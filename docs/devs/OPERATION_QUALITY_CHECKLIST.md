@@ -1,5 +1,26 @@
 # Operation Quality Checklist
 
+## 2026-07-08 Loop581 residual86 prior-compatible source-native 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_581_REPORT_20260708.md`.
+  - [x] Raw residual action batch 기록 완료: `docs/devs/loop581_candidate_set_residual86_source_native_action_batch.json/.md`.
+  - [x] Full source-native review batch 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json/.md`.
+  - [x] Prior-compatible verdict/state 기록 완료: `docs/devs/loop581_candidate_set_full375_prior_compatible_source_native_verdicts.json/.md`, `loop581_candidate_set_full375_prior_compatible_state.json`.
+  - [x] Combined source-native review 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_full375_combined_source_native_review.json/.md`.
+  - [x] Residual action queue와 residual46 batch 기록 완료: `docs/devs/loop581_candidate_set_full375_prior_compatible_residual_action_queue.json/.md`, `loop581_candidate_set_full375_prior_compatible_residual46_action_batch.json/.md`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+  - [x] Prior-compatible 재사용은 동일 post_id, 동일 triage bucket, 현재 후보 title/url 일치로 제한했다.
+  - [x] Prior-compatible `84`건은 approval이 아니라 source-native 회계 전이 후보로만 기록했다.
+  - [x] Combined summary는 decision `79`, info missing `7`, validation issue `0`이다.
+  - [x] Gate wiring 뒤 제외 후보 `40`건을 반영해도 residual action queue `46`건이 남는다.
+  - [x] Residual46 batch의 runtime input candidate는 `0`이다.
+  - [x] 다음 test/runtime run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지다.
+  - [x] Dashboard는 진행 확인 도구이며 semantic/full_scan approval 근거가 아니다.
+  - [x] Full375 raw collateral `86`과 runtime counts missing 때문에 collateral `NO-GO`를 유지했다.
+- Gate: prior-compatible transfer `REVIEW-LOCKED / compatible 84`, combined source-native `REVIEW-LOCKED / decision 79 / info_missing 7`, residual queue `REVIEW-LOCKED / 46`, full375 collateral `NO-GO / raw 86 / adjusted residual 46`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop580 candidate-set projection/full375 품질 게이트
 
 - 근거:

@@ -1,0 +1,4242 @@
+{
+  "report_type": "prior_compatible_collateral_verdicts_state",
+  "review_id": "loop581_candidate_set_full375_prior_compatible_source_native",
+  "scope": "Loop581 candidate-set full375 prior-compatible source-native",
+  "generated_at": "2026-07-08T03:39:25",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "current_batch_rows": 86,
+    "source_verdict_rows": 895,
+    "overlap_rows": 574,
+    "compatible_rows": 84,
+    "unreviewed_current_batch_rows": 2,
+    "skip_counts": {
+      "triage_bucket_changed": 37,
+      "post_id_not_in_current_batch": 321,
+      "duplicate_compatible_post_id": 453
+    }
+  },
+  "source_verdicts": [
+    {
+      "path": "docs\\devs\\loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json",
+      "expected_triage_bucket": "*"
+    },
+    {
+      "path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json",
+      "expected_triage_bucket": "*"
+    },
+    {
+      "path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json",
+      "expected_triage_bucket": "*"
+    },
+    {
+      "path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json",
+      "expected_triage_bucket": "*"
+    },
+    {
+      "path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json",
+      "expected_triage_bucket": "*"
+    },
+    {
+      "path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json",
+      "expected_triage_bucket": "*"
+    },
+    {
+      "path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json",
+      "expected_triage_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "path": "docs\\devs\\loop513_unsafe_promotion_info_missing12_source_native_verdicts.json",
+      "expected_triage_bucket": "unsafe_promotion_from_hold"
+    },
+    {
+      "path": "docs\\devs\\loop512_wrong_work_info_missing10_source_native_verdicts.json",
+      "expected_triage_bucket": "wrong_work_title_flip"
+    },
+    {
+      "path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json",
+      "expected_triage_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json",
+      "expected_triage_bucket": "unsafe_promotion_from_hold"
+    },
+    {
+      "path": "docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json",
+      "expected_triage_bucket": "wrong_work_title_flip"
+    }
+  ],
+  "skipped_rows": [
+    {
+      "post_id": 11671514,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11697242,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697256,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11708447,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710021,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718099,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11716464,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11666741,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11663514,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11674694,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11657047,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660241,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11698870,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11658621,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11690855,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710044,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668300,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669921,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694065,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11708478,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11665099,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669929,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671500,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671514,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11682791,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718097,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11658637,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669928,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671501,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671538,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11676317,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11682768,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11687618,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694067,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697231,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11706852,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710037,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660273,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11661856,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11665110,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11665124,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11666725,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668278,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668305,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11673102,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11677926,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11681178,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11685994,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11687661,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11690841,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694019,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697239,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697242,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697256,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11698871,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11698904,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11702094,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11706844,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11708447,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710021,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710047,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710049,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11711632,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11714885,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11714892,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11716480,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11716505,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718099,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718114,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11666700,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11716464,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11666741,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718057,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11663514,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11674694,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11676314,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11657047,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11673086,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11674703,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11681177,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11695611,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11706867,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660262,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694044,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660241,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669907,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671512,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11681152,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694041,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11698870,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11703631,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11658621,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660238,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668324,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11677957,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11687635,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11690855,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11705256,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11705257,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11708466,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710044,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11714913,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718105,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660254,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11661863,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11666713,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668300,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669921,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669926,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11682749,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11682767,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11682775,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11689292,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11692436,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11692444,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694035,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694065,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11695609,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697249,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11698859,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11698865,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11700483,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11700500,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11703640,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11703658,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11705231,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11706831,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11706842,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11708453,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11708470,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11708478,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710036,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710046,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660232,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11663554,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11682792,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11703674,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11714903,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11665099,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669929,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671500,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671514,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11682791,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718097,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11658637,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669928,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671501,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671538,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11676317,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11682768,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11687618,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694067,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697231,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11706852,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710037,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660273,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11661856,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11663557,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11665110,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11665124,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11666725,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668278,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668305,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668325,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669913,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11673102,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11677926,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11681178,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11685994,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11687661,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11690841,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694019,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697239,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697242,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697256,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11698871,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11698904,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11702094,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11706844,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11708447,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710021,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710047,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710049,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11711632,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11714885,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11714887,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11714892,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11716480,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11716505,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718099,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718114,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11666700,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11716464,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11666741,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718057,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11663514,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11674694,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11676314,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11657047,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11673086,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11674703,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11681177,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11695611,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11665121,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11706867,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660262,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694044,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660241,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669907,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671512,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11681152,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694041,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11698870,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11703631,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11658621,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660238,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668324,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11677957,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11687635,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11690855,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11705256,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11705257,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11708466,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710044,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11714913,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718105,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660254,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11661863,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11666713,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668300,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669921,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669926,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11673080,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11677924,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11681159,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11682749,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11682767,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11682775,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11689292,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11692436,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11692444,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694035,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694065,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11695609,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697249,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11698859,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11698865,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11700483,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11700500,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11703640,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11703658,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11705231,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11706831,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11706842,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11708453,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11708470,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11708478,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710036,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710046,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660232,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11663554,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11682792,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11703674,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11714903,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11665099,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669929,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671500,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671514,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11682791,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718097,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11658637,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669928,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671501,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671538,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11676317,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11682768,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11687618,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694067,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697231,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11706852,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710037,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660273,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11661856,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11663535,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11663557,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11665110,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11665124,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11666725,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668278,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668305,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668325,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669913,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11673102,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11677915,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11677926,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11681172,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11681178,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11685994,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11687661,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11690841,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694019,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697239,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697242,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697256,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11698871,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11698904,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11702094,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11706844,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11708447,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710021,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710047,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710049,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11711632,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11714885,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11714887,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11714892,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11716480,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11716505,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718099,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718110,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718114,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11666700,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11716464,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11666741,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718057,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11663514,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11674694,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11676314,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11657047,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11673086,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11674703,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11681177,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11695611,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11665121,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11673077,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694068,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11706867,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660262,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694044,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660241,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669907,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671512,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11681152,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694041,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11698870,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11703631,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11658621,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660238,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668324,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11677957,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11687635,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11690855,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11705256,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11705257,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11708466,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710044,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11714913,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718105,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660254,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11661863,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11663511,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11666713,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668300,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669921,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669926,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11673080,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11677924,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11681159,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11682749,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11682767,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11682775,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11689292,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11692436,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11692444,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694035,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694063,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694065,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11695609,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697249,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11698859,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11698865,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11700483,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11700500,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11703640,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11703658,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11705230,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11705231,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11705251,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11706831,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11706842,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11708453,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11708470,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11708478,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710036,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710046,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660232,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11663554,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11682792,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11703674,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11714903,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop544_current_full375_carried_forward_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11665099,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669929,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671500,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671514,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11682791,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718097,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11658637,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669928,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671501,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671538,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11676317,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11682768,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11687618,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694067,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697231,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11706852,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710037,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660273,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11661856,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11663535,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11663557,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11665110,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11665124,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11666725,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668278,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668305,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668325,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669913,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11673102,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11677915,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11677926,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11681172,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11681178,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11685994,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11687661,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11690841,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694019,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697239,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697242,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697256,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11698871,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11698904,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11702094,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11706844,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11708447,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710021,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710047,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710049,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11711632,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11714885,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11714887,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11714892,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11716480,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11716505,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718099,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718110,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718114,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11666700,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11716464,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11666741,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718057,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11663514,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11674694,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11676314,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11657047,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11673086,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11674703,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11681177,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11695611,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11665121,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11673077,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694068,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11706867,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660262,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694044,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660241,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669907,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671512,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11681152,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694041,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11698870,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11703631,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11658621,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660238,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668324,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11677957,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11687635,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11690855,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11705256,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11705257,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11708466,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710044,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11714913,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718105,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660254,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660277,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11661863,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11663511,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11666713,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668300,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669921,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669926,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669933,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11673080,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11677924,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11681159,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11682749,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11682767,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11682775,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11689292,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11692436,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11692444,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694035,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694063,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694065,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11695609,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697249,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11698859,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11698865,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11700483,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11700500,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11703640,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11703658,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11705230,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11705231,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11705251,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11706831,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11706842,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11708453,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11708470,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11708478,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710036,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710046,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718098,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop536_current_full375_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11665099,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669929,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671500,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671514,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11682791,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718097,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11658637,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669928,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671501,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671538,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11676317,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11682768,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11687618,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694067,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697231,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697234,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11706852,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710037,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660271,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660273,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11661856,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11663535,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11663557,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11665110,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11665124,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11666725,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668278,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668305,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668325,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669913,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11673102,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11677915,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11677926,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11681172,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11681178,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11685994,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11687661,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11690841,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694019,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697239,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697242,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697256,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11698871,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11698904,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11702094,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11706844,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11706871,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11708447,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710021,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710047,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710049,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11711632,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11714885,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11714887,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11714892,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11716480,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11716505,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718099,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718110,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718114,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11666700,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11716464,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11666741,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718057,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11663514,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11674694,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11676314,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11657047,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11673086,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11674703,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11681177,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11695611,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11665121,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11673077,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694068,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11706867,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660262,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694044,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_projected_loop511_p0_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660254,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660277,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11661863,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11663511,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11666713,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668300,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669921,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669926,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669933,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11673080,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11677924,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11679547,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11681159,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11682749,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11682767,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11682775,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11689292,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11692436,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11692444,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694035,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694063,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694065,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11695609,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697249,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11698859,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11698865,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11700483,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11700500,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11703640,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11703658,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11705230,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11705231,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11705251,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11706831,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11706842,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11708453,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11708470,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11708478,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710036,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710046,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718098,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop514_safe_loss_info_missing41_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11658621,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop513_unsafe_promotion_info_missing12_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660238,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop513_unsafe_promotion_info_missing12_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668324,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop513_unsafe_promotion_info_missing12_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11677957,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop513_unsafe_promotion_info_missing12_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11687635,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop513_unsafe_promotion_info_missing12_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11690855,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop513_unsafe_promotion_info_missing12_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11705256,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop513_unsafe_promotion_info_missing12_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11705257,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop513_unsafe_promotion_info_missing12_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11708466,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop513_unsafe_promotion_info_missing12_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710044,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop513_unsafe_promotion_info_missing12_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11714913,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop513_unsafe_promotion_info_missing12_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718105,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop513_unsafe_promotion_info_missing12_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660241,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop512_wrong_work_info_missing10_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11663554,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop512_wrong_work_info_missing10_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11666731,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop512_wrong_work_info_missing10_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669907,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop512_wrong_work_info_missing10_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671512,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop512_wrong_work_info_missing10_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11681152,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop512_wrong_work_info_missing10_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694041,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop512_wrong_work_info_missing10_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11698870,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop512_wrong_work_info_missing10_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11703631,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop512_wrong_work_info_missing10_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11703674,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop512_wrong_work_info_missing10_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11658620,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660232,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11660257,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660265,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660271,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660273,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11660277,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11661856,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11661881,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11663514,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11663521,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11663535,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11663540,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11663557,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11665110,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11665124,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11666700,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11666725,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11666731,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668278,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668288,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668300,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668305,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668325,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669907,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11669908,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669913,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669926,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669933,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671507,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671512,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11673096,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11673102,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11674694,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11676314,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11677915,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11677924,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11677926,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11681152,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11681172,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11681178,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11682749,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11682761,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11682767,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11682775,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11684372,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11685987,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11685994,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11687661,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11690841,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11692436,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11692444,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694019,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694035,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694049,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11695609,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697239,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697242,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697249,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697256,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11698859,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11698871,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11698904,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11698910,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11702090,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11702094,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11703674,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11705230,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11705251,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11706844,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11706871,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11708432,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11708447,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11708478,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710021,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710036,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710047,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710049,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11711632,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11713220,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11713222,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11714885,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11714887,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11714892,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11714903,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11716475,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11716480,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11716498,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11716505,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718099,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718110,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11718114,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop481_safe_loss_resolved_to_null_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11658621,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11658637,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660238,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11666705,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11668324,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669928,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671501,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671538,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11674704,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11676317,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11681180,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11682768,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11684370,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11685985,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11687618,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11687627,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11687635,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11690855,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694067,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697231,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11697234,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11703645,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11706852,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710037,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop480_unsafe_promotion_from_hold_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11660254,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11660262,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11663554,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11665099,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669929,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671500,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11671514,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11673077,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11679547,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11682791,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11689292,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11692426,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694041,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694044,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694068,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11698865,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11703658,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11706867,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11708453,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json",
+      "source_bucket": "wrong_work_title_flip",
+      "current_bucket": "safe_loss_resolved_to_null"
+    },
+    {
+      "post_id": 11718097,
+      "reason": "duplicate_compatible_post_id",
+      "source_path": "docs\\devs\\loop479_wrong_work_title_flip_source_native_verdicts.json"
+    }
+  ],
+  "unreviewed_batch": {
+    "gate": "REVIEW-LOCKED",
+    "summary": {
+      "source_review_rows": 86,
+      "prior_compatible_rows": 84,
+      "additional_covered_rows": 0,
+      "covered_post_ids": 84,
+      "unreviewed_rows": 2,
+      "counts_by_bucket": {
+        "wrong_work_title_flip": 1,
+        "safe_loss_resolved_to_null": 1
+      },
+      "counts_by_collateral_status": {
+        "resolved_to_different_title": 1,
+        "resolved_to_null": 1
+      },
+      "image_rows": 2,
+      "text_only_rows": 0
+    },
+    "artifacts": {
+      "json": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop581_candidate_set_full375_prior_incompatible_review_batch.json",
+      "jsonl": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop581_candidate_set_full375_prior_incompatible_review_batch.jsonl",
+      "markdown": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop581_candidate_set_full375_prior_incompatible_review_batch.md"
+    }
+  },
+  "unreviewed_placeholder_verdicts": {
+    "gate": "REVIEW-LOCKED",
+    "summary": {
+      "source_review_rows": 86,
+      "prior_compatible_rows": 84,
+      "additional_covered_rows": 0,
+      "covered_post_ids": 84,
+      "placeholder_rows": 2,
+      "counts_by_bucket": {
+        "wrong_work_title_flip": 1,
+        "safe_loss_resolved_to_null": 1
+      }
+    },
+    "artifact": "docs\\devs\\loop581_candidate_set_full375_unreviewed_placeholder_verdicts.json"
+  }
+}

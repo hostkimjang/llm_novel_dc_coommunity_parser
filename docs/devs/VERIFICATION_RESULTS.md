@@ -1,5 +1,36 @@
 # Verification Results
 
+## 2026-07-08 Loop581 residual86 prior-compatible source-native 회계
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_581_REPORT_20260708.md`
+  - `tools/split_collateral_action_queue.py`
+  - `tests/test_split_collateral_action_queue.py`
+  - `docs/devs/loop581_candidate_set_residual86_source_native_action_batch.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json/.jsonl/.md`
+  - `docs/devs/loop581_candidate_set_full375_prior_compatible_source_native_verdicts.json/.md`
+  - `docs/devs/loop581_candidate_set_full375_prior_compatible_state.json`
+  - `docs/devs/loop581_candidate_set_full375_unreviewed_placeholder_verdicts.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_full375_combined_source_native_review.json/.md`
+  - `docs/devs/loop581_candidate_set_full375_prior_compatible_residual_action_queue.json/.md`
+  - `docs/devs/loop581_candidate_set_full375_prior_compatible_residual46_action_batch.json/.md`
+  - `docs/devs/loop581_candidate_set_full375_prior_compatible_residual_p0_action_batch.json/.md`
+- 검증:
+  - Full source-native batch generation: PASS, selected `86`, source/baseline/after missing `0/0/0`.
+  - Prior-compatible transfer: PASS 산출, compatible `84`, prior-incompatible current rows `2`.
+  - Combined source-native summary: PASS 산출, reviewed `86/86`, decision `79`, info missing `7`, validation issue `0`.
+  - Residual action queue: PASS 산출, residual `46`, validation issue `0`.
+  - Residual46 action batch: PASS 산출, selected `46`, runtime input candidate `0`, dashboard contract recorded.
+  - Focused unittest: PASS, `28` tests.
+  - py_compile: PASS.
+  - Generated JSON parse: PASS.
+  - `git diff --check`: PASS, CRLF 경고만 있음.
+- 결과:
+  - Raw residual `86`은 source-native 회계상 residual `46`으로 재정렬됐다.
+  - Full375 raw collateral은 여전히 `86`이고 runtime counts missing이므로 approval이 아니다.
+  - 다음 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지다.
+- Gate: prior-compatible transfer `REVIEW-LOCKED / 84`, combined source-native `REVIEW-LOCKED / decision 79 / info_missing 7`, residual queue `REVIEW-LOCKED / 46`, full375 collateral `NO-GO / raw 86 / adjusted residual 46`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop580 candidate-set projection contract와 full375 collateral 재검증
 
 - 산출물:

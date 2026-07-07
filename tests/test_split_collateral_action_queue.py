@@ -213,6 +213,48 @@ class SplitCollateralActionQueueTest(unittest.TestCase):
         self.assertEqual(p1_group["owner_mode"], "SOURCE_NATIVE_OR_BLIND_REVIEW")
         self.assertEqual(p1_group["post_ids"], [22])
 
+    def test_source_transition_info_missing_extends_policy_review_expected_count(self) -> None:
+        combined_review = {
+            "review_id": "unit_combined_with_info_missing",
+            "gate": "REVIEW-LOCKED",
+            "summary": {
+                "queue_transition": {
+                    "residual_action_queue_rows": 3,
+                    "repair_required_rows": 1,
+                    "policy_or_native_review_required_rows": 1,
+                    "info_missing_rows": 1,
+                }
+            },
+            "rows": [
+                {
+                    "post_id": 40,
+                    "triage_bucket": "safe_loss_resolved_to_null",
+                    "review_label": "REPROCESS",
+                    "action": ["repair_safe_loss_restore_supported_title"],
+                },
+                {
+                    "post_id": 41,
+                    "triage_bucket": "unsafe_promotion_from_hold",
+                    "review_label": "HOLD",
+                    "action": ["native_web_review_required"],
+                },
+                {
+                    "post_id": 42,
+                    "triage_bucket": "wrong_work_title_flip",
+                    "review_label": "INFO_MISSING",
+                    "action": ["source_native_or_blind_review_required"],
+                },
+            ],
+        }
+
+        queue = build_residual_queue(combined_review, generated_at="2026-07-08T00:00:00")
+
+        self.assertEqual(queue["gate"], "REVIEW-LOCKED")
+        self.assertEqual(queue["summary"]["validation_issue_count"], 0)
+        expected = queue["summary"]["expected_from_source_transition"]
+        self.assertEqual(expected["policy_or_native_review_required_rows"], 2)
+        self.assertEqual(expected["source_info_missing_rows"], 1)
+
     def test_can_build_triage_only_residual_queue(self) -> None:
         queue = build_residual_queue(
             {

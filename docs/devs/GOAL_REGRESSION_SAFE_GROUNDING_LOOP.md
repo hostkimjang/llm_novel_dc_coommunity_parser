@@ -429,6 +429,8 @@
 
 ---
 
+> 2026-07-08 상태 addendum (Loop581 residual86 prior-compatible source-native 회계): goal은 완료가 아니다. 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다. Loop580 raw residual `86`건을 full source-native/blind review batch로 고정했고 source/baseline/after 누락은 `0/0/0`이다. 과거 source-native verdict를 현재 post_id, triage bucket, 현재 후보 title/url 기준으로만 재사용해 prior-compatible `84`, prior-incompatible current row `2`를 얻었다. Combined source-native summary는 reviewed `86/86`, source-native decision `79`, info missing `7`, validation issue `0`, label `ACCEPT 40 / REPROCESS 18 / HOLD 21 / INFO_MISSING 7`이다. Gate wiring 뒤 제외 후보 `40`건을 반영해도 residual action queue는 `46`건이며 bucket은 safe_loss `32`, unsafe promotion `4`, wrong_work `10`이다. Residual46 action batch는 selected `46`, runtime input candidate `0`, source-native review rows `33`이고 execution contract는 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지다. Full375 raw collateral은 여전히 `NO-GO / raw 86 / runtime counts missing`이고 dashboard는 `http://127.0.0.1:8080`에서 `ok=true / standalone=true / pid=9320`로 응답한다. Gate는 prior-compatible transfer `REVIEW-LOCKED`, combined source-native `REVIEW-LOCKED / decision 79 / info_missing 7`, residual queue `REVIEW-LOCKED / 46`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`다. 완료 기준은 계속 `full375 collateral GO + full_scan 경로 정의`다.
+
 ## 0. 왜 이 goal인가 — 이전 루프가 회귀를 낸 두 메타원인
 
 전수 조사·코드추적·기존 하네스 7갈래 digest가 **모두 같은 두 결함**으로 수렴했다. 이 goal은 이 둘을 게이트로 막는 것이 존재 이유다.

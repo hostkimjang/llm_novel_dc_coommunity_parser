@@ -1,5 +1,20 @@
 # Development History
 
+## 2026-07-08 - Loop581 residual86 prior-compatible source-native accounting
+
+- 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+- Loop580 raw residual `86`건을 full source-native/blind review batch로 고정했다.
+- Source/baseline/after 누락은 `0/0/0`이다.
+- 과거 source-native verdict는 현재 post_id, triage bucket, 현재 후보 title/url이 맞는 경우에만 prior-compatible 전이했다.
+- Prior-compatible rows는 `84`, prior-incompatible current rows는 `2`다.
+- Combined source-native summary는 reviewed `86/86`, decision `79`, info missing `7`, validation issue `0`, label `ACCEPT 40 / REPROCESS 18 / HOLD 21 / INFO_MISSING 7`이다.
+- Gate wiring 뒤 제외 후보 `40`건을 반영해도 residual action queue는 `46`건으로 남는다.
+- Residual bucket은 safe_loss `32`, unsafe promotion `4`, wrong_work `10`이다.
+- Residual46 action batch는 selected `46`, runtime input candidate `0`, source-native review rows `33`이고 test/runtime execution contract는 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지다.
+- `tools/split_collateral_action_queue.py`는 source transition의 `info_missing_rows`를 policy/native review expected count에 포함하도록 수정했다.
+- Report는 `docs/devs/loop_reports/LOOP_581_REPORT_20260708.md`다.
+- Gate는 prior-compatible transfer `REVIEW-LOCKED / 84`, combined source-native `REVIEW-LOCKED / decision 79 / info_missing 7`, residual queue `REVIEW-LOCKED / 46`, full375 collateral `NO-GO / raw 86 / adjusted residual 46`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop580 candidate-set projection contract and full375 collateral recheck
 
 - 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.

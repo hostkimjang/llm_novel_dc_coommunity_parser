@@ -252,10 +252,13 @@ def build_residual_queue(
     source_label_counts = summary.get("label_counts") or {}
     source_expected_reprocess = transition.get("repair_required_rows", source_label_counts.get("REPROCESS"))
     source_expected_policy_review = transition.get("policy_or_native_review_required_rows")
+    source_expected_info_missing = transition.get("info_missing_rows")
     if source_expected_policy_review is None:
         source_expected_policy_review = source_label_counts.get("HOLD", 0) + source_label_counts.get(
             "INFO_MISSING", 0
         )
+    elif source_expected_info_missing is not None:
+        source_expected_policy_review = int(source_expected_policy_review) + int(source_expected_info_missing)
 
     def _adjust_expected(value: Any, label: str | None = None) -> int | None:
         if value is None:
@@ -339,6 +342,7 @@ def build_residual_queue(
                 "source_residual_action_queue_rows": source_expected_residual,
                 "source_repair_required_rows": source_expected_reprocess,
                 "source_policy_or_native_review_required_rows": source_expected_policy_review,
+                "source_info_missing_rows": source_expected_info_missing,
             },
             "closed_post_ids_excluded": sorted(exclude_post_ids),
             "excluded_residual_action_queue_rows": len(excluded_rows),

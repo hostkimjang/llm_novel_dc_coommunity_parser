@@ -1,0 +1,2821 @@
+{
+  "report_type": "action_queue_batch",
+  "batch_id": "loop581_candidate_set_residual86_source_native_action_batch",
+  "generated_at": "2026-07-08T03:39:06",
+  "source_queue_id": "loop580_candidate_set_full375_residual86_batch_action_queue",
+  "filter": {
+    "priorities": [
+      "P0"
+    ],
+    "labels": null,
+    "actions": [
+      "source_native_or_blind_review_required"
+    ]
+  },
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "gate": "REVIEW-LOCKED",
+  "summary": {
+    "source_queue_rows": 86,
+    "selected_rows": 86,
+    "runtime_input_candidate_rows": 0,
+    "source_native_review_rows": 86,
+    "search_replay_required_rows": 0,
+    "label_counts": {
+      "INFO_MISSING": 86
+    },
+    "priority_counts": {
+      "P0": 86
+    },
+    "owner_mode_counts": {
+      "None": 86
+    },
+    "audit_status_counts": {
+      "None": 86
+    },
+    "action_counts": {
+      "p0_safe_loss_resolved_to_null_review_required": 41,
+      "p0_unsafe_promotion_from_hold_review_required": 24,
+      "p0_wrong_work_title_flip_review_required": 21,
+      "source_native_or_blind_review_required": 86
+    },
+    "lane_counts": {
+      "source_native_or_blind_review": 86
+    },
+    "dispatch_lane_counts": {
+      "source_native_or_blind_review": 86
+    },
+    "validation_issue_count": 0
+  },
+  "validation_issues": [],
+  "action_groups": [
+    {
+      "lane": "source_native_or_blind_review",
+      "row_count": 86,
+      "label_counts": {
+        "INFO_MISSING": 86
+      },
+      "priority_counts": {
+        "P0": 86
+      },
+      "dispatch_lane_counts": {
+        "source_native_or_blind_review": 86
+      },
+      "post_ids": [
+        11658637,
+        11660232,
+        11660238,
+        11660254,
+        11660262,
+        11660273,
+        11661856,
+        11661863,
+        11663554,
+        11665099,
+        11665110,
+        11665124,
+        11666700,
+        11666725,
+        11668278,
+        11668305,
+        11668324,
+        11669907,
+        11669928,
+        11669929,
+        11671500,
+        11671501,
+        11671512,
+        11671514,
+        11671538,
+        11673086,
+        11674703,
+        11676314,
+        11676317,
+        11677957,
+        11681152,
+        11681177,
+        11681178,
+        11682749,
+        11682768,
+        11682775,
+        11682791,
+        11682792,
+        11685994,
+        11687618,
+        11687635,
+        11687661,
+        11694035,
+        11694041,
+        11694044,
+        11694067,
+        11695609,
+        11695611,
+        11697231,
+        11697239,
+        11697249,
+        11698859,
+        11698865,
+        11698870,
+        11698871,
+        11698904,
+        11700483,
+        11700500,
+        11703631,
+        11703640,
+        11703658,
+        11703674,
+        11705231,
+        11705256,
+        11705257,
+        11706842,
+        11706844,
+        11706852,
+        11706867,
+        11708453,
+        11708466,
+        11710036,
+        11710037,
+        11710047,
+        11710049,
+        11711632,
+        11714885,
+        11714892,
+        11714903,
+        11714913,
+        11716480,
+        11716505,
+        11718057,
+        11718097,
+        11718105,
+        11718114
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11658637,
+          "triage_bucket": "unsafe_promotion_from_hold",
+          "review_label": "INFO_MISSING",
+          "source_native_verdict": "unreviewed_regression_row",
+          "selected_title": "재벌집 막내아들",
+          "selected_option_id": "UNREVIEWED_P1",
+          "evidence_grade": "Missing",
+          "actions": [
+            "source_native_or_blind_review_required",
+            "p0_unsafe_promotion_from_hold_review_required"
+          ],
+          "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+          "evidence_refs": [],
+          "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+          "before_title": null,
+          "after_title": "재벌집 막내아들",
+          "before_url": null,
+          "after_url": "https://series.naver.com/novel/detail.series?productNo=4340987",
+          "priority": "P0",
+          "collateral_status": "null_to_resolved",
+          "batch_lanes": [
+            "source_native_or_blind_review"
+          ],
+          "dispatch_lane": "source_native_or_blind_review",
+          "runtime_input_eligible": false,
+          "source_native_review_required": true
+        },
+        {
+          "post_id": 11660232,
+          "triage_bucket": "wrong_work_title_flip",
+          "review_label": "INFO_MISSING",
+          "source_native_verdict": "unreviewed_regression_row",
+          "selected_title": "괴담 호텔 탈출기",
+          "selected_option_id": "UNREVIEWED_P1",
+          "evidence_grade": "Missing",
+          "actions": [
+            "source_native_or_blind_review_required",
+            "p0_wrong_work_title_flip_review_required"
+          ],
+          "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+          "evidence_refs": [],
+          "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+          "before_title": "괴담 동아리",
+          "after_title": "괴담 호텔 탈출기",
+          "before_url": "https://page.kakao.com/content/54701995",
+          "after_url": null,
+          "priority": "P0",
+          "collateral_status": "resolved_to_different_title",
+          "batch_lanes": [
+            "source_native_or_blind_review"
+          ],
+          "dispatch_lane": "source_native_or_blind_review",
+          "runtime_input_eligible": false,
+          "source_native_review_required": true
+        },
+        {
+          "post_id": 11660238,
+          "triage_bucket": "unsafe_promotion_from_hold",
+          "review_label": "INFO_MISSING",
+          "source_native_verdict": "unreviewed_regression_row",
+          "selected_title": "무림마조",
+          "selected_option_id": "UNREVIEWED_P1",
+          "evidence_grade": "Missing",
+          "actions": [
+            "source_native_or_blind_review_required",
+            "p0_unsafe_promotion_from_hold_review_required"
+          ],
+          "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+          "evidence_refs": [],
+          "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+          "before_title": null,
+          "after_title": "무림마조",
+          "before_url": null,
+          "after_url": "https://novelpia.com/novel/347096",
+          "priority": "P0",
+          "collateral_status": "null_to_resolved",
+          "batch_lanes": [
+            "source_native_or_blind_review"
+          ],
+          "dispatch_lane": "source_native_or_blind_review",
+          "runtime_input_eligible": false,
+          "source_native_review_required": true
+        },
+        {
+          "post_id": 11660254,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "INFO_MISSING",
+          "source_native_verdict": "unreviewed_regression_row",
+          "selected_title": null,
+          "selected_option_id": "UNREVIEWED_P1",
+          "evidence_grade": "Missing",
+          "actions": [
+            "source_native_or_blind_review_required",
+            "p0_safe_loss_resolved_to_null_review_required"
+          ],
+          "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+          "evidence_refs": [],
+          "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+          "before_title": "푸푸푸 랜드의 두가지 일상",
+          "after_title": null,
+          "before_url": "https://novelpia.com/novel/82399",
+          "after_url": null,
+          "priority": "P0",
+          "collateral_status": "resolved_to_null",
+          "batch_lanes": [
+            "source_native_or_blind_review"
+          ],
+          "dispatch_lane": "source_native_or_blind_review",
+          "runtime_input_eligible": false,
+          "source_native_review_required": true
+        },
+        {
+          "post_id": 11660262,
+          "triage_bucket": "wrong_work_title_flip",
+          "review_label": "INFO_MISSING",
+          "source_native_verdict": "unreviewed_regression_row",
+          "selected_title": "로판에 도파민을 풀었다",
+          "selected_option_id": "UNREVIEWED_P1",
+          "evidence_grade": "Missing",
+          "actions": [
+            "source_native_or_blind_review_required",
+            "p0_wrong_work_title_flip_review_required"
+          ],
+          "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+          "evidence_refs": [],
+          "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+          "before_title": "그렇게, 그 괴물과 두 번 결혼했다",
+          "after_title": "로판에 도파민을 풀었다",
+          "before_url": "https://page.kakao.com/content/65093670?tab_type=about",
+          "after_url": "https://novelpia.com/novel/376145",
+          "priority": "P0",
+          "collateral_status": "resolved_to_different_title",
+          "batch_lanes": [
+            "source_native_or_blind_review"
+          ],
+          "dispatch_lane": "source_native_or_blind_review",
+          "runtime_input_eligible": false,
+          "source_native_review_required": true
+        },
+        {
+          "post_id": 11660273,
+          "triage_bucket": "wrong_work_title_flip",
+          "review_label": "INFO_MISSING",
+          "source_native_verdict": "unreviewed_regression_row",
+          "selected_title": "그리즐리 그랑",
+          "selected_option_id": "UNREVIEWED_P1",
+          "evidence_grade": "Missing",
+          "actions": [
+            "source_native_or_blind_review_required",
+            "p0_wrong_work_title_flip_review_required"
+          ],
+          "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+          "evidence_refs": [],
+          "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+          "before_title": "마도서를 줍다 마법사가 되다",
+          "after_title": "그리즐리 그랑",
+          "before_url": "https://novelpia.com/novel/414963",
+          "after_url": null,
+          "priority": "P0",
+          "collateral_status": "resolved_to_different_title",
+          "batch_lanes": [
+            "source_native_or_blind_review"
+          ],
+          "dispatch_lane": "source_native_or_blind_review",
+          "runtime_input_eligible": false,
+          "source_native_review_required": true
+        },
+        {
+          "post_id": 11661856,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "INFO_MISSING",
+          "source_native_verdict": "unreviewed_regression_row",
+          "selected_title": null,
+          "selected_option_id": "UNREVIEWED_P1",
+          "evidence_grade": "Missing",
+          "actions": [
+            "source_native_or_blind_review_required",
+            "p0_safe_loss_resolved_to_null_review_required"
+          ],
+          "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+          "evidence_refs": [],
+          "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+          "before_title": "너랑은 절! 대! 안 사Kill거니까!",
+          "after_title": null,
+          "before_url": null,
+          "after_url": null,
+          "priority": "P0",
+          "collateral_status": "resolved_to_null",
+          "batch_lanes": [
+            "source_native_or_blind_review"
+          ],
+          "dispatch_lane": "source_native_or_blind_review",
+          "runtime_input_eligible": false,
+          "source_native_review_required": true
+        },
+        {
+          "post_id": 11661863,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "INFO_MISSING",
+          "source_native_verdict": "unreviewed_regression_row",
+          "selected_title": null,
+          "selected_option_id": "UNREVIEWED_P1",
+          "evidence_grade": "Missing",
+          "actions": [
+            "source_native_or_blind_review_required",
+            "p0_safe_loss_resolved_to_null_review_required"
+          ],
+          "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+          "evidence_refs": [],
+          "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+          "before_title": "저주받은 영애가 되었습니다",
+          "after_title": null,
+          "before_url": null,
+          "after_url": null,
+          "priority": "P0",
+          "collateral_status": "resolved_to_null",
+          "batch_lanes": [
+            "source_native_or_blind_review"
+          ],
+          "dispatch_lane": "source_native_or_blind_review",
+          "runtime_input_eligible": false,
+          "source_native_review_required": true
+        }
+      ]
+    }
+  ],
+  "execution_contract": {
+    "policy": "TEST_RUNS_USE_PARALLEL_16_AND_WEB_DASHBOARD",
+    "row_count": 86,
+    "requested_parallel": 16,
+    "expected_effective_parallel": 16,
+    "required_flags": [
+      "--parallel 16"
+    ],
+    "forbidden_flags": [
+      "--no-dashboard"
+    ],
+    "dashboard_gate": "GO_PROGRESS_VIEW_NOT_APPROVAL",
+    "dashboard_contract": {
+      "dashboard_policy": "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+      "dashboard_url": "http://127.0.0.1:8080",
+      "start_dashboard_command": "python tools/dashboard_server.py --host 127.0.0.1 --port 8080",
+      "forbidden_flags": [
+        "--no-dashboard"
+      ],
+      "runner_cli_guard": "tools/run_independent_plan.py ignores --no-dashboard unless ALLOW_TEST_RUN_NO_DASHBOARD=1 is explicitly set as a breakglass override.",
+      "live_forwarding_contract": "Start tools/dashboard_server.py first; expert_main detects the standalone dashboard and forwards monitor events to it.",
+      "fallback_attach_contract": "If a run was already started without live forwarding, attach its manifest with tools/attach_manifest_dashboard.py."
+    },
+    "approval_boundary": "Dashboard progress visibility and runtime completion are not semantic/full_scan approval."
+  },
+  "rows": [
+    {
+      "post_id": 11658637,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "재벌집 막내아들",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_unsafe_promotion_from_hold_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": null,
+      "after_title": "재벌집 막내아들",
+      "before_url": null,
+      "after_url": "https://series.naver.com/novel/detail.series?productNo=4340987",
+      "priority": "P0",
+      "collateral_status": "null_to_resolved",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11660232,
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "괴담 호텔 탈출기",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "괴담 동아리",
+      "after_title": "괴담 호텔 탈출기",
+      "before_url": "https://page.kakao.com/content/54701995",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_different_title",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11660238,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "무림마조",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_unsafe_promotion_from_hold_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": null,
+      "after_title": "무림마조",
+      "before_url": null,
+      "after_url": "https://novelpia.com/novel/347096",
+      "priority": "P0",
+      "collateral_status": "null_to_resolved",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11660254,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "푸푸푸 랜드의 두가지 일상",
+      "after_title": null,
+      "before_url": "https://novelpia.com/novel/82399",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11660262,
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "로판에 도파민을 풀었다",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "그렇게, 그 괴물과 두 번 결혼했다",
+      "after_title": "로판에 도파민을 풀었다",
+      "before_url": "https://page.kakao.com/content/65093670?tab_type=about",
+      "after_url": "https://novelpia.com/novel/376145",
+      "priority": "P0",
+      "collateral_status": "resolved_to_different_title",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11660273,
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "그리즐리 그랑",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "마도서를 줍다 마법사가 되다",
+      "after_title": "그리즐리 그랑",
+      "before_url": "https://novelpia.com/novel/414963",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_different_title",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11661856,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "너랑은 절! 대! 안 사Kill거니까!",
+      "after_title": null,
+      "before_url": null,
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11661863,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "저주받은 영애가 되었습니다",
+      "after_title": null,
+      "before_url": null,
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11663554,
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "전 버튜버가 하고 싶은데요",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "주서연 ( 전 버튜버가 하고 싶은데요 )",
+      "after_title": "전 버튜버가 하고 싶은데요",
+      "before_url": "https://novelpia.com/novel/275975",
+      "after_url": "https://novelpia.com/novel/275975",
+      "priority": "P0",
+      "collateral_status": "resolved_to_different_title",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11665099,
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "옥탑방의 천재 마물 소환사",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "옥천마 출정",
+      "after_title": "옥탑방의 천재 마물 소환사",
+      "before_url": null,
+      "after_url": "https://novelpia.com/novel/377416",
+      "priority": "P0",
+      "collateral_status": "resolved_to_different_title",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11665110,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "낭만적인 초능력을 위하여",
+      "after_title": null,
+      "before_url": "https://page.kakao.com/content/54662428?tab_type=about",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11665124,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "화산파(화산귀환)",
+      "after_title": null,
+      "before_url": null,
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11666700,
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "내 고향엔 무림인이 산다",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "하남자의 탑 공략법",
+      "after_title": "내 고향엔 무림인이 산다",
+      "before_url": null,
+      "after_url": "https://novel.munpia.com/493263",
+      "priority": "P0",
+      "collateral_status": "resolved_to_different_title",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11666725,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "학대받던 11살 고마가 각성한 이유",
+      "after_title": null,
+      "before_url": null,
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11668278,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "짜장면",
+      "after_title": null,
+      "before_url": "https://ridibooks.com/books/331000103?srsltid=AfmBOooEkRJMPaz44nPpLs4RX2DCmM1Yr9aygAMCBQHM1lBvSielYo7W",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11668305,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "Fate/stay night",
+      "after_title": null,
+      "before_url": null,
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11668324,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "니들 생각 다 들린다",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_unsafe_promotion_from_hold_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": null,
+      "after_title": "니들 생각 다 들린다",
+      "before_url": null,
+      "after_url": "https://novelpia.com/novel/384318",
+      "priority": "P0",
+      "collateral_status": "null_to_resolved",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11669907,
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "약스포) 마법 좋아좋아좋아",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "마법 좋아좋아좋아",
+      "after_title": "약스포) 마법 좋아좋아좋아",
+      "before_url": null,
+      "after_url": "https://novelpia.com/novel/326040",
+      "priority": "P0",
+      "collateral_status": "resolved_to_different_title",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11669928,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "탑의 성좌들이 날 애호한다",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_unsafe_promotion_from_hold_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": null,
+      "after_title": "탑의 성좌들이 날 애호한다",
+      "before_url": null,
+      "after_url": "https://novelpia.com/novel/377032",
+      "priority": "P0",
+      "collateral_status": "null_to_resolved",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11669929,
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "헌터갤러리의 국가권력급 기계공주",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "기계공주",
+      "after_title": "헌터갤러리의 국가권력급 기계공주",
+      "before_url": null,
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_different_title",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11671500,
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "악당은 살고 싶다",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "악당도 살고 싶다",
+      "after_title": "악당은 살고 싶다",
+      "before_url": "https://page.kakao.com/content/56807841?tab_type=about",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_different_title",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11671501,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "판초우의의 마법사",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_unsafe_promotion_from_hold_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": null,
+      "after_title": "판초우의의 마법사",
+      "before_url": null,
+      "after_url": "https://novel.munpia.com/530500",
+      "priority": "P0",
+      "collateral_status": "null_to_resolved",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11671512,
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "킹덤, 전국의 패왕 [킹덤 패러디 ]",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "삼시세끼, 심아식당",
+      "after_title": "킹덤, 전국의 패왕 [킹덤 패러디 ]",
+      "before_url": null,
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_different_title",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11671514,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "악신에게 총애받는 자",
+      "after_title": null,
+      "before_url": "https://novelpia.com/novel/137926",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11671538,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "망한 교단의 성기사",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_unsafe_promotion_from_hold_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": null,
+      "after_title": "망한 교단의 성기사",
+      "before_url": null,
+      "after_url": "https://series.naver.com/novel/detail.series?productNo=12696086",
+      "priority": "P0",
+      "collateral_status": "null_to_resolved",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11673086,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_unsafe_promotion_from_hold_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": null,
+      "after_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "before_url": null,
+      "after_url": "https://novelpia.com/novel/382324",
+      "priority": "P0",
+      "collateral_status": "null_to_resolved",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11674703,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "도굴왕",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_unsafe_promotion_from_hold_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": null,
+      "after_title": "도굴왕",
+      "before_url": null,
+      "after_url": "https://page.kakao.com/content/49105974",
+      "priority": "P0",
+      "collateral_status": "null_to_resolved",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11676314,
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "마도서를 줍다 마법사가 되다",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "소설 속 엑스트라",
+      "after_title": "마도서를 줍다 마법사가 되다",
+      "before_url": null,
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_different_title",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11676317,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "마도서를 줍다 마법사가 되다",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_unsafe_promotion_from_hold_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": null,
+      "after_title": "마도서를 줍다 마법사가 되다",
+      "before_url": null,
+      "after_url": "https://novel.munpia.com/477135",
+      "priority": "P0",
+      "collateral_status": "null_to_resolved",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11677957,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "음악 천재가 불륜을 못 숨김",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_unsafe_promotion_from_hold_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": null,
+      "after_title": "음악 천재가 불륜을 못 숨김",
+      "before_url": null,
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "null_to_resolved",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11681152,
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "[포켓몬] 체육관 챌린지에서 살아남기",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "체육관 챌린지에서 살아남기",
+      "after_title": "[포켓몬] 체육관 챌린지에서 살아남기",
+      "before_url": null,
+      "after_url": "https://novelpia.com/novel/92244",
+      "priority": "P0",
+      "collateral_status": "resolved_to_different_title",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11681177,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "격투 천재 여고생이 되었다",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_unsafe_promotion_from_hold_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": null,
+      "after_title": "격투 천재 여고생이 되었다",
+      "before_url": null,
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "null_to_resolved",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11681178,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "재벌가 차녀의 2회차 걸그룹",
+      "after_title": null,
+      "before_url": null,
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11682749,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "주인공인데 주인공이 아님",
+      "after_title": null,
+      "before_url": "https://novelpia.com/novel/69138",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11682768,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "마법소녀ㄴ은 은퇴하고 싶다",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_unsafe_promotion_from_hold_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": null,
+      "after_title": "마법소녀ㄴ은 은퇴하고 싶다",
+      "before_url": null,
+      "after_url": "https://novelpia.com/novel/347507",
+      "priority": "P0",
+      "collateral_status": "null_to_resolved",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11682775,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "여자가 되어서라도 복수한다",
+      "after_title": null,
+      "before_url": null,
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11682791,
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "시간을 달리는 소설가",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "피아조아 <시간을 달리는 소설가>",
+      "after_title": "시간을 달리는 소설가",
+      "before_url": null,
+      "after_url": "https://novel.munpia.com/357213",
+      "priority": "P0",
+      "collateral_status": "resolved_to_different_title",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11682792,
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "[무친년]이 무림의 미친놈",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "이 무림의 미친년은 나야",
+      "after_title": "[무친년]이 무림의 미친놈",
+      "before_url": "https://novelpia.com/novel/217943",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_different_title",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11685994,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "무한을 이해한 나는 외신의 사제가 되었습니다",
+      "after_title": null,
+      "before_url": "https://novelpia.com/novel/270445",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11687618,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "아카데미 생존 갤러리",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_unsafe_promotion_from_hold_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": null,
+      "after_title": "아카데미 생존 갤러리",
+      "before_url": null,
+      "after_url": "https://novelpia.com/novel/380218",
+      "priority": "P0",
+      "collateral_status": "null_to_resolved",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11687635,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "아포칼립스의 던전주가 되었다",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_unsafe_promotion_from_hold_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": null,
+      "after_title": "아포칼립스의 던전주가 되었다",
+      "before_url": null,
+      "after_url": "https://novelpia.com/novel/367861",
+      "priority": "P0",
+      "collateral_status": "null_to_resolved",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11687661,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "약혼녀가 소천마였다",
+      "after_title": null,
+      "before_url": "https://series.naver.com/novel/detail.series?productNo=13178533",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11694035,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "시로코의 제멋대로 일상 단편선",
+      "after_title": null,
+      "before_url": "https://novelpia.com/novel/203102",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11694041,
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "격투기 천재",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "격투 소설 엑스트라가 타격 천재임",
+      "after_title": "격투기 천재",
+      "before_url": "https://novelpia.com/novel/427330",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_different_title",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11694044,
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "즉사기 들고 무림에 떨어지다",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "판초우의의 마법사",
+      "after_title": "즉사기 들고 무림에 떨어지다",
+      "before_url": "https://series.naver.com/novel/detail.series?productNo=14207846",
+      "after_url": "https://novel.munpia.com/528383",
+      "priority": "P0",
+      "collateral_status": "resolved_to_different_title",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11694067,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "괴담에 휘말렸다",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_unsafe_promotion_from_hold_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": null,
+      "after_title": "괴담에 휘말렸다",
+      "before_url": null,
+      "after_url": "https://novelpia.com/novel/363195",
+      "priority": "P0",
+      "collateral_status": "null_to_resolved",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11695609,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "쳇바퀴의 생쥐 사도가 되었다",
+      "after_title": null,
+      "before_url": "https://novelpia.com/novel/406113",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11695611,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "여신이 나만 애호함",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_unsafe_promotion_from_hold_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": null,
+      "after_title": "여신이 나만 애호함",
+      "before_url": null,
+      "after_url": "https://novelpia.com/novel/346855",
+      "priority": "P0",
+      "collateral_status": "null_to_resolved",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11697231,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "아카데미 생존 갤러리",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_unsafe_promotion_from_hold_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": null,
+      "after_title": "아카데미 생존 갤러리",
+      "before_url": null,
+      "after_url": "https://novelpia.com/novel/380218",
+      "priority": "P0",
+      "collateral_status": "null_to_resolved",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11697239,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "조혈모세포 기증 궁금해요",
+      "after_title": null,
+      "before_url": "https://ridibooks.com/books/1745005698",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11697249,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "버거피아",
+      "after_title": null,
+      "before_url": null,
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11698859,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "귤부인 대롱대롱",
+      "after_title": null,
+      "before_url": null,
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11698865,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "나츠키 스바루/작중 행적/5~8장",
+      "after_title": null,
+      "before_url": null,
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11698870,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "인간실격",
+      "after_title": null,
+      "before_url": null,
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11698871,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "렘(Re: 제로부터 시작하는 이세계 생활)",
+      "after_title": null,
+      "before_url": null,
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11698904,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "타락",
+      "after_title": null,
+      "before_url": "https://novelpia.com/novel/111974",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11700483,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "니들 생각 다 들린다",
+      "after_title": null,
+      "before_url": null,
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11700500,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "전지적 1인칭 시점",
+      "after_title": null,
+      "before_url": null,
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11703631,
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "이블 파티 대 헌터",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "나의 악당들",
+      "after_title": "이블 파티 대 헌터",
+      "before_url": "https://page.kakao.com/content/55826557",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_different_title",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11703640,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "헌터갤러리의 국가권력급 기계공주",
+      "after_title": null,
+      "before_url": "https://novelpia.com/novel/390228",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11703658,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "아프리카 의 독재자가 되었다 .",
+      "after_title": null,
+      "before_url": "https://novel.munpia.com/246271",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11703674,
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "아카데미의 마피아가 되었다",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "게임 속 도굴꾼이 되었다",
+      "after_title": "아카데미의 마피아가 되었다",
+      "before_url": "https://novelpia.com/novel/49730",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_different_title",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11705231,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "한국 레전드 프로게이머인 내가 일본판타지 사정에 휘말린 것에 대하여",
+      "after_title": null,
+      "before_url": "https://novelpia.com/novel/143896",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11705256,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "하남자의 탑 공략법",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_unsafe_promotion_from_hold_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": null,
+      "after_title": "하남자의 탑 공략법",
+      "before_url": null,
+      "after_url": "https://novel.munpia.com/400210",
+      "priority": "P0",
+      "collateral_status": "null_to_resolved",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11705257,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "히어로 IN 히로인",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_unsafe_promotion_from_hold_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": null,
+      "after_title": "히어로 IN 히로인",
+      "before_url": null,
+      "after_url": "https://novelpia.com/novel/1055",
+      "priority": "P0",
+      "collateral_status": "null_to_resolved",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11706842,
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "대마법사였던것은 다시 대마법사를 꿈꾼다",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "삼국지 마대 가 되었다",
+      "after_title": "대마법사였던것은 다시 대마법사를 꿈꾼다",
+      "before_url": "https://novel.munpia.com/374118",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_different_title",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11706844,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "범 먹는 괴이 사냥꾼",
+      "after_title": null,
+      "before_url": null,
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11706852,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "판초우의의 마법사",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_unsafe_promotion_from_hold_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": null,
+      "after_title": "판초우의의 마법사",
+      "before_url": null,
+      "after_url": "https://novel.munpia.com/530500",
+      "priority": "P0",
+      "collateral_status": "null_to_resolved",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11706867,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "따옴표",
+      "after_title": null,
+      "before_url": "https://novelpia.com/novel/128391",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11708453,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "감옥학원에서 나만 힐링할거다",
+      "after_title": null,
+      "before_url": "https://novelpia.com/novel/75754",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11708466,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "매국노",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_unsafe_promotion_from_hold_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": null,
+      "after_title": "매국노",
+      "before_url": null,
+      "after_url": "https://novelpia.com/novel/271202",
+      "priority": "P0",
+      "collateral_status": "null_to_resolved",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11710036,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "쳇바퀴의 생쥐 사도가 되었다",
+      "after_title": null,
+      "before_url": "https://novelpia.com/novel/406113",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11710037,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "괴담 호텔 탈출기",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_unsafe_promotion_from_hold_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": null,
+      "after_title": "괴담 호텔 탈출기",
+      "before_url": null,
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "null_to_resolved",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11710047,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "로판 속 미움받는 악역이 되었다",
+      "after_title": null,
+      "before_url": "https://novelpia.com/novel/387035",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11710049,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "after_title": null,
+      "before_url": null,
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11711632,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "유어 네임(YOUR NAME)",
+      "after_title": null,
+      "before_url": "https://ridibooks.com/books/3885045016?srsltid=AfmBOooJcQsdVVoTLySqlPpzCEarIglvxpVZU7jozBhhVyUXnHotFF1h",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11714885,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "새아빠가 여동생을 탐하길래, 나는 새엄마를 길들였다",
+      "after_title": null,
+      "before_url": "https://novelpia.com/novel/431950",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11714892,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "헌터갤러리의 국가권력급 기계공주",
+      "after_title": null,
+      "before_url": "https://novelpia.com/novel/390228",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11714903,
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "괴담 호텔 탈출기",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "온 세상이 정신이상자다",
+      "after_title": "괴담 호텔 탈출기",
+      "before_url": "https://novelpia.com/novel/380804",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_different_title",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11714913,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "전 버튜버가 하고 싶은데요",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_unsafe_promotion_from_hold_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": null,
+      "after_title": "전 버튜버가 하고 싶은데요",
+      "before_url": null,
+      "after_url": "https://novelpia.com/novel/275975",
+      "priority": "P0",
+      "collateral_status": "null_to_resolved",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11716480,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "여대생 가랑이 사이 무릎 꿇은 엄마들",
+      "after_title": null,
+      "before_url": null,
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11716505,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "헌터대회) A급 헌터가 살아가는 법",
+      "after_title": null,
+      "before_url": "https://series.naver.com/novel/detail.series?productNo=11641627",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11718057,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "컵라면",
+      "after_title": null,
+      "before_url": "https://novelpia.com/novel/107486",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11718097,
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "망겜의 힐러",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "라디오에서 우리의 노래가 나오면",
+      "after_title": "망겜의 힐러",
+      "before_url": "https://page.kakao.com/content/62032924",
+      "after_url": "https://series.naver.com/novel/detail.series?productNo=9146730",
+      "priority": "P0",
+      "collateral_status": "resolved_to_different_title",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11718105,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": "몰락민족의 천재 기사",
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_unsafe_promotion_from_hold_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": null,
+      "after_title": "몰락민족의 천재 기사",
+      "before_url": null,
+      "after_url": "https://novel.munpia.com/510190",
+      "priority": "P0",
+      "collateral_status": "null_to_resolved",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11718114,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "unreviewed_regression_row",
+      "selected_title": null,
+      "selected_option_id": "UNREVIEWED_P1",
+      "evidence_grade": "Missing",
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "full375 collateral triage에서는 회귀 후보지만 P0 source-native review 범위 밖이라 별도 source-native 또는 blind review가 필요하다.",
+      "evidence_refs": [],
+      "source_review_id": "loop580_candidate_set_full375_residual86_batch_action_queue_triage_only_source",
+      "before_title": "설정값 딸깍으로 판타지 시스템 정상화",
+      "after_title": null,
+      "before_url": "https://novelpia.com/novel/383584",
+      "after_url": null,
+      "priority": "P0",
+      "collateral_status": "resolved_to_null",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    }
+  ],
+  "approval_boundary": {
+    "batch_generation_is_not_approval": true,
+    "runtime_input_generation_is_not_runtime_approval": true,
+    "source_native_packet_generation_is_not_review_completion": true,
+    "completion_gate": "full375 collateral GO + full_scan path"
+  }
+}

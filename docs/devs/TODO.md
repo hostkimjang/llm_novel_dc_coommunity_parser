@@ -1,5 +1,21 @@
 # Developer TODO Index
 
+## 2026-07-08 Loop581 이후
+
+- 상태 업데이트: Loop580 raw residual `86`건은 prior-compatible source-native 회계로 재정렬됐지만 full375 collateral은 여전히 `NO-GO`다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Residual `86`건을 full source-native/blind review batch로 고정했다.
+- [x] Source/baseline/after 누락 `0/0/0`을 확인했다.
+- [x] 과거 source-native verdict를 현재 post_id, triage bucket, 현재 후보 title/url 기준으로만 prior-compatible 전이했다.
+- [x] Prior-compatible `84`, prior-incompatible current row `2`를 확인했다.
+- [x] Combined source-native summary를 생성했고 decision `79`, info missing `7`, validation issue `0`을 확인했다.
+- [x] Residual action queue를 `46`건으로 재구성했다.
+- [x] Residual46 action batch에 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지 계약을 기록했다.
+- [ ] Prior-incompatible `11660273`, `11671514`는 image/native 확인 뒤 verdict를 채운다.
+- [ ] Residual46 중 runtime input candidate는 `0`이므로 코드/계약/source-native 정리 없이 dispatch하지 않는다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: prior-compatible transfer `REVIEW-LOCKED / 84`, combined source-native `REVIEW-LOCKED / decision 79 / info_missing 7`, residual queue `REVIEW-LOCKED / 46`, full375 collateral `NO-GO / raw 86 / adjusted residual 46`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop580 이후
 
 - 상태 업데이트: Candidate-set 계약 적용은 projection/release/publication audit에서 닫혔지만 full375 collateral은 raw `86`건으로 여전히 `NO-GO`다. Goal은 완료가 아니다.

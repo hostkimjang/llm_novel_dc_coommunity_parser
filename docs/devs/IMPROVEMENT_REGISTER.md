@@ -1,5 +1,21 @@
 # Improvement Register
 
+## IMP-20260708-581 - Residual86 prior-compatible source-native accounting
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | 필요한 test run만 `--parallel 16` + dashboard attached로 실행 |
+| Full source-native batch | REVIEW-LOCKED | residual `86`, source/baseline/after missing `0/0/0` | blind/source-native verdict 유지 |
+| Prior-compatible transfer | REVIEW-LOCKED | compatible `84`, prior-incompatible `2` | title/url 호환 조건 유지 |
+| Combined source-native summary | REVIEW-LOCKED | decision `79`, info missing `7`, validation issue `0` | INFO_MISSING `7`은 decision으로 세지 않음 |
+| Residual action queue | REVIEW-LOCKED | residual `46`, safe_loss `32`, unsafe `4`, wrong_work `10` | source/native/contract lane별 처리 |
+| Residual46 action batch | REVIEW-LOCKED | selected `46`, runtime input candidate `0`, dashboard contract recorded | dispatch 전 code/contract/source-native 조건 확인 |
+| Full375 collateral | NO-GO | raw `86`, adjusted residual `46`, runtime counts missing | full375 collateral GO 전 approval 금지 |
+| Test run dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | dashboard `http://127.0.0.1:8080`, next run `--parallel 16`, `--no-dashboard` 금지 | 진행 관측용으로만 사용 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: prior-compatible transfer `REVIEW-LOCKED / 84`, combined source-native `REVIEW-LOCKED / decision 79 / info_missing 7`, residual queue `REVIEW-LOCKED / 46`, full375 collateral `NO-GO / raw 86 / adjusted residual 46`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-580 - Candidate-set projection contract and full375 recheck
 
 | 항목 | 상태 | 근거 | 다음 |
