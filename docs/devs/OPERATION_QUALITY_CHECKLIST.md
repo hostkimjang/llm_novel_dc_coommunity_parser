@@ -1,5 +1,25 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop523 direct-title surface projection sync 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_523_REPORT_20260707.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop523_direct_title_surface_projection_state_20260707.json`.
+  - [x] Expected audit 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json/.md`.
+  - [x] Failure queue 기록 완료: `docs/devs/loop523_direct_title_surface_safe57_expected_failure_queue.json/.md`.
+  - [x] Repair queue 기록 완료: `docs/devs/loop523_direct_title_surface_repair27_queue.json/.md`.
+  - [x] Publication contract audit 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_publication_contract_audit.json/.md`.
+- 품질 경계:
+  - [x] 새 runtime replay는 실행하지 않았다.
+  - [x] Direct title surface 복구 행은 `4`건이다.
+  - [x] Expected-title pass는 `15 -> 19`로 늘었다.
+  - [x] Repair queue는 `32 -> 27`로 줄었다.
+  - [x] Validation issue는 `0`이다.
+  - [x] Dashboard는 `http://127.0.0.1:8080`, `parallel_count=16` 기준으로 유지한다.
+  - [ ] Projection 결과를 semantic/full_scan approval 근거로 쓰지 않는다.
+  - [ ] Full375 collateral GO 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- Gate: code/test contract `GO_UNIT`, expected-title `NO-GO / 19 of 57`, repair queue `REVIEW-LOCKED / 27`, runtime replay `NOT_RUN_PROJECTION_ONLY`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop522 context-preserving projection sync 품질 게이트
 
 - 근거:

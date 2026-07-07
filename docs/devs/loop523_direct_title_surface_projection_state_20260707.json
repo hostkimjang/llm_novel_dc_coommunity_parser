@@ -1,0 +1,99 @@
+{
+  "loop_id": "loop523_direct_title_surface_projection",
+  "date": "2026-07-07",
+  "goal_status": "ACTIVE_NOT_COMPLETE",
+  "runtime_replay": "NOT_RUN_PROJECTION_ONLY",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "completion_gate": "full375 collateral GO + full_scan path",
+  "source_runtime_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop515_shared_gate_projected_safe57_runtime_replay_result.json",
+  "projection_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_final_sync_projection_result.json",
+  "expected_audit": {
+    "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json",
+    "row_count": 57,
+    "exact_safe_resolved_pass": 19,
+    "exact_safe_resolved_fail": 38,
+    "runtime_safe_resolved_count": 30,
+    "runtime_promotion_blocked_count": 27,
+    "status_counts": {
+      "FAIL_RUNTIME_PROMOTION_BLOCKED": 27,
+      "FAIL_SAFE_RESOLVED_TITLE_MISMATCH": 11,
+      "PASS_EXACT_SAFE_RESOLVED": 19
+    }
+  },
+  "queues": {
+    "failure_queue": {
+      "path": "docs/devs/loop523_direct_title_surface_safe57_expected_failure_queue.json",
+      "action_queue_rows": 38,
+      "label_counts": {
+        "HOLD": 11,
+        "REPROCESS": 27
+      },
+      "priority_counts": {
+        "P0": 11,
+        "P1": 27
+      }
+    },
+    "repair_queue": {
+      "path": "docs/devs/loop523_direct_title_surface_repair27_queue.json",
+      "repair_rows": 27,
+      "runtime_replay_allowed_rows": 0,
+      "primary_repair_lane_counts": {
+        "candidate_preservation_or_scrub_repair": 9,
+        "image_or_alias_anchor_contract_repair": 5,
+        "scope_or_nonwork_monotonicity_repair": 10,
+        "title_url_or_variant_trace_repair": 3
+      }
+    }
+  },
+  "publication_contract": {
+    "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_publication_contract_audit.json",
+    "gate": "GO",
+    "row_count": 57,
+    "violation_row_count": 0
+  },
+  "direct_title_surface": {
+    "reason_code": "direct_title_surface_publication",
+    "cleared_post_ids": [
+      11663535,
+      11663557,
+      11708447,
+      11705230
+    ],
+    "remaining_title_url_or_variant_trace_repair_post_ids": [
+      11718099,
+      11718110,
+      11673080
+    ],
+    "url_policy": "official URL is withheld when title/url variant mismatch remains"
+  },
+  "dashboard": {
+    "policy": "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+    "url": "http://127.0.0.1:8080",
+    "health": {
+      "ok": true,
+      "standalone": true,
+      "pid": 9320
+    },
+    "latest_status": {
+      "total_posts": 57,
+      "done_count": 57,
+      "progress_pct": 100.0,
+      "parallel_count": 16,
+      "batch_running": false
+    },
+    "approval_boundary": "progress view only; not semantic or full_scan approval evidence"
+  },
+  "verification": {
+    "focused_unittest": "PASS",
+    "full_validation": "PASS",
+    "commands": [
+      "python -m py_compile expert_main.py tests/test_expert_main_comment_metadata.py tools/test_run_dashboard_policy.py tools/run_independent_plan.py",
+      "python -m unittest tests.test_expert_main_comment_metadata tests.test_runtime_expected_failure_queue tests.test_shared_gate_runtime_block_repair_queue tests.test_publication_contract_convergence_audit tests.test_dashboard_standalone -v",
+      "tools/audit_runtime_expected_titles.py loop523 direct-title projection audit refresh",
+      "tools/audit_publication_contract_convergence.py loop523 direct-title projection audit refresh",
+      "tools/build_runtime_expected_failure_queue.py loop523 expected failure queue refresh",
+      "tools/build_shared_gate_runtime_block_repair_queue.py loop523 repair queue refresh"
+    ]
+  }
+}

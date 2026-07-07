@@ -2620,6 +2620,164 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         self.assertIsNone(repaired_source["negative_evidence"])
         self.assertFalse(trace["gate_decision"]["publish_allowed"])
 
+    def test_blocked_direct_title_surface_restores_publication_with_url_withheld(self):
+        result = {
+            "title": "아못참겠다 잠룡회귀 하렘임순애임?",
+            "content": [
+                "그냥 읽으려는데",
+                "어떤리뷰에서 순애물이라는데",
+                "내눈엔 히로인이 여럿보인다",
+            ],
+            "identity": {
+                "title_resolution_allowed": False,
+                "title_resolution_state": "unresolved_matchable",
+                "work_resolution": "unresolved",
+                "is_resolved_work_discussion": False,
+                "discussion_type": "character_talk",
+                "topicality": "core_relevant",
+                "candidate_ledger_status": "promotion_blocked",
+                "blocked_official_title": "잠룡회귀",
+                "blocked_official_title_url": "https://series.naver.com/novel/detail.series?productNo=10787151",
+                "anchor_type": "title_exact",
+                "context_sources": ["title", "body", "search"],
+                "consistency_flags": [
+                    "official_detail_url_repaired_from_search",
+                    "weak_alias_surface_public_title_bridge",
+                ],
+                "search_evidence_catalog": [
+                    {
+                        "title": "잠룡회귀 [단행본]",
+                        "url": "https://series.naver.com/novel/detail.series?productNo=10787151",
+                        "domain": "series.naver.com",
+                        "snippet": "잠룡회귀 본문과 같은 작품 상세 페이지",
+                        "purpose": "title_anchor_official_probe",
+                        "source_tier": "novel_platform",
+                    }
+                ],
+                "title_candidates": [
+                    {
+                        "official_title": "잠룡회귀",
+                        "heretic_url": "https://series.naver.com/novel/detail.series?productNo=10787151",
+                        "confidence": "High",
+                        "alias_or_mention": "잠룡회귀",
+                        "source_tier": "official_detail",
+                        "page_type": "novel_page",
+                        "negative_evidence": [
+                            "url_title_mismatch:잠룡회귀 [단행본]",
+                            "weak_alias_surface_public_title_bridge",
+                        ],
+                        "reference_role": "candidate",
+                    }
+                ],
+                "candidate_ledger": {
+                    "blocked_official_title": "잠룡회귀",
+                    "blocked_official_title_url": "https://series.naver.com/novel/detail.series?productNo=10787151",
+                    "anchor_type": "title_exact",
+                    "context_sources": ["title", "body", "search"],
+                    "candidate_preservation_sources": [
+                        {
+                            "official_title": "잠룡회귀",
+                            "heretic_url": "https://series.naver.com/novel/detail.series?productNo=10787151",
+                            "confidence": "High",
+                            "alias_or_mention": "잠룡회귀",
+                            "source_tier": "official_detail",
+                            "page_type": "novel_page",
+                            "negative_evidence": [
+                                "url_title_mismatch:잠룡회귀 [단행본]",
+                                "weak_alias_surface_public_title_bridge",
+                            ],
+                            "reference_role": "candidate",
+                        }
+                    ],
+                },
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(result)
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "safe_resolved")
+        self.assertEqual(identity["novel_identity"]["official_title"], "잠룡회귀")
+        self.assertIsNone(identity["novel_identity"].get("heretic_url"))
+        decision = identity["promotion_decision"]
+        self.assertEqual(decision["status"], "publish")
+        self.assertTrue(decision["publish_allowed"])
+        self.assertEqual(decision["official_title"], "잠룡회귀")
+        self.assertIsNone(decision["official_url"])
+        self.assertIn("direct_title_surface_publication", decision["reason_codes"])
+        self.assertIn("official_url_withheld_by_title_mismatch", decision["reason_codes"])
+        self.assertNotIn("serialized_public_identity_scrubbed", decision["reason_codes"])
+        trace = identity["publish_contract_trace"]
+        self.assertEqual(trace["scope_state"]["scope_kind"], "current_work")
+        self.assertIn("post_title_direct_surface", trace["scope_state"]["direct_bridge_sources"])
+        self.assertTrue(trace["gate_decision"]["publish_allowed"])
+
+    def test_blocked_direct_title_surface_allows_author_anchor_when_title_is_raw_surface(self):
+        result = {
+            "title": "퇴마록 생각해보니 올해 예능프로그램으로 나오지 않나",
+            "content": ["애니 진짜 재밌었는데 이우혁 형님도 나오시려나"],
+            "identity": {
+                "title_resolution_allowed": False,
+                "title_resolution_state": "unresolved_matchable",
+                "work_resolution": "unresolved",
+                "discussion_type": "general",
+                "topicality": "core_relevant",
+                "candidate_ledger_status": "promotion_blocked",
+                "blocked_official_title": "퇴마록",
+                "blocked_official_title_url": "https://m.munpia.com/novel/detail/563860",
+                "anchor_type": "author",
+                "context_sources": ["title", "body", "search"],
+                "consistency_flags": [
+                    "external_ip_unresolved_final_blocked",
+                    "weak_alias_surface_public_title_bridge",
+                ],
+                "search_evidence_catalog": [
+                    {
+                        "title": "퇴마록 - 카카오페이지",
+                        "url": "https://page.kakao.com/content/66470141",
+                        "domain": "page.kakao.com",
+                        "snippet": "한국 장르소설 퇴마록 시리즈 상세 페이지",
+                        "purpose": "title_anchor_official_probe",
+                        "source_tier": "novel_platform",
+                    }
+                ],
+                "candidate_ledger": {
+                    "blocked_official_title": "퇴마록",
+                    "blocked_official_title_url": "https://m.munpia.com/novel/detail/563860",
+                    "anchor_type": "author",
+                    "context_sources": ["title", "body", "search"],
+                    "candidate_preservation_sources": [
+                        {
+                            "official_title": "퇴마록",
+                            "heretic_url": "https://m.munpia.com/novel/detail/563860",
+                            "confidence": "High",
+                            "alias_or_mention": "퇴마록",
+                            "source_tier": "official_detail",
+                            "page_type": "novel_page",
+                            "negative_evidence": [
+                                "weak_alias_surface_public_title_bridge",
+                            ],
+                            "reference_role": "candidate",
+                        }
+                    ],
+                },
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(result)
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "safe_resolved")
+        self.assertEqual(identity["novel_identity"]["official_title"], "퇴마록")
+        decision = identity["promotion_decision"]
+        self.assertTrue(decision["publish_allowed"])
+        self.assertIn("direct_title_surface_publication", decision["reason_codes"])
+        trace = identity["publish_contract_trace"]
+        self.assertIn("post_title_direct_surface", trace["scope_state"]["direct_bridge_sources"])
+        self.assertTrue(trace["gate_decision"]["publish_allowed"])
+
     def test_blocked_search_verified_alias_prefers_current_scope_over_image_context_hold(self):
         result = {
             "post_id": 11716448,
@@ -3576,6 +3734,7 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         decision = identity["promotion_decision"]
         self.assertFalse(decision["publish_allowed"])
         self.assertNotIn("verified_alias_title_only_publication", decision["reason_codes"])
+        self.assertNotIn("direct_title_surface_publication", decision["reason_codes"])
 
     def test_title_only_official_detail_without_url_does_not_restore(self):
         result = {

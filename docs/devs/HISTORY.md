@@ -1,5 +1,19 @@
 # Development History
 
+## 2026-07-07 - Loop523 direct-title surface projection sync
+
+- `expert_main.py` final publication sync에 direct title surface bridge를 추가했다.
+- 후보 title이 post title/source에 직접 있고 official detail support가 있으면 `direct_title_surface_publication`으로 `safe_resolved/publish`를 복구한다.
+- URL/title variant mismatch는 URL을 공개하지 않고 `official_url_withheld_by_title_mismatch`로 보존한다.
+- 테스트 2건을 추가해 direct title surface 복구와 author-anchor 허용 조건을 고정했다.
+- 새 runtime replay는 실행하지 않았고, Loop515 runtime result에 current-code projection을 적용했다.
+- Expected-title PASS는 `15/57 -> 19/57`, failure queue는 `42 -> 38`, repair queue는 `32 -> 27`이다.
+- 복구 post_id는 `11663535`, `11663557`, `11708447`, `11705230`이고 남은 title/url variant repair는 `11718099`, `11718110`, `11673080`이다.
+- Publication contract는 `GO / 57 rows / 0 violations`다.
+- Dashboard는 `http://127.0.0.1:8080`에서 `ok=true`, 최신 status `57/57`, `parallel_count=16`이다. 다음 runtime/test run도 `--parallel 16`과 dashboard 기본 ON을 유지한다.
+- Report는 `docs/devs/loop_reports/LOOP_523_REPORT_20260707.md`, state는 `docs/devs/loop523_direct_title_surface_projection_state_20260707.json`이다.
+- Gate는 code/test contract `GO_UNIT`, runtime replay `NOT_RUN_PROJECTION_ONLY`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop522 context-preserving projection sync
 
 - `_sync_final_publication_ledger_contract(...)`가 stored result row wrapper를 받으면 runtime postprocess와 같은 source context를 nested `analysis_result` sync payload에 주입하도록 보강했다.

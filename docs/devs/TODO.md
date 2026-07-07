@@ -1,5 +1,23 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop523 TODO
+
+- 상태 업데이트: direct title surface bridge로 `title_url_or_variant_trace_repair` 4건을 projection safe_resolved로 복구했다. Goal은 완료가 아니다.
+- [x] 새 runtime replay를 발주하지 않았다.
+- [x] Direct raw title surface + official detail support를 `direct_title_surface_publication`으로 수렴했다.
+- [x] URL/title variant mismatch는 URL withheld로 보존했다.
+- [x] `author` anchor는 direct title surface가 있을 때만 허용한다.
+- [x] Expected-title projection audit는 `NO-GO / 19 of 57`이다.
+- [x] Failure queue는 `38`건, repair queue는 `27`건이다.
+- [x] Publication contract audit는 `GO / 0 violations`다.
+- [x] Dashboard health/status를 확인했다: `http://127.0.0.1:8080`, `ok=true`, status `57/57`, `parallel_count=16`.
+- [ ] 남은 repair queue `27`건을 lane별 N건 배치로 처리한다.
+- [ ] `title_url_or_variant_trace_repair 3`은 variant/source-native 정책 검토 뒤에만 replay 후보로 되돌린다.
+- [ ] 다음 runtime/test run은 `--parallel 16`과 dashboard 기본 ON으로 실행한다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: code/test contract `GO_UNIT`, expected-title `NO-GO / 19 of 57`, repair queue `REVIEW-LOCKED / 27`, runtime replay `NOT_RUN_PROJECTION_ONLY`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop522 TODO
 
 - 상태 업데이트: stored result row projection이 runtime source context를 보존하도록 고쳤고 `11708478` source-context artifact를 repair queue에서 제거했다. Goal은 완료가 아니다.

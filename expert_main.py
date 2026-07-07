@@ -1420,6 +1420,47 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
                     return True
         return False
 
+    def _has_direct_title_surface_bridge_for_title_only(candidate_title: str) -> bool:
+        candidate_key = _publication_title_key(candidate_title)
+        if len(candidate_key) < 3 or candidate_key in _PUBLICATION_GENERIC_ALIAS_KEYS:
+            return False
+        source_key = _publication_source_key(result_dict, post_title=_source_post_title())
+        return bool(source_key and _publication_alias_in_source(candidate_title, source_key))
+
+    def _prior_contract_marks_noncurrent_scope() -> bool:
+        def _reason_codes(container: Any) -> set[str]:
+            if not isinstance(container, dict):
+                return set()
+            codes = {
+                str(value or "").strip().lower()
+                for value in (container.get("reason_codes") or [])
+                if str(value or "").strip()
+            }
+            scope = container.get("scope")
+            if isinstance(scope, dict):
+                codes.update(
+                    str(value or "").strip().lower()
+                    for value in (scope.get("conflict_reason_codes") or [])
+                    if str(value or "").strip()
+                )
+            return codes
+
+        containers: List[Any] = [promotion_decision, ledger.get("promotion_decision")]
+        for trace in (identity.get("publish_contract_trace"), ledger.get("publish_contract_trace")):
+            if not isinstance(trace, dict):
+                continue
+            containers.extend([trace.get("gate_decision"), trace.get("scope_state")])
+        for container in containers:
+            if not isinstance(container, dict):
+                continue
+            scope = container.get("scope") if isinstance(container.get("scope"), dict) else container
+            scope_kind = str(scope.get("scope_kind") or "").strip().lower() if isinstance(scope, dict) else ""
+            if scope_kind in {"context_only", "not_current_work", "non_current"}:
+                return True
+            if _reason_codes(container) & {"context_only", "scope_context_only", "scope_not_current_work"}:
+                return True
+        return False
+
     def _restore_blocked_verified_alias_title_only(candidate_title: str, candidate_url: str) -> bool:
         candidate_title = str(candidate_title or "").strip()
         candidate_url = _official_detail_url(candidate_url)
@@ -1454,6 +1495,10 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
             "low_specificity_batch_alias_counterevidence_blocked",
         }
         hard_negative_hits = flags & hard_negative_flags
+        distinct_alias_bridge = _has_distinct_alias_bridge_for_title_only(candidate_title)
+        direct_title_surface_bridge = _has_direct_title_surface_bridge_for_title_only(candidate_title)
+        if direct_title_surface_bridge and not distinct_alias_bridge and _prior_contract_marks_noncurrent_scope():
+            return False
         if hard_negative_hits:
             counterevidence_only_recoverable = hard_negative_hits <= {
                 "verified_alias_title_only_counterevidence_blocked",
@@ -1463,7 +1508,7 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
                 and "title" in contexts
                 and "search" in contexts
                 and bool(contexts & {"body", "comments"})
-                and _has_distinct_alias_bridge_for_title_only(candidate_title)
+                and (distinct_alias_bridge or direct_title_surface_bridge)
                 and not (
                     _publication_candidate_negative_evidence(identity, ledger, candidate_title, candidate_url)
                     & {
@@ -1487,7 +1532,10 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
             return False
 
         anchor_type = str(identity.get("anchor_type") or ledger.get("anchor_type") or "").strip().lower()
-        if anchor_type not in {"title_exact", "title_alias", "full_title_surface", "character_mention"}:
+        allowed_anchor_types = {"title_exact", "title_alias", "full_title_surface", "character_mention"}
+        if anchor_type not in allowed_anchor_types and not (
+            direct_title_surface_bridge and anchor_type == "author"
+        ):
             return False
         if str(identity.get("discussion_type") or "").strip().lower() in {"noise", "other", "off_topic"}:
             return False
@@ -1495,7 +1543,7 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
             return False
         if _publication_sentence_like_alias_overreach(identity, candidate_title):
             return False
-        if not _has_distinct_alias_bridge_for_title_only(candidate_title):
+        if not (distinct_alias_bridge or direct_title_surface_bridge):
             return False
         if not _publication_has_direct_source_support(
             result_dict,
@@ -1509,6 +1557,16 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
         if not _candidate_has_official_title_support(candidate_title, candidate_url):
             return False
 
+        bridge_reason_code = (
+            "direct_title_surface_publication"
+            if direct_title_surface_bridge and not distinct_alias_bridge
+            else "verified_alias_title_only_publication"
+        )
+        bridge_source = (
+            "post_title_direct_surface"
+            if direct_title_surface_bridge and not distinct_alias_bridge
+            else "post_title_alias"
+        )
         changed_local = False
         scope_state = {
             "scope_kind": "current_work",
@@ -1516,8 +1574,8 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
             "direct_bridge_sources": list(
                 dict.fromkeys(
                     [
-                        "verified_alias_title_only_publication",
-                        "post_title_alias",
+                        bridge_reason_code,
+                        bridge_source,
                         "title",
                         "search",
                         *(source for source in ("body", "comments") if source in contexts),
@@ -1526,7 +1584,7 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
             ),
             "conflict_reason_codes": [
                 "official_url_withheld_by_title_mismatch",
-                "verified_alias_title_only_publication",
+                bridge_reason_code,
             ],
         }
         gate_decision = {
@@ -1539,7 +1597,7 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
                 "official_title_exists",
                 "row_discusses_work_as_work",
                 "scope_current_work",
-                "verified_alias_title_only_publication",
+                bridge_reason_code,
                 "official_url_withheld_by_title_mismatch",
                 "serialized_public_identity_shared_gate_restored",
             ],
@@ -1599,7 +1657,7 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
             }
         ]
         for value in (
-            "verified_alias_title_only_publication",
+            bridge_reason_code,
             "serialized_public_identity_shared_gate_restored",
         ):
             if value not in cleaned_flags:

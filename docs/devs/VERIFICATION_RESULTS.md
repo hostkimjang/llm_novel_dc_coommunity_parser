@@ -1,5 +1,40 @@
 # Verification Results
 
+## 2026-07-07 Loop523 Verification
+
+- 범위: direct raw title surface와 official detail support가 함께 있는 blocked title/url variant 행을 final publication sync에서 복구했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_523_REPORT_20260707.md`
+  - state `docs\devs\loop523_direct_title_surface_projection_state_20260707.json`
+  - expected audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop523_direct_title_surface_safe57_expected_audit.json`
+  - failure queue `docs\devs\loop523_direct_title_surface_safe57_expected_failure_queue.json`
+  - repair queue `docs\devs\loop523_direct_title_surface_repair27_queue.json`
+  - publication contract audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop523_direct_title_surface_publication_contract_audit.json`
+  - code `expert_main.py`
+  - test `tests\test_expert_main_comment_metadata.py`
+- Result:
+  - direct-title surface 복구 post_id `11663535`, `11663557`, `11708447`, `11705230`
+  - expected-title gate `NO-GO / 19 of 57`
+  - failure queue rows `38`
+  - repair queue rows `27`
+  - runtime replay allowed rows `0`
+  - publication contract `GO / 57 rows / 0 violations`
+  - expected pass Loop522 대비 `15 -> 19`
+  - failure queue Loop522 대비 `42 -> 38`
+  - repair queue Loop522 대비 `32 -> 27`
+  - dashboard `http://127.0.0.1:8080`, health `ok=true`, latest status `57/57`, `parallel_count=16`
+- Validation:
+  - focused direct-title surface unittest PASS.
+  - `python -m py_compile expert_main.py tests\test_expert_main_comment_metadata.py tools\test_run_dashboard_policy.py tools\run_independent_plan.py` PASS.
+  - `python -m unittest tests.test_expert_main_comment_metadata tests.test_runtime_expected_failure_queue tests.test_shared_gate_runtime_block_repair_queue tests.test_publication_contract_convergence_audit tests.test_dashboard_standalone -v` PASS, `134` tests.
+  - Loop523 current-code projection/expected audit/contract audit/failure queue/repair queue 재생성 PASS.
+  - JSON parse PASS.
+- Boundary:
+  - Loop523은 runtime replay가 아니다.
+  - Projection contract GO는 expected-title, full375 collateral, search evidence, full_scan approval을 대체하지 않는다.
+  - 다음 runtime/test run은 `--parallel 16`과 웹 dashboard 기본 ON을 유지한다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-07 Loop522 Verification
 
 - 범위: stored result row projection에서 runtime source context를 보존하고 Loop521의 `11708478` source-context artifact를 제거했다.

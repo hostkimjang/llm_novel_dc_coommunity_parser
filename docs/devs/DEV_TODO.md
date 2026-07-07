@@ -61,6 +61,13 @@
 
 ## P1
 
+- [x] Loop523 direct title surface publication bridge
+  - 상태: implemented_loop523 / projection_verified / approval blocked
+  - 관련 파일: `expert_main.py`, `tests/test_expert_main_comment_metadata.py`
+  - 문제: `퇴마록`, `잠룡회귀`, `월야환담`처럼 작품명이 post title/source에 직접 있는데 distinct alias가 없다는 이유로 title/url variant row가 `promotion_blocked`에 남았다.
+  - 조치: direct raw title surface와 official detail support가 함께 있으면 `direct_title_surface_publication`으로 shared gate를 수렴하되, variant mismatch URL은 withheld한다.
+  - 완료 기준: Loop523 projection에서 `11663535`, `11663557`, `11708447`, `11705230`이 `safe_resolved/publish`로 복구되고 repair queue가 `32 -> 27`로 줄어든다.
+  - 검증: focused unittest PASS, Loop523 expected audit `19/57`, failure queue `38`, repair queue `27`, publication contract `GO / 0 violations`, `full_scan_approval=false` 유지.
 - [x] Loop521 projection source-context 보존 수리
   - 상태: implemented_loop522 / projection_verified / approval blocked
   - 관련 파일 후보: `expert_main.py`, projection helper/tooling, `tools/build_shared_gate_runtime_block_repair_queue.py`

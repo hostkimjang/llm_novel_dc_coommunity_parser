@@ -1,5 +1,13 @@
 # Sampling And Parallel Test Guide
 
+## 2026-07-07 Loop523 테스트런 대시보드 운영 확인
+
+- 다음 regression-safe grounding 테스트런/검증런도 `--parallel 16`과 standalone dashboard `http://127.0.0.1:8080` 기본 부착을 유지한다.
+- 현재 dashboard health는 `ok=true`, `standalone=true`, `pid=9320`이고 최신 status는 `57/57`, `progress_pct=100.0`, `parallel_count=16`, `batch_running=false`다.
+- `tools/run_independent_plan.py`는 기본적으로 dashboard를 켜며 child run에 `DASHBOARD_URL`, `DASHBOARD_PORT`, `EXPERT_DASHBOARD_FORWARD=1`을 전달한다. 계획에 `--no-dashboard`가 남아 있으면 실행 직전에 제거한다.
+- 직접 `expert_main.py`를 실행할 때도 dashboard health를 먼저 확인하고, `--no-dashboard`는 사용자가 명시적으로 끄라고 한 경우에만 둔다.
+- dashboard는 진행상황 관측 도구다. `semantic_quality`, `full_scan_approval`, `full375 collateral GO`의 승인 근거로 단독 사용하지 않는다.
+
 ## 2026-07-06 Loop503 테스트런 병렬도와 웹 대시보드 최신 지침
 
 - 현재 regression-safe grounding 계열 테스트런/검증런의 기본 요청 병렬도는 사용자 지시에 따라 `--parallel 16`이다. 입력 수가 16보다 작으면 실제 worker는 manifest의 `effective_parallel=min(input_post_count, healthy_endpoint_count, 16)`로 낮아질 수 있으며 정상이다.

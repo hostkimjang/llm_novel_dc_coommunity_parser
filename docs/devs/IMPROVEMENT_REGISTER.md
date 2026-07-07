@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260707-523 - direct title surface publication bridge
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Direct title surface bridge | GO_UNIT | 후보 title이 post title/source에 직접 있고 official detail support가 있으면 `direct_title_surface_publication`으로 복구 | full375 collateral 전 runtime approval로 승격 금지 |
+| URL/title variant boundary | GO_UNIT | variant mismatch URL은 withheld, reason `official_url_withheld_by_title_mismatch` 보존 | variant/source-native 정책 검토 |
+| Expected-title refresh | NO-GO | `19/57` pass | 남은 failure `38`을 N건 배치로 처리 |
+| Repair queue | REVIEW-LOCKED | `32 -> 27`, `runtime_replay_allowed_rows=0` | contract/source-context 수리 뒤 replay 후보로 복귀 |
+| Publication contract | GO_PROJECTION | `57 rows / 0 violations` | runtime proof로 승격 금지 |
+| Dashboard policy | GO_PROGRESS_VIEW | `http://127.0.0.1:8080`, latest status `57/57`, `parallel_count=16` | 다음 테스트런도 `--parallel 16` + dashboard 기본 ON |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: code/test contract `GO_UNIT`, expected-title `NO-GO / 19 of 57`, repair queue `REVIEW-LOCKED / 27`, runtime replay `NOT_RUN_PROJECTION_ONLY`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-522 - stored result source-context projection sync
 
 | 항목 | 상태 | 근거 | 다음 |

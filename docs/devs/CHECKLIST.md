@@ -1,5 +1,24 @@
 # Development Checklist
 
+## 2026-07-07 Loop523 direct-title surface projection sync 체크
+
+- [x] 새 runtime replay를 실행하지 않았다.
+- [x] `expert_main.py`에 direct title surface bridge를 추가했다.
+- [x] Direct raw title surface + official detail support가 있으면 `direct_title_surface_publication`으로 shared gate를 수렴한다.
+- [x] Variant/title-url mismatch URL은 계속 withheld한다.
+- [x] 계약 테스트 2건을 추가했다.
+- [x] Expected-title PASS는 `15/57 -> 19/57`이다.
+- [x] Failure queue는 `42 -> 38`, repair queue는 `32 -> 27`로 줄었다.
+- [x] Publication contract는 `GO / 57 rows / 0 violations`다.
+- [x] 복구 post_id는 `11663535`, `11663557`, `11708447`, `11705230`이다.
+- [x] 남은 `title_url_or_variant_trace_repair`는 `11718099`, `11718110`, `11673080`이다.
+- [x] Dashboard health는 `ok=true`, `standalone=true`, `pid=9320`이다.
+- [x] 다음 runtime/test run은 `--parallel 16`과 웹 dashboard 기본 ON을 유지한다.
+- [ ] Projection GO를 runtime proof나 semantic/full_scan approval로 쓰지 않는다.
+- [ ] Repair queue `27`건은 contract/source-context 수리 전 runtime replay 입력으로 쓰지 않는다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: code/test contract `GO_UNIT`, expected-title `NO-GO / 19 of 57`, repair queue `REVIEW-LOCKED / 27`, runtime replay `NOT_RUN_PROJECTION_ONLY`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop522 context-preserving projection sync 체크
 
 - [x] 새 runtime replay를 실행하지 않았다.
