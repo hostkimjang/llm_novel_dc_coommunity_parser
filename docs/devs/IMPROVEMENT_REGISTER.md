@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260707-511 - final sync projection and title-only regression guard
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Title-only unresolved contract | GO_UNIT | `11663521`형 reason contract가 unresolved이면 title-only publish를 차단 | runtime replay에서 저장 결과 확인 |
+| Preservation-only alias override guard | GO_UNIT | `candidate_preservation_only_no_official_detail` 후보가 `11698880` public title을 역전하지 못함 | `아생갤` 도메인 보정은 유지하되 후보 보존과 publish 분리 |
+| Blocked reason cleanup | GO_UNIT | blocked demotion에서 `scope_current_work`, `serialized_public_identity_published` 제거 | publication contract 상시 감사 유지 |
+| Projection golden18 | GO | `loop511_projected_loop510_after_final_sync_golden_audit`, `18/18 PASS` | runtime replay와 분리 |
+| Projection publication contract | GO | `loop511_projected_loop510_after_final_sync_publication_contract_audit`, violations `0` | full375/static gate에 계속 적용 |
+| Projection full375 collateral | NO-GO | regression candidates `141` | P0 bucket batch triage 또는 full_scan 경로 정의 필요 |
+| Runtime replay | NOT_RUN | projection 검증만 수행 | 필요 시 `--parallel 16`과 dashboard 기본 부착 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: code/unit `GO`, projection golden18 `GO / 18 of 18`, projection publication contract `GO / 0 violations`, runtime replay `NOT_RUN_AFTER_PATCH`, full375 collateral `NO-GO / regression candidates 141`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-510 - full375 current HEAD replay 완료 감사
 
 | 항목 | 상태 | 근거 | 다음 |

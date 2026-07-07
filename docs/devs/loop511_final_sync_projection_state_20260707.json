@@ -1,0 +1,54 @@
+{
+  "loop": 511,
+  "date": "2026-07-07",
+  "scope": "final_sync_projection_after_loop510_full375",
+  "runtime_replay": "NOT_RUN_AFTER_PATCH",
+  "source_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop510_full375_current_head_a729e745_search_nonlight_result.json",
+  "projected_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json",
+  "projection": {
+    "row_count": 375,
+    "changed_rows": 222,
+    "post_11663521": {
+      "before": "카미조 토우마가 IS세계관에 떨어지는 이야기. 꽤 예전에 썼던 글인데 저쪽에선 읽기 힘들어서 여기에 재업합니다",
+      "after": "어떤 마술의 금서목록",
+      "status": "golden_expected_alternative_match"
+    },
+    "post_11698880": {
+      "after": "가챠 중독자의 퓨전펑크 생활",
+      "blocked_override": "candidate_preservation_only_no_official_detail"
+    }
+  },
+  "artifacts": {
+    "golden_audit_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_golden_audit.json",
+    "golden_audit_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_golden_audit.md",
+    "collateral_compare_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_collateral_compare.json",
+    "collateral_compare_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_collateral_compare.md",
+    "publication_contract_audit_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_publication_contract_audit.json",
+    "publication_contract_audit_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_publication_contract_audit.md"
+  },
+  "verification": {
+    "py_compile": "PASS",
+    "focused_unittest": "PASS / 3",
+    "expert_main_comment_metadata": "PASS / 75",
+    "publication_contract_convergence_audit_tests": "PASS / 18",
+    "projection_golden18": "PASS / 18 of 18",
+    "projection_publication_contract": "GO / 0 violations",
+    "projection_full375_collateral": "NO-GO / regression candidates 141"
+  },
+  "gate": {
+    "code_unit_contract": "GO",
+    "projection_golden18": "GO",
+    "projection_publication_contract": "GO",
+    "runtime_replay": "NOT_RUN_AFTER_PATCH",
+    "full375_collateral": "NO-GO",
+    "search_evidence": "REVIEW",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "next": [
+    "신규 테스트런은 명시적 반대 지시가 없으면 --parallel 16과 웹 대시보드를 기본 부착한다.",
+    "Projection PASS를 full_scan approval로 승격하지 않는다.",
+    "완료 기준은 full375 collateral GO + full_scan 경로 정의다."
+  ]
+}

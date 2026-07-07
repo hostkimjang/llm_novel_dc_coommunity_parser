@@ -1,5 +1,24 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop511 TODO
+
+- 상태 업데이트: Loop510 full375 결과에 final sync projection을 적용해 golden18 projection은 `18/18 PASS`로 회복했지만 full375 collateral은 `NO-GO / regression candidates 141`이다. Goal은 완료가 아니다.
+- [x] `11663521` wrong fanfic title 회귀를 title-only unresolved contract로 분석했다.
+- [x] `11698880`의 `아생갤` preservation-only 후보가 `가챠 중독자의 퓨전펑크 생활` public title을 역전하지 못하게 했다.
+- [x] `candidate_preservation_only_no_official_detail` negative evidence를 public override 차단 근거로 추가했다.
+- [x] blocked demotion reason에서 `scope_current_work`, `serialized_public_identity_published`를 제거했다.
+- [x] Projection result `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json`을 생성했다.
+- [x] Projection golden audit는 `PASS / 18 of 18`이다.
+- [x] Projection publication contract audit는 `GO / 375 rows / 0 violations`이다.
+- [x] Projection full375 collateral은 `NO-GO / regression candidates 141`이다.
+- [x] Runtime replay는 실행하지 않았고 `NOT_RUN_AFTER_PATCH`로 기록했다.
+- [x] py_compile, focused unittest `3`, comment metadata unittest `75`, publication contract audit unittest `18` PASS.
+- [x] 신규 테스트런/검증런은 명시적 반대 지시가 없으면 `--parallel 16`과 웹 대시보드를 기본 부착한다.
+- [ ] Projection PASS를 full_scan approval로 승격하지 않는다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: code/unit `GO`, projection golden18 `GO / 18 of 18`, projection publication contract `GO / 0 violations`, runtime replay `NOT_RUN_AFTER_PATCH`, full375 collateral `NO-GO / regression candidates 141`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop510 TODO
 
 - 상태 업데이트: Loop510 full375 current HEAD replay는 `375/375` 완주했지만 golden18 `17/18`, full375 collateral regression candidates `142`로 always-on gate가 `NO-GO`다. Goal은 완료가 아니다.

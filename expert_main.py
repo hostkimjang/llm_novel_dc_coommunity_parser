@@ -4219,6 +4219,7 @@ def _sync_allowed_publication_result_contract(
                 negative_evidence
                 & {
                     "official_detail_url_missing_direct_source_support",
+                    "candidate_preservation_only_no_official_detail",
                     "weak_alias_surface_public_title_bridge",
                     "url_title_mismatch",
                 }
@@ -6560,7 +6561,12 @@ def _demote_inferred_publication_with_critical_counterevidence(result_dict: Dict
         for code in (decision.get("reason_codes") or [])
         if str(code).strip()
     ]
-    if "final_publication_decision_inferred_from_serialized_identity" not in reason_codes:
+    is_inferred_publication = "final_publication_decision_inferred_from_serialized_identity" in reason_codes
+    is_title_only_publication = bool(
+        "verified_alias_title_only_publication" in reason_codes
+        and "official_url_withheld_by_title_mismatch" in reason_codes
+    )
+    if not (is_inferred_publication or is_title_only_publication):
         return False
 
     reason_chunks: List[str] = []
@@ -6610,6 +6616,9 @@ def _demote_inferred_publication_with_critical_counterevidence(result_dict: Dict
     if not candidate_title:
         return False
 
+    source_key = _publication_source_key(result_dict, post_title=post_title)
+    candidate_key = _publication_title_key(candidate_title)
+    candidate_title_in_source = bool(candidate_key and candidate_key in source_key)
     has_alias_source_support = _publication_has_direct_source_support(
         result_dict,
         identity,
@@ -6617,6 +6626,20 @@ def _demote_inferred_publication_with_critical_counterevidence(result_dict: Dict
         candidate_title,
         candidate_url,
         post_title=post_title,
+    )
+    title_only_uncertain_markers = (
+        "official_title_evidence: false",
+        "정식 제목 미확정",
+        "단일 공식 제목 확정은 위험",
+        "제목 지목을 보류",
+        "미확정 유지의 핵심 사유",
+        "title_resolution_allowed=false",
+        "title_resolution_state=unresolved_matchable",
+    )
+    title_only_contradicts_unresolved_contract = bool(
+        is_title_only_publication
+        and not candidate_title_in_source
+        and any(marker in reason_text for marker in title_only_uncertain_markers)
     )
     has_sentence_like_alias_overreach = bool(
         _publication_sentence_like_alias_overreach(identity, candidate_title)
@@ -6626,7 +6649,7 @@ def _demote_inferred_publication_with_critical_counterevidence(result_dict: Dict
     )
     has_weak_counterevidence = (
         weak_inferred_without_post_span and not has_alias_source_support
-    ) or has_sentence_like_alias_overreach
+    ) or has_sentence_like_alias_overreach or title_only_contradicts_unresolved_contract
     if not (has_critical_counterevidence or has_weak_counterevidence):
         return False
 
@@ -6635,6 +6658,8 @@ def _demote_inferred_publication_with_critical_counterevidence(result_dict: Dict
         flag = "inferred_publication_critical_counterevidence"
     elif has_sentence_like_alias_overreach:
         flag = "inferred_publication_sentence_like_alias_overreach"
+    elif title_only_contradicts_unresolved_contract:
+        flag = "title_only_publication_contradicts_unresolved_contract"
     else:
         flag = "inferred_publication_missing_direct_source_support"
     scope_state = {
@@ -6685,10 +6710,14 @@ def _demote_inferred_publication_with_critical_counterevidence(result_dict: Dict
     demoted_decision["official_title"] = None
     demoted_decision["official_url"] = None
     demoted_decision["candidate_preserved"] = True
+    publish_only_reason_codes = {
+        "scope_current_work",
+        "serialized_public_identity_published",
+    }
     demoted_decision["reason_codes"] = list(
         dict.fromkeys(
             [
-                *reason_codes,
+                *(code for code in reason_codes if code not in publish_only_reason_codes),
                 flag,
                 "scope_context_only",
                 "scope_not_current_work",

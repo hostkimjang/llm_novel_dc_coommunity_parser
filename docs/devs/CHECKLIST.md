@@ -1,5 +1,25 @@
 # Development Checklist
 
+## 2026-07-07 Loop511 final sync projection 체크
+
+- [x] Loop510 result `375` rows에 current final sync projection을 적용했다.
+- [x] `11663521`은 projection 후 `어떤 마술의 금서목록`으로 expected alternative match가 됐다.
+- [x] `11698880`은 projection 후 `가챠 중독자의 퓨전펑크 생활`을 유지했다.
+- [x] `아카데미 생존 갤러리` preservation-only 후보는 `candidate_preservation_only_no_official_detail` negative evidence 때문에 public override하지 못한다.
+- [x] title-only unresolved contract demotion은 blocked decision에서 publish-only reason을 제거한다.
+- [x] Projection golden18은 `PASS / 18 of 18`이다.
+- [x] Projection publication contract는 `GO / 375 rows / 0 violations`이다.
+- [x] Projection full375 collateral은 `NO-GO / regression candidates 141`이다.
+- [x] Runtime replay는 실행하지 않았다.
+- [x] py_compile PASS.
+- [x] focused unittest `3` PASS.
+- [x] `tests.test_expert_main_comment_metadata` `75` tests PASS.
+- [x] `tests.test_publication_contract_convergence_audit` `18` tests PASS.
+- [x] 신규 테스트런/검증런은 명시적 반대 지시가 없으면 `--parallel 16`과 웹 대시보드를 기본 부착한다.
+- [ ] Projection PASS를 full_scan approval로 쓰지 않는다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: code/unit `GO`, projection golden18 `GO`, projection publication contract `GO`, runtime replay `NOT_RUN_AFTER_PATCH`, full375 collateral `NO-GO / regression candidates 141`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop510 full375 current HEAD replay 완료 감사 체크
 
 - [x] Loop509 repair27 runtime replay 완료 뒤 full375 collateral gate 확인으로 전환했다.

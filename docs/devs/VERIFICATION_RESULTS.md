@@ -1,5 +1,36 @@
 # Verification Results
 
+## 2026-07-07 Loop511 Verification
+
+- 범위: Loop510 full375 result에 current working tree final publication sync를 projection으로 재적용하고, `11663521` golden failure와 `11698880` preservation-only alias override 회귀를 검증했다. 새 runtime replay는 실행하지 않았다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_511_REPORT_20260707.md`
+  - state `docs\devs\loop511_final_sync_projection_state_20260707.json`
+  - projected result `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop511_projected_loop510_after_final_sync_result.json`
+  - golden audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop511_projected_loop510_after_final_sync_golden_audit.json`
+  - collateral compare `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop511_projected_loop510_after_final_sync_collateral_compare.json`
+  - publication contract audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop511_projected_loop510_after_final_sync_publication_contract_audit.json`
+- Result:
+  - projection input rows `375`
+  - projection changed rows `222`
+  - `11663521` projected title `어떤 마술의 금서목록`
+  - `11698880` projected title `가챠 중독자의 퓨전펑크 생활`
+  - projection golden18 `PASS / 18 of 18`
+  - projection publication contract `GO / row_count 375 / violation_row_count 0`
+  - projection full375 collateral `NO-GO / regression candidates 141`
+- Validation:
+  - `.\.venv312\Scripts\python.exe -m py_compile expert_main.py tests/test_expert_main_comment_metadata.py` PASS.
+  - focused unittest `3` PASS.
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_expert_main_comment_metadata` PASS, `75` tests.
+  - `.\.venv312\Scripts\python.exe -m unittest tests.test_publication_contract_convergence_audit` PASS, `18` tests.
+  - `tools\audit_regression_safe_golden.py ... loop511_projected ...` PASS, golden output `18/18`, collateral output `141`.
+  - `tools\audit_publication_contract_convergence.py ... loop511_projected ...` PASS, gate `GO`.
+- Boundary:
+  - Projection PASS는 runtime replay나 full_scan approval이 아니다.
+  - Full375 collateral regression `141`이 남아 completion gate는 닫히지 않았다.
+  - 다음 테스트런/검증런은 명시적 반대 지시가 없으면 `--parallel 16`과 웹 대시보드 기본 부착을 유지한다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-07 Loop510 Verification
 
 - 범위: Loop509 이후 current HEAD `a729e745` full375 collateral replay를 완료 감사하고 golden18/full375 always-on gate를 재생성했다.

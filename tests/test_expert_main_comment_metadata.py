@@ -5601,6 +5601,155 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
             "preserved_body_alias_candidate",
         )
 
+    def test_preservation_only_alias_candidate_does_not_override_official_detail_public_title(self):
+        correct_title = "가챠 중독자의 퓨전펑크 생활"
+        correct_url = "https://novelpia.com/novel/387014"
+        preservation_title = "아카데미 생존 갤러리"
+        correct_candidate = {
+            "official_title": correct_title,
+            "heretic_url": correct_url,
+            "confidence": "High",
+            "alias_or_mention": "가챠펑크",
+            "source_tier": "official_detail",
+            "page_type": "novel_page",
+            "reference_role": "primary",
+            "preservation_role": "title_candidate",
+            "locked": True,
+        }
+        preservation_only_candidate = {
+            "official_title": preservation_title,
+            "heretic_url": None,
+            "confidence": "Medium",
+            "alias_or_mention": "아생갤",
+            "source_tier": "mixed",
+            "reference_role": "primary",
+            "preservation_role": "title_candidate",
+            "negative_evidence": ["candidate_preservation_only_no_official_detail"],
+        }
+        result = {
+            "post_id": 11698880,
+            "title": "아생갤 개 존나게 재밌군 ㅇㅇ",
+            "content": [
+                "가챠펑크 세드릭도 그렇고",
+                "일본 씹찐따 주인공 처럼",
+                "시원시원한 상남자라서 너무 좋구나",
+            ],
+            "comments": [],
+            "identity": {
+                "candidate_ledger_status": "safe_resolved",
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "is_resolved_work_discussion": True,
+                "safe_resolved": True,
+                "promotion_blocked": False,
+                "discussion_type": "character_talk",
+                "context_sources": ["title", "body", "search", "image"],
+                "consistency_flags": [
+                    "known_title_abbreviation_candidate_preserved",
+                    "verified_alias_title_only_publication",
+                    "serialized_public_identity_shared_gate_restored",
+                    "serialized_public_identity_body_verified_competition_reconciled",
+                    "serialized_public_identity_locked_candidate_reconciled",
+                    "serialized_public_identity_gate_candidate_blocked_by_locked_public_candidate",
+                ],
+                "novel_identity": {
+                    "official_title": correct_title,
+                    "heretic_url": None,
+                    "confidence": "Medium",
+                },
+                "primary_work": dict(correct_candidate),
+                "title_candidates": [
+                    dict(correct_candidate),
+                    dict(preservation_only_candidate),
+                ],
+                "candidate_preservation_sources": [
+                    dict(correct_candidate),
+                    dict(preservation_only_candidate),
+                ],
+                "promotion_decision": {
+                    "status": "publish",
+                    "publish_allowed": True,
+                    "official_title": correct_title,
+                    "official_url": None,
+                    "candidate_preserved": False,
+                    "reason_codes": [
+                        "official_title_exists",
+                        "row_discusses_work_as_work",
+                        "scope_current_work",
+                        "verified_alias_title_only_publication",
+                        "official_url_withheld_by_title_mismatch",
+                        "serialized_public_identity_shared_gate_restored",
+                        "serialized_public_identity_published",
+                    ],
+                    "bypassed_gate": False,
+                    "scope": {
+                        "scope_kind": "current_work",
+                        "confidence": "high",
+                        "direct_bridge_sources": [
+                            "verified_alias_title_only_publication",
+                            "post_title_alias",
+                            "title",
+                            "search",
+                            "body",
+                        ],
+                        "conflict_reason_codes": [
+                            "official_url_withheld_by_title_mismatch",
+                            "verified_alias_title_only_publication",
+                        ],
+                    },
+                },
+                "promotion_gate_state": {
+                    "candidate_title": correct_title,
+                    "candidate_url": None,
+                    "official_title_exists": True,
+                    "row_discusses_work_as_work": True,
+                    "scope": {
+                        "scope_kind": "current_work",
+                        "confidence": "high",
+                        "direct_bridge_sources": [
+                            "verified_alias_title_only_publication",
+                            "post_title_alias",
+                            "title",
+                            "search",
+                            "body",
+                        ],
+                    },
+                },
+                "candidate_ledger": {
+                    "candidate_preservation_sources": [
+                        dict(correct_candidate),
+                        dict(preservation_only_candidate),
+                    ],
+                },
+            },
+            "analysis": {
+                "detected_titles": [
+                    dict(correct_candidate),
+                    dict(preservation_only_candidate),
+                ],
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(
+            result,
+            post_title=result["title"],
+        )
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["novel_identity"]["official_title"], correct_title)
+        self.assertEqual(identity["promotion_decision"]["official_title"], correct_title)
+        self.assertEqual(identity["primary_work"]["official_title"], correct_title)
+        self.assertEqual(
+            identity["publish_contract_trace"]["pre_gate_candidate"]["official_title"],
+            correct_title,
+        )
+        self.assertNotEqual(
+            identity["promotion_decision"]["official_title"],
+            preservation_title,
+        )
+
     def test_locked_public_candidate_blocks_title_only_gate_candidate_override(self):
         correct_title = "가챠 중독자의 퓨전펑크 생활"
         correct_url = "https://novelpia.com/novel/387014"
@@ -5748,6 +5897,141 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
             identity["publish_contract_trace"]["pre_gate_candidate"]["source"],
             "locked_competing_public_candidate",
         )
+
+    def test_title_only_publication_respects_unresolved_reason_contract(self):
+        candidate_title = "카미조 토우마가 IS세계관에 떨어지는 이야기. 꽤 예전에 썼던 글인데 저쪽에선 읽기 힘들어서 여기에 재업합니다"
+        candidate_url = "https://novelpia.com/novel/240628"
+        result = {
+            "post_id": 11663521,
+            "title": "TS) 시스터즈 퍼스트 정신머리 고치려면",
+            "content": [
+                "고쳐질때까지 토우마가 갱생펀치 갈기면 되지 않을까?",
+                "원래 뭐든 존나 패면 교정되는법임",
+            ],
+            "comments": [],
+            "identity": {
+                "candidate_ledger_status": "safe_resolved",
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "safe_resolved": True,
+                "promotion_blocked": False,
+                "discussion_type": "character_talk",
+                "context_sources": ["title", "search", "body"],
+                "novel_identity": {
+                    "official_title": candidate_title,
+                    "heretic_url": None,
+                    "confidence": "High",
+                },
+                "primary_work": {
+                    "official_title": candidate_title,
+                    "heretic_url": candidate_url,
+                    "confidence": "High",
+                    "alias_or_mention": "토우마",
+                    "source_tier": "official_detail",
+                    "page_type": "novel_page",
+                    "reference_role": "primary",
+                    "locked": True,
+                },
+                "candidate_preservation_sources": [
+                    {
+                        "official_title": candidate_title,
+                        "heretic_url": candidate_url,
+                        "confidence": "High",
+                        "alias_or_mention": "토우마",
+                        "source_tier": "official_detail",
+                        "page_type": "novel_page",
+                        "reference_role": "primary",
+                        "locked": True,
+                    }
+                ],
+                "promotion_decision": {
+                    "status": "publish",
+                    "publish_allowed": True,
+                    "official_title": candidate_title,
+                    "official_url": None,
+                    "candidate_preserved": False,
+                    "reason_codes": [
+                        "official_title_exists",
+                        "row_discusses_work_as_work",
+                        "scope_current_work",
+                        "verified_alias_title_only_publication",
+                        "official_url_withheld_by_title_mismatch",
+                        "serialized_public_identity_published",
+                    ],
+                    "bypassed_gate": False,
+                    "scope": {
+                        "scope_kind": "current_work",
+                        "confidence": "high",
+                        "direct_bridge_sources": [
+                            "verified_alias_title_only_publication",
+                            "post_title_alias",
+                            "title",
+                            "search",
+                            "body",
+                        ],
+                    },
+                },
+                "promotion_gate_state": {
+                    "candidate_title": candidate_title,
+                    "candidate_url": None,
+                    "official_title_exists": True,
+                    "row_discusses_work_as_work": True,
+                    "scope": {
+                        "scope_kind": "current_work",
+                        "confidence": "high",
+                        "direct_bridge_sources": [
+                            "verified_alias_title_only_publication",
+                            "post_title_alias",
+                            "title",
+                            "search",
+                            "body",
+                        ],
+                    },
+                },
+                "reason_lines": [
+                    "[판정 요약]",
+                    "- 판정: 관련(정식 제목 미확정)",
+                    f"- 공식 제목: '{candidate_title}'",
+                    "- official_title_evidence: false",
+                    "- 웹소설/장르 맥락은 인정하되, 원문 앵커·검색 증거·전문가 충돌을 종합하면 단일 공식 제목 확정은 위험하여 미확정으로 유지합니다.",
+                    "- title_resolution_state=unresolved_matchable",
+                    "- title_resolution_allowed=false",
+                ],
+                "reason": "\n".join(
+                    [
+                        "[판정 요약]",
+                        "- 판정: 관련(정식 제목 미확정)",
+                        "- 미확정 유지의 핵심 사유: 제목 '시스터즈 퍼스트'는 정식 제목이 아닌 에피소드/설정 명칭임",
+                    ]
+                ),
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(
+            result,
+            post_title=result["title"],
+        )
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "promotion_blocked")
+        self.assertFalse(identity["title_resolution_allowed"])
+        self.assertFalse(identity["safe_resolved"])
+        self.assertTrue(identity["promotion_blocked"])
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertEqual(identity["blocked_official_title"], candidate_title)
+        decision = identity["promotion_decision"]
+        self.assertFalse(decision["publish_allowed"])
+        self.assertEqual(decision["status"], "candidate_only")
+        self.assertIsNone(decision["official_title"])
+        self.assertIn(
+            "title_only_publication_contradicts_unresolved_contract",
+            decision["reason_codes"],
+        )
+        self.assertIn("serialized_public_identity_scrubbed", decision["reason_codes"])
+        self.assertNotIn("scope_current_work", decision["reason_codes"])
+        self.assertNotIn("serialized_public_identity_published", decision["reason_codes"])
 
     def test_publish_contract_trace_converges_stale_publish_trace_to_blocked_decision(self):
         stale_publish_decision = {

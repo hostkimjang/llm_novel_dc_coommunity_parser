@@ -1,5 +1,27 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop511 final sync projection 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_511_REPORT_20260707.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop511_final_sync_projection_state_20260707.json`.
+  - [x] Projection result 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json`.
+  - [x] Golden audit 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_golden_audit.json/.md`.
+  - [x] Collateral compare 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_collateral_compare.json/.md`.
+  - [x] Publication contract audit 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_publication_contract_audit.json/.md`.
+- 품질 경계:
+  - [x] Runtime replay는 실행하지 않았고 projection 검증으로만 기록했다.
+  - [x] `11663521`은 projection 후 `어떤 마술의 금서목록`으로 golden expected alternative match가 됐다.
+  - [x] `11698880`은 projection 후 `가챠 중독자의 퓨전펑크 생활`을 유지했다.
+  - [x] Projection golden18은 `GO / 18 of 18`이다.
+  - [x] Projection publication contract는 `GO / 375 rows / 0 violations`이다.
+  - [x] Projection full375 collateral은 `NO-GO / regression candidates 141`이다.
+  - [x] py_compile, focused unittest, comment metadata unittest, publication contract audit unittest를 통과했다.
+  - [x] 웹 대시보드는 다음 runtime 테스트런 진행 관측 도구로 계속 기본 부착한다.
+  - [ ] Projection PASS를 semantic/full_scan approval 증거로 쓰지 않는다.
+  - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: code/unit `GO`, projection golden18 `GO / 18 of 18`, projection publication contract `GO / 0 violations`, runtime replay `NOT_RUN_AFTER_PATCH`, full375 collateral `NO-GO / regression candidates 141`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop510 full375 current HEAD replay 완료 감사 품질 게이트
 
 - 근거:

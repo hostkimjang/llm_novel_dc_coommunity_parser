@@ -1,5 +1,17 @@
 # Development History
 
+## 2026-07-07 - Loop511 final sync projection and title-only regression guard
+
+- 새 LLM runtime replay 없이 Loop510 full375 result `375` rows에 current working tree final publication sync를 projection으로 재적용했다.
+- `expert_main.py`는 title-only publication이 unresolved reason contract와 충돌하면 publish를 차단하고, blocked demotion 후 publish-only reason을 제거한다.
+- `candidate_preservation_only_no_official_detail` negative evidence가 있는 preservation-only alias 후보는 public title override 후보가 될 수 없도록 했다.
+- `tests/test_expert_main_comment_metadata.py`에 `11663521`형 unresolved contract 테스트와 `11698880`형 preservation-only alias override 방지 테스트를 추가했다.
+- Projection 결과 `11663521`은 `어떤 마술의 금서목록`으로 expected alternative match가 됐고, `11698880`은 `가챠 중독자의 퓨전펑크 생활`을 유지했다.
+- Projection golden18은 `PASS / 18 of 18`, publication contract는 `GO / row_count 375 / violation_row_count 0`이다.
+- Projection full375 collateral은 regression candidates `141`로 여전히 `NO-GO`다.
+- 검증은 py_compile PASS, focused unittest `3`건 PASS, comment metadata unittest `75`건 PASS, publication contract audit unittest `18`건 PASS다.
+- Gate는 code/unit `GO`, projection golden18 `GO`, projection publication contract `GO`, runtime replay `NOT_RUN_AFTER_PATCH`, full375 collateral `NO-GO / regression candidates 141`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop510 full375 current HEAD replay 완료 감사
 
 - Loop509 repair27 runtime replay 완료 뒤 full375 collateral gate 확인으로 전환했다.
