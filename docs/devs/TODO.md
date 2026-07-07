@@ -1,5 +1,20 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop528 TODO
+
+- 상태 업데이트: B1 `22`건을 canonical candidate recheck batch로 묶었다. Goal은 완료가 아니다.
+- [x] 새 runtime replay를 발주하지 않았다.
+- [x] B1 different/related candidate alignment rows를 N건 batch로 처리했다.
+- [x] Batch selected rows는 `22`, verdict required rows는 `22`, runtime replay allowed rows는 `0`이다.
+- [x] `tools/build_canonical_candidate_recheck_batch.py`를 추가했다.
+- [x] `tests/test_canonical_candidate_recheck_batch.py`를 추가했다.
+- [x] Batch generation과 JSON parse를 통과했다.
+- [ ] Source-native/blind canonical verdict를 작성해 `expected`, `current`, `related variant`, `wrong/unrelated`, `insufficient`를 분리한다.
+- [ ] Verdict 뒤 contract test 전까지 B1 runtime replay를 열지 않는다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: batch generation `GO`, canonical verdict `NOT_RUN_AFTER_PACKET`, runtime replay `BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK_VERDICT_AND_CONTRACT_TESTS`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop523 TODO
 
 - 상태 업데이트: direct title surface bridge로 `title_url_or_variant_trace_repair` 4건을 projection safe_resolved로 복구했다. Goal은 완료가 아니다.

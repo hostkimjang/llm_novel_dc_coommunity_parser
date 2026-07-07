@@ -1,0 +1,3255 @@
+{
+  "report_type": "canonical_candidate_recheck_batch",
+  "batch_id": "loop528_b1_canonical_candidate_recheck22_batch",
+  "generated_at": "2026-07-07T14:31:40",
+  "source_queue_id": "loop527_batched_repair_release_gate27_queue",
+  "source_gate": "REVIEW-LOCKED",
+  "selected_lanes": [
+    "B1_different_candidate_alignment_review",
+    "B1_missing_candidate_alignment_review",
+    "B1_related_candidate_alignment_review"
+  ],
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "gate": "REVIEW-LOCKED",
+  "summary": {
+    "source_queue_rows": 27,
+    "selected_rows": 22,
+    "verdict_required_rows": 22,
+    "runtime_replay_allowed_rows": 0,
+    "review_lane_counts": {
+      "B1_different_candidate_alignment_review": 12,
+      "B1_related_candidate_alignment_review": 10
+    },
+    "alignment_state_counts": {
+      "different_title_candidate_review": 12,
+      "related_title_surface_review": 10
+    },
+    "candidate_support_state_counts": {
+      "image_ocr_preservation_pending_official_url": 1,
+      "non_official_candidate_preservation_only": 8,
+      "official_detail_trace_missing_url_review": 1,
+      "official_url_candidate_support": 12
+    },
+    "search_gate_counts": {
+      "SEARCH_BLIND_BLOCKER": 9,
+      "SEARCH_EVIDENCE_MISSING": 6,
+      "SEARCH_OK": 1,
+      "SEARCH_RECOVERED_CONDITIONAL": 6
+    },
+    "primary_repair_lane_counts": {
+      "candidate_preservation_or_scrub_repair": 8,
+      "image_or_alias_anchor_contract_repair": 3,
+      "scope_or_nonwork_monotonicity_repair": 9,
+      "title_url_or_variant_trace_repair": 2
+    },
+    "validation_issue_count": 0
+  },
+  "validation_issues": [],
+  "review_groups": [
+    {
+      "review_lane": "B1_different_candidate_alignment_review",
+      "row_count": 12,
+      "candidate_support_state_counts": {
+        "non_official_candidate_preservation_only": 5,
+        "official_url_candidate_support": 7
+      },
+      "search_gate_counts": {
+        "SEARCH_BLIND_BLOCKER": 5,
+        "SEARCH_EVIDENCE_MISSING": 3,
+        "SEARCH_OK": 1,
+        "SEARCH_RECOVERED_CONDITIONAL": 3
+      },
+      "primary_repair_lane_counts": {
+        "candidate_preservation_or_scrub_repair": 5,
+        "image_or_alias_anchor_contract_repair": 2,
+        "scope_or_nonwork_monotonicity_repair": 4,
+        "title_url_or_variant_trace_repair": 1
+      },
+      "post_ids": [
+        11660271,
+        11660273,
+        11665124,
+        11669913,
+        11677926,
+        11681172,
+        11690841,
+        11697242,
+        11718110,
+        11694068,
+        11668300,
+        11679547
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11660271,
+          "review_lane": "B1_different_candidate_alignment_review",
+          "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+          "expected_or_source_native_title": "월야의 여인들",
+          "projected_title": "월야의 여인들",
+          "current_projection_candidate_title": "경멸하는 여자를 굴복시키는 법",
+          "current_projection_candidate_url": "https://novelpia.com/novel/121059",
+          "current_projection_candidate_alignment_state": "different_title_candidate_review",
+          "candidate_support_state": "official_url_candidate_support",
+          "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+          "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+          "reason_codes": [
+            "llm_only_sentence_candidate_pruned",
+            "official_detail_url",
+            "official_title_exists",
+            "recommendation_context_only_no_work_anchor",
+            "resolved_public_title_scope",
+            "row_discussion_missing",
+            "scope_context_only",
+            "scope_not_current_work",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "actions": [
+            "scope_or_nonwork_monotonicity_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_recovered_conditional_tag_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "candidate_evidence_profile": {
+            "source_tiers": [
+              "official_detail"
+            ],
+            "source_roles": [
+              "primary",
+              "title_candidate"
+            ],
+            "negative_evidence": [],
+            "metadata_source_count": 3,
+            "image_title_match": false
+          },
+          "allowed_verdicts": [
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+            "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+            "RELATED_CANONICAL_VARIANT_CONFIRMED",
+            "WRONG_OR_UNRELATED_CANDIDATE",
+            "INSUFFICIENT_EVIDENCE_HOLD"
+          ],
+          "review_questions": [
+            "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+            "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+            "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+          ],
+          "after_verdict_contract": {
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+              "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+              "runtime_release": "blocked_until_contract_tests_pass"
+            },
+            "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+              "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+              "runtime_release": "blocked_until_expected_contract_updated"
+            },
+            "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+              "next_state": "canonical_variant_policy_contract_required",
+              "runtime_release": "blocked_until_variant_policy_tests_pass"
+            },
+            "WRONG_OR_UNRELATED_CANDIDATE": {
+              "next_state": "current_projection_candidate_scrub_required",
+              "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+            },
+            "INSUFFICIENT_EVIDENCE_HOLD": {
+              "next_state": "hard_hold_or_native_web_review_required",
+              "runtime_release": "blocked_until_stronger_evidence"
+            },
+            "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+            "runtime_replay_allowed_before_verdict": false
+          },
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11660271",
+            "prior_runtime_expected_audit#post_id=11660271",
+            "current_projection_result#post_id=11660271"
+          ],
+          "approval_boundary": {
+            "packet_generation_is_not_verdict": true,
+            "canonical_recheck_is_required_before_runtime_replay": true,
+            "full375_collateral_remains_no_go": true
+          }
+        },
+        {
+          "post_id": 11660273,
+          "review_lane": "B1_different_candidate_alignment_review",
+          "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+          "expected_or_source_native_title": "마도서를 줍다 마법사가 되다",
+          "projected_title": "마도서를 줍다 마법사가 되다",
+          "current_projection_candidate_title": "투명인데 안키움",
+          "current_projection_candidate_url": null,
+          "current_projection_candidate_alignment_state": "different_title_candidate_review",
+          "candidate_support_state": "non_official_candidate_preservation_only",
+          "search_gate": "SEARCH_BLIND_BLOCKER",
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+          "reason_codes": [
+            "blocked_candidate_scope_inferred_from_final_contract",
+            "exact_alias_candidate_preserved_without_work_discussion",
+            "image_ocr_without_title_anchor",
+            "nonwork_or_noise_context",
+            "scope_context_only",
+            "scope_not_current_work",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "actions": [
+            "scope_or_nonwork_monotonicity_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_blind_preflight_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "candidate_evidence_profile": {
+            "source_tiers": [
+              "comment_surface"
+            ],
+            "source_roles": [
+              "candidate",
+              "comment_surface_candidate"
+            ],
+            "negative_evidence": [],
+            "metadata_source_count": 3,
+            "image_title_match": false
+          },
+          "allowed_verdicts": [
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+            "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+            "RELATED_CANONICAL_VARIANT_CONFIRMED",
+            "WRONG_OR_UNRELATED_CANDIDATE",
+            "INSUFFICIENT_EVIDENCE_HOLD"
+          ],
+          "review_questions": [
+            "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+            "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+            "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+          ],
+          "after_verdict_contract": {
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+              "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+              "runtime_release": "blocked_until_contract_tests_pass"
+            },
+            "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+              "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+              "runtime_release": "blocked_until_expected_contract_updated"
+            },
+            "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+              "next_state": "canonical_variant_policy_contract_required",
+              "runtime_release": "blocked_until_variant_policy_tests_pass"
+            },
+            "WRONG_OR_UNRELATED_CANDIDATE": {
+              "next_state": "current_projection_candidate_scrub_required",
+              "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+            },
+            "INSUFFICIENT_EVIDENCE_HOLD": {
+              "next_state": "hard_hold_or_native_web_review_required",
+              "runtime_release": "blocked_until_stronger_evidence"
+            },
+            "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+            "runtime_replay_allowed_before_verdict": false
+          },
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11660273",
+            "prior_runtime_expected_audit#post_id=11660273",
+            "current_projection_result#post_id=11660273"
+          ],
+          "approval_boundary": {
+            "packet_generation_is_not_verdict": true,
+            "canonical_recheck_is_required_before_runtime_replay": true,
+            "full375_collateral_remains_no_go": true
+          }
+        },
+        {
+          "post_id": 11665124,
+          "review_lane": "B1_different_candidate_alignment_review",
+          "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+          "expected_or_source_native_title": "화산파(화산귀환)",
+          "projected_title": "화산파(화산귀환)",
+          "current_projection_candidate_title": "뿔 달고 귀환했다 뿔을 단 채 귀환해버렸다 표지는 ai그림입니다",
+          "current_projection_candidate_url": "https://novelpia.com/novel/320490",
+          "current_projection_candidate_alignment_state": "different_title_candidate_review",
+          "candidate_support_state": "official_url_candidate_support",
+          "search_gate": "SEARCH_BLIND_BLOCKER",
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+          "reason_codes": [
+            "llm_only_sentence_candidate_pruned",
+            "official_url_recall_candidate_preserved",
+            "official_url_recall_candidate_source_preserved",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "actions": [
+            "candidate_preservation_or_scrub_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_blind_preflight_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "candidate_evidence_profile": {
+            "source_tiers": [
+              "official_detail"
+            ],
+            "source_roles": [
+              "candidate",
+              "title_candidate"
+            ],
+            "negative_evidence": [],
+            "metadata_source_count": 3,
+            "image_title_match": false
+          },
+          "allowed_verdicts": [
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+            "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+            "RELATED_CANONICAL_VARIANT_CONFIRMED",
+            "WRONG_OR_UNRELATED_CANDIDATE",
+            "INSUFFICIENT_EVIDENCE_HOLD"
+          ],
+          "review_questions": [
+            "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+            "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+            "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+          ],
+          "after_verdict_contract": {
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+              "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+              "runtime_release": "blocked_until_contract_tests_pass"
+            },
+            "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+              "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+              "runtime_release": "blocked_until_expected_contract_updated"
+            },
+            "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+              "next_state": "canonical_variant_policy_contract_required",
+              "runtime_release": "blocked_until_variant_policy_tests_pass"
+            },
+            "WRONG_OR_UNRELATED_CANDIDATE": {
+              "next_state": "current_projection_candidate_scrub_required",
+              "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+            },
+            "INSUFFICIENT_EVIDENCE_HOLD": {
+              "next_state": "hard_hold_or_native_web_review_required",
+              "runtime_release": "blocked_until_stronger_evidence"
+            },
+            "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+            "runtime_replay_allowed_before_verdict": false
+          },
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11665124",
+            "prior_runtime_expected_audit#post_id=11665124",
+            "current_projection_result#post_id=11665124"
+          ],
+          "approval_boundary": {
+            "packet_generation_is_not_verdict": true,
+            "canonical_recheck_is_required_before_runtime_replay": true,
+            "full375_collateral_remains_no_go": true
+          }
+        },
+        {
+          "post_id": 11669913,
+          "review_lane": "B1_different_candidate_alignment_review",
+          "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+          "expected_or_source_native_title": "하룬",
+          "projected_title": "하룬",
+          "current_projection_candidate_title": "팩트는",
+          "current_projection_candidate_url": null,
+          "current_projection_candidate_alignment_state": "different_title_candidate_review",
+          "candidate_support_state": "non_official_candidate_preservation_only",
+          "search_gate": "SEARCH_BLIND_BLOCKER",
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+          "reason_codes": [
+            "blocked_candidate_scope_inferred_from_final_contract",
+            "exact_alias_candidate_preserved_without_work_discussion",
+            "image_ocr_without_title_anchor",
+            "nonwork_or_noise_context",
+            "scope_context_only",
+            "scope_not_current_work",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "actions": [
+            "scope_or_nonwork_monotonicity_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_blind_preflight_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "candidate_evidence_profile": {
+            "source_tiers": [
+              "post_title_surface"
+            ],
+            "source_roles": [
+              "candidate",
+              "title_candidate"
+            ],
+            "negative_evidence": [],
+            "metadata_source_count": 3,
+            "image_title_match": false
+          },
+          "allowed_verdicts": [
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+            "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+            "RELATED_CANONICAL_VARIANT_CONFIRMED",
+            "WRONG_OR_UNRELATED_CANDIDATE",
+            "INSUFFICIENT_EVIDENCE_HOLD"
+          ],
+          "review_questions": [
+            "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+            "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+            "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+          ],
+          "after_verdict_contract": {
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+              "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+              "runtime_release": "blocked_until_contract_tests_pass"
+            },
+            "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+              "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+              "runtime_release": "blocked_until_expected_contract_updated"
+            },
+            "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+              "next_state": "canonical_variant_policy_contract_required",
+              "runtime_release": "blocked_until_variant_policy_tests_pass"
+            },
+            "WRONG_OR_UNRELATED_CANDIDATE": {
+              "next_state": "current_projection_candidate_scrub_required",
+              "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+            },
+            "INSUFFICIENT_EVIDENCE_HOLD": {
+              "next_state": "hard_hold_or_native_web_review_required",
+              "runtime_release": "blocked_until_stronger_evidence"
+            },
+            "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+            "runtime_replay_allowed_before_verdict": false
+          },
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11669913",
+            "prior_runtime_expected_audit#post_id=11669913",
+            "current_projection_result#post_id=11669913"
+          ],
+          "approval_boundary": {
+            "packet_generation_is_not_verdict": true,
+            "canonical_recheck_is_required_before_runtime_replay": true,
+            "full375_collateral_remains_no_go": true
+          }
+        },
+        {
+          "post_id": 11677926,
+          "review_lane": "B1_different_candidate_alignment_review",
+          "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+          "expected_or_source_native_title": "재앙급 막내 공자의 회귀",
+          "projected_title": "재앙급 막내 공자의 회귀",
+          "current_projection_candidate_title": "무영자 가 돌아왔다",
+          "current_projection_candidate_url": null,
+          "current_projection_candidate_alignment_state": "different_title_candidate_review",
+          "candidate_support_state": "non_official_candidate_preservation_only",
+          "search_gate": "SEARCH_BLIND_BLOCKER",
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+          "reason_codes": [
+            "llm_only_sentence_candidate_pruned",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "actions": [
+            "candidate_preservation_or_scrub_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_blind_preflight_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "candidate_evidence_profile": {
+            "source_tiers": [
+              "community",
+              "mixed"
+            ],
+            "source_roles": [
+              "candidate",
+              "primary",
+              "recommendation_candidate",
+              "title_candidate"
+            ],
+            "negative_evidence": [
+              "short_alias_hold_without_promotion",
+              "weak_alias_surface_public_title_bridge"
+            ],
+            "metadata_source_count": 8,
+            "image_title_match": false
+          },
+          "allowed_verdicts": [
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+            "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+            "RELATED_CANONICAL_VARIANT_CONFIRMED",
+            "WRONG_OR_UNRELATED_CANDIDATE",
+            "INSUFFICIENT_EVIDENCE_HOLD"
+          ],
+          "review_questions": [
+            "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+            "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+            "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+          ],
+          "after_verdict_contract": {
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+              "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+              "runtime_release": "blocked_until_contract_tests_pass"
+            },
+            "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+              "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+              "runtime_release": "blocked_until_expected_contract_updated"
+            },
+            "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+              "next_state": "canonical_variant_policy_contract_required",
+              "runtime_release": "blocked_until_variant_policy_tests_pass"
+            },
+            "WRONG_OR_UNRELATED_CANDIDATE": {
+              "next_state": "current_projection_candidate_scrub_required",
+              "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+            },
+            "INSUFFICIENT_EVIDENCE_HOLD": {
+              "next_state": "hard_hold_or_native_web_review_required",
+              "runtime_release": "blocked_until_stronger_evidence"
+            },
+            "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+            "runtime_replay_allowed_before_verdict": false
+          },
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11677926",
+            "prior_runtime_expected_audit#post_id=11677926",
+            "current_projection_result#post_id=11677926"
+          ],
+          "approval_boundary": {
+            "packet_generation_is_not_verdict": true,
+            "canonical_recheck_is_required_before_runtime_replay": true,
+            "full375_collateral_remains_no_go": true
+          }
+        },
+        {
+          "post_id": 11681172,
+          "review_lane": "B1_different_candidate_alignment_review",
+          "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+          "expected_or_source_native_title": "헌터갤러리의 국가권력급 기계공주",
+          "projected_title": "헌터갤러리의 국가권력급 기계공주",
+          "current_projection_candidate_title": "파멸의 날, 밤하늘 속 별들이 빛나던 그 날을 잊지못한 소년은 기사를 자칭한다. 저 하늘에 빛나는 별하늘을 그릴 때 까지",
+          "current_projection_candidate_url": "https://novelpia.com/novel/420052",
+          "current_projection_candidate_alignment_state": "different_title_candidate_review",
+          "candidate_support_state": "official_url_candidate_support",
+          "search_gate": "SEARCH_EVIDENCE_MISSING",
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "None",
+          "primary_repair_lane": "image_or_alias_anchor_contract_repair",
+          "reason_codes": [
+            "batch_alias_public_title_bridge",
+            "official_detail_url",
+            "official_title_exists",
+            "official_title_looks_like_listing_description",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "actions": [
+            "image_or_alias_anchor_contract_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_blind_preflight_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "candidate_evidence_profile": {
+            "source_tiers": [
+              "official_detail"
+            ],
+            "source_roles": [
+              "primary",
+              "title_candidate"
+            ],
+            "negative_evidence": [],
+            "metadata_source_count": 3,
+            "image_title_match": false
+          },
+          "allowed_verdicts": [
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+            "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+            "RELATED_CANONICAL_VARIANT_CONFIRMED",
+            "WRONG_OR_UNRELATED_CANDIDATE",
+            "INSUFFICIENT_EVIDENCE_HOLD"
+          ],
+          "review_questions": [
+            "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+            "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+            "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+          ],
+          "after_verdict_contract": {
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+              "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+              "runtime_release": "blocked_until_contract_tests_pass"
+            },
+            "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+              "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+              "runtime_release": "blocked_until_expected_contract_updated"
+            },
+            "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+              "next_state": "canonical_variant_policy_contract_required",
+              "runtime_release": "blocked_until_variant_policy_tests_pass"
+            },
+            "WRONG_OR_UNRELATED_CANDIDATE": {
+              "next_state": "current_projection_candidate_scrub_required",
+              "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+            },
+            "INSUFFICIENT_EVIDENCE_HOLD": {
+              "next_state": "hard_hold_or_native_web_review_required",
+              "runtime_release": "blocked_until_stronger_evidence"
+            },
+            "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+            "runtime_replay_allowed_before_verdict": false
+          },
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11681172",
+            "prior_runtime_expected_audit#post_id=11681172",
+            "current_projection_result#post_id=11681172"
+          ],
+          "approval_boundary": {
+            "packet_generation_is_not_verdict": true,
+            "canonical_recheck_is_required_before_runtime_replay": true,
+            "full375_collateral_remains_no_go": true
+          }
+        }
+      ]
+    },
+    {
+      "review_lane": "B1_related_candidate_alignment_review",
+      "row_count": 10,
+      "candidate_support_state_counts": {
+        "image_ocr_preservation_pending_official_url": 1,
+        "non_official_candidate_preservation_only": 3,
+        "official_detail_trace_missing_url_review": 1,
+        "official_url_candidate_support": 5
+      },
+      "search_gate_counts": {
+        "SEARCH_BLIND_BLOCKER": 4,
+        "SEARCH_EVIDENCE_MISSING": 3,
+        "SEARCH_RECOVERED_CONDITIONAL": 3
+      },
+      "primary_repair_lane_counts": {
+        "candidate_preservation_or_scrub_repair": 3,
+        "image_or_alias_anchor_contract_repair": 1,
+        "scope_or_nonwork_monotonicity_repair": 5,
+        "title_url_or_variant_trace_repair": 1
+      },
+      "post_ids": [
+        11697256,
+        11706871,
+        11710021,
+        11714887,
+        11718114,
+        11666741,
+        11669926,
+        11673080,
+        11682767,
+        11698859
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11697256,
+          "review_lane": "B1_related_candidate_alignment_review",
+          "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+          "expected_or_source_native_title": "황제의 딸로 환생했다",
+          "projected_title": "황제의 딸로 환생했다",
+          "current_projection_candidate_title": "황제딸",
+          "current_projection_candidate_url": null,
+          "current_projection_candidate_alignment_state": "related_title_surface_review",
+          "candidate_support_state": "official_detail_trace_missing_url_review",
+          "search_gate": "SEARCH_EVIDENCE_MISSING",
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "None",
+          "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+          "reason_codes": [
+            "context_only",
+            "official_detail_url",
+            "official_title_exists",
+            "row_discussion_missing",
+            "scope_not_current_work",
+            "scope_unclassified",
+            "scope_unknown",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "actions": [
+            "scope_or_nonwork_monotonicity_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_blind_preflight_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "candidate_evidence_profile": {
+            "source_tiers": [
+              "comment_surface"
+            ],
+            "source_roles": [
+              "candidate",
+              "comment_surface_candidate"
+            ],
+            "negative_evidence": [],
+            "metadata_source_count": 3,
+            "image_title_match": false
+          },
+          "allowed_verdicts": [
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+            "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+            "RELATED_CANONICAL_VARIANT_CONFIRMED",
+            "WRONG_OR_UNRELATED_CANDIDATE",
+            "INSUFFICIENT_EVIDENCE_HOLD"
+          ],
+          "review_questions": [
+            "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+            "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+            "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+          ],
+          "after_verdict_contract": {
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+              "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+              "runtime_release": "blocked_until_contract_tests_pass"
+            },
+            "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+              "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+              "runtime_release": "blocked_until_expected_contract_updated"
+            },
+            "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+              "next_state": "canonical_variant_policy_contract_required",
+              "runtime_release": "blocked_until_variant_policy_tests_pass"
+            },
+            "WRONG_OR_UNRELATED_CANDIDATE": {
+              "next_state": "current_projection_candidate_scrub_required",
+              "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+            },
+            "INSUFFICIENT_EVIDENCE_HOLD": {
+              "next_state": "hard_hold_or_native_web_review_required",
+              "runtime_release": "blocked_until_stronger_evidence"
+            },
+            "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+            "runtime_replay_allowed_before_verdict": false
+          },
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11697256",
+            "prior_runtime_expected_audit#post_id=11697256",
+            "current_projection_result#post_id=11697256"
+          ],
+          "approval_boundary": {
+            "packet_generation_is_not_verdict": true,
+            "canonical_recheck_is_required_before_runtime_replay": true,
+            "full375_collateral_remains_no_go": true
+          }
+        },
+        {
+          "post_id": 11706871,
+          "review_lane": "B1_related_candidate_alignment_review",
+          "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+          "expected_or_source_native_title": "파우스트",
+          "projected_title": "파우스트",
+          "current_projection_candidate_title": "데빌게이머 파우스트",
+          "current_projection_candidate_url": "https://series.naver.com/novel/detail.series?productNo=2179539",
+          "current_projection_candidate_alignment_state": "related_title_surface_review",
+          "candidate_support_state": "official_url_candidate_support",
+          "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+          "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+          "reason_codes": [
+            "llm_only_sentence_candidate_pruned",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "actions": [
+            "candidate_preservation_or_scrub_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_recovered_conditional_tag_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "candidate_evidence_profile": {
+            "source_tiers": [
+              "official_detail"
+            ],
+            "source_roles": [
+              "candidate",
+              "mentioned",
+              "mentioned_work",
+              "primary",
+              "secondary_reference",
+              "title_candidate"
+            ],
+            "negative_evidence": [
+              "official_detail_url_title_mismatch_publish_blocked",
+              "promoted_image_work_title_conflicts_with_public_title",
+              "url_title_mismatch"
+            ],
+            "metadata_source_count": 10,
+            "image_title_match": false
+          },
+          "allowed_verdicts": [
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+            "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+            "RELATED_CANONICAL_VARIANT_CONFIRMED",
+            "WRONG_OR_UNRELATED_CANDIDATE",
+            "INSUFFICIENT_EVIDENCE_HOLD"
+          ],
+          "review_questions": [
+            "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+            "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+            "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+          ],
+          "after_verdict_contract": {
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+              "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+              "runtime_release": "blocked_until_contract_tests_pass"
+            },
+            "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+              "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+              "runtime_release": "blocked_until_expected_contract_updated"
+            },
+            "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+              "next_state": "canonical_variant_policy_contract_required",
+              "runtime_release": "blocked_until_variant_policy_tests_pass"
+            },
+            "WRONG_OR_UNRELATED_CANDIDATE": {
+              "next_state": "current_projection_candidate_scrub_required",
+              "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+            },
+            "INSUFFICIENT_EVIDENCE_HOLD": {
+              "next_state": "hard_hold_or_native_web_review_required",
+              "runtime_release": "blocked_until_stronger_evidence"
+            },
+            "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+            "runtime_replay_allowed_before_verdict": false
+          },
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11706871",
+            "prior_runtime_expected_audit#post_id=11706871",
+            "current_projection_result#post_id=11706871"
+          ],
+          "approval_boundary": {
+            "packet_generation_is_not_verdict": true,
+            "canonical_recheck_is_required_before_runtime_replay": true,
+            "full375_collateral_remains_no_go": true
+          }
+        },
+        {
+          "post_id": 11710021,
+          "review_lane": "B1_related_candidate_alignment_review",
+          "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+          "expected_or_source_native_title": "무한의 마법사",
+          "projected_title": "무한의 마법사",
+          "current_projection_candidate_title": "무마",
+          "current_projection_candidate_url": null,
+          "current_projection_candidate_alignment_state": "related_title_surface_review",
+          "candidate_support_state": "non_official_candidate_preservation_only",
+          "search_gate": "SEARCH_EVIDENCE_MISSING",
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "None",
+          "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+          "reason_codes": [
+            "community_banter",
+            "non_novel_discourse",
+            "nonwork",
+            "row_discussion_missing",
+            "scope_not_current_work",
+            "scope_platform_meta_nonwork",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "actions": [
+            "scope_or_nonwork_monotonicity_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_blind_preflight_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "candidate_evidence_profile": {
+            "source_tiers": [
+              "post_title_surface"
+            ],
+            "source_roles": [
+              "candidate",
+              "title_candidate"
+            ],
+            "negative_evidence": [],
+            "metadata_source_count": 3,
+            "image_title_match": false
+          },
+          "allowed_verdicts": [
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+            "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+            "RELATED_CANONICAL_VARIANT_CONFIRMED",
+            "WRONG_OR_UNRELATED_CANDIDATE",
+            "INSUFFICIENT_EVIDENCE_HOLD"
+          ],
+          "review_questions": [
+            "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+            "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+            "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+          ],
+          "after_verdict_contract": {
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+              "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+              "runtime_release": "blocked_until_contract_tests_pass"
+            },
+            "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+              "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+              "runtime_release": "blocked_until_expected_contract_updated"
+            },
+            "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+              "next_state": "canonical_variant_policy_contract_required",
+              "runtime_release": "blocked_until_variant_policy_tests_pass"
+            },
+            "WRONG_OR_UNRELATED_CANDIDATE": {
+              "next_state": "current_projection_candidate_scrub_required",
+              "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+            },
+            "INSUFFICIENT_EVIDENCE_HOLD": {
+              "next_state": "hard_hold_or_native_web_review_required",
+              "runtime_release": "blocked_until_stronger_evidence"
+            },
+            "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+            "runtime_replay_allowed_before_verdict": false
+          },
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11710021",
+            "prior_runtime_expected_audit#post_id=11710021",
+            "current_projection_result#post_id=11710021"
+          ],
+          "approval_boundary": {
+            "packet_generation_is_not_verdict": true,
+            "canonical_recheck_is_required_before_runtime_replay": true,
+            "full375_collateral_remains_no_go": true
+          }
+        },
+        {
+          "post_id": 11714887,
+          "review_lane": "B1_related_candidate_alignment_review",
+          "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+          "expected_or_source_native_title": "도굴왕 1 |",
+          "projected_title": "도굴왕 1 |",
+          "current_projection_candidate_title": "[도굴왕] [fate] 도굴왕에서 에누마 엘리시를!!",
+          "current_projection_candidate_url": "https://novelpia.com/novel/155741",
+          "current_projection_candidate_alignment_state": "related_title_surface_review",
+          "candidate_support_state": "official_url_candidate_support",
+          "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+          "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+          "reason_codes": [
+            "community_banter",
+            "non_novel_discourse",
+            "nonwork",
+            "official_url_recall_candidate_preserved",
+            "official_url_recall_candidate_source_preserved",
+            "row_discussion_missing",
+            "scope_not_current_work",
+            "scope_platform_meta_nonwork",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "actions": [
+            "scope_or_nonwork_monotonicity_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_recovered_conditional_tag_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "candidate_evidence_profile": {
+            "source_tiers": [
+              "community",
+              "llm_only",
+              "official_detail"
+            ],
+            "source_roles": [
+              "candidate",
+              "mentioned",
+              "recommendation_candidate",
+              "secondary_reference",
+              "title_candidate"
+            ],
+            "negative_evidence": [
+              "short_alias_hold_without_promotion"
+            ],
+            "metadata_source_count": 7,
+            "image_title_match": true
+          },
+          "allowed_verdicts": [
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+            "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+            "RELATED_CANONICAL_VARIANT_CONFIRMED",
+            "WRONG_OR_UNRELATED_CANDIDATE",
+            "INSUFFICIENT_EVIDENCE_HOLD"
+          ],
+          "review_questions": [
+            "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+            "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+            "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+          ],
+          "after_verdict_contract": {
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+              "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+              "runtime_release": "blocked_until_contract_tests_pass"
+            },
+            "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+              "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+              "runtime_release": "blocked_until_expected_contract_updated"
+            },
+            "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+              "next_state": "canonical_variant_policy_contract_required",
+              "runtime_release": "blocked_until_variant_policy_tests_pass"
+            },
+            "WRONG_OR_UNRELATED_CANDIDATE": {
+              "next_state": "current_projection_candidate_scrub_required",
+              "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+            },
+            "INSUFFICIENT_EVIDENCE_HOLD": {
+              "next_state": "hard_hold_or_native_web_review_required",
+              "runtime_release": "blocked_until_stronger_evidence"
+            },
+            "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+            "runtime_replay_allowed_before_verdict": false
+          },
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11714887",
+            "prior_runtime_expected_audit#post_id=11714887",
+            "current_projection_result#post_id=11714887"
+          ],
+          "approval_boundary": {
+            "packet_generation_is_not_verdict": true,
+            "canonical_recheck_is_required_before_runtime_replay": true,
+            "full375_collateral_remains_no_go": true
+          }
+        },
+        {
+          "post_id": 11718114,
+          "review_lane": "B1_related_candidate_alignment_review",
+          "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+          "expected_or_source_native_title": "설정값 딸깍으로 판타지 시스템 정상화",
+          "projected_title": "설정값 딸깍으로 판타지 시스템 정상화",
+          "current_projection_candidate_title": "시스템",
+          "current_projection_candidate_url": "https://novelpia.com/novel/383584",
+          "current_projection_candidate_alignment_state": "related_title_surface_review",
+          "candidate_support_state": "official_url_candidate_support",
+          "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+          "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+          "reason_codes": [
+            "blocked_candidate_scope_inferred_from_final_contract",
+            "exact_alias_candidate_preserved_without_work_discussion",
+            "image_ocr_without_title_anchor",
+            "nonwork_or_noise_context",
+            "scope_context_only",
+            "scope_not_current_work",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "actions": [
+            "scope_or_nonwork_monotonicity_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_recovered_conditional_tag_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "candidate_evidence_profile": {
+            "source_tiers": [
+              "community",
+              "post_title_surface"
+            ],
+            "source_roles": [
+              "candidate",
+              "recommendation_candidate",
+              "title_candidate"
+            ],
+            "negative_evidence": [
+              "comment_answer_preservation_only"
+            ],
+            "metadata_source_count": 5,
+            "image_title_match": false
+          },
+          "allowed_verdicts": [
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+            "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+            "RELATED_CANONICAL_VARIANT_CONFIRMED",
+            "WRONG_OR_UNRELATED_CANDIDATE",
+            "INSUFFICIENT_EVIDENCE_HOLD"
+          ],
+          "review_questions": [
+            "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+            "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+            "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+          ],
+          "after_verdict_contract": {
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+              "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+              "runtime_release": "blocked_until_contract_tests_pass"
+            },
+            "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+              "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+              "runtime_release": "blocked_until_expected_contract_updated"
+            },
+            "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+              "next_state": "canonical_variant_policy_contract_required",
+              "runtime_release": "blocked_until_variant_policy_tests_pass"
+            },
+            "WRONG_OR_UNRELATED_CANDIDATE": {
+              "next_state": "current_projection_candidate_scrub_required",
+              "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+            },
+            "INSUFFICIENT_EVIDENCE_HOLD": {
+              "next_state": "hard_hold_or_native_web_review_required",
+              "runtime_release": "blocked_until_stronger_evidence"
+            },
+            "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+            "runtime_replay_allowed_before_verdict": false
+          },
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11718114",
+            "prior_runtime_expected_audit#post_id=11718114",
+            "current_projection_result#post_id=11718114"
+          ],
+          "approval_boundary": {
+            "packet_generation_is_not_verdict": true,
+            "canonical_recheck_is_required_before_runtime_replay": true,
+            "full375_collateral_remains_no_go": true
+          }
+        },
+        {
+          "post_id": 11666741,
+          "review_lane": "B1_related_candidate_alignment_review",
+          "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+          "expected_or_source_native_title": "별을 품은 소드마스터",
+          "projected_title": "별을 품은 소드마스터",
+          "current_projection_candidate_title": "별품소",
+          "current_projection_candidate_url": null,
+          "current_projection_candidate_alignment_state": "related_title_surface_review",
+          "candidate_support_state": "non_official_candidate_preservation_only",
+          "search_gate": "SEARCH_EVIDENCE_MISSING",
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "None",
+          "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+          "reason_codes": [
+            "promotion_blocked",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "actions": [
+            "candidate_preservation_or_scrub_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_blind_preflight_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "candidate_evidence_profile": {
+            "source_tiers": [
+              "community"
+            ],
+            "source_roles": [
+              "candidate",
+              "recommendation_candidate"
+            ],
+            "negative_evidence": [
+              "short_alias_hold_without_promotion"
+            ],
+            "metadata_source_count": 2,
+            "image_title_match": false
+          },
+          "allowed_verdicts": [
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+            "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+            "RELATED_CANONICAL_VARIANT_CONFIRMED",
+            "WRONG_OR_UNRELATED_CANDIDATE",
+            "INSUFFICIENT_EVIDENCE_HOLD"
+          ],
+          "review_questions": [
+            "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+            "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+            "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+          ],
+          "after_verdict_contract": {
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+              "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+              "runtime_release": "blocked_until_contract_tests_pass"
+            },
+            "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+              "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+              "runtime_release": "blocked_until_expected_contract_updated"
+            },
+            "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+              "next_state": "canonical_variant_policy_contract_required",
+              "runtime_release": "blocked_until_variant_policy_tests_pass"
+            },
+            "WRONG_OR_UNRELATED_CANDIDATE": {
+              "next_state": "current_projection_candidate_scrub_required",
+              "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+            },
+            "INSUFFICIENT_EVIDENCE_HOLD": {
+              "next_state": "hard_hold_or_native_web_review_required",
+              "runtime_release": "blocked_until_stronger_evidence"
+            },
+            "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+            "runtime_replay_allowed_before_verdict": false
+          },
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11666741",
+            "prior_runtime_expected_audit#post_id=11666741",
+            "current_projection_result#post_id=11666741"
+          ],
+          "approval_boundary": {
+            "packet_generation_is_not_verdict": true,
+            "canonical_recheck_is_required_before_runtime_replay": true,
+            "full375_collateral_remains_no_go": true
+          }
+        }
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "post_id": 11660271,
+      "review_lane": "B1_different_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "월야의 여인들",
+      "projected_title": "월야의 여인들",
+      "current_projection_candidate_title": "경멸하는 여자를 굴복시키는 법",
+      "current_projection_candidate_url": "https://novelpia.com/novel/121059",
+      "current_projection_candidate_alignment_state": "different_title_candidate_review",
+      "candidate_support_state": "official_url_candidate_support",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "reason_codes": [
+        "llm_only_sentence_candidate_pruned",
+        "official_detail_url",
+        "official_title_exists",
+        "recommendation_context_only_no_work_anchor",
+        "resolved_public_title_scope",
+        "row_discussion_missing",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "scope_or_nonwork_monotonicity_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_recovered_conditional_tag_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [
+          "official_detail"
+        ],
+        "source_roles": [
+          "primary",
+          "title_candidate"
+        ],
+        "negative_evidence": [],
+        "metadata_source_count": 3,
+        "image_title_match": false
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+        "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11660271",
+        "prior_runtime_expected_audit#post_id=11660271",
+        "current_projection_result#post_id=11660271"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    },
+    {
+      "post_id": 11660273,
+      "review_lane": "B1_different_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "마도서를 줍다 마법사가 되다",
+      "projected_title": "마도서를 줍다 마법사가 되다",
+      "current_projection_candidate_title": "투명인데 안키움",
+      "current_projection_candidate_url": null,
+      "current_projection_candidate_alignment_state": "different_title_candidate_review",
+      "candidate_support_state": "non_official_candidate_preservation_only",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "reason_codes": [
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "nonwork_or_noise_context",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "scope_or_nonwork_monotonicity_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [
+          "comment_surface"
+        ],
+        "source_roles": [
+          "candidate",
+          "comment_surface_candidate"
+        ],
+        "negative_evidence": [],
+        "metadata_source_count": 3,
+        "image_title_match": false
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+        "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11660273",
+        "prior_runtime_expected_audit#post_id=11660273",
+        "current_projection_result#post_id=11660273"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    },
+    {
+      "post_id": 11665124,
+      "review_lane": "B1_different_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "화산파(화산귀환)",
+      "projected_title": "화산파(화산귀환)",
+      "current_projection_candidate_title": "뿔 달고 귀환했다 뿔을 단 채 귀환해버렸다 표지는 ai그림입니다",
+      "current_projection_candidate_url": "https://novelpia.com/novel/320490",
+      "current_projection_candidate_alignment_state": "different_title_candidate_review",
+      "candidate_support_state": "official_url_candidate_support",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+      "reason_codes": [
+        "llm_only_sentence_candidate_pruned",
+        "official_url_recall_candidate_preserved",
+        "official_url_recall_candidate_source_preserved",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "candidate_preservation_or_scrub_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [
+          "official_detail"
+        ],
+        "source_roles": [
+          "candidate",
+          "title_candidate"
+        ],
+        "negative_evidence": [],
+        "metadata_source_count": 3,
+        "image_title_match": false
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+        "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11665124",
+        "prior_runtime_expected_audit#post_id=11665124",
+        "current_projection_result#post_id=11665124"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    },
+    {
+      "post_id": 11669913,
+      "review_lane": "B1_different_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "하룬",
+      "projected_title": "하룬",
+      "current_projection_candidate_title": "팩트는",
+      "current_projection_candidate_url": null,
+      "current_projection_candidate_alignment_state": "different_title_candidate_review",
+      "candidate_support_state": "non_official_candidate_preservation_only",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "reason_codes": [
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "nonwork_or_noise_context",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "scope_or_nonwork_monotonicity_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [
+          "post_title_surface"
+        ],
+        "source_roles": [
+          "candidate",
+          "title_candidate"
+        ],
+        "negative_evidence": [],
+        "metadata_source_count": 3,
+        "image_title_match": false
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+        "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11669913",
+        "prior_runtime_expected_audit#post_id=11669913",
+        "current_projection_result#post_id=11669913"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    },
+    {
+      "post_id": 11677926,
+      "review_lane": "B1_different_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "재앙급 막내 공자의 회귀",
+      "projected_title": "재앙급 막내 공자의 회귀",
+      "current_projection_candidate_title": "무영자 가 돌아왔다",
+      "current_projection_candidate_url": null,
+      "current_projection_candidate_alignment_state": "different_title_candidate_review",
+      "candidate_support_state": "non_official_candidate_preservation_only",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+      "reason_codes": [
+        "llm_only_sentence_candidate_pruned",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "candidate_preservation_or_scrub_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [
+          "community",
+          "mixed"
+        ],
+        "source_roles": [
+          "candidate",
+          "primary",
+          "recommendation_candidate",
+          "title_candidate"
+        ],
+        "negative_evidence": [
+          "short_alias_hold_without_promotion",
+          "weak_alias_surface_public_title_bridge"
+        ],
+        "metadata_source_count": 8,
+        "image_title_match": false
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+        "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11677926",
+        "prior_runtime_expected_audit#post_id=11677926",
+        "current_projection_result#post_id=11677926"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    },
+    {
+      "post_id": 11681172,
+      "review_lane": "B1_different_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "헌터갤러리의 국가권력급 기계공주",
+      "projected_title": "헌터갤러리의 국가권력급 기계공주",
+      "current_projection_candidate_title": "파멸의 날, 밤하늘 속 별들이 빛나던 그 날을 잊지못한 소년은 기사를 자칭한다. 저 하늘에 빛나는 별하늘을 그릴 때 까지",
+      "current_projection_candidate_url": "https://novelpia.com/novel/420052",
+      "current_projection_candidate_alignment_state": "different_title_candidate_review",
+      "candidate_support_state": "official_url_candidate_support",
+      "search_gate": "SEARCH_EVIDENCE_MISSING",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "None",
+      "primary_repair_lane": "image_or_alias_anchor_contract_repair",
+      "reason_codes": [
+        "batch_alias_public_title_bridge",
+        "official_detail_url",
+        "official_title_exists",
+        "official_title_looks_like_listing_description",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "image_or_alias_anchor_contract_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [
+          "official_detail"
+        ],
+        "source_roles": [
+          "primary",
+          "title_candidate"
+        ],
+        "negative_evidence": [],
+        "metadata_source_count": 3,
+        "image_title_match": false
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+        "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11681172",
+        "prior_runtime_expected_audit#post_id=11681172",
+        "current_projection_result#post_id=11681172"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    },
+    {
+      "post_id": 11690841,
+      "review_lane": "B1_different_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "블루 아카이브",
+      "projected_title": "블루 아카이브",
+      "current_projection_candidate_title": "가츠동도 만들어줌",
+      "current_projection_candidate_url": null,
+      "current_projection_candidate_alignment_state": "different_title_candidate_review",
+      "candidate_support_state": "non_official_candidate_preservation_only",
+      "search_gate": "SEARCH_EVIDENCE_MISSING",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "None",
+      "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+      "reason_codes": [
+        "promotion_blocked",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "candidate_preservation_or_scrub_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [
+          "comment_surface"
+        ],
+        "source_roles": [
+          "candidate",
+          "comment_surface_candidate"
+        ],
+        "negative_evidence": [],
+        "metadata_source_count": 3,
+        "image_title_match": false
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+        "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11690841",
+        "prior_runtime_expected_audit#post_id=11690841",
+        "current_projection_result#post_id=11690841"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    },
+    {
+      "post_id": 11697242,
+      "review_lane": "B1_different_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "유희왕",
+      "projected_title": "유희왕",
+      "current_projection_candidate_title": "삼전의 재를 썼어야지",
+      "current_projection_candidate_url": null,
+      "current_projection_candidate_alignment_state": "different_title_candidate_review",
+      "candidate_support_state": "non_official_candidate_preservation_only",
+      "search_gate": "SEARCH_EVIDENCE_MISSING",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "None",
+      "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+      "reason_codes": [
+        "promotion_blocked",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "candidate_preservation_or_scrub_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [
+          "comment_surface"
+        ],
+        "source_roles": [
+          "candidate",
+          "comment_surface_candidate"
+        ],
+        "negative_evidence": [],
+        "metadata_source_count": 3,
+        "image_title_match": false
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+        "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11697242",
+        "prior_runtime_expected_audit#post_id=11697242",
+        "current_projection_result#post_id=11697242"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    },
+    {
+      "post_id": 11697256,
+      "review_lane": "B1_related_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "황제의 딸로 환생했다",
+      "projected_title": "황제의 딸로 환생했다",
+      "current_projection_candidate_title": "황제딸",
+      "current_projection_candidate_url": null,
+      "current_projection_candidate_alignment_state": "related_title_surface_review",
+      "candidate_support_state": "official_detail_trace_missing_url_review",
+      "search_gate": "SEARCH_EVIDENCE_MISSING",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "None",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "reason_codes": [
+        "context_only",
+        "official_detail_url",
+        "official_title_exists",
+        "row_discussion_missing",
+        "scope_not_current_work",
+        "scope_unclassified",
+        "scope_unknown",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "scope_or_nonwork_monotonicity_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [
+          "comment_surface"
+        ],
+        "source_roles": [
+          "candidate",
+          "comment_surface_candidate"
+        ],
+        "negative_evidence": [],
+        "metadata_source_count": 3,
+        "image_title_match": false
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+        "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11697256",
+        "prior_runtime_expected_audit#post_id=11697256",
+        "current_projection_result#post_id=11697256"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    },
+    {
+      "post_id": 11706871,
+      "review_lane": "B1_related_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "파우스트",
+      "projected_title": "파우스트",
+      "current_projection_candidate_title": "데빌게이머 파우스트",
+      "current_projection_candidate_url": "https://series.naver.com/novel/detail.series?productNo=2179539",
+      "current_projection_candidate_alignment_state": "related_title_surface_review",
+      "candidate_support_state": "official_url_candidate_support",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+      "reason_codes": [
+        "llm_only_sentence_candidate_pruned",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "candidate_preservation_or_scrub_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_recovered_conditional_tag_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [
+          "official_detail"
+        ],
+        "source_roles": [
+          "candidate",
+          "mentioned",
+          "mentioned_work",
+          "primary",
+          "secondary_reference",
+          "title_candidate"
+        ],
+        "negative_evidence": [
+          "official_detail_url_title_mismatch_publish_blocked",
+          "promoted_image_work_title_conflicts_with_public_title",
+          "url_title_mismatch"
+        ],
+        "metadata_source_count": 10,
+        "image_title_match": false
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+        "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11706871",
+        "prior_runtime_expected_audit#post_id=11706871",
+        "current_projection_result#post_id=11706871"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    },
+    {
+      "post_id": 11710021,
+      "review_lane": "B1_related_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "무한의 마법사",
+      "projected_title": "무한의 마법사",
+      "current_projection_candidate_title": "무마",
+      "current_projection_candidate_url": null,
+      "current_projection_candidate_alignment_state": "related_title_surface_review",
+      "candidate_support_state": "non_official_candidate_preservation_only",
+      "search_gate": "SEARCH_EVIDENCE_MISSING",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "None",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "reason_codes": [
+        "community_banter",
+        "non_novel_discourse",
+        "nonwork",
+        "row_discussion_missing",
+        "scope_not_current_work",
+        "scope_platform_meta_nonwork",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "scope_or_nonwork_monotonicity_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [
+          "post_title_surface"
+        ],
+        "source_roles": [
+          "candidate",
+          "title_candidate"
+        ],
+        "negative_evidence": [],
+        "metadata_source_count": 3,
+        "image_title_match": false
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+        "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11710021",
+        "prior_runtime_expected_audit#post_id=11710021",
+        "current_projection_result#post_id=11710021"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    },
+    {
+      "post_id": 11714887,
+      "review_lane": "B1_related_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "도굴왕 1 |",
+      "projected_title": "도굴왕 1 |",
+      "current_projection_candidate_title": "[도굴왕] [fate] 도굴왕에서 에누마 엘리시를!!",
+      "current_projection_candidate_url": "https://novelpia.com/novel/155741",
+      "current_projection_candidate_alignment_state": "related_title_surface_review",
+      "candidate_support_state": "official_url_candidate_support",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "reason_codes": [
+        "community_banter",
+        "non_novel_discourse",
+        "nonwork",
+        "official_url_recall_candidate_preserved",
+        "official_url_recall_candidate_source_preserved",
+        "row_discussion_missing",
+        "scope_not_current_work",
+        "scope_platform_meta_nonwork",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "scope_or_nonwork_monotonicity_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_recovered_conditional_tag_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [
+          "community",
+          "llm_only",
+          "official_detail"
+        ],
+        "source_roles": [
+          "candidate",
+          "mentioned",
+          "recommendation_candidate",
+          "secondary_reference",
+          "title_candidate"
+        ],
+        "negative_evidence": [
+          "short_alias_hold_without_promotion"
+        ],
+        "metadata_source_count": 7,
+        "image_title_match": true
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+        "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11714887",
+        "prior_runtime_expected_audit#post_id=11714887",
+        "current_projection_result#post_id=11714887"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    },
+    {
+      "post_id": 11718110,
+      "review_lane": "B1_different_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "지구온라인에서 쌀먹합니다",
+      "projected_title": "지구온라인에서 쌀먹합니다",
+      "current_projection_candidate_title": "지구 온라인 의 플레이어가 되었다",
+      "current_projection_candidate_url": "https://novelpia.com/novel/385052",
+      "current_projection_candidate_alignment_state": "different_title_candidate_review",
+      "candidate_support_state": "official_url_candidate_support",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "primary_repair_lane": "title_url_or_variant_trace_repair",
+      "reason_codes": [
+        "blocked_candidate_scope_inferred_from_search_evidence",
+        "character_bridge_variance_hold",
+        "official_detail_url_recovered_from_search_evidence",
+        "scope_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "title_url_or_variant_trace_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [
+          "official_detail"
+        ],
+        "source_roles": [
+          "candidate",
+          "title_candidate"
+        ],
+        "negative_evidence": [
+          "short_lead_surface_public_title_bridge"
+        ],
+        "metadata_source_count": 3,
+        "image_title_match": false
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+        "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11718110",
+        "prior_runtime_expected_audit#post_id=11718110",
+        "current_projection_result#post_id=11718110"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    },
+    {
+      "post_id": 11718114,
+      "review_lane": "B1_related_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "설정값 딸깍으로 판타지 시스템 정상화",
+      "projected_title": "설정값 딸깍으로 판타지 시스템 정상화",
+      "current_projection_candidate_title": "시스템",
+      "current_projection_candidate_url": "https://novelpia.com/novel/383584",
+      "current_projection_candidate_alignment_state": "related_title_surface_review",
+      "candidate_support_state": "official_url_candidate_support",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "reason_codes": [
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "nonwork_or_noise_context",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "scope_or_nonwork_monotonicity_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_recovered_conditional_tag_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [
+          "community",
+          "post_title_surface"
+        ],
+        "source_roles": [
+          "candidate",
+          "recommendation_candidate",
+          "title_candidate"
+        ],
+        "negative_evidence": [
+          "comment_answer_preservation_only"
+        ],
+        "metadata_source_count": 5,
+        "image_title_match": false
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+        "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11718114",
+        "prior_runtime_expected_audit#post_id=11718114",
+        "current_projection_result#post_id=11718114"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    },
+    {
+      "post_id": 11666741,
+      "review_lane": "B1_related_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "별을 품은 소드마스터",
+      "projected_title": "별을 품은 소드마스터",
+      "current_projection_candidate_title": "별품소",
+      "current_projection_candidate_url": null,
+      "current_projection_candidate_alignment_state": "related_title_surface_review",
+      "candidate_support_state": "non_official_candidate_preservation_only",
+      "search_gate": "SEARCH_EVIDENCE_MISSING",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "None",
+      "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+      "reason_codes": [
+        "promotion_blocked",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "candidate_preservation_or_scrub_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [
+          "community"
+        ],
+        "source_roles": [
+          "candidate",
+          "recommendation_candidate"
+        ],
+        "negative_evidence": [
+          "short_alias_hold_without_promotion"
+        ],
+        "metadata_source_count": 2,
+        "image_title_match": false
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+        "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11666741",
+        "prior_runtime_expected_audit#post_id=11666741",
+        "current_projection_result#post_id=11666741"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    },
+    {
+      "post_id": 11694068,
+      "review_lane": "B1_different_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "트와일라잇",
+      "projected_title": "트와일라잇",
+      "current_projection_candidate_title": "Twilight",
+      "current_projection_candidate_url": "https://page.kakao.com/content/47180017",
+      "current_projection_candidate_alignment_state": "different_title_candidate_review",
+      "candidate_support_state": "official_url_candidate_support",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+      "reason_codes": [
+        "llm_only_sentence_candidate_pruned",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "candidate_preservation_or_scrub_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_recovered_conditional_tag_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [
+          "official_detail"
+        ],
+        "source_roles": [
+          "mentioned",
+          "mentioned_work",
+          "secondary_reference",
+          "title_candidate"
+        ],
+        "negative_evidence": [],
+        "metadata_source_count": 7,
+        "image_title_match": true
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+        "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11694068",
+        "prior_runtime_expected_audit#post_id=11694068",
+        "current_projection_result#post_id=11694068"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    },
+    {
+      "post_id": 11668300,
+      "review_lane": "B1_different_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "즉사기 들고 게임 속으로",
+      "projected_title": "즉사기 들고 게임 속으로",
+      "current_projection_candidate_title": "즉사기 인 줄 알았는데 지옥이었다",
+      "current_projection_candidate_url": "https://novel.munpia.com/467992",
+      "current_projection_candidate_alignment_state": "different_title_candidate_review",
+      "candidate_support_state": "official_url_candidate_support",
+      "search_gate": "SEARCH_OK",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "ok",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "reason_codes": [
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "nonwork_or_noise_context",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "scope_or_nonwork_monotonicity_repair_required",
+        "current_projection_candidate_recheck_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [
+          "official_detail",
+          "post_title_surface"
+        ],
+        "source_roles": [
+          "candidate",
+          "primary",
+          "recommendation_candidate",
+          "title_candidate"
+        ],
+        "negative_evidence": [
+          "batch_alias_nonwork_context_hold_without_promotion"
+        ],
+        "metadata_source_count": 8,
+        "image_title_match": false
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+        "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11668300",
+        "prior_runtime_expected_audit#post_id=11668300",
+        "current_projection_result#post_id=11668300"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    },
+    {
+      "post_id": 11669926,
+      "review_lane": "B1_related_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "싸울아비 룬",
+      "projected_title": "싸울아비 룬",
+      "current_projection_candidate_title": "싸울 아흔번째",
+      "current_projection_candidate_url": null,
+      "current_projection_candidate_alignment_state": "related_title_surface_review",
+      "candidate_support_state": "image_ocr_preservation_pending_official_url",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+      "reason_codes": [
+        "promotion_blocked",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "candidate_preservation_or_scrub_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [
+          "mixed"
+        ],
+        "source_roles": [
+          "primary",
+          "title_candidate"
+        ],
+        "negative_evidence": [],
+        "metadata_source_count": 3,
+        "image_title_match": true
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+        "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11669926",
+        "prior_runtime_expected_audit#post_id=11669926",
+        "current_projection_result#post_id=11669926"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    },
+    {
+      "post_id": 11673080,
+      "review_lane": "B1_related_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "갤질하는 천재 의사",
+      "projected_title": "갤질하는 천재 의사",
+      "current_projection_candidate_title": "댓글 보는 천재 의사",
+      "current_projection_candidate_url": "https://novelpia.com/novel/372180",
+      "current_projection_candidate_alignment_state": "related_title_surface_review",
+      "candidate_support_state": "official_url_candidate_support",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "primary_repair_lane": "title_url_or_variant_trace_repair",
+      "reason_codes": [
+        "blocked_candidate_scope_inferred_from_search_evidence",
+        "character_bridge_variance_hold",
+        "official_detail_url_recovered_from_search_evidence",
+        "official_url_recall_candidate_preserved",
+        "official_url_recall_candidate_source_preserved",
+        "scope_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "title_url_or_variant_trace_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [
+          "official_detail"
+        ],
+        "source_roles": [
+          "candidate",
+          "title_candidate"
+        ],
+        "negative_evidence": [
+          "promoted_image_work_title_conflicts_with_public_title"
+        ],
+        "metadata_source_count": 3,
+        "image_title_match": false
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+        "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11673080",
+        "prior_runtime_expected_audit#post_id=11673080",
+        "current_projection_result#post_id=11673080"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    },
+    {
+      "post_id": 11679547,
+      "review_lane": "B1_different_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "도굴왕",
+      "projected_title": "도굴왕",
+      "current_projection_candidate_title": "나 혼자만 레벨업",
+      "current_projection_candidate_url": "https://series.naver.com/novel/detail.series?productNo=3207276",
+      "current_projection_candidate_alignment_state": "different_title_candidate_review",
+      "candidate_support_state": "official_url_candidate_support",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "primary_repair_lane": "image_or_alias_anchor_contract_repair",
+      "reason_codes": [
+        "alias_bridge",
+        "llm_only_sentence_candidate_pruned",
+        "official_detail_url",
+        "official_title_exists",
+        "official_url_recall_candidate_preserved",
+        "official_url_recall_candidate_source_preserved",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_scrubbed",
+        "work_consumption_marker"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "image_or_alias_anchor_contract_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_recovered_conditional_tag_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [
+          "official_detail"
+        ],
+        "source_roles": [
+          "candidate",
+          "title_candidate"
+        ],
+        "negative_evidence": [
+          "promoted_image_work_title_conflicts_with_public_title"
+        ],
+        "metadata_source_count": 3,
+        "image_title_match": false
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+        "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11679547",
+        "prior_runtime_expected_audit#post_id=11679547",
+        "current_projection_result#post_id=11679547"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    },
+    {
+      "post_id": 11682767,
+      "review_lane": "B1_related_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "묵향",
+      "projected_title": "묵향",
+      "current_projection_candidate_title": "묵향 1권",
+      "current_projection_candidate_url": "https://mm.munpia.com/?menu=novel&action=view&id=51088&entry_id=776982",
+      "current_projection_candidate_alignment_state": "related_title_surface_review",
+      "candidate_support_state": "official_url_candidate_support",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "primary_repair_lane": "image_or_alias_anchor_contract_repair",
+      "reason_codes": [
+        "batch_alias_public_title_bridge",
+        "llm_only_sentence_candidate_pruned",
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_scrubbed",
+        "weak_alias_surface_public_title_bridge"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "image_or_alias_anchor_contract_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [
+          "official_detail"
+        ],
+        "source_roles": [
+          "candidate",
+          "comparison_target",
+          "mentioned",
+          "mentioned_work",
+          "secondary_reference",
+          "title_candidate"
+        ],
+        "negative_evidence": [
+          "official_detail_url_title_mismatch_publish_blocked",
+          "url_title_mismatch",
+          "url_title_rematched:묵향(다크 스토리 시리즈) (r211 판)",
+          "weak_alias_surface_public_title_bridge"
+        ],
+        "metadata_source_count": 11,
+        "image_title_match": false
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+        "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11682767",
+        "prior_runtime_expected_audit#post_id=11682767",
+        "current_projection_result#post_id=11682767"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    },
+    {
+      "post_id": 11698859,
+      "review_lane": "B1_related_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "귤부인 대롱대롱",
+      "projected_title": "귤부인 대롱대롱",
+      "current_projection_candidate_title": "귤부인",
+      "current_projection_candidate_url": null,
+      "current_projection_candidate_alignment_state": "related_title_surface_review",
+      "candidate_support_state": "non_official_candidate_preservation_only",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "reason_codes": [
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "nonwork_or_noise_context",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "scope_or_nonwork_monotonicity_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [
+          "post_title_surface"
+        ],
+        "source_roles": [
+          "candidate",
+          "title_candidate"
+        ],
+        "negative_evidence": [],
+        "metadata_source_count": 3,
+        "image_title_match": false
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
+        "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11698859",
+        "prior_runtime_expected_audit#post_id=11698859",
+        "current_projection_result#post_id=11698859"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    }
+  ],
+  "approval_boundary": {
+    "batch_generation_is_not_canonical_verdict": true,
+    "runtime_replay_before_canonical_verdict_forbidden": true,
+    "hard_hold_relaxation_requires_blind_or_source_native_verdict": true,
+    "completion_gate": "full375 collateral GO + full_scan path"
+  }
+}

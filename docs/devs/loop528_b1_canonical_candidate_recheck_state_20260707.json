@@ -1,0 +1,67 @@
+{
+  "loop": 528,
+  "date": "2026-07-07",
+  "report_type": "b1_canonical_candidate_recheck_state",
+  "goal_status": "ACTIVE / NOT_COMPLETE",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "runtime_replay": "NOT_RUN",
+  "source_queue": "docs/devs/loop527_batched_repair_release_gate27_queue.json",
+  "batch_json": "docs/devs/loop528_b1_canonical_candidate_recheck22_batch.json",
+  "batch_md": "docs/devs/loop528_b1_canonical_candidate_recheck22_batch.md",
+  "tool": "tools/build_canonical_candidate_recheck_batch.py",
+  "test": "tests/test_canonical_candidate_recheck_batch.py",
+  "summary": {
+    "source_queue_rows": 27,
+    "selected_rows": 22,
+    "verdict_required_rows": 22,
+    "runtime_replay_allowed_rows": 0,
+    "review_lane_counts": {
+      "B1_different_candidate_alignment_review": 12,
+      "B1_related_candidate_alignment_review": 10
+    },
+    "alignment_state_counts": {
+      "different_title_candidate_review": 12,
+      "related_title_surface_review": 10
+    },
+    "candidate_support_state_counts": {
+      "image_ocr_preservation_pending_official_url": 1,
+      "non_official_candidate_preservation_only": 8,
+      "official_detail_trace_missing_url_review": 1,
+      "official_url_candidate_support": 12
+    },
+    "search_gate_counts": {
+      "SEARCH_BLIND_BLOCKER": 9,
+      "SEARCH_EVIDENCE_MISSING": 6,
+      "SEARCH_OK": 1,
+      "SEARCH_RECOVERED_CONDITIONAL": 6
+    },
+    "primary_repair_lane_counts": {
+      "candidate_preservation_or_scrub_repair": 8,
+      "image_or_alias_anchor_contract_repair": 3,
+      "scope_or_nonwork_monotonicity_repair": 9,
+      "title_url_or_variant_trace_repair": 2
+    },
+    "validation_issue_count": 0
+  },
+  "dashboard": {
+    "url": "http://127.0.0.1:8080",
+    "health_ok": true,
+    "standalone": true,
+    "pid": 9320,
+    "progress_pct": 100.0,
+    "parallel_count": 16,
+    "batch_running": false,
+    "approval_boundary": "dashboard is progress visibility only"
+  },
+  "gate": {
+    "batch_generation": "GO",
+    "canonical_verdict": "NOT_RUN_AFTER_PACKET",
+    "runtime_replay": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK_VERDICT_AND_CONTRACT_TESTS",
+    "full375_collateral": "NO-GO",
+    "search_evidence": "REVIEW",
+    "dashboard": "GO_PROGRESS_VIEW_NOT_APPROVAL",
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "completion_gate": "full375 collateral GO + full_scan path"
+}

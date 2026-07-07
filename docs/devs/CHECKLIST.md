@@ -1,5 +1,20 @@
 # Development Checklist
 
+## 2026-07-07 Loop528 B1 canonical candidate recheck batch 체크
+
+- [x] 새 runtime replay를 실행하지 않았다.
+- [x] Loop527 B1 `22`건을 source-native/blind canonical verdict 입력 batch로 묶었다.
+- [x] `tools/build_canonical_candidate_recheck_batch.py`를 추가했다.
+- [x] `tests/test_canonical_candidate_recheck_batch.py` 계약 테스트를 추가했다.
+- [x] Batch selected rows는 `22`, verdict required rows는 `22`, runtime replay allowed rows는 `0`이다.
+- [x] Review lanes는 `B1_different_candidate_alignment_review 12`, `B1_related_candidate_alignment_review 10`이다.
+- [x] Validation issue는 `0`이다.
+- [x] Dashboard health는 `ok=true`, `standalone=true`, `pid=9320`, `parallel_count=16`, `batch_running=false`다.
+- [ ] Source-native/blind canonical verdict 전에는 B1 runtime replay를 열지 않는다.
+- [ ] Verdict 뒤에도 contract test와 full375 collateral 확인 전에는 approval을 열지 않는다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: batch generation `GO`, canonical verdict `NOT_RUN_AFTER_PACKET`, runtime replay `BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK_VERDICT_AND_CONTRACT_TESTS`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop527 batched repair release gate 체크
 
 - [x] 새 runtime replay를 실행하지 않았다.

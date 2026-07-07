@@ -1,5 +1,22 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop528 B1 canonical candidate recheck batch 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_528_REPORT_20260707.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop528_b1_canonical_candidate_recheck_state_20260707.json`.
+  - [x] Batch JSON/Markdown 기록 완료: `docs/devs/loop528_b1_canonical_candidate_recheck22_batch.json/.md`.
+  - [x] Tool 추가 완료: `tools/build_canonical_candidate_recheck_batch.py`.
+  - [x] Test 추가 완료: `tests/test_canonical_candidate_recheck_batch.py`.
+- 품질 경계:
+  - [x] 새 runtime replay는 실행하지 않았다.
+  - [x] B1 `22`건은 verdict 입력 packet으로만 생성했다.
+  - [x] `runtime_replay_allowed_rows`는 `0`이다.
+  - [x] Validation issue는 `0`이다.
+  - [ ] Batch 생성 결과를 canonical verdict, semantic approval, full_scan approval 근거로 쓰지 않는다.
+  - [ ] Dashboard 상태를 semantic/full_scan approval 근거로 쓰지 않는다.
+- Gate: batch generation `GO`, canonical verdict `NOT_RUN_AFTER_PACKET`, runtime replay `BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK_VERDICT_AND_CONTRACT_TESTS`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop527 batched repair release gate 품질 게이트
 
 - 근거:

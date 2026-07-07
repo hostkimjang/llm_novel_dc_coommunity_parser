@@ -1,5 +1,27 @@
 # Verification Results
 
+## 2026-07-07 Loop528 B1 canonical candidate recheck batch
+
+- 코드:
+  - `tools/build_canonical_candidate_recheck_batch.py`를 추가했다.
+  - Loop527 repair queue에서 `B1_different_candidate_alignment_review`와 `B1_related_candidate_alignment_review`만 골라 source-native/blind canonical verdict 입력 packet으로 만든다.
+  - packet 생성은 verdict나 approval이 아니며, `runtime_replay_allowed_rows=0`을 유지한다.
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_528_REPORT_20260707.md`
+  - `docs/devs/loop528_b1_canonical_candidate_recheck_state_20260707.json`
+  - `docs/devs/loop528_b1_canonical_candidate_recheck22_batch.json`
+  - `docs/devs/loop528_b1_canonical_candidate_recheck22_batch.md`
+- 검증:
+  - `python -m py_compile tools\build_canonical_candidate_recheck_batch.py tests\test_canonical_candidate_recheck_batch.py`: PASS.
+  - `python -m unittest tests.test_canonical_candidate_recheck_batch -v`: PASS, `3` tests.
+  - batch generation with `--fail-on-validation-issue`: PASS.
+  - generated batch JSON parse: PASS.
+- 결과:
+  - selected rows `22`, verdict required rows `22`, runtime replay allowed `0`, validation issue `0`.
+  - review lane counts: `B1_different_candidate_alignment_review 12`, `B1_related_candidate_alignment_review 10`.
+  - candidate support counts: `official_url_candidate_support 12`, `non_official_candidate_preservation_only 8`, `official_detail_trace_missing_url_review 1`, `image_ocr_preservation_pending_official_url 1`.
+- Gate: batch generation `GO`, canonical verdict `NOT_RUN_AFTER_PACKET`, runtime replay `BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK_VERDICT_AND_CONTRACT_TESTS`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop527 batched repair release gate
 
 - 코드:

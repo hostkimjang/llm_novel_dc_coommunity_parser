@@ -1,5 +1,15 @@
 # Development History
 
+## 2026-07-07 - Loop528 B1 canonical candidate recheck batch
+
+- 새 runtime replay는 실행하지 않았다.
+- Loop527에서 canonical recheck release gate로 막힌 B1 `22`건을 source-native/blind canonical verdict 입력 batch로 묶었다.
+- `tools/build_canonical_candidate_recheck_batch.py`와 `tests/test_canonical_candidate_recheck_batch.py`를 추가했다.
+- Batch 결과는 selected rows `22`, verdict required rows `22`, runtime replay allowed `0`, validation issue `0`이다.
+- Review lanes는 `B1_different_candidate_alignment_review 12`, `B1_related_candidate_alignment_review 10`이다.
+- Report는 `docs/devs/loop_reports/LOOP_528_REPORT_20260707.md`, state는 `docs/devs/loop528_b1_canonical_candidate_recheck_state_20260707.json`, batch는 `docs/devs/loop528_b1_canonical_candidate_recheck22_batch.json/.md`다.
+- Gate는 batch generation `GO`, canonical verdict `NOT_RUN_AFTER_PACKET`, runtime replay `BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK_VERDICT_AND_CONTRACT_TESTS`, full375 collateral `NO-GO`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop523 direct-title surface projection sync
 
 - `expert_main.py` final publication sync에 direct title surface bridge를 추가했다.

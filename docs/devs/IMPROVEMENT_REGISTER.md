@@ -1,5 +1,18 @@
 # Improvement Register
 
+## IMP-20260707-528 - B1 canonical candidate recheck batch
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| B1 canonical review packet | GO_PACKET | `loop528_b1_canonical_candidate_recheck22_batch` 생성 | source-native/blind verdict 작성 |
+| Runtime release boundary | GO_BLOCKED | `runtime_replay_allowed_rows=0` | verdict+contract test 전 replay 금지 |
+| Different candidate lane | OPEN_REVIEW | `B1_different_candidate_alignment_review 12` | wrong/current/expected canonical 판정 |
+| Related candidate lane | OPEN_REVIEW | `B1_related_candidate_alignment_review 10` | variant/alias/wrong-work 분리 |
+| Verification | GO_UNIT | py_compile PASS, focused unittest `3` PASS, batch generation PASS | broader runtime은 아직 금지 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: batch generation `GO`, canonical verdict `NOT_RUN_AFTER_PACKET`, runtime replay `BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK_VERDICT_AND_CONTRACT_TESTS`, full375 collateral `NO-GO`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-527 - batched repair release gate
 
 | 항목 | 상태 | 근거 | 다음 |
