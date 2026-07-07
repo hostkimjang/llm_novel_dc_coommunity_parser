@@ -1,0 +1,1814 @@
+{
+  "report_type": "ordinary_residual_restore_contract_plan",
+  "plan_id": "loop557_ordinary_restore_conflict_safe_contract_plan",
+  "generated_at": "2026-07-07T22:21:06",
+  "source_dispatch": "loop553_ordinary_residual64_dispatch",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "source_dispatch_rows": 64,
+    "restore_contract_plan_rows": 17,
+    "validation_issue_count": 0,
+    "contract_action_counts": {
+      "expected_title_restore_contract_case": 10,
+      "restore_target_runtime_mismatch_review_required": 7
+    },
+    "promotion_decision_status_counts": {
+      "candidate_only": 7,
+      "publish": 10
+    },
+    "evidence_grade_counts": {
+      "Medium": 3,
+      "Strong": 14
+    },
+    "runtime_expected_audit_status_counts": {
+      "FAIL_RUNTIME_PROMOTION_BLOCKED": 9,
+      "FAIL_SAFE_RESOLVED_TITLE_MISMATCH": 7,
+      "missing": 1
+    },
+    "search_condition_counts": {
+      "runtime_expected_audit_missing": 1,
+      "search_degraded_condition": 10,
+      "search_recovered_condition": 5,
+      "search_status_missing": 1
+    },
+    "official_support_ref_missing_rows": 1,
+    "search_review_required_before_approval_rows": 12,
+    "release_candidate_not_approval_rows": 10,
+    "publish_allowed_rows": 0,
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "rows": [
+    {
+      "post_id": 11660273,
+      "contract_origin": "ordinary_residual_shared_gate_restore",
+      "contract_batch_lane": "O1_shared_gate_restore_contract",
+      "source_dispatch_lane": "shared_gate_restore_contract_review",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "target_title": "마도서를 줍다 마법사가 되다",
+      "target_url": "https://novelpia.com/novel/414963",
+      "official_support_refs": [
+        "https://novelpia.com/novel/414963"
+      ],
+      "official_support_ref_count": 1,
+      "current_projection_candidate_title": "그리즐리 그랑",
+      "current_projection_candidate_url": "https://novel.munpia.com/128153",
+      "runtime_expected_audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+      "runtime_search_status": "SEARCH_DEGRADED",
+      "search_condition_tag": "search_degraded_condition",
+      "contract_action": "restore_target_runtime_mismatch_review_required",
+      "promotion_decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": true,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "ordinary_residual_supported_restore_contract_case",
+          "official_support_ref_present",
+          "restore_target_runtime_mismatch_review_required",
+          "runtime_safe_resolved_title_conflicts_with_restore_target"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11660273,
+        "candidate_title": "마도서를 줍다 마법사가 되다",
+        "candidate_url": "https://novelpia.com/novel/414963",
+        "source": "ordinary_residual_restore_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "ordinary_residual_source_native_verdict",
+            "shared_gate_restore_contract_review",
+            "official_support_ref"
+          ],
+          "competing_candidates": [
+            "그리즐리 그랑"
+          ],
+          "conflict_reason_codes": [
+            "runtime_safe_resolved_title_conflicts_with_restore_target"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "ordinary_residual_source_native_restore_contract",
+          "strength": "strong",
+          "source_path_or_snippet": "본문이 `마줍에 나오는 투명 우주 흡혈귀`라고 후보 작품의 약칭과 설정 대상을 직접 연결한다.",
+          "supports_publish": true,
+          "reason_code": "ordinary_residual_supported_restore_contract_case"
+        },
+        {
+          "kind": "official_support_ref",
+          "strength": "strong",
+          "source_path_or_snippet": "https://novelpia.com/novel/414963",
+          "supports_publish": true,
+          "reason_code": "official_support_ref_present"
+        },
+        {
+          "kind": "runtime_expected_title_mismatch",
+          "strength": "strong",
+          "source_path_or_snippet": "runtime actual title `그리즐리 그랑` conflicts with restore target `마도서를 줍다 마법사가 되다`",
+          "supports_publish": false,
+          "reason_code": "runtime_safe_resolved_title_conflicts_with_restore_target",
+          "actual_title": "그리즐리 그랑",
+          "actual_url": "https://novel.munpia.com/128153"
+        }
+      ],
+      "release_candidate_not_approval": false,
+      "restore_target_mismatch_review_required": true,
+      "search_review_required_before_approval": true,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": true,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "본문이 `마줍에 나오는 투명 우주 흡혈귀`라고 후보 작품의 약칭과 설정 대상을 직접 연결한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11660273",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11660273",
+        "https://novelpia.com/novel/414963",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11660273",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11660273",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11660273",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11660273",
+        "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11660273",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11660273",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11660273",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11660273",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11660273"
+      ]
+    },
+    {
+      "post_id": 11663511,
+      "contract_origin": "ordinary_residual_shared_gate_restore",
+      "contract_batch_lane": "O1_shared_gate_restore_contract",
+      "source_dispatch_lane": "shared_gate_restore_contract_review",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_short_title_and_episode_support_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "target_title": "부캐 키우는 황태자님",
+      "target_url": "https://novelpia.com/novel/330363",
+      "official_support_refs": [
+        "https://novelpia.com/novel/330363"
+      ],
+      "official_support_ref_count": 1,
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "runtime_expected_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "runtime_search_status": "SEARCH_DEGRADED",
+      "search_condition_tag": "search_degraded_condition",
+      "contract_action": "expected_title_restore_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "부캐 키우는 황태자님",
+        "official_url": "https://novelpia.com/novel/330363",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "ordinary_residual_supported_restore_contract_case",
+          "official_support_ref_present"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11663511,
+        "candidate_title": "부캐 키우는 황태자님",
+        "candidate_url": "https://novelpia.com/novel/330363",
+        "source": "ordinary_residual_restore_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "ordinary_residual_source_native_verdict",
+            "shared_gate_restore_contract_review",
+            "official_support_ref"
+          ],
+          "competing_candidates": [
+            ""
+          ],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "ordinary_residual_source_native_restore_contract",
+          "strength": "strong",
+          "source_path_or_snippet": "원문 제목 `부캐황태자99화`가 C1의 직접 약칭과 회차 맥락을 제공한다. 이미지가 character-only여도 텍스트 자체가 작품 소비 글이므로 after null은 safe-loss다.",
+          "supports_publish": true,
+          "reason_code": "ordinary_residual_supported_restore_contract_case"
+        },
+        {
+          "kind": "official_support_ref",
+          "strength": "strong",
+          "source_path_or_snippet": "https://novelpia.com/novel/330363",
+          "supports_publish": true,
+          "reason_code": "official_support_ref_present"
+        }
+      ],
+      "release_candidate_not_approval": true,
+      "restore_target_mismatch_review_required": false,
+      "search_review_required_before_approval": true,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": true,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "원문 제목 `부캐황태자99화`가 C1의 직접 약칭과 회차 맥락을 제공한다. 이미지가 character-only여도 텍스트 자체가 작품 소비 글이므로 after null은 safe-loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11663511",
+        "https://novelpia.com/novel/330363",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11663511",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11663511",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11663511"
+      ]
+    },
+    {
+      "post_id": 11663535,
+      "contract_origin": "ordinary_residual_shared_gate_restore",
+      "contract_batch_lane": "O1_shared_gate_restore_contract",
+      "source_dispatch_lane": "shared_gate_restore_contract_review",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "target_title": "퇴마록",
+      "target_url": "https://page.kakao.com/content/66470141",
+      "official_support_refs": [
+        "https://page.kakao.com/content/66470141"
+      ],
+      "official_support_ref_count": 1,
+      "current_projection_candidate_title": "퇴마록",
+      "current_projection_candidate_url": null,
+      "runtime_expected_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "runtime_search_status": "SEARCH_DEGRADED",
+      "search_condition_tag": "search_degraded_condition",
+      "contract_action": "expected_title_restore_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "퇴마록",
+        "official_url": "https://page.kakao.com/content/66470141",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "ordinary_residual_supported_restore_contract_case",
+          "official_support_ref_present"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11663535,
+        "candidate_title": "퇴마록",
+        "candidate_url": "https://page.kakao.com/content/66470141",
+        "source": "ordinary_residual_restore_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "ordinary_residual_source_native_verdict",
+            "shared_gate_restore_contract_review",
+            "official_support_ref"
+          ],
+          "competing_candidates": [
+            "퇴마록"
+          ],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "ordinary_residual_source_native_restore_contract",
+          "strength": "strong",
+          "source_path_or_snippet": "post title과 본문이 `퇴마록` 인물/능력 체계를 직접 열거한다.",
+          "supports_publish": true,
+          "reason_code": "ordinary_residual_supported_restore_contract_case"
+        },
+        {
+          "kind": "official_support_ref",
+          "strength": "strong",
+          "source_path_or_snippet": "https://page.kakao.com/content/66470141",
+          "supports_publish": true,
+          "reason_code": "official_support_ref_present"
+        }
+      ],
+      "release_candidate_not_approval": true,
+      "restore_target_mismatch_review_required": false,
+      "search_review_required_before_approval": true,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": true,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "post title과 본문이 `퇴마록` 인물/능력 체계를 직접 열거한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11663535",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11663535",
+        "https://page.kakao.com/content/66470141",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11663535",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11663535",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11663535",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11663535",
+        "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11663535",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11663535",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11663535",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11663535",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11663535"
+      ]
+    },
+    {
+      "post_id": 11668300,
+      "contract_origin": "ordinary_residual_shared_gate_restore",
+      "contract_batch_lane": "O1_shared_gate_restore_contract",
+      "source_dispatch_lane": "shared_gate_restore_contract_review",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_short_title_supports_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "target_title": "즉사기 들고 게임 속 으로",
+      "target_url": "https://series.naver.com/novel/detail.series?productNo=8050192",
+      "official_support_refs": [
+        "https://series.naver.com/novel/detail.series?productNo=8050192"
+      ],
+      "official_support_ref_count": 1,
+      "current_projection_candidate_title": "즉사기 인 줄 알았는데 지옥이었다",
+      "current_projection_candidate_url": null,
+      "runtime_expected_audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+      "runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "search_condition_tag": "search_recovered_condition",
+      "contract_action": "restore_target_runtime_mismatch_review_required",
+      "promotion_decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": true,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "ordinary_residual_supported_restore_contract_case",
+          "official_support_ref_present",
+          "restore_target_runtime_mismatch_review_required",
+          "runtime_safe_resolved_title_conflicts_with_restore_target"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11668300,
+        "candidate_title": "즉사기 들고 게임 속 으로",
+        "candidate_url": "https://series.naver.com/novel/detail.series?productNo=8050192",
+        "source": "ordinary_residual_restore_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "ordinary_residual_source_native_verdict",
+            "shared_gate_restore_contract_review",
+            "official_support_ref"
+          ],
+          "competing_candidates": [
+            "즉사기 인 줄 알았는데 지옥이었다"
+          ],
+          "conflict_reason_codes": [
+            "runtime_safe_resolved_title_conflicts_with_restore_target"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "ordinary_residual_source_native_restore_contract",
+          "strength": "strong",
+          "source_path_or_snippet": "원문 제목 `즉사기`와 `보러간다`가 C1의 직접 약칭과 독서 의사를 함께 제공한다. 캐릭터 이미지가 약해도 텍스트 앵커가 충분하므로 after null은 회귀다.",
+          "supports_publish": true,
+          "reason_code": "ordinary_residual_supported_restore_contract_case"
+        },
+        {
+          "kind": "official_support_ref",
+          "strength": "strong",
+          "source_path_or_snippet": "https://series.naver.com/novel/detail.series?productNo=8050192",
+          "supports_publish": true,
+          "reason_code": "official_support_ref_present"
+        },
+        {
+          "kind": "runtime_expected_title_mismatch",
+          "strength": "strong",
+          "source_path_or_snippet": "runtime actual title `즉사기 인 줄 알았는데 지옥이었다` conflicts with restore target `즉사기 들고 게임 속 으로`",
+          "supports_publish": false,
+          "reason_code": "runtime_safe_resolved_title_conflicts_with_restore_target",
+          "actual_title": "즉사기 인 줄 알았는데 지옥이었다",
+          "actual_url": null
+        }
+      ],
+      "release_candidate_not_approval": false,
+      "restore_target_mismatch_review_required": true,
+      "search_review_required_before_approval": false,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": true,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "원문 제목 `즉사기`와 `보러간다`가 C1의 직접 약칭과 독서 의사를 함께 제공한다. 캐릭터 이미지가 약해도 텍스트 앵커가 충분하므로 after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11668300",
+        "https://series.naver.com/novel/detail.series?productNo=8050192",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11668300",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11668300",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11668300"
+      ]
+    },
+    {
+      "post_id": 11673077,
+      "contract_origin": "ordinary_residual_shared_gate_restore",
+      "contract_batch_lane": "O1_shared_gate_restore_contract",
+      "source_dispatch_lane": "shared_gate_restore_contract_review",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_title_surface_supports_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "target_title": "판초우의의 마법사",
+      "target_url": "https://novel.munpia.com/530500",
+      "official_support_refs": [
+        "https://novel.munpia.com/530500"
+      ],
+      "official_support_ref_count": 1,
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "runtime_expected_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "runtime_search_status": "SEARCH_DEGRADED",
+      "search_condition_tag": "search_degraded_condition",
+      "contract_action": "expected_title_restore_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "판초우의의 마법사",
+        "official_url": "https://novel.munpia.com/530500",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "ordinary_residual_supported_restore_contract_case",
+          "official_support_ref_present"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11673077,
+        "candidate_title": "판초우의의 마법사",
+        "candidate_url": "https://novel.munpia.com/530500",
+        "source": "ordinary_residual_restore_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "ordinary_residual_source_native_verdict",
+            "shared_gate_restore_contract_review",
+            "official_support_ref"
+          ],
+          "competing_candidates": [
+            ""
+          ],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "ordinary_residual_source_native_restore_contract",
+          "strength": "strong",
+          "source_path_or_snippet": "원문 제목과 본문이 `판초우의`를 직접 평가한다. C1 title loss는 수리 대상이다.",
+          "supports_publish": true,
+          "reason_code": "ordinary_residual_supported_restore_contract_case"
+        },
+        {
+          "kind": "official_support_ref",
+          "strength": "strong",
+          "source_path_or_snippet": "https://novel.munpia.com/530500",
+          "supports_publish": true,
+          "reason_code": "official_support_ref_present"
+        }
+      ],
+      "release_candidate_not_approval": true,
+      "restore_target_mismatch_review_required": false,
+      "search_review_required_before_approval": true,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": true,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "원문 제목과 본문이 `판초우의`를 직접 평가한다. C1 title loss는 수리 대상이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json#post_id=11673077",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11673077",
+        "https://novel.munpia.com/530500",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11673077",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11673077",
+        "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11673077",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11673077",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11673077",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11673077",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11673077"
+      ]
+    },
+    {
+      "post_id": 11673102,
+      "contract_origin": "ordinary_residual_shared_gate_restore",
+      "contract_batch_lane": "O1_shared_gate_restore_contract",
+      "source_dispatch_lane": "shared_gate_restore_contract_review",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "target_title": "갤질하는 천재 의사",
+      "target_url": "https://mm.munpia.com/?menu=novel&action=view&id=556720&entry_id=next&entry_seq=-10860205",
+      "official_support_refs": [
+        "https://mm.munpia.com/?menu=novel&action=view&id=556720&entry_id=next&entry_seq=-10860205"
+      ],
+      "official_support_ref_count": 1,
+      "current_projection_candidate_title": "댓글 보는 천재 의사",
+      "current_projection_candidate_url": "https://novelpia.com/novel/372180",
+      "runtime_expected_audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+      "runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "search_condition_tag": "search_recovered_condition",
+      "contract_action": "restore_target_runtime_mismatch_review_required",
+      "promotion_decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": true,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "ordinary_residual_supported_restore_contract_case",
+          "official_support_ref_present",
+          "restore_target_runtime_mismatch_review_required",
+          "runtime_safe_resolved_title_conflicts_with_restore_target"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11673102,
+        "candidate_title": "갤질하는 천재 의사",
+        "candidate_url": "https://mm.munpia.com/?menu=novel&action=view&id=556720&entry_id=next&entry_seq=-10860205",
+        "source": "ordinary_residual_restore_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "ordinary_residual_source_native_verdict",
+            "shared_gate_restore_contract_review",
+            "official_support_ref"
+          ],
+          "competing_candidates": [
+            "댓글 보는 천재 의사"
+          ],
+          "conflict_reason_codes": [
+            "runtime_safe_resolved_title_conflicts_with_restore_target"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "ordinary_residual_source_native_restore_contract",
+          "strength": "strong",
+          "source_path_or_snippet": "본문이 랭킹 작품 목록에 `갤질의사`를 직접 포함하므로 후보 title의 약칭이 source-native로 지지된다.",
+          "supports_publish": true,
+          "reason_code": "ordinary_residual_supported_restore_contract_case"
+        },
+        {
+          "kind": "official_support_ref",
+          "strength": "strong",
+          "source_path_or_snippet": "https://mm.munpia.com/?menu=novel&action=view&id=556720&entry_id=next&entry_seq=-10860205",
+          "supports_publish": true,
+          "reason_code": "official_support_ref_present"
+        },
+        {
+          "kind": "runtime_expected_title_mismatch",
+          "strength": "strong",
+          "source_path_or_snippet": "runtime actual title `댓글 보는 천재 의사` conflicts with restore target `갤질하는 천재 의사`",
+          "supports_publish": false,
+          "reason_code": "runtime_safe_resolved_title_conflicts_with_restore_target",
+          "actual_title": "댓글 보는 천재 의사",
+          "actual_url": "https://novelpia.com/novel/372180"
+        }
+      ],
+      "release_candidate_not_approval": false,
+      "restore_target_mismatch_review_required": true,
+      "search_review_required_before_approval": false,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": true,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "본문이 랭킹 작품 목록에 `갤질의사`를 직접 포함하므로 후보 title의 약칭이 source-native로 지지된다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11673102",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11673102",
+        "https://mm.munpia.com/?menu=novel&action=view&id=556720&entry_id=next&entry_seq=-10860205",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11673102",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11673102",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11673102",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11673102",
+        "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11673102",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11673102",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11673102",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11673102",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11673102"
+      ]
+    },
+    {
+      "post_id": 11677915,
+      "contract_origin": "ordinary_residual_shared_gate_restore",
+      "contract_batch_lane": "O1_shared_gate_restore_contract",
+      "source_dispatch_lane": "shared_gate_restore_contract_review",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "comment_bridge_supports_safe_title_lost_to_null",
+      "evidence_grade": "Medium",
+      "target_title": "전지적 독자 시점",
+      "target_url": "https://novel.munpia.com/104753",
+      "official_support_refs": [
+        "https://novel.munpia.com/104753"
+      ],
+      "official_support_ref_count": 1,
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "runtime_expected_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "runtime_search_status": "SEARCH_DEGRADED",
+      "search_condition_tag": "search_degraded_condition",
+      "contract_action": "expected_title_restore_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "전지적 독자 시점",
+        "official_url": "https://novel.munpia.com/104753",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "ordinary_residual_supported_restore_contract_case",
+          "official_support_ref_present"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11677915,
+        "candidate_title": "전지적 독자 시점",
+        "candidate_url": "https://novel.munpia.com/104753",
+        "source": "ordinary_residual_restore_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "medium",
+          "direct_bridge_sources": [
+            "ordinary_residual_source_native_verdict",
+            "shared_gate_restore_contract_review",
+            "official_support_ref"
+          ],
+          "competing_candidates": [
+            ""
+          ],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "ordinary_residual_source_native_restore_contract",
+          "strength": "medium",
+          "source_path_or_snippet": "댓글이 `전독시`를 직접 언급하며 최애작 비난 맥락의 대상 후보로 source-native 지지가 있다.",
+          "supports_publish": true,
+          "reason_code": "ordinary_residual_supported_restore_contract_case"
+        },
+        {
+          "kind": "official_support_ref",
+          "strength": "strong",
+          "source_path_or_snippet": "https://novel.munpia.com/104753",
+          "supports_publish": true,
+          "reason_code": "official_support_ref_present"
+        }
+      ],
+      "release_candidate_not_approval": true,
+      "restore_target_mismatch_review_required": false,
+      "search_review_required_before_approval": true,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": true,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "댓글이 `전독시`를 직접 언급하며 최애작 비난 맥락의 대상 후보로 source-native 지지가 있다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11677915",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11677915",
+        "https://novel.munpia.com/104753",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11677915",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11677915",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11677915",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11677915",
+        "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11677915",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11677915",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11677915",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11677915",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11677915"
+      ]
+    },
+    {
+      "post_id": 11681172,
+      "contract_origin": "ordinary_residual_shared_gate_restore",
+      "contract_batch_lane": "O1_shared_gate_restore_contract",
+      "source_dispatch_lane": "shared_gate_restore_contract_review",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "target_title": "헌터갤러리의 국가권력급 기계공주",
+      "target_url": null,
+      "official_support_refs": [],
+      "official_support_ref_count": 0,
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "runtime_expected_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "runtime_search_status": null,
+      "search_condition_tag": "search_status_missing",
+      "contract_action": "expected_title_restore_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "헌터갤러리의 국가권력급 기계공주",
+        "official_url": null,
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "ordinary_residual_supported_restore_contract_case"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11681172,
+        "candidate_title": "헌터갤러리의 국가권력급 기계공주",
+        "candidate_url": "",
+        "source": "ordinary_residual_restore_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "ordinary_residual_source_native_verdict",
+            "shared_gate_restore_contract_review"
+          ],
+          "competing_candidates": [
+            ""
+          ],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "ordinary_residual_source_native_restore_contract",
+          "strength": "strong",
+          "source_path_or_snippet": "post title의 `기계공주맛`이 후보 작품의 직접 약칭/비교 표면이고 복원 근거가 충분하다.",
+          "supports_publish": true,
+          "reason_code": "ordinary_residual_supported_restore_contract_case"
+        }
+      ],
+      "release_candidate_not_approval": true,
+      "restore_target_mismatch_review_required": false,
+      "search_review_required_before_approval": true,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": true,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "post title의 `기계공주맛`이 후보 작품의 직접 약칭/비교 표면이고 복원 근거가 충분하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11681172",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11681172",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11681172",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11681172",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11681172",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11681172",
+        "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11681172",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11681172",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11681172",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11681172",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11681172"
+      ]
+    },
+    {
+      "post_id": 11689292,
+      "contract_origin": "ordinary_residual_shared_gate_restore",
+      "contract_batch_lane": "O1_shared_gate_restore_contract",
+      "source_dispatch_lane": "shared_gate_restore_contract_review",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_title_and_cover_ocr_support_safe_title",
+      "evidence_grade": "Strong",
+      "target_title": "최악의 파트너",
+      "target_url": "https://novelpia.com/novel/40854",
+      "official_support_refs": [
+        "https://novelpia.com/novel/40854"
+      ],
+      "official_support_ref_count": 1,
+      "current_projection_candidate_title": "[원신] 최악의 파트너",
+      "current_projection_candidate_url": null,
+      "runtime_expected_audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+      "runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "search_condition_tag": "search_recovered_condition",
+      "contract_action": "restore_target_runtime_mismatch_review_required",
+      "promotion_decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": true,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "ordinary_residual_supported_restore_contract_case",
+          "official_support_ref_present",
+          "restore_target_runtime_mismatch_review_required",
+          "runtime_safe_resolved_title_conflicts_with_restore_target"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11689292,
+        "candidate_title": "최악의 파트너",
+        "candidate_url": "https://novelpia.com/novel/40854",
+        "source": "ordinary_residual_restore_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "ordinary_residual_source_native_verdict",
+            "shared_gate_restore_contract_review",
+            "official_support_ref"
+          ],
+          "competing_candidates": [
+            "[원신] 최악의 파트너"
+          ],
+          "conflict_reason_codes": [
+            "runtime_safe_resolved_title_conflicts_with_restore_target"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "ordinary_residual_source_native_restore_contract",
+          "strength": "strong",
+          "source_path_or_snippet": "원문 제목이 `최악의 파트너 표지`를 직접 말하고 이미지 OCR도 같은 제목을 읽는다. 댓글도 패러디 작품 맥락으로 이어지므로 after null은 회귀다.",
+          "supports_publish": true,
+          "reason_code": "ordinary_residual_supported_restore_contract_case"
+        },
+        {
+          "kind": "official_support_ref",
+          "strength": "strong",
+          "source_path_or_snippet": "https://novelpia.com/novel/40854",
+          "supports_publish": true,
+          "reason_code": "official_support_ref_present"
+        },
+        {
+          "kind": "runtime_expected_title_mismatch",
+          "strength": "strong",
+          "source_path_or_snippet": "runtime actual title `[원신] 최악의 파트너` conflicts with restore target `최악의 파트너`",
+          "supports_publish": false,
+          "reason_code": "runtime_safe_resolved_title_conflicts_with_restore_target",
+          "actual_title": "[원신] 최악의 파트너",
+          "actual_url": null
+        }
+      ],
+      "release_candidate_not_approval": false,
+      "restore_target_mismatch_review_required": true,
+      "search_review_required_before_approval": false,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": true,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "원문 제목이 `최악의 파트너 표지`를 직접 말하고 이미지 OCR도 같은 제목을 읽는다. 댓글도 패러디 작품 맥락으로 이어지므로 after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11689292",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11689292",
+        "https://novelpia.com/novel/40854",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11689292",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11689292",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11689292"
+      ]
+    },
+    {
+      "post_id": 11694019,
+      "contract_origin": "ordinary_residual_shared_gate_restore",
+      "contract_batch_lane": "O1_shared_gate_restore_contract",
+      "source_dispatch_lane": "shared_gate_restore_contract_review",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "target_title": "혼후 순결",
+      "target_url": "https://page.kakao.com/content/61863349",
+      "official_support_refs": [
+        "https://page.kakao.com/content/61863349"
+      ],
+      "official_support_ref_count": 1,
+      "current_projection_candidate_title": "이세계에서 사이비로 살아남기",
+      "current_projection_candidate_url": null,
+      "runtime_expected_audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+      "runtime_search_status": "SEARCH_DEGRADED",
+      "search_condition_tag": "search_degraded_condition",
+      "contract_action": "restore_target_runtime_mismatch_review_required",
+      "promotion_decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": true,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "ordinary_residual_supported_restore_contract_case",
+          "official_support_ref_present",
+          "restore_target_runtime_mismatch_review_required",
+          "runtime_safe_resolved_title_conflicts_with_restore_target"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11694019,
+        "candidate_title": "혼후 순결",
+        "candidate_url": "https://page.kakao.com/content/61863349",
+        "source": "ordinary_residual_restore_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "ordinary_residual_source_native_verdict",
+            "shared_gate_restore_contract_review",
+            "official_support_ref"
+          ],
+          "competing_candidates": [
+            "이세계에서 사이비로 살아남기"
+          ],
+          "conflict_reason_codes": [
+            "runtime_safe_resolved_title_conflicts_with_restore_target"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "ordinary_residual_source_native_restore_contract",
+          "strength": "strong",
+          "source_path_or_snippet": "post title과 본문이 `혼후순결` 설정/장면을 직접 논의한다.",
+          "supports_publish": true,
+          "reason_code": "ordinary_residual_supported_restore_contract_case"
+        },
+        {
+          "kind": "official_support_ref",
+          "strength": "strong",
+          "source_path_or_snippet": "https://page.kakao.com/content/61863349",
+          "supports_publish": true,
+          "reason_code": "official_support_ref_present"
+        },
+        {
+          "kind": "runtime_expected_title_mismatch",
+          "strength": "strong",
+          "source_path_or_snippet": "runtime actual title `이세계에서 사이비로 살아남기` conflicts with restore target `혼후 순결`",
+          "supports_publish": false,
+          "reason_code": "runtime_safe_resolved_title_conflicts_with_restore_target",
+          "actual_title": "이세계에서 사이비로 살아남기",
+          "actual_url": null
+        }
+      ],
+      "release_candidate_not_approval": false,
+      "restore_target_mismatch_review_required": true,
+      "search_review_required_before_approval": true,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": true,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "post title과 본문이 `혼후순결` 설정/장면을 직접 논의한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11694019",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11694019",
+        "https://page.kakao.com/content/61863349",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11694019",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11694019",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11694019",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11694019",
+        "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11694019",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11694019",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11694019",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11694019",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11694019"
+      ]
+    },
+    {
+      "post_id": 11694063,
+      "contract_origin": "ordinary_residual_shared_gate_restore",
+      "contract_batch_lane": "O1_shared_gate_restore_contract",
+      "source_dispatch_lane": "shared_gate_restore_contract_review",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_character_and_title_surface_support_safe_title",
+      "evidence_grade": "Strong",
+      "target_title": "빙의한 신의 아이, 엘리시아",
+      "target_url": "https://novelpia.com/novel/57074",
+      "official_support_refs": [
+        "https://novelpia.com/novel/57074"
+      ],
+      "official_support_ref_count": 1,
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "runtime_expected_audit_status": null,
+      "runtime_search_status": null,
+      "search_condition_tag": "runtime_expected_audit_missing",
+      "contract_action": "expected_title_restore_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "빙의한 신의 아이, 엘리시아",
+        "official_url": "https://novelpia.com/novel/57074",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "ordinary_residual_supported_restore_contract_case",
+          "official_support_ref_present"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11694063,
+        "candidate_title": "빙의한 신의 아이, 엘리시아",
+        "candidate_url": "https://novelpia.com/novel/57074",
+        "source": "ordinary_residual_restore_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "ordinary_residual_source_native_verdict",
+            "shared_gate_restore_contract_review",
+            "official_support_ref"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "ordinary_residual_source_native_restore_contract",
+          "strength": "strong",
+          "source_path_or_snippet": "원문은 엘리시아/아레스/엘리 정실 맥락을 직접 말하고 C1 title이 핵심 캐릭터명을 포함한다. after null은 회귀다.",
+          "supports_publish": true,
+          "reason_code": "ordinary_residual_supported_restore_contract_case"
+        },
+        {
+          "kind": "official_support_ref",
+          "strength": "strong",
+          "source_path_or_snippet": "https://novelpia.com/novel/57074",
+          "supports_publish": true,
+          "reason_code": "official_support_ref_present"
+        }
+      ],
+      "release_candidate_not_approval": true,
+      "restore_target_mismatch_review_required": false,
+      "search_review_required_before_approval": true,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": true,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "원문은 엘리시아/아레스/엘리 정실 맥락을 직접 말하고 C1 title이 핵심 캐릭터명을 포함한다. after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11694063",
+        "https://novelpia.com/novel/57074",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11694063",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11694063",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11694063"
+      ]
+    },
+    {
+      "post_id": 11694068,
+      "contract_origin": "ordinary_residual_shared_gate_restore",
+      "contract_batch_lane": "O1_shared_gate_restore_contract",
+      "source_dispatch_lane": "shared_gate_restore_contract_review",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_title_and_quote_context_support_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "target_title": "트와일라잇",
+      "target_url": "https://ridibooks.com/books/593000441",
+      "official_support_refs": [
+        "https://ridibooks.com/books/593000441"
+      ],
+      "official_support_ref_count": 1,
+      "current_projection_candidate_title": "트와일라잇 시리즈",
+      "current_projection_candidate_url": null,
+      "runtime_expected_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "runtime_search_status": "SEARCH_DEGRADED",
+      "search_condition_tag": "search_degraded_condition",
+      "contract_action": "expected_title_restore_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "트와일라잇",
+        "official_url": "https://ridibooks.com/books/593000441",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "ordinary_residual_supported_restore_contract_case",
+          "official_support_ref_present"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11694068,
+        "candidate_title": "트와일라잇",
+        "candidate_url": "https://ridibooks.com/books/593000441",
+        "source": "ordinary_residual_restore_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "ordinary_residual_source_native_verdict",
+            "shared_gate_restore_contract_review",
+            "official_support_ref"
+          ],
+          "competing_candidates": [
+            "트와일라잇 시리즈"
+          ],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "ordinary_residual_source_native_restore_contract",
+          "strength": "strong",
+          "source_path_or_snippet": "원문 제목과 댓글 인용이 `트와일라잇`을 직접 다룬다. C1 title loss는 수리 대상이다.",
+          "supports_publish": true,
+          "reason_code": "ordinary_residual_supported_restore_contract_case"
+        },
+        {
+          "kind": "official_support_ref",
+          "strength": "strong",
+          "source_path_or_snippet": "https://ridibooks.com/books/593000441",
+          "supports_publish": true,
+          "reason_code": "official_support_ref_present"
+        }
+      ],
+      "release_candidate_not_approval": true,
+      "restore_target_mismatch_review_required": false,
+      "search_review_required_before_approval": true,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": true,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "원문 제목과 댓글 인용이 `트와일라잇`을 직접 다룬다. C1 title loss는 수리 대상이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json#post_id=11694068",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11694068",
+        "https://ridibooks.com/books/593000441",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11694068",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11694068",
+        "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11694068",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11694068",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11694068",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11694068",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11694068"
+      ]
+    },
+    {
+      "post_id": 11702094,
+      "contract_origin": "ordinary_residual_shared_gate_restore",
+      "contract_batch_lane": "O1_shared_gate_restore_contract",
+      "source_dispatch_lane": "shared_gate_restore_contract_review",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_short_title_supports_safe_title_lost_to_null",
+      "evidence_grade": "Medium",
+      "target_title": "#더블오",
+      "target_url": "https://novelpia.com/novel/417074",
+      "official_support_refs": [
+        "https://novelpia.com/novel/417074"
+      ],
+      "official_support_ref_count": 1,
+      "current_projection_candidate_title": "댓글창이 내 흑막 연기를 너무 좋아한다",
+      "current_projection_candidate_url": null,
+      "runtime_expected_audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+      "runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "search_condition_tag": "search_recovered_condition",
+      "contract_action": "restore_target_runtime_mismatch_review_required",
+      "promotion_decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": true,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "ordinary_residual_supported_restore_contract_case",
+          "official_support_ref_present",
+          "restore_target_runtime_mismatch_review_required",
+          "runtime_safe_resolved_title_conflicts_with_restore_target"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11702094,
+        "candidate_title": "#더블오",
+        "candidate_url": "https://novelpia.com/novel/417074",
+        "source": "ordinary_residual_restore_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "medium",
+          "direct_bridge_sources": [
+            "ordinary_residual_source_native_verdict",
+            "shared_gate_restore_contract_review",
+            "official_support_ref"
+          ],
+          "competing_candidates": [
+            "댓글창이 내 흑막 연기를 너무 좋아한다"
+          ],
+          "conflict_reason_codes": [
+            "runtime_safe_resolved_title_conflicts_with_restore_target"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "ordinary_residual_source_native_restore_contract",
+          "strength": "medium",
+          "source_path_or_snippet": "`더블오` 정체 공개와 댓글창 반응이 후보 title을 직접 말하며 후보가 단일이다.",
+          "supports_publish": true,
+          "reason_code": "ordinary_residual_supported_restore_contract_case"
+        },
+        {
+          "kind": "official_support_ref",
+          "strength": "strong",
+          "source_path_or_snippet": "https://novelpia.com/novel/417074",
+          "supports_publish": true,
+          "reason_code": "official_support_ref_present"
+        },
+        {
+          "kind": "runtime_expected_title_mismatch",
+          "strength": "strong",
+          "source_path_or_snippet": "runtime actual title `댓글창이 내 흑막 연기를 너무 좋아한다` conflicts with restore target `#더블오`",
+          "supports_publish": false,
+          "reason_code": "runtime_safe_resolved_title_conflicts_with_restore_target",
+          "actual_title": "댓글창이 내 흑막 연기를 너무 좋아한다",
+          "actual_url": null
+        }
+      ],
+      "release_candidate_not_approval": false,
+      "restore_target_mismatch_review_required": true,
+      "search_review_required_before_approval": false,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": true,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "`더블오` 정체 공개와 댓글창 반응이 후보 title을 직접 말하며 후보가 단일이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11702094",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11702094",
+        "https://novelpia.com/novel/417074",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11702094",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11702094",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11702094",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11702094",
+        "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11702094",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11702094",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11702094",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11702094",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11702094"
+      ]
+    },
+    {
+      "post_id": 11705230,
+      "contract_origin": "ordinary_residual_shared_gate_restore",
+      "contract_batch_lane": "O1_shared_gate_restore_contract",
+      "source_dispatch_lane": "shared_gate_restore_contract_review",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_title_surface_and_setting_discussion_support_safe_title",
+      "evidence_grade": "Strong",
+      "target_title": "월야환담",
+      "target_url": "https://ridibooks.com/books/3685002646",
+      "official_support_refs": [
+        "https://ridibooks.com/books/3685002646"
+      ],
+      "official_support_ref_count": 1,
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "runtime_expected_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "search_condition_tag": "search_recovered_condition",
+      "contract_action": "expected_title_restore_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "월야환담",
+        "official_url": "https://ridibooks.com/books/3685002646",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "ordinary_residual_supported_restore_contract_case",
+          "official_support_ref_present"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11705230,
+        "candidate_title": "월야환담",
+        "candidate_url": "https://ridibooks.com/books/3685002646",
+        "source": "ordinary_residual_restore_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "ordinary_residual_source_native_verdict",
+            "shared_gate_restore_contract_review",
+            "official_support_ref"
+          ],
+          "competing_candidates": [
+            ""
+          ],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "ordinary_residual_source_native_restore_contract",
+          "strength": "strong",
+          "source_path_or_snippet": "원문이 `월야환담`을 직접 말하고 CCTV/스마트폰/마약 설정 같은 시대상 비교를 이어간다. after null은 회귀다.",
+          "supports_publish": true,
+          "reason_code": "ordinary_residual_supported_restore_contract_case"
+        },
+        {
+          "kind": "official_support_ref",
+          "strength": "strong",
+          "source_path_or_snippet": "https://ridibooks.com/books/3685002646",
+          "supports_publish": true,
+          "reason_code": "official_support_ref_present"
+        }
+      ],
+      "release_candidate_not_approval": true,
+      "restore_target_mismatch_review_required": false,
+      "search_review_required_before_approval": false,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": true,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "원문이 `월야환담`을 직접 말하고 CCTV/스마트폰/마약 설정 같은 시대상 비교를 이어간다. after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11705230",
+        "https://ridibooks.com/books/3685002646",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11705230",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11705230",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11705230"
+      ]
+    },
+    {
+      "post_id": 11705251,
+      "contract_origin": "ordinary_residual_shared_gate_restore",
+      "contract_batch_lane": "O1_shared_gate_restore_contract",
+      "source_dispatch_lane": "shared_gate_restore_contract_review",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_series_title_and_character_context_support_safe_title",
+      "evidence_grade": "Strong",
+      "target_title": "월야환담 창월야",
+      "target_url": "https://ridibooks.com/books/3685002646",
+      "official_support_refs": [
+        "https://ridibooks.com/books/3685002646"
+      ],
+      "official_support_ref_count": 1,
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "runtime_expected_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "runtime_search_status": "SEARCH_DEGRADED",
+      "search_condition_tag": "search_degraded_condition",
+      "contract_action": "expected_title_restore_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "월야환담 창월야",
+        "official_url": "https://ridibooks.com/books/3685002646",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "ordinary_residual_supported_restore_contract_case",
+          "official_support_ref_present"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11705251,
+        "candidate_title": "월야환담 창월야",
+        "candidate_url": "https://ridibooks.com/books/3685002646",
+        "source": "ordinary_residual_restore_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "ordinary_residual_source_native_verdict",
+            "shared_gate_restore_contract_review",
+            "official_support_ref"
+          ],
+          "competing_candidates": [
+            ""
+          ],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "ordinary_residual_source_native_restore_contract",
+          "strength": "strong",
+          "source_path_or_snippet": "원문 제목 `창월야 기준`과 한세건/진마/유다/팬텀/아르곤 맥락이 C1을 직접 지지한다. after null은 회귀다.",
+          "supports_publish": true,
+          "reason_code": "ordinary_residual_supported_restore_contract_case"
+        },
+        {
+          "kind": "official_support_ref",
+          "strength": "strong",
+          "source_path_or_snippet": "https://ridibooks.com/books/3685002646",
+          "supports_publish": true,
+          "reason_code": "official_support_ref_present"
+        }
+      ],
+      "release_candidate_not_approval": true,
+      "restore_target_mismatch_review_required": false,
+      "search_review_required_before_approval": true,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": true,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "원문 제목 `창월야 기준`과 한세건/진마/유다/팬텀/아르곤 맥락이 C1을 직접 지지한다. after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11705251",
+        "https://ridibooks.com/books/3685002646",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11705251",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11705251",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11705251"
+      ]
+    },
+    {
+      "post_id": 11706842,
+      "contract_origin": "ordinary_residual_shared_gate_restore",
+      "contract_batch_lane": "O1_shared_gate_restore_contract",
+      "source_dispatch_lane": "shared_gate_restore_contract_review",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_abbreviation_and_completion_status_support_safe_title",
+      "evidence_grade": "Medium",
+      "target_title": "삼국지 마대 가 되었다",
+      "target_url": "https://novel.munpia.com/374118",
+      "official_support_refs": [
+        "https://novel.munpia.com/374118"
+      ],
+      "official_support_ref_count": 1,
+      "current_projection_candidate_title": "대마법사였던것은 다시 대마법사를 꿈꾼다",
+      "current_projection_candidate_url": "https://novelpia.com/novel/998",
+      "runtime_expected_audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+      "runtime_search_status": "SEARCH_DEGRADED",
+      "search_condition_tag": "search_degraded_condition",
+      "contract_action": "restore_target_runtime_mismatch_review_required",
+      "promotion_decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": true,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "ordinary_residual_supported_restore_contract_case",
+          "official_support_ref_present",
+          "restore_target_runtime_mismatch_review_required",
+          "runtime_safe_resolved_title_conflicts_with_restore_target"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11706842,
+        "candidate_title": "삼국지 마대 가 되었다",
+        "candidate_url": "https://novel.munpia.com/374118",
+        "source": "ordinary_residual_restore_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "medium",
+          "direct_bridge_sources": [
+            "ordinary_residual_source_native_verdict",
+            "shared_gate_restore_contract_review",
+            "official_support_ref"
+          ],
+          "competing_candidates": [
+            "대마법사였던것은 다시 대마법사를 꿈꾼다"
+          ],
+          "conflict_reason_codes": [
+            "runtime_safe_resolved_title_conflicts_with_restore_target"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "ordinary_residual_source_native_restore_contract",
+          "strength": "medium",
+          "source_path_or_snippet": "`대마대`와 댓글의 `초창기작품`, 완결 여부 질문이 C1 약칭/연재 상태 맥락을 지지한다. 표면은 축약형이라 Medium이지만 after null은 회귀로 본다.",
+          "supports_publish": true,
+          "reason_code": "ordinary_residual_supported_restore_contract_case"
+        },
+        {
+          "kind": "official_support_ref",
+          "strength": "strong",
+          "source_path_or_snippet": "https://novel.munpia.com/374118",
+          "supports_publish": true,
+          "reason_code": "official_support_ref_present"
+        },
+        {
+          "kind": "runtime_expected_title_mismatch",
+          "strength": "strong",
+          "source_path_or_snippet": "runtime actual title `대마법사였던것은 다시 대마법사를 꿈꾼다` conflicts with restore target `삼국지 마대 가 되었다`",
+          "supports_publish": false,
+          "reason_code": "runtime_safe_resolved_title_conflicts_with_restore_target",
+          "actual_title": "대마법사였던것은 다시 대마법사를 꿈꾼다",
+          "actual_url": "https://novelpia.com/novel/998"
+        }
+      ],
+      "release_candidate_not_approval": false,
+      "restore_target_mismatch_review_required": true,
+      "search_review_required_before_approval": true,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": true,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "`대마대`와 댓글의 `초창기작품`, 완결 여부 질문이 C1 약칭/연재 상태 맥락을 지지한다. 표면은 축약형이라 Medium이지만 after null은 회귀로 본다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11706842",
+        "https://novel.munpia.com/374118",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11706842",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11706842",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11706842"
+      ]
+    },
+    {
+      "post_id": 11718110,
+      "contract_origin": "ordinary_residual_shared_gate_restore",
+      "contract_batch_lane": "O1_shared_gate_restore_contract",
+      "source_dispatch_lane": "shared_gate_restore_contract_review",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "target_title": "지구온라인에서 쌀먹합니다",
+      "target_url": "https://novelpia.com/novel/395678",
+      "official_support_refs": [
+        "https://novelpia.com/novel/395678"
+      ],
+      "official_support_ref_count": 1,
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "runtime_expected_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "runtime_search_status": "SEARCH_DEGRADED",
+      "search_condition_tag": "search_degraded_condition",
+      "contract_action": "expected_title_restore_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "지구온라인에서 쌀먹합니다",
+        "official_url": "https://novelpia.com/novel/395678",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "ordinary_residual_supported_restore_contract_case",
+          "official_support_ref_present"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11718110,
+        "candidate_title": "지구온라인에서 쌀먹합니다",
+        "candidate_url": "https://novelpia.com/novel/395678",
+        "source": "ordinary_residual_restore_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "ordinary_residual_source_native_verdict",
+            "shared_gate_restore_contract_review",
+            "official_support_ref"
+          ],
+          "competing_candidates": [
+            ""
+          ],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "ordinary_residual_source_native_restore_contract",
+          "strength": "strong",
+          "source_path_or_snippet": "`지구온라인`과 쌀먹/주인공 외모찬양 반응이 후보 작품 감상으로 직접 결속된다.",
+          "supports_publish": true,
+          "reason_code": "ordinary_residual_supported_restore_contract_case"
+        },
+        {
+          "kind": "official_support_ref",
+          "strength": "strong",
+          "source_path_or_snippet": "https://novelpia.com/novel/395678",
+          "supports_publish": true,
+          "reason_code": "official_support_ref_present"
+        }
+      ],
+      "release_candidate_not_approval": true,
+      "restore_target_mismatch_review_required": false,
+      "search_review_required_before_approval": true,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": true,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "`지구온라인`과 쌀먹/주인공 외모찬양 반응이 후보 작품 감상으로 직접 결속된다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11718110",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11718110",
+        "https://novelpia.com/novel/395678",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11718110",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11718110",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11718110",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11718110",
+        "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11718110",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11718110",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11718110",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11718110",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11718110"
+      ]
+    }
+  ],
+  "approval_boundary": {
+    "restore_contract_plan_is_not_approval": true,
+    "promotion_decision_publish_is_contract_case_only": true,
+    "contract_application_required_before_runtime": true,
+    "runtime_replay_allowed": false,
+    "full375_collateral_remains_no_go": true,
+    "full_scan_approval": false
+  }
+}

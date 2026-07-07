@@ -23,6 +23,7 @@ from llm_batch.promotion_gate import (  # noqa: E402
 
 RESTORE_LANE = "shared_gate_restore_contract_review"
 RESTORE_ACTION = "expected_title_restore_contract_case"
+MISMATCH_REVIEW_ACTION = "restore_target_runtime_mismatch_review_required"
 OFFICIAL_REF_MARKERS = (
     "novelpia.com",
     "novel.munpia.com",
@@ -51,6 +52,14 @@ def _as_list(value: Any) -> list[Any]:
 
 def _string(value: Any) -> str:
     return str(value or "").strip()
+
+
+def _compact(value: Any) -> str:
+    return "".join(ch for ch in _string(value).lower() if ch.isalnum())
+
+
+def _same_title(left: Any, right: Any) -> bool:
+    return bool(_compact(left) and _compact(left) == _compact(right))
 
 
 def _counter_to_dict(counter: Counter[str]) -> dict[str, int]:
@@ -113,6 +122,23 @@ def _search_condition(runtime_row: dict[str, Any] | None) -> str:
     return "search_status_missing"
 
 
+def _append_unique(values: Any, *items: str) -> list[str]:
+    out = [str(value) for value in (values or []) if str(value).strip()] if isinstance(values, list) else []
+    for item in items:
+        if item and item not in out:
+            out.append(item)
+    return out
+
+
+def _runtime_target_mismatch(selected_title: str, runtime_row: dict[str, Any] | None) -> bool:
+    if not runtime_row:
+        return False
+    if _string(runtime_row.get("audit_status")) != "FAIL_SAFE_RESOLVED_TITLE_MISMATCH":
+        return False
+    actual_title = _string(runtime_row.get("actual_title"))
+    return bool(selected_title and actual_title and not _same_title(selected_title, actual_title))
+
+
 def _build_plan_row(row: dict[str, Any], runtime_row: dict[str, Any] | None) -> dict[str, Any]:
     post_id = _post_id(row.get("post_id"))
     selected_title = _string(row.get("selected_title"))
@@ -167,6 +193,51 @@ def _build_plan_row(row: dict[str, Any], runtime_row: dict[str, Any] | None) -> 
     decision = can_publish_title(state, evidence)
     runtime_audit_status = _string(runtime_row.get("audit_status")) if runtime_row else ""
     search_condition = _search_condition(runtime_row)
+    mismatch_review_required = _runtime_target_mismatch(selected_title, runtime_row)
+    decision_dict = decision.to_dict()
+    state_dict = state.to_dict()
+    evidence_dicts = [item.to_dict() for item in evidence]
+    if mismatch_review_required:
+        actual_title = _string(runtime_row.get("actual_title"))
+        actual_url = _string(runtime_row.get("actual_url"))
+        decision_dict.update(
+            {
+                "status": "candidate_only",
+                "publish_allowed": False,
+                "official_title": None,
+                "official_url": None,
+                "candidate_preserved": True,
+                "reason_codes": _append_unique(
+                    decision_dict.get("reason_codes"),
+                    "restore_target_runtime_mismatch_review_required",
+                    "runtime_safe_resolved_title_conflicts_with_restore_target",
+                ),
+                "bypassed_gate": False,
+            }
+        )
+        scope = state_dict.get("scope") if isinstance(state_dict.get("scope"), dict) else {}
+        scope["conflict_reason_codes"] = _append_unique(
+            scope.get("conflict_reason_codes"),
+            "runtime_safe_resolved_title_conflicts_with_restore_target",
+        )
+        scope["competing_candidates"] = _append_unique(scope.get("competing_candidates"), actual_title)
+        state_dict["scope"] = scope
+        evidence_dicts.append(
+            {
+                "kind": "runtime_expected_title_mismatch",
+                "strength": "strong",
+                "source_path_or_snippet": (
+                    f"runtime actual title `{actual_title}` conflicts with restore target `{selected_title}`"
+                ),
+                "supports_publish": False,
+                "reason_code": "runtime_safe_resolved_title_conflicts_with_restore_target",
+                "actual_title": actual_title or None,
+                "actual_url": actual_url or None,
+            }
+        )
+    contract_action = RESTORE_ACTION if decision.status == "publish" else "candidate_scrub_no_publish_contract_case"
+    if mismatch_review_required:
+        contract_action = MISMATCH_REVIEW_ACTION
     return {
         "post_id": post_id,
         "contract_origin": "ordinary_residual_shared_gate_restore",
@@ -185,11 +256,12 @@ def _build_plan_row(row: dict[str, Any], runtime_row: dict[str, Any] | None) -> 
         "runtime_expected_audit_status": runtime_audit_status or None,
         "runtime_search_status": _string(runtime_row.get("search_status")) or None if runtime_row else None,
         "search_condition_tag": search_condition,
-        "contract_action": RESTORE_ACTION if decision.status == "publish" else "candidate_scrub_no_publish_contract_case",
-        "promotion_decision": decision.to_dict(),
-        "promotion_gate_state": state.to_dict(),
-        "promotion_gate_evidence": [item.to_dict() for item in evidence],
-        "release_candidate_not_approval": decision.status == "publish",
+        "contract_action": contract_action,
+        "promotion_decision": decision_dict,
+        "promotion_gate_state": state_dict,
+        "promotion_gate_evidence": evidence_dicts,
+        "release_candidate_not_approval": contract_action == RESTORE_ACTION and decision_dict.get("status") == "publish",
+        "restore_target_mismatch_review_required": mismatch_review_required,
         "search_review_required_before_approval": search_condition in {
             "search_degraded_condition",
             "search_status_missing",

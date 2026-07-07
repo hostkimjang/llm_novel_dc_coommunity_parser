@@ -12,6 +12,7 @@ EXPECTED_RESTORE = "expected_title_restore_contract_case"
 CANDIDATE_SCRUB = "candidate_scrub_no_publish_contract_case"
 VARIANT_HOLD = "canonical_variant_policy_hold_contract_case"
 STRONGER_HOLD = "stronger_evidence_hard_hold_contract_case"
+MISMATCH_REVIEW = "restore_target_runtime_mismatch_review_required"
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -74,6 +75,12 @@ def _classification_for(
         return (
             "contract_processed_candidate_scrub_no_publish",
             "candidate_scrub_no_publish_not_approval",
+            issues,
+        )
+    if action == MISMATCH_REVIEW:
+        return (
+            "ordinary_residual_unprocessed",
+            "restore_target_mismatch_source_native_review_required",
             issues,
         )
     if action == VARIANT_HOLD:
@@ -139,6 +146,8 @@ def build_accounting(
         if issues:
             validation_issues.append({"post_id": residual_row.get("post_id"), "issues": issues})
         actions = residual_row.get("actions") if isinstance(residual_row.get("actions"), list) else []
+        if effect == "restore_target_mismatch_source_native_review_required":
+            actions = [*actions, "source_native_or_blind_review_required", MISMATCH_REVIEW]
         for action in actions:
             action_counts[str(action)] += 1
         label_counts[_string(residual_row.get("review_label"))] += 1
@@ -155,6 +164,7 @@ def build_accounting(
                 "selected_title": residual_row.get("selected_title"),
                 "selected_option_id": residual_row.get("selected_option_id"),
                 "loop546_transition": residual_row.get("loop546_transition"),
+                "actions": actions,
                 "contract_action": (plan_row or {}).get("contract_action"),
                 "contract_batch_lane": (plan_row or {}).get("contract_batch_lane"),
                 "contract_accounting_state": state,
@@ -212,6 +222,9 @@ def build_accounting(
             ),
             "no_publish_or_hold_contract_rows": contract_processed_rows
             - effect_counts.get("release_candidate_not_approval_full375_recheck_required", 0),
+            "restore_target_mismatch_review_rows": effect_counts.get(
+                "restore_target_mismatch_source_native_review_required", 0
+            ),
             "publish_allowed_rows": 0,
             "runtime_replay_allowed_rows": 0,
             "full375_collateral_gate": "NO-GO",
@@ -269,6 +282,8 @@ def _policy_ref_for(
         return _payload_ref(variant_review, default_prefix="canonical_variant_policy_review")
     if action_text == STRONGER_HOLD:
         return _payload_ref(c3_review, default_prefix="stronger_evidence_hold_review")
+    if action_text == MISMATCH_REVIEW:
+        return _payload_ref(contract_plan, default_prefix="restore_target_runtime_mismatch_review")
     return None
 
 

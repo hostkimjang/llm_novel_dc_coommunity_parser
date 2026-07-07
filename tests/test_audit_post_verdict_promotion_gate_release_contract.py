@@ -106,6 +106,42 @@ class AuditPostVerdictPromotionGateReleaseContractTest(unittest.TestCase):
         self.assertEqual(audit["rows"][0]["release_gate_state"], "expected_restore_contract_satisfied_release_candidate")
         self.assertTrue(audit["rows"][0]["publish_allowed"])
 
+    def test_runtime_mismatch_plan_requires_no_public_identity(self):
+        audit = build_audit(
+            contract_plan={
+                "plan_id": "unit",
+                "gate": "REVIEW-LOCKED",
+                "full_scan_approval": False,
+                "rows": [_plan_row(1, "restore_target_runtime_mismatch_review_required")],
+            },
+            projection_rows=[_projection(1, title="Unexpected Public", status="safe_resolved", publish=True)],
+            audit_id="unit",
+        )
+
+        self.assertEqual(audit["gate"], "NO-GO")
+        self.assertEqual(audit["summary"]["violation_row_count"], 1)
+        self.assertEqual(audit["rows"][0]["release_gate_state"], "restore_target_mismatch_public_identity_violation")
+        self.assertEqual(
+            audit["rows"][0]["violation_code"],
+            "mismatch_review_published_before_source_native_verdict",
+        )
+
+    def test_runtime_mismatch_plan_preserves_no_release_when_blocked(self):
+        audit = build_audit(
+            contract_plan={
+                "plan_id": "unit",
+                "gate": "REVIEW-LOCKED",
+                "full_scan_approval": False,
+                "rows": [_plan_row(1, "restore_target_runtime_mismatch_review_required")],
+            },
+            projection_rows=[_projection(1)],
+            audit_id="unit",
+        )
+
+        self.assertEqual(audit["gate"], "REVIEW-LOCKED")
+        self.assertEqual(audit["summary"]["satisfied_no_release_rows"], 1)
+        self.assertEqual(audit["rows"][0]["release_gate_state"], "restore_target_mismatch_preserved_no_release")
+
     def test_markdown_gate_interpretation_uses_summary_counts(self):
         audit = build_audit(
             contract_plan={

@@ -110,6 +110,15 @@ def _actions(row: dict[str, Any]) -> list[str]:
     return [str(item) for item in _as_list(row.get("actions")) if str(item)]
 
 
+def _merge_actions(*values: list[str]) -> list[str]:
+    out: list[str] = []
+    for items in values:
+        for item in items:
+            if item and item not in out:
+                out.append(item)
+    return out
+
+
 def _primary_lane(row: dict[str, Any]) -> str:
     actions = set(_actions(row))
     label = str(row.get("review_label") or "")
@@ -168,7 +177,10 @@ def build_dispatch(
         if not source:
             validation_issues.append({"code": "ordinary_row_missing_source_queue_row", "post_id": post_id})
             source = {}
-        actions = _actions(source)
+        actions = _merge_actions(_actions(source), _actions(row))
+        lane_input = dict(source or row)
+        lane_input["actions"] = actions
+        lane_input["review_label"] = row.get("review_label") or source.get("review_label")
         merged = {
             "post_id": post_id,
             "triage_bucket": row.get("triage_bucket") or source.get("triage_bucket"),
@@ -189,6 +201,7 @@ def build_dispatch(
             "rationale_ko": row.get("rationale_ko") or source.get("rationale_ko"),
             "evidence_refs": source.get("evidence_refs") or row.get("evidence_refs") or [],
         }
+        merged["primary_lane"] = _primary_lane(lane_input)
         merged["lane_gate"] = _lane_gate(str(merged["primary_lane"]))
         ordinary_rows.append(merged)
 

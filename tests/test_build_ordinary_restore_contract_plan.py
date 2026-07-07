@@ -55,6 +55,33 @@ class BuildOrdinaryRestoreContractPlanTest(unittest.TestCase):
         self.assertEqual(plan["summary"]["runtime_replay_allowed_rows"], 0)
         self.assertEqual(plan["summary"]["search_review_required_before_approval_rows"], 1)
 
+    def test_runtime_title_mismatch_is_review_hold_not_restore_publish(self):
+        audit = {
+            "rows": [
+                {
+                    "post_id": 1,
+                    "audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+                    "actual_title": "Runtime Work",
+                    "actual_url": "https://novelpia.com/novel/999",
+                    "search_status": "SEARCH_DEGRADED",
+                }
+            ]
+        }
+
+        plan = build_plan(dispatch=self._dispatch(), runtime_expected_audit=audit, plan_id="unit")
+        row = plan["rows"][0]
+
+        self.assertEqual(plan["gate"], "REVIEW-LOCKED")
+        self.assertEqual(row["contract_action"], "restore_target_runtime_mismatch_review_required")
+        self.assertEqual(row["promotion_decision"]["status"], "candidate_only")
+        self.assertFalse(row["promotion_decision"]["publish_allowed"])
+        self.assertFalse(row["release_candidate_not_approval"])
+        self.assertTrue(row["restore_target_mismatch_review_required"])
+        self.assertIn(
+            "runtime_safe_resolved_title_conflicts_with_restore_target",
+            row["promotion_decision"]["reason_codes"],
+        )
+
     def test_missing_title_is_validation_issue(self):
         dispatch = self._dispatch()
         dispatch["rows"][0]["selected_title"] = ""

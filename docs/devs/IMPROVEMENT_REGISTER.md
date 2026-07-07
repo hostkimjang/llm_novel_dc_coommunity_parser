@@ -1,5 +1,24 @@
 # Improvement Register
 
+## IMP-20260707-557-559 - Conflict-safe restore mismatch guard and full375 P0 batch
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | P0 batch review 전 신규 대형 run 금지 |
+| Restore mismatch guard | GO_UNIT | `FAIL_SAFE_RESOLVED_TITLE_MISMATCH` target conflict를 mismatch review로 전환 | source-native/blind review로 확정 |
+| Restore contract plan | REVIEW-LOCKED | publish `10`, mismatch review `7`, validation issue `0` | release candidate와 approval 분리 |
+| Projection application | REVIEW-LOCKED | applied `10`, skipped `7` | mismatch row public release 금지 |
+| Release audit | REVIEW-LOCKED | violation `0`, no-release `7`, release candidate `10` | runtime/full_scan approval과 분리 |
+| Publication contract | GO_PROJECTION_CONTRACT | `375` rows, violation `0` | full_scan approval로 오해 금지 |
+| Residual accounting | REVIEW-LOCKED | ordinary `64 -> 54`, mismatch review `7` | residual54 batch 처리 |
+| Golden audit | GO | `18/18`, failed `0` | full375로 과적합 여부 계속 확인 |
+| Full375 collateral | NO-GO | changed `188`, regression `126` | P0 126 review 필요 |
+| P0 review batch | REVIEW-LOCKED | selected `126`, missing `0/0/0` | blind/source-native verdict 작성 |
+| Dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | `http://127.0.0.1:8080`, latest `49/49`, `parallel_count=16` | 다음 runtime/test run도 dashboard 기본 ON |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: restore contract `REVIEW-LOCKED / publish 10 / mismatch 7`, golden `GO`, full375 collateral `NO-GO / 126`, P0 batch `REVIEW-LOCKED / 126`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-555-556 - Ordinary restore projection application and residual47 dispatch
 
 | 항목 | 상태 | 근거 | 다음 |

@@ -1,0 +1,155 @@
+{
+  "report_type": "post_verdict_projection_publish_contract_application",
+  "projection_id": "loop557_ordinary_restore_conflict_safe_projection_contract",
+  "generated_at": "2026-07-07T22:21:16",
+  "source_contract_plan": "loop557_ordinary_restore_conflict_safe_contract_plan",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "projection_rows": 375,
+    "contract_plan_rows": 17,
+    "publish_contract_plan_rows": 10,
+    "applied_publish_contract_rows": 10,
+    "restore_plan_rows": 10,
+    "applied_restore_rows": 10,
+    "applied_expected_audit_update_rows": 0,
+    "applied_canonical_cleanup_rows": 0,
+    "validation_issue_count": 0,
+    "skipped_contract_action_counts": {
+      "restore_target_runtime_mismatch_review_required": 7
+    },
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "applied_rows": [
+    {
+      "post_id": 11663511,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "부캐 키우는 황태자님",
+      "target_url": "https://novelpia.com/novel/330363",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11663535,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "퇴마록",
+      "target_url": "https://page.kakao.com/content/66470141",
+      "superseded_projection_candidate": {
+        "official_title": "퇴마록",
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11673077,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "판초우의의 마법사",
+      "target_url": "https://novel.munpia.com/530500",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11677915,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "전지적 독자 시점",
+      "target_url": "https://novel.munpia.com/104753",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11681172,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "헌터갤러리의 국가권력급 기계공주",
+      "target_url": null,
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11694063,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "빙의한 신의 아이, 엘리시아",
+      "target_url": "https://novelpia.com/novel/57074",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11694068,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "트와일라잇",
+      "target_url": "https://ridibooks.com/books/593000441",
+      "superseded_projection_candidate": {
+        "official_title": "트와일라잇 시리즈",
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11705230,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "월야환담",
+      "target_url": "https://ridibooks.com/books/3685002646",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11705251,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "월야환담 창월야",
+      "target_url": "https://ridibooks.com/books/3685002646",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11718110,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "지구온라인에서 쌀먹합니다",
+      "target_url": "https://novelpia.com/novel/395678",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    }
+  ],
+  "approval_boundary": {
+    "projection_application_is_not_runtime_replay": true,
+    "release_candidate_is_not_full_scan_approval": true,
+    "runtime_replay_before_full375_collateral_forbidden": true,
+    "full375_collateral_remains_no_go": true
+  }
+}

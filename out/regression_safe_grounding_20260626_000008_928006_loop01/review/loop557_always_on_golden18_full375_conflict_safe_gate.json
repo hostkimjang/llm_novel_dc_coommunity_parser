@@ -1,0 +1,46 @@
+{
+  "report_type": "always_on_regression_gates",
+  "generated_at": "2026-07-07T22:22:28",
+  "gate": "NO-GO",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "policy": {
+    "golden_expected_rows": 18,
+    "full_375_collateral_required": true,
+    "golden_pass_alone_is_not_approval": true,
+    "collateral_runtime_pass_alone_is_not_approval": true,
+    "collateral_source_native_exclusion_requires_clean_review_summary": true
+  },
+  "golden": {
+    "gate": "GO",
+    "expected_rows": 18,
+    "row_count": 18,
+    "passed_count": 18,
+    "failed_count": 0,
+    "canary_semantic_gate": "PASS",
+    "runtime_complete": true,
+    "blockers": []
+  },
+  "collateral": {
+    "gate": "NO-GO",
+    "expected_shared_posts": 375,
+    "shared_post_count": 375,
+    "changed_post_count": 188,
+    "collateral_regression_count": 126,
+    "review_adjusted_regression_count": 126,
+    "review_adjustment": {
+      "provided": false,
+      "applied": false,
+      "exclusion_candidate_rows": 0,
+      "review_adjusted_regression_count": 126,
+      "blockers": []
+    },
+    "runtime_complete": true,
+    "blockers": [
+      "collateral_regression_count_nonzero"
+    ]
+  },
+  "blockers": [
+    "collateral:collateral_regression_count_nonzero"
+  ]
+}

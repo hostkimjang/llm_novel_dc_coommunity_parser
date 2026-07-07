@@ -105,6 +105,24 @@ class ReaccountResidualAfterContractReviewsTest(unittest.TestCase):
         self.assertFalse(accounting["rows"][0]["contract_processed"])
         self.assertIn("expected_restore_application_missing", accounting["rows"][0]["validation_issues"])
 
+    def test_restore_target_runtime_mismatch_returns_to_source_native_review(self):
+        accounting = build_accounting(
+            residual_queue={"queue_id": "residual", "rows": [_residual_row(25)]},
+            contract_plan={
+                "plan_id": "plan",
+                "rows": [_plan_row(25, "restore_target_runtime_mismatch_review_required")],
+            },
+            accounting_id="unit",
+        )
+
+        row = accounting["rows"][0]
+        self.assertEqual(accounting["gate"], "REVIEW-LOCKED")
+        self.assertFalse(row["contract_processed"])
+        self.assertTrue(row["ordinary_residual_unprocessed"])
+        self.assertEqual(row["contract_accounting_effect"], "restore_target_mismatch_source_native_review_required")
+        self.assertIn("source_native_or_blind_review_required", row["actions"])
+        self.assertEqual(accounting["summary"]["restore_target_mismatch_review_rows"], 1)
+
     def test_dispatch_source_and_application_ref_are_preserved(self):
         accounting = build_accounting(
             residual_queue={"dispatch_id": "ordinary_dispatch", "rows": [_residual_row(30)]},

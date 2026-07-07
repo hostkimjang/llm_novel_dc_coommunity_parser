@@ -1,5 +1,24 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop557-559 TODO
+
+- 상태 업데이트: Loop555 golden 실패 `11694019`를 restore mismatch review로 되돌렸고 golden18은 회복됐지만 full375 collateral은 `126` 회귀로 `NO-GO`다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Loop557 restore contract plan은 `17`건을 publish `10` / mismatch review `7`로 분리했다.
+- [x] Projection application은 applied `10`, skipped mismatch `7`, validation issue `0`이다.
+- [x] Release audit은 violation `0`, mismatch no-release `7`, release candidate `10`, runtime allowed `0`이다.
+- [x] Publication contract는 `GO / 375 rows / 0 violations`다.
+- [x] Residual accounting은 ordinary `64 -> 54`, contract-processed `10`, mismatch review `7`이다.
+- [x] Loop558 lane은 candidate set rebuild `15`, native-web/image evidence `20`, no-publish/multi-work guard `6`, source-native/blind review `12`, canonical cleanup `1`이다.
+- [x] Golden audit은 `GO / 18 of 18`로 회복됐다.
+- [x] Full375 collateral compare는 changed `188`, regression `126`, always-on `NO-GO`다.
+- [x] Loop559 P0 review batch는 `126`건이며 safe_loss `73`, unsafe promotion `28`, wrong_work `25`, missing source/baseline/after `0/0/0`이다.
+- [x] 다음 runtime/test run은 `--parallel 16`, 웹 dashboard 기본 ON, `--no-dashboard` 기본 금지로 둔다.
+- [ ] Loop559 P0 batch `126`건을 blind/source-native review로 처리한다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: restore contract `REVIEW-LOCKED / publish 10 / mismatch 7`, golden `GO`, full375 collateral `NO-GO / 126`, P0 batch `REVIEW-LOCKED / 126`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop555-556 TODO
 
 - 상태 업데이트: Loop554 restore contract `17`건을 full375 projection에 적용했고 ordinary residual은 `47`건으로 줄었다. Goal은 완료가 아니다.

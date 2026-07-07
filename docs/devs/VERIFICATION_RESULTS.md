@@ -1,5 +1,44 @@
 # Verification Results
 
+## 2026-07-07 Loop557-559 conflict-safe restore mismatch guard and full375 P0 batch
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_557_559_REPORT_20260707.md`
+  - `docs/devs/loop557_ordinary_restore_conflict_safe_contract_plan.json`
+  - `docs/devs/loop557_ordinary_restore_conflict_safe_projection_contract_application.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop557_ordinary_restore_conflict_safe_projection_result.json`
+  - `docs/devs/loop557_ordinary_restore_conflict_safe_release_gate_audit.json`
+  - `docs/devs/loop557_ordinary_restore_conflict_safe_publication_contract_audit.json`
+  - `docs/devs/loop557_ordinary_residual64_after_conflict_safe_restore_accounting.json`
+  - `docs/devs/loop558_ordinary_residual54_dispatch_after_conflict_safe_restore.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop557_ordinary_restore_conflict_safe_golden_audit.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop557_ordinary_restore_conflict_safe_collateral_compare.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop557_always_on_golden18_full375_conflict_safe_gate.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_collateral_triage.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json`
+- 검증:
+  - py_compile: PASS, `.venv312`, changed tool/test 및 audit/triage/batch tool.
+  - unittest focused suite: PASS, restore plan/release audit/residual accounting/residual dispatch/projection application/full375 triage/P0 batch, 총 `39` tests.
+  - unittest always-on/bootstrap suite: PASS, always-on gate/bootstrap/triage/P0 batch, 총 `23` tests.
+  - Contract plan generation: PASS, restore rows `17`, publish `10`, mismatch review `7`, validation issue `0`.
+  - Projection application: PASS, applied `10`, skipped mismatch `7`, validation issue `0`.
+  - Release audit: PASS, violation `0`, mismatch no-release `7`, release candidate `10`, runtime allowed `0`.
+  - Publication contract: PASS, `GO / 375 rows / 0 violations`.
+  - Residual accounting: PASS, ordinary `64 -> 54`, contract-processed `10`, mismatch review `7`, validation issue `0`.
+  - Residual dispatch: PASS, ordinary `54`, validation issue `0`, source-native/blind lane `12`.
+  - Golden audit: PASS, `GO / 18 of 18`, failed count `0`.
+  - Full375 collateral compare: expected NO-GO, changed `188`, regression `126`.
+  - Always-on gate: expected NO-GO, blocker `collateral_regression_count_nonzero`.
+  - Loop559 triage/batch: PASS generation, P0 `126`, missing source/baseline/after `0/0/0`.
+  - Dashboard health/status: PASS, `http://127.0.0.1:8080`, Loop545 `49/49`, `progress_pct=100.0`, `parallel_count=16`, `batch_running=false`.
+  - `git diff --check`: PASS. LF/CRLF warning만 있었고 whitespace error는 없었다.
+- 결과:
+  - `11694019` wrong restore publish 경로는 mismatch review/no-release로 되돌렸다.
+  - Golden18은 회복됐지만 full375 collateral regression `126` 때문에 full375 동결 해제 및 full_scan approval은 불가하다.
+  - Residual은 `54`건이고, full375 P0 review batch `126`건이 다음 우선 검증 입력이다.
+  - 다음 runtime/test run은 `--parallel 16`, 웹 dashboard 기본 ON, `--no-dashboard` 기본 금지로 실행한다.
+- Gate: restore contract `REVIEW-LOCKED`, golden `GO`, full375 collateral `NO-GO / 126`, always-on `NO-GO`, P0 batch `REVIEW-LOCKED / 126`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop555-556 ordinary restore projection and residual47 dispatch
 
 - 산출물:

@@ -129,6 +129,35 @@ class OrdinaryResidualDispatchTests(unittest.TestCase):
         self.assertEqual(lanes_by_post[2], "no_publish_multiwork_guard_review")
         self.assertEqual(dispatch["summary"]["runtime_replay_allowed_rows"], 0)
 
+    def test_runtime_mismatch_accounting_moves_restore_row_to_source_native_lane(self):
+        source_queue = {
+            "queue_id": "loop546",
+            "rows": [
+                {
+                    "post_id": 1,
+                    "review_label": "REPROCESS",
+                    "actions": [
+                        "repair_safe_loss_restore_supported_title",
+                        "shared_promotion_gate_wiring_required",
+                    ],
+                }
+            ],
+        }
+        accounting = self._accounting()
+        accounting["rows"] = [accounting["rows"][0]]
+        accounting["rows"][0]["actions"] = [
+            "repair_safe_loss_restore_supported_title",
+            "shared_promotion_gate_wiring_required",
+            "source_native_or_blind_review_required",
+            "restore_target_runtime_mismatch_review_required",
+        ]
+        accounting["rows"][0]["contract_accounting_effect"] = "restore_target_mismatch_source_native_review_required"
+
+        dispatch = build_dispatch(accounting=accounting, source_queue=source_queue, dispatch_id="d5")
+
+        self.assertEqual(dispatch["rows"][0]["primary_lane"], "source_native_or_blind_review")
+        self.assertEqual(dispatch["summary"]["lane_counts"], {"source_native_or_blind_review": 1})
+
     def test_missing_source_queue_row_is_validation_issue(self):
         source_queue = {"queue_id": "loop546", "rows": []}
 

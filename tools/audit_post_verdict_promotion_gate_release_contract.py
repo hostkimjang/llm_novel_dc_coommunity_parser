@@ -12,6 +12,7 @@ RESTORE = "expected_title_restore_contract_case"
 SCRUB = "candidate_scrub_no_publish_contract_case"
 VARIANT_HOLD = "canonical_variant_policy_hold_contract_case"
 STRONGER_HOLD = "stronger_evidence_hard_hold_contract_case"
+MISMATCH_REVIEW = "restore_target_runtime_mismatch_review_required"
 EXPECTED_AUDIT_UPDATE = "expected_audit_update_exclusion_contract_case"
 NATIVE_WEB_HOLD = "native_web_disambiguation_hold_contract_case"
 CANONICAL_CLEANUP = "canonical_cleanup_or_url_correction_contract_case"
@@ -199,6 +200,14 @@ def _audit_row(plan_row: dict[str, Any], projection_row: dict[str, Any] | None) 
             violation_code = "hard_hold_published_before_stronger_evidence"
         else:
             release_gate_state = "stronger_evidence_hold_preserved_no_release"
+            satisfied_no_release = True
+    elif action == MISMATCH_REVIEW:
+        if has_public_identity:
+            release_gate_state = "restore_target_mismatch_public_identity_violation"
+            violation = True
+            violation_code = "mismatch_review_published_before_source_native_verdict"
+        else:
+            release_gate_state = "restore_target_mismatch_preserved_no_release"
             satisfied_no_release = True
     elif action == EXPECTED_AUDIT_UPDATE:
         if candidate_leaked:

@@ -1,5 +1,21 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop557-559 conflict-safe restore 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_557_559_REPORT_20260707.md`.
+  - [x] Conflict-safe restore plan/application/release/publication/accounting/dispatch 기록 완료: `docs/devs/loop557_*`, `docs/devs/loop558_*`.
+  - [x] Golden/collateral/always-on/triage/P0 batch 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop557_*`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_*`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+  - [x] `FAIL_SAFE_RESOLVED_TITLE_MISMATCH`와 source-native target 충돌은 restore publish가 아니라 mismatch review로 되돌렸다.
+  - [x] Golden `18/18` 회복은 full375 approval이 아니다.
+  - [x] Full375 collateral regression `126`을 always-on `NO-GO`로 유지했다.
+  - [x] P0 `126`건은 단건 residual 소모가 아니라 batch review 입력이다.
+  - [x] 다음 runtime/test run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 기본 금지로 둔다.
+  - [x] Full375 collateral `GO` 전 goal completion을 선언하지 않는다.
+- Gate: restore contract `REVIEW-LOCKED`, golden `GO`, full375 collateral `NO-GO / 126`, P0 batch `REVIEW-LOCKED / 126`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop555-556 ordinary restore projection 품질 게이트
 
 - 근거:

@@ -1,5 +1,24 @@
 # Development Checklist
 
+## 2026-07-07 Loop557-559 conflict-safe restore 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 실행하지 않았다.
+- [x] Loop555 golden 실패 `11694019`를 restore contract 과적용으로 재분류했다.
+- [x] Runtime `FAIL_SAFE_RESOLVED_TITLE_MISMATCH`와 source-native target이 충돌하면 restore publish를 열지 않는 계약을 추가했다.
+- [x] Restore contract plan은 `17`건을 publish `10` / mismatch review `7`로 분리했다.
+- [x] Projection application은 applied `10`, skipped mismatch `7`, validation issue `0`이다.
+- [x] Release audit은 violation `0`, mismatch no-release `7`, release candidate `10`, runtime replay allowed `0`이다.
+- [x] Publication contract는 `GO / 375 rows / 0 violations`다.
+- [x] Residual accounting은 ordinary `64 -> 54`, contract-processed `10`, mismatch source-native review required `7`이다.
+- [x] Loop558 dispatch는 remaining ordinary residual `54`건을 batch lane으로 재분해했다.
+- [x] Golden audit은 `GO / 18 of 18`이다.
+- [x] Full375 collateral compare는 changed `188`, regression `126`, always-on gate `NO-GO`다.
+- [x] Loop559 P0 review batch `126`건을 생성했다.
+- [x] 다음 runtime/test run은 `--parallel 16`, 웹 dashboard `http://127.0.0.1:8080` 기본 ON으로 둔다.
+- [ ] P0 review batch `126`건을 blind/source-native 검증으로 닫기 전 full_scan approval을 열지 않는다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: restore contract `REVIEW-LOCKED / publish 10 / mismatch 7`, golden `GO`, full375 collateral `NO-GO / 126`, P0 batch `REVIEW-LOCKED / 126`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop555-556 ordinary restore projection 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 런을 실행하지 않았다.
