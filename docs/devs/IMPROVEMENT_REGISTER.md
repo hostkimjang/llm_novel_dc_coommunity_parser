@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260708-596 - shared gate projection and residual12 accounting
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | 실제 test run만 `--parallel 16` + dashboard attached로 실행 |
+| Shared gate projection | REVIEW-LOCKED | source review shared-gate 대상 `5`, remaining15 overlap `3`, validation issue `0` | release candidate는 full375 전 approval 금지 |
+| Release candidate | REVIEW-LOCKED | `11698871`, `11706844` shared gate publish | runtime/full375 재확인 전 release 금지 |
+| No-publish contract | REVIEW-LOCKED | `11710047` candidate-only no-publish | 후보 보존, public publish 금지 |
+| Publication contract | GO | `375` rows, violation `0` | collateral gate와 분리 |
+| Residual46 | REVIEW-LOCKED | processed_or_excluded `34`, ordinary residual `12` | remaining12 batch 처리 |
+| Full375 collateral | NO-GO | raw `75`, adjusted `68`, unreviewed `50`, runtime counts missing | collateral GO 전 approval 금지 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: shared gate projection `REVIEW-LOCKED`, residual46 `REVIEW-LOCKED / ordinary 12`, publication `GO`, full375 collateral `NO-GO / raw 75 / adjusted 68`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-595 - native-web judge batch accounting and residual15 dispatch
 
 | 항목 | 상태 | 근거 | 다음 |

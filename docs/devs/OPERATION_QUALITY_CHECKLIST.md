@@ -1,5 +1,26 @@
 # Operation Quality Checklist
 
+## 2026-07-08 Loop596 shared gate residual12 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_596_REPORT_20260708.md`.
+  - [x] Shared gate projection 기록 완료: `docs/devs/loop596_native_web_judge_shared_gate_projection.json/.md`.
+  - [x] Remaining15 shared gate contract plan/application 기록 완료.
+  - [x] Combined plan/application 기록 완료: `docs/devs/loop596_residual46_combined_contract_plan.json/.md`, `docs/devs/loop596_residual46_combined_projection_application.json/.md`.
+  - [x] Residual accounting과 remaining dispatch 기록 완료.
+  - [x] Publication contract audit 기록 완료: `docs/devs/loop596_remaining15_shared_gate_publication_contract_audit.json/.md`.
+  - [x] Full375 collateral compare 기록 완료: `docs/devs/loop596_remaining15_shared_gate_full375_collateral_compare.json/.md`.
+  - [x] Always-on gate 기록 완료: `docs/devs/loop596_always_on_golden18_full375_shared_gate.json/.md`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+  - [x] `11698871`, `11706844`는 release candidate일 뿐 approval이 아니다.
+  - [x] `11710047`은 candidate-only no-publish contract로 보존했다.
+  - [x] Residual46 ordinary는 `15 -> 12`로 줄었지만 approval이 아니다.
+  - [x] Publication contract는 `GO / 375 rows / violation 0`이다.
+  - [x] Full375 collateral은 `NO-GO / raw 75 / adjusted 68 / unreviewed 50 / runtime counts missing`이다.
+  - [x] Remaining dispatch는 `native_web_image_evidence_review 12`, publish/runtime allowed `0`이다.
+- Gate: shared gate projection `REVIEW-LOCKED`, residual46 `REVIEW-LOCKED / ordinary 12`, publication `GO`, full375 collateral `NO-GO / raw 75 / adjusted 68`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop595 native-web judge batch 품질 게이트
 
 - 근거:

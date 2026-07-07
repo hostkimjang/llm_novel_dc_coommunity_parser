@@ -1,0 +1,1078 @@
+{
+  "report_type": "residual_queue_shared_promotion_gate_projection",
+  "projection_id": "loop596_native_web_judge_shared_gate_projection",
+  "generated_at": "2026-07-08T07:19:40",
+  "source_queue_id": null,
+  "source_review_id": "loop589_p0_info_missing_source_native_verdicts",
+  "source_gate": "REVIEW-LOCKED",
+  "action_filter": "shared_promotion_gate_wiring_required",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "gate": "REVIEW-LOCKED",
+  "input_rows": 5,
+  "summary": {
+    "source_queue_rows": 25,
+    "projected_rows": 5,
+    "projected_status_counts": {
+      "promotion_blocked": 3,
+      "safe_resolved": 2
+    },
+    "source_label_counts": {
+      "REPROCESS": 5
+    },
+    "source_bucket_counts": {
+      "safe_loss_resolved_to_null": 3,
+      "wrong_work_title_flip": 2
+    },
+    "publish_allowed_rows": 2,
+    "matches_source_native_title_rows": 2,
+    "validation_issue_count": 0
+  },
+  "validation_issues": [],
+  "rows": [
+    {
+      "post_id": 11682792,
+      "triage_bucket": "wrong_work_title_flip",
+      "selected_title": "이 무림의 미친년은 나야",
+      "selected_url": "https://novelpia.com/novel/217943",
+      "selected_option_id": "C2",
+      "source_native_verdict": "source_alias_supports_official_title_after_variant_wrong_work",
+      "source_review_id": "loop589_p0_info_missing_source_native_verdicts",
+      "evidence_grade": "Strong",
+      "source_actions": [
+        "repair_after_wrong_work",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "projected_status": "promotion_blocked",
+      "projected_title": null,
+      "projected_url": null,
+      "matches_source_native_title": false,
+      "promotion_decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": true,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discussion_missing",
+          "context_only",
+          "scope_context_only",
+          "scope_not_current_work",
+          "source_native_support_not_sufficient",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "context_only",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "source_native_support_not_sufficient"
+          ]
+        }
+      },
+      "publish_contract_trace": {
+        "pre_gate_candidate": {
+          "official_title": "이 무림의 미친년은 나야",
+          "official_url": "https://novelpia.com/novel/217943",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "gate_decision": {
+          "status": "candidate_only",
+          "publish_allowed": false,
+          "official_title": null,
+          "official_url": null,
+          "candidate_preserved": true,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discussion_missing",
+            "context_only",
+            "scope_context_only",
+            "scope_not_current_work",
+            "source_native_support_not_sufficient",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "context_only",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": [
+              "source_native_support_not_sufficient"
+            ]
+          }
+        },
+        "scope_state": {
+          "scope_kind": "context_only",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "source_native_support_not_sufficient"
+          ]
+        },
+        "post_gate_identity": {
+          "official_title": null,
+          "official_url": null,
+          "title_resolution_allowed": false,
+          "title_resolution_state": "context_only",
+          "work_resolution": "unresolved",
+          "candidate_ledger_status": "promotion_blocked"
+        },
+        "reason_codes": [
+          "official_title_exists",
+          "row_discussion_missing",
+          "context_only",
+          "scope_context_only",
+          "scope_not_current_work",
+          "source_native_support_not_sufficient",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false
+      },
+      "publish_ledger": {
+        "candidate_preservation": {
+          "official_title": "이 무림의 미친년은 나야",
+          "official_url": "https://novelpia.com/novel/217943",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "public_publish": {
+          "official_title": null,
+          "official_url": null,
+          "title_resolution_allowed": false,
+          "title_resolution_state": "context_only",
+          "work_resolution": "unresolved",
+          "candidate_ledger_status": "promotion_blocked"
+        },
+        "gate_decision": {
+          "status": "candidate_only",
+          "publish_allowed": false,
+          "official_title": null,
+          "official_url": null,
+          "candidate_preserved": true,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discussion_missing",
+            "context_only",
+            "scope_context_only",
+            "scope_not_current_work",
+            "source_native_support_not_sufficient",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "context_only",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": [
+              "source_native_support_not_sufficient"
+            ]
+          }
+        }
+      },
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discussion_missing",
+        "context_only",
+        "scope_context_only",
+        "scope_not_current_work",
+        "source_native_support_not_sufficient",
+        "official_detail_url"
+      ],
+      "promotion_gate_state": {
+        "post_id": 11682792,
+        "candidate_title": "이 무림의 미친년은 나야",
+        "candidate_url": "https://novelpia.com/novel/217943",
+        "source": "source_native_residual_queue_shared_gate_projection",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": false,
+        "title_resolution_state": "context_only",
+        "work_resolution": "unresolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "context_only",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "source_native_support_not_sufficient"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "source_native_review",
+          "strength": "strong",
+          "source_path_or_snippet": "원문 제목의 `무친년`은 작품 별칭이고 본문은 1000회차와 노맨스 감상으로 작품 소비 맥락을 직접 말한다. C2가 공식 제목이고, after의 C1 `[무친년]이 무림의 미친놈`은 title variant/wrong-work 표면이므로 shared promotion gate를 통한 restore 대상이다.",
+          "supports_publish": false,
+          "reason_code": "source_native_support_not_sufficient"
+        },
+        {
+          "kind": "official_detail_url",
+          "strength": "strong",
+          "source_path_or_snippet": "https://novelpia.com/novel/217943",
+          "supports_publish": false,
+          "reason_code": "official_detail_url"
+        }
+      ],
+      "rationale_ko": "원문 제목의 `무친년`은 작품 별칭이고 본문은 1000회차와 노맨스 감상으로 작품 소비 맥락을 직접 말한다. C2가 공식 제목이고, after의 C1 `[무친년]이 무림의 미친놈`은 title variant/wrong-work 표면이므로 shared promotion gate를 통한 restore 대상이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11682792",
+        "docs/devs/loop588_residual_p0_native_policy_preflight_accounting.json#post_id=11682792",
+        "https://novelpia.com/novel/217943"
+      ]
+    },
+    {
+      "post_id": 11660273,
+      "triage_bucket": "wrong_work_title_flip",
+      "selected_title": "마도서를 줍다 마법사가 되다",
+      "selected_url": "https://novelpia.com/novel/414963",
+      "selected_option_id": "C2",
+      "source_native_verdict": "source_context_identifies_internal_entity_after_wrong_work",
+      "source_review_id": "loop589_p0_info_missing_source_native_verdicts",
+      "evidence_grade": "Strong",
+      "source_actions": [
+        "repair_after_wrong_work",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "projected_status": "promotion_blocked",
+      "projected_title": null,
+      "projected_url": null,
+      "matches_source_native_title": false,
+      "promotion_decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": true,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discussion_missing",
+          "context_only",
+          "scope_context_only",
+          "scope_not_current_work",
+          "source_native_support_not_sufficient",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "context_only",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "source_native_support_not_sufficient"
+          ]
+        }
+      },
+      "publish_contract_trace": {
+        "pre_gate_candidate": {
+          "official_title": "마도서를 줍다 마법사가 되다",
+          "official_url": "https://novelpia.com/novel/414963",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "gate_decision": {
+          "status": "candidate_only",
+          "publish_allowed": false,
+          "official_title": null,
+          "official_url": null,
+          "candidate_preserved": true,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discussion_missing",
+            "context_only",
+            "scope_context_only",
+            "scope_not_current_work",
+            "source_native_support_not_sufficient",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "context_only",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": [
+              "source_native_support_not_sufficient"
+            ]
+          }
+        },
+        "scope_state": {
+          "scope_kind": "context_only",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "source_native_support_not_sufficient"
+          ]
+        },
+        "post_gate_identity": {
+          "official_title": null,
+          "official_url": null,
+          "title_resolution_allowed": false,
+          "title_resolution_state": "context_only",
+          "work_resolution": "unresolved",
+          "candidate_ledger_status": "promotion_blocked"
+        },
+        "reason_codes": [
+          "official_title_exists",
+          "row_discussion_missing",
+          "context_only",
+          "scope_context_only",
+          "scope_not_current_work",
+          "source_native_support_not_sufficient",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false
+      },
+      "publish_ledger": {
+        "candidate_preservation": {
+          "official_title": "마도서를 줍다 마법사가 되다",
+          "official_url": "https://novelpia.com/novel/414963",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "public_publish": {
+          "official_title": null,
+          "official_url": null,
+          "title_resolution_allowed": false,
+          "title_resolution_state": "context_only",
+          "work_resolution": "unresolved",
+          "candidate_ledger_status": "promotion_blocked"
+        },
+        "gate_decision": {
+          "status": "candidate_only",
+          "publish_allowed": false,
+          "official_title": null,
+          "official_url": null,
+          "candidate_preserved": true,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discussion_missing",
+            "context_only",
+            "scope_context_only",
+            "scope_not_current_work",
+            "source_native_support_not_sufficient",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "context_only",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": [
+              "source_native_support_not_sufficient"
+            ]
+          }
+        }
+      },
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discussion_missing",
+        "context_only",
+        "scope_context_only",
+        "scope_not_current_work",
+        "source_native_support_not_sufficient",
+        "official_detail_url"
+      ],
+      "promotion_gate_state": {
+        "post_id": 11660273,
+        "candidate_title": "마도서를 줍다 마법사가 되다",
+        "candidate_url": "https://novelpia.com/novel/414963",
+        "source": "source_native_residual_queue_shared_gate_projection",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": false,
+        "title_resolution_state": "context_only",
+        "work_resolution": "unresolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "context_only",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "source_native_support_not_sufficient"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "source_native_review",
+          "strength": "strong",
+          "source_path_or_snippet": "본문이 `그리즐리는 마줍에 나오는 투명 우주 흡혈귀`라고 직접 설명한다. `그리즐리`는 C2 작품 내부 존재 또는 설정이지 별도 작품 제목이 아니므로 after의 `그리즐리 그랑`은 wrong-work이며, C2를 shared promotion gate restore 대상으로 둔다.",
+          "supports_publish": false,
+          "reason_code": "source_native_support_not_sufficient"
+        },
+        {
+          "kind": "official_detail_url",
+          "strength": "strong",
+          "source_path_or_snippet": "https://novelpia.com/novel/414963",
+          "supports_publish": false,
+          "reason_code": "official_detail_url"
+        }
+      ],
+      "rationale_ko": "본문이 `그리즐리는 마줍에 나오는 투명 우주 흡혈귀`라고 직접 설명한다. `그리즐리`는 C2 작품 내부 존재 또는 설정이지 별도 작품 제목이 아니므로 after의 `그리즐리 그랑`은 wrong-work이며, C2를 shared promotion gate restore 대상으로 둔다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11660273",
+        "docs/devs/loop588_residual_p0_native_policy_preflight_accounting.json#post_id=11660273",
+        "https://novelpia.com/novel/414963"
+      ]
+    },
+    {
+      "post_id": 11698871,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_title": "Re : 제로부터 시작하는 이세계 생활",
+      "selected_url": "https://page.kakao.com/content/48677416",
+      "selected_option_id": "CODEX_NATIVE_WEB_JUDGE",
+      "source_native_verdict": "codex_native_web_judge_reprocess_under_resolved",
+      "source_review_id": null,
+      "evidence_grade": "Strong",
+      "source_actions": [
+        "native_web_judge_reprocess_required",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "projected_status": "safe_resolved",
+      "projected_title": "Re : 제로부터 시작하는 이세계 생활",
+      "projected_url": "https://page.kakao.com/content/48677416",
+      "matches_source_native_title": true,
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "Re : 제로부터 시작하는 이세계 생활",
+        "official_url": "https://page.kakao.com/content/48677416",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "publish_contract_trace": {
+        "pre_gate_candidate": {
+          "official_title": "Re : 제로부터 시작하는 이세계 생활",
+          "official_url": "https://page.kakao.com/content/48677416",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "Re : 제로부터 시작하는 이세계 생활",
+          "official_url": "https://page.kakao.com/content/48677416",
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        },
+        "scope_state": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        },
+        "post_gate_identity": {
+          "official_title": "Re : 제로부터 시작하는 이세계 생활",
+          "official_url": "https://page.kakao.com/content/48677416",
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false
+      },
+      "publish_ledger": {
+        "candidate_preservation": {
+          "official_title": "Re : 제로부터 시작하는 이세계 생활",
+          "official_url": "https://page.kakao.com/content/48677416",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "public_publish": {
+          "official_title": "Re : 제로부터 시작하는 이세계 생활",
+          "official_url": "https://page.kakao.com/content/48677416",
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "Re : 제로부터 시작하는 이세계 생활",
+          "official_url": "https://page.kakao.com/content/48677416",
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        }
+      },
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work",
+        "official_detail_url"
+      ],
+      "promotion_gate_state": {
+        "post_id": 11698871,
+        "candidate_title": "Re : 제로부터 시작하는 이세계 생활",
+        "candidate_url": "https://page.kakao.com/content/48677416",
+        "source": "source_native_residual_queue_shared_gate_projection",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "source_native_review",
+          "strength": "strong",
+          "source_path_or_snippet": "게시글의 '리제로', 에밀리아, 렘 언급은 작품 식별 근거가 충분하다. 카카오페이지 공식 웹소설 상세에서 'Re : 제로부터 시작하는 이세계 생활'과 작가/장르가 확인되므로, 파이프라인의 관련 판정은 맞지만 제목과 URL을 미해결로 둔 것은 과소해결이다.",
+          "supports_publish": true,
+          "reason_code": "source_native_review_current_work"
+        },
+        {
+          "kind": "official_detail_url",
+          "strength": "strong",
+          "source_path_or_snippet": "https://page.kakao.com/content/48677416",
+          "supports_publish": false,
+          "reason_code": "official_detail_url"
+        }
+      ],
+      "rationale_ko": "게시글의 '리제로', 에밀리아, 렘 언급은 작품 식별 근거가 충분하다. 카카오페이지 공식 웹소설 상세에서 'Re : 제로부터 시작하는 이세계 생활'과 작가/장르가 확인되므로, 파이프라인의 관련 판정은 맞지만 제목과 URL을 미해결로 둔 것은 과소해결이다.",
+      "evidence_refs": [
+        "out/codex_native_web_judge_20260620_165159_711176_completed779/verdicts#post_id=11698871",
+        "https://page.kakao.com/content/48677416",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11698871",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11698871",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11698871"
+      ]
+    },
+    {
+      "post_id": 11706844,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_title": "호랑이 사냥꾼",
+      "selected_url": "https://m.munpia.com/novel/detail/522066",
+      "selected_option_id": "CODEX_NATIVE_WEB_JUDGE",
+      "source_native_verdict": "codex_native_web_judge_reprocess_under_resolved",
+      "source_review_id": null,
+      "evidence_grade": "Medium",
+      "source_actions": [
+        "native_web_judge_reprocess_required",
+        "native_web_reverify_required",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "projected_status": "safe_resolved",
+      "projected_title": "호랑이 사냥꾼",
+      "projected_url": "https://m.munpia.com/novel/detail/522066",
+      "matches_source_native_title": true,
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "호랑이 사냥꾼",
+        "official_url": "https://m.munpia.com/novel/detail/522066",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "medium",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "publish_contract_trace": {
+        "pre_gate_candidate": {
+          "official_title": "호랑이 사냥꾼",
+          "official_url": "https://m.munpia.com/novel/detail/522066",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "호랑이 사냥꾼",
+          "official_url": "https://m.munpia.com/novel/detail/522066",
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "medium",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        },
+        "scope_state": {
+          "scope_kind": "current_work",
+          "confidence": "medium",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        },
+        "post_gate_identity": {
+          "official_title": "호랑이 사냥꾼",
+          "official_url": "https://m.munpia.com/novel/detail/522066",
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false
+      },
+      "publish_ledger": {
+        "candidate_preservation": {
+          "official_title": "호랑이 사냥꾼",
+          "official_url": "https://m.munpia.com/novel/detail/522066",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "public_publish": {
+          "official_title": "호랑이 사냥꾼",
+          "official_url": "https://m.munpia.com/novel/detail/522066",
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "호랑이 사냥꾼",
+          "official_url": "https://m.munpia.com/novel/detail/522066",
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "medium",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        }
+      },
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work",
+        "official_detail_url"
+      ],
+      "promotion_gate_state": {
+        "post_id": 11706844,
+        "candidate_title": "호랑이 사냥꾼",
+        "candidate_url": "https://m.munpia.com/novel/detail/522066",
+        "source": "source_native_residual_queue_shared_gate_projection",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "medium",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "source_native_review",
+          "strength": "medium",
+          "source_path_or_snippet": "OCR에는 '범 먹는 괴이 사냥꾼'과 작가 편곤이 명시되어 있고, 현재 문피아 공식 상세는 같은 작가·같은 조선 이매망량 설명의 '호랑이 사냥꾼'으로 확인된다. OCR 제목과 현재 공식 제목이 달라 재검증은 필요하지만, null로 둔 파이프라인은 과소해결이다.",
+          "supports_publish": true,
+          "reason_code": "source_native_review_current_work"
+        },
+        {
+          "kind": "official_detail_url",
+          "strength": "strong",
+          "source_path_or_snippet": "https://m.munpia.com/novel/detail/522066",
+          "supports_publish": false,
+          "reason_code": "official_detail_url"
+        }
+      ],
+      "rationale_ko": "OCR에는 '범 먹는 괴이 사냥꾼'과 작가 편곤이 명시되어 있고, 현재 문피아 공식 상세는 같은 작가·같은 조선 이매망량 설명의 '호랑이 사냥꾼'으로 확인된다. OCR 제목과 현재 공식 제목이 달라 재검증은 필요하지만, null로 둔 파이프라인은 과소해결이다.",
+      "evidence_refs": [
+        "out/codex_native_web_judge_20260620_165159_711176_completed779/verdicts#post_id=11706844",
+        "https://m.munpia.com/novel/detail/522066",
+        "https://www.webtoonguide.com/ko/db/producer-name/%ED%8E%B8%EA%B3%A4",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11706844",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11706844",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11706844"
+      ]
+    },
+    {
+      "post_id": 11710047,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_title": "아카데미 속 미움받는 악역이 되었다",
+      "selected_url": "https://novelpia.com/novel/387035",
+      "selected_option_id": "CODEX_NATIVE_WEB_JUDGE",
+      "source_native_verdict": "codex_native_web_judge_reprocess_wrong_work",
+      "source_review_id": null,
+      "evidence_grade": "Strong",
+      "source_actions": [
+        "native_web_judge_reprocess_required",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "projected_status": "promotion_blocked",
+      "projected_title": null,
+      "projected_url": null,
+      "matches_source_native_title": false,
+      "promotion_decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": true,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discussion_missing",
+          "context_only",
+          "scope_context_only",
+          "scope_not_current_work",
+          "source_native_support_not_sufficient",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "context_only",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "source_native_support_not_sufficient"
+          ]
+        }
+      },
+      "publish_contract_trace": {
+        "pre_gate_candidate": {
+          "official_title": "아카데미 속 미움받는 악역이 되었다",
+          "official_url": "https://novelpia.com/novel/387035",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "gate_decision": {
+          "status": "candidate_only",
+          "publish_allowed": false,
+          "official_title": null,
+          "official_url": null,
+          "candidate_preserved": true,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discussion_missing",
+            "context_only",
+            "scope_context_only",
+            "scope_not_current_work",
+            "source_native_support_not_sufficient",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "context_only",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": [
+              "source_native_support_not_sufficient"
+            ]
+          }
+        },
+        "scope_state": {
+          "scope_kind": "context_only",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "source_native_support_not_sufficient"
+          ]
+        },
+        "post_gate_identity": {
+          "official_title": null,
+          "official_url": null,
+          "title_resolution_allowed": false,
+          "title_resolution_state": "context_only",
+          "work_resolution": "unresolved",
+          "candidate_ledger_status": "promotion_blocked"
+        },
+        "reason_codes": [
+          "official_title_exists",
+          "row_discussion_missing",
+          "context_only",
+          "scope_context_only",
+          "scope_not_current_work",
+          "source_native_support_not_sufficient",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false
+      },
+      "publish_ledger": {
+        "candidate_preservation": {
+          "official_title": "아카데미 속 미움받는 악역이 되었다",
+          "official_url": "https://novelpia.com/novel/387035",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "public_publish": {
+          "official_title": null,
+          "official_url": null,
+          "title_resolution_allowed": false,
+          "title_resolution_state": "context_only",
+          "work_resolution": "unresolved",
+          "candidate_ledger_status": "promotion_blocked"
+        },
+        "gate_decision": {
+          "status": "candidate_only",
+          "publish_allowed": false,
+          "official_title": null,
+          "official_url": null,
+          "candidate_preserved": true,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discussion_missing",
+            "context_only",
+            "scope_context_only",
+            "scope_not_current_work",
+            "source_native_support_not_sufficient",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "context_only",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": [
+              "source_native_support_not_sufficient"
+            ]
+          }
+        }
+      },
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discussion_missing",
+        "context_only",
+        "scope_context_only",
+        "scope_not_current_work",
+        "source_native_support_not_sufficient",
+        "official_detail_url"
+      ],
+      "promotion_gate_state": {
+        "post_id": 11710047,
+        "candidate_title": "아카데미 속 미움받는 악역이 되었다",
+        "candidate_url": "https://novelpia.com/novel/387035",
+        "source": "source_native_residual_queue_shared_gate_projection",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": false,
+        "title_resolution_state": "context_only",
+        "work_resolution": "unresolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "context_only",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "source_native_support_not_sufficient"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "source_native_review",
+          "strength": "strong",
+          "source_path_or_snippet": "이미지 OCR에는 제목이 '아카데미 속 미움받는 악역이 되었다'이고 작가도 파워후단벌신사 계열로 읽히며, 노벨피아 공식 상세 페이지에서도 같은 작품과 URL이 확인되므로 파이프라인이 선택한 '로판 속 미움받는 악역이 되었다'는 유사 제목의 다른 작품으로 판단됩니다.",
+          "supports_publish": false,
+          "reason_code": "source_native_support_not_sufficient"
+        },
+        {
+          "kind": "official_detail_url",
+          "strength": "strong",
+          "source_path_or_snippet": "https://novelpia.com/novel/387035",
+          "supports_publish": false,
+          "reason_code": "official_detail_url"
+        }
+      ],
+      "rationale_ko": "이미지 OCR에는 제목이 '아카데미 속 미움받는 악역이 되었다'이고 작가도 파워후단벌신사 계열로 읽히며, 노벨피아 공식 상세 페이지에서도 같은 작품과 URL이 확인되므로 파이프라인이 선택한 '로판 속 미움받는 악역이 되었다'는 유사 제목의 다른 작품으로 판단됩니다.",
+      "evidence_refs": [
+        "out/codex_native_web_judge_20260620_165159_711176_completed779/verdicts#post_id=11710047",
+        "https://novelpia.com/novel/387035",
+        "https://novelpia.com/novel/146549",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11710047",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11710047",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11710047"
+      ]
+    }
+  ],
+  "approval_boundary": {
+    "projection_is_not_runtime_replay": true,
+    "projection_is_not_full375_approval": true,
+    "requires_runtime_replay_and_full375_collateral_go": true
+  }
+}

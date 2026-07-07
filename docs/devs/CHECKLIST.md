@@ -1,5 +1,22 @@
 # Development Checklist
 
+## 2026-07-08 Loop596 shared gate residual12 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Loop595 source-native/native-web review 중 `shared_promotion_gate_wiring_required` 5건을 shared `PromotionDecision` gate projection으로 처리했다.
+- [x] Remaining15와 겹치는 shared gate 대상 `3`건만 contract plan으로 필터링했다.
+- [x] `11698871`, `11706844`는 shared gate `publish`로 release candidate 처리했지만 approval로 세지 않았다.
+- [x] `11710047`은 shared gate `candidate_only`라 no-publish contract로 보존했다.
+- [x] Combined contract plan은 `24 -> 27`, projection application은 applied `9 -> 11`로 갱신했다.
+- [x] Publication contract audit은 `GO / 375 rows / violation 0`이다.
+- [x] Residual46은 processed_or_excluded `31 -> 34`, ordinary residual `15 -> 12`로 재회계했다.
+- [x] Remaining dispatch는 `native_web_image_evidence_review 12`건이며 publish/runtime allowed `0`이다.
+- [x] Full375 collateral은 `NO-GO / raw 75 / adjusted 68 / unreviewed 50 / runtime counts missing`이다.
+- [ ] Remaining12는 native-web/image evidence batch로 계속 처리한다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: shared gate projection `REVIEW-LOCKED`, residual46 `REVIEW-LOCKED / ordinary 12`, publication `GO`, full375 collateral `NO-GO / raw 75 / adjusted 68`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_596_REPORT_20260708.md`, `docs/devs/loop596_remaining15_shared_gate_contract_plan.json`, `docs/devs/loop596_residual46_shared_gate_accounting.json`, `docs/devs/loop596_residual46_remaining12_dispatch.json`, `docs/devs/loop596_remaining15_shared_gate_full375_collateral_compare.json`, `docs/devs/loop596_always_on_golden18_full375_shared_gate.json`.
+
 ## 2026-07-08 Loop595 native-web judge batch 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
