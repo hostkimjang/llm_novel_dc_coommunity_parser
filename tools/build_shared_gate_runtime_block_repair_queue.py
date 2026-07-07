@@ -124,6 +124,14 @@ def _reason_set(row: dict[str, Any]) -> set[str]:
     return {str(item or "").strip() for item in value if str(item or "").strip()}
 
 
+def _runtime_audit_status(row: dict[str, Any]) -> str:
+    return str(row.get("prior_runtime_audit_status") or row.get("audit_status") or "").strip()
+
+
+def _runtime_search_status(row: dict[str, Any]) -> str:
+    return str(row.get("prior_runtime_search_status") or row.get("search_status") or "None").strip()
+
+
 def _projected_reason_set(row: dict[str, Any]) -> set[str]:
     value = row.get("projected_reasons") or []
     if not isinstance(value, list):
@@ -144,12 +152,13 @@ def _repair_rows(queue: dict[str, Any]) -> tuple[list[dict[str, Any]], list[dict
         action_set = set(_actions(row))
         if not action_set.intersection(REPAIR_ACTIONS):
             continue
-        if str(row.get("prior_runtime_audit_status") or "") != "FAIL_RUNTIME_PROMOTION_BLOCKED":
+        audit_status = _runtime_audit_status(row)
+        if audit_status != "FAIL_RUNTIME_PROMOTION_BLOCKED":
             issues.append(
                 {
                     "code": "repair_action_without_prior_promotion_block",
                     "post_id": row.get("post_id"),
-                    "prior_runtime_audit_status": row.get("prior_runtime_audit_status"),
+                    "prior_runtime_audit_status": audit_status or None,
                 }
             )
         selected.append(row)
@@ -157,8 +166,7 @@ def _repair_rows(queue: dict[str, Any]) -> tuple[list[dict[str, Any]], list[dict
 
 
 def _search_gate(row: dict[str, Any]) -> str:
-    status = row.get("prior_runtime_search_status")
-    text = str(status) if status is not None else "None"
+    text = _runtime_search_status(row)
     if text == "ok":
         return "SEARCH_OK"
     if text == "SEARCH_DEGRADED_RECOVERED":
@@ -304,11 +312,11 @@ def classify_repair_row(row: dict[str, Any]) -> dict[str, Any]:
 
     return {
         "post_id": row.get("post_id"),
-        "selected_title": row.get("selected_title"),
-        "projected_title": row.get("projected_title"),
+        "selected_title": row.get("selected_title") or row.get("expected_title"),
+        "projected_title": row.get("projected_title") or row.get("expected_title"),
         "source_native_verdict": row.get("source_native_verdict"),
-        "prior_runtime_audit_status": row.get("prior_runtime_audit_status"),
-        "prior_runtime_search_status": row.get("prior_runtime_search_status"),
+        "prior_runtime_audit_status": _runtime_audit_status(row) or None,
+        "prior_runtime_search_status": _runtime_search_status(row),
         "search_gate": search_gate,
         "projected_scope_claim": _scope_claim(projected_reasons, projected=True),
         "runtime_scope_claim": _scope_claim(reasons),

@@ -1,5 +1,23 @@
 # Development Checklist
 
+## 2026-07-07 Loop521 post-Loop520 queue refresh 체크
+
+- [x] 새 runtime replay를 실행하지 않았다.
+- [x] Loop520 projection result를 expected-title audit에 다시 걸었다.
+- [x] Expected-title gate는 `NO-GO / 14 of 57`이다.
+- [x] Failure queue `43`건을 생성했다.
+- [x] Repair queue `33`건을 생성했다.
+- [x] `projection_runtime_scope_conflict`는 Loop517 `13`건에서 Loop521 `0`건으로 줄었다.
+- [x] `11708478`이 새 repair row로 추가됐음을 기록했다.
+- [x] `build_shared_gate_runtime_block_repair_queue.py`가 `audit_status/search_status` 스키마를 지원하도록 고쳤다.
+- [x] `expected_title`을 repair queue의 selected/projected title fallback으로 보존한다.
+- [x] Report `docs/devs/loop_reports/LOOP_521_REPORT_20260707.md`를 작성했다.
+- [x] State `docs/devs/loop521_post_projection_queue_state_20260707.json`을 작성했다.
+- [ ] Projection source context 손실 가능성을 runtime proof로 오인하지 않는다.
+- [ ] Repair queue `33`건은 contract/source-context 수리 전 runtime replay 입력으로 쓰지 않는다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: queue schema `GO`, expected-title `NO-GO / 14 of 57`, repair queue `REVIEW-LOCKED / 33`, runtime replay `NOT_RUN_PROJECTION_AUDIT_ONLY`, full375 collateral `NO-GO`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop520 scope reason normalization 수렴 체크
 
 - [x] 새 runtime replay를 실행하지 않았다.

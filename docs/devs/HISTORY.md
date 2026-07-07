@@ -1,5 +1,17 @@
 # Development History
 
+## 2026-07-07 - Loop521 post-Loop520 queue refresh
+
+- 새 runtime replay는 실행하지 않고 Loop520 projection result를 expected-title audit과 repair queue에 다시 연결했다.
+- Expected-title audit는 `NO-GO / 14 of 57`이며 failure queue는 `43`건이다.
+- Repair queue는 `33`건이고 runtime replay allowed rows는 `0`이다.
+- Loop517의 projection/runtime scope conflict action은 `hard_noncurrent 11 + mixed_trace 2 -> 0`으로 사라졌다.
+- 단 `11708478`이 새 repair row로 추가되어 actionable queue 감소는 아니다.
+- `tools/build_shared_gate_runtime_block_repair_queue.py`는 최신 expected-failure queue 스키마 `audit_status/search_status`와 `expected_title` fallback을 지원한다.
+- Verification은 py_compile PASS, `tests.test_shared_gate_runtime_block_repair_queue` `7` tests PASS, queue generation PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_521_REPORT_20260707.md`, state는 `docs/devs/loop521_post_projection_queue_state_20260707.json`, queues는 `docs/devs/loop521_*queue.json/.md`다.
+- Gate는 queue schema `GO`, expected-title `NO-GO / 14 of 57`, repair queue `REVIEW-LOCKED / 33`, runtime replay `NOT_RUN_PROJECTION_AUDIT_ONLY`, full375 collateral `NO-GO`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop520 scope reason normalization
 
 - `src/llm_batch/promotion_gate.py`에 `normalize_scope_reason_codes`를 추가해 current-work marker와 non-current/context marker 혼합을 shared gate 단계에서 정규화했다.

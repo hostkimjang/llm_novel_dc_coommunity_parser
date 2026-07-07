@@ -1,5 +1,23 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop521 post-Loop520 queue refresh 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_521_REPORT_20260707.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop521_post_projection_queue_state_20260707.json`.
+  - [x] Expected audit 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop521_loop520_projected_safe57_expected_audit.json/.md`.
+  - [x] Failure queue 기록 완료: `docs/devs/loop521_loop520_projected_safe57_expected_failure_queue.json/.md`.
+  - [x] Repair queue 기록 완료: `docs/devs/loop521_scope_reason_post_projection_repair33_queue.json/.md`.
+  - [x] Unit validation: `tests.test_shared_gate_runtime_block_repair_queue` `7` tests PASS.
+- 품질 경계:
+  - [x] 새 runtime replay는 실행하지 않았다.
+  - [x] Loop517 scope conflict action은 `13 -> 0`으로 정규화됐다.
+  - [x] Expected-title gate는 여전히 `NO-GO / 14 of 57`이다.
+  - [x] `11708478`은 projection source-context 손실 가능성으로 별도 follow-up에 둔다.
+  - [ ] Repair queue를 runtime replay 입력으로 바로 쓰지 않는다.
+  - [ ] Dashboard 상태를 semantic/full_scan approval 근거로 쓰지 않는다.
+- Gate: queue schema `GO`, expected-title `NO-GO / 14 of 57`, repair queue `REVIEW-LOCKED / 33`, runtime replay `NOT_RUN_PROJECTION_AUDIT_ONLY`, full375 collateral `NO-GO`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop520 scope reason normalization 수렴 품질 게이트
 
 - 근거:

@@ -1,5 +1,18 @@
 # Improvement Register
 
+## IMP-20260707-521 - post-projection queue refresh schema compatibility
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Expected-title refresh | NO-GO | Loop520 projection audit `14/57` | expected failure를 repair/source-native queue로 유지 |
+| Failure queue | REVIEW-LOCKED | `43` rows, `REPROCESS 33`, `HOLD 10` | runtime 반복 금지 |
+| Repair queue schema | GO_UNIT | `audit_status/search_status` fallback, `expected_title` title fallback | queue builder 호환성 유지 |
+| Scope conflict action | GO_PROJECTION | Loop517 `hard 11 + mixed 2` -> Loop521 `0` | source-context 손실 행 별도 확인 |
+| New repair row | OPEN_REPAIR | `11708478` added | projection source-context 보존 또는 shared gate bridge 검증 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: queue schema `GO`, expected-title `NO-GO / 14 of 57`, repair queue `REVIEW-LOCKED / 33`, runtime replay `NOT_RUN_PROJECTION_AUDIT_ONLY`, full375 collateral `NO-GO`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-520 - scope reason normalization
 
 | 항목 | 상태 | 근거 | 다음 |

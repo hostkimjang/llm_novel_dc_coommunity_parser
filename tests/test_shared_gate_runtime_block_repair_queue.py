@@ -177,6 +177,42 @@ class SharedGateRuntimeBlockRepairQueueTest(unittest.TestCase):
             {"none": 1},
         )
 
+    def test_runtime_expected_failure_schema_is_supported(self):
+        queue = {
+            "queue_id": "unit_runtime_expected_failure",
+            "rows": [
+                {
+                    "post_id": 11708478,
+                    "expected_title": "사연 있는 악역으로 착각 당한다",
+                    "audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+                    "search_status": "SEARCH_DEGRADED",
+                    "reason_codes": [
+                        "verified_alias_title_only_publication",
+                        "verified_alias_title_only_counterevidence_blocked",
+                        "scope_context_only",
+                        "scope_not_current_work",
+                        "serialized_public_identity_scrubbed",
+                    ],
+                    "actions": ["shared_gate_runtime_block_repair_required"],
+                }
+            ],
+        }
+
+        repair = build_repair_queue(queue, queue_id="unit_repair")
+
+        self.assertEqual(repair["gate"], "REVIEW-LOCKED")
+        self.assertEqual(repair["summary"]["validation_issue_count"], 0)
+        self.assertEqual(repair["rows"][0]["prior_runtime_audit_status"], "FAIL_RUNTIME_PROMOTION_BLOCKED")
+        self.assertEqual(repair["rows"][0]["prior_runtime_search_status"], "SEARCH_DEGRADED")
+        self.assertEqual(repair["rows"][0]["selected_title"], "사연 있는 악역으로 착각 당한다")
+        self.assertEqual(repair["rows"][0]["projected_title"], "사연 있는 악역으로 착각 당한다")
+        self.assertEqual(repair["rows"][0]["search_gate"], "SEARCH_BLIND_BLOCKER")
+        self.assertEqual(
+            repair["rows"][0]["primary_repair_lane"],
+            "image_or_alias_anchor_contract_repair",
+        )
+        self.assertIn("search_blind_preflight_required", repair["rows"][0]["actions"])
+
     def test_title_url_markers_take_priority_over_scope_markers(self):
         queue = {
             "queue_id": "unit_followup",

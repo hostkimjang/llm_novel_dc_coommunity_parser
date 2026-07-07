@@ -1,0 +1,119 @@
+{
+  "loop": 521,
+  "date": "2026-07-07",
+  "title": "post-Loop520 expected-title and repair queue refresh",
+  "goal_status": "ACTIVE_NOT_COMPLETE",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "runtime_replay": {
+    "status": "NOT_RUN_PROJECTION_AUDIT_ONLY",
+    "reason": "Loop520 projection result를 expected-title audit과 queue builder에 다시 걸었으며 새 expert_main runtime replay는 실행하지 않았다."
+  },
+  "dashboard": {
+    "policy": "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+    "url": "http://127.0.0.1:8080",
+    "latest_status": {
+      "ok": true,
+      "standalone": true,
+      "pid": 9320,
+      "done_count": 57,
+      "total_posts": 57,
+      "progress_pct": 100.0,
+      "parallel_count": 16,
+      "batch_running": false,
+      "input_file": "loop515_shared_gate_projected_safe57_runtime_replay_input.jsonl",
+      "output_file": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop515_shared_gate_projected_safe57_runtime_replay_result.json"
+    },
+    "boundary": "dashboard는 진행 확인 도구이며 semantic/full_scan approval 근거가 아니다."
+  },
+  "artifacts": {
+    "expected_audit_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop521_loop520_projected_safe57_expected_audit.json",
+    "expected_audit_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop521_loop520_projected_safe57_expected_audit.md",
+    "failure_queue_json": "docs/devs/loop521_loop520_projected_safe57_expected_failure_queue.json",
+    "failure_queue_md": "docs/devs/loop521_loop520_projected_safe57_expected_failure_queue.md",
+    "repair_queue_json": "docs/devs/loop521_scope_reason_post_projection_repair33_queue.json",
+    "repair_queue_md": "docs/devs/loop521_scope_reason_post_projection_repair33_queue.md",
+    "report": "docs/devs/loop_reports/LOOP_521_REPORT_20260707.md"
+  },
+  "expected_title_audit": {
+    "gate": "NO-GO",
+    "row_count": 57,
+    "exact_safe_resolved_pass": 14,
+    "exact_safe_resolved_fail": 43,
+    "runtime_safe_resolved_count": 24,
+    "runtime_promotion_blocked_count": 33,
+    "status_counts": {
+      "FAIL_RUNTIME_PROMOTION_BLOCKED": 33,
+      "FAIL_SAFE_RESOLVED_TITLE_MISMATCH": 10,
+      "PASS_EXACT_SAFE_RESOLVED": 14
+    }
+  },
+  "failure_queue": {
+    "action_queue_rows": 43,
+    "label_counts": {
+      "HOLD": 10,
+      "REPROCESS": 33
+    },
+    "priority_counts": {
+      "P0": 10,
+      "P1": 33
+    },
+    "owner_mode_counts": {
+      "CODE_OR_RUNTIME_PROMOTION_GATE_REPAIR": 33,
+      "SOURCE_NATIVE_OR_BLIND_CANONICAL_REVIEW": 10
+    },
+    "validation_issue_count": 0
+  },
+  "repair_queue": {
+    "repair_rows": 33,
+    "runtime_replay_allowed_rows": 0,
+    "primary_repair_lane_counts": {
+      "candidate_preservation_or_scrub_repair": 9,
+      "image_or_alias_anchor_contract_repair": 6,
+      "scope_or_nonwork_monotonicity_repair": 10,
+      "title_url_or_variant_trace_repair": 8
+    },
+    "projection_runtime_scope_conflict_kind_counts": {
+      "none": 33
+    },
+    "validation_issue_count": 0
+  },
+  "loop517_to_loop521_delta": {
+    "projection_runtime_scope_conflict_kind_counts": {
+      "loop517": {
+        "hard_noncurrent": 11,
+        "mixed_trace": 2,
+        "none": 19
+      },
+      "loop521": {
+        "none": 33
+      }
+    },
+    "repair_rows": {
+      "loop517": 32,
+      "loop521": 33
+    },
+    "added_repair_post_ids": [
+      11708478
+    ],
+    "interpretation": "Loop520 reason normalization은 projection/runtime scope conflict action을 제거했지만 expected-title queue 자체를 줄이지는 않았다. 11708478은 projection-context artifact 가능성이 있어 runtime 반복 전 source context 보존 방식 또는 shared gate bridge를 별도 확인해야 한다."
+  },
+  "code_changes": [
+    {
+      "file": "tools/build_shared_gate_runtime_block_repair_queue.py",
+      "change": "runtime expected failure queue의 audit_status/search_status 스키마를 prior_runtime_* 스키마와 동일하게 처리하고 expected_title을 selected/projected title fallback으로 보존한다."
+    }
+  ],
+  "gates": {
+    "queue_schema_contract": "GO",
+    "expected_title_projection_audit": "NO-GO_14_OF_57",
+    "repair_queue": "REVIEW-LOCKED_33_ROWS",
+    "runtime_replay": "NOT_RUN_PROJECTION_AUDIT_ONLY",
+    "full375_collateral": "NO-GO",
+    "search_evidence": "REVIEW",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE_NOT_COMPLETE",
+    "completion_criterion": "full375 collateral GO + full_scan 경로 정의"
+  }
+}

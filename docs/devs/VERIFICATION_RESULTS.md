@@ -1,5 +1,35 @@
 # Verification Results
 
+## 2026-07-07 Loop521 Verification
+
+- 범위: Loop520 projection result를 expected-title/repair queue에 다시 연결하고 repair queue builder의 최신 failure queue schema 호환성을 검증했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_521_REPORT_20260707.md`
+  - state `docs\devs\loop521_post_projection_queue_state_20260707.json`
+  - expected audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop521_loop520_projected_safe57_expected_audit.json`
+  - failure queue `docs\devs\loop521_loop520_projected_safe57_expected_failure_queue.json`
+  - repair queue `docs\devs\loop521_scope_reason_post_projection_repair33_queue.json`
+  - tool `tools\build_shared_gate_runtime_block_repair_queue.py`
+  - test `tests\test_shared_gate_runtime_block_repair_queue.py`
+- Result:
+  - expected-title gate `NO-GO / 14 of 57`
+  - failure queue rows `43`
+  - repair queue rows `33`
+  - runtime replay allowed rows `0`
+  - projection/runtime scope conflict kind Loop517 `hard_noncurrent 11 + mixed_trace 2` -> Loop521 `none 33`
+  - added repair row `11708478`
+  - dashboard latest status `57/57`, `progress_pct=100.0`, `parallel_count=16`
+- Validation:
+  - `python -m py_compile tools\build_shared_gate_runtime_block_repair_queue.py tests\test_shared_gate_runtime_block_repair_queue.py` PASS.
+  - `python -m unittest tests.test_shared_gate_runtime_block_repair_queue -v` PASS, `7` tests.
+  - `tools\build_runtime_expected_failure_queue.py ... --fail-on-validation-issue` PASS.
+  - `tools\build_shared_gate_runtime_block_repair_queue.py ... --fail-on-validation-issue` PASS.
+- Boundary:
+  - Loop521은 runtime replay가 아니다.
+  - Scope conflict action `0`은 expected-title/full375 collateral approval이 아니다.
+  - `11708478`은 projection source-context 손실 가능성이 있어 hard-hold 완화가 아니라 source-context 보존/shared gate bridge 확인 대상으로 둔다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-07 Loop520 Verification
 
 - 범위: shared promotion gate와 final ledger sync의 mixed current/non-current scope reason 정규화.

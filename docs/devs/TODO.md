@@ -1,5 +1,23 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop521 TODO
+
+- 상태 업데이트: Loop520 projection을 expected-title/repair queue에 다시 연결했고 queue schema 호환성 문제를 고쳤다. Goal은 완료가 아니다.
+- [x] 새 runtime replay를 발주하지 않았다.
+- [x] Expected-title projection audit는 `NO-GO / 14 of 57`이다.
+- [x] Failure queue는 `43`건, repair queue는 `33`건이다.
+- [x] Loop517 scope conflict action은 `13 -> 0`으로 사라졌다.
+- [x] `11708478`이 새 repair row로 추가됐다.
+- [x] 최신 expected-failure queue의 `audit_status/search_status` 스키마를 repair queue builder가 지원한다.
+- [x] `expected_title` fallback으로 repair queue title을 보존한다.
+- [x] Report/state/queues를 기록했다.
+- [x] py_compile PASS, focused unittest `7` tests PASS.
+- [ ] `11708478`은 projection source-context 보존 또는 shared gate bridge 검증 후 replay 후보로 되돌린다.
+- [ ] `title_url_or_variant_trace_repair 8`을 N건 배치 코드/계약 수리 후보로 유지한다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: queue schema `GO`, expected-title `NO-GO / 14 of 57`, repair queue `REVIEW-LOCKED / 33`, runtime replay `NOT_RUN_PROJECTION_AUDIT_ONLY`, full375 collateral `NO-GO`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop520 TODO
 
 - 상태 업데이트: mixed current/non-current scope reason을 shared promotion gate와 final ledger sync에서 정규화했다. Goal은 완료가 아니다.

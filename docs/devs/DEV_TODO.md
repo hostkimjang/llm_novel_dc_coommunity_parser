@@ -61,6 +61,12 @@
 
 ## P1
 
+- [ ] Loop521 projection source-context 보존 수리
+  - 상태: open_after_schema_fix
+  - 관련 파일 후보: `expert_main.py`, projection helper/tooling, `tools/build_shared_gate_runtime_block_repair_queue.py`
+  - 문제: Loop520 projection expected audit에서 `11708478`이 새 repair row로 추가됐다. 실제 입력은 댓글 작성자 답변 `사연있는악역착각`과 이미지 장면 OCR을 갖지만, projection 경로에서 source context가 충분히 전달되지 않으면 `verified_alias_title_only_counterevidence_blocked`로 demote된다.
+  - 완료 기준: projection/final sync 경로가 runtime과 같은 source context를 사용하거나, source context 없음 상태를 approval 근거로 쓰지 않는 guard를 둔다.
+  - 검증: Loop521 repair queue에서 `11708478` 처리 방향이 source-context 보존 또는 shared gate bridge 검증으로 분리되고, runtime replay 전 `full_scan_approval=false`를 유지한다.
 - [ ] LLM/후처리 규칙 일반화 감사 도구화
   - 상태: proposed
   - 문제: 품질 오답을 고칠 때 특정 post id, 특정 제목, 특정 검색 문자열을 직접 막는 방식으로 누적되면 대량 런에서 새 false positive/false negative를 만든다.
