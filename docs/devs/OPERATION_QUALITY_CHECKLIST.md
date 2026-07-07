@@ -1,5 +1,23 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop541 shared-gate contract plan 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_541_REPORT_20260707.md`.
+  - [x] B1 contract queue 기록 완료: `docs/devs/loop541_b1_missing_candidate_post_verdict_contract_queue.json/.md`.
+  - [x] B1 shared-gate plan 기록 완료: `docs/devs/loop541_b1_missing_candidate_shared_gate_contract_plan.json/.md`.
+  - [x] Title mismatch shared-gate plan 기록 완료: `docs/devs/loop541_title_mismatch_shared_gate_contract_plan.json/.md`.
+  - [x] Title mismatch plan tool/test 추가 완료: `tools/build_title_mismatch_verdict_contract_plan.py`, `tests/test_build_title_mismatch_verdict_contract_plan.py`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 런은 실행하지 않았다.
+  - [x] B1 plan runtime replay allowed rows는 `0`이다.
+  - [x] Title mismatch plan runtime replay allowed rows는 `0`이다.
+  - [x] B1 `publish 1`과 title mismatch `publish 1`은 contract case일 뿐 approval이 아니다.
+  - [x] JSON parse PASS, py_compile PASS, 관련 unittest `10` tests PASS, `git diff --check` PASS다.
+  - [ ] Contract test, search evidence 복구, stronger evidence 없이 runtime release하지 않는다.
+  - [ ] Dashboard 상태를 semantic/full_scan approval 근거로 쓰지 않는다.
+- Gate: B1 contract `REVIEW-LOCKED / 11`, title mismatch contract `REVIEW-LOCKED / 3`, runtime replay `BLOCKED / allowed 0`, full375 collateral `NO-GO / residual 100`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop540 verdict 적용 품질 게이트
 
 - 근거:

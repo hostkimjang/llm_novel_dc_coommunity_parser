@@ -217,8 +217,9 @@ def write_markdown(path: Path, queue: dict[str, Any]) -> None:
         lines.append(f"  - post_ids: {post_ids}")
     lines.extend(["", "## Gate 해석", ""])
     lines.append(
-        "B1 canonical verdict는 `22/22` 적용됐지만 이 큐는 replay release가 아니다. "
-        "C1/C2는 contract test가 먼저 필요하고, C3는 stronger evidence 또는 native-web 검증 전까지 hard hold다."
+        f"Canonical verdict는 `{summary['contract_queue_rows']}/{summary['source_application_rows']}` 적용됐지만 "
+        "이 큐는 replay release가 아니다. C1/C2는 contract test가 먼저 필요하고, "
+        "C3는 stronger evidence 또는 native-web 검증 전까지 hard hold다."
     )
     lines.append("")
     path.parent.mkdir(parents=True, exist_ok=True)

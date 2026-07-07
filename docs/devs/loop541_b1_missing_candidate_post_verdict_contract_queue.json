@@ -1,0 +1,402 @@
+{
+  "report_type": "canonical_post_verdict_contract_queue",
+  "queue_id": "loop541_b1_missing_candidate_post_verdict_contract_queue",
+  "generated_at": "2026-07-07T18:20:55",
+  "source_application": "loop540_b1_missing_candidate_verdict_application",
+  "source_batch": "docs\\devs\\loop539_b1_missing_candidate_canonical_recheck11_batch.json",
+  "source_verdicts": "docs\\devs\\loop540_b1_missing_candidate_source_native_verdicts.json",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "source_application_rows": 11,
+    "contract_queue_rows": 11,
+    "validation_issue_count": 0,
+    "contract_batch_lane_counts": {
+      "C3_stronger_evidence_or_native_web_hold": 5,
+      "C1_expected_restore_or_candidate_scrub_contract": 6
+    },
+    "post_verdict_next_state_counts": {
+      "hard_hold_or_native_web_review_required": 5,
+      "candidate_scrub_or_expected_title_restore_contract_required": 6
+    },
+    "canonical_verdict_counts": {
+      "INSUFFICIENT_EVIDENCE_HOLD": 5,
+      "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": 6
+    },
+    "runtime_replay_allowed_rows": 0,
+    "contract_test_required_rows": 11,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "next_batches": [
+    {
+      "contract_batch_lane": "C1_expected_restore_or_candidate_scrub_contract",
+      "row_count": 6,
+      "post_ids": [
+        11697256,
+        11666741,
+        11694068,
+        11663511,
+        11669933,
+        11706831
+      ],
+      "canonical_verdict_counts": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": 6
+      },
+      "search_gate_counts": {
+        "SEARCH_BLIND_BLOCKER": 4,
+        "SEARCH_EVIDENCE_MISSING": 1,
+        "SEARCH_RECOVERED_CONDITIONAL": 1
+      },
+      "runtime_replay_allowed_rows": 0
+    },
+    {
+      "contract_batch_lane": "C3_stronger_evidence_or_native_web_hold",
+      "row_count": 5,
+      "post_ids": [
+        11669913,
+        11697242,
+        11718114,
+        11669926,
+        11677924
+      ],
+      "canonical_verdict_counts": {
+        "INSUFFICIENT_EVIDENCE_HOLD": 5
+      },
+      "search_gate_counts": {
+        "SEARCH_RECOVERED_CONDITIONAL": 4,
+        "SEARCH_OK": 1
+      },
+      "runtime_replay_allowed_rows": 0
+    }
+  ],
+  "rows": [
+    {
+      "post_id": 11669913,
+      "contract_batch_lane": "C3_stronger_evidence_or_native_web_hold",
+      "post_verdict_next_state": "hard_hold_or_native_web_review_required",
+      "canonical_verdict": "INSUFFICIENT_EVIDENCE_HOLD",
+      "evidence_grade": "Weak",
+      "canonical_title": "",
+      "canonical_url": "",
+      "expected_or_source_native_title": "하룬",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "runtime_release_condition": "blocked_until_stronger_evidence",
+      "runtime_replay_allowed": false,
+      "contract_test_required_before_runtime": true,
+      "actions": [
+        "collect_stronger_source_or_native_web_evidence",
+        "keep_hard_hold_until_evidence_strength_improves"
+      ],
+      "rationale_ko": "원문 제목에는 `하룬`이 보이나 본문은 수학 마법 평가이고 댓글은 `판수대`로 다른 작품을 끌어온다. Loop538도 `multi_work/context_only`와 `exact_alias_candidate_preserved_without_work_discussion`을 기록했으므로 expected title을 public restore 계약으로 넘기기에는 증거가 부족하다.",
+      "evidence_refs": [
+        "docs/devs/loop539_b1_missing_candidate_canonical_recheck11_batch.json#post_id=11669913",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop537_shared_gate_seeded_runtime_replay_input.jsonl#post_id=11669913",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop538_shared_gate_seeded_runtime_replay_result.json#post_id=11669913"
+      ]
+    },
+    {
+      "post_id": 11697242,
+      "contract_batch_lane": "C3_stronger_evidence_or_native_web_hold",
+      "post_verdict_next_state": "hard_hold_or_native_web_review_required",
+      "canonical_verdict": "INSUFFICIENT_EVIDENCE_HOLD",
+      "evidence_grade": "Weak",
+      "canonical_title": "",
+      "canonical_url": "",
+      "expected_or_source_native_title": "유희왕",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "runtime_release_condition": "blocked_until_stronger_evidence",
+      "runtime_replay_allowed": false,
+      "contract_test_required_before_runtime": true,
+      "actions": [
+        "collect_stronger_source_or_native_web_evidence",
+        "keep_hard_hold_until_evidence_strength_improves"
+      ],
+      "rationale_ko": "원문과 OCR은 `유희왕` 카드/캐릭터 밈을 다루며 Loop538은 `non_novel_discourse`, `community_banter`, `thematic_overlap_only`를 기록했다. 웹소설 current-work title로 expected를 복구하면 비소설/밈 표면 승격 위험이 크다.",
+      "evidence_refs": [
+        "docs/devs/loop539_b1_missing_candidate_canonical_recheck11_batch.json#post_id=11697242",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop537_shared_gate_seeded_runtime_replay_input.jsonl#post_id=11697242",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop538_shared_gate_seeded_runtime_replay_result.json#post_id=11697242"
+      ]
+    },
+    {
+      "post_id": 11697256,
+      "contract_batch_lane": "C1_expected_restore_or_candidate_scrub_contract",
+      "post_verdict_next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+      "canonical_verdict": "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+      "evidence_grade": "Medium",
+      "canonical_title": "황제의 딸로 환생했다",
+      "canonical_url": "https://novelpia.com/novel/250464",
+      "expected_or_source_native_title": "황제의 딸로 환생했다",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+      "runtime_release_condition": "blocked_until_contract_tests_pass",
+      "runtime_replay_allowed": false,
+      "contract_test_required_before_runtime": true,
+      "actions": [
+        "write_expected_restore_or_candidate_scrub_contract_test",
+        "keep_runtime_replay_blocked_until_contract_passes"
+      ],
+      "rationale_ko": "댓글에서 `황제딸`과 `황제의 딸로 환생했습니다`가 추천 답변으로 직접 나오고, Loop538 search evidence는 노벨피아 공식 상세 `황제의 딸로 환생했다`를 잡았다. 다만 추천 문맥과 weak alias bridge가 있어 runtime 복구 전 계약 테스트가 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop539_b1_missing_candidate_canonical_recheck11_batch.json#post_id=11697256",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop537_shared_gate_seeded_runtime_replay_input.jsonl#post_id=11697256",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop538_shared_gate_seeded_runtime_replay_result.json#post_id=11697256"
+      ]
+    },
+    {
+      "post_id": 11718114,
+      "contract_batch_lane": "C3_stronger_evidence_or_native_web_hold",
+      "post_verdict_next_state": "hard_hold_or_native_web_review_required",
+      "canonical_verdict": "INSUFFICIENT_EVIDENCE_HOLD",
+      "evidence_grade": "Weak",
+      "canonical_title": "",
+      "canonical_url": "",
+      "expected_or_source_native_title": "설정값 딸깍으로 판타지 시스템 정상화",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_OK",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "runtime_release_condition": "blocked_until_stronger_evidence",
+      "runtime_replay_allowed": false,
+      "contract_test_required_before_runtime": true,
+      "actions": [
+        "collect_stronger_source_or_native_web_evidence",
+        "keep_hard_hold_until_evidence_strength_improves"
+      ],
+      "rationale_ko": "원문은 `시스템 딸깍`, `파이어볼`, `마법 강사질` 같은 장르/클리셰 비평이고 이미지도 character_visual_only다. Loop538은 `context_only`, `scope_not_current_work`, `image_ocr_without_title_anchor`를 기록했으므로 특정 expected title 복구는 보류한다.",
+      "evidence_refs": [
+        "docs/devs/loop539_b1_missing_candidate_canonical_recheck11_batch.json#post_id=11718114",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop537_shared_gate_seeded_runtime_replay_input.jsonl#post_id=11718114",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop538_shared_gate_seeded_runtime_replay_result.json#post_id=11718114"
+      ]
+    },
+    {
+      "post_id": 11666741,
+      "contract_batch_lane": "C1_expected_restore_or_candidate_scrub_contract",
+      "post_verdict_next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+      "canonical_verdict": "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+      "evidence_grade": "Medium",
+      "canonical_title": "별을 품은 소드마스터",
+      "canonical_url": "",
+      "expected_or_source_native_title": "별을 품은 소드마스터",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_EVIDENCE_MISSING",
+      "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+      "runtime_release_condition": "blocked_until_contract_tests_pass",
+      "runtime_replay_allowed": false,
+      "contract_test_required_before_runtime": true,
+      "actions": [
+        "write_expected_restore_or_candidate_scrub_contract_test",
+        "keep_runtime_replay_blocked_until_contract_passes"
+      ],
+      "rationale_ko": "원문 제목과 본문은 `별품소` 웹툰/결말/기사뽕을 직접 말하고, Loop538 search evidence는 `별을 품은 소드마스터`를 별품소 약칭과 웹툰 맥락으로 회수했다. 공식 URL은 부족하므로 Medium으로 두고 계약 테스트 전 runtime release는 열지 않는다.",
+      "evidence_refs": [
+        "docs/devs/loop539_b1_missing_candidate_canonical_recheck11_batch.json#post_id=11666741",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop537_shared_gate_seeded_runtime_replay_input.jsonl#post_id=11666741",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop538_shared_gate_seeded_runtime_replay_result.json#post_id=11666741"
+      ]
+    },
+    {
+      "post_id": 11694068,
+      "contract_batch_lane": "C1_expected_restore_or_candidate_scrub_contract",
+      "post_verdict_next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+      "canonical_verdict": "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+      "evidence_grade": "Strong",
+      "canonical_title": "트와일라잇",
+      "canonical_url": "https://page.kakao.com/content/47180017",
+      "expected_or_source_native_title": "트와일라잇",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+      "runtime_release_condition": "blocked_until_contract_tests_pass",
+      "runtime_replay_allowed": false,
+      "contract_test_required_before_runtime": true,
+      "actions": [
+        "write_expected_restore_or_candidate_scrub_contract_test",
+        "keep_runtime_replay_blocked_until_contract_passes"
+      ],
+      "rationale_ko": "원문 제목은 `트와일라잇 인터뷰`이고 이미지 OCR도 `Twilight`와 작가 맥락을 직접 잡는다. Loop492는 한국어/영어 표기 variant same-work로 이미 ACCEPT 판정했으므로, missing-candidate 상태에서는 expected `트와일라잇`을 source-native title로 유지한다.",
+      "evidence_refs": [
+        "docs/devs/loop539_b1_missing_candidate_canonical_recheck11_batch.json#post_id=11694068",
+        "docs/devs/loop492_p0_hold9_source_native_verdicts.json#post_id=11694068",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop537_shared_gate_seeded_runtime_replay_input.jsonl#post_id=11694068",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop538_shared_gate_seeded_runtime_replay_result.json#post_id=11694068"
+      ]
+    },
+    {
+      "post_id": 11663511,
+      "contract_batch_lane": "C1_expected_restore_or_candidate_scrub_contract",
+      "post_verdict_next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+      "canonical_verdict": "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+      "evidence_grade": "Strong",
+      "canonical_title": "부캐 키우는 황태자님",
+      "canonical_url": "",
+      "expected_or_source_native_title": "부캐 키우는 황태자님",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "primary_repair_lane": "title_url_or_variant_trace_repair",
+      "runtime_release_condition": "blocked_until_contract_tests_pass",
+      "runtime_replay_allowed": false,
+      "contract_test_required_before_runtime": true,
+      "actions": [
+        "write_expected_restore_or_candidate_scrub_contract_test",
+        "keep_runtime_replay_blocked_until_contract_passes"
+      ],
+      "rationale_ko": "원문 제목 `부캐황태자99화)`는 expected title의 약칭과 회차 표면을 직접 포함하고 본문도 해당 회차 반응이다. Loop538은 current_work와 official_detail recovery 후보를 기록했으나 다른 후보로 scrub됐으므로 expected restore 계약 테스트가 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop539_b1_missing_candidate_canonical_recheck11_batch.json#post_id=11663511",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop537_shared_gate_seeded_runtime_replay_input.jsonl#post_id=11663511",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop538_shared_gate_seeded_runtime_replay_result.json#post_id=11663511"
+      ]
+    },
+    {
+      "post_id": 11669926,
+      "contract_batch_lane": "C3_stronger_evidence_or_native_web_hold",
+      "post_verdict_next_state": "hard_hold_or_native_web_review_required",
+      "canonical_verdict": "INSUFFICIENT_EVIDENCE_HOLD",
+      "evidence_grade": "Weak",
+      "canonical_title": "",
+      "canonical_url": "",
+      "expected_or_source_native_title": "싸울아비 룬",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+      "runtime_release_condition": "blocked_until_stronger_evidence",
+      "runtime_replay_allowed": false,
+      "contract_test_required_before_runtime": true,
+      "actions": [
+        "collect_stronger_source_or_native_web_evidence",
+        "keep_hard_hold_until_evidence_strength_improves"
+      ],
+      "rationale_ko": "이미지 OCR은 `싸울 아비문`처럼 읽혔고 검색은 `싸울아비 룬` 쪽을 회수했지만, 원문 텍스트는 직업/마녀/유사TS 감상만으로 제목을 직접 확인하지 못한다. OCR/검색 후보 충돌을 풀기 전 expected title 복구는 보류한다.",
+      "evidence_refs": [
+        "docs/devs/loop539_b1_missing_candidate_canonical_recheck11_batch.json#post_id=11669926",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop537_shared_gate_seeded_runtime_replay_input.jsonl#post_id=11669926",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop538_shared_gate_seeded_runtime_replay_result.json#post_id=11669926"
+      ]
+    },
+    {
+      "post_id": 11669933,
+      "contract_batch_lane": "C1_expected_restore_or_candidate_scrub_contract",
+      "post_verdict_next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+      "canonical_verdict": "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+      "evidence_grade": "Strong",
+      "canonical_title": "회귀수선전",
+      "canonical_url": "https://namu.wiki/w/%ED%9A%8C%EA%B7%80%EC%88%98%EC%84%A0%EC%A0%84(%E5%9B%9E%E6%AD%B8%E4%BF%AE%E4%BB%99%E5%82%B3)",
+      "expected_or_source_native_title": "회귀수선전",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "primary_repair_lane": "title_url_or_variant_trace_repair",
+      "runtime_release_condition": "blocked_until_contract_tests_pass",
+      "runtime_replay_allowed": false,
+      "contract_test_required_before_runtime": true,
+      "actions": [
+        "write_expected_restore_or_candidate_scrub_contract_test",
+        "keep_runtime_replay_blocked_until_contract_passes"
+      ],
+      "rationale_ko": "원문은 `중경계`, `해방상제`, `서휼` 등 회귀수선전 고유 설정/인물을 직접 묻고, search evidence도 회귀수선전 설정 문서를 회수한다. expected title 자체는 source-native로 확인되며 후속은 candidate restore 계약 테스트 문제다.",
+      "evidence_refs": [
+        "docs/devs/loop539_b1_missing_candidate_canonical_recheck11_batch.json#post_id=11669933",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop537_shared_gate_seeded_runtime_replay_input.jsonl#post_id=11669933",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop538_shared_gate_seeded_runtime_replay_result.json#post_id=11669933"
+      ]
+    },
+    {
+      "post_id": 11677924,
+      "contract_batch_lane": "C3_stronger_evidence_or_native_web_hold",
+      "post_verdict_next_state": "hard_hold_or_native_web_review_required",
+      "canonical_verdict": "INSUFFICIENT_EVIDENCE_HOLD",
+      "evidence_grade": "Weak",
+      "canonical_title": "",
+      "canonical_url": "",
+      "expected_or_source_native_title": "고결에 오만이 깃들 때",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "primary_repair_lane": "title_url_or_variant_trace_repair",
+      "runtime_release_condition": "blocked_until_stronger_evidence",
+      "runtime_replay_allowed": false,
+      "contract_test_required_before_runtime": true,
+      "actions": [
+        "collect_stronger_source_or_native_web_evidence",
+        "keep_hard_hold_until_evidence_strength_improves"
+      ],
+      "rationale_ko": "이미지 OCR과 search evidence는 `귀쟁이 투기장의 역배 기사님`과 `고결에 오만이 깃들 때`를 함께 보존한다. 원문은 남캐 일러/갑옷 감상이라 두 후보 중 단일 current work를 확정하기 어렵고, multi-work/image-title conflict가 남아 HOLD가 맞다.",
+      "evidence_refs": [
+        "docs/devs/loop539_b1_missing_candidate_canonical_recheck11_batch.json#post_id=11677924",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop537_shared_gate_seeded_runtime_replay_input.jsonl#post_id=11677924",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop538_shared_gate_seeded_runtime_replay_result.json#post_id=11677924"
+      ]
+    },
+    {
+      "post_id": 11706831,
+      "contract_batch_lane": "C1_expected_restore_or_candidate_scrub_contract",
+      "post_verdict_next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+      "canonical_verdict": "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+      "evidence_grade": "Strong",
+      "canonical_title": "소설 속 빌런은 아카데미 차석으로 살아간다",
+      "canonical_url": "https://novelpia.com/novel/341994",
+      "expected_or_source_native_title": "소설 속 빌런은 아카데미 차석으로 살아간다",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "runtime_release_condition": "blocked_until_contract_tests_pass",
+      "runtime_replay_allowed": false,
+      "contract_test_required_before_runtime": true,
+      "actions": [
+        "write_expected_restore_or_candidate_scrub_contract_test",
+        "keep_runtime_replay_blocked_until_contract_passes"
+      ],
+      "rationale_ko": "원문 제목 `빌런차석 살아남?`과 댓글 `연재는 하고 있음`은 해당 작품의 약칭/연재 상태 질문이고, Loop538 search evidence는 노벨피아 공식 상세 `소설 속 빌런은 아카데미 차석으로 살아간다`를 회수했다. expected title은 source-native로 유지한다.",
+      "evidence_refs": [
+        "docs/devs/loop539_b1_missing_candidate_canonical_recheck11_batch.json#post_id=11706831",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop537_shared_gate_seeded_runtime_replay_input.jsonl#post_id=11706831",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop538_shared_gate_seeded_runtime_replay_result.json#post_id=11706831"
+      ]
+    }
+  ],
+  "approval_boundary": {
+    "post_verdict_queue_is_not_runtime_release": true,
+    "runtime_replay_before_contract_tests_forbidden": true,
+    "full375_collateral_remains_no_go": true
+  }
+}

@@ -1,0 +1,278 @@
+{
+  "report_type": "title_mismatch_verdict_contract_plan",
+  "plan_id": "loop541_title_mismatch_shared_gate_contract_plan",
+  "generated_at": "2026-07-07T18:20:55",
+  "source_verdicts": "loop540_title_mismatch_hold3_source_native_verdicts",
+  "source_batch": "docs/devs/loop539_title_mismatch_hold3_source_native_batch.json",
+  "source_packet": "docs/devs/loop539_title_mismatch_hold3_source_native_review_packet.json",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "source_verdict_rows": 3,
+    "contract_plan_rows": 3,
+    "validation_issue_count": 0,
+    "review_label_counts": {
+      "ACCEPT": 1,
+      "HOLD": 1,
+      "REPROCESS": 1
+    },
+    "contract_batch_lane_counts": {
+      "T1_expected_audit_update_or_blind_acceptance_contract": 1,
+      "T2_native_web_disambiguation_hold": 1,
+      "T3_canonical_cleanup_or_url_correction_contract": 1
+    },
+    "contract_action_counts": {
+      "expected_audit_update_exclusion_contract_case": 1,
+      "native_web_disambiguation_hold_contract_case": 1,
+      "canonical_cleanup_or_url_correction_contract_case": 1
+    },
+    "promotion_decision_status_counts": {
+      "publish": 1,
+      "candidate_only": 2
+    },
+    "contract_blocking_reason_counts": {
+      "native_web_disambiguation_required": 1,
+      "canonical_cleanup_required": 1
+    },
+    "runtime_replay_allowed_rows": 0,
+    "contract_test_required_rows": 2,
+    "stronger_evidence_required_rows": 1,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "rows": [
+    {
+      "post_id": 11660277,
+      "contract_batch_lane": "T1_expected_audit_update_or_blind_acceptance_contract",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "actual_image_ocr_title_correct_expected_was_post_question_surface",
+      "evidence_grade": "Strong",
+      "expected_title": "아카메디 아카데미 본 사람?",
+      "actual_title": "아카메디 아카데미",
+      "target_title": "아카메디 아카데미",
+      "target_url": "https://novelpia.com/novel/22299",
+      "contract_blocking_reason": null,
+      "contract_action": "expected_audit_update_exclusion_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "아카메디 아카데미",
+        "official_url": "https://novelpia.com/novel/22299",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "title_mismatch_expected_update_contract_case"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11660277,
+        "candidate_title": "아카메디 아카데미",
+        "candidate_url": "https://novelpia.com/novel/22299",
+        "source": "title_mismatch_verdict_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "title_mismatch_source_native_verdict",
+            "T1_expected_audit_update_or_blind_acceptance_contract"
+          ],
+          "competing_candidates": [
+            "아카메디 아카데미",
+            "아카메디 아카데미 본 사람?"
+          ],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "title_mismatch_source_native_verdict",
+          "strength": "strong",
+          "source_path_or_snippet": "원문 제목은 추천/감상 문장이고 이미지 OCR은 노벨피아 작품 상세의 `아카메디 아카데미`를 직접 읽는다. expected `아카메디 아카데미 본 사람?`는 작품명이 아니라 과거 expected baseline이 글 표면 질문을 섞은 값이므로 actual public title을 정당 canonical로 본다.",
+          "supports_publish": true,
+          "reason_code": "title_mismatch_expected_update_contract_case"
+        }
+      ],
+      "runtime_replay_allowed": false,
+      "contract_test_required_before_runtime": true,
+      "stronger_evidence_required_before_runtime": false,
+      "rationale_ko": "원문 제목은 추천/감상 문장이고 이미지 OCR은 노벨피아 작품 상세의 `아카메디 아카데미`를 직접 읽는다. expected `아카메디 아카데미 본 사람?`는 작품명이 아니라 과거 expected baseline이 글 표면 질문을 섞은 값이므로 actual public title을 정당 canonical로 본다.",
+      "evidence_refs": [
+        "docs/devs/loop539_title_mismatch_hold3_source_native_review_packet.json#post_id=11660277",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop537_shared_gate_seeded_runtime_replay_input.jsonl#post_id=11660277",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop538_shared_gate_seeded_runtime_replay_result.json#post_id=11660277"
+      ]
+    },
+    {
+      "post_id": 11694063,
+      "contract_batch_lane": "T2_native_web_disambiguation_hold",
+      "review_label": "HOLD",
+      "source_native_verdict": "ambiguous_elisia_alias_requires_character_work_native_review",
+      "evidence_grade": "Medium",
+      "expected_title": "빙의한 신의 아이, 엘리시아",
+      "actual_title": "엘리시아 전기",
+      "target_title": "빙의한 신의 아이, 엘리시아",
+      "target_url": null,
+      "contract_blocking_reason": "native_web_disambiguation_required",
+      "contract_action": "native_web_disambiguation_hold_contract_case",
+      "promotion_decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": true,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discussion_missing",
+          "context_only",
+          "scope_context_only",
+          "scope_not_current_work",
+          "native_web_disambiguation_required"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11694063,
+        "candidate_title": "빙의한 신의 아이, 엘리시아",
+        "candidate_url": "",
+        "source": "title_mismatch_verdict_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": false,
+        "title_resolution_state": "context_only",
+        "work_resolution": "unresolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "context_only",
+          "confidence": "medium",
+          "direct_bridge_sources": [
+            "title_mismatch_source_native_verdict",
+            "T2_native_web_disambiguation_hold"
+          ],
+          "competing_candidates": [
+            "엘리시아 전기",
+            "빙의한 신의 아이, 엘리시아"
+          ],
+          "conflict_reason_codes": [
+            "native_web_disambiguation_required"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "title_mismatch_source_native_verdict",
+          "strength": "medium",
+          "source_path_or_snippet": "원문은 `엘리시아`, `아레스`, 캐릭터 해석을 말하고 Loop538은 `빙의한 신의 아이, 엘리시아`와 `엘리시아 전기`를 모두 후보로 보존했다. actual이 더 높은 confidence로 올라왔지만 동일 별칭 경쟁과 character-only 이미지가 남아 있어 blind/native-web 검증 전에는 expected도 actual도 단독 정답으로 닫지 않는다.",
+          "supports_publish": false,
+          "reason_code": "native_web_disambiguation_required"
+        }
+      ],
+      "runtime_replay_allowed": false,
+      "contract_test_required_before_runtime": false,
+      "stronger_evidence_required_before_runtime": true,
+      "rationale_ko": "원문은 `엘리시아`, `아레스`, 캐릭터 해석을 말하고 Loop538은 `빙의한 신의 아이, 엘리시아`와 `엘리시아 전기`를 모두 후보로 보존했다. actual이 더 높은 confidence로 올라왔지만 동일 별칭 경쟁과 character-only 이미지가 남아 있어 blind/native-web 검증 전에는 expected도 actual도 단독 정답으로 닫지 않는다.",
+      "evidence_refs": [
+        "docs/devs/loop539_title_mismatch_hold3_source_native_review_packet.json#post_id=11694063",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop537_shared_gate_seeded_runtime_replay_input.jsonl#post_id=11694063",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop538_shared_gate_seeded_runtime_replay_result.json#post_id=11694063"
+      ]
+    },
+    {
+      "post_id": 11718098,
+      "contract_batch_lane": "T3_canonical_cleanup_or_url_correction_contract",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "abbreviation_supports_expected_official_title_after_candidate_contaminated",
+      "evidence_grade": "Strong",
+      "expected_title": "마법 좋아좋아좋아",
+      "actual_title": "마법 좋아, 마법과 좋아",
+      "target_title": "마법 좋아좋아좋아",
+      "target_url": null,
+      "contract_blocking_reason": "canonical_cleanup_required",
+      "contract_action": "canonical_cleanup_or_url_correction_contract_case",
+      "promotion_decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": true,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discussion_missing",
+          "context_only",
+          "scope_context_only",
+          "scope_not_current_work",
+          "canonical_cleanup_required"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11718098,
+        "candidate_title": "마법 좋아좋아좋아",
+        "candidate_url": "",
+        "source": "title_mismatch_verdict_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": false,
+        "title_resolution_state": "context_only",
+        "work_resolution": "unresolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "context_only",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "title_mismatch_source_native_verdict",
+            "T3_canonical_cleanup_or_url_correction_contract"
+          ],
+          "competing_candidates": [
+            "마법 좋아, 마법과 좋아",
+            "마법 좋아좋아좋아"
+          ],
+          "conflict_reason_codes": [
+            "canonical_cleanup_required"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "title_mismatch_source_native_verdict",
+          "strength": "strong",
+          "source_path_or_snippet": "Loop492 native-web verdict를 승계한다. 원문 `마좋좋좋`과 결말 반응은 공식 작품 `마법 좋아좋아좋아`를 직접 가리키며, actual `마법 좋아, 마법과 좋아`와 URL `3260401`은 후보/URL 오염으로 재처리해야 한다.",
+          "supports_publish": false,
+          "reason_code": "canonical_cleanup_required"
+        }
+      ],
+      "runtime_replay_allowed": false,
+      "contract_test_required_before_runtime": true,
+      "stronger_evidence_required_before_runtime": false,
+      "rationale_ko": "Loop492 native-web verdict를 승계한다. 원문 `마좋좋좋`과 결말 반응은 공식 작품 `마법 좋아좋아좋아`를 직접 가리키며, actual `마법 좋아, 마법과 좋아`와 URL `3260401`은 후보/URL 오염으로 재처리해야 한다.",
+      "evidence_refs": [
+        "docs/devs/loop539_title_mismatch_hold3_source_native_review_packet.json#post_id=11718098",
+        "docs/devs/loop492_p0_hold9_source_native_verdicts.json#post_id=11718098",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop537_shared_gate_seeded_runtime_replay_input.jsonl#post_id=11718098",
+        "https://novelpia.com/novel/326040"
+      ]
+    }
+  ],
+  "approval_boundary": {
+    "title_mismatch_plan_is_not_runtime_replay": true,
+    "accept_label_is_expected_audit_update_contract_only": true,
+    "runtime_replay_before_contract_tests_forbidden": true,
+    "full375_collateral_remains_no_go": true
+  }
+}

@@ -226,7 +226,7 @@ def write_markdown(path: Path, plan: dict[str, Any]) -> None:
     lines = [
         f"# {plan.get('plan_id')}",
         "",
-        "Loop530 post-verdict contract queue를 shared `can_publish_title` gate 입력으로 변환한 계약 계획이다. "
+        "Post-verdict contract queue를 shared `can_publish_title` gate 입력으로 변환한 계약 계획이다. "
         "이 산출물은 runtime replay 허가가 아니며, C1/C2 contract test와 C3 stronger evidence 확인 전에는 release를 열지 않는다.",
         "",
         "## 요약",
@@ -255,7 +255,7 @@ def write_markdown(path: Path, plan: dict[str, Any]) -> None:
         )
     lines.extend(["", "## Gate 해석", ""])
     lines.append(
-        "C1 일부는 expected title restore contract case로 정리되지만 이는 contract test 입력일 뿐이다. "
+        "Post-verdict C1 일부는 expected title restore contract case로 정리되지만 이는 contract test 입력일 뿐이다. "
         "C2는 canonical variant policy가 닫히기 전까지 candidate-only로 유지하고, "
         "C3는 stronger evidence/native-web 확인 전까지 hard hold로 둔다. "
         "따라서 goal은 `ACTIVE / NOT_COMPLETE`이고 완료 기준은 계속 `full375 collateral GO + full_scan 경로 정의`다."

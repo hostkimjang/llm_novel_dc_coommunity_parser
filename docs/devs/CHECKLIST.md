@@ -1,5 +1,27 @@
 # Development Checklist
 
+## 2026-07-07 Loop541 shared-gate contract plan 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 런을 실행하지 않았다.
+- [x] B1 Loop540 verdict `11`건을 post-verdict contract queue로 전환했다.
+- [x] B1 contract queue validation issue는 `0`이다.
+- [x] B1 lane은 `C1 6 / C3 5`다.
+- [x] B1 shared-gate plan은 `candidate_only 10 / publish contract case 1`이다.
+- [x] B1 runtime replay allowed rows는 `0`이다.
+- [x] Title mismatch `3`건을 shared-gate contract plan으로 전환했다.
+- [x] Title mismatch plan은 `expected audit update 1 / native-web hold 1 / cleanup correction 1`이다.
+- [x] Title mismatch runtime replay allowed rows는 `0`이다.
+- [x] 기존 post-verdict Markdown의 과거 회차/고정 row-count 문구를 일반화했다.
+- [x] JSON parse PASS, py_compile PASS, 관련 unittest `10` tests PASS, `git diff --check` PASS다.
+- [ ] B1 publish contract case `11669933`은 contract test 전 runtime release하지 않는다.
+- [ ] Search blind/evidence missing C1 `5`건은 search evidence 복구 전 no-publish로 유지한다.
+- [ ] C3 `5`건은 stronger evidence/native-web review 전 hard-hold를 유지한다.
+- [ ] Title mismatch `ACCEPT`는 expected audit update/exclusion contract로만 사용한다.
+- [ ] `11718098` cleanup/URL correction 전 runtime replay를 열지 않는다.
+- [ ] Dashboard 상태를 semantic/full_scan approval 근거로 쓰지 않는다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: B1 contract `REVIEW-LOCKED / 11`, title mismatch contract `REVIEW-LOCKED / 3`, runtime replay `BLOCKED / allowed 0`, full375 collateral `NO-GO / residual 100`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop540 verdict 적용 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 런을 실행하지 않았다.

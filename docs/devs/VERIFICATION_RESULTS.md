@@ -1,5 +1,31 @@
 # Verification Results
 
+## 2026-07-07 Loop541 verdict to shared-gate contract plan
+
+- 코드:
+  - `tools/build_canonical_post_verdict_contract_queue.py` Markdown의 `22/22` 하드코딩을 현재 row 수 기반으로 일반화했다.
+  - `tools/build_post_verdict_promotion_gate_contract_plan.py` Markdown의 `Loop530` 고정 문구를 일반 post-verdict 문구로 바꿨다.
+  - `tools/build_title_mismatch_verdict_contract_plan.py`를 추가해 title mismatch verdict를 shared `can_publish_title` gate plan으로 변환한다.
+  - `tests/test_build_title_mismatch_verdict_contract_plan.py`를 추가했다.
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_541_REPORT_20260707.md`
+  - `docs/devs/loop541_b1_missing_candidate_post_verdict_contract_queue.json`
+  - `docs/devs/loop541_b1_missing_candidate_shared_gate_contract_plan.json`
+  - `docs/devs/loop541_title_mismatch_shared_gate_contract_plan.json`
+- 검증:
+  - B1 contract queue generation: PASS, validation issue `0`.
+  - B1 shared-gate plan generation: PASS, validation issue `0`.
+  - Title mismatch shared-gate plan generation: PASS, validation issue `0`.
+  - JSON parse: PASS, `3` files.
+  - py_compile: PASS, related tools/tests.
+  - unittest: PASS, `10` tests.
+  - `git diff --check`: PASS.
+- 결과:
+  - B1 plan은 `candidate_only 10 / publish 1`이며 publish `1`도 expected title restore contract case일 뿐 runtime approval이 아니다.
+  - B1 runtime replay allowed rows는 `0`이다.
+  - Title mismatch plan은 `publish 1 / candidate_only 2`, runtime replay allowed rows `0`이다.
+- Gate: B1 contract `REVIEW-LOCKED / 11`, title mismatch contract `REVIEW-LOCKED / 3`, runtime replay `BLOCKED / allowed 0`, full375 collateral `NO-GO / residual 100`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop540 B1 verdict 적용과 title mismatch 3건 분리
 
 - 실행:

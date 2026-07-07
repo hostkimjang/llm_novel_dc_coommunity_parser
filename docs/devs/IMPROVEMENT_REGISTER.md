@@ -1,5 +1,21 @@
 # Improvement Register
 
+## IMP-20260707-541 - Loop540 verdict의 shared-gate contract plan 전환
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | BLOCKED | 새 runtime/bounded/full375 실행 없음, allowed rows `0` | contract/evidence 전 replay 금지 |
+| B1 contract queue | REVIEW-LOCKED | rows `11`, validation issue `0`, lane `C1 6 / C3 5` | C1/C3 후속 분리 |
+| B1 shared-gate plan | REVIEW-LOCKED | `candidate_only 10 / publish 1`, publish는 contract case | 11669933 contract test |
+| Search-blind C1 | BLOCKED | `search_blind_condition 4`, `search_evidence_missing 1` | search evidence 복구 전 no-publish |
+| C3 hard-hold | HOLD | `stronger_evidence_required 5` | native-web/stronger evidence review |
+| Title mismatch plan | REVIEW-LOCKED | `expected update 1 / native hold 1 / cleanup 1`, allowed `0` | 11660277/11694063/11718098 후속 계약 |
+| Tooling hygiene | GO_UNIT | Loop530/22-row Markdown 하드코딩 제거, title mismatch plan tool/test 추가 | future loop 재사용 |
+| Full375 collateral | NO-GO | residual `100` 유지 | contract repair 뒤 full375 재검증 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: B1 contract `REVIEW-LOCKED / 11`, title mismatch contract `REVIEW-LOCKED / 3`, runtime replay `BLOCKED / allowed 0`, full375 collateral `NO-GO / residual 100`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-540 - B1 verdict 적용과 title mismatch 3건 분리
 
 | 항목 | 상태 | 근거 | 다음 |

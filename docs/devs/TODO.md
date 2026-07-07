@@ -1,5 +1,27 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop541 TODO
+
+- 상태 업데이트: Loop540 B1/title mismatch verdict를 shared promotion gate contract plan으로 전환했다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 런을 발주하지 않았다.
+- [x] B1 contract queue rows는 `11`, validation issue는 `0`이다.
+- [x] B1 shared-gate plan은 `candidate_only 10 / publish contract case 1`이다.
+- [x] B1 runtime replay allowed rows는 `0`이다.
+- [x] Title mismatch shared-gate plan rows는 `3`, validation issue는 `0`이다.
+- [x] Title mismatch plan은 `expected audit update 1 / native-web hold 1 / cleanup correction 1`이다.
+- [x] Title mismatch runtime replay allowed rows는 `0`이다.
+- [x] Title mismatch contract plan tool/test를 추가했다.
+- [x] 기존 post-verdict Markdown 하드코딩을 일반화했다.
+- [ ] `11669933` expected title restore contract test를 작성한다.
+- [ ] C1 search-blind/evidence-missing `5`건은 search recovery 전 no-publish로 유지한다.
+- [ ] C3 hard-hold `5`건은 stronger evidence/native-web review를 수행한다.
+- [ ] `11660277` expected audit update/exclusion 계약을 gate wiring에 반영한다.
+- [ ] `11694063` native-web disambiguation을 수행한다.
+- [ ] `11718098` canonical cleanup/official URL correction을 수행한다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: B1 contract `REVIEW-LOCKED / 11`, title mismatch contract `REVIEW-LOCKED / 3`, runtime replay `BLOCKED / allowed 0`, full375 collateral `NO-GO / residual 100`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop540 TODO
 
 - 상태 업데이트: Loop539 B1 missing-candidate `11`건과 title mismatch `3`건을 source-native verdict로 분리했다. Goal은 완료가 아니다.
