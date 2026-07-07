@@ -1,5 +1,23 @@
 # Operation Quality Checklist
 
+## 2026-07-08 Loop569 source-native safe-loss projection 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_569_REPORT_20260708.md`.
+  - [x] Source-native projection application 기록 완료: `docs/devs/loop569_source_native_safe_loss_projection_application.json/.md`.
+  - [x] Publication contract audit 기록 완료: `docs/devs/loop569_source_native_safe_loss_publication_contract_audit.json/.md`.
+  - [x] Full375 collateral compare/triage와 always-on gate 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop569_*`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+  - [x] Source-native seed는 approval이 아니라 projection contract input으로만 사용했다.
+  - [x] Publication contract `GO / 375 rows / 0 violations`는 trace convergence 근거일 뿐 full_scan approval이 아니다.
+  - [x] Golden18 `GO`를 full_scan approval로 승격하지 않았다.
+  - [x] Full375 raw regression `117`을 `NO-GO` blocker로 유지했다.
+  - [x] Dashboard는 이번 회차에 실행할 runtime이 없어 새 진행률이 없었고, 다음 test/runtime run에서 `--parallel 16`과 함께 기본 ON으로 붙인다.
+  - [x] Dashboard는 진행 확인 도구이며 semantic/full_scan approval 근거가 아니다.
+  - [x] Full375 collateral `GO` 전 goal completion을 선언하지 않는다.
+- Gate: source-native projection contract `REVIEW-LOCKED`, publication contract `GO`, golden `GO`, full375 collateral `NO-GO / raw 117`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop567-568 full375 collateral 재확인 품질 게이트
 
 - 근거:

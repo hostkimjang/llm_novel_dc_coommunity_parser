@@ -1,5 +1,15 @@
 # Sampling And Parallel Test Guide
 
+## 2026-07-08 현재 테스트런 진행상황 표시 기본값
+
+- 다음 regression-safe grounding test/runtime run은 진행상황 확인을 위해 `http://127.0.0.1:8080` web dashboard에 붙여 실행한다.
+- 요청 병렬도는 사용자 지시에 따라 `--parallel 16`을 기본으로 둔다. 입력 수나 healthy endpoint 수가 작으면 effective parallel이 16보다 낮을 수 있으며 정상이다.
+- `--no-dashboard`는 사용자가 명시적으로 끄라고 한 경우에만 허용한다. 계획 파일, run manifest, 추천 명령에 남아 있으면 실행 직전 제거한다.
+- 실행 전 dashboard health를 확인하고, 서버가 없으면 `python tools/dashboard_server.py --host 127.0.0.1 --port 8080`로 먼저 띄운다.
+- 이미 dashboard 없이 시작된 런은 중단하지 말고 `python tools/attach_manifest_dashboard.py --manifest <result_manifest.json> --dashboard-url http://127.0.0.1:8080`로 사후 부착한다.
+- Loop569는 projection/static 검증이라 새 runtime 진행률이 없었다. 새 runtime이 시작되면 manifest forwarding으로 dashboard 진행률이 갱신되어야 한다.
+- Dashboard는 진행상황 관측 도구이며 `semantic_quality`, `full_scan_approval`, `full375 collateral GO`의 승인 근거가 아니다.
+
 ## 2026-07-07 Loop564 runtime replay 대시보드 관측 결과
 
 - Loop564 runtime replay는 사용자 지시에 따라 `--parallel 16`과 dashboard ON으로 실행했다.

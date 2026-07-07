@@ -1,5 +1,19 @@
 # Development History
 
+## 2026-07-08 - Loop569 source-native safe-loss projection contract
+
+- 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+- `expert_main.py`의 projection follow-up seed helper가 `source_native_projection_contract_not_approval` 상태와 safe-loss/shared-gate action을 받을 수 있게 했다.
+- `tools/apply_source_native_repair_projection_contract.py`와 `tests/test_apply_source_native_repair_projection_contract.py`를 추가했다.
+- Loop567 full375 projection `375` rows와 source-native verdict `118` rows를 결합했다.
+- Eligible safe-loss `33`건 결과는 `applied_shared_gate_publish 14`, `post_sync_held 4`, `skipped_missing_official_detail_url 10`, `skipped_by_shared_gate 5`다.
+- Publication contract convergence는 `GO / 375 rows / 0 violations`다.
+- Golden18은 `GO / 18 of 18`이지만 full375 collateral은 changed `171`, raw regression `117`로 `NO-GO`다.
+- Always-on gate는 `NO-GO`, blocker는 `collateral:collateral_regression_count_nonzero`다.
+- 이번 회차는 projection/static 검증이라 새 dashboard runtime 진행률은 없었다. 다음 runtime/test run은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 실행한다.
+- Report는 `docs/devs/loop_reports/LOOP_569_REPORT_20260708.md`다.
+- Gate는 source-native projection contract `REVIEW-LOCKED`, publication contract `GO`, golden `GO`, full375 collateral `NO-GO / raw 117`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop567-568 full375 collateral recheck after Loop566
 
 - 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.

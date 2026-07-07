@@ -1,5 +1,33 @@
 # Verification Results
 
+## 2026-07-08 Loop569 source-native safe-loss projection contract
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_569_REPORT_20260708.md`
+  - `docs/devs/loop569_source_native_safe_loss_projection_application.json/.md`
+  - `docs/devs/loop569_source_native_safe_loss_publication_contract_audit.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop569_source_native_safe_loss_projection_result.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop569_source_native_safe_loss_collateral_compare.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop569_source_native_safe_loss_collateral_triage.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop569_always_on_golden18_full375_source_native_safe_loss_gate.json/.md`
+- 검증:
+  - Source-native projection application: PASS, projection rows `375`, verdict rows `118`, eligible safe-loss rows `33`.
+  - Application outcome: `applied_shared_gate_publish 14`, `post_sync_held 4`, `skipped_missing_official_detail_url 10`, `skipped_by_shared_gate 5`.
+  - Publication contract audit: PASS, `GO / 375 rows / 0 violations`.
+  - Golden audit: PASS, `GO / 18 of 18`.
+  - Full375 collateral compare: NO-GO, changed `171`, raw regression `117`.
+  - Collateral triage: NO-GO, `safe_loss_resolved_to_null 56 / unsafe_promotion_from_hold 28 / wrong_work_title_flip 33`.
+  - Always-on gate: NO-GO, blocker `collateral:collateral_regression_count_nonzero`.
+  - focused unittest: PASS, `10` tests.
+  - py_compile: PASS, `expert_main.py`, `tools\apply_source_native_repair_projection_contract.py`.
+  - broader focused unittest: PASS, `40` tests.
+  - Dashboard: NOT_RUN_THIS_LOOP, projection/static 검증이라 새 runtime 진행률 없음. 다음 test/runtime run은 `--parallel 16`, dashboard 기본 ON.
+- 결과:
+  - Source-native verdict 수렴 경로는 실코드와 계약 테스트로 생겼다.
+  - Full375 collateral이 `NO-GO`라 동결 해제와 full_scan approval은 열지 않는다.
+  - 이전 review-adjusted residual `79`는 새 projection 기준으로 재회계 전까지 재사용하지 않는다.
+- Gate: source-native projection contract `REVIEW-LOCKED`, publication contract `GO`, golden `GO`, full375 collateral `NO-GO / raw 117`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop567-568 full375 collateral recheck after Loop566
 
 - 산출물:

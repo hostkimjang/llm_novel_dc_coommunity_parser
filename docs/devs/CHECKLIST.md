@@ -1,5 +1,20 @@
 # Development Checklist
 
+## 2026-07-08 Loop569 source-native safe-loss projection contract 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 실행하지 않았다.
+- [x] `source_native_projection_contract_not_approval` seed 상태를 shared promotion seed helper에 연결했다.
+- [x] Source-native safe-loss verdict 적용 도구와 계약 테스트를 추가했다.
+- [x] Eligible safe-loss `33`건 중 `applied_shared_gate_publish 14`, `post_sync_held 4`, `skipped_missing_official_detail_url 10`, `skipped_by_shared_gate 5`로 기록했다.
+- [x] Publication contract는 `GO / 375 rows / 0 violations`다.
+- [x] Golden18은 `GO / 18 of 18`이다.
+- [x] Full375 collateral은 changed `171`, raw regression `117`로 `NO-GO`다.
+- [x] 이번 회차는 projection/static 검증이라 새 dashboard runtime 진행률은 없다.
+- [x] 다음 runtime/test run 계약은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지다.
+- [ ] 새 projection 기준 review-adjusted residual은 별도 재회계 전까지 주장하지 않는다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: source-native projection contract `REVIEW-LOCKED`, publication contract `GO`, golden `GO`, full375 collateral `NO-GO / raw 117`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop567-568 full375 collateral 재확인 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 실행하지 않았다.

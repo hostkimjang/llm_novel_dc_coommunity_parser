@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260708-569 - Source-native safe-loss projection contract
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | 다음 실제 test/runtime run은 dashboard attached로 실행 |
+| Shared seed wiring | GO_UNIT | `source_native_projection_contract_not_approval`과 safe-loss/shared-gate action 허용 | hard-negative 우회 없이 shared gate 유지 |
+| Application | REVIEW-LOCKED | eligible `33`, publish `14`, held `4`, skipped `15` | skipped URL/gate 사유 batch 처리 |
+| Publication contract | GO_PROJECTION_CONTRACT | `375` rows, violation `0` | full_scan approval로 오해 금지 |
+| Golden18 | GO | `18/18`, failed `0` | full375 collateral과 항상 동시 확인 |
+| Full375 collateral | NO-GO | changed `171`, raw regression `117` | 새 projection 기준 review-adjusted 재회계 |
+| Dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | 이번 loop runtime 없음, 다음 run `--parallel 16` + dashboard ON | 진행 관측용으로만 사용 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: source-native projection contract `REVIEW-LOCKED`, publication contract `GO`, golden `GO`, full375 collateral `NO-GO / raw 117`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-567-568 - Full375 collateral recheck and residual79 batch
 
 | 항목 | 상태 | 근거 | 다음 |

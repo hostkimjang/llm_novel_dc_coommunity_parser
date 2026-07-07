@@ -1,5 +1,21 @@
 # Developer TODO Index
 
+## 2026-07-08 Loop569 이후
+
+- 상태 업데이트: Source-native safe-loss projection contract는 실코드/계약 테스트로 들어갔지만 full375 collateral은 raw regression `117`로 `NO-GO`다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] `source_native_projection_contract_not_approval` seed 상태를 shared promotion seed helper에 연결했다.
+- [x] Safe-loss eligible `33`건 application을 생성했다.
+- [x] Publication contract는 `GO / 375 rows / 0 violations`로 확인했다.
+- [x] Golden18은 `GO / 18 of 18`로 확인했다.
+- [x] Always-on full375 collateral gate는 `NO-GO / raw 117`로 기록했다.
+- [x] 다음 runtime/test run 계약을 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 유지했다.
+- [ ] 새 projection 기준 review-adjusted residual을 재회계한다.
+- [ ] `wrong_work_title_flip 33`은 blind/source-native 검증 전 publish 완화 대상이 아니다.
+- [ ] `skipped_missing_official_detail_url 10`은 official detail URL 근거 보존 전 publish하지 않는다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: source-native projection contract `REVIEW-LOCKED`, publication contract `GO`, golden `GO`, full375 collateral `NO-GO / raw 117`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop567-568 이후
 
 - 상태 업데이트: Golden18은 `GO / 18 of 18`이지만 full375 collateral은 raw regression `118`, review-adjusted residual `79`로 `NO-GO`다. Goal은 완료가 아니다.

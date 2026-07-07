@@ -2,6 +2,15 @@
 
 검색 품질, slang DB 회수율, 대시보드/운영 UX처럼 사용자 체감 품질에 가까운 개선 항목을 관리한다.
 
+## 2026-07-08 테스트런 dashboard 진행률 UX
+
+- [x] 현재 테스트런 기본값을 `--parallel 16`, web dashboard ON, `--no-dashboard` 금지로 재확인했다.
+- [x] `tools/test_run_dashboard_policy.py`는 `TEST_RUNS_USE_PARALLEL_16_AND_WEB_DASHBOARD` 계약을 제공한다.
+- [x] `tools/run_independent_plan.py` 경로는 dashboard 기본 ON과 `--no-dashboard` 제거를 사용한다.
+- [x] `docs/devs/SAMPLING_AND_PARALLEL_TEST_GUIDE.md` 상단에 현재 기본값과 사후 attach 경로를 갱신했다.
+- [ ] 다음 실제 test/runtime run 시작 시 `http://127.0.0.1:8080` dashboard health와 진행률을 함께 보고한다.
+- Gate: dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, runtime approval 아님, full375 collateral `NO-GO`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## Current HEAD evidence refresh
 
 - [ ] Loop472 safe-loss runtime closure follow-up

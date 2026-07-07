@@ -6996,7 +6996,12 @@ def _apply_projection_followup_promotion_seed(
     identity = result_dict.get("identity")
     if not isinstance(identity, dict):
         return False
-    if projection_followup.get("approval_state") != "runtime_replay_required_not_approval":
+    approval_state = str(projection_followup.get("approval_state") or "").strip()
+    allowed_approval_states = {
+        "runtime_replay_required_not_approval",
+        "source_native_projection_contract_not_approval",
+    }
+    if approval_state not in allowed_approval_states:
         return False
     if projection_followup.get("projected_status") != "safe_resolved":
         return False
@@ -7008,7 +7013,12 @@ def _apply_projection_followup_promotion_seed(
         for value in (projection_followup.get("actions") or [])
         if str(value or "").strip()
     }
-    if "runtime_replay_with_projection_followup_seed_required" not in actions:
+    allowed_seed_actions = {
+        "runtime_replay_with_projection_followup_seed_required",
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required",
+    }
+    if not (actions & allowed_seed_actions):
         return False
 
     decision = projection_followup.get("promotion_decision")
