@@ -1,5 +1,18 @@
 # Improvement Register
 
+## IMP-20260707-525 - same-title readiness split before shared gate relaxation
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Readiness split | GO_UNIT | `repair_readiness_state` 추가 | same-title도 search/alignment 전에는 완화 금지 |
+| Same-title preflight | REVIEW | `11710049`, `11718099`, `11700483`, `11708470`은 search preflight required | search 복구 또는 source-native/blind 확인 선행 |
+| Conditional contract candidate | OPEN_REPAIR | `11682775` 1건 | candidate preservation/scrub 계약 수리, publish 승격 아님 |
+| Runtime replay boundary | GO_BLOCKED | `runtime_replay_allowed_rows=0` | contract/source-context 수리 전 반복 실행 금지 |
+| Verification | GO_UNIT | py_compile PASS, focused unittest `10` PASS, queue generation PASS | full375 collateral 전 approval 금지 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: queue schema `GO`, repair queue `REVIEW-LOCKED / 27`, readiness `REVIEW / candidate_alignment 22 + search_preflight 4 + conditional_contract 1`, runtime replay `NOT_RUN`, full375 collateral `NO-GO`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-524 - current projection candidate alignment in shared gate repair queue
 
 | 항목 | 상태 | 근거 | 다음 |

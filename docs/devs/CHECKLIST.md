@@ -1,5 +1,22 @@
 # Development Checklist
 
+## 2026-07-07 Loop525 same-title readiness 체크
+
+- [x] 새 runtime replay를 실행하지 않았다.
+- [x] Loop524 same-title surface `5`건을 search/readiness 기준으로 재분류했다.
+- [x] `repair_readiness_state`를 repair queue row와 summary에 추가했다.
+- [x] Readiness 분포는 `candidate_alignment_review_required 22`, `same_title_search_preflight_required 4`, `same_title_search_recovered_contract_candidate 1`이다.
+- [x] `same_title_contract_candidate`는 `0`건이다.
+- [x] Search preflight required post_id는 `11710049`, `11718099`, `11700483`, `11708470`이다.
+- [x] 조건부 contract candidate는 `11682775` 1건이다.
+- [x] `11682775`는 publish-ready가 아니라 candidate preservation/scrub 계약 수리 후보로 기록했다.
+- [x] `tests.test_shared_gate_runtime_block_repair_queue`는 `10` tests PASS다.
+- [x] Dashboard health는 `ok=true`, `standalone=true`, `pid=9320`이다.
+- [ ] Search preflight required 4건을 publish 완화 대상으로 쓰지 않는다.
+- [ ] `11682775`는 official URL 부재와 unverified image support를 닫기 전 safe_resolved로 승격하지 않는다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: queue schema `GO`, repair queue `REVIEW-LOCKED / 27`, readiness `REVIEW / candidate_alignment 22 + search_preflight 4 + conditional_contract 1`, runtime replay `NOT_RUN`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop524 current projection candidate alignment 체크
 
 - [x] 새 runtime replay를 실행하지 않았다.

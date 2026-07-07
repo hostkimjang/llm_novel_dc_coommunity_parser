@@ -1,5 +1,34 @@
 # Verification Results
 
+## 2026-07-07 Loop525 Verification
+
+- 범위: Loop524 same-title surface `5`건을 search/readiness 기준으로 재분류해 shared gate 완화 전 preflight를 강제했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_525_REPORT_20260707.md`
+  - state `docs\devs\loop525_same_title_readiness_state_20260707.json`
+  - repair queue `docs\devs\loop525_same_title_readiness_repair27_queue.json`
+  - repair queue markdown `docs\devs\loop525_same_title_readiness_repair27_queue.md`
+  - tool `tools\build_shared_gate_runtime_block_repair_queue.py`
+  - test `tests\test_shared_gate_runtime_block_repair_queue.py`
+- Result:
+  - repair queue rows `27`
+  - runtime replay allowed rows `0`
+  - validation issue `0`
+  - readiness `candidate_alignment_review_required 22`, `same_title_search_preflight_required 4`, `same_title_search_recovered_contract_candidate 1`
+  - `same_title_contract_candidate 0`
+  - conditional contract candidate `11682775`
+  - search preflight required `11710049`, `11718099`, `11700483`, `11708470`
+- Validation:
+  - `python -m py_compile tools\build_shared_gate_runtime_block_repair_queue.py tests\test_shared_gate_runtime_block_repair_queue.py` PASS.
+  - `python -m unittest tests.test_shared_gate_runtime_block_repair_queue -v` PASS, `10` tests.
+  - `tools\build_shared_gate_runtime_block_repair_queue.py --projection-result ... --fail-on-validation-issue` PASS.
+  - Generated queue JSON parse PASS.
+- Boundary:
+  - Loop525는 runtime replay가 아니다.
+  - `11682775`는 publish-ready가 아니라 candidate preservation/scrub 계약 수리 후보다.
+  - Search preflight required 4건은 gate 완화 대상이 아니다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-07 Loop524 Verification
 
 - 범위: Loop523 shared gate repair27 큐에 현재 projection `pre_gate_candidate`를 결합해 gate 완화 전 후보 정렬 review를 상시 회계하도록 했다.

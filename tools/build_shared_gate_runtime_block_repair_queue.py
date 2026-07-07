@@ -196,6 +196,20 @@ def _candidate_alignment_requires_review(state: str) -> bool:
     }
 
 
+def _repair_readiness_state(*, alignment_state: str, search_gate: str) -> str:
+    if alignment_state == "not_checked":
+        return "projection_alignment_not_checked"
+    if _candidate_alignment_requires_review(alignment_state):
+        return "candidate_alignment_review_required"
+    if search_gate in {"SEARCH_BLIND_BLOCKER", "SEARCH_EVIDENCE_MISSING"}:
+        return "same_title_search_preflight_required"
+    if search_gate == "SEARCH_RECOVERED_CONDITIONAL":
+        return "same_title_search_recovered_contract_candidate"
+    if search_gate == "SEARCH_OK":
+        return "same_title_contract_candidate"
+    return "manual_review_required"
+
+
 def _actions(row: dict[str, Any]) -> list[str]:
     value = row.get("actions") or []
     if isinstance(value, str):
@@ -421,6 +435,16 @@ def classify_repair_row(
     if alignment_requires_review:
         facets.append("current_projection_candidate_alignment_review")
         actions.insert(1, "current_projection_candidate_recheck_required")
+    readiness_state = _repair_readiness_state(
+        alignment_state=alignment_state,
+        search_gate=search_gate,
+    )
+    if readiness_state == "same_title_search_recovered_contract_candidate":
+        actions.insert(1, "same_title_search_recovered_contract_repair_candidate")
+    elif readiness_state == "same_title_contract_candidate":
+        actions.insert(1, "same_title_surface_contract_repair_candidate")
+    elif readiness_state == "same_title_search_preflight_required":
+        actions.insert(1, "same_title_surface_search_preflight_required")
 
     contract_tests = _contract_tests(lane)
     if alignment_requires_review:
@@ -440,6 +464,7 @@ def classify_repair_row(
         "current_projection_candidate": projection_candidate,
         "current_projection_candidate_alignment_state": alignment_state,
         "current_projection_candidate_alignment_requires_review": alignment_requires_review,
+        "repair_readiness_state": readiness_state,
         "source_native_verdict": row.get("source_native_verdict"),
         "prior_runtime_audit_status": _runtime_audit_status(row) or None,
         "prior_runtime_search_status": _runtime_search_status(row),
@@ -484,6 +509,7 @@ def build_repair_queue(
     )
     scope_conflict_kind_counts = Counter(str(row.get("projection_runtime_scope_conflict_kind") or "none") for row in out_rows)
     alignment_counts = Counter(str(row.get("current_projection_candidate_alignment_state") or "not_checked") for row in out_rows)
+    readiness_counts = Counter(str(row.get("repair_readiness_state") or "manual_review_required") for row in out_rows)
     lane_groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for row in out_rows:
         lane_groups[str(row["primary_repair_lane"])].append(row)
@@ -520,6 +546,9 @@ def build_repair_queue(
                 "current_projection_candidate_review_rows": sum(
                     1 for row in group_rows if row.get("current_projection_candidate_alignment_requires_review")
                 ),
+                "repair_readiness_counts": _counter_to_dict(
+                    Counter(str(row.get("repair_readiness_state") or "manual_review_required") for row in group_rows)
+                ),
                 "post_ids": [row.get("post_id") for row in group_rows],
                 "sample_rows": group_rows[:8],
             }
@@ -550,6 +579,7 @@ def build_repair_queue(
             "current_projection_candidate_review_rows": sum(
                 1 for row in out_rows if row.get("current_projection_candidate_alignment_requires_review")
             ),
+            "repair_readiness_counts": _counter_to_dict(readiness_counts),
             "validation_issue_count": len(validation_issues),
         },
         "stop_condition": {
@@ -587,6 +617,7 @@ def write_markdown(queue: dict[str, Any], path: Path) -> None:
         f"- projection_runtime_scope_conflict_kind_counts: `{summary.get('projection_runtime_scope_conflict_kind_counts')}`",
         f"- current_projection_candidate_alignment_counts: `{summary.get('current_projection_candidate_alignment_counts')}`",
         f"- current_projection_candidate_review_rows: `{summary.get('current_projection_candidate_review_rows')}`",
+        f"- repair_readiness_counts: `{summary.get('repair_readiness_counts')}`",
         f"- validation_issue_count: `{summary.get('validation_issue_count')}`",
         "- approval: `false`",
         "- semantic_quality: `REVIEW-LOCKED`",
@@ -614,6 +645,7 @@ def write_markdown(queue: dict[str, Any], path: Path) -> None:
                 f"- projection_runtime_scope_conflict_kind_counts: `{group.get('projection_runtime_scope_conflict_kind_counts')}`",
                 f"- current_projection_candidate_alignment_counts: `{group.get('current_projection_candidate_alignment_counts')}`",
                 f"- current_projection_candidate_review_rows: `{group.get('current_projection_candidate_review_rows')}`",
+                f"- repair_readiness_counts: `{group.get('repair_readiness_counts')}`",
                 f"- sample_post_ids: `{sample}`",
                 "",
             ]
