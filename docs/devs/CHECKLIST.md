@@ -1,5 +1,24 @@
 # Development Checklist
 
+## 2026-07-07 Loop513 unsafe_promotion INFO_MISSING 배치 체크
+
+- [x] Loop512 residual `source_native_or_blind_review_required 53`에서 `unsafe_promotion_from_hold` INFO_MISSING `12`건을 추출했다.
+- [x] Source-native/native-web verdict `docs/devs/loop513_unsafe_promotion_info_missing12_source_native_verdicts.json`를 작성했다.
+- [x] 추가 verdict label은 `ACCEPT 7`, `REPROCESS 5`, `HOLD 0`이다.
+- [x] Prior-compatible verdicts `78`건과 Loop512/Loop513 추가 verdict를 함께 반영했다.
+- [x] Review summary validation issue는 `0`이다.
+- [x] 전체 label은 `ACCEPT 37`, `REPROCESS 44`, `HOLD 19`, `INFO_MISSING 41`이다.
+- [x] Residual action queue는 `104`건이다.
+- [x] Residual bucket은 `safe_loss_resolved_to_null 84`, `unsafe_promotion_from_hold 9`, `wrong_work_title_flip 11`이다.
+- [x] 남은 source-native/blind review는 `safe_loss_resolved_to_null 41`뿐이다.
+- [x] Standalone dashboard health는 `ok=true`, `standalone=true`, `pid=9320`이다.
+- [x] 최신 Loop510 manifest dashboard attach 상태는 `375/375`, `parallel_count=16`, `batch_running=false`다.
+- [x] Report `docs/devs/loop_reports/LOOP_513_REPORT_20260707.md`를 작성했다.
+- [x] State `docs/devs/loop513_unsafe_promotion_batch_state_20260707.json`을 작성했다.
+- [ ] 이번 회차의 `ACCEPT`를 full_scan approval로 승격하지 않는다.
+- [ ] 다음은 `safe_loss_resolved_to_null` INFO_MISSING `41`건을 N건 배치로 처리한다.
+- Gate: full375 collateral `NO-GO / residual_action_queue_rows 104`, runtime replay `NOT_RUN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop512 collateral 재회계 체크
 
 - [x] Loop511 projection full375 collateral regression candidates `141`건을 현재 기준으로 재회계했다.

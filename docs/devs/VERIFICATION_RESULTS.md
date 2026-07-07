@@ -1,5 +1,37 @@
 # Verification Results
 
+## 2026-07-07 Loop513 Verification
+
+- 범위: Loop512 residual `unsafe_promotion_from_hold` INFO_MISSING `12`건을 source-native/native-web review로 처리하고, Loop513 summary와 residual action queue를 재생성했다. 새 runtime replay는 실행하지 않았다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_513_REPORT_20260707.md`
+  - state `docs\devs\loop513_unsafe_promotion_batch_state_20260707.json`
+  - unsafe verdicts `docs\devs\loop513_unsafe_promotion_info_missing12_source_native_verdicts.json`
+  - prior-compatible verdicts `docs\devs\loop513_projected_loop511_p0_prior_compatible_source_native_verdicts.json`
+  - placeholder verdicts `docs\devs\loop513_projected_loop511_p0_unreviewed_placeholder_verdicts.json`
+  - review summary `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop513_projected_loop511_after_unsafe12_review_summary.json`
+  - residual queue `docs\devs\loop513_after_unsafe12_review_adjusted_residual104_action_queue.json`
+- Result:
+  - additional unsafe reviewed rows `12`
+  - additional verdict label counts `ACCEPT 7`, `REPROCESS 5`, `HOLD 0`
+  - placeholder INFO_MISSING rows `41`
+  - label counts `ACCEPT 37`, `REPROCESS 44`, `HOLD 19`, `INFO_MISSING 41`
+  - residual action queue rows `104`
+  - residual bucket counts `safe_loss_resolved_to_null 84`, `unsafe_promotion_from_hold 9`, `wrong_work_title_flip 11`
+  - source-native/blind review remaining `safe_loss_resolved_to_null 41`
+- Dashboard:
+  - health `http://127.0.0.1:8080/api/health` PASS, `ok=true`, `standalone=true`, `pid=9320`
+  - latest Loop510 manifest attach PASS, status `375/375`, `progress_pct=100.0`, `parallel_count=16`, `batch_running=false`
+- Validation:
+  - JSON parse PASS for Loop513 verdict artifact.
+  - `tools\build_prior_compatible_collateral_verdicts.py ... --additional-covered-verdicts-json ...` PASS, compatible rows `78`, unreviewed current batch rows `63`.
+  - `tools\summarize_collateral_review_verdicts.py ...` PASS, validation issue `0`.
+  - `tools\split_collateral_action_queue.py ... --fail-on-validation-issue` PASS, residual action queue `104`, validation issue `0`.
+- Boundary:
+  - Loop513 is review/accounting progress, not runtime replay.
+  - Full375 collateral remains `NO-GO`.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-07 Loop512 Verification
 
 - 범위: Loop511 projection full375 collateral `141`건을 P0 review batch로 재회계하고, `wrong_work_title_flip` INFO_MISSING `10`건을 source-native/native-web review로 처리했다. 새 runtime replay는 실행하지 않았다.

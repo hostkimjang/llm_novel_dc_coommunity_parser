@@ -1,0 +1,256 @@
+{
+  "review_id": "loop513_unsafe_promotion_info_missing12_source_native_verdicts",
+  "loop": 513,
+  "source_batch": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_unreviewed_batch.json",
+  "scope": "Loop513 projected Loop511/512 INFO_MISSING unsafe_promotion_from_hold 12건 source-native/native-web 보강 판정",
+  "review_policy": "source-native 우선, 필요한 경우 native-web evidence_refs를 보강했다. ACCEPT는 regression-count 제외 후보일 뿐 semantic_quality/full_scan approval을 열지 않는다.",
+  "rows": [
+    {
+      "post_id": 11658621,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "title_similarity_and_character_image_not_enough_for_publish",
+      "evidence_grade": "Medium",
+      "action": [
+        "repair_unsafe_promotion",
+        "search_title_similarity_hard_hold_required"
+      ],
+      "rationale_ko": "원문은 `진짜였다고`, 실제 이름, 편결 도전 맥락만 말하고 이미지도 character_visual_only다. C1 존재는 native-web으로 확인되지만, 원문 표면과 C1 `무능한게 아니라 전설이였다고?` 사이의 직접 작품 앵커가 약해 promotion_blocked를 풀 근거로 부족하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_unreviewed_batch.json#post_id=11658621",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11658621",
+        "https://novelpia.com/novel/371917"
+      ]
+    },
+    {
+      "post_id": 11660238,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "selected_option_id": "C1",
+      "selected_title": "무림마조",
+      "selected_url": "https://novelpia.com/novel/347096",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "direct_abbreviation_and_character_context_support_promotion",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문 `림조`, `한서진`, `청월`은 같은 작품 소비/캐릭터 맥락이고, native-web에서도 `림조 청월`이 `무림마조` 맥락으로 확인된다. after C1 promotion은 source-native로 정당하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_unreviewed_batch.json#post_id=11660238",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11660238",
+        "https://m.dcinside.com/board/genrenovel/11793934",
+        "https://novelpia.com/novel/347096"
+      ]
+    },
+    {
+      "post_id": 11668324,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "selected_option_id": "C1",
+      "selected_title": "니들 생각 다 들린다",
+      "selected_url": "https://novelpia.com/novel/384318",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_alias_supported_but_multi_work_question_requires_candidate_preservation",
+      "evidence_grade": "Medium",
+      "action": [
+        "multi_work_guard_required",
+        "preserve_secondary_candidates"
+      ],
+      "rationale_ko": "`니생들`은 `니들 생각 다 들린다` 약칭으로 source-native와 native-web 근거가 있다. 그러나 원문은 `니생들이랑 김괴라리`를 함께 묻는 다작품 질문이라 C1 단일 public identity만 남기면 후보 보존이 불완전하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_unreviewed_batch.json#post_id=11668324",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11668324",
+        "https://m.dcinside.com/board/genrenovel/11417112",
+        "https://novelpia.com/novel/384318"
+      ]
+    },
+    {
+      "post_id": 11677957,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "selected_option_id": "C1",
+      "selected_title": "음악 천재가 불륜을 못 숨김",
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "author_surface_and_native_web_support_title_promotion",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문 `페도부이`는 작가 표면이고, native-web에서 `음악 천재가 불륜을 못 숨김`의 작가명/랭킹 표면과 연결된다. after title은 정당한 작품 승격이며 URL 누락은 collateral unsafe promotion으로 세지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_unreviewed_batch.json#post_id=11677957",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11677957",
+        "https://novelpia.com/novel/402592",
+        "https://m.dcinside.com/board/genrenovel/12096439",
+        "https://novelpia.com/top100/monopoly/weekly/donation/all/all/%EB%9D%BC%EC%9D%B4%ED%8A%B8%EB%85%B8%EB%B2%A8"
+      ]
+    },
+    {
+      "post_id": 11687635,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "selected_option_id": "C1",
+      "selected_title": "아포칼립스의 던전주가 되었다",
+      "selected_url": "https://novelpia.com/novel/367861",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "direct_image_work_surface_and_ocr_catalog_support_promotion",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "이미지 evidence catalog가 `아포칼립스의 던전주가 되었다`와 작가명을 OCR explicit work title로 잡고, 공식 URL도 같은 제목을 지지한다. 추천글 맥락이지만 source-native 현재 작품 앵커는 충분하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_unreviewed_batch.json#post_id=11687635",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11687635",
+        "https://novelpia.com/novel/367861"
+      ]
+    },
+    {
+      "post_id": 11690855,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "nonwork_limbus_game_metrics_context_blocks_fanfic_title_promotion",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_unsafe_promotion",
+        "intent_guard_review",
+        "nonwork_game_context_publish_block_required"
+      ],
+      "rationale_ko": "원문은 `림버스` 게임의 유저 수/씹덕겜 순위 이야기이고 이미지도 MAU 그래프와 게임 관련 장면이다. C1은 림버스 2차 창작 웹소설로, 원문 intent와 다른 후보를 검색/제목 표면으로 과승격한 상태다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_unreviewed_batch.json#post_id=11690855",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11690855"
+      ]
+    },
+    {
+      "post_id": 11705256,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "selected_option_id": "C1",
+      "selected_title": "하남자의 탑 공략법",
+      "selected_url": "https://novel.munpia.com/400210",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "direct_short_title_and_review_context_support_promotion",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문 `하남자 탑`은 `하남자의 탑 공략법` 약칭으로 읽히고, `하차함`, `50대 틀딱이면 좋아할 맛`은 작품 소비/리뷰 맥락이다. native-web도 같은 약칭과 작품명을 지지한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_unreviewed_batch.json#post_id=11705256",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11705256",
+        "https://m.dcinside.com/board/genrenovel/11376619",
+        "https://novel.munpia.com/400210"
+      ]
+    },
+    {
+      "post_id": 11705257,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "selected_option_id": "C1",
+      "selected_title": "히어로 IN 히로인",
+      "selected_url": "https://novelpia.com/novel/1055",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "hirohiro_fanart_native_web_supports_hero_in_heroine",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문 `히로히로 팬아트`와 댓글 `시아루트`는 작품 팬아트 맥락이고, native-web에서 `히어로 IN 히로인` 공식/외전 페이지가 `히로히로 팬아트` 표면을 직접 보인다. after C1은 정당하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_unreviewed_batch.json#post_id=11705257",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11705257",
+        "https://novelpia.com/novel/1055",
+        "https://novelpia.com/novel/1123",
+        "https://novelpia.com/fanart/all/view_1323959/"
+      ]
+    },
+    {
+      "post_id": 11708466,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "selected_option_id": "C1",
+      "selected_title": "매국노",
+      "selected_url": "https://novelpia.com/novel/271202",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "direct_title_and_character_context_support_promotion",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문 제목이 `매국노`를 직접 부르고, 본문 `하루토`, `이설`, `유하은`은 같은 작품 캐릭터 문맥으로 native-web 커뮤니티 근거에서도 확인된다. after C1 promotion은 source-native로 정당하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_unreviewed_batch.json#post_id=11708466",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11708466",
+        "https://novelpia.com/novel/271202",
+        "https://m.dcinside.com/board/genrenovel/9440527",
+        "https://m.dcinside.com/board/genrenovel/11852120"
+      ]
+    },
+    {
+      "post_id": 11710044,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "gacha_punk_alias_collision_current_option_misses_correct_work",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_unsafe_promotion",
+        "candidate_set_rebuild_required",
+        "alias_collision_guard_required"
+      ],
+      "rationale_ko": "원문 `가챠펑크`는 `가챠 중독자의 퓨전펑크 생활` 계열 약칭으로 쓰이는 표면이다. after C1 `퓨전 펑크 의 전생자`는 `퓨전펑크` 공유 토큰에 끌린 다른 작품 후보라 현재 옵션으로 정답을 닫을 수 없다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_unreviewed_batch.json#post_id=11710044",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11710044",
+        "https://m.dcinside.com/board/genrenovel/11902382",
+        "https://novelpia.com/fanart/34/12"
+      ]
+    },
+    {
+      "post_id": 11714913,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "selected_option_id": "C1",
+      "selected_title": "전 버튜버가 하고 싶은데요",
+      "selected_url": "https://novelpia.com/novel/275975",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "character_surface_and_official_detail_support_work_bridge",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문 `주서연`은 `전 버튜버가 하고 싶은데요`의 캐릭터 표면으로 검색/공식 URL과 결합된다. 이미지는 character_visual_only라 단독 근거는 아니지만, 제목의 캐릭터 표면과 official detail이 함께 있어 C1 승격은 제외 후보로 볼 수 있다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_unreviewed_batch.json#post_id=11714913",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11714913",
+        "https://novelpia.com/novel/275975",
+        "https://namu.wiki/w/%EC%A3%BC%EC%84%9C%EC%97%B0(%EC%A0%84%20%EB%B2%84%ED%8A%9C%EB%B2%84%EA%B0%80%20%ED%95%98%EA%B3%A0%20%EC%8B%B6%EC%9D%80%EB%8D%B0%EC%9A%94)"
+      ]
+    },
+    {
+      "post_id": 11718105,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "selected_option_id": "C1",
+      "selected_title": "몰락민족의 천재 기사",
+      "selected_url": "https://novel.munpia.com/510190",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "multi_work_platform_listing_single_title_promotion_incomplete",
+      "evidence_grade": "Medium",
+      "action": [
+        "multi_work_guard_required",
+        "image_listing_multi_work_guard_required",
+        "preserve_secondary_candidates"
+      ],
+      "rationale_ko": "이미지 목록과 댓글에는 `트럭커`, `몰락`, `망배우`, `뇌조꺼` 등 여러 작품이 동시에 나온다. C1은 그중 하나로 source-supported지만, 단일 public title로 닫으면 다작품/목록 맥락을 잃으므로 promotion gate는 multi-work 보존 경로로 수리해야 한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_unreviewed_batch.json#post_id=11718105",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11718105",
+        "https://novel.munpia.com/510190",
+        "https://series.naver.com/novel/detail.series?productNo=13683859"
+      ]
+    }
+  ]
+}

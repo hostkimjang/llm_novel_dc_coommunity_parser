@@ -1,5 +1,26 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop513 unsafe_promotion 배치 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_513_REPORT_20260707.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop513_unsafe_promotion_batch_state_20260707.json`.
+  - [x] unsafe verdict 기록 완료: `docs/devs/loop513_unsafe_promotion_info_missing12_source_native_verdicts.json/.md`.
+  - [x] Prior-compatible verdict 기록 완료: `docs/devs/loop513_projected_loop511_p0_prior_compatible_source_native_verdicts.json/.md`.
+  - [x] Summary 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_after_unsafe12_review_summary.json/.md`.
+  - [x] Residual queue 기록 완료: `docs/devs/loop513_after_unsafe12_review_adjusted_residual104_action_queue.json/.md`.
+- 품질 경계:
+  - [x] 새 runtime replay는 실행하지 않았다.
+  - [x] unsafe_promotion INFO_MISSING `12`건과 기존 prior-compatible `78`건을 분리했다.
+  - [x] Placeholder INFO_MISSING은 `53 -> 41`로 줄었다.
+  - [x] Residual action queue는 `111 -> 104`다.
+  - [x] Validation issue는 `0`이다.
+  - [x] 남은 source-native/blind review는 `safe_loss_resolved_to_null 41`이다.
+  - [x] 테스트런 dashboard health와 최신 manifest attach를 재확인했다.
+  - [ ] ACCEPT `37`건은 gate wiring 뒤에만 regression count 제외 후보로 쓴다.
+  - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: full375 collateral `NO-GO / residual_action_queue_rows 104`, runtime replay `NOT_RUN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop512 collateral 재회계 품질 게이트
 
 - 근거:

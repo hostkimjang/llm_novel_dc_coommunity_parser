@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260707-513 - unsafe_promotion INFO_MISSING 12 review and dashboard check
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| unsafe_promotion INFO_MISSING 12 | GO_REVIEW_BATCH | `ACCEPT 7`, `REPROCESS 5`, `HOLD 0` | REPROCESS 5는 multi-work, nonwork, alias collision, title similarity guard로 분리 |
+| Review summary | REVIEW-LOCKED | label `ACCEPT 37`, `REPROCESS 44`, `HOLD 19`, `INFO_MISSING 41` | ACCEPT는 gate wiring 뒤 regression 제외 후보 |
+| Residual action queue | NO-GO | residual `104`, safe_loss `84`, unsafe `9`, wrong_work `11` | safe_loss INFO_MISSING 41 batch 처리 |
+| Source-native/blind remaining | OPEN | `source_native_or_blind_review_required 41`, bucket `safe_loss_resolved_to_null` | N건 배치 판정 |
+| Dashboard policy | GO | health `ok=true`, latest attach `375/375`, `parallel_count=16` | 신규 테스트런도 `--parallel 16`과 dashboard 기본 부착 |
+| Runtime replay | NOT_RUN | 이번 회차는 회계/검토 산출물만 생성 | 필요 시 dashboard 붙인 runtime replay로 검증 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: full375 collateral `NO-GO / residual_action_queue_rows 104`, runtime replay `NOT_RUN`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-512 - full375 collateral P0 reaccounting and wrong_work10 review
 
 | 항목 | 상태 | 근거 | 다음 |

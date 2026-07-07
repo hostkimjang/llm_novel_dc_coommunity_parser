@@ -1,5 +1,17 @@
 # Development History
 
+## 2026-07-07 - Loop513 unsafe_promotion INFO_MISSING batch review
+
+- Loop512 residual `source_native_or_blind_review_required 53` 중 `unsafe_promotion_from_hold` INFO_MISSING `12`건을 source-native/native-web 근거로 처리했다.
+- 추가 verdict 결과는 `ACCEPT 7`, `REPROCESS 5`, `HOLD 0`이다.
+- 전체 review summary는 `ACCEPT 37`, `REPROCESS 44`, `HOLD 19`, `INFO_MISSING 41`, validation issue `0`이다.
+- Residual action queue는 `111 -> 104`로 줄었고, bucket은 `safe_loss_resolved_to_null 84`, `unsafe_promotion_from_hold 9`, `wrong_work_title_flip 11`이다.
+- 남은 source-native/blind review는 `safe_loss_resolved_to_null 41`뿐이다.
+- 사용자 지시에 맞춰 테스트런 dashboard도 재확인했다. `http://127.0.0.1:8080/api/health`는 `ok=true`, `standalone=true`, `pid=9320`이고, 최신 Loop510 manifest attach 상태는 `375/375`, `progress_pct=100.0`, `parallel_count=16`, `batch_running=false`다.
+- 새 runtime replay는 실행하지 않았다.
+- Report는 `docs/devs/loop_reports/LOOP_513_REPORT_20260707.md`, state는 `docs/devs/loop513_unsafe_promotion_batch_state_20260707.json`이다.
+- Gate는 full375 collateral `NO-GO / residual_action_queue_rows 104`, runtime replay `NOT_RUN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop512 full375 collateral P0 reaccounting and wrong_work batch review
 
 - Loop511 projection full375 collateral `141`건을 P0 review batch로 재정렬했다.

@@ -1,5 +1,23 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop513 TODO
+
+- 상태 업데이트: Loop512 residual `source_native_or_blind_review_required 53` 중 `unsafe_promotion_from_hold` INFO_MISSING `12`건을 source-native/native-web 배치로 처리했다. Goal은 완료가 아니다.
+- [x] unsafe_promotion INFO_MISSING `12`건 verdict를 작성했다.
+- [x] 추가 verdict label은 `ACCEPT 7`, `REPROCESS 5`, `HOLD 0`이다.
+- [x] Placeholder INFO_MISSING은 `53 -> 41`로 줄었다.
+- [x] Review summary는 `ACCEPT 37`, `REPROCESS 44`, `HOLD 19`, `INFO_MISSING 41`, validation issue `0`이다.
+- [x] Residual action queue는 `111 -> 104`로 줄었다.
+- [x] Residual bucket은 `safe_loss_resolved_to_null 84`, `unsafe_promotion_from_hold 9`, `wrong_work_title_flip 11`이다.
+- [x] 남은 source-native/blind review는 `safe_loss_resolved_to_null 41`로 분리됐다.
+- [x] 최신 테스트런 dashboard health를 확인했다: `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`.
+- [x] 최신 Loop510 manifest를 dashboard에 사후 부착해 `375/375`, `progress_pct=100.0`, `parallel_count=16`을 확인했다.
+- [x] Report와 state를 기록했다.
+- [ ] `safe_loss_resolved_to_null` INFO_MISSING `41`건을 N건 배치로 계속 처리한다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: full375 collateral `NO-GO / residual_action_queue_rows 104`, runtime replay `NOT_RUN`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop512 TODO
 
 - 상태 업데이트: Loop511 projection collateral `141`건을 P0 batch로 재회계했고, `wrong_work_title_flip` INFO_MISSING `10`건을 source-native/native-web 판정으로 처리했다. Goal은 완료가 아니다.
