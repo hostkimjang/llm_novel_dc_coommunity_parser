@@ -1,5 +1,23 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop526 same-title candidate support 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_526_REPORT_20260707.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop526_same_title_candidate_support_state_20260707.json`.
+  - [x] Repair queue 기록 완료: `docs/devs/loop526_same_title_candidate_support_repair27_queue.json/.md`.
+  - [x] Tool contract 갱신 완료: `tools/build_shared_gate_runtime_block_repair_queue.py`.
+  - [x] Test 갱신 완료: `tests/test_shared_gate_runtime_block_repair_queue.py`.
+- 품질 경계:
+  - [x] 새 runtime replay는 실행하지 않았다.
+  - [x] Repair rows는 `27`, replay allowed rows는 `0`이다.
+  - [x] `candidate_support_state`로 official URL support와 preservation-only support를 분리했다.
+  - [x] `11682775`는 publish-ready가 아니라 `candidate_preservation_only_no_official_detail`이다.
+  - [x] `same_title_search_recovered_contract_candidate`는 `0`건이다.
+  - [ ] 보존 전용 후보를 semantic/full_scan approval 근거로 쓰지 않는다.
+  - [ ] Dashboard 상태를 semantic/full_scan approval 근거로 쓰지 않는다.
+- Gate: queue schema `GO`, repair queue `REVIEW-LOCKED / 27`, candidate support `REVIEW`, readiness `REVIEW / candidate_alignment 22 + search_preflight 4 + preservation_only_contract 1`, runtime replay `NOT_RUN`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop525 same-title readiness 품질 게이트
 
 - 근거:

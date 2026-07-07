@@ -327,7 +327,7 @@ class SharedGateRuntimeBlockRepairQueueTest(unittest.TestCase):
             projection_candidates_by_post_id={
                 "11702094": {
                     "official_title": "더블오",
-                    "official_url": None,
+                    "official_url": "https://novelpia.com/novel/123456",
                     "source": "candidate_ledger_or_serialized_identity",
                 }
             },
@@ -336,6 +336,7 @@ class SharedGateRuntimeBlockRepairQueueTest(unittest.TestCase):
         row = repair["rows"][0]
         self.assertEqual(row["current_projection_candidate_alignment_state"], "same_title_surface")
         self.assertFalse(row["current_projection_candidate_alignment_requires_review"])
+        self.assertEqual(row["candidate_support_state"], "official_url_candidate_support")
         self.assertEqual(row["repair_readiness_state"], "same_title_search_recovered_contract_candidate")
         self.assertNotIn("current_projection_candidate_alignment_review", row["repair_facets"])
         self.assertNotIn("current_projection_candidate_recheck_required", row["actions"])
@@ -347,6 +348,60 @@ class SharedGateRuntimeBlockRepairQueueTest(unittest.TestCase):
         self.assertEqual(
             repair["summary"]["repair_readiness_counts"],
             {"same_title_search_recovered_contract_candidate": 1},
+        )
+
+    def test_matching_current_projection_candidate_without_official_url_is_preservation_only(self):
+        queue = {
+            "queue_id": "unit_followup",
+            "rows": [
+                {
+                    "post_id": 11682775,
+                    "selected_title": "여자가 되어서라도 복수한다",
+                    "projected_title": "여자가 되어서라도 복수한다",
+                    "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+                    "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+                    "prior_runtime_reason_codes": [
+                        "promotion_blocked",
+                        "serialized_public_identity_scrubbed",
+                    ],
+                    "actions": ["shared_gate_runtime_block_repair_required"],
+                }
+            ],
+        }
+
+        repair = build_repair_queue(
+            queue,
+            queue_id="unit_repair",
+            projection_candidates_by_post_id={
+                "11682775": {
+                    "official_title": "여자가 되어서라도 복수한다",
+                    "official_url": None,
+                    "source": "candidate_ledger_or_serialized_identity",
+                    "candidate_negative_evidence": [
+                        "missing_official_url_for_official_detail",
+                        "unverified_promoted_image_work_title_without_official_support",
+                    ],
+                    "candidate_source_tiers": ["community"],
+                    "candidate_image_title_match": True,
+                }
+            },
+        )
+
+        row = repair["rows"][0]
+        self.assertEqual(row["current_projection_candidate_alignment_state"], "same_title_surface")
+        self.assertEqual(row["candidate_support_state"], "candidate_preservation_only_no_official_detail")
+        self.assertEqual(row["repair_readiness_state"], "same_title_preservation_only_contract_repair_candidate")
+        self.assertFalse(row["runtime_replay_allowed"])
+        self.assertIn("same_title_preservation_only_contract_repair_candidate", row["actions"])
+        self.assertIn("candidate_preservation_only_no_publish_required", row["actions"])
+        self.assertNotIn("same_title_search_recovered_contract_repair_candidate", row["actions"])
+        self.assertEqual(
+            repair["summary"]["candidate_support_state_counts"],
+            {"candidate_preservation_only_no_official_detail": 1},
+        )
+        self.assertEqual(
+            repair["summary"]["repair_readiness_counts"],
+            {"same_title_preservation_only_contract_repair_candidate": 1},
         )
 
     def test_matching_current_projection_candidate_with_blind_search_stays_preflight_blocked(self):

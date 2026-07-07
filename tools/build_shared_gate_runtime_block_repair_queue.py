@@ -123,6 +123,88 @@ def _unwrap_result_row(row: dict[str, Any]) -> dict[str, Any]:
     return row
 
 
+def _surface_key(value: Any) -> str:
+    return "".join(ch for ch in str(value or "").casefold() if ch.isalnum())
+
+
+def _near_surface_match(left: Any, right: Any) -> bool:
+    left_key = _surface_key(left)
+    right_key = _surface_key(right)
+    if not left_key or not right_key:
+        return False
+    return left_key == right_key or left_key in right_key or right_key in left_key
+
+
+def _candidate_metadata(identity: dict[str, Any], ledger: dict[str, Any], candidate_title: Any) -> dict[str, Any]:
+    negative_evidence: set[str] = set()
+    source_tiers: set[str] = set()
+    source_roles: set[str] = set()
+    matched_source_count = 0
+    for container in (identity, ledger):
+        if not isinstance(container, dict):
+            continue
+        for key in ("candidate_preservation_sources", "title_candidates"):
+            values = container.get(key)
+            if not isinstance(values, list):
+                continue
+            for item in values:
+                if not isinstance(item, dict):
+                    continue
+                item_title = item.get("official_title") or item.get("title") or item.get("resolved_title")
+                if candidate_title and item_title and not _near_surface_match(candidate_title, item_title):
+                    continue
+                if candidate_title and not item_title:
+                    continue
+                matched_source_count += 1
+                raw_negative = item.get("negative_evidence") or []
+                if isinstance(raw_negative, str):
+                    raw_negative = [raw_negative]
+                if isinstance(raw_negative, list):
+                    negative_evidence.update(
+                        str(value or "").strip()
+                        for value in raw_negative
+                        if str(value or "").strip()
+                    )
+                for field in ("source_tier", "reference_role", "preservation_role"):
+                    value = str(item.get(field) or "").strip()
+                    if not value:
+                        continue
+                    if field == "source_tier":
+                        source_tiers.add(value)
+                    else:
+                        source_roles.add(value)
+
+    image_title_match = False
+    for container in (identity, ledger):
+        if not isinstance(container, dict):
+            continue
+        for key in ("image_evidence_catalog", "image_enrichment"):
+            values = container.get(key)
+            if not isinstance(values, list):
+                continue
+            for item in values:
+                if not isinstance(item, dict) or item.get("promotion_eligible") is not True:
+                    continue
+                for field in ("explicit_work_title", "detected_title", "work_title", "official_title"):
+                    if _near_surface_match(candidate_title, item.get(field)):
+                        image_title_match = True
+                        break
+                if image_title_match:
+                    break
+            if image_title_match:
+                break
+        if image_title_match:
+            break
+
+    return {
+        "candidate_negative_evidence": sorted(negative_evidence),
+        "candidate_source_tiers": sorted(source_tiers),
+        "candidate_source_roles": sorted(source_roles),
+        "candidate_metadata_source_count": matched_source_count,
+        "candidate_image_title_match": image_title_match,
+    }
+
+
 def load_projection_candidate_map(path: Path) -> dict[str, dict[str, Any]]:
     payload = json.loads(path.read_text(encoding="utf-8-sig"))
     candidates: dict[str, dict[str, Any]] = {}
@@ -146,14 +228,23 @@ def load_projection_candidate_map(path: Path) -> dict[str, dict[str, Any]]:
         blocked_reasons = trace.get("blocked_reason_codes") or trace.get("reason_codes") or []
         if not isinstance(blocked_reasons, list):
             blocked_reasons = [blocked_reasons]
+        blocked_official_title = ledger.get("blocked_official_title") or identity.get("blocked_official_title")
+        blocked_official_url = (
+            ledger.get("blocked_official_title_url")
+            or ledger.get("blocked_official_url")
+            or identity.get("blocked_official_title_url")
+            or identity.get("blocked_official_url")
+        )
+        candidate_title = pre_gate.get("official_title") or blocked_official_title
         candidates[post_id] = {
-            "official_title": pre_gate.get("official_title"),
-            "official_url": pre_gate.get("official_url"),
+            "official_title": candidate_title,
+            "official_url": pre_gate.get("official_url") or blocked_official_url,
             "source": pre_gate.get("source"),
             "decision": trace.get("decision"),
             "reason_codes": [str(item) for item in blocked_reasons if str(item or "").strip()],
-            "blocked_official_title": ledger.get("blocked_official_title") or identity.get("blocked_official_title"),
-            "blocked_official_url": ledger.get("blocked_official_url") or identity.get("blocked_official_url"),
+            "blocked_official_title": blocked_official_title,
+            "blocked_official_url": blocked_official_url,
+            **_candidate_metadata(identity, ledger, candidate_title),
         }
     return candidates
 
@@ -196,13 +287,64 @@ def _candidate_alignment_requires_review(state: str) -> bool:
     }
 
 
-def _repair_readiness_state(*, alignment_state: str, search_gate: str) -> str:
+PRESERVATION_ONLY_SUPPORT_STATES = {
+    "candidate_preservation_only_no_official_detail",
+    "unverified_image_candidate_preservation_only",
+    "image_ocr_preservation_pending_official_url",
+    "non_official_candidate_preservation_only",
+}
+
+
+def _candidate_support_state(projection_candidate: dict[str, Any] | None) -> str:
+    if projection_candidate is None:
+        return "projection_alignment_not_checked"
+    if not projection_candidate:
+        return "missing_current_projection_candidate_support"
+    if projection_candidate.get("official_url"):
+        return "official_url_candidate_support"
+    title = str(projection_candidate.get("official_title") or "").strip()
+    if not title:
+        return "missing_current_projection_candidate_support"
+    negative_evidence = {
+        str(value or "").strip()
+        for value in projection_candidate.get("candidate_negative_evidence") or []
+        if str(value or "").strip()
+    }
+    reason_codes = {
+        str(value or "").strip()
+        for value in projection_candidate.get("reason_codes") or []
+        if str(value or "").strip()
+    }
+    source_tiers = {
+        str(value or "").strip()
+        for value in projection_candidate.get("candidate_source_tiers") or []
+        if str(value or "").strip()
+    }
+    if "missing_official_url_for_official_detail" in negative_evidence:
+        return "candidate_preservation_only_no_official_detail"
+    if (
+        "unverified_promoted_image_work_title_without_official_support" in negative_evidence
+        or "unverified_promoted_image_work_title_without_official_support" in reason_codes
+    ):
+        return "unverified_image_candidate_preservation_only"
+    if projection_candidate.get("candidate_image_title_match") is True:
+        return "image_ocr_preservation_pending_official_url"
+    if "official_detail_url" in reason_codes:
+        return "official_detail_trace_missing_url_review"
+    if source_tiers and "official_detail" not in source_tiers:
+        return "non_official_candidate_preservation_only"
+    return "candidate_support_review_required"
+
+
+def _repair_readiness_state(*, alignment_state: str, search_gate: str, candidate_support_state: str) -> str:
     if alignment_state == "not_checked":
         return "projection_alignment_not_checked"
     if _candidate_alignment_requires_review(alignment_state):
         return "candidate_alignment_review_required"
     if search_gate in {"SEARCH_BLIND_BLOCKER", "SEARCH_EVIDENCE_MISSING"}:
         return "same_title_search_preflight_required"
+    if candidate_support_state in PRESERVATION_ONLY_SUPPORT_STATES:
+        return "same_title_preservation_only_contract_repair_candidate"
     if search_gate == "SEARCH_RECOVERED_CONDITIONAL":
         return "same_title_search_recovered_contract_candidate"
     if search_gate == "SEARCH_OK":
@@ -431,6 +573,7 @@ def classify_repair_row(
                 expected_title_for_alignment,
                 projection_candidate.get("official_title"),
             )
+    candidate_support_state = _candidate_support_state(projection_candidate)
     alignment_requires_review = _candidate_alignment_requires_review(alignment_state)
     if alignment_requires_review:
         facets.append("current_projection_candidate_alignment_review")
@@ -438,9 +581,13 @@ def classify_repair_row(
     readiness_state = _repair_readiness_state(
         alignment_state=alignment_state,
         search_gate=search_gate,
+        candidate_support_state=candidate_support_state,
     )
     if readiness_state == "same_title_search_recovered_contract_candidate":
         actions.insert(1, "same_title_search_recovered_contract_repair_candidate")
+    elif readiness_state == "same_title_preservation_only_contract_repair_candidate":
+        actions.insert(1, "same_title_preservation_only_contract_repair_candidate")
+        actions.insert(2, "candidate_preservation_only_no_publish_required")
     elif readiness_state == "same_title_contract_candidate":
         actions.insert(1, "same_title_surface_contract_repair_candidate")
     elif readiness_state == "same_title_search_preflight_required":
@@ -464,6 +611,7 @@ def classify_repair_row(
         "current_projection_candidate": projection_candidate,
         "current_projection_candidate_alignment_state": alignment_state,
         "current_projection_candidate_alignment_requires_review": alignment_requires_review,
+        "candidate_support_state": candidate_support_state,
         "repair_readiness_state": readiness_state,
         "source_native_verdict": row.get("source_native_verdict"),
         "prior_runtime_audit_status": _runtime_audit_status(row) or None,
@@ -509,6 +657,7 @@ def build_repair_queue(
     )
     scope_conflict_kind_counts = Counter(str(row.get("projection_runtime_scope_conflict_kind") or "none") for row in out_rows)
     alignment_counts = Counter(str(row.get("current_projection_candidate_alignment_state") or "not_checked") for row in out_rows)
+    candidate_support_counts = Counter(str(row.get("candidate_support_state") or "candidate_support_review_required") for row in out_rows)
     readiness_counts = Counter(str(row.get("repair_readiness_state") or "manual_review_required") for row in out_rows)
     lane_groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for row in out_rows:
@@ -546,6 +695,9 @@ def build_repair_queue(
                 "current_projection_candidate_review_rows": sum(
                     1 for row in group_rows if row.get("current_projection_candidate_alignment_requires_review")
                 ),
+                "candidate_support_state_counts": _counter_to_dict(
+                    Counter(str(row.get("candidate_support_state") or "candidate_support_review_required") for row in group_rows)
+                ),
                 "repair_readiness_counts": _counter_to_dict(
                     Counter(str(row.get("repair_readiness_state") or "manual_review_required") for row in group_rows)
                 ),
@@ -579,6 +731,7 @@ def build_repair_queue(
             "current_projection_candidate_review_rows": sum(
                 1 for row in out_rows if row.get("current_projection_candidate_alignment_requires_review")
             ),
+            "candidate_support_state_counts": _counter_to_dict(candidate_support_counts),
             "repair_readiness_counts": _counter_to_dict(readiness_counts),
             "validation_issue_count": len(validation_issues),
         },
@@ -617,6 +770,7 @@ def write_markdown(queue: dict[str, Any], path: Path) -> None:
         f"- projection_runtime_scope_conflict_kind_counts: `{summary.get('projection_runtime_scope_conflict_kind_counts')}`",
         f"- current_projection_candidate_alignment_counts: `{summary.get('current_projection_candidate_alignment_counts')}`",
         f"- current_projection_candidate_review_rows: `{summary.get('current_projection_candidate_review_rows')}`",
+        f"- candidate_support_state_counts: `{summary.get('candidate_support_state_counts')}`",
         f"- repair_readiness_counts: `{summary.get('repair_readiness_counts')}`",
         f"- validation_issue_count: `{summary.get('validation_issue_count')}`",
         "- approval: `false`",
@@ -645,6 +799,7 @@ def write_markdown(queue: dict[str, Any], path: Path) -> None:
                 f"- projection_runtime_scope_conflict_kind_counts: `{group.get('projection_runtime_scope_conflict_kind_counts')}`",
                 f"- current_projection_candidate_alignment_counts: `{group.get('current_projection_candidate_alignment_counts')}`",
                 f"- current_projection_candidate_review_rows: `{group.get('current_projection_candidate_review_rows')}`",
+                f"- candidate_support_state_counts: `{group.get('candidate_support_state_counts')}`",
                 f"- repair_readiness_counts: `{group.get('repair_readiness_counts')}`",
                 f"- sample_post_ids: `{sample}`",
                 "",

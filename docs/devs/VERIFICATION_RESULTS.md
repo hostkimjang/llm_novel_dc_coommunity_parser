@@ -1,5 +1,28 @@
 # Verification Results
 
+## 2026-07-07 Loop526 same-title candidate support split
+
+- 코드:
+  - `tools/build_shared_gate_runtime_block_repair_queue.py`에 `candidate_support_state`를 추가했다.
+  - 현재 projection 후보의 `official_url`, candidate preservation source의 negative evidence/source tier, image title match를 읽어 same-title 후보를 official support와 preservation-only로 나눈다.
+  - `11682775`류 URL 없는 보존 후보는 `same_title_preservation_only_contract_repair_candidate`와 `candidate_preservation_only_no_publish_required`로 분류한다.
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_526_REPORT_20260707.md`
+  - `docs/devs/loop526_same_title_candidate_support_state_20260707.json`
+  - `docs/devs/loop526_same_title_candidate_support_repair27_queue.json`
+  - `docs/devs/loop526_same_title_candidate_support_repair27_queue.md`
+- 검증:
+  - `python -m py_compile tools\build_shared_gate_runtime_block_repair_queue.py tests\test_shared_gate_runtime_block_repair_queue.py`: PASS.
+  - `python -m unittest tests.test_shared_gate_runtime_block_repair_queue -v`: PASS, `11` tests.
+  - queue generation with `--projection-result` and `--fail-on-validation-issue`: PASS.
+  - generated queue JSON parse: PASS.
+- 결과:
+  - repair rows `27`, runtime replay allowed `0`, validation issue `0`.
+  - candidate support counts: `official_url_candidate_support 14`, `candidate_preservation_only_no_official_detail 1`, `unverified_image_candidate_preservation_only 1`, `image_ocr_preservation_pending_official_url 1`, `official_detail_trace_missing_url_review 2`, `non_official_candidate_preservation_only 8`.
+  - readiness counts: `candidate_alignment_review_required 22`, `same_title_search_preflight_required 4`, `same_title_preservation_only_contract_repair_candidate 1`.
+  - `same_title_search_recovered_contract_candidate`는 `0`건이다.
+- Gate: queue schema `GO`, repair queue `REVIEW-LOCKED / 27`, candidate support `REVIEW`, runtime replay `NOT_RUN`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop525 Verification
 
 - 범위: Loop524 same-title surface `5`건을 search/readiness 기준으로 재분류해 shared gate 완화 전 preflight를 강제했다.

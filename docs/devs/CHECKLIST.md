@@ -1,5 +1,22 @@
 # Development Checklist
 
+## 2026-07-07 Loop526 same-title candidate support 체크
+
+- [x] 새 runtime replay를 실행하지 않았다.
+- [x] Loop525 same-title 5건을 후보 support 기준으로 재분류했다.
+- [x] `candidate_support_state`를 repair queue row와 summary에 추가했다.
+- [x] Candidate support 분포는 `official_url_candidate_support 14`, `candidate_preservation_only_no_official_detail 1`, `unverified_image_candidate_preservation_only 1`, `image_ocr_preservation_pending_official_url 1`, `official_detail_trace_missing_url_review 2`, `non_official_candidate_preservation_only 8`이다.
+- [x] Readiness 분포는 `candidate_alignment_review_required 22`, `same_title_search_preflight_required 4`, `same_title_preservation_only_contract_repair_candidate 1`이다.
+- [x] `same_title_search_recovered_contract_candidate`는 `0`건이다.
+- [x] `11682775`는 `candidate_preservation_only_no_official_detail`로 재분류했다.
+- [x] `11682775`에 `candidate_preservation_only_no_publish_required` action을 부여했다.
+- [x] `tests.test_shared_gate_runtime_block_repair_queue`는 `11` tests PASS다.
+- [x] Dashboard health는 `ok=true`, `standalone=true`, `pid=9320`이다.
+- [ ] `11682775`를 공식 URL/검증 support 없이 safe_resolved로 승격하지 않는다.
+- [ ] Search preflight required 4건을 publish 완화 대상으로 쓰지 않는다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: queue schema `GO`, repair queue `REVIEW-LOCKED / 27`, candidate support `REVIEW`, readiness `REVIEW / candidate_alignment 22 + search_preflight 4 + preservation_only_contract 1`, runtime replay `NOT_RUN`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop525 same-title readiness 체크
 
 - [x] 새 runtime replay를 실행하지 않았다.

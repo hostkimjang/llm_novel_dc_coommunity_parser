@@ -1,0 +1,80 @@
+{
+  "loop_id": "Loop526",
+  "date": "2026-07-07",
+  "mode": "projection_queue_accounting_only",
+  "runtime_replay": "NOT_RUN",
+  "source_queue": "docs/devs/loop523_direct_title_surface_safe57_expected_failure_queue.json",
+  "projection_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_final_sync_projection_result.json",
+  "artifacts": {
+    "report": "docs/devs/loop_reports/LOOP_526_REPORT_20260707.md",
+    "repair_queue_json": "docs/devs/loop526_same_title_candidate_support_repair27_queue.json",
+    "repair_queue_md": "docs/devs/loop526_same_title_candidate_support_repair27_queue.md"
+  },
+  "summary": {
+    "source_queue_rows": 38,
+    "repair_rows": 27,
+    "runtime_replay_allowed_rows": 0,
+    "validation_issue_count": 0,
+    "current_projection_candidate_alignment_counts": {
+      "different_title_candidate_review": 12,
+      "related_title_surface_review": 10,
+      "same_title_surface": 5
+    },
+    "candidate_support_state_counts": {
+      "candidate_preservation_only_no_official_detail": 1,
+      "image_ocr_preservation_pending_official_url": 1,
+      "non_official_candidate_preservation_only": 8,
+      "official_detail_trace_missing_url_review": 2,
+      "official_url_candidate_support": 14,
+      "unverified_image_candidate_preservation_only": 1
+    },
+    "repair_readiness_counts": {
+      "candidate_alignment_review_required": 22,
+      "same_title_preservation_only_contract_repair_candidate": 1,
+      "same_title_search_preflight_required": 4
+    },
+    "same_title_search_preflight_post_ids": [
+      11710049,
+      11718099,
+      11700483,
+      11708470
+    ],
+    "same_title_preservation_only_contract_repair_candidate_post_ids": [
+      11682775
+    ],
+    "same_title_search_recovered_contract_candidate_post_ids": []
+  },
+  "next_candidate": {
+    "post_id": 11682775,
+    "title": "여자가 되어서라도 복수한다",
+    "candidate_support_state": "candidate_preservation_only_no_official_detail",
+    "readiness_state": "same_title_preservation_only_contract_repair_candidate",
+    "lane": "candidate_preservation_or_scrub_repair",
+    "boundary": "publish-ready가 아니라 candidate preservation/scrub 계약 수리 후보"
+  },
+  "validation": {
+    "py_compile": "PASS",
+    "unittest": "PASS / tests.test_shared_gate_runtime_block_repair_queue / 11 tests",
+    "queue_generation": "PASS",
+    "json_parse": "PASS"
+  },
+  "dashboard": {
+    "url": "http://127.0.0.1:8080",
+    "health": "ok=true / standalone=true / pid=9320",
+    "latest_attached_status": "progress_pct=100.0 / parallel_count=16 / batch_running=false",
+    "approval_evidence": false
+  },
+  "gates": {
+    "queue_schema": "GO",
+    "repair_queue": "REVIEW-LOCKED / 27",
+    "candidate_support": "REVIEW / official_url 14 + preservation_only 11 + trace_missing_url 2",
+    "readiness": "REVIEW / candidate_alignment 22 + search_preflight 4 + preservation_only_contract 1",
+    "runtime_replay": "NOT_RUN / replay_allowed_rows 0",
+    "full375_collateral": "NO-GO",
+    "search_evidence": "REVIEW",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "completion_gate": "full375 collateral GO + full_scan path"
+}

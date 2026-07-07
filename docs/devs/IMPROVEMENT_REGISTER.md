@@ -1,5 +1,18 @@
 # Improvement Register
 
+## IMP-20260707-526 - same-title candidate support split
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Candidate support split | GO_UNIT | `candidate_support_state` 추가 | same-title도 support 상태 없이는 완화 금지 |
+| Preservation-only boundary | GO_UNIT | `11682775`를 `candidate_preservation_only_no_official_detail`로 분리 | 공식 URL/검증 support 전 publish 금지 |
+| Readiness accounting | REVIEW | `candidate_alignment 22`, `search_preflight 4`, `preservation_only_contract 1` | search preflight와 candidate alignment를 별도 배치 처리 |
+| Runtime replay boundary | GO_BLOCKED | `runtime_replay_allowed_rows=0` | contract/source-context 수리 전 반복 실행 금지 |
+| Verification | GO_UNIT | py_compile PASS, focused unittest `11` PASS, queue generation PASS | full375 collateral 전 approval 금지 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: queue schema `GO`, repair queue `REVIEW-LOCKED / 27`, candidate support `REVIEW`, readiness `REVIEW / candidate_alignment 22 + search_preflight 4 + preservation_only_contract 1`, runtime replay `NOT_RUN`, full375 collateral `NO-GO`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-525 - same-title readiness split before shared gate relaxation
 
 | 항목 | 상태 | 근거 | 다음 |
