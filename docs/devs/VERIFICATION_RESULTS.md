@@ -1,5 +1,25 @@
 # Verification Results
 
+## 2026-07-08 Loop600 unreviewed40 source-native 판정과 always-on gate
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_600_REPORT_20260708.md`
+  - `docs/devs/loop599_full375_unreviewed40_source_native_verdicts.json`
+  - `docs/devs/loop599_full375_unreviewed40_source_native_review.json/.md`
+  - `docs/devs/loop599_combined_loop595_unreviewed40_source_native_review.json/.md`
+  - `docs/devs/loop599_always_on_golden18_full375_unreviewed40_source_native_gate.json/.md`
+  - `tools/merge_collateral_review_summaries.py`
+  - `tests/test_merge_collateral_review_summaries.py`
+- 검증:
+  - Source-native summary: PASS, reviewed `40/40`, decision `40`, validation issue `0`, label `ACCEPT 37 / HOLD 3`.
+  - Merged review summary: PASS, rows `65`, source-native decision `56`, info missing `9`, exclusion candidate `44`, residual action queue `21`, validation issue `0`.
+  - Always-on gate: PASS 산출, golden18 `GO`, full375 collateral `NO-GO / raw 73 / adjusted 29 / unreviewed 8 / runtime counts missing`, overall `NO-GO`.
+  - Dashboard health/status: PASS, health `ok=true / standalone=true / pid=9320`, latest status Loop564 `30/30`, `parallel_count=16`, `batch_running=false`.
+- 결과:
+  - Golden18 PASS만으로는 승인하지 않는다. full375 gate가 여전히 `NO-GO`이므로 goal은 `ACTIVE / NOT_COMPLETE`다.
+  - 다음 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 실행한다.
+- Gate: source-native verdict `REVIEW-LOCKED`, merged review `REVIEW-LOCKED`, always-on `NO-GO / adjusted 29 / unreviewed 8 / runtime missing`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop593 canonical cleanup과 residual46 회계 갱신
 
 - 산출물:

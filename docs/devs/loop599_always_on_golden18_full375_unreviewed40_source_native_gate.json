@@ -1,0 +1,84 @@
+{
+  "report_type": "always_on_regression_gates",
+  "generated_at": "2026-07-08T08:24:46",
+  "gate": "NO-GO",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "policy": {
+    "golden_expected_rows": 18,
+    "full_375_collateral_required": true,
+    "golden_pass_alone_is_not_approval": true,
+    "collateral_runtime_pass_alone_is_not_approval": true,
+    "collateral_source_native_exclusion_requires_clean_review_summary": true
+  },
+  "golden": {
+    "gate": "GO",
+    "expected_rows": 18,
+    "row_count": 18,
+    "passed_count": 18,
+    "failed_count": 0,
+    "canary_semantic_gate": "PASS",
+    "runtime_complete": true,
+    "blockers": []
+  },
+  "collateral": {
+    "gate": "NO-GO",
+    "expected_shared_posts": 375,
+    "shared_post_count": 375,
+    "changed_post_count": 152,
+    "collateral_regression_count": 73,
+    "review_adjusted_regression_count": 29,
+    "review_adjustment": {
+      "provided": true,
+      "applied": true,
+      "review_id": "loop599_combined_loop595_unreviewed40_source_native_review",
+      "review_gate": "REVIEW-LOCKED",
+      "review_scope": "p0_scoped",
+      "batch_review_rows": 65,
+      "reviewed_rows": 65,
+      "source_native_decision_rows": 56,
+      "info_missing_rows": 9,
+      "unreviewed_batch_rows": 0,
+      "unreviewed_or_info_missing_batch_rows": 9,
+      "unreviewed_regression_rows": 8,
+      "validation_issue_count": 0,
+      "exclusion_candidate_rows": 44,
+      "label_counts": {
+        "ACCEPT": 44,
+        "REPROCESS": 6,
+        "INFO_MISSING": 9,
+        "REJECT": 1,
+        "HOLD": 5
+      },
+      "action_counts": {
+        "exclude_from_regression_count_after_gate_wiring": 44,
+        "repair_after_wrong_work": 3,
+        "shared_promotion_gate_wiring_required": 5,
+        "candidate_set_rebuild_required": 1,
+        "native_web_or_image_evidence_required": 9,
+        "native_web_judge_reprocess_required": 3,
+        "native_web_reverify_required": 1,
+        "wrong_work_or_cross_media_policy_hold_required": 1,
+        "blind_or_policy_judge_required": 1,
+        "native_web_or_image_human_review_required": 2,
+        "official_detail_url_enrichment_required": 1,
+        "native_web_or_alias_relation_review_required": 1,
+        "image_native_review_required": 1,
+        "character_bridge_native_web_review_required": 1
+      },
+      "review_adjusted_regression_count": 29,
+      "blockers": []
+    },
+    "runtime_complete": false,
+    "blockers": [
+      "collateral_review_adjusted_regression_count_nonzero",
+      "collateral_review_unreviewed_regression_rows_nonzero",
+      "collateral_runtime_counts_missing"
+    ]
+  },
+  "blockers": [
+    "collateral:collateral_review_adjusted_regression_count_nonzero",
+    "collateral:collateral_review_unreviewed_regression_rows_nonzero",
+    "collateral:collateral_runtime_counts_missing"
+  ]
+}

@@ -1,5 +1,21 @@
 # Development Checklist
 
+## 2026-07-08 Loop600 unreviewed40 source-native 판정과 full375 gate 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Loop599 `INFO_MISSING 40`을 source-native/blind 판정으로 전수 처리했다.
+- [x] Source-native verdict는 reviewed `40/40`, decision `40`, validation issue `0`, label `ACCEPT 37 / HOLD 3`이다.
+- [x] `wrong_work_title_flip 11`과 `safe_loss_resolved_to_null 9`는 전부 regression count 제외 후보로 닫았다.
+- [x] `unsafe_promotion_from_hold 20` 중 `17`은 제외 후보, `3`은 native-web/image/character bridge HOLD로 남겼다.
+- [x] Loop595+Loop599 병합 review summary는 rows `65`, decision `56`, info missing `9`, exclusion candidate `44`, residual action queue `21`, validation issue `0`이다.
+- [x] Always-on gate는 golden18 `GO`, full375 collateral `NO-GO / raw 73 / adjusted 29 / unreviewed 8 / runtime counts missing`임을 확인했다.
+- [x] Dashboard health는 `http://127.0.0.1:8080/api/health`, `ok=true`, `standalone=true`, `pid=9320`으로 확인했다.
+- [ ] HOLD 3건(`11677957`, `11687635`, `11714913`)과 residual action queue `21`을 N건 배치로 계속 처리한다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, manifest attach fallback 활성, `--no-dashboard` 금지로 실행한다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: source-native verdict `REVIEW-LOCKED`, merged full375 review `REVIEW-LOCKED`, always-on `NO-GO / adjusted 29 / unreviewed 8 / runtime missing`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_600_REPORT_20260708.md`, `docs/devs/loop599_full375_unreviewed40_source_native_review.json`, `docs/devs/loop599_combined_loop595_unreviewed40_source_native_review.json`, `docs/devs/loop599_always_on_golden18_full375_unreviewed40_source_native_gate.json`.
+
 ## 2026-07-08 Loop599 full375 unreviewed40 review batch 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
@@ -11,11 +27,11 @@
 - [x] Blind/source-native review batch rows `40`, missing source/baseline/after `0/0/0`, gate `REVIEW-LOCKED`를 확인했다.
 - [x] `REJECT` 라벨을 policy/native residual로 포함하도록 splitter 계약을 보강했다.
 - [x] Review batch builder에 `--exclude-post-ids`를 추가해 closed collateral row 반복을 막았다.
-- [ ] Loop599 `INFO_MISSING 40`을 blind/source-native 또는 native-web batch로 판정한다.
+- [x] Loop599 `INFO_MISSING 40`을 blind/source-native batch로 판정했다.
 - [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, manifest attach fallback 활성, `--no-dashboard` 금지로 실행한다.
 - [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
-- Gate: loop599 batch generation `REVIEW-LOCKED`, judge verdict `NOT_RUN`, full375 collateral `NO-GO / raw 73 / adjusted 66`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
-- 산출물: `docs/devs/loop_reports/LOOP_599_REPORT_20260708.md`, `docs/devs/loop599_full375_after_residual46_triage.json`, `docs/devs/loop599_full375_unreviewed40_action_queue.json`, `docs/devs/loop599_full375_unreviewed40_review_batch.json`.
+- Gate: loop599 batch generation `REVIEW-LOCKED`, judge verdict `REVIEW-LOCKED / ACCEPT 37 / HOLD 3`, full375 collateral `NO-GO / raw 73 / adjusted 29`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_599_REPORT_20260708.md`, `docs/devs/loop599_full375_after_residual46_triage.json`, `docs/devs/loop599_full375_unreviewed40_action_queue.json`, `docs/devs/loop599_full375_unreviewed40_review_batch.json`, `docs/devs/loop599_full375_unreviewed40_source_native_review.json`.
 
 ## 2026-07-08 Loop598 remaining4 native hold contract 체크
 

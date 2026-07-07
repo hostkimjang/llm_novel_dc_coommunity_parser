@@ -1,5 +1,24 @@
 # Operation Quality Checklist
 
+## 2026-07-08 Loop600 source-native 판정과 full375 gate 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_600_REPORT_20260708.md`.
+  - [x] Source-native verdict 기록 완료: `docs/devs/loop599_full375_unreviewed40_source_native_verdicts.json`.
+  - [x] Source-native summary 기록 완료: `docs/devs/loop599_full375_unreviewed40_source_native_review.json/.md`.
+  - [x] Loop595+Loop599 병합 summary 기록 완료: `docs/devs/loop599_combined_loop595_unreviewed40_source_native_review.json/.md`.
+  - [x] Always-on gate 기록 완료: `docs/devs/loop599_always_on_golden18_full375_unreviewed40_source_native_gate.json/.md`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+  - [x] Loop599 review batch `40/40`은 validation issue `0`으로 판정됐다.
+  - [x] `ACCEPT 37`은 regression count 제외 후보일 뿐 approval이 아니다.
+  - [x] HOLD `3`건은 alias/image/character bridge native review 전 hard-hold다.
+  - [x] 병합 summary는 rows `65`, exclusion candidate `44`, residual action queue `21`, validation issue `0`이다.
+  - [x] Always-on gate는 golden18 `GO`지만 collateral `NO-GO / adjusted 29 / unreviewed 8 / runtime counts missing`이다.
+  - [x] Dashboard health는 `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`으로 확인했다.
+  - [x] 다음 test/runtime run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지다.
+- Gate: source-native verdict `REVIEW-LOCKED`, merged review `REVIEW-LOCKED`, always-on `NO-GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop599 full375 unreviewed40 review batch 품질 게이트
 
 - 근거:

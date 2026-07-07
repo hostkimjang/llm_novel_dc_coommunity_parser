@@ -1,5 +1,18 @@
 # Development History
 
+## 2026-07-08 - Loop600 unreviewed40 source-native verdict and full375 gate refresh
+
+- 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+- Loop599 `INFO_MISSING 40`을 source-native/blind 판정으로 전수 처리했다.
+- Verdict 결과는 reviewed `40/40`, validation issue `0`, `ACCEPT 37 / HOLD 3`이다.
+- `wrong_work_title_flip 11`과 `safe_loss_resolved_to_null 9`는 모두 exclusion candidate로 닫혔다.
+- `unsafe_promotion_from_hold 20` 중 `17`은 exclusion candidate, `3`은 native-web/image/character bridge HOLD로 남았다.
+- Loop595+Loop599 병합 review summary는 rows `65`, decision `56`, info missing `9`, exclusion candidate `44`, residual action queue `21`, validation issue `0`이다.
+- Always-on gate는 golden18 `GO`지만 full375 collateral `NO-GO / raw 73 / adjusted 29 / unreviewed 8 / runtime counts missing`로 전체 `NO-GO`다.
+- Dashboard는 `http://127.0.0.1:8080`에서 `ok=true / standalone=true / pid=9320`로 확인했고, 다음 test/runtime run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지다.
+- Report는 `docs/devs/loop_reports/LOOP_600_REPORT_20260708.md`다.
+- Gate는 source-native verdict `REVIEW-LOCKED`, merged review `REVIEW-LOCKED`, always-on `NO-GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop593 canonical cleanup and dashboard contract refresh
 
 - 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
