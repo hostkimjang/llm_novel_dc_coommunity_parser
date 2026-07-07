@@ -1,5 +1,22 @@
 # Developer TODO Index
 
+## 2026-07-08 Loop573 이후
+
+- 상태 업데이트: Loop573은 official detail URL canonical 수리로 raw regression `113 -> 111`, review-adjusted residual `74 -> 72`로 낮췄다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] `m.munpia.com/novel/detail/<id>`와 `ridibooks.com/books/<id>` 정규화를 추가했다.
+- [x] Projection application `13`건을 생성했고 `applied_shared_gate_publish 2`를 확인했다.
+- [x] Publication contract `GO / 375 rows / 0 violations`를 확인했다.
+- [x] Full375 collateral compare와 adjusted always-on gate를 갱신했다.
+- [x] Residual72 action queue와 remaining P0 repair25 batch를 생성했다.
+- [x] Dashboard health를 확인했고 다음 runtime/test run 계약을 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 유지했다.
+- [ ] `post_sync_held 2`는 final publication ledger sync가 막은 사유를 별도 batch로 분해한다.
+- [ ] `skipped_missing_official_detail_url 8`은 official detail URL/native evidence 보강 전 publish하지 않는다.
+- [ ] Remaining P0 repair25는 코드/계약 수리 후 필요한 경우에만 dashboard attached test run으로 실행한다.
+- [ ] INFO_MISSING `20`건은 source-native/blind verdict 전 hard-hold 완화 대상이 아니다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: golden18 `GO`, publication contract `GO`, full375 collateral `NO-GO / adjusted 72`, residual queue `REVIEW-LOCKED / 72`, P0 repair batch `REVIEW-LOCKED / 25`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop572 이후
 
 - 상태 업데이트: Loop572는 Strong source-native shared-gate seed로 stale context-only hard-hold 일부를 수리해 raw regression `117 -> 113`, review-adjusted residual `78 -> 74`로 낮췄다. Goal은 완료가 아니다.

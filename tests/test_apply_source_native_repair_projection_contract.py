@@ -1,9 +1,21 @@
 import unittest
 
+from expert_main import _canonical_official_detail_url
+
 from tools.apply_source_native_repair_projection_contract import apply_contract
 
 
 class ApplySourceNativeRepairProjectionContractTest(unittest.TestCase):
+    def test_canonical_official_detail_url_accepts_mobile_munpia_and_ridi_detail(self):
+        self.assertEqual(
+            _canonical_official_detail_url("https://m.munpia.com/novel/detail/567990"),
+            "https://novel.munpia.com/567990",
+        )
+        self.assertEqual(
+            _canonical_official_detail_url("https://ridibooks.com/books/425439440"),
+            "https://ridibooks.com/books/425439440",
+        )
+
     def test_applies_source_native_selected_title_through_shared_seed(self):
         projection = [
             {

@@ -1,5 +1,36 @@
 # Verification Results
 
+## 2026-07-08 Loop573 official detail URL canonical 수리
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_573_REPORT_20260708.md`
+  - `docs/devs/loop573_official_detail_url_canonical_projection_application.json/.md`
+  - `docs/devs/loop573_official_detail_url_canonical_publication_contract_audit.json/.md`
+  - `docs/devs/loop573_official_detail_url_canonical_residual72_action_queue.json/.md`
+  - `docs/devs/loop573_official_detail_url_canonical_remaining_p0_code_repair25_batch.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop573_official_detail_url_canonical_projection_result.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop573_official_detail_url_canonical_collateral_compare.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop573_official_detail_url_canonical_collateral_triage.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop573_official_detail_url_canonical_combined_source_native_review.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop573_always_on_golden18_full375_official_detail_url_canonical_gate.json/.md`
+- 검증:
+  - URL canonical unit: PASS, mobile Munpia detail과 Ridibooks book URL을 공식 상세 URL로 인정.
+  - Source-native projection application: PASS, eligible `13`, publish `2`, held `2`, missing URL `8`, shared-gate skip `1`.
+  - Full375 collateral compare: NO-GO, shared `375`, changed `167`, raw regression `111`.
+  - Publication contract audit: GO, rows `375`, violation `0`.
+  - Combined source-native summary: PASS, reviewed `111/111`, decision `91`, info missing `20`, validation issue `0`.
+  - Always-on gate: PASS 산출, golden `GO`, collateral `NO-GO / adjusted 72`.
+  - Residual queue: PASS, rows `72`, validation issue `0`.
+  - Remaining P0 batch: PASS, selected `25`, validation issue `0`, execution contract `--parallel 16` + dashboard ON.
+  - Dashboard health: PASS, `http://127.0.0.1:8080/api/health`, `ok=true`, `standalone=true`, `pid=9320`.
+  - py_compile: PASS, expert/tool dashboard policy 관련 파일.
+  - Focused unittest: PASS, `24` tests.
+- 결과:
+  - Loop573은 full375 raw regression을 `113 -> 111`, adjusted residual을 `74 -> 72`로 줄였다.
+  - Full375 collateral은 여전히 `NO-GO`라 full_scan approval과 goal completion을 열지 않는다.
+  - 다음 작업 단위는 remaining P0 repair25, post-sync held 2, missing URL 8, INFO_MISSING 20 source-native/blind review다.
+- Gate: golden18 `GO`, publication contract `GO`, full375 collateral `NO-GO / adjusted 72`, residual queue `REVIEW-LOCKED / 72`, P0 repair batch `REVIEW-LOCKED / 25`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop572 P0 repair31 shared-gate hard-hold 수리
 
 - 산출물:

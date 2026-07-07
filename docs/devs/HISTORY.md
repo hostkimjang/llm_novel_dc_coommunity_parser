@@ -1,5 +1,21 @@
 # Development History
 
+## 2026-07-08 - Loop573 official detail URL canonical repair
+
+- 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+- `_canonical_official_detail_url()`이 `m.munpia.com/novel/detail/<id>`를 `https://novel.munpia.com/<id>`로 정규화하게 했다.
+- `ridibooks.com/books/<id>` 공식 상세 URL을 source-native safe-loss projection의 official detail URL로 인정했다.
+- Loop572 remaining P0 `27`건 중 eligible safe-loss `13`건 결과는 `applied_shared_gate_publish 2`, `post_sync_held 2`, `skipped_missing_official_detail_url 8`, `skipped_by_shared_gate 1`이다.
+- 닫힌 post_id는 `11697242`, `11708447`이다.
+- Publication contract는 `GO / 375 rows / 0 violations`다.
+- Full375 collateral은 changed `167`, raw regression `111`, review-adjusted residual `72`로 줄었지만 `NO-GO`다.
+- Residual action queue는 `72`건이며 bucket은 safe_loss `41`, unsafe promotion `8`, wrong_work `23`이다.
+- Remaining P0 code repair batch는 `25`건이다.
+- Dashboard는 `http://127.0.0.1:8080`에서 `ok=true / standalone=true / pid=9320`로 확인했다. 이번 회차는 projection/static 검증이라 새 runtime 진행률은 없었다.
+- Focused unittest `24`개를 통과했다.
+- Report는 `docs/devs/loop_reports/LOOP_573_REPORT_20260708.md`다.
+- Gate는 golden18 `GO`, publication contract `GO`, full375 collateral `NO-GO / adjusted 72`, residual queue `REVIEW-LOCKED / 72`, P0 repair batch `REVIEW-LOCKED / 25`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop572 P0 repair31 shared-gate hard-hold repair
 
 - 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.

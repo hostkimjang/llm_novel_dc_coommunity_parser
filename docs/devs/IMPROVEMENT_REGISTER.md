@@ -1,5 +1,22 @@
 # Improvement Register
 
+## IMP-20260708-573 - Official detail URL canonical repair
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | 필요한 test run만 `--parallel 16` + dashboard attached로 실행 |
+| URL canonical | GO_UNIT | mobile Munpia detail과 Ridibooks book URL 인정 | 공식 URL 외 범위로 확장 금지 |
+| Application | REVIEW-LOCKED | eligible `13`, publish `2`, post-sync held `2`, missing URL `8`, shared-gate skip `1` | held/missing URL 후속 처리 |
+| Publication contract | GO_PROJECTION_CONTRACT | `375` rows, violation `0` | full_scan approval로 오해 금지 |
+| Full375 collateral | NO-GO | raw `113 -> 111`, changed `167` | remaining residual 처리 후 재평가 |
+| Review adjustment | APPLIED_NOT_APPROVAL | exclusion `39`, adjusted residual `72` | full375 GO 전 approval 금지 |
+| Residual queue | REVIEW-LOCKED | rows `72`, safe_loss `41`, unsafe `8`, wrong_work `23` | batch 단위로 계속 처리 |
+| Remaining P0 repair | REVIEW-LOCKED | rows `25`, `repair_safe_loss_restore_supported_title 11 / repair_after_wrong_work 10 / repair_unsafe_promotion 4` | 코드/계약 수리 선행 |
+| Test run dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | dashboard URL `http://127.0.0.1:8080`, health `ok=true`, next run `--parallel 16`, `--no-dashboard` 금지 | 진행 관측용으로만 사용 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: golden18 `GO`, publication contract `GO`, full375 collateral `NO-GO / adjusted 72`, residual queue `REVIEW-LOCKED / 72`, P0 repair batch `REVIEW-LOCKED / 25`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-572 - P0 repair31 shared-gate hard-hold 수리
 
 | 항목 | 상태 | 근거 | 다음 |

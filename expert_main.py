@@ -50,10 +50,16 @@ def _canonical_official_detail_url(value: Any) -> str:
         return url
     if "novel.munpia.com/" in lowered:
         return url
+    if "ridibooks.com/books/" in lowered:
+        return url
 
     parts = urlsplit(url)
     host = parts.netloc.lower()
+    path = parts.path.strip("/")
     if host in {"mm.munpia.com", "m.munpia.com"}:
+        match = re.search(r"(?:^|/)novel/detail/(\d+)(?:/|$)", path, flags=re.IGNORECASE)
+        if match:
+            return f"https://novel.munpia.com/{match.group(1)}"
         params = parse_qs(parts.query)
         menu = (params.get("menu") or [""])[0].strip().lower()
         novel_id = (params.get("id") or [""])[0].strip()
