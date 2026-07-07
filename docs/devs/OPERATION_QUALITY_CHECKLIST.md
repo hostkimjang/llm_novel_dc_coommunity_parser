@@ -1,5 +1,23 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop520 scope reason normalization 수렴 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_520_REPORT_20260707.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop520_scope_reason_normalization_state_20260707.json`.
+  - [x] Data Analytics artifact 기록 완료: `docs/devs/loop520_scope_reason_data_analytics_artifact.json`.
+  - [x] Loop515 projection audit: `0/57` violations.
+  - [x] Loop510 full375 projection audit: `0/375` violations.
+  - [x] Loop511 projection audit: `0/375` violations.
+  - [x] Unit validation: promotion/publication audit `44` tests PASS, expert_main metadata `76` tests PASS.
+- 품질 경계:
+  - [x] 새 runtime replay는 실행하지 않았다.
+  - [x] Projection result 원본은 큰 generated artifact로 경로/크기만 state에 기록했다.
+  - [x] 신규 테스트런/검증런은 `--parallel 16`과 dashboard 기본 ON을 유지한다.
+  - [ ] Projection GO를 expected-title/full375 collateral approval로 쓰지 않는다.
+  - [ ] Dashboard 상태를 semantic/full_scan approval 근거로 쓰지 않는다.
+- Gate: scope reason contract `GO_PROJECTION_CONTRACT`, runtime replay `NOT_RUN_PROJECTION_ONLY`, expected-title replay `NOT_RECHECKED`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop519 mixed scope reason publication contract 감사 품질 게이트
 
 - 근거:

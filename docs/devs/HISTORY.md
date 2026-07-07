@@ -1,5 +1,15 @@
 # Development History
 
+## 2026-07-07 - Loop520 scope reason normalization
+
+- `src/llm_batch/promotion_gate.py`에 `normalize_scope_reason_codes`를 추가해 current-work marker와 non-current/context marker 혼합을 shared gate 단계에서 정규화했다.
+- non-current scope에서 row discussion이 관측되면 `row_discussion_present_noncurrent_scope`로 기록해 정보는 보존하되 `row_discusses_work_as_work` current marker와 분리한다.
+- `expert_main.py`의 `_enforce_publish_contract_trace_convergence()`도 final ledger 수렴 전에 같은 정규화를 적용한다.
+- 새 runtime replay는 실행하지 않았고, 기존 Loop515/510/511 result artifact에 current-code final sync projection을 적용했다.
+- Projection publication contract audit는 Loop515 `2 -> 0 / 57`, Loop510 full375 `33 -> 0 / 375`, Loop511 projection `36 -> 0 / 375`로 모두 `GO`다.
+- Report는 `docs/devs/loop_reports/LOOP_520_REPORT_20260707.md`, state는 `docs/devs/loop520_scope_reason_normalization_state_20260707.json`, Data Analytics artifact는 `docs/devs/loop520_scope_reason_data_analytics_artifact.json`이다.
+- Gate는 scope reason contract `GO_PROJECTION_CONTRACT`, runtime replay `NOT_RUN_PROJECTION_ONLY`, expected-title replay `NOT_RECHECKED`, full375 collateral `NO-GO`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop519 mixed scope reason publication contract audit
 
 - 새 runtime replay는 실행하지 않고 기존 Loop515/510/511 산출물에 강화 publication contract audit를 적용했다.

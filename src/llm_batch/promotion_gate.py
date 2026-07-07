@@ -22,6 +22,24 @@ BLOCKING_REASON_CODES = {
     "caveated_alias_boundary",
 }
 
+CURRENT_WORK_REASON_MARKERS = {
+    "scope_current_work",
+    "row_discusses_work_as_work",
+}
+NONCURRENT_SCOPE_REASON_MARKERS = {
+    "context_only",
+    "scope_context_only",
+    "scope_not_current_work",
+    "scope_unknown",
+    "scope_unclassified",
+    "row_discussion_missing",
+    "nonwork",
+    "nonwork_or_noise_context",
+    "community_banter",
+    "scope_platform_meta_nonwork",
+    "non_novel_discourse",
+}
+
 HARD_BLOCKING_REASON_CODES = {
     "thematic_overlap_only",
 }
@@ -127,25 +145,62 @@ def _dedupe(items: Iterable[str]) -> List[str]:
     return out
 
 
+def normalize_scope_reason_codes(
+    reason_codes: Iterable[str],
+    *,
+    scope_kind: str = "",
+) -> List[str]:
+    """Remove stale current/non-current scope reason mixtures."""
+    codes = _dedupe(reason_codes)
+    code_set = set(codes)
+    normalized_scope = str(scope_kind or "").strip().lower()
+    current_markers = code_set & CURRENT_WORK_REASON_MARKERS
+    noncurrent_markers = code_set & NONCURRENT_SCOPE_REASON_MARKERS
+
+    if normalized_scope == SCOPE_CURRENT_WORK or (
+        current_markers and not code_set.intersection({"scope_not_current_work", "scope_context_only"})
+    ):
+        return [code for code in codes if code not in NONCURRENT_SCOPE_REASON_MARKERS]
+    if normalized_scope and normalized_scope != SCOPE_CURRENT_WORK and current_markers and noncurrent_markers:
+        cleaned: List[str] = []
+        discussion_marker_added = False
+        for code in codes:
+            if code == "row_discusses_work_as_work":
+                if not discussion_marker_added:
+                    cleaned.append("row_discussion_present_noncurrent_scope")
+                    discussion_marker_added = True
+                continue
+            if code == "scope_current_work":
+                continue
+            cleaned.append(code)
+        return _dedupe(cleaned)
+    return codes
+
+
 def _state_reason_codes(state: GroundingState) -> List[str]:
     codes: List[str] = []
+    scope_kind = state.scope.normalized_kind() if isinstance(state.scope, ScopeState) else ""
+    scope_blocks_current_marker = bool(scope_kind and scope_kind != SCOPE_CURRENT_WORK)
+    row_discusses_current_work = state.row_discusses_work_as_work and not scope_blocks_current_marker
     if state.official_title_exists:
         codes.append("official_title_exists")
-    if state.row_discusses_work_as_work:
+    if row_discusses_current_work:
         codes.append("row_discusses_work_as_work")
+    elif state.row_discusses_work_as_work:
+        codes.append("row_discussion_present_noncurrent_scope")
     else:
         codes.append("row_discussion_missing")
 
     resolution_state = str(state.title_resolution_state or "").strip().lower()
-    if resolution_state in {"context_only", "nonwork"}:
+    if not row_discusses_current_work and resolution_state in {"context_only", "nonwork"}:
         codes.append(resolution_state)
 
     work_resolution = str(state.work_resolution or "").strip().lower()
-    if work_resolution in {"context_only", "nonwork"}:
+    if not row_discusses_current_work and work_resolution in {"context_only", "nonwork"}:
         codes.append(work_resolution)
 
     discussion_type = str(state.discussion_type or "").strip().lower()
-    if discussion_type == "community_banter":
+    if not row_discusses_current_work and discussion_type == "community_banter":
         codes.append("community_banter")
 
     if state.prior_variance_quarantine:
@@ -155,12 +210,11 @@ def _state_reason_codes(state: GroundingState) -> List[str]:
     if state.caveated_alias_boundary:
         codes.append("caveated_alias_boundary")
     if isinstance(state.scope, ScopeState):
-        scope_kind = state.scope.normalized_kind()
         codes.append(f"scope_{scope_kind}")
         if scope_kind != SCOPE_CURRENT_WORK:
             codes.append("scope_not_current_work")
         codes.extend(state.scope.conflict_reason_codes)
-    return codes
+    return normalize_scope_reason_codes(codes, scope_kind=scope_kind)
 
 
 def can_publish_title(

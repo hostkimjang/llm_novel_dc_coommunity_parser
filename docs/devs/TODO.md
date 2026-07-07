@@ -1,5 +1,22 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop520 TODO
+
+- 상태 업데이트: mixed current/non-current scope reason을 shared promotion gate와 final ledger sync에서 정규화했다. Goal은 완료가 아니다.
+- [x] 새 runtime replay를 발주하지 않았다.
+- [x] `normalize_scope_reason_codes` helper를 추가했다.
+- [x] final ledger convergence가 같은 helper를 사용한다.
+- [x] Loop515 projection audit는 `0/57` violations다.
+- [x] Loop510 full375 projection audit는 `0/375` violations다.
+- [x] Loop511 projection audit는 `0/375` violations다.
+- [x] Report/state/Data Analytics artifact를 기록했다.
+- [x] py_compile PASS, focused unittest `120` tests PASS.
+- [ ] Projection GO를 runtime proof나 semantic approval로 쓰지 않는다.
+- [ ] Expected-title replay 실패 큐와 full375 collateral residual을 다음 N건 배치로 연결한다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: scope reason contract `GO_PROJECTION_CONTRACT`, runtime replay `NOT_RUN_PROJECTION_ONLY`, expected-title replay `NOT_RECHECKED`, full375 collateral `NO-GO`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop519 TODO
 
 - 상태 업데이트: mixed current/noncurrent scope reason을 publication contract audit 위반으로 승격했다. Goal은 완료가 아니다.

@@ -1,0 +1,174 @@
+{
+  "title": "Loop520 scope reason normalization 감사 요약",
+  "status": "rendered",
+  "language": "ko",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "Loop520 scope reason normalization 감사 요약",
+    "generatedAt": "2026-07-07T12:24:00+09:00",
+    "blocks": [
+      {
+        "id": "intro",
+        "type": "markdown",
+        "body": "# Loop520 scope reason normalization 감사 요약\n\nLoop520은 새 runtime replay가 아니라 current-code final sync projection이다. shared promotion gate와 final publication ledger sync에서 mixed current/noncurrent scope reason을 정규화했고, Loop515/510/511 publication contract audit가 모두 GO로 내려왔다. 단 이 결과는 semantic/full_scan approval이 아니며 full375 collateral gate는 계속 NO-GO다."
+      },
+      {
+        "id": "chart_block",
+        "type": "chart",
+        "chartId": "violation_delta_chart"
+      },
+      {
+        "id": "table_block",
+        "type": "table",
+        "tableId": "audit_delta_table"
+      }
+    ],
+    "charts": [
+      {
+        "id": "violation_delta_chart",
+        "title": "publication contract 위반 행 수 변화",
+        "subtitle": "mixed scope reason 계약은 projection 기준 0건으로 수렴했다.",
+        "dataset": "audit_delta_long",
+        "type": "bar",
+        "source": {
+          "query": {
+            "description": "Loop519 before와 Loop520 after projection의 publication contract 위반 행 수를 long format으로 비교",
+            "sql": "SELECT artifact, stage, violation_rows FROM audit_delta_long"
+          }
+        },
+        "encodings": {
+          "x": {
+            "field": "artifact"
+          },
+          "y": {
+            "field": "violation_rows"
+          },
+          "color": {
+            "field": "stage"
+          }
+        }
+      }
+    ],
+    "tables": [
+      {
+        "id": "audit_delta_table",
+        "title": "Loop520 audit delta",
+        "dataset": "audit_delta",
+        "source": {
+          "query": {
+            "description": "Loop519 mixed scope reason audit와 Loop520 current-code projection audit의 전후 위반 행 수 비교",
+            "sql": "SELECT artifact, row_count, before_violation_rows, after_violation_rows, changed_rows, gate_after, boundary FROM audit_delta"
+          }
+        },
+        "columns": [
+          {
+            "field": "artifact",
+            "label": "산출물"
+          },
+          {
+            "field": "row_count",
+            "label": "행 수"
+          },
+          {
+            "field": "before_violation_rows",
+            "label": "이전 위반"
+          },
+          {
+            "field": "after_violation_rows",
+            "label": "projection 위반"
+          },
+          {
+            "field": "changed_rows",
+            "label": "sync 변경 행"
+          },
+          {
+            "field": "gate_after",
+            "label": "projection gate"
+          },
+          {
+            "field": "boundary",
+            "label": "경계"
+          }
+        ],
+        "defaultSort": {
+          "field": "before_violation_rows",
+          "direction": "desc"
+        }
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "status": "ready",
+    "generatedAt": "2026-07-07T12:24:00+09:00",
+    "datasets": {
+      "audit_delta": [
+        {
+          "artifact": "Loop515 safe57 runtime result",
+          "row_count": 57,
+          "before_violation_rows": 2,
+          "after_violation_rows": 0,
+          "changed_rows": 41,
+          "gate_after": "GO",
+          "boundary": "runtime replay 아님"
+        },
+        {
+          "artifact": "Loop510 full375 runtime result",
+          "row_count": 375,
+          "before_violation_rows": 33,
+          "after_violation_rows": 0,
+          "changed_rows": 233,
+          "gate_after": "GO",
+          "boundary": "projection only"
+        },
+        {
+          "artifact": "Loop511 final sync projection",
+          "row_count": 375,
+          "before_violation_rows": 36,
+          "after_violation_rows": 0,
+          "changed_rows": 223,
+          "gate_after": "GO",
+          "boundary": "projection only"
+        }
+      ],
+      "audit_delta_long": [
+        {
+          "artifact": "Loop515 safe57",
+          "stage": "before",
+          "violation_rows": 2
+        },
+        {
+          "artifact": "Loop515 safe57",
+          "stage": "after projection",
+          "violation_rows": 0
+        },
+        {
+          "artifact": "Loop510 full375",
+          "stage": "before",
+          "violation_rows": 33
+        },
+        {
+          "artifact": "Loop510 full375",
+          "stage": "after projection",
+          "violation_rows": 0
+        },
+        {
+          "artifact": "Loop511 projection",
+          "stage": "before",
+          "violation_rows": 36
+        },
+        {
+          "artifact": "Loop511 projection",
+          "stage": "after projection",
+          "violation_rows": 0
+        }
+      ]
+    }
+  },
+  "gate": {
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "completion_criterion": "full375 collateral GO + full_scan 경로 정의"
+  }
+}

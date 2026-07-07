@@ -26,6 +26,11 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional
 from urllib.parse import parse_qs, urlsplit, urlunsplit
 
+try:
+    from llm_batch.promotion_gate import normalize_scope_reason_codes
+except ModuleNotFoundError:
+    from src.llm_batch.promotion_gate import normalize_scope_reason_codes
+
 _DEFAULT_VLM_MAX_IMAGE_BYTES = "16777216"
 
 # 대시보드 비활성화 플래그: --no-dashboard
@@ -232,6 +237,20 @@ def _enforce_publish_contract_trace_convergence(result_dict: Dict[str, Any]) -> 
     gate_decision = dict(decision)
     gate_decision["bypassed_gate"] = False
     publish_allowed = gate_decision.get("publish_allowed") is True
+    trace_scope = trace.get("scope_state") if isinstance(trace, dict) else None
+    decision_scope = gate_decision.get("scope")
+    scope_payload = decision_scope if isinstance(decision_scope, dict) else trace_scope
+    scope_kind = ""
+    if isinstance(scope_payload, dict):
+        scope_kind = str(scope_payload.get("scope_kind") or "").strip()
+    raw_reason_codes = gate_decision.get("reason_codes")
+    if isinstance(raw_reason_codes, list):
+        normalized_reason_codes = normalize_scope_reason_codes(
+            [str(code) for code in raw_reason_codes if str(code).strip()],
+            scope_kind=scope_kind,
+        )
+        if raw_reason_codes != normalized_reason_codes:
+            gate_decision["reason_codes"] = normalized_reason_codes
     reason_code_set = {
         str(code or "").strip()
         for code in (gate_decision.get("reason_codes") or [])

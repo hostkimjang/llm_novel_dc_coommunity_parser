@@ -1,0 +1,103 @@
+{
+  "loop": 520,
+  "date": "2026-07-07",
+  "title": "scope reason normalization across shared promotion gate and final ledger sync",
+  "goal_status": "ACTIVE_NOT_COMPLETE",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "runtime_replay": {
+    "status": "NOT_RUN_PROJECTION_ONLY",
+    "reason": "기존 Loop515/510/511 result artifact를 current-code final sync로 projection했으며 새 expert_main runtime replay는 실행하지 않았다."
+  },
+  "dashboard": {
+    "policy": "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+    "url": "http://127.0.0.1:8080",
+    "latest_status": {
+      "batch_running": false,
+      "total_posts": 57,
+      "current_index": 57,
+      "done_count": 57,
+      "progress_pct": 100.0,
+      "parallel_count": 16,
+      "input_file": "loop515_shared_gate_projected_safe57_runtime_replay_input.jsonl"
+    },
+    "boundary": "dashboard는 진행 확인 도구이며 semantic/full_scan approval 근거가 아니다."
+  },
+  "code_changes": [
+    {
+      "file": "src/llm_batch/promotion_gate.py",
+      "change": "normalize_scope_reason_codes helper를 추가하고 _state_reason_codes에서 current-work와 non-current/context marker 혼합을 정규화한다."
+    },
+    {
+      "file": "expert_main.py",
+      "change": "_enforce_publish_contract_trace_convergence가 promotion_decision reason_codes를 final ledger 수렴 전에 정규화한다."
+    }
+  ],
+  "audit_delta": [
+    {
+      "artifact": "Loop515 safe57 runtime result",
+      "source_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop515_shared_gate_projected_safe57_runtime_replay_result.json",
+      "projection_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop520_loop515_after_scope_reason_normalization_projection_result.json",
+      "projection_result_size_bytes": 3376978,
+      "audit_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop520_loop515_scope_reason_normalization_publication_contract_audit.json",
+      "row_count": 57,
+      "changed_rows": 41,
+      "before_violation_rows": 2,
+      "after_violation_rows": 0,
+      "after_gate": "GO"
+    },
+    {
+      "artifact": "Loop510 full375 runtime result",
+      "source_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop510_full375_current_head_a729e745_search_nonlight_result.json",
+      "projection_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop520_loop510_full375_after_scope_reason_normalization_projection_result.json",
+      "projection_result_size_bytes": 20251307,
+      "audit_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop520_loop510_full375_scope_reason_normalization_publication_contract_audit.json",
+      "row_count": 375,
+      "changed_rows": 233,
+      "before_violation_rows": 33,
+      "after_violation_rows": 0,
+      "after_gate": "GO"
+    },
+    {
+      "artifact": "Loop511 final sync projection",
+      "source_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json",
+      "projection_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop520_loop511_after_scope_reason_normalization_projection_result.json",
+      "projection_result_size_bytes": 20709085,
+      "audit_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop520_loop511_scope_reason_normalization_publication_contract_audit.json",
+      "row_count": 375,
+      "changed_rows": 223,
+      "before_violation_rows": 36,
+      "after_violation_rows": 0,
+      "after_gate": "GO"
+    }
+  ],
+  "verification": {
+    "py_compile": "PASS",
+    "unit_tests": [
+      {
+        "command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_promotion_gate_contract tests.test_publication_contract_convergence_audit -v",
+        "result": "PASS",
+        "test_count": 44
+      },
+      {
+        "command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_expert_main_comment_metadata -v",
+        "result": "PASS",
+        "test_count": 76
+      }
+    ],
+    "data_analytics": "validate/render PASS"
+  },
+  "gates": {
+    "scope_reason_contract": "GO_PROJECTION_CONTRACT",
+    "publication_contract_projection": "GO_0_VIOLATIONS",
+    "runtime_replay": "NOT_RUN_PROJECTION_ONLY",
+    "expected_title_replay": "NOT_RECHECKED",
+    "full375_collateral": "NO-GO",
+    "search_evidence": "REVIEW",
+    "dashboard": "GO_PROGRESS_VIEW_NOT_APPROVAL",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE_NOT_COMPLETE",
+    "completion_criterion": "full375 collateral GO + full_scan 경로 정의"
+  }
+}

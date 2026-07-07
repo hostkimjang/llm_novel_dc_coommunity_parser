@@ -1,5 +1,18 @@
 # Improvement Register
 
+## IMP-20260707-520 - scope reason normalization
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Shared gate reason normalization | GO_UNIT | `normalize_scope_reason_codes` 추가 | runtime replay 전 expected-title 큐와 연결 |
+| Final ledger convergence | GO_UNIT | `_enforce_publish_contract_trace_convergence()`에서 reason 정규화 | current-code projection 유지 |
+| Loop515 contract projection | GO_PROJECTION | violations `2 -> 0` | runtime proof 아님 |
+| Loop510 full375 contract projection | GO_PROJECTION | violations `33 -> 0` | collateral semantic gate 별도 |
+| Loop511 contract projection | GO_PROJECTION | violations `36 -> 0` | expected-title 별도 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: scope reason contract `GO_PROJECTION_CONTRACT`, runtime replay `NOT_RUN_PROJECTION_ONLY`, full375 collateral `NO-GO`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-519 - mixed scope reason publication contract audit
 
 | 항목 | 상태 | 근거 | 다음 |

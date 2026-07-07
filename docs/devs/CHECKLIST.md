@@ -1,5 +1,22 @@
 # Development Checklist
 
+## 2026-07-07 Loop520 scope reason normalization 수렴 체크
+
+- [x] 새 runtime replay를 실행하지 않았다.
+- [x] `src/llm_batch/promotion_gate.py`에 `normalize_scope_reason_codes`를 추가했다.
+- [x] `expert_main.py` final ledger convergence에서 reason code 정규화를 적용했다.
+- [x] Loop515 projection publication contract는 `2 -> 0 / 57`로 `GO`다.
+- [x] Loop510 full375 projection publication contract는 `33 -> 0 / 375`로 `GO`다.
+- [x] Loop511 projection publication contract는 `36 -> 0 / 375`로 `GO`다.
+- [x] Data Analytics artifact `docs/devs/loop520_scope_reason_data_analytics_artifact.json` validate/render PASS.
+- [x] Report `docs/devs/loop_reports/LOOP_520_REPORT_20260707.md`를 작성했다.
+- [x] State `docs/devs/loop520_scope_reason_normalization_state_20260707.json`을 작성했다.
+- [x] Dashboard는 `57/57`, `progress_pct=100.0`, `parallel_count=16`, `batch_running=false`다.
+- [ ] Projection GO를 runtime proof나 semantic approval로 쓰지 않는다.
+- [ ] Expected-title replay와 full375 collateral은 별도 gate로 유지한다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: scope reason contract `GO_PROJECTION_CONTRACT`, runtime replay `NOT_RUN_PROJECTION_ONLY`, expected-title replay `NOT_RECHECKED`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop519 mixed scope reason publication contract 감사 체크
 
 - [x] 새 runtime replay를 실행하지 않았다.

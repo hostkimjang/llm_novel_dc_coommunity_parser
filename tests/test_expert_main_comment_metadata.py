@@ -14,6 +14,7 @@ from expert_main import (
     _public_comment_dialogue_context_lines,
     _public_comment_metadata,
     _require_vlm_ocr_for_image_posts,
+    _enforce_publish_contract_trace_convergence,
     _sync_final_publication_ledger_contract,
     _scrub_promotion_blocked_result_contract,
     _vlm_ocr_semantic_review_gate_lines,
@@ -22,6 +23,66 @@ from expert_main import (
 
 
 class ExpertMainCommentMetadataTest(unittest.TestCase):
+    def test_publish_contract_convergence_normalizes_mixed_scope_reason_codes(self):
+        decision = {
+            "status": "publish",
+            "publish_allowed": True,
+            "official_title": "테스트 작품",
+            "official_url": "https://novelpia.com/novel/1",
+            "candidate_preserved": False,
+            "reason_codes": [
+                "official_title_exists",
+                "row_discusses_work_as_work",
+                "scope_current_work",
+                "context_only",
+                "serialized_public_identity_published",
+            ],
+            "scope": {"scope_kind": "current_work", "confidence": "high"},
+            "bypassed_gate": False,
+        }
+        result = {
+            "identity": {
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "candidate_ledger_status": "safe_resolved",
+                "promotion_decision": dict(decision),
+                "publish_contract_trace": {
+                    "gate_decision": dict(decision),
+                    "scope_state": {"scope_kind": "current_work", "confidence": "high"},
+                    "post_gate_identity": {},
+                    "reason_codes": list(decision["reason_codes"]),
+                    "bypassed_gate": False,
+                },
+                "publish_ledger": {"gate_decision": dict(decision)},
+                "candidate_ledger": {
+                    "promotion_decision": dict(decision),
+                    "publish_contract_trace": {
+                        "gate_decision": dict(decision),
+                        "scope_state": {"scope_kind": "current_work", "confidence": "high"},
+                        "post_gate_identity": {},
+                        "reason_codes": list(decision["reason_codes"]),
+                        "bypassed_gate": False,
+                    },
+                    "publish_ledger": {"gate_decision": dict(decision)},
+                },
+            }
+        }
+
+        changed = _enforce_publish_contract_trace_convergence(result)
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        reason_codes = identity["promotion_decision"]["reason_codes"]
+        self.assertIn("row_discusses_work_as_work", reason_codes)
+        self.assertIn("scope_current_work", reason_codes)
+        self.assertNotIn("context_only", reason_codes)
+        self.assertEqual(identity["publish_contract_trace"]["reason_codes"], reason_codes)
+        self.assertEqual(
+            identity["candidate_ledger"]["promotion_decision"]["reason_codes"],
+            reason_codes,
+        )
+
     def test_promotion_blocked_result_contract_scrubs_resolution_text(self):
         result = {
             "identity": {

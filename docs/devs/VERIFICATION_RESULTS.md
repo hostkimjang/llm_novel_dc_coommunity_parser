@@ -1,5 +1,32 @@
 # Verification Results
 
+## 2026-07-07 Loop520 Verification
+
+- 범위: shared promotion gate와 final ledger sync의 mixed current/non-current scope reason 정규화.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_520_REPORT_20260707.md`
+  - state `docs\devs\loop520_scope_reason_normalization_state_20260707.json`
+  - Data Analytics artifact `docs\devs\loop520_scope_reason_data_analytics_artifact.json`
+  - Loop515 projection audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop520_loop515_scope_reason_normalization_publication_contract_audit.json`
+  - Loop510 full375 projection audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop520_loop510_full375_scope_reason_normalization_publication_contract_audit.json`
+  - Loop511 projection audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop520_loop511_scope_reason_normalization_publication_contract_audit.json`
+  - code `src\llm_batch\promotion_gate.py`
+  - code `expert_main.py`
+- Result:
+  - Loop515 publication contract `2 -> 0 / 57`, gate `GO`
+  - Loop510 full375 publication contract `33 -> 0 / 375`, gate `GO`
+  - Loop511 publication contract `36 -> 0 / 375`, gate `GO`
+  - dashboard latest status `57/57`, `progress_pct=100.0`, `parallel_count=16`
+- Validation:
+  - `python -m py_compile src\llm_batch\promotion_gate.py expert_main.py tests\test_promotion_gate_contract.py tests\test_expert_main_comment_metadata.py tests\test_publication_contract_convergence_audit.py` PASS.
+  - `python -m unittest tests.test_promotion_gate_contract tests.test_publication_contract_convergence_audit -v` PASS, `44` tests.
+  - `python -m unittest tests.test_expert_main_comment_metadata -v` PASS, `76` tests.
+  - Data Analytics validate/render PASS.
+- Boundary:
+  - Loop520은 projection-only 검증이며 runtime replay가 아니다.
+  - Projection publication contract `GO`는 expected-title replay, full375 collateral, search evidence, full_scan approval을 대체하지 않는다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-07 Loop519 Verification
 
 - 범위: publication contract audit에 mixed current/noncurrent scope reason 위반을 추가하고 기존 Loop515/510/511 산출물에 적용했다.

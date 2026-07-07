@@ -78,11 +78,12 @@
   - 조치: `tools/build_completed_source_candidate_audit.py`가 `search_health_ready`와 `publication_contract_ready`를 계산하고 approval source candidate 조건에 포함한다.
   - 검증: `tests.test_completed_source_candidate_audit + tests.test_publication_contract_convergence_audit` `7` tests OK, Loop277 후보 감사 `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop277_completed_source_candidate_publication_contract_audit.md`.
 - [x] publication contract convergence artifact audit 추가
-  - 상태: implemented_loop275 / strengthened_loop519 / approval blocked
+  - 상태: implemented_loop275 / strengthened_loop519 / normalized_loop520_projection_go / approval blocked
   - 문제: `PromotionDecision`, `publish_contract_trace`, `publish_ledger`, serialized public identity가 helper 내부에서는 수렴해도 실제 result artifact에서 stale trace나 blocked public leak가 남을 수 있다.
   - 조치: `tools/audit_publication_contract_convergence.py`를 추가해 result rows 단위로 수렴 위반을 `NO-GO` 처리한다.
   - Loop519 보강: current-work marker와 non-current/context marker가 reason source 안이나 source 사이에 함께 남으면 `mixed_current_noncurrent_scope_reason_codes`로 `NO-GO` 처리한다.
-  - 검증: `tests.test_publication_contract_convergence_audit` `20` tests OK, Loop519 audits `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop519_loop515_publication_contract_mixed_scope_audit.md`, `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop519_loop510_full375_publication_contract_mixed_scope_audit.md`, `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop519_loop511_projection_publication_contract_mixed_scope_audit.md`.
+  - Loop520 보강: shared promotion gate와 final ledger sync에서 mixed scope reason을 정규화해 projection audit를 Loop515 `2 -> 0`, Loop510 full375 `33 -> 0`, Loop511 `36 -> 0`으로 낮췄다.
+  - 검증: `tests.test_publication_contract_convergence_audit` `20` tests OK, `tests.test_promotion_gate_contract` 포함 `44` tests OK, `tests.test_expert_main_comment_metadata` `76` tests OK. Loop520 audits `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop520_loop515_scope_reason_normalization_publication_contract_audit.md`, `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop520_loop510_full375_scope_reason_normalization_publication_contract_audit.md`, `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop520_loop511_scope_reason_normalization_publication_contract_audit.md`.
 - [x] Synthesizer hidden reference 로깅 예외 방어
   - 상태: implemented_loop278 / approval blocked
   - 문제: Synthesizer LLM 출력의 `hidden_references`에 dict가 아닌 항목이 섞이면 로깅 중 `'int' object has no attribute 'get'` 예외가 나고 health audit에 trace 신호가 남는다.
