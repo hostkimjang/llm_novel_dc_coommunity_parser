@@ -1,5 +1,16 @@
 # Development History
 
+## 2026-07-07 - Loop519 mixed scope reason publication contract audit
+
+- 새 runtime replay는 실행하지 않고 기존 Loop515/510/511 산출물에 강화 publication contract audit를 적용했다.
+- `tools/audit_publication_contract_convergence.py`는 current-work marker와 non-current/context marker가 reason source 안이나 source 사이에 함께 남으면 `mixed_current_noncurrent_scope_reason_codes`로 NO-GO 처리한다.
+- `tests/test_publication_contract_convergence_audit.py`에 mixed reason 우회 방지 테스트 2건을 추가했다.
+- Loop515 pre-patch probe는 `GO / 0 of 57`이었지만 post-patch audit는 `NO-GO / 2 of 57`이고 post_id는 `11679547`, `11700483`이다.
+- Loop510 full375 runtime audit는 `NO-GO / 33 of 375`, Loop511 projection audit는 `NO-GO / 36 of 375`다.
+- 최신 Loop515 manifest를 dashboard `http://127.0.0.1:8080`에 재부착했고 status는 `57/57`, `progress_pct=100.0`, `parallel_count=16`이다.
+- Report는 `docs/devs/loop_reports/LOOP_519_REPORT_20260707.md`, state는 `docs/devs/loop519_mixed_scope_reason_contract_state_20260707.json`, Data Analytics artifact는 `docs/devs/loop519_mixed_scope_reason_data_analytics_artifact.json`이다.
+- Gate는 contract audit `NO-GO_MIXED_SCOPE_REASON_CONTRACT_STATIC`, runtime replay `NOT_RUN_AFTER_CONTRACT_AUDIT`, full375 collateral `NO-GO`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop517 shared gate scope conflict split
 
 - Loop516 repair queue의 `projection_runtime_scope_conflict 13`건을 hard conflict와 mixed trace로 분리했다.

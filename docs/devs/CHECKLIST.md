@@ -1,5 +1,23 @@
 # Development Checklist
 
+## 2026-07-07 Loop519 mixed scope reason publication contract 감사 체크
+
+- [x] 새 runtime replay를 실행하지 않았다.
+- [x] 최신 Loop515 manifest를 `http://127.0.0.1:8080` dashboard에 재부착했다.
+- [x] Dashboard status는 `57/57`, `progress_pct=100.0`, `parallel_count=16`, `batch_running=false`다.
+- [x] `mixed_current_noncurrent_scope_reason_codes` 계약을 `tools/audit_publication_contract_convergence.py`에 추가했다.
+- [x] `PromotionDecision`, `publish_contract_trace`, `publish_ledger`, `candidate_ledger` reason source를 함께 감사한다.
+- [x] Loop515 post-patch audit는 `2/57` NO-GO이며 post_id는 `11679547`, `11700483`이다.
+- [x] Loop510 full375 runtime audit는 `33/375` NO-GO다.
+- [x] Loop511 projection audit는 `36/375` NO-GO다.
+- [x] Report `docs/devs/loop_reports/LOOP_519_REPORT_20260707.md`를 작성했다.
+- [x] State `docs/devs/loop519_mixed_scope_reason_contract_state_20260707.json`을 작성했다.
+- [x] Data Analytics artifact `docs/devs/loop519_mixed_scope_reason_data_analytics_artifact.json`을 작성했다.
+- [ ] Mixed trace는 hard-hold 완화가 아니라 trace normalization으로 처리한다.
+- [ ] Dashboard는 진행 확인 도구이며 semantic/full_scan approval 근거가 아니다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: contract audit `NO-GO_MIXED_SCOPE_REASON_CONTRACT_STATIC`, runtime replay `NOT_RUN_AFTER_CONTRACT_AUDIT`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop518 테스트런 웹 대시보드 템플릿 동기화 체크
 
 - [x] 현재 standalone dashboard health를 확인했다: `ok=true`, `standalone=true`, `pid=9320`.

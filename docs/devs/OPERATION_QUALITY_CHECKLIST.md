@@ -1,5 +1,23 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop519 mixed scope reason publication contract 감사 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_519_REPORT_20260707.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop519_mixed_scope_reason_contract_state_20260707.json`.
+  - [x] Data Analytics artifact 기록 완료: `docs/devs/loop519_mixed_scope_reason_data_analytics_artifact.json`.
+  - [x] Loop515 강화 audit: `2/57` NO-GO.
+  - [x] Loop510 full375 runtime 강화 audit: `33/375` NO-GO.
+  - [x] Loop511 projection 강화 audit: `36/375` NO-GO.
+  - [x] Dashboard 최신 manifest attach: `57/57`, `progress_pct=100.0`, `parallel_count=16`.
+- 품질 경계:
+  - [x] 새 runtime replay는 실행하지 않았다.
+  - [x] Mixed current/noncurrent reason은 trace normalization 대상이다.
+  - [x] 신규 테스트런/검증런은 `--parallel 16`과 dashboard 기본 ON을 유지한다.
+  - [ ] Dashboard 상태를 semantic/full_scan approval 근거로 쓰지 않는다.
+  - [ ] Full375 collateral GO 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- Gate: contract audit `NO-GO_MIXED_SCOPE_REASON_CONTRACT_STATIC`, runtime replay `NOT_RUN_AFTER_CONTRACT_AUDIT`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop518 테스트런 웹 대시보드 템플릿 동기화 품질 게이트
 
 - 근거:

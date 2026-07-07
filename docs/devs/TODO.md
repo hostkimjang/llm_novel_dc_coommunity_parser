@@ -1,5 +1,24 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop519 TODO
+
+- 상태 업데이트: mixed current/noncurrent scope reason을 publication contract audit 위반으로 승격했다. Goal은 완료가 아니다.
+- [x] 새 runtime replay를 발주하지 않았다.
+- [x] 최신 Loop515 manifest를 `http://127.0.0.1:8080` dashboard에 재부착했다.
+- [x] Dashboard status는 `57/57`, `progress_pct=100.0`, `parallel_count=16`, `batch_running=false`다.
+- [x] `mixed_current_noncurrent_scope_reason_codes` 계약을 추가했다.
+- [x] Loop515 post-patch audit는 `2/57` NO-GO다.
+- [x] Loop510 full375 runtime audit는 `33/375` NO-GO다.
+- [x] Loop511 projection audit는 `36/375` NO-GO다.
+- [x] Report/state/Data Analytics artifact를 기록했다.
+- [x] py_compile PASS, focused unittest `20` tests PASS.
+- [ ] `11679547`, `11700483`은 trace normalization 뒤 replay 후보로 되돌린다.
+- [ ] Full375 mixed trace 33/36건을 residual queue와 연결해 N건 배치로 처리한다.
+- [ ] Dashboard를 semantic/full_scan approval 근거로 쓰지 않는다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: contract audit `NO-GO_MIXED_SCOPE_REASON_CONTRACT_STATIC`, runtime replay `NOT_RUN_AFTER_CONTRACT_AUDIT`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop517 TODO
 
 - 상태 업데이트: Loop516 scope conflict `13`건을 hard conflict와 mixed trace로 분리했다. Goal은 완료가 아니다.

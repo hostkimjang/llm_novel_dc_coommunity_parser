@@ -1,0 +1,124 @@
+{
+  "loop": 519,
+  "date": "2026-07-07",
+  "title": "mixed current/noncurrent scope reason publication contract audit",
+  "goal_status": "ACTIVE_NOT_COMPLETE",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "runtime_replay": {
+    "status": "NOT_RUN_AFTER_CONTRACT_AUDIT",
+    "reason": "기존 Loop515/510/511 산출물에 강화 audit를 적용했으며 동일 packet runtime replay는 실행하지 않았다."
+  },
+  "dashboard": {
+    "policy": "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+    "url": "http://127.0.0.1:8080",
+    "health": {
+      "ok": true,
+      "standalone": true,
+      "pid": 9320
+    },
+    "latest_attached_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop515_shared_gate_projected_safe57_runtime_replay_result_manifest.json",
+    "latest_status": {
+      "batch_running": false,
+      "total_posts": 57,
+      "current_index": 57,
+      "done_count": 57,
+      "progress_pct": 100.0,
+      "parallel_count": 16
+    },
+    "boundary": "dashboard는 진행 확인 도구이며 semantic/full_scan approval 근거가 아니다."
+  },
+  "contract_change": {
+    "tool": "tools/audit_publication_contract_convergence.py",
+    "tests": "tests/test_publication_contract_convergence_audit.py",
+    "new_violation_code": "mixed_current_noncurrent_scope_reason_codes",
+    "policy": "current-work marker와 non-current/context marker가 reason source 안이나 source 사이에 함께 남으면 mixed trace로 보고 정규화해야 한다.",
+    "current_markers": [
+      "scope_current_work",
+      "row_discusses_work_as_work"
+    ],
+    "noncurrent_markers": [
+      "context_only",
+      "scope_context_only",
+      "scope_not_current_work",
+      "scope_unknown",
+      "scope_unclassified",
+      "row_discussion_missing",
+      "nonwork",
+      "nonwork_or_noise_context",
+      "community_banter",
+      "scope_platform_meta_nonwork",
+      "non_novel_discourse"
+    ],
+    "reason_sources": [
+      "PromotionDecision.reason_codes",
+      "publish_contract_trace.reason_codes",
+      "publish_contract_trace.gate_decision.reason_codes",
+      "publish_ledger.gate_decision.reason_codes",
+      "candidate_ledger.promotion_decision.reason_codes",
+      "candidate_ledger.publish_contract_trace.reason_codes"
+    ]
+  },
+  "audit_results": [
+    {
+      "name": "Loop515 pre-patch probe",
+      "artifact_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop519_pre_patch_loop515_publication_contract_mixed_scope_probe.json",
+      "artifact_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop519_pre_patch_loop515_publication_contract_mixed_scope_probe.md",
+      "row_count": 57,
+      "violation_row_count": 0,
+      "gate": "GO",
+      "meaning": "기존 audit는 mixed current/noncurrent scope reason을 감지하지 못했다."
+    },
+    {
+      "name": "Loop515 post-patch audit",
+      "artifact_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop519_loop515_publication_contract_mixed_scope_audit.json",
+      "artifact_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop519_loop515_publication_contract_mixed_scope_audit.md",
+      "row_count": 57,
+      "violation_row_count": 2,
+      "gate": "NO-GO",
+      "violation_code": "mixed_current_noncurrent_scope_reason_codes",
+      "post_ids": [
+        11679547,
+        11700483
+      ],
+      "meaning": "Loop517의 mixed trace 2건이 publication contract audit에서 실제 NO-GO로 잡힌다."
+    },
+    {
+      "name": "Loop510 full375 runtime audit",
+      "artifact_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop519_loop510_full375_publication_contract_mixed_scope_audit.json",
+      "artifact_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop519_loop510_full375_publication_contract_mixed_scope_audit.md",
+      "row_count": 375,
+      "violation_row_count": 33,
+      "gate": "NO-GO",
+      "violation_code": "mixed_current_noncurrent_scope_reason_codes",
+      "meaning": "full375 runtime artifact에도 mixed trace가 다수 남아 있어 golden 소표본만으로 승인할 수 없다."
+    },
+    {
+      "name": "Loop511 projection audit",
+      "artifact_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop519_loop511_projection_publication_contract_mixed_scope_audit.json",
+      "artifact_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop519_loop511_projection_publication_contract_mixed_scope_audit.md",
+      "row_count": 375,
+      "violation_row_count": 36,
+      "gate": "NO-GO",
+      "violation_code": "mixed_current_noncurrent_scope_reason_codes",
+      "meaning": "projection 경로도 mixed trace 정규화 전에는 approval 후보가 아니다."
+    }
+  ],
+  "verification": {
+    "py_compile": "PASS",
+    "focused_unittest": "PASS",
+    "focused_unittest_command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_publication_contract_convergence_audit -v",
+    "focused_unittest_count": 20,
+    "data_analytics": "validate/render PASS"
+  },
+  "gates": {
+    "contract_audit": "NO-GO_MIXED_SCOPE_REASON_CONTRACT_STATIC",
+    "runtime_replay": "NOT_RUN_AFTER_CONTRACT_AUDIT",
+    "full375_collateral": "NO-GO",
+    "search_evidence": "REVIEW",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE_NOT_COMPLETE",
+    "completion_criterion": "full375 collateral GO + full_scan 경로 정의"
+  }
+}

@@ -39,6 +39,23 @@ IMAGE_HARD_HOLD_REASON_CODES = {
     "precision_seed_weak_source_title_without_official_support",
 }
 IMAGE_UNVERIFIED_REASON_CODE = "unverified_promoted_image_work_title_without_official_support"
+SCOPE_CURRENT_WORK_REASON_MARKERS = {
+    "scope_current_work",
+    "row_discusses_work_as_work",
+}
+SCOPE_NONCURRENT_REASON_MARKERS = {
+    "context_only",
+    "scope_context_only",
+    "scope_not_current_work",
+    "scope_unknown",
+    "scope_unclassified",
+    "row_discussion_missing",
+    "nonwork",
+    "nonwork_or_noise_context",
+    "community_banter",
+    "scope_platform_meta_nonwork",
+    "non_novel_discourse",
+}
 
 
 def load_json(path: Path) -> Any:
@@ -149,6 +166,16 @@ def _has_candidate_payload(value: Any) -> bool:
 
 def _scope_kind(value: Any) -> str:
     return str(_dict_or_empty(value).get("scope_kind") or "").strip()
+
+
+def _reason_code_set(value: Any) -> set[str]:
+    if isinstance(value, dict):
+        value = value.get("reason_codes")
+    if isinstance(value, str):
+        value = [value]
+    if not isinstance(value, list):
+        return set()
+    return {str(code or "").strip() for code in value if str(code or "").strip()}
 
 
 def _title_key(value: Any) -> str:
@@ -321,11 +348,49 @@ def audit_row(row: dict[str, Any], *, index: int) -> dict[str, Any]:
 
     publish_allowed = decision.get("publish_allowed") is True
     status = str(decision.get("status") or "").strip()
-    reason_codes = {
-        str(code or "").strip()
-        for code in (decision.get("reason_codes") or [])
-        if str(code or "").strip()
-    }
+    reason_codes = _reason_code_set(decision)
+    reason_code_sources = [
+        ("PromotionDecision.reason_codes", reason_codes),
+        ("publish_contract_trace.reason_codes", _reason_code_set(trace) if isinstance(trace, dict) else set()),
+        (
+            "publish_contract_trace.gate_decision.reason_codes",
+            _reason_code_set(gate_decision) if isinstance(gate_decision, dict) else set(),
+        ),
+        (
+            "publish_ledger.gate_decision.reason_codes",
+            _reason_code_set(ledger_gate_decision) if isinstance(ledger_gate_decision, dict) else set(),
+        ),
+        (
+            "candidate_ledger.promotion_decision.reason_codes",
+            _reason_code_set(candidate_decision) if isinstance(candidate_decision, dict) else set(),
+        ),
+        (
+            "candidate_ledger.publish_contract_trace.reason_codes",
+            _reason_code_set(candidate_trace) if isinstance(candidate_trace, dict) else set(),
+        ),
+    ]
+    combined_scope_reason_codes: set[str] = set()
+    mixed_sources: list[str] = []
+    for source_name, source_codes in reason_code_sources:
+        combined_scope_reason_codes.update(source_codes)
+        if (
+            source_codes & SCOPE_CURRENT_WORK_REASON_MARKERS
+            and source_codes & SCOPE_NONCURRENT_REASON_MARKERS
+        ):
+            mixed_sources.append(source_name)
+    current_scope_markers = sorted(combined_scope_reason_codes & SCOPE_CURRENT_WORK_REASON_MARKERS)
+    noncurrent_scope_markers = sorted(combined_scope_reason_codes & SCOPE_NONCURRENT_REASON_MARKERS)
+    if current_scope_markers and noncurrent_scope_markers:
+        source_detail = f" sources={mixed_sources}" if mixed_sources else " sources=cross-source"
+        _append_violation(
+            violations,
+            "mixed_current_noncurrent_scope_reason_codes",
+            (
+                "scope reason codes mix current-work markers "
+                f"{current_scope_markers} with non-current markers {noncurrent_scope_markers};"
+                f"{source_detail}"
+            ),
+        )
     decision_scope = _dict_or_empty(decision.get("scope"))
     trace_scope = _dict_or_empty(trace.get("scope_state")) if isinstance(trace, dict) else {}
     scope_kind = _scope_kind(decision_scope)
@@ -648,6 +713,7 @@ def audit_rows(rows: list[dict[str, Any]]) -> dict[str, Any]:
             "url_title_mismatch_block_must_preserve_candidate_url_without_publication": True,
             "official_url_withheld_reason_must_not_publish_url": True,
             "verified_image_ocr_work_title_current_work_candidate_must_not_remain_precision_blocked": True,
+            "mixed_current_and_noncurrent_scope_reason_codes_must_be_normalized": True,
         },
         "summary": {
             "row_count": len(row_reports),
@@ -668,6 +734,7 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
         "- 정책: `PromotionDecision`, `publish_contract_trace`, `publish_ledger`, serialized public identity는 같은 publish/block 결론으로 수렴해야 한다.",
         "- 정책: `serialized_public_identity_scrubbed`는 후보가 있으면 candidate ledger/trace에 보존하고, 후보가 없으면 `hold_without_candidates` 같은 no-candidate reason을 남겨야 한다.",
         "- 정책: `PromotionDecision.scope`는 `publish_contract_trace.scope_state`와 일치해야 하며, scope reason code와 publish/block reason code가 충돌하면 안 된다.",
+        "- 정책: current-work marker와 non-current/context marker가 reason source 안이나 source 사이에 함께 남으면 mixed trace로 보고 정규화해야 한다.",
         "- 정책: URL/title mismatch block은 후보 URL을 보존하되 public decision/trace/ledger/serialized identity로 URL을 publish하지 않아야 한다.",
         "- 정책: `official_url_withheld_by_title_mismatch`는 제목 publish만 허용하고 URL은 pre-gate 후보로만 남겨야 한다.",
         "- 정책: `promotion_eligible=true`인 이미지/OCR work-title 후보가 current-work shared gate를 충족하면 title-only publish로 수렴해야 하며, 직접 제목 앵커가 없는 이미지는 candidate_only로 남아야 한다.",

@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260707-519 - mixed scope reason publication contract audit
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Mixed scope reason audit | NO-GO_CONTRACT | `mixed_current_noncurrent_scope_reason_codes` 추가 | trace normalization 수리 |
+| Loop515 stale GO 갱신 | NO-GO | pre-patch `0/57`, post-patch `2/57` | `11679547`, `11700483` reason 수렴 |
+| Full375 runtime 확인 | NO-GO | Loop510 full375 `33/375` | residual queue와 연결 |
+| Projection 확인 | NO-GO | Loop511 projection `36/375` | projection trace 정규화 |
+| Dashboard 진행 보기 | GO_PROGRESS_VIEW | latest attach `57/57`, `parallel_count=16` | 다음 테스트런도 dashboard 기본 ON |
+| Verification | GO_UNIT | py_compile PASS, focused unittest `20` PASS | broader runtime은 아직 금지 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: contract audit `NO-GO_MIXED_SCOPE_REASON_CONTRACT_STATIC`, runtime replay `NOT_RUN_AFTER_CONTRACT_AUDIT`, full375 collateral `NO-GO`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-517 - shared gate scope conflict split
 
 | 항목 | 상태 | 근거 | 다음 |

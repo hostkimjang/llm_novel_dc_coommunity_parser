@@ -1,5 +1,32 @@
 # Verification Results
 
+## 2026-07-07 Loop519 Verification
+
+- 범위: publication contract audit에 mixed current/noncurrent scope reason 위반을 추가하고 기존 Loop515/510/511 산출물에 적용했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_519_REPORT_20260707.md`
+  - state `docs\devs\loop519_mixed_scope_reason_contract_state_20260707.json`
+  - Data Analytics artifact `docs\devs\loop519_mixed_scope_reason_data_analytics_artifact.json`
+  - Loop515 audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop519_loop515_publication_contract_mixed_scope_audit.json`
+  - Loop510 full375 audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop519_loop510_full375_publication_contract_mixed_scope_audit.json`
+  - Loop511 projection audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop519_loop511_projection_publication_contract_mixed_scope_audit.json`
+  - tool `tools\audit_publication_contract_convergence.py`
+  - test `tests\test_publication_contract_convergence_audit.py`
+- Result:
+  - Loop515 pre-patch probe `GO / violation 0 of 57`
+  - Loop515 post-patch audit `NO-GO / violation 2 of 57`
+  - Loop510 full375 runtime audit `NO-GO / violation 33 of 375`
+  - Loop511 projection audit `NO-GO / violation 36 of 375`
+  - dashboard latest attach `57/57`, `progress_pct=100.0`, `parallel_count=16`
+- Validation:
+  - `python -m py_compile tools\audit_publication_contract_convergence.py tests\test_publication_contract_convergence_audit.py` PASS.
+  - `python -m unittest tests.test_publication_contract_convergence_audit -v` PASS, `20` tests.
+  - Data Analytics validate/render PASS.
+- Boundary:
+  - Loop519은 runtime replay가 아니다.
+  - Dashboard는 진행 확인 도구이며 semantic/full_scan approval 근거가 아니다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-07 Loop517 Verification
 
 - 범위: Loop516 repair queue의 projection/runtime scope conflict `13`건을 hard conflict와 mixed trace로 분리했다.

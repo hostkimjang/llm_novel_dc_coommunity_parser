@@ -713,6 +713,75 @@ class PublicationContractConvergenceAuditTest(unittest.TestCase):
         }
         self.assertIn("publish_allowed_non_current_scope", codes)
 
+    def test_current_scope_reason_codes_cannot_mix_context_only_marker(self):
+        row = _converged_scrubbed_candidate_row()
+        identity = row["analysis_result"]["identity"]
+        scope = {"scope_kind": "current_work", "confidence": "high"}
+        decision = {
+            **identity["promotion_decision"],
+            "scope": scope,
+            "reason_codes": [
+                "scope_current_work",
+                "row_discusses_work_as_work",
+                "context_only",
+                "serialized_public_identity_scrubbed",
+            ],
+        }
+        identity["promotion_decision"] = decision
+        identity["publish_contract_trace"] = {
+            **identity["publish_contract_trace"],
+            "gate_decision": decision,
+            "scope_state": scope,
+            "reason_codes": decision["reason_codes"],
+        }
+        identity["publish_ledger"] = {
+            **identity["publish_ledger"],
+            "gate_decision": decision,
+        }
+        identity["candidate_ledger"] = {
+            **identity["candidate_ledger"],
+            "promotion_decision": decision,
+            "publish_contract_trace": identity["publish_contract_trace"],
+            "publish_ledger": identity["publish_ledger"],
+        }
+
+        report = audit_rows([row])
+
+        self.assertEqual(report["gate"], "NO-GO")
+        codes = {
+            violation["code"]
+            for row_report in report["violations"]
+            for violation in row_report["violations"]
+        }
+        self.assertIn("mixed_current_noncurrent_scope_reason_codes", codes)
+
+    def test_trace_reason_codes_cannot_add_noncurrent_marker_to_current_decision(self):
+        row = _converged_publish_row()
+        identity = row["analysis_result"]["identity"]
+        decision = identity["promotion_decision"]
+        trace = {
+            **identity["publish_contract_trace"],
+            "reason_codes": [
+                *decision["reason_codes"],
+                "scope_context_only",
+            ],
+        }
+        identity["publish_contract_trace"] = trace
+        identity["candidate_ledger"] = {
+            **identity["candidate_ledger"],
+            "publish_contract_trace": trace,
+        }
+
+        report = audit_rows([row])
+
+        self.assertEqual(report["gate"], "NO-GO")
+        codes = {
+            violation["code"]
+            for row_report in report["violations"]
+            for violation in row_report["violations"]
+        }
+        self.assertIn("mixed_current_noncurrent_scope_reason_codes", codes)
+
     def test_official_url_withheld_reason_allows_title_only_publication(self):
         row = _converged_publish_row()
         identity = row["analysis_result"]["identity"]

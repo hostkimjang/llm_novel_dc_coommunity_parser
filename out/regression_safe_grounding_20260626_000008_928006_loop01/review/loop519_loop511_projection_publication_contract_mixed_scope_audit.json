@@ -1,0 +1,787 @@
+{
+  "report_type": "publication_contract_convergence_audit",
+  "generated_at": "2026-07-07T12:01:46",
+  "gate": "NO-GO",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "policy": {
+    "promotion_decision_trace_ledger_serialized_identity_must_converge": true,
+    "blocked_decision_must_not_publish_serialized_public_identity": true,
+    "allowed_decision_must_match_serialized_public_identity": true,
+    "scrubbed_candidate_must_be_preserved_or_marked_no_candidate": true,
+    "promotion_decision_scope_must_match_trace_and_reason_codes": true,
+    "blocked_decision_must_not_carry_publish_only_reason_codes": true,
+    "url_title_mismatch_block_must_preserve_candidate_url_without_publication": true,
+    "official_url_withheld_reason_must_not_publish_url": true,
+    "verified_image_ocr_work_title_current_work_candidate_must_not_remain_precision_blocked": true,
+    "mixed_current_and_noncurrent_scope_reason_codes_must_be_normalized": true
+  },
+  "summary": {
+    "row_count": 375,
+    "violation_row_count": 36,
+    "violation_counts": {
+      "mixed_current_noncurrent_scope_reason_codes": 36
+    }
+  },
+  "violations": [
+    {
+      "index": 28,
+      "post_id": "11668324",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": "니들 생각 다 들린다",
+        "official_url": "https://novelpia.com/novel/384318"
+      },
+      "decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "니들 생각 다 들린다",
+        "official_url": "https://novelpia.com/novel/384318"
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work', 'scope_current_work'] with non-current markers ['context_only']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 37,
+      "post_id": "11677920",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": null,
+        "official_url": null
+      },
+      "decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work', 'scope_current_work'] with non-current markers ['context_only']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 54,
+      "post_id": "11700495",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": null,
+        "official_url": null
+      },
+      "decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work', 'scope_current_work'] with non-current markers ['context_only']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 68,
+      "post_id": "11714913",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": "전 버튜버가 하고 싶은데요",
+        "official_url": "https://novelpia.com/novel/275975"
+      },
+      "decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "전 버튜버가 하고 싶은데요",
+        "official_url": "https://novelpia.com/novel/275975"
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work', 'scope_current_work'] with non-current markers ['context_only']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 69,
+      "post_id": "11718057",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": null,
+        "official_url": null
+      },
+      "decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work', 'scope_current_work'] with non-current markers ['context_only']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 78,
+      "post_id": "11682749",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": null,
+        "official_url": null
+      },
+      "decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work'] with non-current markers ['scope_context_only', 'scope_not_current_work']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 88,
+      "post_id": "11706842",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": null,
+        "official_url": null
+      },
+      "decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work'] with non-current markers ['scope_context_only', 'scope_not_current_work']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 89,
+      "post_id": "11708453",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": null,
+        "official_url": null
+      },
+      "decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work', 'scope_current_work'] with non-current markers ['context_only']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 90,
+      "post_id": "11710036",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": null,
+        "official_url": null
+      },
+      "decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work', 'scope_current_work'] with non-current markers ['context_only']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 114,
+      "post_id": "11668313",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": "귀환 용사의 현대 생활",
+        "official_url": "https://novelpia.com/novel/391587"
+      },
+      "decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "귀환 용사의 현대 생활",
+        "official_url": "https://novelpia.com/novel/391587"
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work', 'scope_current_work'] with non-current markers ['context_only']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 116,
+      "post_id": "11669926",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": null,
+        "official_url": null
+      },
+      "decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work'] with non-current markers ['scope_not_current_work']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 123,
+      "post_id": "11673080",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": null,
+        "official_url": null
+      },
+      "decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work'] with non-current markers ['scope_context_only', 'scope_not_current_work']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 136,
+      "post_id": "11694065",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": null,
+        "official_url": null
+      },
+      "decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work', 'scope_current_work'] with non-current markers ['context_only']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 137,
+      "post_id": "11694067",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": "괴담에 휘말렸다",
+        "official_url": "https://novelpia.com/novel/363195"
+      },
+      "decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "괴담에 휘말렸다",
+        "official_url": "https://novelpia.com/novel/363195"
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work', 'scope_current_work'] with non-current markers ['context_only']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 140,
+      "post_id": "11695637",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": null,
+        "official_url": null
+      },
+      "decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work', 'scope_current_work'] with non-current markers ['context_only']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 144,
+      "post_id": "11698910",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": "판초우의의 마법사",
+        "official_url": "https://series.naver.com/novel/detail.series?productNo=14207846"
+      },
+      "decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "판초우의의 마법사",
+        "official_url": "https://series.naver.com/novel/detail.series?productNo=14207846"
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work', 'scope_current_work'] with non-current markers ['context_only']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 146,
+      "post_id": "11702085",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": "괴담 호텔 탈출기",
+        "official_url": "https://novelpia.com/novel/102155"
+      },
+      "decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "괴담 호텔 탈출기",
+        "official_url": "https://novelpia.com/novel/102155"
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work', 'scope_current_work'] with non-current markers ['context_only']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 148,
+      "post_id": "11703624",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": "판초우의의 마법사",
+        "official_url": "https://novel.munpia.com/530500"
+      },
+      "decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "판초우의의 마법사",
+        "official_url": "https://novel.munpia.com/530500"
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work', 'scope_current_work'] with non-current markers ['context_only']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 153,
+      "post_id": "11705251",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": null,
+        "official_url": null
+      },
+      "decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work'] with non-current markers ['scope_context_only', 'scope_not_current_work']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 155,
+      "post_id": "11706832",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": null,
+        "official_url": null
+      },
+      "decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work'] with non-current markers ['scope_context_only', 'scope_not_current_work']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 179,
+      "post_id": "11666729",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": "이 무림의 미친년은 나야",
+        "official_url": "https://novelpia.com/novel/217943"
+      },
+      "decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "이 무림의 미친년은 나야",
+        "official_url": "https://novelpia.com/novel/217943"
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work', 'scope_current_work'] with non-current markers ['context_only']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 206,
+      "post_id": "11700500",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": null,
+        "official_url": null
+      },
+      "decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work', 'scope_current_work'] with non-current markers ['context_only']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 214,
+      "post_id": "11706831",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": null,
+        "official_url": null
+      },
+      "decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work', 'scope_current_work'] with non-current markers ['context_only']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 231,
+      "post_id": "11692444",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": null,
+        "official_url": null
+      },
+      "decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work'] with non-current markers ['scope_context_only', 'scope_not_current_work']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 233,
+      "post_id": "11694063",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": null,
+        "official_url": null
+      },
+      "decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work'] with non-current markers ['scope_context_only', 'scope_not_current_work']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 276,
+      "post_id": "11705245",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": null,
+        "official_url": null
+      },
+      "decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work'] with non-current markers ['context_only', 'scope_context_only', 'scope_not_current_work']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 302,
+      "post_id": "11661856",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": null,
+        "official_url": null
+      },
+      "decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work'] with non-current markers ['scope_not_current_work']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 305,
+      "post_id": "11666725",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": null,
+        "official_url": null
+      },
+      "decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work'] with non-current markers ['scope_not_current_work']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 317,
+      "post_id": "11700483",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": null,
+        "official_url": null
+      },
+      "decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work'] with non-current markers ['scope_not_current_work']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 320,
+      "post_id": "11716480",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": null,
+        "official_url": null
+      },
+      "decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work'] with non-current markers ['scope_not_current_work']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 327,
+      "post_id": "11666713",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": null,
+        "official_url": null
+      },
+      "decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work', 'scope_current_work'] with non-current markers ['context_only']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 348,
+      "post_id": "11660238",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": "무림마조",
+        "official_url": "https://novelpia.com/novel/347096"
+      },
+      "decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "무림마조",
+        "official_url": "https://novelpia.com/novel/347096"
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work', 'scope_current_work'] with non-current markers ['context_only']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 359,
+      "post_id": "11685995",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": null,
+        "official_url": null
+      },
+      "decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work'] with non-current markers ['scope_context_only', 'scope_not_current_work']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 367,
+      "post_id": "11702060",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": null,
+        "official_url": null
+      },
+      "decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work', 'scope_current_work'] with non-current markers ['context_only']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 369,
+      "post_id": "11702081",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": null,
+        "official_url": null
+      },
+      "decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work', 'scope_current_work'] with non-current markers ['context_only']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 371,
+      "post_id": "11705257",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": "히어로 IN 히로인",
+        "official_url": "https://novelpia.com/novel/1055"
+      },
+      "decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "히어로 IN 히로인",
+        "official_url": "https://novelpia.com/novel/1055"
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work', 'scope_current_work'] with non-current markers ['context_only']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    }
+  ],
+  "result_paths": [
+    "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop511_projected_loop510_after_final_sync_result.json"
+  ]
+}

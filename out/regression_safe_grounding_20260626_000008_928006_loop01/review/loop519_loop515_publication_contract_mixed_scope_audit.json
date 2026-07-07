@@ -1,0 +1,73 @@
+{
+  "report_type": "publication_contract_convergence_audit",
+  "generated_at": "2026-07-07T12:01:24",
+  "gate": "NO-GO",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "policy": {
+    "promotion_decision_trace_ledger_serialized_identity_must_converge": true,
+    "blocked_decision_must_not_publish_serialized_public_identity": true,
+    "allowed_decision_must_match_serialized_public_identity": true,
+    "scrubbed_candidate_must_be_preserved_or_marked_no_candidate": true,
+    "promotion_decision_scope_must_match_trace_and_reason_codes": true,
+    "blocked_decision_must_not_carry_publish_only_reason_codes": true,
+    "url_title_mismatch_block_must_preserve_candidate_url_without_publication": true,
+    "official_url_withheld_reason_must_not_publish_url": true,
+    "verified_image_ocr_work_title_current_work_candidate_must_not_remain_precision_blocked": true,
+    "mixed_current_and_noncurrent_scope_reason_codes_must_be_normalized": true
+  },
+  "summary": {
+    "row_count": 57,
+    "violation_row_count": 2,
+    "violation_counts": {
+      "mixed_current_noncurrent_scope_reason_codes": 2
+    }
+  },
+  "violations": [
+    {
+      "index": 38,
+      "post_id": "11679547",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": null,
+        "official_url": null
+      },
+      "decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work', 'scope_current_work'] with non-current markers ['context_only']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    },
+    {
+      "index": 48,
+      "post_id": "11700483",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": null,
+        "official_url": null
+      },
+      "decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null
+      },
+      "violations": [
+        {
+          "code": "mixed_current_noncurrent_scope_reason_codes",
+          "detail": "scope reason codes mix current-work markers ['row_discusses_work_as_work'] with non-current markers ['scope_not_current_work']; sources=['PromotionDecision.reason_codes', 'publish_contract_trace.reason_codes', 'publish_contract_trace.gate_decision.reason_codes', 'publish_ledger.gate_decision.reason_codes', 'candidate_ledger.promotion_decision.reason_codes', 'candidate_ledger.publish_contract_trace.reason_codes']"
+        }
+      ]
+    }
+  ],
+  "result_paths": [
+    "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop515_shared_gate_projected_safe57_runtime_replay_result.json"
+  ]
+}

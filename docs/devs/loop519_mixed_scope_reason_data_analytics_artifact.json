@@ -1,0 +1,126 @@
+{
+  "title": "Loop519 mixed scope reason 감사 요약",
+  "status": "rendered",
+  "language": "ko",
+  "manifest": {
+    "title": "Loop519 mixed scope reason 감사 요약",
+    "blocks": [
+      {
+        "id": "intro",
+        "type": "markdown",
+        "body": "# Loop519 mixed scope reason 감사 요약\n\n기존 publication contract audit는 current-work marker와 non-current/context marker가 함께 남은 reason trace를 감지하지 못했다. Loop519 강화 뒤 Loop515 safe57은 2건, Loop510 full375 runtime은 33건, Loop511 projection은 36건이 NO-GO로 드러났다."
+      },
+      {
+        "id": "audit_bar",
+        "type": "chart",
+        "chart": "mixed_scope_violations"
+      },
+      {
+        "id": "audit_table",
+        "type": "table",
+        "table": "mixed_scope_audit_rows"
+      }
+    ],
+    "charts": [
+      {
+        "id": "mixed_scope_violations",
+        "title": "mixed scope reason 위반 행 수",
+        "subtitle": "golden 소표본 GO만으로는 full375 승인 근거가 부족하다.",
+        "dataset": "mixed_scope_audits",
+        "type": "bar",
+        "encodings": {
+          "x": {
+            "field": "audit"
+          },
+          "y": {
+            "field": "violation_rows"
+          },
+          "color": {
+            "field": "gate"
+          }
+        }
+      }
+    ],
+    "tables": [
+      {
+        "id": "mixed_scope_audit_rows",
+        "title": "감사 결과",
+        "dataset": "mixed_scope_audits",
+        "columns": [
+          {
+            "field": "audit",
+            "label": "감사"
+          },
+          {
+            "field": "row_count",
+            "label": "행 수"
+          },
+          {
+            "field": "violation_rows",
+            "label": "위반 행"
+          },
+          {
+            "field": "gate",
+            "label": "게이트"
+          },
+          {
+            "field": "meaning",
+            "label": "의미"
+          }
+        ],
+        "defaultSort": {
+          "field": "violation_rows",
+          "direction": "desc"
+        }
+      }
+    ],
+    "sources": [
+      {
+        "name": "Loop519 publication contract audits",
+        "query": {
+          "description": "Loop515/510/511 산출물에 mixed current/noncurrent scope reason 강화 audit를 적용한 요약",
+          "sql": "SELECT audit, row_count, violation_rows, gate, meaning FROM mixed_scope_audits"
+        }
+      }
+    ]
+  },
+  "snapshot": {
+    "datasets": {
+      "mixed_scope_audits": [
+        {
+          "audit": "Loop515 pre-patch probe",
+          "row_count": 57,
+          "violation_rows": 0,
+          "gate": "GO",
+          "meaning": "기존 audit는 mixed scope reason을 감지하지 못함"
+        },
+        {
+          "audit": "Loop515 post-patch",
+          "row_count": 57,
+          "violation_rows": 2,
+          "gate": "NO-GO",
+          "meaning": "11679547, 11700483 mixed trace 확인"
+        },
+        {
+          "audit": "Loop510 full375 runtime",
+          "row_count": 375,
+          "violation_rows": 33,
+          "gate": "NO-GO",
+          "meaning": "full375 runtime artifact에도 mixed trace 다수"
+        },
+        {
+          "audit": "Loop511 projection",
+          "row_count": 375,
+          "violation_rows": 36,
+          "gate": "NO-GO",
+          "meaning": "projection 경로도 trace 정규화 전 approval 불가"
+        }
+      ]
+    }
+  },
+  "gate": {
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "completion_criterion": "full375 collateral GO + full_scan 경로 정의"
+  }
+}
