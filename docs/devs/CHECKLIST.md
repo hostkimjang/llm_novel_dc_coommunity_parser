@@ -1,5 +1,26 @@
 # Development Checklist
 
+## 2026-07-08 Loop585 official support enrichment 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Loop583 official-support-missing hold `5`건을 웹 검증 근거로 재분류했다.
+- [x] Exact official detail `3`, target-title mismatch hold `1`, eBook/classic policy hold `1`, validation issue `0`을 확인했다.
+- [x] Exact `3`건만 enriched dispatch로 내보냈다.
+- [x] Shared restore plan 재생성 결과 `expected_title_restore_contract_case 3`, promotion decision `publish 3`, runtime allowed `0`을 확인했다.
+- [x] Projection-only 적용 결과 rows `375`, applied restore `3`, validation issue `0`을 확인했다.
+- [x] Publication contract `GO / 375 rows / 0 violations`를 확인했다.
+- [x] Combined release gate `REVIEW-LOCKED / violation 0 / release candidate 4 / no-release hold 2`를 확인했다.
+- [x] Full375 collateral compare는 raw regression `85 -> 82`로 줄었지만 `NO-GO / runtime counts missing`임을 확인했다.
+- [x] Always-on gate는 golden18 `GO`, collateral `NO-GO / raw 82 / runtime counts missing`, 전체 `NO-GO`임을 확인했다.
+- [x] P0 residual은 ordinary `15`, official follow-up `2`; residual46은 ordinary `42`, official follow-up `2`로 재회계했다.
+- [x] `tests.test_build_official_support_enrichment_review` `4` tests, 관련 focused unittest `39` tests, py_compile을 통과했다.
+- [ ] `11665124`는 canonical title rewrite 검토 전 publish하지 않는다.
+- [ ] `11698870`은 eBook/classic policy 검토 전 webnovel publish gate에 넣지 않는다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 실행한다.
+- [ ] Dashboard 진행률을 semantic/full_scan approval 근거로 쓰지 않는다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: official support enrichment `REVIEW-LOCKED / exact 3 / hold 2`, publication `GO`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 82 / runtime counts missing`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop584 test-run dashboard audit gate 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.

@@ -1,5 +1,22 @@
 # Improvement Register
 
+## IMP-20260708-585 - Official support enrichment and full375 collateral recheck
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | 실제 test run만 `--parallel 16` + dashboard attached로 실행 |
+| Official support review | REVIEW-LOCKED | reviewed `5`, exact `3`, title mismatch hold `1`, eBook/classic hold `1`, validation issue `0` | hold 2건은 별도 정책/정규화 검토 |
+| Enriched restore plan | REVIEW-LOCKED | `expected_title_restore_contract_case 3`, promotion decision `publish 3`, runtime allowed `0` | release 후보를 approval로 세지 않음 |
+| Projection application | REVIEW-LOCKED | rows `375`, applied restore `3`, validation issue `0` | full375 collateral 계속 재확인 |
+| Publication contract | GO | `375` rows, violation `0` | full_scan approval과 분리 |
+| Release gate | REVIEW-LOCKED | release candidate `4`, no-release hold `2`, violation `0` | `11665124`/`11698870` publish 금지 유지 |
+| Residual46 | REVIEW-LOCKED | contract processed `4`, ordinary residual `42`, official follow-up `2` | 다음 batch lane 처리 |
+| P0 residual19 | REVIEW-LOCKED | contract processed `4`, ordinary residual `15`, official follow-up `2` | 다음 P0 lane 처리 |
+| Full375 collateral | NO-GO | raw regression `82`, runtime counts missing | collateral GO 전 approval 금지 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: official support enrichment `REVIEW-LOCKED / exact 3 / hold 2`, publication `GO`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 82`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-584 - Test-run dashboard audit gate
 
 | 항목 | 상태 | 근거 | 다음 |

@@ -1,5 +1,40 @@
 # Verification Results
 
+## 2026-07-08 Loop585 official support enrichment와 full375 collateral 재검증
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_585_REPORT_20260708.md`
+  - `tools/build_official_support_enrichment_review.py`
+  - `tests/test_build_official_support_enrichment_review.py`
+  - `docs/devs/loop585_official_support_review_refs.json`
+  - `docs/devs/loop585_official_support_enrichment_review.json/.md`
+  - `docs/devs/loop585_official_support_enriched_restore_dispatch.json`
+  - `docs/devs/loop585_official_support_enriched_restore_contract_plan.json/.md`
+  - `docs/devs/loop585_official_support_enriched_restore_projection_application.json/.md`
+  - `docs/devs/loop585_official_support_combined_restore_release_gate_audit.json/.md`
+  - `docs/devs/loop585_residual_p0_official_support_contract_accounting.json/.md`
+  - `docs/devs/loop585_residual46_official_support_contract_accounting.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop585_official_support_enriched_restore_projection_result.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop585_official_support_enriched_restore_full375_collateral_compare.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop585_always_on_golden18_full375_official_support_gate.json/.md`
+- 검증:
+  - Official support review generation: PASS, reviewed `5`, exact official detail `3`, hold `2`, validation issue `0`.
+  - Enriched restore plan generation: PASS, rows `3`, `expected_title_restore_contract_case 3`, promotion decision `publish 3`, runtime allowed `0`.
+  - Projection application: PASS, rows `375`, applied restore `3`, validation issue `0`.
+  - Publication contract audit: PASS, `GO / 375 rows / 0 violations`.
+  - Combined release gate audit: PASS, `REVIEW-LOCKED`, violation `0`, release candidate `4`, no-release hold `2`.
+  - Full375 collateral compare: PASS 산출, gate `NO-GO`, changed `158`, raw regression `82`, runtime counts missing.
+  - Always-on gate: PASS 산출, gate `NO-GO`, golden18 `GO`, collateral `NO-GO / raw 82`.
+  - Residual accounting: PASS, P0 ordinary `15`, residual46 ordinary `42`, official support follow-up `2`, validation issue `0`.
+  - `python -m unittest tests.test_build_official_support_enrichment_review -v`: PASS, `4` tests.
+  - `python -m py_compile tools\build_official_support_enrichment_review.py`: PASS.
+  - `python -m unittest tests.test_build_ordinary_restore_contract_plan tests.test_apply_post_verdict_expected_restore_projection_contract tests.test_audit_post_verdict_promotion_gate_release_contract tests.test_reaccount_residual_after_contract_reviews -v`: PASS, `39` tests.
+- 결과:
+  - Official URL missing hold `5`건 중 exact official detail `3`건만 release candidate로 수렴했다.
+  - `11665124`는 target/title mismatch, `11698870`은 eBook/classic policy hold라 publish 후보로 세지 않았다.
+  - Full375 collateral이 `NO-GO / raw 82`이므로 release candidate `4`건과 golden18 `GO`는 approval 근거가 아니다.
+- Gate: official support enrichment `REVIEW-LOCKED / exact 3 / hold 2`, publication `GO`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 82`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop584 test-run dashboard audit gate 보강
 
 - 산출물:

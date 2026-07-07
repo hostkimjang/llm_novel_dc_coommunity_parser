@@ -1,0 +1,85 @@
+{
+  "report_type": "manual_official_support_review_refs",
+  "review_id": "loop585_official_support_review_refs",
+  "generated_at": "2026-07-08T05:20:00",
+  "source_contract_plan": "loop582_residual_p0_shared_gate_restore_contract_plan",
+  "scope": "Loop583 official_support_missing_restore_hold_contract_case 5 rows",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "rows": [
+    {
+      "post_id": 11665124,
+      "target_title": "화산파(화산귀환)",
+      "official_support_state": "official_detail_found_target_title_mismatch",
+      "official_title": "화산귀환",
+      "official_url": "https://series.naver.com/novel/detail.series?productNo=4130558",
+      "accepted_by_shared_official_detail_contract": false,
+      "source_urls": [
+        "https://series.naver.com/novel/detail.series?productNo=4130558"
+      ],
+      "source_evidence_ko": "Naver Series novel detail은 화산귀환 회차를 제공하지만, 현재 target title `화산파(화산귀환)`와 공식 title이 일치하지 않는다.",
+      "hold_reason_ko": "공식 detail 자체는 webnovel detail 계약 범위지만 target title mismatch가 있어 canonical title rewrite 검토 전 publish하지 않는다.",
+      "review_action": "canonical_title_rewrite_review_required"
+    },
+    {
+      "post_id": 11710049,
+      "target_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "official_support_state": "official_detail_exact_title_found",
+      "official_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "official_url": "https://novelpia.com/novel/382324",
+      "accepted_by_shared_official_detail_contract": true,
+      "source_urls": [
+        "https://novelpia.com/novel/382324"
+      ],
+      "source_evidence_ko": "노벨피아 공식 detail에 target title, 작가, `#패러디 #림월드 #랫따싶` 태그가 확인된다.",
+      "review_action": "append_official_ref_to_restore_dispatch"
+    },
+    {
+      "post_id": 11682775,
+      "target_title": "여자가 되어서라도 복수한다",
+      "official_support_state": "official_detail_exact_title_found",
+      "official_title": "여자가 되어서라도 복수한다",
+      "official_url": "https://novelpia.com/novel/403405",
+      "accepted_by_shared_official_detail_contract": true,
+      "source_urls": [
+        "https://novelpia.com/novel/403405"
+      ],
+      "source_evidence_ko": "노벨피아 공식 detail에 target title, 작가, `#무협 #복수 #TS` 태그가 확인된다.",
+      "review_action": "append_official_ref_to_restore_dispatch"
+    },
+    {
+      "post_id": 11700500,
+      "target_title": "전지적 1인칭 시점",
+      "official_support_state": "official_detail_exact_title_found",
+      "official_title": "전지적 1인칭 시점",
+      "official_url": "https://novelpia.com/novel/49942",
+      "accepted_by_shared_official_detail_contract": true,
+      "source_urls": [
+        "https://novelpia.com/novel/49942"
+      ],
+      "source_evidence_ko": "노벨피아 공식 detail에 target title, 작가 고속도루, PLUS 독점, fantasy tag와 synopsis가 확인된다.",
+      "review_action": "append_official_ref_to_restore_dispatch"
+    },
+    {
+      "post_id": 11698870,
+      "target_title": "인간실격",
+      "official_support_state": "ebook_or_classic_policy_review_required",
+      "official_title": "인간실격",
+      "official_url": "https://series.naver.com/ebook/detail.series?productNo=8927664",
+      "accepted_by_shared_official_detail_contract": false,
+      "source_urls": [
+        "https://series.naver.com/ebook/detail.series?productNo=8927664"
+      ],
+      "source_evidence_ko": "Naver Series eBook detail은 다자이 오사무/출판사/카테고리 소설을 제공하는 eBook/고전 문학 페이지다.",
+      "hold_reason_ko": "현재 webnovel official detail 계약은 `series.naver.com/novel/detail.series`를 대상으로 하며 eBook/classic 작품을 같은 publish gate로 통과시키지 않는다.",
+      "review_action": "non_webnovel_ebook_policy_hold"
+    }
+  ],
+  "approval_boundary": {
+    "manual_web_review_is_not_runtime_replay": true,
+    "exact_official_url_rows_must_rerun_shared_restore_plan": true,
+    "target_title_mismatch_rows_do_not_publish": true,
+    "ebook_or_classic_rows_do_not_publish": true,
+    "full_scan_approval": false
+  }
+}

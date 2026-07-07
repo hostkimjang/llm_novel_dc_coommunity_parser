@@ -17,6 +17,16 @@
 - [ ] 다음 실제 test/runtime run 시작 시 `http://127.0.0.1:8080` dashboard health와 진행률을 함께 보고한다.
 - Gate: dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, runtime approval 아님, full375 collateral `NO-GO`, goal `ACTIVE / NOT_COMPLETE`.
 
+## 2026-07-08 official support enrichment 후속 UX/운영 TODO
+
+- [x] Loop585에서 official-support-missing hold `5`건을 exact official detail `3`, title mismatch hold `1`, eBook/classic policy hold `1`로 나눴다.
+- [x] Exact `3`건만 release candidate로 넘기고, title mismatch/eBook-classic hold는 publish 후보에서 제외했다.
+- [x] Full375 collateral raw regression은 `85 -> 82`로 줄었지만 `NO-GO / runtime counts missing`로 유지했다.
+- [ ] `11665124`는 canonical title rewrite UX/계약으로 분리한다.
+- [ ] `11698870`은 eBook/classic policy UX/계약으로 분리한다.
+- [ ] 다음 test/runtime run은 dashboard 진행률 URL과 함께 상태를 보고하되 approval 근거로 쓰지 않는다.
+- Gate: official support enrichment `REVIEW-LOCKED / exact 3 / hold 2`, full375 collateral `NO-GO / raw 82`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## Current HEAD evidence refresh
 
 - [ ] Loop472 safe-loss runtime closure follow-up

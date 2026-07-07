@@ -1,0 +1,80 @@
+{
+  "report_type": "post_verdict_projection_publish_contract_application_overlay",
+  "projection_id": "loop585_official_support_combined_restore_projection_contract",
+  "generated_at": "2026-07-08T04:45:32",
+  "source_contract_plan": "loop585_official_support_combined_restore_contract_plan",
+  "source_applications": [
+    "loop583_residual_p0_ready_restore_projection_contract",
+    "loop585_official_support_enriched_restore_projection_contract"
+  ],
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "projection_rows": 375,
+    "contract_plan_rows": 6,
+    "applied_publish_contract_rows": 4,
+    "applied_restore_rows": 4,
+    "validation_issue_count": 0,
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "applied_rows": [
+    {
+      "post_id": 11718114,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "설정값 딸깍으로 판타지 시스템 정상화",
+      "target_url": "https://novelpia.com/novel/383584",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11710049,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "target_url": "https://novelpia.com/novel/382324",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11682775,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "여자가 되어서라도 복수한다",
+      "target_url": "https://novelpia.com/novel/403405",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11700500,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "전지적 1인칭 시점",
+      "target_url": "https://novelpia.com/novel/49942",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    }
+  ],
+  "approval_boundary": {
+    "overlay_is_not_runtime_replay": true,
+    "release_candidate_is_not_full_scan_approval": true,
+    "runtime_replay_before_full375_collateral_forbidden": true,
+    "full375_collateral_remains_no_go": true
+  }
+}

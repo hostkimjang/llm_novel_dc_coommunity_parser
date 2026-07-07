@@ -1,5 +1,24 @@
 # Development History
 
+## 2026-07-08 - Loop585 official support enrichment and full375 collateral recheck
+
+- 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+- Loop583 official-support-missing hold `5`건을 공식 detail URL 근거로 재분류했다.
+- Official support review 결과는 exact official detail `3`, target-title mismatch hold `1`, eBook/classic policy hold `1`, validation issue `0`이다.
+- `11710049`, `11682775`, `11700500`만 enriched restore dispatch로 넘겼고 `11665124`, `11698870`은 publish하지 않았다.
+- Enriched restore contract plan은 rows `3`, `expected_title_restore_contract_case 3`, promotion decision `publish 3`, runtime allowed `0`이다.
+- Projection-only 적용은 rows `375`, applied publish/restore `3`, validation issue `0`이다.
+- Publication contract는 `GO / 375 rows / 0 violations`다.
+- Combined release gate는 `REVIEW-LOCKED`, violation `0`, release candidate `4`, no-release hold `2`, runtime allowed `0`이다.
+- Full375 collateral은 changed `158`, raw regression `85 -> 82`로 줄었지만 `NO-GO / runtime counts missing`다.
+- Always-on gate는 golden18 `GO / 18 of 18`과 collateral `NO-GO / raw 82` 조합으로 전체 `NO-GO`다.
+- Residual P0 accounting은 contract processed `4`, ordinary residual `15`, official support follow-up `2`다.
+- Residual46 accounting은 contract processed `4`, ordinary residual `42`, official support follow-up `2`다.
+- `tools/build_official_support_enrichment_review.py`와 `tests/test_build_official_support_enrichment_review.py`를 추가했다.
+- Focused unittest `4 + 39`개와 py_compile을 통과했다.
+- Report는 `docs/devs/loop_reports/LOOP_585_REPORT_20260708.md`다.
+- Gate는 official support enrichment `REVIEW-LOCKED / exact 3 / hold 2`, publication `GO`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 82`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop584 test-run dashboard audit gate
 
 - 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
