@@ -1,0 +1,287 @@
+{
+  "report_type": "post_verdict_projection_publish_contract_application",
+  "projection_id": "loop598_residual46_combined_projection_application",
+  "generated_at": "2026-07-08T07:51:26",
+  "source_contract_plan": "loop598_residual46_combined_contract_plan",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "projection_rows": 375,
+    "contract_plan_rows": 39,
+    "publish_contract_plan_rows": 17,
+    "applied_publish_contract_rows": 17,
+    "restore_plan_rows": 16,
+    "applied_restore_rows": 16,
+    "applied_expected_audit_update_rows": 0,
+    "applied_canonical_cleanup_rows": 1,
+    "applied_candidate_set_restore_rows": 0,
+    "validation_issue_count": 0,
+    "skipped_contract_action_counts": {
+      "candidate_set_rebuild_required_before_publish": 13,
+      "native_web_disambiguation_hold_contract_case": 1,
+      "non_webnovel_ebook_policy_hold_contract_case": 1,
+      "candidate_scrub_no_publish_contract_case": 3
+    },
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path",
+    "addition_projection_id": "loop598_remaining4_native_hold_projection_application",
+    "addition_applied_rows": 4,
+    "applied_hold_contract_rows": 4,
+    "applied_non_publish_contract_rows": 4
+  },
+  "validation_issues": [],
+  "applied_rows": [
+    {
+      "post_id": 11660273,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "마도서를 줍다 마법사가 되다",
+      "target_url": "https://novelpia.com/novel/414963",
+      "superseded_projection_candidate": {
+        "official_title": "그리즐리 그랑",
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11665124,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "화산귀환",
+      "target_url": "https://series.naver.com/novel/detail.series?productNo=4130558",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11682775,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "여자가 되어서라도 복수한다",
+      "target_url": "https://novelpia.com/novel/403405",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11682792,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "이 무림의 미친년은 나야",
+      "target_url": "https://novelpia.com/novel/217943",
+      "superseded_projection_candidate": {
+        "official_title": "[무친년]이 무림의 미친놈",
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11700483,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "니들 생각 다 들린다",
+      "target_url": "https://novelpia.com/novel/384318",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11700500,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "전지적 1인칭 시점",
+      "target_url": "https://novelpia.com/novel/49942",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11710049,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "target_url": "https://novelpia.com/novel/382324",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11718114,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "설정값 딸깍으로 판타지 시스템 정상화",
+      "target_url": "https://novelpia.com/novel/383584",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11669907,
+      "contract_action": "canonical_cleanup_or_url_correction_contract_case",
+      "target_title": "마법 좋아좋아좋아",
+      "target_url": "https://novelpia.com/novel/326040",
+      "superseded_projection_candidate": {
+        "official_title": "약스포) 마법 좋아좋아좋아",
+        "official_url": null,
+        "source": "canonical_cleanup_or_url_correction_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11698871,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "Re : 제로부터 시작하는 이세계 생활",
+      "target_url": "https://page.kakao.com/content/48677416",
+      "superseded_projection_candidate": {
+        "official_title": "Re : 제로부터 시작하는 이세계 생활",
+        "official_url": "https://page.kakao.com/content/48677416",
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11706844,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "호랑이 사냥꾼",
+      "target_url": "https://m.munpia.com/novel/detail/522066",
+      "superseded_projection_candidate": {
+        "official_title": "호랑이 사냥꾼",
+        "official_url": "https://m.munpia.com/novel/detail/522066",
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11661856,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "너랑은 절! 대! 안 사갈거니까!",
+      "target_url": null,
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11665110,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "사이키델리아",
+      "target_url": "https://ridibooks.com/books/297056360",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11666725,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "학대받던 11살 고마가 각성한 이유",
+      "target_url": null,
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11685994,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "교황님 아하세요 마왕 들어 가요",
+      "target_url": null,
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11694067,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "괴담에 휘말렸다",
+      "target_url": "https://novelpia.com/novel/363195",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11682791,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "시간을 달리는 소설가",
+      "target_url": "https://novel.munpia.com/357213",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11671538,
+      "status": "scrubbed_public_identity",
+      "contract_action": "native_web_disambiguation_hold_contract_case",
+      "current_projection_candidate_title": "망한 교단의 성기사",
+      "current_projection_candidate_url": "https://series.naver.com/novel/detail.series?productNo=12696086",
+      "target_title": null,
+      "target_url": null,
+      "runtime_replay_allowed": false
+    },
+    {
+      "post_id": 11718057,
+      "status": "scrubbed_public_identity",
+      "contract_action": "native_web_disambiguation_hold_contract_case",
+      "current_projection_candidate_title": "컵라면",
+      "current_projection_candidate_url": "https://novel.munpia.com/530740",
+      "target_title": null,
+      "target_url": null,
+      "runtime_replay_allowed": false
+    },
+    {
+      "post_id": 11687661,
+      "status": "scrubbed_public_identity",
+      "contract_action": "native_web_disambiguation_hold_contract_case",
+      "current_projection_candidate_title": "약혼녀가 소천마였다",
+      "current_projection_candidate_url": "https://series.naver.com/novel/detail.series?productNo=13178533",
+      "target_title": null,
+      "target_url": null,
+      "runtime_replay_allowed": false
+    },
+    {
+      "post_id": 11716480,
+      "status": "scrubbed_public_identity",
+      "contract_action": "native_web_disambiguation_hold_contract_case",
+      "current_projection_candidate_title": "여대생 가랑이 사이 무릎 꿇은 엄마들",
+      "current_projection_candidate_url": null,
+      "target_title": null,
+      "target_url": null,
+      "runtime_replay_allowed": false
+    }
+  ],
+  "approval_boundary": {
+    "projection_application_is_not_runtime_replay": true,
+    "release_candidate_is_not_full_scan_approval": true,
+    "runtime_replay_before_full375_collateral_forbidden": true,
+    "full375_collateral_remains_no_go": true
+  }
+}

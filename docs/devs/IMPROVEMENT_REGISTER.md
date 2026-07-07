@@ -1,5 +1,21 @@
 # Improvement Register
 
+## IMP-20260708-598 - remaining4 native hold convergence
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | 실제 test run만 `--parallel 16` + dashboard attached로 실행 |
+| Remaining4 hold contract | REVIEW-LOCKED | rows `4`, candidate-only `4`, validation issue `0` | native-web/image evidence 전 public publish 금지 |
+| Projection application | REVIEW-LOCKED | rows `375`, applied hold `4`, scrubbed public identity `4` | candidate ledger 보존, public identity scrub 유지 |
+| Release gate | REVIEW-LOCKED | violation `0`, release candidate `17`, no-release `22` | release candidate는 approval 금지 |
+| Publication contract | GO | `375` rows, violation `0` | collateral gate와 분리 |
+| Residual46 | REVIEW-LOCKED | processed_or_excluded `46`, ordinary residual `0` | residual 0을 completion으로 오해 금지 |
+| Full375 collateral | NO-GO | raw `73`, adjusted `66`, unreviewed `48`, runtime counts missing | collateral GO 전 approval 금지 |
+| Test run dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | `http://127.0.0.1:8080`, health `ok=true`, runner dashboard forced ON | 진행 관측용으로만 사용 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: native hold contract `REVIEW-LOCKED`, residual46 `REVIEW-LOCKED / ordinary 0`, publication `GO`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 73 / adjusted 66`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-597 - remaining native evidence contract and dashboard visibility
 
 | 항목 | 상태 | 근거 | 다음 |

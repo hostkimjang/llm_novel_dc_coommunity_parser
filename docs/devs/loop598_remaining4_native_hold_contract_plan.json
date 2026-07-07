@@ -1,0 +1,444 @@
+{
+  "report_type": "remaining_native_hold_contract_plan",
+  "plan_id": "loop598_remaining4_native_hold_contract_plan",
+  "generated_at": "2026-07-08T07:51:15",
+  "source_dispatch_id": "loop597_residual46_remaining4_dispatch",
+  "source_result_path": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop597_remaining12_native_evidence_projection_result.json",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "source_dispatch_rows": 4,
+    "contract_plan_rows": 4,
+    "native_web_hold_contract_rows": 4,
+    "release_candidate_not_approval_rows": 0,
+    "no_publish_contract_rows": 0,
+    "validation_issue_count": 0,
+    "contract_action_counts": {
+      "native_web_disambiguation_hold_contract_case": 4
+    },
+    "promotion_decision_status_counts": {
+      "candidate_only": 4
+    },
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "rows": [
+    {
+      "post_id": 11687661,
+      "contract_origin": "loop598_remaining4_native_hold_contract_plan",
+      "contract_batch_lane": "remaining_native_web_image_hold",
+      "contract_action": "native_web_disambiguation_hold_contract_case",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "evidence_grade": "Weak",
+      "target_title": null,
+      "target_url": null,
+      "current_projection_candidate_title": "약혼녀가 소천마였다",
+      "current_projection_candidate_url": "https://series.naver.com/novel/detail.series?productNo=13178533",
+      "candidate_source": "image_evidence_catalog.explicit_work_title",
+      "actions": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "promotion_decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": true,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discussion_present_noncurrent_scope",
+          "scope_image_ocr_derived_work",
+          "scope_not_current_work",
+          "image_ocr_or_platform_visual_requires_native_review"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "image_ocr_derived_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "image_evidence_catalog.explicit_work_title"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "image_ocr_or_platform_visual_requires_native_review"
+          ]
+        }
+      },
+      "promotion_gate_state": {
+        "post_id": 11687661,
+        "candidate_title": "약혼녀가 소천마였다",
+        "candidate_url": "https://series.naver.com/novel/detail.series?productNo=13178533",
+        "source": "remaining_native_hold_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "unresolved_matchable",
+        "work_resolution": "unresolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "image_ocr_derived_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "image_evidence_catalog.explicit_work_title"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "image_ocr_or_platform_visual_requires_native_review"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "native_web_hold_boundary",
+          "strength": "medium",
+          "source_path_or_snippet": "image_evidence_catalog.explicit_work_title",
+          "supports_publish": false,
+          "reason_code": "image_ocr_or_platform_visual_requires_native_review"
+        }
+      ],
+      "scope_state": {
+        "scope_kind": "image_ocr_derived_work",
+        "confidence": "high",
+        "direct_bridge_sources": [
+          "image_evidence_catalog.explicit_work_title"
+        ],
+        "competing_candidates": [],
+        "conflict_reason_codes": [
+          "image_ocr_or_platform_visual_requires_native_review"
+        ]
+      },
+      "release_candidate_not_approval": false,
+      "runtime_replay_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "이미지/OCR에서 작품 표면은 보이지만 현재 gate에서 public title publish 조건을 충족하지 못해 native-web/image 확인 전 no-release hold로 둔다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop597_remaining12_native_evidence_projection_result.json#post_id=11687661",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11687661",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11687661",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11687661",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11687661"
+      ]
+    },
+    {
+      "post_id": 11716480,
+      "contract_origin": "loop598_remaining4_native_hold_contract_plan",
+      "contract_batch_lane": "remaining_native_web_image_hold",
+      "contract_action": "native_web_disambiguation_hold_contract_case",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "evidence_grade": "Weak",
+      "target_title": null,
+      "target_url": null,
+      "current_projection_candidate_title": "여대생 가랑이 사이 무릎 꿇은 엄마들",
+      "current_projection_candidate_url": null,
+      "candidate_source": "image_evidence_catalog.explicit_work_title",
+      "actions": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "promotion_decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": true,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discussion_present_noncurrent_scope",
+          "scope_image_ocr_derived_work",
+          "scope_not_current_work",
+          "image_ocr_or_platform_visual_requires_native_review"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "image_ocr_derived_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "image_evidence_catalog.explicit_work_title"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "image_ocr_or_platform_visual_requires_native_review"
+          ]
+        }
+      },
+      "promotion_gate_state": {
+        "post_id": 11716480,
+        "candidate_title": "여대생 가랑이 사이 무릎 꿇은 엄마들",
+        "candidate_url": "",
+        "source": "remaining_native_hold_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "unresolved_matchable",
+        "work_resolution": "unresolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "image_ocr_derived_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "image_evidence_catalog.explicit_work_title"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "image_ocr_or_platform_visual_requires_native_review"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "native_web_hold_boundary",
+          "strength": "medium",
+          "source_path_or_snippet": "image_evidence_catalog.explicit_work_title",
+          "supports_publish": false,
+          "reason_code": "image_ocr_or_platform_visual_requires_native_review"
+        }
+      ],
+      "scope_state": {
+        "scope_kind": "image_ocr_derived_work",
+        "confidence": "high",
+        "direct_bridge_sources": [
+          "image_evidence_catalog.explicit_work_title"
+        ],
+        "competing_candidates": [],
+        "conflict_reason_codes": [
+          "image_ocr_or_platform_visual_requires_native_review"
+        ]
+      },
+      "release_candidate_not_approval": false,
+      "runtime_replay_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "이미지/OCR에서 작품 표면은 보이지만 현재 gate에서 public title publish 조건을 충족하지 못해 native-web/image 확인 전 no-release hold로 둔다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop597_remaining12_native_evidence_projection_result.json#post_id=11716480",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11716480",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11716480",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11716480",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11716480"
+      ]
+    },
+    {
+      "post_id": 11718057,
+      "contract_origin": "loop598_remaining4_native_hold_contract_plan",
+      "contract_batch_lane": "remaining_native_web_image_hold",
+      "contract_action": "native_web_disambiguation_hold_contract_case",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "generic_or_author_like_surface_needs_native_confirmation",
+      "evidence_grade": "Medium",
+      "target_title": null,
+      "target_url": null,
+      "current_projection_candidate_title": "컵라면",
+      "current_projection_candidate_url": "https://novel.munpia.com/530740",
+      "candidate_source": "publish_contract_trace.pre_gate_candidate",
+      "actions": [
+        "native_web_review_required",
+        "title_surface_specificity_review_required"
+      ],
+      "promotion_decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": true,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discussion_present_noncurrent_scope",
+          "scope_unknown",
+          "scope_not_current_work",
+          "title_surface_specificity_requires_native_confirmation"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "unknown",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "publish_contract_trace.pre_gate_candidate"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "title_surface_specificity_requires_native_confirmation"
+          ]
+        }
+      },
+      "promotion_gate_state": {
+        "post_id": 11718057,
+        "candidate_title": "컵라면",
+        "candidate_url": "https://novel.munpia.com/530740",
+        "source": "remaining_native_hold_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "unresolved_matchable",
+        "work_resolution": "unresolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "unknown",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "publish_contract_trace.pre_gate_candidate"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "title_surface_specificity_requires_native_confirmation"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "native_web_hold_boundary",
+          "strength": "medium",
+          "source_path_or_snippet": "publish_contract_trace.pre_gate_candidate",
+          "supports_publish": false,
+          "reason_code": "title_surface_specificity_requires_native_confirmation"
+        }
+      ],
+      "scope_state": {
+        "scope_kind": "unknown",
+        "confidence": "high",
+        "direct_bridge_sources": [
+          "publish_contract_trace.pre_gate_candidate"
+        ],
+        "competing_candidates": [],
+        "conflict_reason_codes": [
+          "title_surface_specificity_requires_native_confirmation"
+        ]
+      },
+      "release_candidate_not_approval": false,
+      "runtime_replay_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "짧거나 일반명사/작가명처럼 읽히는 표면이므로 native 확인 전 public title을 열지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop597_remaining12_native_evidence_projection_result.json#post_id=11718057",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json#post_id=11718057",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11718057",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11718057",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11718057"
+      ]
+    },
+    {
+      "post_id": 11671538,
+      "contract_origin": "loop598_remaining4_native_hold_contract_plan",
+      "contract_batch_lane": "remaining_native_web_image_hold",
+      "contract_action": "native_web_disambiguation_hold_contract_case",
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "HOLD",
+      "source_native_verdict": "character_or_deity_bridge_not_enough_without_verified_work_link",
+      "evidence_grade": "Weak",
+      "target_title": null,
+      "target_url": null,
+      "current_projection_candidate_title": "망한 교단의 성기사",
+      "current_projection_candidate_url": "https://series.naver.com/novel/detail.series?productNo=12696086",
+      "candidate_source": "publish_contract_trace.pre_gate_candidate",
+      "actions": [
+        "character_bridge_review_required",
+        "native_web_review_required"
+      ],
+      "promotion_decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": true,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discussion_present_noncurrent_scope",
+          "scope_unknown",
+          "scope_not_current_work",
+          "character_bridge_requires_verified_work_link"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "unknown",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "publish_contract_trace.pre_gate_candidate"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "character_bridge_requires_verified_work_link"
+          ]
+        }
+      },
+      "promotion_gate_state": {
+        "post_id": 11671538,
+        "candidate_title": "망한 교단의 성기사",
+        "candidate_url": "https://series.naver.com/novel/detail.series?productNo=12696086",
+        "source": "remaining_native_hold_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "unresolved_matchable",
+        "work_resolution": "unresolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "unknown",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "publish_contract_trace.pre_gate_candidate"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "character_bridge_requires_verified_work_link"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "native_web_hold_boundary",
+          "strength": "medium",
+          "source_path_or_snippet": "publish_contract_trace.pre_gate_candidate",
+          "supports_publish": false,
+          "reason_code": "character_bridge_requires_verified_work_link"
+        }
+      ],
+      "scope_state": {
+        "scope_kind": "unknown",
+        "confidence": "high",
+        "direct_bridge_sources": [
+          "publish_contract_trace.pre_gate_candidate"
+        ],
+        "competing_candidates": [],
+        "conflict_reason_codes": [
+          "character_bridge_requires_verified_work_link"
+        ]
+      },
+      "release_candidate_not_approval": false,
+      "runtime_replay_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "캐릭터/설정 표면과 후보 작품 사이의 직접 relation이 부족해 native 확인 전 public title을 열지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop597_remaining12_native_evidence_projection_result.json#post_id=11671538",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop480_unsafe_promotion_from_hold_review_batch.json#post_id=11671538",
+        "https://series.naver.com/novel/detail.series?productNo=12696086",
+        "docs/devs/loop480_unsafe_promotion_from_hold_source_native_verdicts.json#post_id=11671538",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11671538"
+      ]
+    }
+  ],
+  "approval_boundary": {
+    "native_web_hold_is_not_approval": true,
+    "projection_scrub_required_for_leaked_public_identity": true,
+    "runtime_replay_allowed_rows": 0,
+    "full_scan_approval": false
+  }
+}

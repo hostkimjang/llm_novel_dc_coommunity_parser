@@ -1,5 +1,24 @@
 # Development Checklist
 
+## 2026-07-08 Loop598 remaining4 native hold contract 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Loop597 remaining4를 단건 반복하지 않고 native-web/image hold contract batch로 처리했다.
+- [x] Remaining4 contract plan rows `4`, candidate-only `4`, validation issue `0`을 확인했다.
+- [x] Projection application rows `375`, applied hold `4`, scrubbed public identity `4`, runtime allowed `0`을 확인했다.
+- [x] Combined contract plan rows `39`, release candidate `17`, no-release/hold `22`, validation issue `0`을 확인했다.
+- [x] Release gate audit violation `0`, pending `0`, release candidate `17`, satisfied no-release `22`를 확인했다.
+- [x] Publication contract audit은 `GO / 375 rows / violation 0`이다.
+- [x] Residual46은 processed_or_excluded `46`, ordinary residual `4 -> 0`으로 재회계했다.
+- [x] Remaining dispatch는 ordinary residual rows `0`, publish/runtime allowed `0`이다.
+- [x] Full375 collateral은 `NO-GO / raw 73 / adjusted 66 / unreviewed 48 / runtime counts missing`이다.
+- [x] Dashboard health는 `http://127.0.0.1:8080/api/health`, `ok=true`, `standalone=true`, `pid=9320`으로 확인했다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, manifest attach fallback 활성, `--no-dashboard` 금지로 실행한다.
+- [ ] Dashboard 진행률을 semantic/full_scan approval 근거로 쓰지 않는다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: native hold contract `REVIEW-LOCKED`, residual46 `REVIEW-LOCKED / ordinary 0`, publication `GO`, release `REVIEW-LOCKED / violation 0`, full375 collateral `NO-GO / raw 73 / adjusted 66`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_598_REPORT_20260708.md`, `docs/devs/loop598_remaining4_native_hold_contract_plan.json`, `docs/devs/loop598_residual46_native_hold_accounting.json`, `docs/devs/loop598_residual46_remaining0_dispatch.json`, `docs/devs/loop598_remaining4_native_hold_full375_collateral_compare.json`, `docs/devs/loop598_always_on_golden18_full375_native_hold.json`.
+
 ## 2026-07-08 Loop597 remaining native evidence contract 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.

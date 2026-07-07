@@ -50,6 +50,8 @@ class MergeContractPlanApplicationTest(unittest.TestCase):
         self.assertEqual(merged["summary"]["addition_plan_rows"], 2)
         self.assertEqual(merged["summary"]["addition_publish_release_candidate_rows"], 1)
         self.assertEqual(merged["summary"]["addition_candidate_only_no_publish_rows"], 1)
+        self.assertEqual(merged["summary"]["release_candidate_not_approval_rows"], 0)
+        self.assertEqual(merged["summary"]["no_release_hold_rows"], 1)
         self.assertEqual(
             merged["summary"]["contract_action_counts"]["expected_title_restore_contract_case"],
             2,
@@ -78,7 +80,8 @@ class MergeContractPlanApplicationTest(unittest.TestCase):
             },
             "validation_issues": [],
             "applied_rows": [
-                {"post_id": 2, "contract_action": "expected_title_restore_contract_case"}
+                {"post_id": 2, "contract_action": "expected_title_restore_contract_case"},
+                {"post_id": 3, "contract_action": "native_web_disambiguation_hold_contract_case"},
             ],
         }
 
@@ -91,7 +94,8 @@ class MergeContractPlanApplicationTest(unittest.TestCase):
 
         self.assertEqual(merged_application["gate"], "REVIEW-LOCKED")
         self.assertEqual(merged_application["summary"]["applied_publish_contract_rows"], 2)
-        self.assertEqual(merged_application["summary"]["addition_applied_rows"], 1)
+        self.assertEqual(merged_application["summary"]["applied_hold_contract_rows"], 1)
+        self.assertEqual(merged_application["summary"]["addition_applied_rows"], 2)
         self.assertEqual(merged_application["summary"]["applied_restore_rows"], 2)
         self.assertEqual(
             merged_application["summary"]["skipped_contract_action_counts"][

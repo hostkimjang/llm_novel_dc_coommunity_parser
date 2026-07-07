@@ -8,6 +8,23 @@ from pathlib import Path
 from typing import Any
 
 
+PUBLISH_CONTRACT_ACTIONS = {
+    "expected_title_restore_contract_case",
+    "expected_audit_update_exclusion_contract_case",
+    "canonical_cleanup_or_url_correction_contract_case",
+    "candidate_set_expected_restore_contract_case",
+}
+HOLD_CONTRACT_ACTIONS = {
+    "candidate_scrub_no_publish_contract_case",
+    "native_web_disambiguation_hold_contract_case",
+    "candidate_set_rebuild_required_before_publish",
+    "no_publish_intent_guard_contract_case",
+    "canonical_variant_policy_hold_contract_case",
+    "stronger_evidence_hard_hold_contract_case",
+    "non_webnovel_ebook_policy_hold_contract_case",
+}
+
+
 def load_json(path: Path) -> dict[str, Any]:
     payload = json.loads(path.read_text(encoding="utf-8-sig"))
     if not isinstance(payload, dict):
@@ -41,6 +58,18 @@ def _decision_counter(rows: list[dict[str, Any]]) -> dict[str, int]:
     return {key: values[key] for key in sorted(values) if key}
 
 
+def _is_publish_action(row: dict[str, Any]) -> bool:
+    return str(row.get("contract_action") or "") in PUBLISH_CONTRACT_ACTIONS
+
+
+def _is_hold_action(row: dict[str, Any]) -> bool:
+    return str(row.get("contract_action") or "") in HOLD_CONTRACT_ACTIONS
+
+
+def _action_count(rows: list[dict[str, Any]], action: str) -> int:
+    return sum(1 for row in rows if str(row.get("contract_action") or "") == action)
+
+
 def merge_plan(
     base: dict[str, Any],
     addition: dict[str, Any],
@@ -55,6 +84,8 @@ def merge_plan(
         *(base.get("validation_issues") or []),
         *(addition.get("validation_issues") or []),
     ]
+    release_rows = [row for row in rows if row.get("release_candidate_not_approval")]
+    hold_rows = [row for row in rows if _is_hold_action(row)]
     summary = dict(base.get("summary") or {})
     summary.update(
         {
@@ -63,6 +94,17 @@ def merge_plan(
             "contract_action_counts": _counter(rows, "contract_action"),
             "contract_batch_lane_counts": _counter(rows, "contract_batch_lane"),
             "promotion_decision_status_counts": _decision_counter(rows),
+            "release_candidate_not_approval_rows": len(release_rows),
+            "candidate_set_rebuild_hold_rows": _action_count(
+                rows, "candidate_set_rebuild_required_before_publish"
+            ),
+            "native_web_disambiguation_hold_rows": _action_count(
+                rows, "native_web_disambiguation_hold_contract_case"
+            ),
+            "non_webnovel_ebook_policy_hold_rows": _action_count(
+                rows, "non_webnovel_ebook_policy_hold_contract_case"
+            ),
+            "no_release_hold_rows": len(hold_rows),
             "addition_plan_id": addition.get("plan_id"),
             "addition_plan_rows": len(addition_rows),
             "addition_publish_release_candidate_rows": (
@@ -74,6 +116,9 @@ def merge_plan(
                 (addition.get("summary") or {}).get("candidate_only_no_publish_rows")
                 if (addition.get("summary") or {}).get("candidate_only_no_publish_rows") is not None
                 else (addition.get("summary") or {}).get("no_publish_contract_rows")
+            ),
+            "addition_native_web_hold_rows": _action_count(
+                addition_rows, "native_web_disambiguation_hold_contract_case"
             ),
             "runtime_replay_allowed_rows": 0,
             "full375_collateral_gate": "NO-GO",
@@ -111,13 +156,17 @@ def merge_application(
     ]
     skipped = Counter(base.get("summary", {}).get("skipped_contract_action_counts") or {})
     skipped.update(addition.get("summary", {}).get("skipped_contract_action_counts") or {})
+    publish_rows = [row for row in rows if _is_publish_action(row)]
+    hold_rows = [row for row in rows if _is_hold_action(row)]
     summary = dict(base.get("summary") or {})
     summary.update(
         {
             "contract_plan_rows": (base.get("summary") or {}).get("contract_plan_rows", 0)
             + (addition.get("summary") or {}).get("contract_plan_rows", 0),
-            "publish_contract_plan_rows": len(rows),
-            "applied_publish_contract_rows": len(rows),
+            "publish_contract_plan_rows": len(publish_rows),
+            "applied_publish_contract_rows": len(publish_rows),
+            "applied_hold_contract_rows": len(hold_rows),
+            "applied_non_publish_contract_rows": len(hold_rows),
             "restore_plan_rows": sum(
                 1 for row in rows if row.get("contract_action") == "expected_title_restore_contract_case"
             ),

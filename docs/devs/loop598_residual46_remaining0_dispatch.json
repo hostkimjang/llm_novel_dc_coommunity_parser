@@ -1,0 +1,36 @@
+{
+  "report_type": "ordinary_residual_dispatch",
+  "dispatch_id": "loop598_residual46_remaining0_dispatch",
+  "generated_at": "2026-07-08T07:53:46",
+  "source_accounting_id": "loop598_residual46_native_hold_accounting",
+  "source_queue_id": "loop581_candidate_set_full375_prior_compatible_residual_action_queue",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "source_accounting_rows": 46,
+    "source_queue_rows": 46,
+    "ordinary_residual_rows": 0,
+    "contract_processed_rows_held": 39,
+    "validation_issue_count": 0,
+    "lane_counts": {},
+    "label_counts": {},
+    "bucket_counts": {},
+    "transition_counts": {},
+    "action_counts": {},
+    "publish_allowed_rows": 0,
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "lane_groups": [],
+  "rows": [],
+  "approval_boundary": {
+    "dispatch_generation_is_not_approval": true,
+    "runtime_replay_allowed": false,
+    "publish_allowed": false,
+    "full375_collateral_go_required_before_completion": true,
+    "full_scan_approval": false
+  }
+}
