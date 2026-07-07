@@ -1,5 +1,20 @@
 # Development Checklist
 
+## 2026-07-07 Loop550 C2 canonical variant policy 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 런을 실행하지 않았다.
+- [x] C2 canonical variant policy `5`건을 shared promotion gate 계약 기준으로 검토했다.
+- [x] Policy review rows는 `5/5`, validation issue는 `0`이다.
+- [x] `canonical_variant_quarantine_no_publish`는 `5`건이다.
+- [x] Regression exclusion candidate after gate wiring은 `5`건이다.
+- [x] Search blind/missing conditional row는 `4`건이다.
+- [x] Publish allowed rows는 `0`, runtime replay allowed rows는 `0`이다.
+- [x] Dashboard policy tests는 `12` tests PASS이며, 다음 테스트런은 `--parallel 16`, dashboard 기본 ON으로 둔다.
+- [x] Search blind/missing `4`건을 search 복구 전 promotion approval로 쓰지 않는다.
+- [ ] C3 stronger evidence/native-web hold `3`건을 처리한다.
+- [x] Full375 collateral `GO` 전 full_scan path를 완료로 선언하지 않는다.
+- Gate: C2 variant policy `REVIEW-LOCKED / no-publish quarantine 5`, search evidence `REVIEW`, runtime replay `NOT_RUN / allowed 0`, full375 collateral `NO-GO / residual78 still open`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop549 B1 expected restore projection 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 런을 실행하지 않았다.

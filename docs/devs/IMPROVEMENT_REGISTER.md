@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260707-550 - C2 canonical variant policy review
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 실행 없음, runtime allowed `0` | C3/full375 전 replay 금지 |
+| C2 variant policy | REVIEW-LOCKED | no-publish quarantine `5`, validation issue `0` | search conditional과 approval 분리 |
+| Search evidence | REVIEW | search blind/missing conditional `4` | search recovery 전 promotion approval 금지 |
+| Regression exclusion candidate | REVIEW-LOCKED | after gate wiring candidate `5` | full375 gate에서 별도 회계 |
+| Dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | policy tests `12` PASS, `http://127.0.0.1:8080`, Loop545 `49/49`, `parallel_count=16` | 다음 runtime/test run은 `--parallel 16`, dashboard 기본 ON |
+| Full375 collateral | NO-GO | residual78 계속 open | C3 처리 후 full375 재확인 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: C2 variant policy `REVIEW-LOCKED / no-publish quarantine 5`, runtime replay `NOT_RUN`, full375 collateral `NO-GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-549 - B1 expected restore projection contract application
 
 | 항목 | 상태 | 근거 | 다음 |

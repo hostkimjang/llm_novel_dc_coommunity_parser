@@ -1,5 +1,21 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop550 C2 canonical variant policy 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_550_REPORT_20260707.md`.
+  - [x] Policy review 기록 완료: `docs/devs/loop550_c2_canonical_variant_policy_review.json`.
+  - [x] Tool/test 기록 완료: `tools/build_canonical_variant_policy_review.py`, `tests/test_build_canonical_variant_policy_review.py`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 런은 실행하지 않았다.
+  - [x] C2 `5`건은 no-publish quarantine으로 유지했다.
+  - [x] Publish/runtime allowed rows는 `0/0`이다.
+  - [x] Regression exclusion candidate `5`건은 queue 회계 후보일 뿐 approval이 아니다.
+  - [x] Dashboard policy tests `12` tests PASS로 다음 테스트런 dashboard 기본 ON을 확인했다.
+  - [x] Search blind/missing conditional `4`건은 search 복구 전 promotion approval로 쓰지 않는다.
+  - [x] C3 `3`건과 full375 collateral 전 goal completion을 선언하지 않는다.
+- Gate: C2 variant policy `REVIEW-LOCKED`, runtime replay `NOT_RUN`, full375 collateral `NO-GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop549 B1 expected restore projection 품질 게이트
 
 - 근거:

@@ -1,0 +1,162 @@
+{
+  "report_type": "canonical_variant_policy_review",
+  "review_id": "loop550_c2_canonical_variant_policy_review",
+  "generated_at": "2026-07-07T21:04:29",
+  "source_contract_plan": "loop548_b1_post_verdict_promotion_gate_contract_plan",
+  "source_contract_queue": "loop548_b1_post_verdict_contract_queue",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "source_variant_rows": 5,
+    "policy_review_rows": 5,
+    "validation_issue_count": 0,
+    "policy_decision_counts": {
+      "canonical_variant_quarantine_no_publish": 5
+    },
+    "variant_relation_counts": {
+      "current_candidate_matches_clean_canonical": 2,
+      "expected_matches_clean_canonical": 3
+    },
+    "search_gate_counts": {
+      "SEARCH_BLIND_BLOCKER": 3,
+      "SEARCH_EVIDENCE_MISSING": 1,
+      "SEARCH_RECOVERED_CONDITIONAL": 1
+    },
+    "search_blind_conditional_rows": 4,
+    "regression_exclusion_candidate_rows": 5,
+    "publish_allowed_rows": 0,
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "rows": [
+    {
+      "post_id": 11697256,
+      "policy_decision": "canonical_variant_quarantine_no_publish",
+      "variant_relation": "current_candidate_matches_clean_canonical",
+      "expected_or_source_native_title": "황제의 딸로 환생했다",
+      "canonical_title": "황제의 딸로 환생했습니다",
+      "canonical_url": "https://novelpia.com/novel/250464",
+      "current_projection_candidate_title": "황제의 딸로 환생했습니다",
+      "current_projection_candidate_url": "https://novelpia.com/novel/250464",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "search_blind_conditional": true,
+      "evidence_grade": "Medium",
+      "regression_exclusion_candidate_after_gate_wiring": true,
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "validation_issues": [],
+      "rationale_ko": "추천 댓글에서 `황제딸` 약칭 뒤 `황제의 딸로 환생했습니다` 풀네임과 노벨피아 플랫폼이 직접 나온다. expected `황제의 딸로 환생했다`와 current candidate는 같은 작품 계열 표기 variant로 보고 variant policy 계약으로 넘긴다.",
+      "evidence_refs": [
+        "docs/devs/loop547_b1_canonical_candidate_recheck14_batch.json#post_id=11697256",
+        "docs/devs/loop530_b1_canonical_source_native_verdicts.json#post_id=11697256",
+        "docs/devs/loop540_b1_missing_candidate_source_native_verdicts.json#post_id=11697256"
+      ]
+    },
+    {
+      "post_id": 11710021,
+      "policy_decision": "canonical_variant_quarantine_no_publish",
+      "variant_relation": "expected_matches_clean_canonical",
+      "expected_or_source_native_title": "무한의 마법사",
+      "canonical_title": "무한의 마법사",
+      "canonical_url": null,
+      "current_projection_candidate_title": "무마",
+      "current_projection_candidate_url": null,
+      "search_gate": "SEARCH_EVIDENCE_MISSING",
+      "search_blind_conditional": true,
+      "evidence_grade": "Medium",
+      "regression_exclusion_candidate_after_gate_wiring": true,
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "validation_issues": [],
+      "rationale_ko": "제목 `무마 웹툰`과 본문 `시로네` 맥락은 `무한의 마법사` 약칭으로 볼 수 있다. current candidate `무마`는 별도 작품이 아니라 약칭 variant이므로 canonical variant policy 계약으로 둔다.",
+      "evidence_refs": [
+        "docs/devs/loop547_b1_canonical_candidate_recheck14_batch.json#post_id=11710021",
+        "docs/devs/loop530_b1_canonical_source_native_verdicts.json#post_id=11710021",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop545_current_full375_residual97_runtime_expected_title_audit.json#post_id=11710021"
+      ]
+    },
+    {
+      "post_id": 11714887,
+      "policy_decision": "canonical_variant_quarantine_no_publish",
+      "variant_relation": "current_candidate_matches_clean_canonical",
+      "expected_or_source_native_title": "도굴왕 1 |",
+      "canonical_title": "도굴왕",
+      "canonical_url": "https://page.kakao.com/content/53190884",
+      "current_projection_candidate_title": "도굴왕",
+      "current_projection_candidate_url": null,
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "search_blind_conditional": false,
+      "evidence_grade": "Medium",
+      "regression_exclusion_candidate_after_gate_wiring": true,
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "validation_issues": [],
+      "rationale_ko": "본문 제목, YouTube/Aniplus PV 제목, 영상 설명이 모두 `도굴왕`을 직접 지지한다. expected `도굴왕 1 |`는 오염된 표기이고 current candidate `도굴왕`은 clean canonical variant로 보되 release는 variant policy 계약 뒤로 둔다.",
+      "evidence_refs": [
+        "docs/devs/loop547_b1_canonical_candidate_recheck14_batch.json#post_id=11714887",
+        "docs/devs/loop530_b1_canonical_source_native_verdicts.json#post_id=11714887",
+        "docs/devs/loop492_p0_hold9_source_native_verdicts.json#post_id=11714887"
+      ]
+    },
+    {
+      "post_id": 11682767,
+      "policy_decision": "canonical_variant_quarantine_no_publish",
+      "variant_relation": "expected_matches_clean_canonical",
+      "expected_or_source_native_title": "묵향",
+      "canonical_title": "묵향",
+      "canonical_url": null,
+      "current_projection_candidate_title": "묵향 1권",
+      "current_projection_candidate_url": "https://mm.munpia.com/?menu=novel&action=view&id=51088&entry_id=776982",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "search_blind_conditional": true,
+      "evidence_grade": "Medium",
+      "regression_exclusion_candidate_after_gate_wiring": true,
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "validation_issues": [],
+      "rationale_ko": "제목 `묵향`과 본문/댓글의 아르티어스, 드래곤 하트, TS 초기 전개가 같은 작품 맥락을 지지한다. current candidate `묵향 1권`은 권차/상세 페이지 variant라 canonical variant policy 계약으로 둔다.",
+      "evidence_refs": [
+        "docs/devs/loop547_b1_canonical_candidate_recheck14_batch.json#post_id=11682767",
+        "docs/devs/loop530_b1_canonical_source_native_verdicts.json#post_id=11682767",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop545_current_full375_residual97_runtime_expected_title_audit.json#post_id=11682767"
+      ]
+    },
+    {
+      "post_id": 11698859,
+      "policy_decision": "canonical_variant_quarantine_no_publish",
+      "variant_relation": "expected_matches_clean_canonical",
+      "expected_or_source_native_title": "귤부인 대롱대롱",
+      "canonical_title": "귤부인 대롱대롱",
+      "canonical_url": null,
+      "current_projection_candidate_title": "귤부인",
+      "current_projection_candidate_url": null,
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "search_blind_conditional": true,
+      "evidence_grade": "Medium",
+      "regression_exclusion_candidate_after_gate_wiring": true,
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "validation_issues": [],
+      "rationale_ko": "제목이 `귤부인 대롱대롱`을 직접 말하고 본문이 해당 장면 반응을 이어간다. current candidate `귤부인`은 축약/부분 표면이므로 canonical title은 원문 전체 표면으로 보존한다.",
+      "evidence_refs": [
+        "docs/devs/loop547_b1_canonical_candidate_recheck14_batch.json#post_id=11698859",
+        "docs/devs/loop530_b1_canonical_source_native_verdicts.json#post_id=11698859",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop545_current_full375_residual97_runtime_expected_title_audit.json#post_id=11698859"
+      ]
+    }
+  ],
+  "approval_boundary": {
+    "variant_policy_review_is_not_runtime_replay": true,
+    "variant_quarantine_is_not_full_scan_approval": true,
+    "search_blind_conditional_rows_require_search_recovery_before_promotion": true,
+    "full375_collateral_remains_no_go": true
+  }
+}

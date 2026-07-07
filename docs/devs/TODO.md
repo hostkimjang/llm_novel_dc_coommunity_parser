@@ -1,5 +1,19 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop550 TODO
+
+- 상태 업데이트: Loop549 뒤 남은 C2 canonical variant policy `5`건을 no-publish quarantine으로 정리했다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 런을 발주하지 않았다.
+- [x] C2 policy review rows `5/5`, validation issue `0`이다.
+- [x] `canonical_variant_quarantine_no_publish 5`, regression exclusion candidate `5`다.
+- [x] Publish/runtime allowed rows는 `0/0`이다.
+- [x] Dashboard policy tests `12` tests PASS이며 다음 테스트런은 `--parallel 16`, dashboard 기본 ON으로 유지한다.
+- [x] Search blind/missing conditional `4`건은 search 복구 전 promotion approval로 쓰지 않는다.
+- [ ] C3 stronger evidence/native-web hold `3`건을 처리한다.
+- [x] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: C2 variant policy `REVIEW-LOCKED / no-publish quarantine 5`, search evidence `REVIEW`, full375 collateral `NO-GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop549 TODO
 
 - 상태 업데이트: Loop548 C1 expected restore pending `3`건을 projection-only로 적용했다. Goal은 완료가 아니다.
