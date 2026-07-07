@@ -1,5 +1,17 @@
 # Development History
 
+## 2026-07-08 - Loop584 test-run dashboard audit gate
+
+- 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+- 테스트런 진행상황을 보기 쉽게 web dashboard에 붙이는 운영 계약을 `tools/audit_goal_test_run_contract.py`까지 확장했다.
+- Audit observed 필드에 `dashboard_enabled`, `dashboard_mode`, `dashboard_url`, `dashboard_standalone_forwarding`, `dashboard_start_error`를 추가했다.
+- 소규모 goal/test run에서 `dashboard_enabled=false`는 `NO-GO`, dashboard 필드 누락은 `REVIEW`다.
+- `tests/test_goal_test_run_contract_audit.py`에 dashboard 정상 manifest helper와 missing/disabled dashboard 계약 테스트를 추가했다.
+- Focused unittest `24`개와 py_compile을 통과했다.
+- Dashboard는 `http://127.0.0.1:8080`에서 `ok=true / standalone=true / pid=9320`로 확인했고, latest status는 Loop564 `30/30`, `parallel_count=16`, `batch_running=false`다.
+- Report는 `docs/devs/loop_reports/LOOP_584_REPORT_20260708.md`다.
+- Gate는 dashboard audit `GO_CONTRACT_ENFORCED`, runtime replay `NOT_RUN`, full375 collateral `NO-GO / raw 85`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop583 ready restore projection contract and full375 collateral recheck
 
 - 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.

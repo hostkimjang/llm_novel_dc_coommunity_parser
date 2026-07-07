@@ -1,5 +1,19 @@
 # Development Checklist
 
+## 2026-07-08 Loop584 test-run dashboard audit gate 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] `tools/audit_goal_test_run_contract.py`가 dashboard manifest 필드 `dashboard_enabled`, `dashboard_mode`, `dashboard_url`, `dashboard_standalone_forwarding`, `dashboard_start_error`를 관측하도록 보강했다.
+- [x] 소규모 goal/test run에서 `dashboard_enabled=false`는 `NO-GO`, dashboard 필드 누락은 `REVIEW`로 판정하도록 했다.
+- [x] `tests/test_goal_test_run_contract_audit.py`에 정상 dashboard manifest helper, missing dashboard `REVIEW`, disabled dashboard `NO-GO` 테스트를 추가했다.
+- [x] Focused unittest `24`개와 py_compile을 통과했다.
+- [x] Dashboard health는 `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`으로 확인했다.
+- [x] Dashboard status는 마지막 Loop564 `30/30`, `parallel_count=16`, `batch_running=false`로 확인했다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 실행한다.
+- [ ] Dashboard 진행률을 semantic/full_scan approval 근거로 쓰지 않는다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: dashboard audit `GO_CONTRACT_ENFORCED`, runtime replay `NOT_RUN`, full375 collateral `NO-GO / raw 85 / runtime counts missing`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop583 ready restore projection 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.

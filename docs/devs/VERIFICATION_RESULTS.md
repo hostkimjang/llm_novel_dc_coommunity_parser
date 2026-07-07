@@ -1,5 +1,24 @@
 # Verification Results
 
+## 2026-07-08 Loop584 test-run dashboard audit gate 보강
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_584_REPORT_20260708.md`
+  - `tools/audit_goal_test_run_contract.py`
+  - `tests/test_goal_test_run_contract_audit.py`
+  - `docs/devs/SAMPLING_AND_PARALLEL_TEST_GUIDE.md`
+  - `docs/devs/CHECKLIST.md`
+  - `docs/devs/HISTORY.md`
+- 검증:
+  - `python -m unittest tests.test_goal_test_run_contract_audit tests.test_run_independent_plan -v`: PASS, `24` tests.
+  - `python -m py_compile tools\audit_goal_test_run_contract.py tools\run_independent_plan.py tools\test_run_dashboard_policy.py`: PASS.
+  - Dashboard health/status 확인: PASS, health `ok=true / standalone=true / pid=9320`, latest status Loop564 `30/30`, `parallel_count=16`, `batch_running=false`.
+- 결과:
+  - `tools/run_independent_plan.py`의 dashboard 기본 ON 계약에 더해, 사후 감사도 dashboard manifest 필드를 본다.
+  - `dashboard_enabled=false`는 test/runtime run 계약 `NO-GO`, dashboard 필드 누락은 `REVIEW`로 잡힌다.
+  - Dashboard는 진행 관측 도구이며 semantic/full_scan approval 근거가 아니다.
+- Gate: dashboard audit `GO_CONTRACT_ENFORCED`, runtime replay `NOT_RUN`, full375 collateral `NO-GO / raw 85`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop583 ready restore projection contract와 full375 collateral 재검증
 
 - 산출물:

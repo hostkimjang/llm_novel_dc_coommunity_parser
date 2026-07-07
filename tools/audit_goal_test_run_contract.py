@@ -400,6 +400,11 @@ def audit_manifest(
     endpoint_count_after_filter = _to_int(
         _manifest_value(manifest, "mcp_endpoint_count_after_health_filter")
     )
+    dashboard_enabled = _to_bool(_manifest_value(manifest, "dashboard_enabled"))
+    dashboard_mode = str(_manifest_value(manifest, "dashboard_mode") or "").strip()
+    dashboard_url = str(_manifest_value(manifest, "dashboard_url") or "").strip()
+    dashboard_standalone_forwarding = _to_bool(_manifest_value(manifest, "dashboard_standalone_forwarding"))
+    dashboard_start_error = str(_manifest_value(manifest, "dashboard_start_error") or "").strip()
 
     is_small_run = bool(expect_small_goal_run and input_count is not None and input_count <= small_run_threshold)
     log_paths = list(log_paths)
@@ -668,6 +673,43 @@ def audit_manifest(
                     "inspect_manifest_health_accounting",
                 )
             )
+        if dashboard_enabled is False:
+            issues.append(
+                _issue(
+                    "dashboard_disabled_for_goal_test_run",
+                    "NO-GO",
+                    "dashboard_enabled=false; test/runtime run progress was not attached to the web dashboard",
+                    "rerun_with_dashboard_or_use_run_independent_plan_default_dashboard",
+                )
+            )
+        elif dashboard_enabled is None:
+            issues.append(
+                _issue(
+                    "dashboard_enabled_missing",
+                    "REVIEW",
+                    "dashboard_enabled field is missing; dashboard attachment cannot be audited",
+                    "rerun_with_dashboard_manifest_contract_or_fix_manifest_writer",
+                )
+            )
+        if dashboard_enabled is True:
+            if dashboard_mode in {"", "disabled", "unavailable"}:
+                issues.append(
+                    _issue(
+                        "dashboard_mode_not_attached",
+                        "REVIEW",
+                        f"dashboard_enabled=true but dashboard_mode={dashboard_mode or 'missing'}",
+                        "inspect_dashboard_start_error_or_attach_manifest_dashboard",
+                    )
+                )
+            if not dashboard_url:
+                issues.append(
+                    _issue(
+                        "dashboard_url_missing",
+                        "REVIEW",
+                        "dashboard_enabled=true but dashboard_url is missing",
+                        "record_dashboard_url_in_manifest_or_rerun_with_dashboard_contract",
+                    )
+                )
 
     log_counts = log_scan.get("total_counts") or {}
     forbidden_counts = {
@@ -831,6 +873,11 @@ def audit_manifest(
             "mcp_health_timeout_sec": health_timeout_sec,
             "mcp_health_ok_count": health_ok_count,
             "mcp_health_failure_count": health_failure_count,
+            "dashboard_enabled": dashboard_enabled,
+            "dashboard_mode": dashboard_mode,
+            "dashboard_url": dashboard_url,
+            "dashboard_standalone_forwarding": dashboard_standalone_forwarding,
+            "dashboard_start_error": dashboard_start_error,
         },
         "log_scan": log_scan,
         "issues": issues,
@@ -894,6 +941,7 @@ def write_markdown(path: Path, audit: dict[str, Any]) -> None:
 - small_run_lifecycle_blocked: `{observed.get('mcp_small_run_shard_lifecycle_blocked')}`
 - healthy_endpoint_filter: `{observed.get('mcp_healthy_endpoint_filter')}`, after_filter=`{observed.get('mcp_endpoint_count_after_health_filter')}`
 - health: `include_search={observed.get('mcp_health_include_search')}`, `light_mode={observed.get('mcp_health_light_mode')}`, `required_ok={observed.get('mcp_health_required_ok_count')}`, `checked={observed.get('mcp_health_checked_endpoint_count')}`, `ok={observed.get('mcp_health_ok_count')}`, `failure={observed.get('mcp_health_failure_count')}`, `batch={observed.get('mcp_health_probe_batch_size')}`, `stopped_after_required={observed.get('mcp_health_probe_stopped_after_required_ok')}`
+- dashboard: `enabled={observed.get('dashboard_enabled')}`, `mode={observed.get('dashboard_mode')}`, `url={observed.get('dashboard_url')}`, `standalone_forwarding={observed.get('dashboard_standalone_forwarding')}`, `start_error={observed.get('dashboard_start_error')}`
 
 ## 로그 금지 패턴
 

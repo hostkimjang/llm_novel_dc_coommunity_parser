@@ -31,6 +31,16 @@ def load_expert_main_module():
     return module
 
 
+def dashboard_manifest_fields() -> dict[str, object]:
+    return {
+        "dashboard_enabled": True,
+        "dashboard_mode": "standalone_forward",
+        "dashboard_url": "http://127.0.0.1:8080",
+        "dashboard_standalone_forwarding": True,
+        "dashboard_start_error": "",
+    }
+
+
 class GoalTestRunContractAuditTest(unittest.TestCase):
     def test_expert_main_caps_gemma_4_4b_parallel_as_model_max(self):
         mod = load_expert_main_module()
@@ -90,6 +100,7 @@ class GoalTestRunContractAuditTest(unittest.TestCase):
             "mcp_health_failure_count": 0,
             "mcp_requested_endpoint_count_before_health_filter": 4,
             "mcp_endpoint_count_after_health_filter": 4,
+            **dashboard_manifest_fields(),
         }
 
         audit = mod.audit_manifest(manifest)
@@ -167,6 +178,7 @@ class GoalTestRunContractAuditTest(unittest.TestCase):
             "mcp_health_failure_count": 0,
             "mcp_requested_endpoint_count_before_health_filter": 36,
             "mcp_endpoint_count_after_health_filter": 2,
+            **dashboard_manifest_fields(),
         }
 
         audit = mod.audit_manifest(manifest)
@@ -176,6 +188,87 @@ class GoalTestRunContractAuditTest(unittest.TestCase):
         self.assertFalse(audit["observed"]["mcp_health_include_search"])
         self.assertTrue(audit["observed"]["mcp_health_light_mode"])
         self.assertEqual(audit["observed"]["mcp_health_checked_endpoint_count"], 2)
+
+    def test_small_goal_run_missing_dashboard_contract_is_review(self):
+        mod = load_audit_module()
+        manifest = {
+            "input_post_count": 1,
+            "llm_endpoint": "http://10.20.0.101:8000/",
+            "requested_parallel": 16,
+            "effective_parallel": 1,
+            "completed_count": 1,
+            "flushed_count": 1,
+            "pending_count": 0,
+            "failed_count": 0,
+            "image_post_count": 0,
+            "vlm_enabled": True,
+            "ocr_enabled": True,
+            "vlm_ocr_semantic_review_ready": True,
+            "mcp_auto_up_shards": False,
+            "mcp_auto_recreate_shards": False,
+            "mcp_local_shard_management_enabled": False,
+            "mcp_small_run_shard_lifecycle_blocked": True,
+            "mcp_health_include_search": False,
+            "mcp_health_light_mode": True,
+            "mcp_health_required_ok_count": 1,
+            "mcp_health_checked_endpoint_count": 1,
+            "mcp_health_probe_batch_size": 1,
+            "mcp_health_workers": 1,
+            "mcp_health_attempts": 1,
+            "mcp_health_timeout_sec": 8.0,
+            "mcp_health_ok_count": 1,
+            "mcp_health_failure_count": 0,
+            "mcp_requested_endpoint_count_before_health_filter": 1,
+            "mcp_endpoint_count_after_health_filter": 1,
+        }
+
+        audit = mod.audit_manifest(manifest)
+
+        codes = {item["code"] for item in audit["issues"]}
+        self.assertEqual(audit["gate"]["runtime_contract"], "REVIEW")
+        self.assertIn("dashboard_enabled_missing", codes)
+
+    def test_small_goal_run_disabled_dashboard_is_no_go(self):
+        mod = load_audit_module()
+        manifest = {
+            "input_post_count": 1,
+            "llm_endpoint": "http://10.20.0.101:8000/",
+            "requested_parallel": 16,
+            "effective_parallel": 1,
+            "completed_count": 1,
+            "flushed_count": 1,
+            "pending_count": 0,
+            "failed_count": 0,
+            "image_post_count": 0,
+            "vlm_enabled": True,
+            "ocr_enabled": True,
+            "vlm_ocr_semantic_review_ready": True,
+            "mcp_auto_up_shards": False,
+            "mcp_auto_recreate_shards": False,
+            "mcp_local_shard_management_enabled": False,
+            "mcp_small_run_shard_lifecycle_blocked": True,
+            "mcp_health_include_search": False,
+            "mcp_health_light_mode": True,
+            "mcp_health_required_ok_count": 1,
+            "mcp_health_checked_endpoint_count": 1,
+            "mcp_health_probe_batch_size": 1,
+            "mcp_health_workers": 1,
+            "mcp_health_attempts": 1,
+            "mcp_health_timeout_sec": 8.0,
+            "mcp_health_ok_count": 1,
+            "mcp_health_failure_count": 0,
+            "mcp_requested_endpoint_count_before_health_filter": 1,
+            "mcp_endpoint_count_after_health_filter": 1,
+            "dashboard_enabled": False,
+            "dashboard_mode": "disabled",
+            "dashboard_url": "",
+        }
+
+        audit = mod.audit_manifest(manifest)
+
+        codes = {item["code"] for item in audit["issues"]}
+        self.assertEqual(audit["gate"]["runtime_contract"], "NO-GO")
+        self.assertIn("dashboard_disabled_for_goal_test_run", codes)
 
     def test_small_goal_run_search_health_is_review(self):
         mod = load_audit_module()
@@ -444,6 +537,7 @@ class GoalTestRunContractAuditTest(unittest.TestCase):
                         "mcp_health_failure_count": 0,
                         "mcp_requested_endpoint_count_before_health_filter": 1,
                         "mcp_endpoint_count_after_health_filter": 1,
+                        **dashboard_manifest_fields(),
                     },
                     ensure_ascii=False,
                 ),
@@ -513,6 +607,7 @@ class GoalTestRunContractAuditTest(unittest.TestCase):
                         "mcp_health_failure_count": 0,
                         "mcp_requested_endpoint_count_before_health_filter": 1,
                         "mcp_endpoint_count_after_health_filter": 1,
+                        **dashboard_manifest_fields(),
                     },
                     ensure_ascii=False,
                 ),
@@ -579,6 +674,7 @@ class GoalTestRunContractAuditTest(unittest.TestCase):
                         "mcp_health_failure_count": 0,
                         "mcp_requested_endpoint_count_before_health_filter": 1,
                         "mcp_endpoint_count_after_health_filter": 1,
+                        **dashboard_manifest_fields(),
                     },
                     ensure_ascii=False,
                 ),

@@ -1,5 +1,14 @@
 # Sampling And Parallel Test Guide
 
+## 2026-07-08 Loop584 test-run dashboard audit gate
+
+- 다음 regression-safe grounding test/runtime run은 계속 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 실행한다.
+- `tools/run_independent_plan.py`는 기본 dashboard 모드에서 서버를 확인/시작하고, child run에 `DASHBOARD_URL`, `DASHBOARD_PORT`, `EXPERT_DASHBOARD_FORWARD=1`을 전달하며, 계획 내부 `--no-dashboard`를 실행 직전에 제거한다.
+- `tools/audit_goal_test_run_contract.py`는 이제 manifest의 `dashboard_enabled`, `dashboard_mode`, `dashboard_url`, `dashboard_standalone_forwarding`, `dashboard_start_error`를 감사한다.
+- 소규모 goal/test run에서 `dashboard_enabled=false`는 `NO-GO`, dashboard 필드 누락은 `REVIEW`다. 정상 run은 dashboard URL을 manifest에 남겨야 한다.
+- 현재 standalone dashboard health는 `ok=true`, `standalone=true`, `pid=9320`이고 URL은 `http://127.0.0.1:8080`이다. 최신 status는 마지막 runtime replay Loop564 `30/30`, `parallel_count=16`, `batch_running=false`다.
+- Dashboard는 진행상황 관측 도구이며 `semantic_quality`, `full_scan_approval`, `full375 collateral GO`의 승인 근거가 아니다.
+
 ## 2026-07-08 Loop583 projection/static 검증과 dashboard 상태
 
 - Loop583은 projection/static 검증이라 새 runtime 진행률은 없다.

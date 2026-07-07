@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260708-584 - Test-run dashboard audit gate
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | 실제 test run만 `--parallel 16` + dashboard attached로 실행 |
+| Runner dashboard | GO_CONTRACT_ENFORCED | `run_independent_plan.py` 기본 ON, `--no-dashboard` 제거 계약 유지 | breakglass 외 비활성 금지 |
+| Manifest audit | GO_CONTRACT_ENFORCED | `dashboard_enabled=false` -> `NO-GO`, field missing -> `REVIEW` | 모든 신규 goal/test run manifest에 dashboard URL 기록 |
+| Dashboard health | GO_PROGRESS_VIEW_NOT_APPROVAL | `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`, status Loop564 `30/30`, `parallel_count=16` | 진행 관측용 |
+| Verification | PASS | focused unittest `24`, py_compile PASS | 다음 실제 run에서 진행률 확인 |
+| Full375 collateral | NO-GO | raw regression `85`, runtime counts missing | collateral GO 전 approval 금지 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: dashboard audit `GO_CONTRACT_ENFORCED`, runtime replay `NOT_RUN`, full375 collateral `NO-GO / raw 85`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-583 - Ready restore projection and official URL hold accounting
 
 | 항목 | 상태 | 근거 | 다음 |
