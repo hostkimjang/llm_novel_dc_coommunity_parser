@@ -1,5 +1,35 @@
 # Verification Results
 
+## 2026-07-07 Loop538 shared-gate seeded runtime replay 실행 감사
+
+- 실행:
+  - Loop537 runtime input `35`건을 실행했다.
+  - 조건은 `--parallel 16`, dashboard ON, search 포함 non-light, VLM/OCR ON, `--slang-db off`, `--reuse-shards-only`다.
+  - run_id는 `20260707_164355_092466`이다.
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_538_REPORT_20260707.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop538_shared_gate_seeded_runtime_replay_result.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop538_shared_gate_seeded_runtime_replay_result_manifest.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_replay_health.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_publication_contract_audit.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json`
+  - `docs/devs/loop538_shared_gate_seeded_runtime_failure_action_queue.json`
+- 검증:
+  - Runtime completed/flushed/pending/failed: `35/35/0/0`.
+  - Total time `3176.2s`, avg `90.7s/post`.
+  - requested/effective parallel: `16/16`.
+  - VLM/OCR semantic gate: `READY`, image posts `23`.
+  - Run health: `GO / clean_completed_source`.
+  - Publication contract: `GO / 35 rows / 0 violations`.
+  - Goal/test contract: `REVIEW`, small-run light-health 계약과 의도적 non-light search 조건 충돌.
+  - Expected-title: `NO-GO / 21 of 35`.
+- 결과:
+  - `PASS_EXACT_SAFE_RESOLVED 21`, `FAIL_RUNTIME_PROMOTION_BLOCKED 11`, `FAIL_SAFE_RESOLVED_TITLE_MISMATCH 3`.
+  - Failure action queue는 `14`건이고 `REPROCESS 11 / HOLD 3`, `P0 3 / P1 11`이다.
+  - Search evidence는 `REVIEW / search_timeout_observed + search_degraded_observed`다.
+  - Dashboard는 `http://127.0.0.1:8080` 진행 확인 도구로 사용했고 approval 근거가 아니다.
+- Gate: runtime integrity `GO`, publication contract `GO`, expected-title replay `NO-GO / 21 of 35`, failure queue `REVIEW-LOCKED / 14`, full375 collateral `NO-GO / residual 100`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop537 shared-gate seed replay 입력과 dashboard 계약
 
 - 코드:

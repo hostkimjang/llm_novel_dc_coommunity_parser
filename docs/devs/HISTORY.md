@@ -1,5 +1,18 @@
 # Development History
 
+## 2026-07-07 - Loop538 shared-gate seeded runtime replay 실행 감사
+
+- Loop537 runtime replay input `35`건을 사용자 지시대로 `--parallel 16`과 dashboard ON으로 실행했다.
+- Run `20260707_164355_092466`은 search 포함 non-light, VLM/OCR ON, `--slang-db off`, `--reuse-shards-only` 조건으로 완주했다.
+- Runtime completed/flushed/pending/failed는 `35/35/0/0`, total time은 `3176.2s`, avg time/post는 `90.7s`다.
+- Dashboard는 `http://127.0.0.1:8080`에 붙였고 진행 관측 도구로만 사용했다.
+- Run health는 `GO / clean_completed_source`이고 publication contract는 `GO / 35 rows / 0 violations`다.
+- Expected-title audit은 `NO-GO / 21 of 35`다. 상태는 `PASS_EXACT_SAFE_RESOLVED 21`, `FAIL_RUNTIME_PROMOTION_BLOCKED 11`, `FAIL_SAFE_RESOLVED_TITLE_MISMATCH 3`이다.
+- Search evidence는 `REVIEW / search_timeout_observed + search_degraded_observed`다.
+- 실패 `14`건은 `docs/devs/loop538_shared_gate_seeded_runtime_failure_action_queue.json/.md`로 배치 분리했다. Label은 `REPROCESS 11 / HOLD 3`, priority는 `P0 3 / P1 11`이다.
+- Report는 `docs/devs/loop_reports/LOOP_538_REPORT_20260707.md`, result는 `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop538_shared_gate_seeded_runtime_replay_result.json`이다.
+- Gate는 runtime integrity `GO`, publication contract `GO`, expected-title replay `NO-GO / 21 of 35`, failure queue `REVIEW-LOCKED / 14`, full375 collateral `NO-GO / residual 100`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop537 shared-gate seed replay 입력과 dashboard 계약
 
 - 새 runtime replay나 full375 대형 런은 실행하지 않았다.

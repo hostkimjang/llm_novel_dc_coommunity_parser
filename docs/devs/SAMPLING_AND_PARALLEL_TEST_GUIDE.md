@@ -1,5 +1,14 @@
 # Sampling And Parallel Test Guide
 
+## 2026-07-07 Loop538 runtime replay 대시보드 관측 결과
+
+- Loop538 runtime replay는 `--parallel 16`, dashboard ON, search 포함 non-light 조건으로 실행했다.
+- Run `20260707_164355_092466`의 manifest는 requested/effective parallel `16/16`을 기록했고 completed/flushed/pending/failed는 `35/35/0/0`이다.
+- Dashboard URL은 `http://127.0.0.1:8080`이며 실행 중 진행률, done_count, elapsed, token usage를 확인하는 데 사용했다.
+- Total time은 `3176.2s`, avg time/post는 `90.7s`였다. 마지막 tail row들이 길어져 진행률이 계단식으로 올라갔다.
+- 다음 테스트런/검증런도 기본은 `--parallel 16`과 dashboard ON이다. `--no-dashboard`는 사용자가 명시적으로 끌 때만 허용한다.
+- Dashboard는 진행상황 관측 도구이며 `semantic_quality`, `full_scan_approval`, `full375 collateral GO`의 승인 근거가 아니다.
+
 ## 2026-07-07 Loop537 runtime input manifest dashboard 계약
 
 - Loop537 runtime replay input manifest는 `requested_parallel=16`, `expected_effective_parallel=16`, dashboard policy `WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS`를 기록한다.

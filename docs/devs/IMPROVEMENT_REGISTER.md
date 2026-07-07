@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260707-538 - shared-gate seeded runtime replay 실행 감사
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime completion | GO | run `20260707_164355_092466`, completed/flushed/pending/failed `35/35/0/0` | result 기반 감사 유지 |
+| Parallel/dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | `--parallel 16`, effective `16`, dashboard `http://127.0.0.1:8080` | 다음 테스트런도 같은 기본값 |
+| Publication contract | GO | `35` rows, violation `0` | expected-title와 분리 유지 |
+| Expected-title replay | NO-GO | exact safe_resolved `21/35`, promotion blocked `11`, mismatch `3` | 실패 `14`건 배치 처리 |
+| Failure queue | REVIEW-LOCKED | action queue `14`, `REPROCESS 11 / HOLD 3`, validation issue `0` | P0 mismatch 3건 blind/source-native 검토 |
+| Search evidence | REVIEW | timeout/degraded observed, expected audit degraded/unrecovered `0/0` | P0 search recovery에서 닫기 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: runtime integrity `GO`, publication contract `GO`, expected-title replay `NO-GO / 21 of 35`, failure queue `REVIEW-LOCKED / 14`, full375 collateral `NO-GO / residual 100`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-537 - shared-gate seed replay 입력과 dashboard 계약
 
 | 항목 | 상태 | 근거 | 다음 |

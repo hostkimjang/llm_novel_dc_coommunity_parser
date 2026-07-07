@@ -1,0 +1,1514 @@
+{
+  "report_type": "runtime_expected_failure_action_queue",
+  "queue_id": "loop538_shared_gate_seeded_runtime_failure_action_queue",
+  "generated_at": "2026-07-07T17:39:13",
+  "source_expected_audit": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json",
+  "source_projection_path": "docs/devs/loop536_current_full375_shared_gate_residual54_projection.json",
+  "source_run_id": null,
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "gate": "REVIEW-LOCKED",
+  "summary": {
+    "expected_rows": 35,
+    "passed_rows_excluded": 21,
+    "failed_rows": 14,
+    "projection_still_blocked_rows": 0,
+    "action_queue_rows": 14,
+    "source_audit_status_counts": {
+      "FAIL_RUNTIME_PROMOTION_BLOCKED": 11,
+      "FAIL_SAFE_RESOLVED_TITLE_MISMATCH": 3,
+      "PASS_EXACT_SAFE_RESOLVED": 21
+    },
+    "source_kind_counts": {
+      "loop489_expected_audit_failure": 14
+    },
+    "label_counts": {
+      "HOLD": 3,
+      "REPROCESS": 11
+    },
+    "priority_counts": {
+      "P0": 3,
+      "P1": 11
+    },
+    "owner_mode_counts": {
+      "CODE_OR_RUNTIME_PROMOTION_GATE_REPAIR": 11,
+      "SOURCE_NATIVE_OR_BLIND_CANONICAL_REVIEW": 3
+    },
+    "action_counts": {
+      "canonical_variant_or_wrong_work_review_required": 3,
+      "search_degraded_or_timeout_replay_required": 7,
+      "search_evidence_missing_review_required": 1,
+      "shared_gate_runtime_block_repair_required": 11
+    },
+    "action_group_count": 4,
+    "search_unrecovered_degraded_rows": 0,
+    "search_unrecovered_degraded_total": 0,
+    "validation_issue_count": 0
+  },
+  "validation_issues": [],
+  "action_groups": [
+    {
+      "action": "canonical_variant_or_wrong_work_review_required",
+      "row_count": 3,
+      "priority_counts": {
+        "P0": 3
+      },
+      "label_counts": {
+        "HOLD": 3
+      },
+      "audit_status_counts": {
+        "FAIL_SAFE_RESOLVED_TITLE_MISMATCH": 3
+      },
+      "owner_modes": {
+        "SOURCE_NATIVE_OR_BLIND_CANONICAL_REVIEW": 3
+      },
+      "post_ids": [
+        11660277,
+        11694063,
+        11718098
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11660277,
+          "order": 17,
+          "source_kind": "loop489_expected_audit_failure",
+          "audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+          "review_label": "HOLD",
+          "priority": "P0",
+          "owner_mode": "SOURCE_NATIVE_OR_BLIND_CANONICAL_REVIEW",
+          "actions": [
+            "canonical_variant_or_wrong_work_review_required",
+            "search_degraded_or_timeout_replay_required"
+          ],
+          "expected_title": "아카메디 아카데미 본 사람?",
+          "actual_title": "아카메디 아카데미",
+          "actual_url": null,
+          "projected_status": "safe_resolved",
+          "safe_resolved": true,
+          "publish_allowed": true,
+          "candidate_ledger_status": "safe_resolved",
+          "promotion_status": "publish",
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "discussion_type": "review",
+          "search_status": "SEARCH_DEGRADED",
+          "search_degraded": 0,
+          "search_unrecovered_degraded": 0,
+          "exact_title_match": false,
+          "compact_title_match": false,
+          "reason_codes": [
+            "direct_image_work_surface_bridge",
+            "ocr_catalog_official_title",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_published"
+          ],
+          "rationale_ko": "Runtime은 safe_resolved/publish까지 갔지만 expected title과 실제 public title이 다르다. 정당 variant인지 wrong-work인지 blind/source-native review로 먼저 확정해야 한다.",
+          "close_condition": "canonical variant 또는 wrong-work 판정 뒤에만 expected gate를 닫는다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11660277"
+          ]
+        },
+        {
+          "post_id": 11694063,
+          "order": 26,
+          "source_kind": "loop489_expected_audit_failure",
+          "audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+          "review_label": "HOLD",
+          "priority": "P0",
+          "owner_mode": "SOURCE_NATIVE_OR_BLIND_CANONICAL_REVIEW",
+          "actions": [
+            "canonical_variant_or_wrong_work_review_required",
+            "search_degraded_or_timeout_replay_required"
+          ],
+          "expected_title": "빙의한 신의 아이, 엘리시아",
+          "actual_title": "엘리시아 전기",
+          "actual_url": null,
+          "projected_status": "safe_resolved",
+          "safe_resolved": true,
+          "publish_allowed": true,
+          "candidate_ledger_status": "safe_resolved",
+          "promotion_status": "publish",
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "discussion_type": "character_talk",
+          "search_status": "SEARCH_DEGRADED",
+          "search_degraded": 0,
+          "search_unrecovered_degraded": 0,
+          "exact_title_match": false,
+          "compact_title_match": false,
+          "reason_codes": [
+            "official_title_exists",
+            "official_url_withheld_by_title_mismatch",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_body_verified_competition_reconciled",
+            "serialized_public_identity_preserved_body_alias_reconciled",
+            "serialized_public_identity_published",
+            "serialized_public_identity_shared_gate_restored",
+            "title_only_publication_reconciled_to_preserved_body_alias",
+            "verified_alias_title_only_publication"
+          ],
+          "rationale_ko": "Runtime은 safe_resolved/publish까지 갔지만 expected title과 실제 public title이 다르다. 정당 variant인지 wrong-work인지 blind/source-native review로 먼저 확정해야 한다.",
+          "close_condition": "canonical variant 또는 wrong-work 판정 뒤에만 expected gate를 닫는다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11694063"
+          ]
+        },
+        {
+          "post_id": 11718098,
+          "order": 35,
+          "source_kind": "loop489_expected_audit_failure",
+          "audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+          "review_label": "HOLD",
+          "priority": "P0",
+          "owner_mode": "SOURCE_NATIVE_OR_BLIND_CANONICAL_REVIEW",
+          "actions": [
+            "canonical_variant_or_wrong_work_review_required",
+            "search_degraded_or_timeout_replay_required"
+          ],
+          "expected_title": "마법 좋아좋아좋아",
+          "actual_title": "마법 좋아, 마법과 좋아",
+          "actual_url": null,
+          "projected_status": "safe_resolved",
+          "safe_resolved": true,
+          "publish_allowed": true,
+          "candidate_ledger_status": "safe_resolved",
+          "promotion_status": "publish",
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "discussion_type": "review",
+          "search_status": "SEARCH_DEGRADED",
+          "search_degraded": 0,
+          "search_unrecovered_degraded": 0,
+          "exact_title_match": false,
+          "compact_title_match": false,
+          "reason_codes": [
+            "official_title_exists",
+            "resolved_public_title_scope",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_published"
+          ],
+          "rationale_ko": "Runtime은 safe_resolved/publish까지 갔지만 expected title과 실제 public title이 다르다. 정당 variant인지 wrong-work인지 blind/source-native review로 먼저 확정해야 한다.",
+          "close_condition": "canonical variant 또는 wrong-work 판정 뒤에만 expected gate를 닫는다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11718098"
+          ]
+        }
+      ]
+    },
+    {
+      "action": "search_degraded_or_timeout_replay_required",
+      "row_count": 7,
+      "priority_counts": {
+        "P0": 3,
+        "P1": 4
+      },
+      "label_counts": {
+        "HOLD": 3,
+        "REPROCESS": 4
+      },
+      "audit_status_counts": {
+        "FAIL_RUNTIME_PROMOTION_BLOCKED": 4,
+        "FAIL_SAFE_RESOLVED_TITLE_MISMATCH": 3
+      },
+      "owner_modes": {
+        "CODE_OR_RUNTIME_PROMOTION_GATE_REPAIR": 4,
+        "SOURCE_NATIVE_OR_BLIND_CANONICAL_REVIEW": 3
+      },
+      "post_ids": [
+        11697256,
+        11694068,
+        11660277,
+        11663511,
+        11694063,
+        11706831,
+        11718098
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11697256,
+          "order": 7,
+          "source_kind": "loop489_expected_audit_failure",
+          "audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "review_label": "REPROCESS",
+          "priority": "P1",
+          "owner_mode": "CODE_OR_RUNTIME_PROMOTION_GATE_REPAIR",
+          "actions": [
+            "shared_gate_runtime_block_repair_required",
+            "search_degraded_or_timeout_replay_required"
+          ],
+          "expected_title": "황제의 딸로 환생했다",
+          "actual_title": null,
+          "actual_url": null,
+          "projected_status": "safe_resolved",
+          "safe_resolved": false,
+          "publish_allowed": false,
+          "candidate_ledger_status": "promotion_blocked",
+          "promotion_status": "candidate_only",
+          "title_resolution_state": "unresolved_matchable",
+          "work_resolution": "unresolved",
+          "discussion_type": "recommendation",
+          "search_status": "SEARCH_DEGRADED",
+          "search_degraded": 0,
+          "search_unrecovered_degraded": 0,
+          "exact_title_match": false,
+          "compact_title_match": false,
+          "reason_codes": [
+            "llm_only_sentence_candidate_pruned",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection은 safe_resolved였지만 runtime에서는 promotion_blocked로 남았다. candidate preservation, direct support, hard-hold reason을 shared gate에서 다시 배선한다.",
+          "close_condition": "재실행에서 actionable queue가 줄고 동일 packet safe_resolved가 단조 비감소해야 한다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11697256"
+          ]
+        },
+        {
+          "post_id": 11694068,
+          "order": 16,
+          "source_kind": "loop489_expected_audit_failure",
+          "audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "review_label": "REPROCESS",
+          "priority": "P1",
+          "owner_mode": "CODE_OR_RUNTIME_PROMOTION_GATE_REPAIR",
+          "actions": [
+            "shared_gate_runtime_block_repair_required",
+            "search_degraded_or_timeout_replay_required"
+          ],
+          "expected_title": "트와일라잇",
+          "actual_title": null,
+          "actual_url": null,
+          "projected_status": "safe_resolved",
+          "safe_resolved": false,
+          "publish_allowed": false,
+          "candidate_ledger_status": "promotion_blocked",
+          "promotion_status": "candidate_only",
+          "title_resolution_state": "ocr_explicit_title_unresolved",
+          "work_resolution": "unresolved",
+          "discussion_type": "review",
+          "search_status": "SEARCH_DEGRADED",
+          "search_degraded": 0,
+          "search_unrecovered_degraded": 0,
+          "exact_title_match": false,
+          "compact_title_match": false,
+          "reason_codes": [
+            "llm_only_sentence_candidate_pruned",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection은 safe_resolved였지만 runtime에서는 promotion_blocked로 남았다. candidate preservation, direct support, hard-hold reason을 shared gate에서 다시 배선한다.",
+          "close_condition": "재실행에서 actionable queue가 줄고 동일 packet safe_resolved가 단조 비감소해야 한다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11694068"
+          ]
+        },
+        {
+          "post_id": 11660277,
+          "order": 17,
+          "source_kind": "loop489_expected_audit_failure",
+          "audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+          "review_label": "HOLD",
+          "priority": "P0",
+          "owner_mode": "SOURCE_NATIVE_OR_BLIND_CANONICAL_REVIEW",
+          "actions": [
+            "canonical_variant_or_wrong_work_review_required",
+            "search_degraded_or_timeout_replay_required"
+          ],
+          "expected_title": "아카메디 아카데미 본 사람?",
+          "actual_title": "아카메디 아카데미",
+          "actual_url": null,
+          "projected_status": "safe_resolved",
+          "safe_resolved": true,
+          "publish_allowed": true,
+          "candidate_ledger_status": "safe_resolved",
+          "promotion_status": "publish",
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "discussion_type": "review",
+          "search_status": "SEARCH_DEGRADED",
+          "search_degraded": 0,
+          "search_unrecovered_degraded": 0,
+          "exact_title_match": false,
+          "compact_title_match": false,
+          "reason_codes": [
+            "direct_image_work_surface_bridge",
+            "ocr_catalog_official_title",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_published"
+          ],
+          "rationale_ko": "Runtime은 safe_resolved/publish까지 갔지만 expected title과 실제 public title이 다르다. 정당 variant인지 wrong-work인지 blind/source-native review로 먼저 확정해야 한다.",
+          "close_condition": "canonical variant 또는 wrong-work 판정 뒤에만 expected gate를 닫는다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11660277"
+          ]
+        },
+        {
+          "post_id": 11663511,
+          "order": 18,
+          "source_kind": "loop489_expected_audit_failure",
+          "audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "review_label": "REPROCESS",
+          "priority": "P1",
+          "owner_mode": "CODE_OR_RUNTIME_PROMOTION_GATE_REPAIR",
+          "actions": [
+            "shared_gate_runtime_block_repair_required",
+            "search_degraded_or_timeout_replay_required"
+          ],
+          "expected_title": "부캐 키우는 황태자님",
+          "actual_title": null,
+          "actual_url": null,
+          "projected_status": "safe_resolved",
+          "safe_resolved": false,
+          "publish_allowed": false,
+          "candidate_ledger_status": "promotion_blocked",
+          "promotion_status": "candidate_only",
+          "title_resolution_state": "ocr_explicit_title_unresolved",
+          "work_resolution": "unresolved",
+          "discussion_type": "meme",
+          "search_status": "SEARCH_DEGRADED",
+          "search_degraded": 0,
+          "search_unrecovered_degraded": 0,
+          "exact_title_match": false,
+          "compact_title_match": false,
+          "reason_codes": [
+            "blocked_candidate_scope_inferred_from_search_evidence",
+            "character_bridge_variance_hold",
+            "official_detail_url_recovered_from_search_evidence",
+            "scope_current_work",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection은 safe_resolved였지만 runtime에서는 promotion_blocked로 남았다. candidate preservation, direct support, hard-hold reason을 shared gate에서 다시 배선한다.",
+          "close_condition": "재실행에서 actionable queue가 줄고 동일 packet safe_resolved가 단조 비감소해야 한다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11663511"
+          ]
+        },
+        {
+          "post_id": 11694063,
+          "order": 26,
+          "source_kind": "loop489_expected_audit_failure",
+          "audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+          "review_label": "HOLD",
+          "priority": "P0",
+          "owner_mode": "SOURCE_NATIVE_OR_BLIND_CANONICAL_REVIEW",
+          "actions": [
+            "canonical_variant_or_wrong_work_review_required",
+            "search_degraded_or_timeout_replay_required"
+          ],
+          "expected_title": "빙의한 신의 아이, 엘리시아",
+          "actual_title": "엘리시아 전기",
+          "actual_url": null,
+          "projected_status": "safe_resolved",
+          "safe_resolved": true,
+          "publish_allowed": true,
+          "candidate_ledger_status": "safe_resolved",
+          "promotion_status": "publish",
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "discussion_type": "character_talk",
+          "search_status": "SEARCH_DEGRADED",
+          "search_degraded": 0,
+          "search_unrecovered_degraded": 0,
+          "exact_title_match": false,
+          "compact_title_match": false,
+          "reason_codes": [
+            "official_title_exists",
+            "official_url_withheld_by_title_mismatch",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_body_verified_competition_reconciled",
+            "serialized_public_identity_preserved_body_alias_reconciled",
+            "serialized_public_identity_published",
+            "serialized_public_identity_shared_gate_restored",
+            "title_only_publication_reconciled_to_preserved_body_alias",
+            "verified_alias_title_only_publication"
+          ],
+          "rationale_ko": "Runtime은 safe_resolved/publish까지 갔지만 expected title과 실제 public title이 다르다. 정당 variant인지 wrong-work인지 blind/source-native review로 먼저 확정해야 한다.",
+          "close_condition": "canonical variant 또는 wrong-work 판정 뒤에만 expected gate를 닫는다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11694063"
+          ]
+        },
+        {
+          "post_id": 11706831,
+          "order": 31,
+          "source_kind": "loop489_expected_audit_failure",
+          "audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "review_label": "REPROCESS",
+          "priority": "P1",
+          "owner_mode": "CODE_OR_RUNTIME_PROMOTION_GATE_REPAIR",
+          "actions": [
+            "shared_gate_runtime_block_repair_required",
+            "search_degraded_or_timeout_replay_required"
+          ],
+          "expected_title": "소설 속 빌런은 아카데미 차석으로 살아간다",
+          "actual_title": null,
+          "actual_url": null,
+          "projected_status": "safe_resolved",
+          "safe_resolved": false,
+          "publish_allowed": false,
+          "candidate_ledger_status": "promotion_blocked",
+          "promotion_status": "candidate_only",
+          "title_resolution_state": "unresolved_matchable",
+          "work_resolution": "unresolved",
+          "discussion_type": "general",
+          "search_status": "SEARCH_DEGRADED",
+          "search_degraded": 0,
+          "search_unrecovered_degraded": 0,
+          "exact_title_match": false,
+          "compact_title_match": false,
+          "reason_codes": [
+            "context_only",
+            "official_detail_url",
+            "official_title_exists",
+            "row_discussion_missing",
+            "scope_not_current_work",
+            "scope_unclassified",
+            "scope_unknown",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection은 safe_resolved였지만 runtime에서는 promotion_blocked로 남았다. candidate preservation, direct support, hard-hold reason을 shared gate에서 다시 배선한다.",
+          "close_condition": "재실행에서 actionable queue가 줄고 동일 packet safe_resolved가 단조 비감소해야 한다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11706831"
+          ]
+        },
+        {
+          "post_id": 11718098,
+          "order": 35,
+          "source_kind": "loop489_expected_audit_failure",
+          "audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+          "review_label": "HOLD",
+          "priority": "P0",
+          "owner_mode": "SOURCE_NATIVE_OR_BLIND_CANONICAL_REVIEW",
+          "actions": [
+            "canonical_variant_or_wrong_work_review_required",
+            "search_degraded_or_timeout_replay_required"
+          ],
+          "expected_title": "마법 좋아좋아좋아",
+          "actual_title": "마법 좋아, 마법과 좋아",
+          "actual_url": null,
+          "projected_status": "safe_resolved",
+          "safe_resolved": true,
+          "publish_allowed": true,
+          "candidate_ledger_status": "safe_resolved",
+          "promotion_status": "publish",
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "discussion_type": "review",
+          "search_status": "SEARCH_DEGRADED",
+          "search_degraded": 0,
+          "search_unrecovered_degraded": 0,
+          "exact_title_match": false,
+          "compact_title_match": false,
+          "reason_codes": [
+            "official_title_exists",
+            "resolved_public_title_scope",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_published"
+          ],
+          "rationale_ko": "Runtime은 safe_resolved/publish까지 갔지만 expected title과 실제 public title이 다르다. 정당 variant인지 wrong-work인지 blind/source-native review로 먼저 확정해야 한다.",
+          "close_condition": "canonical variant 또는 wrong-work 판정 뒤에만 expected gate를 닫는다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11718098"
+          ]
+        }
+      ]
+    },
+    {
+      "action": "search_evidence_missing_review_required",
+      "row_count": 1,
+      "priority_counts": {
+        "P1": 1
+      },
+      "label_counts": {
+        "REPROCESS": 1
+      },
+      "audit_status_counts": {
+        "FAIL_RUNTIME_PROMOTION_BLOCKED": 1
+      },
+      "owner_modes": {
+        "CODE_OR_RUNTIME_PROMOTION_GATE_REPAIR": 1
+      },
+      "post_ids": [
+        11666741
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11666741,
+          "order": 14,
+          "source_kind": "loop489_expected_audit_failure",
+          "audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "review_label": "REPROCESS",
+          "priority": "P1",
+          "owner_mode": "CODE_OR_RUNTIME_PROMOTION_GATE_REPAIR",
+          "actions": [
+            "shared_gate_runtime_block_repair_required",
+            "search_evidence_missing_review_required"
+          ],
+          "expected_title": "별을 품은 소드마스터",
+          "actual_title": null,
+          "actual_url": null,
+          "projected_status": "safe_resolved",
+          "safe_resolved": false,
+          "publish_allowed": false,
+          "candidate_ledger_status": "promotion_blocked",
+          "promotion_status": "candidate_only",
+          "title_resolution_state": "adjacent",
+          "work_resolution": "none",
+          "discussion_type": "recommendation",
+          "search_status": null,
+          "search_degraded": 0,
+          "search_unrecovered_degraded": 0,
+          "exact_title_match": false,
+          "compact_title_match": false,
+          "reason_codes": [
+            "promotion_blocked",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection은 safe_resolved였지만 runtime에서는 promotion_blocked로 남았다. candidate preservation, direct support, hard-hold reason을 shared gate에서 다시 배선한다.",
+          "close_condition": "재실행에서 actionable queue가 줄고 동일 packet safe_resolved가 단조 비감소해야 한다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11666741"
+          ]
+        }
+      ]
+    },
+    {
+      "action": "shared_gate_runtime_block_repair_required",
+      "row_count": 11,
+      "priority_counts": {
+        "P1": 11
+      },
+      "label_counts": {
+        "REPROCESS": 11
+      },
+      "audit_status_counts": {
+        "FAIL_RUNTIME_PROMOTION_BLOCKED": 11
+      },
+      "owner_modes": {
+        "CODE_OR_RUNTIME_PROMOTION_GATE_REPAIR": 11
+      },
+      "post_ids": [
+        11669913,
+        11697242,
+        11697256,
+        11718114,
+        11666741,
+        11694068,
+        11663511,
+        11669926,
+        11669933,
+        11677924,
+        11706831
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11669913,
+          "order": 3,
+          "source_kind": "loop489_expected_audit_failure",
+          "audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "review_label": "REPROCESS",
+          "priority": "P1",
+          "owner_mode": "CODE_OR_RUNTIME_PROMOTION_GATE_REPAIR",
+          "actions": [
+            "shared_gate_runtime_block_repair_required"
+          ],
+          "expected_title": "하룬",
+          "actual_title": null,
+          "actual_url": null,
+          "projected_status": "safe_resolved",
+          "safe_resolved": false,
+          "publish_allowed": false,
+          "candidate_ledger_status": "promotion_blocked",
+          "promotion_status": "candidate_only",
+          "title_resolution_state": "multi_work",
+          "work_resolution": "multi_work",
+          "discussion_type": "general",
+          "search_status": "SEARCH_DEGRADED_RECOVERED",
+          "search_degraded": 0,
+          "search_unrecovered_degraded": 0,
+          "exact_title_match": false,
+          "compact_title_match": false,
+          "reason_codes": [
+            "blocked_candidate_scope_inferred_from_final_contract",
+            "exact_alias_candidate_preserved_without_work_discussion",
+            "image_ocr_without_title_anchor",
+            "nonwork_or_noise_context",
+            "scope_context_only",
+            "scope_not_current_work",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection은 safe_resolved였지만 runtime에서는 promotion_blocked로 남았다. candidate preservation, direct support, hard-hold reason을 shared gate에서 다시 배선한다.",
+          "close_condition": "재실행에서 actionable queue가 줄고 동일 packet safe_resolved가 단조 비감소해야 한다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11669913"
+          ]
+        },
+        {
+          "post_id": 11697242,
+          "order": 6,
+          "source_kind": "loop489_expected_audit_failure",
+          "audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "review_label": "REPROCESS",
+          "priority": "P1",
+          "owner_mode": "CODE_OR_RUNTIME_PROMOTION_GATE_REPAIR",
+          "actions": [
+            "shared_gate_runtime_block_repair_required"
+          ],
+          "expected_title": "유희왕",
+          "actual_title": null,
+          "actual_url": null,
+          "projected_status": "safe_resolved",
+          "safe_resolved": false,
+          "publish_allowed": false,
+          "candidate_ledger_status": "promotion_blocked",
+          "promotion_status": "candidate_only",
+          "title_resolution_state": "ocr_explicit_title_unresolved",
+          "work_resolution": "none",
+          "discussion_type": "community_banter",
+          "search_status": "SEARCH_DEGRADED_RECOVERED",
+          "search_degraded": 0,
+          "search_unrecovered_degraded": 0,
+          "exact_title_match": false,
+          "compact_title_match": false,
+          "reason_codes": [
+            "community_banter",
+            "non_novel_discourse",
+            "nonwork",
+            "row_discussion_missing",
+            "scope_not_current_work",
+            "scope_platform_meta_nonwork",
+            "serialized_public_identity_scrubbed",
+            "thematic_overlap_only"
+          ],
+          "rationale_ko": "Projection은 safe_resolved였지만 runtime에서는 promotion_blocked로 남았다. candidate preservation, direct support, hard-hold reason을 shared gate에서 다시 배선한다.",
+          "close_condition": "재실행에서 actionable queue가 줄고 동일 packet safe_resolved가 단조 비감소해야 한다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11697242"
+          ]
+        },
+        {
+          "post_id": 11697256,
+          "order": 7,
+          "source_kind": "loop489_expected_audit_failure",
+          "audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "review_label": "REPROCESS",
+          "priority": "P1",
+          "owner_mode": "CODE_OR_RUNTIME_PROMOTION_GATE_REPAIR",
+          "actions": [
+            "shared_gate_runtime_block_repair_required",
+            "search_degraded_or_timeout_replay_required"
+          ],
+          "expected_title": "황제의 딸로 환생했다",
+          "actual_title": null,
+          "actual_url": null,
+          "projected_status": "safe_resolved",
+          "safe_resolved": false,
+          "publish_allowed": false,
+          "candidate_ledger_status": "promotion_blocked",
+          "promotion_status": "candidate_only",
+          "title_resolution_state": "unresolved_matchable",
+          "work_resolution": "unresolved",
+          "discussion_type": "recommendation",
+          "search_status": "SEARCH_DEGRADED",
+          "search_degraded": 0,
+          "search_unrecovered_degraded": 0,
+          "exact_title_match": false,
+          "compact_title_match": false,
+          "reason_codes": [
+            "llm_only_sentence_candidate_pruned",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection은 safe_resolved였지만 runtime에서는 promotion_blocked로 남았다. candidate preservation, direct support, hard-hold reason을 shared gate에서 다시 배선한다.",
+          "close_condition": "재실행에서 actionable queue가 줄고 동일 packet safe_resolved가 단조 비감소해야 한다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11697256"
+          ]
+        },
+        {
+          "post_id": 11718114,
+          "order": 13,
+          "source_kind": "loop489_expected_audit_failure",
+          "audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "review_label": "REPROCESS",
+          "priority": "P1",
+          "owner_mode": "CODE_OR_RUNTIME_PROMOTION_GATE_REPAIR",
+          "actions": [
+            "shared_gate_runtime_block_repair_required"
+          ],
+          "expected_title": "설정값 딸깍으로 판타지 시스템 정상화",
+          "actual_title": null,
+          "actual_url": null,
+          "projected_status": "safe_resolved",
+          "safe_resolved": false,
+          "publish_allowed": false,
+          "candidate_ledger_status": "promotion_blocked",
+          "promotion_status": "candidate_only",
+          "title_resolution_state": "adjacent",
+          "work_resolution": "none",
+          "discussion_type": "recommendation",
+          "search_status": "ok",
+          "search_degraded": 0,
+          "search_unrecovered_degraded": 0,
+          "exact_title_match": false,
+          "compact_title_match": false,
+          "reason_codes": [
+            "blocked_candidate_scope_inferred_from_final_contract",
+            "exact_alias_candidate_preserved_without_work_discussion",
+            "image_ocr_without_title_anchor",
+            "nonwork_or_noise_context",
+            "scope_context_only",
+            "scope_not_current_work",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection은 safe_resolved였지만 runtime에서는 promotion_blocked로 남았다. candidate preservation, direct support, hard-hold reason을 shared gate에서 다시 배선한다.",
+          "close_condition": "재실행에서 actionable queue가 줄고 동일 packet safe_resolved가 단조 비감소해야 한다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11718114"
+          ]
+        },
+        {
+          "post_id": 11666741,
+          "order": 14,
+          "source_kind": "loop489_expected_audit_failure",
+          "audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "review_label": "REPROCESS",
+          "priority": "P1",
+          "owner_mode": "CODE_OR_RUNTIME_PROMOTION_GATE_REPAIR",
+          "actions": [
+            "shared_gate_runtime_block_repair_required",
+            "search_evidence_missing_review_required"
+          ],
+          "expected_title": "별을 품은 소드마스터",
+          "actual_title": null,
+          "actual_url": null,
+          "projected_status": "safe_resolved",
+          "safe_resolved": false,
+          "publish_allowed": false,
+          "candidate_ledger_status": "promotion_blocked",
+          "promotion_status": "candidate_only",
+          "title_resolution_state": "adjacent",
+          "work_resolution": "none",
+          "discussion_type": "recommendation",
+          "search_status": null,
+          "search_degraded": 0,
+          "search_unrecovered_degraded": 0,
+          "exact_title_match": false,
+          "compact_title_match": false,
+          "reason_codes": [
+            "promotion_blocked",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection은 safe_resolved였지만 runtime에서는 promotion_blocked로 남았다. candidate preservation, direct support, hard-hold reason을 shared gate에서 다시 배선한다.",
+          "close_condition": "재실행에서 actionable queue가 줄고 동일 packet safe_resolved가 단조 비감소해야 한다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11666741"
+          ]
+        },
+        {
+          "post_id": 11694068,
+          "order": 16,
+          "source_kind": "loop489_expected_audit_failure",
+          "audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "review_label": "REPROCESS",
+          "priority": "P1",
+          "owner_mode": "CODE_OR_RUNTIME_PROMOTION_GATE_REPAIR",
+          "actions": [
+            "shared_gate_runtime_block_repair_required",
+            "search_degraded_or_timeout_replay_required"
+          ],
+          "expected_title": "트와일라잇",
+          "actual_title": null,
+          "actual_url": null,
+          "projected_status": "safe_resolved",
+          "safe_resolved": false,
+          "publish_allowed": false,
+          "candidate_ledger_status": "promotion_blocked",
+          "promotion_status": "candidate_only",
+          "title_resolution_state": "ocr_explicit_title_unresolved",
+          "work_resolution": "unresolved",
+          "discussion_type": "review",
+          "search_status": "SEARCH_DEGRADED",
+          "search_degraded": 0,
+          "search_unrecovered_degraded": 0,
+          "exact_title_match": false,
+          "compact_title_match": false,
+          "reason_codes": [
+            "llm_only_sentence_candidate_pruned",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection은 safe_resolved였지만 runtime에서는 promotion_blocked로 남았다. candidate preservation, direct support, hard-hold reason을 shared gate에서 다시 배선한다.",
+          "close_condition": "재실행에서 actionable queue가 줄고 동일 packet safe_resolved가 단조 비감소해야 한다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11694068"
+          ]
+        },
+        {
+          "post_id": 11663511,
+          "order": 18,
+          "source_kind": "loop489_expected_audit_failure",
+          "audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "review_label": "REPROCESS",
+          "priority": "P1",
+          "owner_mode": "CODE_OR_RUNTIME_PROMOTION_GATE_REPAIR",
+          "actions": [
+            "shared_gate_runtime_block_repair_required",
+            "search_degraded_or_timeout_replay_required"
+          ],
+          "expected_title": "부캐 키우는 황태자님",
+          "actual_title": null,
+          "actual_url": null,
+          "projected_status": "safe_resolved",
+          "safe_resolved": false,
+          "publish_allowed": false,
+          "candidate_ledger_status": "promotion_blocked",
+          "promotion_status": "candidate_only",
+          "title_resolution_state": "ocr_explicit_title_unresolved",
+          "work_resolution": "unresolved",
+          "discussion_type": "meme",
+          "search_status": "SEARCH_DEGRADED",
+          "search_degraded": 0,
+          "search_unrecovered_degraded": 0,
+          "exact_title_match": false,
+          "compact_title_match": false,
+          "reason_codes": [
+            "blocked_candidate_scope_inferred_from_search_evidence",
+            "character_bridge_variance_hold",
+            "official_detail_url_recovered_from_search_evidence",
+            "scope_current_work",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection은 safe_resolved였지만 runtime에서는 promotion_blocked로 남았다. candidate preservation, direct support, hard-hold reason을 shared gate에서 다시 배선한다.",
+          "close_condition": "재실행에서 actionable queue가 줄고 동일 packet safe_resolved가 단조 비감소해야 한다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11663511"
+          ]
+        },
+        {
+          "post_id": 11669926,
+          "order": 20,
+          "source_kind": "loop489_expected_audit_failure",
+          "audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "review_label": "REPROCESS",
+          "priority": "P1",
+          "owner_mode": "CODE_OR_RUNTIME_PROMOTION_GATE_REPAIR",
+          "actions": [
+            "shared_gate_runtime_block_repair_required"
+          ],
+          "expected_title": "싸울아비 룬",
+          "actual_title": null,
+          "actual_url": null,
+          "projected_status": "safe_resolved",
+          "safe_resolved": false,
+          "publish_allowed": false,
+          "candidate_ledger_status": "promotion_blocked",
+          "promotion_status": "candidate_only",
+          "title_resolution_state": "ocr_explicit_title_unresolved",
+          "work_resolution": "unresolved",
+          "discussion_type": "review",
+          "search_status": "SEARCH_DEGRADED_RECOVERED",
+          "search_degraded": 0,
+          "search_unrecovered_degraded": 0,
+          "exact_title_match": false,
+          "compact_title_match": false,
+          "reason_codes": [
+            "promotion_blocked",
+            "serialized_public_identity_scrubbed"
+          ],
+          "rationale_ko": "Projection은 safe_resolved였지만 runtime에서는 promotion_blocked로 남았다. candidate preservation, direct support, hard-hold reason을 shared gate에서 다시 배선한다.",
+          "close_condition": "재실행에서 actionable queue가 줄고 동일 packet safe_resolved가 단조 비감소해야 한다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11669926"
+          ]
+        }
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "post_id": 11669913,
+      "order": 3,
+      "source_kind": "loop489_expected_audit_failure",
+      "audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "review_label": "REPROCESS",
+      "priority": "P1",
+      "owner_mode": "CODE_OR_RUNTIME_PROMOTION_GATE_REPAIR",
+      "actions": [
+        "shared_gate_runtime_block_repair_required"
+      ],
+      "expected_title": "하룬",
+      "actual_title": null,
+      "actual_url": null,
+      "projected_status": "safe_resolved",
+      "safe_resolved": false,
+      "publish_allowed": false,
+      "candidate_ledger_status": "promotion_blocked",
+      "promotion_status": "candidate_only",
+      "title_resolution_state": "multi_work",
+      "work_resolution": "multi_work",
+      "discussion_type": "general",
+      "search_status": "SEARCH_DEGRADED_RECOVERED",
+      "search_degraded": 0,
+      "search_unrecovered_degraded": 0,
+      "exact_title_match": false,
+      "compact_title_match": false,
+      "reason_codes": [
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "nonwork_or_noise_context",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection은 safe_resolved였지만 runtime에서는 promotion_blocked로 남았다. candidate preservation, direct support, hard-hold reason을 shared gate에서 다시 배선한다.",
+      "close_condition": "재실행에서 actionable queue가 줄고 동일 packet safe_resolved가 단조 비감소해야 한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11669913"
+      ]
+    },
+    {
+      "post_id": 11697242,
+      "order": 6,
+      "source_kind": "loop489_expected_audit_failure",
+      "audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "review_label": "REPROCESS",
+      "priority": "P1",
+      "owner_mode": "CODE_OR_RUNTIME_PROMOTION_GATE_REPAIR",
+      "actions": [
+        "shared_gate_runtime_block_repair_required"
+      ],
+      "expected_title": "유희왕",
+      "actual_title": null,
+      "actual_url": null,
+      "projected_status": "safe_resolved",
+      "safe_resolved": false,
+      "publish_allowed": false,
+      "candidate_ledger_status": "promotion_blocked",
+      "promotion_status": "candidate_only",
+      "title_resolution_state": "ocr_explicit_title_unresolved",
+      "work_resolution": "none",
+      "discussion_type": "community_banter",
+      "search_status": "SEARCH_DEGRADED_RECOVERED",
+      "search_degraded": 0,
+      "search_unrecovered_degraded": 0,
+      "exact_title_match": false,
+      "compact_title_match": false,
+      "reason_codes": [
+        "community_banter",
+        "non_novel_discourse",
+        "nonwork",
+        "row_discussion_missing",
+        "scope_not_current_work",
+        "scope_platform_meta_nonwork",
+        "serialized_public_identity_scrubbed",
+        "thematic_overlap_only"
+      ],
+      "rationale_ko": "Projection은 safe_resolved였지만 runtime에서는 promotion_blocked로 남았다. candidate preservation, direct support, hard-hold reason을 shared gate에서 다시 배선한다.",
+      "close_condition": "재실행에서 actionable queue가 줄고 동일 packet safe_resolved가 단조 비감소해야 한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11697242"
+      ]
+    },
+    {
+      "post_id": 11697256,
+      "order": 7,
+      "source_kind": "loop489_expected_audit_failure",
+      "audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "review_label": "REPROCESS",
+      "priority": "P1",
+      "owner_mode": "CODE_OR_RUNTIME_PROMOTION_GATE_REPAIR",
+      "actions": [
+        "shared_gate_runtime_block_repair_required",
+        "search_degraded_or_timeout_replay_required"
+      ],
+      "expected_title": "황제의 딸로 환생했다",
+      "actual_title": null,
+      "actual_url": null,
+      "projected_status": "safe_resolved",
+      "safe_resolved": false,
+      "publish_allowed": false,
+      "candidate_ledger_status": "promotion_blocked",
+      "promotion_status": "candidate_only",
+      "title_resolution_state": "unresolved_matchable",
+      "work_resolution": "unresolved",
+      "discussion_type": "recommendation",
+      "search_status": "SEARCH_DEGRADED",
+      "search_degraded": 0,
+      "search_unrecovered_degraded": 0,
+      "exact_title_match": false,
+      "compact_title_match": false,
+      "reason_codes": [
+        "llm_only_sentence_candidate_pruned",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection은 safe_resolved였지만 runtime에서는 promotion_blocked로 남았다. candidate preservation, direct support, hard-hold reason을 shared gate에서 다시 배선한다.",
+      "close_condition": "재실행에서 actionable queue가 줄고 동일 packet safe_resolved가 단조 비감소해야 한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11697256"
+      ]
+    },
+    {
+      "post_id": 11718114,
+      "order": 13,
+      "source_kind": "loop489_expected_audit_failure",
+      "audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "review_label": "REPROCESS",
+      "priority": "P1",
+      "owner_mode": "CODE_OR_RUNTIME_PROMOTION_GATE_REPAIR",
+      "actions": [
+        "shared_gate_runtime_block_repair_required"
+      ],
+      "expected_title": "설정값 딸깍으로 판타지 시스템 정상화",
+      "actual_title": null,
+      "actual_url": null,
+      "projected_status": "safe_resolved",
+      "safe_resolved": false,
+      "publish_allowed": false,
+      "candidate_ledger_status": "promotion_blocked",
+      "promotion_status": "candidate_only",
+      "title_resolution_state": "adjacent",
+      "work_resolution": "none",
+      "discussion_type": "recommendation",
+      "search_status": "ok",
+      "search_degraded": 0,
+      "search_unrecovered_degraded": 0,
+      "exact_title_match": false,
+      "compact_title_match": false,
+      "reason_codes": [
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "nonwork_or_noise_context",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection은 safe_resolved였지만 runtime에서는 promotion_blocked로 남았다. candidate preservation, direct support, hard-hold reason을 shared gate에서 다시 배선한다.",
+      "close_condition": "재실행에서 actionable queue가 줄고 동일 packet safe_resolved가 단조 비감소해야 한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11718114"
+      ]
+    },
+    {
+      "post_id": 11666741,
+      "order": 14,
+      "source_kind": "loop489_expected_audit_failure",
+      "audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "review_label": "REPROCESS",
+      "priority": "P1",
+      "owner_mode": "CODE_OR_RUNTIME_PROMOTION_GATE_REPAIR",
+      "actions": [
+        "shared_gate_runtime_block_repair_required",
+        "search_evidence_missing_review_required"
+      ],
+      "expected_title": "별을 품은 소드마스터",
+      "actual_title": null,
+      "actual_url": null,
+      "projected_status": "safe_resolved",
+      "safe_resolved": false,
+      "publish_allowed": false,
+      "candidate_ledger_status": "promotion_blocked",
+      "promotion_status": "candidate_only",
+      "title_resolution_state": "adjacent",
+      "work_resolution": "none",
+      "discussion_type": "recommendation",
+      "search_status": null,
+      "search_degraded": 0,
+      "search_unrecovered_degraded": 0,
+      "exact_title_match": false,
+      "compact_title_match": false,
+      "reason_codes": [
+        "promotion_blocked",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection은 safe_resolved였지만 runtime에서는 promotion_blocked로 남았다. candidate preservation, direct support, hard-hold reason을 shared gate에서 다시 배선한다.",
+      "close_condition": "재실행에서 actionable queue가 줄고 동일 packet safe_resolved가 단조 비감소해야 한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11666741"
+      ]
+    },
+    {
+      "post_id": 11694068,
+      "order": 16,
+      "source_kind": "loop489_expected_audit_failure",
+      "audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "review_label": "REPROCESS",
+      "priority": "P1",
+      "owner_mode": "CODE_OR_RUNTIME_PROMOTION_GATE_REPAIR",
+      "actions": [
+        "shared_gate_runtime_block_repair_required",
+        "search_degraded_or_timeout_replay_required"
+      ],
+      "expected_title": "트와일라잇",
+      "actual_title": null,
+      "actual_url": null,
+      "projected_status": "safe_resolved",
+      "safe_resolved": false,
+      "publish_allowed": false,
+      "candidate_ledger_status": "promotion_blocked",
+      "promotion_status": "candidate_only",
+      "title_resolution_state": "ocr_explicit_title_unresolved",
+      "work_resolution": "unresolved",
+      "discussion_type": "review",
+      "search_status": "SEARCH_DEGRADED",
+      "search_degraded": 0,
+      "search_unrecovered_degraded": 0,
+      "exact_title_match": false,
+      "compact_title_match": false,
+      "reason_codes": [
+        "llm_only_sentence_candidate_pruned",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection은 safe_resolved였지만 runtime에서는 promotion_blocked로 남았다. candidate preservation, direct support, hard-hold reason을 shared gate에서 다시 배선한다.",
+      "close_condition": "재실행에서 actionable queue가 줄고 동일 packet safe_resolved가 단조 비감소해야 한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11694068"
+      ]
+    },
+    {
+      "post_id": 11660277,
+      "order": 17,
+      "source_kind": "loop489_expected_audit_failure",
+      "audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+      "review_label": "HOLD",
+      "priority": "P0",
+      "owner_mode": "SOURCE_NATIVE_OR_BLIND_CANONICAL_REVIEW",
+      "actions": [
+        "canonical_variant_or_wrong_work_review_required",
+        "search_degraded_or_timeout_replay_required"
+      ],
+      "expected_title": "아카메디 아카데미 본 사람?",
+      "actual_title": "아카메디 아카데미",
+      "actual_url": null,
+      "projected_status": "safe_resolved",
+      "safe_resolved": true,
+      "publish_allowed": true,
+      "candidate_ledger_status": "safe_resolved",
+      "promotion_status": "publish",
+      "title_resolution_state": "resolved",
+      "work_resolution": "resolved",
+      "discussion_type": "review",
+      "search_status": "SEARCH_DEGRADED",
+      "search_degraded": 0,
+      "search_unrecovered_degraded": 0,
+      "exact_title_match": false,
+      "compact_title_match": false,
+      "reason_codes": [
+        "direct_image_work_surface_bridge",
+        "ocr_catalog_official_title",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_published"
+      ],
+      "rationale_ko": "Runtime은 safe_resolved/publish까지 갔지만 expected title과 실제 public title이 다르다. 정당 variant인지 wrong-work인지 blind/source-native review로 먼저 확정해야 한다.",
+      "close_condition": "canonical variant 또는 wrong-work 판정 뒤에만 expected gate를 닫는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11660277"
+      ]
+    },
+    {
+      "post_id": 11663511,
+      "order": 18,
+      "source_kind": "loop489_expected_audit_failure",
+      "audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "review_label": "REPROCESS",
+      "priority": "P1",
+      "owner_mode": "CODE_OR_RUNTIME_PROMOTION_GATE_REPAIR",
+      "actions": [
+        "shared_gate_runtime_block_repair_required",
+        "search_degraded_or_timeout_replay_required"
+      ],
+      "expected_title": "부캐 키우는 황태자님",
+      "actual_title": null,
+      "actual_url": null,
+      "projected_status": "safe_resolved",
+      "safe_resolved": false,
+      "publish_allowed": false,
+      "candidate_ledger_status": "promotion_blocked",
+      "promotion_status": "candidate_only",
+      "title_resolution_state": "ocr_explicit_title_unresolved",
+      "work_resolution": "unresolved",
+      "discussion_type": "meme",
+      "search_status": "SEARCH_DEGRADED",
+      "search_degraded": 0,
+      "search_unrecovered_degraded": 0,
+      "exact_title_match": false,
+      "compact_title_match": false,
+      "reason_codes": [
+        "blocked_candidate_scope_inferred_from_search_evidence",
+        "character_bridge_variance_hold",
+        "official_detail_url_recovered_from_search_evidence",
+        "scope_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection은 safe_resolved였지만 runtime에서는 promotion_blocked로 남았다. candidate preservation, direct support, hard-hold reason을 shared gate에서 다시 배선한다.",
+      "close_condition": "재실행에서 actionable queue가 줄고 동일 packet safe_resolved가 단조 비감소해야 한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11663511"
+      ]
+    },
+    {
+      "post_id": 11669926,
+      "order": 20,
+      "source_kind": "loop489_expected_audit_failure",
+      "audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "review_label": "REPROCESS",
+      "priority": "P1",
+      "owner_mode": "CODE_OR_RUNTIME_PROMOTION_GATE_REPAIR",
+      "actions": [
+        "shared_gate_runtime_block_repair_required"
+      ],
+      "expected_title": "싸울아비 룬",
+      "actual_title": null,
+      "actual_url": null,
+      "projected_status": "safe_resolved",
+      "safe_resolved": false,
+      "publish_allowed": false,
+      "candidate_ledger_status": "promotion_blocked",
+      "promotion_status": "candidate_only",
+      "title_resolution_state": "ocr_explicit_title_unresolved",
+      "work_resolution": "unresolved",
+      "discussion_type": "review",
+      "search_status": "SEARCH_DEGRADED_RECOVERED",
+      "search_degraded": 0,
+      "search_unrecovered_degraded": 0,
+      "exact_title_match": false,
+      "compact_title_match": false,
+      "reason_codes": [
+        "promotion_blocked",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection은 safe_resolved였지만 runtime에서는 promotion_blocked로 남았다. candidate preservation, direct support, hard-hold reason을 shared gate에서 다시 배선한다.",
+      "close_condition": "재실행에서 actionable queue가 줄고 동일 packet safe_resolved가 단조 비감소해야 한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11669926"
+      ]
+    },
+    {
+      "post_id": 11669933,
+      "order": 21,
+      "source_kind": "loop489_expected_audit_failure",
+      "audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "review_label": "REPROCESS",
+      "priority": "P1",
+      "owner_mode": "CODE_OR_RUNTIME_PROMOTION_GATE_REPAIR",
+      "actions": [
+        "shared_gate_runtime_block_repair_required"
+      ],
+      "expected_title": "회귀수선전",
+      "actual_title": null,
+      "actual_url": null,
+      "projected_status": "safe_resolved",
+      "safe_resolved": false,
+      "publish_allowed": false,
+      "candidate_ledger_status": "promotion_blocked",
+      "promotion_status": "candidate_only",
+      "title_resolution_state": "multi_work",
+      "work_resolution": "multi_work",
+      "discussion_type": "character_talk",
+      "search_status": "SEARCH_DEGRADED_RECOVERED",
+      "search_degraded": 0,
+      "search_unrecovered_degraded": 0,
+      "exact_title_match": false,
+      "compact_title_match": false,
+      "reason_codes": [
+        "blocked_candidate_scope_inferred_from_search_evidence",
+        "character_bridge_variance_hold",
+        "official_detail_url_recovered_from_search_evidence",
+        "scope_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection은 safe_resolved였지만 runtime에서는 promotion_blocked로 남았다. candidate preservation, direct support, hard-hold reason을 shared gate에서 다시 배선한다.",
+      "close_condition": "재실행에서 actionable queue가 줄고 동일 packet safe_resolved가 단조 비감소해야 한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11669933"
+      ]
+    },
+    {
+      "post_id": 11677924,
+      "order": 23,
+      "source_kind": "loop489_expected_audit_failure",
+      "audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "review_label": "REPROCESS",
+      "priority": "P1",
+      "owner_mode": "CODE_OR_RUNTIME_PROMOTION_GATE_REPAIR",
+      "actions": [
+        "shared_gate_runtime_block_repair_required"
+      ],
+      "expected_title": "고결에 오만이 깃들 때",
+      "actual_title": null,
+      "actual_url": null,
+      "projected_status": "safe_resolved",
+      "safe_resolved": false,
+      "publish_allowed": false,
+      "candidate_ledger_status": "promotion_blocked",
+      "promotion_status": "candidate_only",
+      "title_resolution_state": "ocr_explicit_title_unresolved",
+      "work_resolution": "unresolved",
+      "discussion_type": "character_talk",
+      "search_status": "SEARCH_DEGRADED_RECOVERED",
+      "search_degraded": 0,
+      "search_unrecovered_degraded": 0,
+      "exact_title_match": false,
+      "compact_title_match": false,
+      "reason_codes": [
+        "blocked_candidate_scope_inferred_from_search_evidence",
+        "character_bridge_variance_hold",
+        "official_detail_url_recovered_from_search_evidence",
+        "scope_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection은 safe_resolved였지만 runtime에서는 promotion_blocked로 남았다. candidate preservation, direct support, hard-hold reason을 shared gate에서 다시 배선한다.",
+      "close_condition": "재실행에서 actionable queue가 줄고 동일 packet safe_resolved가 단조 비감소해야 한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11677924"
+      ]
+    },
+    {
+      "post_id": 11694063,
+      "order": 26,
+      "source_kind": "loop489_expected_audit_failure",
+      "audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+      "review_label": "HOLD",
+      "priority": "P0",
+      "owner_mode": "SOURCE_NATIVE_OR_BLIND_CANONICAL_REVIEW",
+      "actions": [
+        "canonical_variant_or_wrong_work_review_required",
+        "search_degraded_or_timeout_replay_required"
+      ],
+      "expected_title": "빙의한 신의 아이, 엘리시아",
+      "actual_title": "엘리시아 전기",
+      "actual_url": null,
+      "projected_status": "safe_resolved",
+      "safe_resolved": true,
+      "publish_allowed": true,
+      "candidate_ledger_status": "safe_resolved",
+      "promotion_status": "publish",
+      "title_resolution_state": "resolved",
+      "work_resolution": "resolved",
+      "discussion_type": "character_talk",
+      "search_status": "SEARCH_DEGRADED",
+      "search_degraded": 0,
+      "search_unrecovered_degraded": 0,
+      "exact_title_match": false,
+      "compact_title_match": false,
+      "reason_codes": [
+        "official_title_exists",
+        "official_url_withheld_by_title_mismatch",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_body_verified_competition_reconciled",
+        "serialized_public_identity_preserved_body_alias_reconciled",
+        "serialized_public_identity_published",
+        "serialized_public_identity_shared_gate_restored",
+        "title_only_publication_reconciled_to_preserved_body_alias",
+        "verified_alias_title_only_publication"
+      ],
+      "rationale_ko": "Runtime은 safe_resolved/publish까지 갔지만 expected title과 실제 public title이 다르다. 정당 variant인지 wrong-work인지 blind/source-native review로 먼저 확정해야 한다.",
+      "close_condition": "canonical variant 또는 wrong-work 판정 뒤에만 expected gate를 닫는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11694063"
+      ]
+    },
+    {
+      "post_id": 11706831,
+      "order": 31,
+      "source_kind": "loop489_expected_audit_failure",
+      "audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "review_label": "REPROCESS",
+      "priority": "P1",
+      "owner_mode": "CODE_OR_RUNTIME_PROMOTION_GATE_REPAIR",
+      "actions": [
+        "shared_gate_runtime_block_repair_required",
+        "search_degraded_or_timeout_replay_required"
+      ],
+      "expected_title": "소설 속 빌런은 아카데미 차석으로 살아간다",
+      "actual_title": null,
+      "actual_url": null,
+      "projected_status": "safe_resolved",
+      "safe_resolved": false,
+      "publish_allowed": false,
+      "candidate_ledger_status": "promotion_blocked",
+      "promotion_status": "candidate_only",
+      "title_resolution_state": "unresolved_matchable",
+      "work_resolution": "unresolved",
+      "discussion_type": "general",
+      "search_status": "SEARCH_DEGRADED",
+      "search_degraded": 0,
+      "search_unrecovered_degraded": 0,
+      "exact_title_match": false,
+      "compact_title_match": false,
+      "reason_codes": [
+        "context_only",
+        "official_detail_url",
+        "official_title_exists",
+        "row_discussion_missing",
+        "scope_not_current_work",
+        "scope_unclassified",
+        "scope_unknown",
+        "serialized_public_identity_scrubbed"
+      ],
+      "rationale_ko": "Projection은 safe_resolved였지만 runtime에서는 promotion_blocked로 남았다. candidate preservation, direct support, hard-hold reason을 shared gate에서 다시 배선한다.",
+      "close_condition": "재실행에서 actionable queue가 줄고 동일 packet safe_resolved가 단조 비감소해야 한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11706831"
+      ]
+    },
+    {
+      "post_id": 11718098,
+      "order": 35,
+      "source_kind": "loop489_expected_audit_failure",
+      "audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+      "review_label": "HOLD",
+      "priority": "P0",
+      "owner_mode": "SOURCE_NATIVE_OR_BLIND_CANONICAL_REVIEW",
+      "actions": [
+        "canonical_variant_or_wrong_work_review_required",
+        "search_degraded_or_timeout_replay_required"
+      ],
+      "expected_title": "마법 좋아좋아좋아",
+      "actual_title": "마법 좋아, 마법과 좋아",
+      "actual_url": null,
+      "projected_status": "safe_resolved",
+      "safe_resolved": true,
+      "publish_allowed": true,
+      "candidate_ledger_status": "safe_resolved",
+      "promotion_status": "publish",
+      "title_resolution_state": "resolved",
+      "work_resolution": "resolved",
+      "discussion_type": "review",
+      "search_status": "SEARCH_DEGRADED",
+      "search_degraded": 0,
+      "search_unrecovered_degraded": 0,
+      "exact_title_match": false,
+      "compact_title_match": false,
+      "reason_codes": [
+        "official_title_exists",
+        "resolved_public_title_scope",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_published"
+      ],
+      "rationale_ko": "Runtime은 safe_resolved/publish까지 갔지만 expected title과 실제 public title이 다르다. 정당 variant인지 wrong-work인지 blind/source-native review로 먼저 확정해야 한다.",
+      "close_condition": "canonical variant 또는 wrong-work 판정 뒤에만 expected gate를 닫는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11718098"
+      ]
+    }
+  ],
+  "approval_boundary": {
+    "queue_is_not_approval": true,
+    "loop489_runtime_health_go_is_not_semantic_approval": true,
+    "publication_contract_go_is_not_expected_title_approval": true,
+    "full375_collateral_remains_no_go_until_replayed": true,
+    "completion_gate": "full375 collateral GO + full_scan path"
+  }
+}

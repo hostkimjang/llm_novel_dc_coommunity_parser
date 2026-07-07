@@ -1,5 +1,26 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop538 runtime replay 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_538_REPORT_20260707.md`.
+  - [x] Runtime result 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop538_shared_gate_seeded_runtime_replay_result.json`.
+  - [x] Runtime manifest 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop538_shared_gate_seeded_runtime_replay_result_manifest.json`.
+  - [x] Run health audit 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_replay_health.json`.
+  - [x] Expected-title audit 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json`.
+  - [x] Failure action queue 기록 완료: `docs/devs/loop538_shared_gate_seeded_runtime_failure_action_queue.json/.md`.
+- 품질 경계:
+  - [x] Runtime은 `35/35/0/0`으로 완주했다.
+  - [x] 테스트런은 `--parallel 16`과 dashboard ON으로 실행했다.
+  - [x] Run health는 `GO / clean_completed_source`다.
+  - [x] Publication contract는 `GO / 0 violations`다.
+  - [x] Expected-title은 `NO-GO / 21 of 35`로 기록했다.
+  - [x] 실패 `14`건을 `REPROCESS 11 / HOLD 3` 배치 큐로 나눴다.
+  - [ ] Runtime completion을 expected-title 또는 semantic approval로 승격하지 않는다.
+  - [ ] Publication contract GO를 full375 collateral GO로 승격하지 않는다.
+  - [ ] Dashboard 상태를 semantic/full_scan approval 근거로 쓰지 않는다.
+- Gate: runtime integrity `GO`, publication contract `GO`, expected-title replay `NO-GO / 21 of 35`, failure queue `REVIEW-LOCKED / 14`, full375 collateral `NO-GO / residual 100`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop537 shared-gate seed replay 입력 품질 게이트
 
 - 근거:

@@ -1,5 +1,24 @@
 # Development Checklist
 
+## 2026-07-07 Loop538 shared-gate seeded runtime replay 실행 체크
+
+- [x] Loop537 runtime replay input `35`건을 실행했다.
+- [x] 실행 조건은 `--parallel 16`, dashboard ON, search 포함 non-light, VLM/OCR ON, `--slang-db off`, `--reuse-shards-only`다.
+- [x] Dashboard는 `http://127.0.0.1:8080`에 붙였고 진행률 관측에 사용했다.
+- [x] Runtime completed/flushed/pending/failed는 `35/35/0/0`이다.
+- [x] Run health는 `GO / clean_completed_source`다.
+- [x] Publication contract는 `GO / 35 rows / 0 violations`다.
+- [x] Expected-title audit을 실행했고 결과는 `NO-GO / 21 of 35`다.
+- [x] 실패 `14`건을 배치 action queue로 생성했다: `REPROCESS 11 / HOLD 3`.
+- [x] Queue validation issue는 `0`이다.
+- [ ] Expected-title 실패 `14`건을 단건 반복하지 말고 배치로 처리한다.
+- [ ] `FAIL_SAFE_RESOLVED_TITLE_MISMATCH 3`건은 source-native 또는 blind canonical review로 분리한다.
+- [ ] `FAIL_RUNTIME_PROMOTION_BLOCKED 11`건은 shared-gate runtime block repair 배치로 처리한다.
+- [ ] Search degraded/timeout 흔적은 P0 search recovery에서 닫기 전까지 `REVIEW`로 유지한다.
+- [ ] Dashboard 상태를 semantic/full_scan approval 근거로 쓰지 않는다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: runtime integrity `GO`, publication contract `GO`, expected-title replay `NO-GO / 21 of 35`, failure queue `REVIEW-LOCKED / 14`, full375 collateral `NO-GO / residual 100`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop537 shared-gate seed replay 입력 체크
 
 - [x] 새 runtime replay나 full375 대형 런을 실행하지 않았다.
