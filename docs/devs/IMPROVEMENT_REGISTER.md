@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260707-512 - full375 collateral P0 reaccounting and wrong_work10 review
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| P0 collateral triage | REVIEW-LOCKED | Loop511 projection regression candidates `141`을 `89/29/23` bucket으로 분리 | full375 collateral GO 전 계속 batch 처리 |
+| Prior-compatible carry-forward | GO_ACCOUNTING | compatible rows `78`, validation issue `0` | carried verdict는 current option match 조건에서만 유지 |
+| wrong_work INFO_MISSING 10 | GO_REVIEW_BATCH | `ACCEPT 4`, `REPROCESS 6`, `INFO_MISSING 0` | REPROCESS 6은 code/contract 또는 candidate rebuild 수리 |
+| Review summary | REVIEW-LOCKED | label `ACCEPT 30`, `REPROCESS 39`, `HOLD 19`, `INFO_MISSING 53` | ACCEPT는 gate wiring 뒤 regression 제외 후보 |
+| Residual action queue | NO-GO | residual `111`, safe_loss `84`, unsafe `16`, wrong_work `11` | `source_native_or_blind_review_required 53` 배치 처리 |
+| Runtime replay | NOT_RUN | 이번 회차는 회계/검토 산출물만 생성 | 필요 시 `--parallel 16`과 dashboard 기본 부착 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: full375 collateral `NO-GO / residual_action_queue_rows 111`, runtime replay `NOT_RUN`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-511 - final sync projection and title-only regression guard
 
 | 항목 | 상태 | 근거 | 다음 |

@@ -1,5 +1,24 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop512 TODO
+
+- 상태 업데이트: Loop511 projection collateral `141`건을 P0 batch로 재회계했고, `wrong_work_title_flip` INFO_MISSING `10`건을 source-native/native-web 판정으로 처리했다. Goal은 완료가 아니다.
+- [x] Loop511 projection collateral compare를 기준으로 Loop512 triage를 생성했다.
+- [x] P0 review batch `141`건을 생성했고 missing source/baseline/after row `0`을 확인했다.
+- [x] Prior-compatible verdict `78`건을 이월했다.
+- [x] `wrong_work_title_flip` INFO_MISSING `10`건을 추가 검토했다.
+- [x] 추가 verdict 결과는 `ACCEPT 4`, `REPROCESS 6`이다.
+- [x] Placeholder INFO_MISSING은 `63 -> 53`으로 줄었다.
+- [x] Review summary는 `ACCEPT 30`, `REPROCESS 39`, `HOLD 19`, `INFO_MISSING 53`, validation issue `0`이다.
+- [x] Residual action queue는 `115 -> 111`로 줄었다.
+- [x] Residual bucket은 `safe_loss_resolved_to_null 84`, `unsafe_promotion_from_hold 16`, `wrong_work_title_flip 11`이다.
+- [x] `wrong_work_title_flip` bucket은 `INFO_MISSING 0`으로 닫았다.
+- [x] Report와 state를 기록했다.
+- [ ] `source_native_or_blind_review_required 53`을 N건 배치로 계속 처리한다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: full375 collateral `NO-GO / residual_action_queue_rows 111`, runtime replay `NOT_RUN`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop511 TODO
 
 - 상태 업데이트: Loop510 full375 결과에 final sync projection을 적용해 golden18 projection은 `18/18 PASS`로 회복했지만 full375 collateral은 `NO-GO / regression candidates 141`이다. Goal은 완료가 아니다.

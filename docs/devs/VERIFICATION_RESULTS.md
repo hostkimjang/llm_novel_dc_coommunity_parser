@@ -1,5 +1,35 @@
 # Verification Results
 
+## 2026-07-07 Loop512 Verification
+
+- 범위: Loop511 projection full375 collateral `141`건을 P0 review batch로 재회계하고, `wrong_work_title_flip` INFO_MISSING `10`건을 source-native/native-web review로 처리했다. 새 runtime replay는 실행하지 않았다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_512_REPORT_20260707.md`
+  - state `docs\devs\loop512_projected_loop511_collateral_reaccounting_state_20260707.json`
+  - triage `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop512_projected_loop511_collateral_triage.json`
+  - P0 review batch `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop512_projected_loop511_p0_review_batch.json`
+  - wrong_work verdicts `docs\devs\loop512_wrong_work_info_missing10_source_native_verdicts.json`
+  - review summary `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop512_projected_loop511_after_wrong_work10_review_summary.json`
+  - residual queue `docs\devs\loop512_after_wrong_work10_review_adjusted_residual111_action_queue.json`
+- Result:
+  - source collateral regression candidates `141`
+  - triage buckets `safe_loss_resolved_to_null 89`, `unsafe_promotion_from_hold 29`, `wrong_work_title_flip 23`
+  - prior-compatible rows `78`
+  - additional wrong_work reviewed rows `10`
+  - placeholder INFO_MISSING rows `53`
+  - label counts `ACCEPT 30`, `REPROCESS 39`, `HOLD 19`, `INFO_MISSING 53`
+  - residual action queue rows `111`
+  - residual bucket counts `safe_loss_resolved_to_null 84`, `unsafe_promotion_from_hold 16`, `wrong_work_title_flip 11`
+- Validation:
+  - JSON parse PASS for new verdict/state/queue artifacts.
+  - `tools\build_prior_compatible_collateral_verdicts.py ... --additional-covered-verdicts-json ...` PASS, placeholder rows `53`.
+  - `tools\summarize_collateral_review_verdicts.py ...` PASS, validation issue `0`.
+  - `tools\split_collateral_action_queue.py ... --fail-on-validation-issue` PASS, validation issue `0`.
+- Boundary:
+  - Loop512 is review/accounting progress, not runtime replay.
+  - Full375 collateral remains `NO-GO`.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-07 Loop511 Verification
 
 - 범위: Loop510 full375 result에 current working tree final publication sync를 projection으로 재적용하고, `11663521` golden failure와 `11698880` preservation-only alias override 회귀를 검증했다. 새 runtime replay는 실행하지 않았다.

@@ -1,5 +1,17 @@
 # Development History
 
+## 2026-07-07 - Loop512 full375 collateral P0 reaccounting and wrong_work batch review
+
+- Loop511 projection full375 collateral `141`건을 P0 review batch로 재정렬했다.
+- P0 bucket은 `safe_loss_resolved_to_null 89`, `unsafe_promotion_from_hold 29`, `wrong_work_title_flip 23`이다.
+- Prior-compatible verdict `78`건을 이월하고, `wrong_work_title_flip` INFO_MISSING `10`건을 추가 source-native/native-web review로 처리했다.
+- 추가 verdict 결과는 `ACCEPT 4`, `REPROCESS 6`이다.
+- 전체 review summary는 `ACCEPT 30`, `REPROCESS 39`, `HOLD 19`, `INFO_MISSING 53`, validation issue `0`이다.
+- Residual action queue는 `115 -> 111`로 줄었고, bucket은 `safe_loss_resolved_to_null 84`, `unsafe_promotion_from_hold 16`, `wrong_work_title_flip 11`이다.
+- 새 runtime replay는 실행하지 않았다.
+- Report는 `docs/devs/loop_reports/LOOP_512_REPORT_20260707.md`, state는 `docs/devs/loop512_projected_loop511_collateral_reaccounting_state_20260707.json`이다.
+- Gate는 full375 collateral `NO-GO / residual_action_queue_rows 111`, runtime replay `NOT_RUN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop511 final sync projection and title-only regression guard
 
 - 새 LLM runtime replay 없이 Loop510 full375 result `375` rows에 current working tree final publication sync를 projection으로 재적용했다.

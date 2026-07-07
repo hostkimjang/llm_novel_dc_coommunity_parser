@@ -1,0 +1,207 @@
+{
+  "review_id": "loop512_wrong_work_info_missing10_source_native_verdicts",
+  "loop": 512,
+  "source_batch": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_unreviewed_batch.json",
+  "scope": "Loop512 projected Loop511 INFO_MISSING wrong_work_title_flip 10건 source-native/native-web 보강 판정",
+  "review_policy": "source-native 우선, 필요한 경우 native-web evidence_refs만 보강했다. ACCEPT는 regression-count 제외 후보일 뿐 semantic_quality/full_scan approval을 열지 않는다.",
+  "rows": [
+    {
+      "post_id": 11660241,
+      "triage_bucket": "wrong_work_title_flip",
+      "selected_option_id": "C2",
+      "selected_title": "이세계 TRPG 게임마스터",
+      "selected_url": "https://novelpia.com/novel/242412",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_title_supported_by_itr_alias_and_tower_lord_context",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_after_wrong_work",
+        "canonical_alias_competition_guard_required"
+      ],
+      "rationale_ko": "원문은 `이티알`, `trpg 파트`, `현실쪽 주인공`, `탑주`를 함께 말한다. native-web 보강에서도 `이세계 TRPG 게임마스터`가 `이티알` 약칭과 탑주 맥락으로 확인된다. after C1은 별도 제목 표면에 끌린 wrong-work flip이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_unreviewed_batch.json#post_id=11660241",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11660241",
+        "https://www.typemoon.net/review/523474",
+        "https://m.ruliweb.com/community/board/300143/read/66916142",
+        "https://novelpia.com/novel/242412"
+      ]
+    },
+    {
+      "post_id": 11663554,
+      "triage_bucket": "wrong_work_title_flip",
+      "selected_option_id": "C1",
+      "selected_title": "전 버튜버가 하고 싶은데요",
+      "selected_url": "https://novelpia.com/novel/275975",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_canonical_title_supported_by_image_work_surface_and_same_url_character_context",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문 `주서연`은 작품 내부 인물 표면이고, after는 같은 URL의 canonical title `전 버튜버가 하고 싶은데요`로 정리됐다. C2는 캐릭터명 괄호 표시형이라 wrong-work 회귀로 세지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_unreviewed_batch.json#post_id=11663554",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11663554",
+        "https://novelpia.com/novel/275975"
+      ]
+    },
+    {
+      "post_id": 11666731,
+      "triage_bucket": "wrong_work_title_flip",
+      "selected_option_id": "C1",
+      "selected_title": "약먹는 천재마법사",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "known_abbreviation_supports_before_title_after_title_typo",
+      "evidence_grade": "Strong",
+      "action": [
+        "canonical_title_cleanup_required",
+        "repair_after_wrong_work"
+      ],
+      "rationale_ko": "`약먹마`는 결과 내부 alias_resolution_sources에서도 `약먹는 천재마법사` 약칭으로 고정돼 있다. after `약먹는 천재마사`는 한 글자 누락 typo가 public title로 승격된 상태라 수리 대상이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_unreviewed_batch.json#post_id=11666731",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11666731"
+      ]
+    },
+    {
+      "post_id": 11669907,
+      "triage_bucket": "wrong_work_title_flip",
+      "selected_option_id": "C1",
+      "selected_title": "마법 좋아좋아좋아",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "vlm_ocr_supports_clean_title_after_title_polluted_by_spoiler_prefix",
+      "evidence_grade": "Medium",
+      "action": [
+        "canonical_title_cleanup_required",
+        "title_url_or_variant_trace_repair"
+      ],
+      "rationale_ko": "Loop511 결과의 candidate ledger에는 `마법 좋아좋아좋아`가 VLM/OCR explicit work title로 남아 있고, after public title은 `약스포)` 접두가 붙은 검색/제목 오염형이다. clean title로 정리하되 URL 보존 경로는 별도 gate 수리가 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_unreviewed_batch.json#post_id=11669907",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11669907",
+        "https://novelpia.com/novel/326040"
+      ]
+    },
+    {
+      "post_id": 11671512,
+      "triage_bucket": "wrong_work_title_flip",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "candidate_set_incomplete_yukari_parody_context_conflicts_with_promoted_kingdom_title",
+      "evidence_grade": "Medium",
+      "action": [
+        "candidate_set_rebuild_required",
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "원문은 `유카리 히로인` 맥락이라 C2 `킹덤, 전국의 패왕 [킹덤 패러디 ]`로 곧장 승격하기 어렵다. Loop511 candidate ledger에도 image work title conflict와 조아라 `삼시세끼 , 심야식당` 후보가 같이 남아 있어, 현재 C1/C2 중 하나를 정답으로 닫기보다 후보셋 재구축이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_unreviewed_batch.json#post_id=11671512",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11671512"
+      ]
+    },
+    {
+      "post_id": 11681152,
+      "triage_bucket": "wrong_work_title_flip",
+      "selected_option_id": "C1",
+      "selected_title": "[포켓몬] 체육관 챌린지에서 살아남기",
+      "selected_url": "https://novelpia.com/novel/92244",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_canonical_bracket_title_supported_by_official_detail_and_image_anchor",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "after는 URL이 붙은 bracket canonical title C1로 정리됐고, Loop511 결과도 official_detail/page 후보를 primary로 들고 있다. before C2는 같은 작품의 축약 표면이라 wrong-work 회귀에서 제외할 수 있다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_unreviewed_batch.json#post_id=11681152",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11681152",
+        "https://novelpia.com/novel/92244"
+      ]
+    },
+    {
+      "post_id": 11694041,
+      "triage_bucket": "wrong_work_title_flip",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "current_options_miss_official_fighting_genius_title",
+      "evidence_grade": "Medium",
+      "action": [
+        "candidate_set_rebuild_required",
+        "canonical_title_cleanup_required",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "원문 `격투천재`와 댓글의 격투/경녀 감상은 작품 논의지만, 현재 C1/C2는 official title을 정확히 담지 못한다. native-web 보강과 Loop511 candidate ledger는 `격투 천재가 되었다 [독점]` 계열을 별도 후보로 보여주므로, C2 `격투기 천재`를 그대로 public title로 닫으면 안 된다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_unreviewed_batch.json#post_id=11694041",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11694041",
+        "https://series.naver.com/novel/detail.series?productNo=6544283",
+        "https://ridibooks.com/books/3228099766"
+      ]
+    },
+    {
+      "post_id": 11698870,
+      "triage_bucket": "wrong_work_title_flip",
+      "selected_option_id": "C1",
+      "selected_title": "인간실격",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "classic_japanese_novel_context_blocks_same_surface_webnovel_promotion",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_after_wrong_work",
+        "intent_guard_review"
+      ],
+      "rationale_ko": "원문은 `그 일본쪽에 유명한거`와 댓글 `작가가 살자하긴 함`으로 다자이 오사무의 고전 `인간실격`을 묻는다. after C2는 같은 표면을 가진 별도 웹소설로 과승격된 상태다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_unreviewed_batch.json#post_id=11698870",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11698870"
+      ]
+    },
+    {
+      "post_id": 11703631,
+      "triage_bucket": "wrong_work_title_flip",
+      "selected_option_id": "C2",
+      "selected_title": "이블 파티 대 헌터",
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_title_supported_by_direct_evil_party_alias_and_munpia_official_detail",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "원문 제목의 `이블파티`는 C2 `이블 파티 대 헌터`와 직접 연결되고, native-web 보강에서 문피아 작품 페이지가 확인된다. before C1 `나의 악당들`은 댓글의 `승수` 표면에 끌린 adjacent 후보로 보이며, current after는 wrong-work 회귀로 세지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_unreviewed_batch.json#post_id=11703631",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11703631",
+        "https://novel.munpia.com/203659/page/1/neSrl/3071258"
+      ]
+    },
+    {
+      "post_id": 11703674,
+      "triage_bucket": "wrong_work_title_flip",
+      "selected_option_id": "C2",
+      "selected_title": "아카데미의 마피아가 되었다 - 웹소설",
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_title_supported_by_direct_academy_mafia_alias_author_context_preserve_old_work_as_secondary",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring",
+        "preserve_secondary_candidates"
+      ],
+      "rationale_ko": "원문 제목은 `아카데미 마피아`를 현재 논의 대상으로 두고, 본문/댓글은 작가 씨즐의 과거작 `게임 속 도굴꾼이 되었다`를 비교 대상으로 언급한다. after C2가 current work이고 C1은 secondary candidate로 보존하는 편이 맞다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_unreviewed_batch.json#post_id=11703674",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11703674"
+      ]
+    }
+  ]
+}

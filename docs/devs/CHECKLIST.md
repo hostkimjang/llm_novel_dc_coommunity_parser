@@ -1,5 +1,23 @@
 # Development Checklist
 
+## 2026-07-07 Loop512 collateral 재회계 체크
+
+- [x] Loop511 projection full375 collateral regression candidates `141`건을 현재 기준으로 재회계했다.
+- [x] P0 bucket은 `safe_loss_resolved_to_null 89`, `unsafe_promotion_from_hold 29`, `wrong_work_title_flip 23`이다.
+- [x] P0 review batch `141`건의 source/baseline/after 누락은 `0`이다.
+- [x] Prior-compatible verdicts `78`건을 이월했다.
+- [x] `wrong_work_title_flip` INFO_MISSING `10`건 verdict를 작성했다.
+- [x] 추가 verdict label은 `ACCEPT 4`, `REPROCESS 6`이다.
+- [x] Review summary validation issue는 `0`이다.
+- [x] 전체 label은 `ACCEPT 30`, `REPROCESS 39`, `HOLD 19`, `INFO_MISSING 53`이다.
+- [x] Residual action queue는 `111`건이다.
+- [x] Residual bucket은 `safe_loss_resolved_to_null 84`, `unsafe_promotion_from_hold 16`, `wrong_work_title_flip 11`이다.
+- [x] Report `docs/devs/loop_reports/LOOP_512_REPORT_20260707.md`를 작성했다.
+- [x] State `docs/devs/loop512_projected_loop511_collateral_reaccounting_state_20260707.json`을 작성했다.
+- [ ] 이번 회차의 `ACCEPT`를 full_scan approval로 승격하지 않는다.
+- [ ] 다음은 `source_native_or_blind_review_required 53`을 N건 배치로 처리한다.
+- Gate: full375 collateral `NO-GO / residual_action_queue_rows 111`, runtime replay `NOT_RUN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop511 final sync projection 체크
 
 - [x] Loop510 result `375` rows에 current final sync projection을 적용했다.
