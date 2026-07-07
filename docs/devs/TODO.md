@@ -1,5 +1,18 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop553 TODO
+
+- 상태 업데이트: Loop552 ordinary residual `64`건을 단건이 아니라 lane batch로 재분해했다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 런을 발주하지 않았다.
+- [x] Ordinary residual rows는 `64`, contract-processed held rows는 `14`다.
+- [x] Lane 분포는 candidate set rebuild `15`, native-web/image evidence `20`, shared-gate restore contract `17`, no-publish/multi-work guard `6`, source-native/blind review `5`, canonical policy cleanup `1`이다.
+- [x] Validation issue는 `0`이다.
+- [x] Publish/runtime allowed rows는 `0/0`이다.
+- [ ] Lane별 선행 review/contract를 닫기 전 runtime replay를 열지 않는다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: ordinary residual dispatch `REVIEW-LOCKED / 64`, full375 collateral `NO-GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop552 TODO
 
 - 상태 업데이트: Loop546 residual78에 Loop548/549/550/551 contract 결과를 결합해 contract-processed `14`, ordinary residual `64`로 재회계했다. Goal은 완료가 아니다.
@@ -10,7 +23,7 @@
 - [x] Release candidate `3`건은 approval이 아니다.
 - [x] No-publish/hold contract `11`건은 public publish를 열지 않는다.
 - [x] Publish/runtime allowed rows는 `0/0`이다.
-- [ ] Ordinary residual unprocessed `64`건을 다음 배치로 재분해한다.
+- [x] Ordinary residual unprocessed `64`건을 Loop553에서 다음 배치 lane으로 재분해했다.
 - [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
 - Gate: residual accounting `REVIEW-LOCKED / contract-processed 14 / ordinary 64`, full375 collateral `NO-GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.

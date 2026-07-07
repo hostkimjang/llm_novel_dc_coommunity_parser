@@ -1,5 +1,18 @@
 # Development Checklist
 
+## 2026-07-07 Loop553 ordinary residual64 dispatch 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 런을 실행하지 않았다.
+- [x] Loop552 ordinary residual `64`건을 Loop546 원본 action과 다시 join했다.
+- [x] Contract-processed held rows는 `14`다.
+- [x] Lane 분포는 candidate set rebuild `15`, native-web/image evidence `20`, shared-gate restore contract `17`, no-publish/multi-work guard `6`, source-native/blind review `5`, canonical policy cleanup `1`이다.
+- [x] Validation issue는 `0`이다.
+- [x] Publish allowed rows는 `0`, runtime replay allowed rows는 `0`이다.
+- [x] 다음 runtime/test run은 `--parallel 16`, dashboard 기본 ON으로 둔다.
+- [ ] Lane별 선행 review/contract를 닫기 전 runtime replay를 열지 않는다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: ordinary residual dispatch `REVIEW-LOCKED / 64`, runtime replay `NOT_RUN / allowed 0`, full375 collateral `NO-GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop552 residual78 contract review accounting 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 런을 실행하지 않았다.
@@ -10,7 +23,7 @@
 - [x] Release candidate `3`건은 approval이 아니다.
 - [x] No-publish or hold contract rows `11`건은 public publish를 열지 않는다.
 - [x] Publish allowed rows는 `0`, runtime replay allowed rows는 `0`이다.
-- [ ] Ordinary residual unprocessed `64`건을 다음 배치로 재분해한다.
+- [x] Ordinary residual unprocessed `64`건을 Loop553에서 다음 배치 lane으로 재분해했다.
 - [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
 - Gate: residual accounting `REVIEW-LOCKED / contract-processed 14 / ordinary 64`, runtime replay `NOT_RUN / allowed 0`, full375 collateral `NO-GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 

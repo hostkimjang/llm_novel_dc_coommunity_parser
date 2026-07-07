@@ -1,5 +1,23 @@
 # Improvement Register
 
+## IMP-20260707-553 - Ordinary residual64 dispatch
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 실행 없음, runtime allowed `0` | lane review/contract 전 replay 금지 |
+| Residual dispatch | REVIEW-LOCKED | ordinary residual `64`, validation issue `0` | lane별 선행조건 처리 |
+| Candidate set rebuild | REVIEW | `15`건 | candidate ledger 재구성 뒤 contract test |
+| Native-web/image evidence | REVIEW | `20`건 | native web, 이미지, OCR, 플랫폼 근거 확인 |
+| Shared-gate restore contract | REVIEW | `17`건 | 복원 후보일 뿐 approval 아님 |
+| No-publish/multi-work guard | REVIEW-LOCKED | `6`건 | hard-hold 유지 |
+| Source-native/blind review | REVIEW-LOCKED | `5`건 | blind/source-native verdict 필요 |
+| Canonical policy cleanup | REVIEW | `1`건 | canonical/URL/variant 정리 |
+| Full375 collateral | NO-GO | residual64와 full375 recheck 남음 | full375 GO와 full_scan path 정의 필요 |
+| Dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | 다음 test run은 `--parallel 16`, dashboard 기본 ON | runtime 진행 관측용으로만 사용 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: ordinary residual dispatch `REVIEW-LOCKED / 64`, runtime replay `NOT_RUN`, full375 collateral `NO-GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-552 - Residual78 contract review accounting
 
 | 항목 | 상태 | 근거 | 다음 |
