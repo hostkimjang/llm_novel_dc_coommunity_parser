@@ -1,5 +1,24 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop546 TODO
+
+- 상태 업데이트: Loop544 full375 재회계와 Loop545 49건 runtime replay를 마쳤고, Loop546에서 publication trace convergence를 보강했다. Goal은 완료가 아니다.
+- [x] Full375 collateral을 재회계했다: raw regression `136`, review-adjusted residual `97`.
+- [x] Loop545 runtime replay는 `--parallel 16`, dashboard ON으로 `49/49` 완료했다.
+- [x] Run health와 goal/test contract는 `GO`다.
+- [x] Expected-title replay는 `NO-GO / 19 of 49`로 기록했다.
+- [x] Failure `30`건 action queue를 생성했다.
+- [x] Promotion-block repair `22`건 queue를 생성했다.
+- [x] `11663535` publication trace 위반을 current-code projection에서 `GO / 0 violations`로 닫았다.
+- [x] Residual action queue를 `97 -> 78`로 갱신했다.
+- [ ] `docs/devs/loop545_current_full375_residual97_runtime_failure_action_queue.json`의 `30`건을 배치로 처리한다.
+- [ ] `docs/devs/loop545_current_full375_residual97_shared_gate_runtime_block_repair_queue.json`의 `22`건을 code/contract/source-native review로 처리한다.
+- [ ] 동일 49건 packet을 수리 없이 다시 실행하지 않는다.
+- [ ] Search degraded/timeout 복구 전 promotion approval을 열지 않는다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: runtime integrity `GO`, publication contract projection `GO`, expected-title replay `NO-GO / 19 of 49`, residual queue `REVIEW-LOCKED / 78`, full375 collateral `NO-GO`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop543 TODO
 
 - 상태 업데이트: Loop542 title mismatch pending `2`건을 projection-only publish-class contract로 닫았다. Goal은 완료가 아니다.

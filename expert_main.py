@@ -249,6 +249,20 @@ def _enforce_publish_contract_trace_convergence(result_dict: Dict[str, Any]) -> 
             [str(code) for code in raw_reason_codes if str(code).strip()],
             scope_kind=scope_kind,
         )
+        if publish_allowed:
+            normalized_reason_codes = [
+                code
+                for code in normalized_reason_codes
+                if code != "serialized_public_identity_scrubbed"
+            ]
+        else:
+            normalized_reason_codes = [
+                code
+                for code in normalized_reason_codes
+                if code != "serialized_public_identity_published"
+            ]
+            if "serialized_public_identity_scrubbed" not in normalized_reason_codes:
+                normalized_reason_codes.append("serialized_public_identity_scrubbed")
         if raw_reason_codes != normalized_reason_codes:
             gate_decision["reason_codes"] = normalized_reason_codes
     reason_code_set = {
@@ -261,6 +275,8 @@ def _enforce_publish_contract_trace_convergence(result_dict: Dict[str, Any]) -> 
     )
 
     converged_trace = dict(trace)
+    if isinstance(decision_scope, dict):
+        converged_trace["scope_state"] = dict(decision_scope)
     if url_withheld_by_title_mismatch:
         withheld_url = str(gate_decision.get("official_url") or "").strip()
         if withheld_url:

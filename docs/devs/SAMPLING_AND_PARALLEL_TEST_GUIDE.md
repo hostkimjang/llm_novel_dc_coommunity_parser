@@ -1,5 +1,14 @@
 # Sampling And Parallel Test Guide
 
+## 2026-07-07 Loop545 runtime replay 대시보드 관측 결과
+
+- Loop545 runtime replay는 사용자 지시에 따라 `--parallel 16`과 dashboard ON으로 실행했다.
+- Dashboard URL은 `http://127.0.0.1:8080`이며 최종 상태는 `49/49`, `progress_pct=100.0`, `parallel_count=16`, `batch_running=false`다.
+- Run `20260707_185644_707690`의 manifest는 requested/effective parallel `16/16`, completed/flushed/pending/failed `49/49/0/0`을 기록했다.
+- Total time은 `3780.0s`, avg time/post는 `77.1s`였다. 마지막 2건은 expert 단계가 끝난 뒤 result/checkpoint flush가 늦게 반영되어 dashboard `done_count`가 잠시 `47/49`, `48/49`에 머물렀다.
+- 다음 테스트런/검증런도 기본은 `--parallel 16`과 dashboard ON이다. `--no-dashboard`는 사용자가 명시적으로 끌 때만 허용한다.
+- Dashboard는 진행상황 관측 도구이며 `semantic_quality`, `full_scan_approval`, `full375 collateral GO`의 승인 근거가 아니다.
+
 ## 2026-07-07 Loop538 runtime replay 대시보드 관측 결과
 
 - Loop538 runtime replay는 `--parallel 16`, dashboard ON, search 포함 non-light 조건으로 실행했다.

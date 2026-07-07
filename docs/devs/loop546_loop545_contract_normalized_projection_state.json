@@ -1,0 +1,14 @@
+{
+  "report_type": "loop545_contract_normalized_projection_state",
+  "generated_at": "2026-07-07T20:04:23",
+  "source_result": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop545_current_full375_residual97_runtime_replay_result.json",
+  "projection_result": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop546_loop545_contract_normalized_projection_result.json",
+  "changed_count": 1,
+  "changed_post_ids": [
+    11663535
+  ],
+  "approval": false,
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "note_ko": "Loop545 runtime result에 현재 코드의 publish_contract_trace convergence만 적용한 projection이다. runtime replay/full_scan approval이 아니다."
+}

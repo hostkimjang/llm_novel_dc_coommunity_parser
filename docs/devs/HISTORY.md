@@ -1,5 +1,21 @@
 # Development History
 
+## 2026-07-07 - Loop544-546 full375 재회계와 residual78 수렴
+
+- Loop544에서 Loop543 projection 기준 full375 collateral을 재회계했다.
+- Golden18은 `18/18 PASS`였지만 full375 raw regression은 `136`, review-adjusted residual은 `97`이라 always-on gate는 `NO-GO`였다.
+- Residual97 중 shared-gate projection `51`건과 runtime replay input `49`건을 만들었다.
+- Loop545 run `20260707_185644_707690`은 `--parallel 16`, dashboard ON, VLM/OCR ON으로 `49/49` 완주했다.
+- Dashboard final은 `http://127.0.0.1:8080`, `49/49`, `progress_pct=100.0`, `parallel_count=16`, `batch_running=false`다.
+- Run health와 goal/test contract는 `GO`였지만 expected-title replay는 `NO-GO / 19 of 49`였다.
+- Loop545 원본 publication contract는 `11663535` 1건 위반이었다.
+- Loop546에서 `_enforce_publish_contract_trace_convergence()`가 blocked decision의 stale publish reason과 trace scope mismatch를 정리하도록 보강했다.
+- Contract-normalized projection은 changed `1`, publication contract `GO / 49 rows / 0 violations`다.
+- Residual queue는 runtime exact pass `19`건 제외로 `97 -> 78`로 줄었다.
+- 검증은 py_compile PASS, focused unittest `2` tests PASS, projection publication audit PASS다.
+- Reports는 `docs/devs/loop_reports/LOOP_544_REPORT_20260707.md`, `docs/devs/loop_reports/LOOP_545_REPORT_20260707.md`, `docs/devs/loop_reports/LOOP_546_REPORT_20260707.md`다.
+- Gate는 runtime integrity `GO`, publication contract projection `GO`, expected-title replay `NO-GO / 19 of 49`, residual queue `REVIEW-LOCKED / 78`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop543 title mismatch publish-class contract projection 적용
 
 - 새 runtime replay, bounded run, full375 대형 런은 실행하지 않았다.

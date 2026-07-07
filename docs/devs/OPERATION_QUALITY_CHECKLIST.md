@@ -1,5 +1,23 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop544-546 runtime/dashboard 품질 게이트
+
+- 근거:
+  - [x] Loop reports 기록 완료: `docs/devs/loop_reports/LOOP_544_REPORT_20260707.md`, `docs/devs/loop_reports/LOOP_545_REPORT_20260707.md`, `docs/devs/loop_reports/LOOP_546_REPORT_20260707.md`.
+  - [x] Loop545 runtime result/manifest/checkpoint 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop545_current_full375_residual97_runtime_replay_result.json`, `_manifest.json`, `_checkpoint.jsonl`.
+  - [x] Dashboard final 확인 완료: `http://127.0.0.1:8080`, `49/49`, `parallel_count=16`, `batch_running=false`.
+  - [x] Contract-normalized projection audit 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop546_loop545_contract_normalized_projection_publication_contract_audit.json`.
+  - [x] Residual78 queue 기록 완료: `docs/devs/loop546_current_full375_after_loop545_runtime_residual78_action_queue.json`.
+- 품질 경계:
+  - [x] Runtime replay는 `--parallel 16`과 dashboard ON으로 실행했다.
+  - [x] Runtime completion `49/49`를 semantic approval로 승격하지 않았다.
+  - [x] Publication contract projection `GO`를 full375 collateral GO로 승격하지 않았다.
+  - [x] Expected-title `NO-GO / 19 of 49`를 유지했다.
+  - [x] Residual `97 -> 78`은 queue delta일 뿐 completion gate가 아니다.
+  - [ ] 동일 49건 packet을 code/contract repair 없이 반복하지 않는다.
+  - [ ] Search evidence `REVIEW`를 복구 전 promotion approval로 쓰지 않는다.
+- Gate: runtime integrity `GO`, publication contract projection `GO`, expected-title replay `NO-GO / 19 of 49`, residual queue `REVIEW-LOCKED / 78`, full375 collateral `NO-GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop543 title mismatch projection 품질 게이트
 
 - 근거:

@@ -1,0 +1,90 @@
+{
+  "report_type": "always_on_regression_gates",
+  "generated_at": "2026-07-07T18:54:06",
+  "gate": "NO-GO",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "policy": {
+    "golden_expected_rows": 18,
+    "full_375_collateral_required": true,
+    "golden_pass_alone_is_not_approval": true,
+    "collateral_runtime_pass_alone_is_not_approval": true,
+    "collateral_source_native_exclusion_requires_clean_review_summary": true
+  },
+  "golden": {
+    "gate": "GO",
+    "expected_rows": 18,
+    "row_count": 18,
+    "passed_count": 18,
+    "failed_count": 0,
+    "canary_semantic_gate": "PASS",
+    "runtime_complete": true,
+    "blockers": []
+  },
+  "collateral": {
+    "gate": "NO-GO",
+    "expected_shared_posts": 375,
+    "shared_post_count": 375,
+    "changed_post_count": 198,
+    "collateral_regression_count": 136,
+    "review_adjusted_regression_count": 97,
+    "review_adjustment": {
+      "provided": true,
+      "applied": true,
+      "review_id": "loop544_current_full375_after_loop543_projection_review_adjusted_summary",
+      "review_gate": "REVIEW-LOCKED",
+      "review_scope": "full_regression",
+      "batch_review_rows": 136,
+      "reviewed_rows": 136,
+      "unreviewed_batch_rows": 0,
+      "unreviewed_regression_rows": 0,
+      "validation_issue_count": 0,
+      "exclusion_candidate_rows": 39,
+      "label_counts": {
+        "ACCEPT": 39,
+        "REPROCESS": 71,
+        "HOLD": 21,
+        "INFO_MISSING": 5
+      },
+      "action_counts": {
+        "exclude_from_regression_count_after_gate_wiring": 39,
+        "repair_after_wrong_work": 10,
+        "candidate_set_rebuild_required": 10,
+        "image_native_review_required": 14,
+        "native_web_review_required": 24,
+        "character_bridge_review_required": 2,
+        "alias_relation_review_required": 2,
+        "repair_safe_loss_restore_supported_title": 51,
+        "shared_promotion_gate_wiring_required": 51,
+        "policy_or_canonical_title_review_required": 3,
+        "canonical_title_cleanup_required": 4,
+        "title_surface_specificity_review_required": 1,
+        "repair_unsafe_promotion": 4,
+        "intent_guard_review": 3,
+        "preserve_secondary_candidates": 8,
+        "canonical_alias_competition_guard_required": 1,
+        "title_url_or_variant_trace_repair": 1,
+        "search_title_similarity_hard_hold_required": 1,
+        "multi_work_guard_required": 4,
+        "nonwork_game_context_publish_block_required": 1,
+        "alias_collision_guard_required": 1,
+        "image_listing_multi_work_guard_required": 2,
+        "ocr_title_variant_cleanup_required": 1,
+        "image_multi_panel_review_required": 1,
+        "merchandise_or_emoticon_work_context_guard": 1,
+        "image_platform_url_preference": 1,
+        "source_native_or_blind_review_required": 5,
+        "p0_wrong_work_title_flip_review_required": 5
+      },
+      "review_adjusted_regression_count": 97,
+      "blockers": []
+    },
+    "runtime_complete": true,
+    "blockers": [
+      "collateral_review_adjusted_regression_count_nonzero"
+    ]
+  },
+  "blockers": [
+    "collateral:collateral_review_adjusted_regression_count_nonzero"
+  ]
+}

@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260707-546 - Residual97 runtime replay와 publication trace convergence
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Full375 재회계 | NO-GO | Loop544 raw regression `136`, residual `97` | residual 배치 수리 뒤 full375 재확인 |
+| Runtime replay | GO_RUNTIME_ONLY | Loop545 `49/49`, `--parallel 16`, dashboard final `49/49` | semantic approval로 승격 금지 |
+| Expected-title | NO-GO | `PASS_EXACT_SAFE_RESOLVED 19/49`, failure `30` | failure queue 배치 처리 |
+| Publication contract | GO_PROJECTION | Loop546 contract-normalized projection `49 rows / 0 violations` | 다음 runtime에 코드 계약 반영 확인 |
+| Residual queue | REVIEW-LOCKED | `97 -> 78`, labels `REPROCESS 52 / HOLD 21 / INFO_MISSING 5` | 30 failure + 22 repair queue 우선 |
+| Search evidence | REVIEW | timeout/degraded observed | search recovery P0 유지 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: code contract `GO_UNIT`, runtime integrity `GO`, publication contract projection `GO`, expected-title replay `NO-GO / 19 of 49`, residual queue `REVIEW-LOCKED / 78`, full375 collateral `NO-GO`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-543 - Title mismatch publish-class projection contract
 
 | 항목 | 상태 | 근거 | 다음 |

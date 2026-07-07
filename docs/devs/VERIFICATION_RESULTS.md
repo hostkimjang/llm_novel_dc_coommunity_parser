@@ -1,5 +1,36 @@
 # Verification Results
 
+## 2026-07-07 Loop544-546 full375 재회계, runtime replay, contract normalization
+
+- 코드:
+  - `expert_main.py`의 `_enforce_publish_contract_trace_convergence()`가 blocked decision에서 stale `serialized_public_identity_published`를 제거하고 `PromotionDecision.scope`를 `publish_contract_trace.scope_state`로 수렴한다.
+  - `tests/test_expert_main_comment_metadata.py`에 stale publish/scrub reason + scope mismatch 회귀 테스트를 추가했다.
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_544_REPORT_20260707.md`
+  - `docs/devs/loop_reports/LOOP_545_REPORT_20260707.md`
+  - `docs/devs/loop_reports/LOOP_546_REPORT_20260707.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop544_always_on_golden18_full375_after_loop543_projection_gate.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop545_current_full375_residual97_runtime_replay_result.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop545_current_full375_residual97_runtime_expected_title_audit.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop546_loop545_contract_normalized_projection_publication_contract_audit.json`
+  - `docs/devs/loop546_current_full375_after_loop545_runtime_residual78_action_queue.json`
+- 검증:
+  - Loop544 golden18: PASS, `18/18`.
+  - Loop544 full375 collateral: `NO-GO`, raw regression `136`, review-adjusted residual `97`.
+  - Loop545 runtime: PASS, completed/flushed/pending/failed `49/49/0/0`, requested/effective parallel `16/16`, dashboard final `49/49`.
+  - Loop545 run health: PASS, `GO / clean_completed_source`.
+  - Loop545 goal/test contract: PASS, `GO`.
+  - Loop545 expected-title audit: `NO-GO / 19 of 49`, failures `30`.
+  - Loop545 원본 publication contract: `NO-GO / violation row 1` (`11663535`).
+  - Loop546 contract-normalized projection: PASS, changed `1`, publication contract `GO / 49 rows / 0 violations`.
+  - py_compile: PASS, `expert_main.py`, `tests/test_expert_main_comment_metadata.py`.
+  - focused unittest: PASS, `2` tests.
+- 결과:
+  - Residual action queue는 runtime exact pass `19`건 제외로 `97 -> 78` 감소했다.
+  - 실패 `30`건은 `docs/devs/loop545_current_full375_residual97_runtime_failure_action_queue.json`으로 분리했다.
+  - Promotion-block repair `22`건은 `docs/devs/loop545_current_full375_residual97_shared_gate_runtime_block_repair_queue.json`으로 분리했다.
+- Gate: code contract `GO_UNIT`, runtime integrity `GO`, publication contract projection `GO`, expected-title replay `NO-GO / 19 of 49`, residual queue `REVIEW-LOCKED / 78`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop543 title mismatch publish-class contract projection 적용
 
 - 코드:

@@ -1,5 +1,26 @@
 # Development Checklist
 
+## 2026-07-07 Loop544-546 residual97 runtime replay와 residual78 체크
+
+- [x] Loop544에서 full375 collateral을 재회계했다: golden18 `18/18 PASS`, raw regression `136`, review-adjusted residual `97`.
+- [x] Loop544 always-on gate는 `NO-GO`로 유지했다.
+- [x] Loop545 runtime replay `49`건을 `--parallel 16`, dashboard ON, VLM/OCR ON으로 실행했다.
+- [x] Loop545 run `20260707_185644_707690`은 completed/flushed/pending/failed `49/49/0/0`이다.
+- [x] Dashboard final은 `http://127.0.0.1:8080`, `49/49`, `progress_pct=100.0`, `parallel_count=16`, `batch_running=false`다.
+- [x] Loop545 run health와 goal/test contract는 `GO`다.
+- [x] Loop545 expected-title audit은 `NO-GO / 19 of 49`로 기록했다.
+- [x] Loop545 failure `30`건을 action queue로 분리했다.
+- [x] Promotion-block repair `22`건을 shared-gate repair queue로 분리했다.
+- [x] Loop546에서 publication trace convergence 코드를 보강했다.
+- [x] Contract-normalized projection은 changed `1`, publication contract `GO / 49 rows / 0 violations`다.
+- [x] Residual queue는 runtime exact pass `19`건 제외로 `97 -> 78`로 줄였다.
+- [x] py_compile PASS, focused unittest `2` tests PASS다.
+- [ ] 동일 49건 packet을 코드/계약 수리 없이 재실행하지 않는다.
+- [ ] Search degraded/timeout 흔적은 P0 search recovery 전까지 `REVIEW`로 유지한다.
+- [ ] Dashboard 상태를 semantic/full_scan approval 근거로 쓰지 않는다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: runtime integrity `GO`, publication contract projection `GO`, expected-title replay `NO-GO / 19 of 49`, residual queue `REVIEW-LOCKED / 78`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop543 title mismatch publish-class contract projection 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 런을 실행하지 않았다.

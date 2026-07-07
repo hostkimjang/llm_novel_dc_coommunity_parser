@@ -1,0 +1,84 @@
+{
+  "audit_type": "goal_test_run_contract",
+  "generated_at": "2026-07-07T20:00:45",
+  "manifest_path": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop545_current_full375_residual97_runtime_replay_result_manifest.json",
+  "log_paths": [
+    "logs\\expert_run_20260707_185644_707690.log"
+  ],
+  "auto_discovered_logs": false,
+  "log_evidence_present": true,
+  "expect_small_goal_run": true,
+  "small_run_threshold": 36,
+  "allow_lifecycle": false,
+  "allow_status_audit": false,
+  "observed": {
+    "run_id": "20260707_185644_707690",
+    "llm_model": "bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4",
+    "llm_endpoint": "http://10.20.0.101:8000/",
+    "requested_parallel_raw": 16,
+    "requested_parallel": 16,
+    "effective_parallel": 16,
+    "parallel_policy": "effective_parallel=min(min(requested_parallel_raw,model_parallel_max),input_post_count)",
+    "model_parallel_max": 36,
+    "model_parallel_cap_applied": false,
+    "input_post_count": 49,
+    "completed_count": 49,
+    "flushed_count": 49,
+    "pending_count": 0,
+    "failed_count": 0,
+    "image_post_count": 32,
+    "vlm_enabled": true,
+    "ocr_enabled": true,
+    "vlm_ocr_semantic_review_ready": true,
+    "mcp_auto_up_shards": false,
+    "mcp_auto_recreate_shards": false,
+    "mcp_local_shard_management_enabled": false,
+    "mcp_local_shard_status_audit": false,
+    "mcp_small_run_shard_lifecycle_blocked": false,
+    "mcp_healthy_endpoint_filter": false,
+    "mcp_requested_endpoint_count_before_health_filter": 16,
+    "mcp_endpoint_count_after_health_filter": 16,
+    "mcp_health_include_search": false,
+    "mcp_health_light_mode": true,
+    "mcp_health_required_ok_count": 16,
+    "mcp_health_checked_endpoint_count": 16,
+    "mcp_health_probe_batch_size": 12,
+    "mcp_health_probe_stopped_after_required_ok": false,
+    "mcp_health_workers": 12,
+    "mcp_health_attempts": 1,
+    "mcp_health_timeout_sec": 8.0,
+    "mcp_health_ok_count": 16,
+    "mcp_health_failure_count": 0
+  },
+  "log_scan": {
+    "total_counts": {},
+    "files": [
+      {
+        "path": "logs\\expert_run_20260707_185644_707690.log",
+        "counts": {},
+        "samples": {}
+      }
+    ]
+  },
+  "issues": [],
+  "gate": {
+    "runtime_contract": "GO",
+    "semantic_approval": "not_evaluated_by_runtime_contract_audit",
+    "reason": "runtime/log/manifest contract only; semantic decision quality remains separately gated"
+  },
+  "process_snapshot": {
+    "enabled": false,
+    "available": false,
+    "source": "disabled",
+    "patterns": [
+      "expert_main",
+      "llm_batch",
+      "warp_shards",
+      "vllm",
+      "uvicorn"
+    ],
+    "matching_process_count": 0,
+    "processes": [],
+    "stale_process_candidate_count": 0
+  }
+}

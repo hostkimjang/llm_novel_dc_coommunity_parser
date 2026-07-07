@@ -1,0 +1,62 @@
+{
+  "report_type": "publication_contract_convergence_audit",
+  "generated_at": "2026-07-07T20:00:44",
+  "gate": "NO-GO",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "policy": {
+    "promotion_decision_trace_ledger_serialized_identity_must_converge": true,
+    "blocked_decision_must_not_publish_serialized_public_identity": true,
+    "allowed_decision_must_match_serialized_public_identity": true,
+    "scrubbed_candidate_must_be_preserved_or_marked_no_candidate": true,
+    "promotion_decision_scope_must_match_trace_and_reason_codes": true,
+    "blocked_decision_must_not_carry_publish_only_reason_codes": true,
+    "url_title_mismatch_block_must_preserve_candidate_url_without_publication": true,
+    "official_url_withheld_reason_must_not_publish_url": true,
+    "verified_image_ocr_work_title_current_work_candidate_must_not_remain_precision_blocked": true,
+    "mixed_current_and_noncurrent_scope_reason_codes_must_be_normalized": true
+  },
+  "summary": {
+    "row_count": 49,
+    "violation_row_count": 1,
+    "violation_counts": {
+      "publish_contract_trace_scope_state_mismatch": 1,
+      "blocked_decision_has_publish_only_reason": 1,
+      "published_and_scrubbed_reason_conflict": 1
+    }
+  },
+  "violations": [
+    {
+      "index": 2,
+      "post_id": "11663535",
+      "gate": "NO-GO",
+      "public_identity": {
+        "official_title": null,
+        "official_url": null
+      },
+      "decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null
+      },
+      "violations": [
+        {
+          "code": "publish_contract_trace_scope_state_mismatch",
+          "detail": "publish_contract_trace.scope_state differs from PromotionDecision.scope"
+        },
+        {
+          "code": "blocked_decision_has_publish_only_reason",
+          "detail": "blocked decision still carries publish-only reason code"
+        },
+        {
+          "code": "published_and_scrubbed_reason_conflict",
+          "detail": "decision carries both serialized_public_identity_published and serialized_public_identity_scrubbed"
+        }
+      ]
+    }
+  ],
+  "result_paths": [
+    "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop545_current_full375_residual97_runtime_replay_result.json"
+  ]
+}

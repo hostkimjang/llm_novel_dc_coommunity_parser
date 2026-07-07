@@ -6575,6 +6575,74 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         self.assertEqual(identity["candidate_ledger"]["publish_contract_trace"], trace)
         self.assertEqual(identity["candidate_ledger"]["publish_ledger"], identity["publish_ledger"])
 
+    def test_publish_contract_convergence_scrubs_blocked_publish_reason_and_scope(self):
+        blocked_decision = {
+            "status": "candidate_only",
+            "publish_allowed": False,
+            "official_title": None,
+            "official_url": None,
+            "candidate_preserved": True,
+            "reason_codes": [
+                "final_publication_decision_inferred_from_serialized_identity",
+                "serialized_public_identity_published",
+                "scope_context_only",
+                "scope_not_current_work",
+                "serialized_public_identity_scrubbed",
+            ],
+            "bypassed_gate": False,
+            "scope": {
+                "scope_kind": "context_only",
+                "confidence": "medium",
+                "conflict_reason_codes": ["serialized_public_identity_missing_official_url"],
+            },
+        }
+        stale_trace = {
+            "pre_gate_candidate": {
+                "official_title": "퇴마록",
+                "official_url": None,
+                "source": "serialized_public_identity",
+            },
+            "gate_decision": dict(blocked_decision),
+            "scope_state": {
+                "scope_kind": "current_work",
+                "confidence": "medium",
+                "direct_bridge_sources": ["title", "body", "comments", "search"],
+            },
+            "post_gate_identity": {"official_title": None, "official_url": None},
+            "reason_codes": list(blocked_decision["reason_codes"]),
+            "bypassed_gate": False,
+        }
+        result = {
+            "identity": {
+                "title_resolution_allowed": False,
+                "title_resolution_state": "unresolved_matchable",
+                "work_resolution": "unresolved",
+                "candidate_ledger_status": "promotion_blocked",
+                "promotion_decision": dict(blocked_decision),
+                "publish_contract_trace": stale_trace,
+                "publish_ledger": {"gate_decision": dict(blocked_decision)},
+                "candidate_ledger": {
+                    "promotion_decision": dict(blocked_decision),
+                    "publish_contract_trace": stale_trace,
+                    "publish_ledger": {"gate_decision": dict(blocked_decision)},
+                },
+            }
+        }
+
+        changed = _enforce_publish_contract_trace_convergence(result)
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        decision = identity["promotion_decision"]
+        reason_codes = decision["reason_codes"]
+        self.assertNotIn("serialized_public_identity_published", reason_codes)
+        self.assertIn("serialized_public_identity_scrubbed", reason_codes)
+        trace = identity["publish_contract_trace"]
+        self.assertEqual(trace["scope_state"], decision["scope"])
+        self.assertEqual(trace["reason_codes"], reason_codes)
+        self.assertEqual(identity["candidate_ledger"]["promotion_decision"], decision)
+        self.assertEqual(identity["candidate_ledger"]["publish_contract_trace"], trace)
+
     def test_platform_meta_image_title_hard_hold_demotes_final_publication_contract(self):
         result = {
             "identity": {
