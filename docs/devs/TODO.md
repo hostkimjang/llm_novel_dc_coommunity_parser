@@ -1,5 +1,25 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop515 TODO
+
+- 상태 업데이트: Loop514 residual `100` 중 shared gate safe57 projection을 실제 runtime replay로 검증했다. Goal은 완료가 아니다.
+- [x] `shared_promotion_gate_wiring_required` / `repair_safe_loss_restore_supported_title` 계열 `57`건 projection을 생성했다.
+- [x] Projection은 `safe_resolved 57/57`, source-native exact match `57/57`, validation issue `0`이다.
+- [x] Runtime input은 `57/57`, missing post_id `0`이다.
+- [x] Run plan은 `--parallel 16`, dashboard 기본 ON, search non-light health, VLM/OCR on을 사용했다.
+- [x] Runtime replay run `20260707_095930_691121`은 completed/flushed/pending/failed `57/57/0/0`으로 완주했다.
+- [x] Dashboard `http://127.0.0.1:8080` 최종 상태는 `57/57`, `progress_pct=100.0`, `batch_running=false`, `parallel_count=16`이다.
+- [x] Run health는 `GO / clean_completed_source`이고 publication contract는 `GO / 57 rows / 0 violations`다.
+- [x] Expected-title runtime 재현은 `NO-GO / 15 of 57`이다.
+- [x] Failure breakdown은 `FAIL_RUNTIME_PROMOTION_BLOCKED 32`, `FAIL_SAFE_RESOLVED_TITLE_MISMATCH 10`, `PASS_EXACT_SAFE_RESOLVED 15`다.
+- [x] 후속 큐는 `57`건이며 `REPROCESS 47`, `HOLD 10`, `P0 42`, `P1 15`로 분리했다.
+- [ ] P0 `shared_gate_runtime_block_repair_required 32`는 code/runtime contract repair로 처리한다.
+- [ ] P0 `source_native_canonical_variant_review_required 10`은 blind/source-native variant review 후에만 replay한다.
+- [ ] PASS exact `15`건도 full375 collateral 전에는 approval로 세지 않는다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: runtime completion `GO_RUNTIME_COMPLETE_AUDITED`, publication contract `GO`, expected-title replay `NO-GO / 15 of 57`, full375 collateral `NO-GO`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop514 TODO
 
 - 상태 업데이트: Loop513 residual `safe_loss_resolved_to_null` INFO_MISSING `41`건을 source-native/image evidence/native-web 배치로 처리했다. Goal은 완료가 아니다.

@@ -1,5 +1,24 @@
 # Development Checklist
 
+## 2026-07-07 Loop515 shared gate safe57 runtime 체크
+
+- [x] Loop514 residual `100`에서 shared gate safe57 projection `57`건을 생성했다.
+- [x] Projection validation issue는 `0`이고 projected status는 `safe_resolved 57`이다.
+- [x] Runtime input manifest는 input `57`, missing post_id `0`이다.
+- [x] Run plan은 `--parallel 16`과 dashboard 기본 ON을 사용한다.
+- [x] Dashboard `http://127.0.0.1:8080`에 테스트런을 붙였고 최종 `57/57`, `progress_pct=100.0`, `batch_running=false`를 확인했다.
+- [x] Run `20260707_095930_691121`은 completed/flushed/pending/failed `57/57/0/0`이다.
+- [x] Checkpoint/result rows는 `57/57`이다.
+- [x] MCP health는 search 포함 non-light, ok/failure `16/0`이다.
+- [x] Run health audit는 `GO / clean_completed_source`다.
+- [x] Publication contract audit는 `GO / 57 rows / 0 violations`다.
+- [x] Expected-title audit는 `NO-GO / 15 of 57`이다.
+- [x] 후속 failure queue는 `57`건, `REPROCESS 47`, `HOLD 10`이다.
+- [ ] Expected-title `NO-GO`를 full_scan approval로 승격하지 않는다.
+- [ ] P0 `42`건은 runtime 반복보다 repair/source-native review로 먼저 분리한다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: runtime completion `GO_RUNTIME_COMPLETE_AUDITED`, publication contract `GO`, expected-title replay `NO-GO`, full375 collateral `NO-GO`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop514 safe_loss INFO_MISSING 배치 체크
 
 - [x] Loop513 residual `safe_loss_resolved_to_null` INFO_MISSING `41`건을 추출했다.

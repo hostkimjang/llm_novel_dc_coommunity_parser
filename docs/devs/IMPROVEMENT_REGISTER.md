@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260707-515 - shared gate safe57 runtime replay
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Projection safe57 | GO_PROJECTION_ONLY | `safe_resolved 57/57`, exact match `57/57`, validation issue `0` | runtime 결과와 분리 |
+| Runtime completion | GO_RUNTIME_COMPLETE_AUDITED | run `20260707_095930_691121`, completed/flushed/pending/failed `57/57/0/0` | semantic approval로 승격 금지 |
+| Parallel/dashboard policy | GO | requested/effective `16/16`, dashboard `57/57`, `progress_pct=100.0` | 다음 테스트런도 `--parallel 16` + dashboard 기본 ON |
+| Publication contract | GO | `57` rows, violations `0` | full375 collateral과 분리 |
+| Expected-title replay | NO-GO | exact safe_resolved `15/57`, blocked `32`, mismatch `10` | projection 과적합/미재현으로 처리 |
+| Failure queue | REVIEW-LOCKED | `REPROCESS 47`, `HOLD 10`, `P0 42`, `P1 15` | P0 32 gate repair, P0 10 variant/source-native review |
+| Search evidence | REVIEW | run health blocker `search_degraded_observed` | search/full_scan approval로 승격 금지 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: runtime completion `GO_RUNTIME_COMPLETE_AUDITED`, publication contract `GO`, expected-title replay `NO-GO / 15 of 57`, full375 collateral `NO-GO`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-514 - safe_loss INFO_MISSING 41 review and dashboard contract
 
 | 항목 | 상태 | 근거 | 다음 |

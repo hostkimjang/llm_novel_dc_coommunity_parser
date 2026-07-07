@@ -1,5 +1,29 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop515 shared gate safe57 runtime 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_515_REPORT_20260707.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop515_shared_gate_safe57_runtime_state_20260707.json`.
+  - [x] Projection 기록 완료: `docs/devs/loop515_residual100_shared_gate_projection.json/.md`.
+  - [x] Initial follow-up queue 기록 완료: `docs/devs/loop515_residual100_shared_gate_followup_queue.json/.md`.
+  - [x] Runtime run manifest 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop515_shared_gate_projected_safe57_runtime_replay_result_manifest.json`.
+  - [x] Run health audit 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop515_shared_gate_projected_safe57_run_health.json`.
+  - [x] Publication contract audit 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop515_shared_gate_projected_safe57_publication_contract.json/.md`.
+  - [x] Expected-title audit 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop515_shared_gate_projected_safe57_runtime_expected_audit.json/.md`.
+  - [x] Failure queue 기록 완료: `docs/devs/loop515_after_safe57_runtime_expected_failure_queue.json/.md`.
+- 품질 경계:
+  - [x] 테스트런은 `--parallel 16`과 dashboard 기본 ON으로 실행했다.
+  - [x] Dashboard 최종 상태는 `57/57`, `progress_pct=100.0`, `batch_running=false`다.
+  - [x] Runtime completion은 `57/57`, failed `0`, ordered flush gap `false`다.
+  - [x] Publication contract violation은 `0`이다.
+  - [x] Expected-title gate는 `NO-GO / 15 of 57`이다.
+  - [x] 후속 큐는 promotion block repair, title mismatch review, exact pass replay 후보를 분리했다.
+  - [ ] Expected-title failure `42`건을 같은 입력 반복으로 무작정 재실행하지 않는다.
+  - [ ] PASS exact `15`건도 full375 collateral 전에는 approval로 세지 않는다.
+  - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: runtime completion `GO_RUNTIME_COMPLETE_AUDITED`, publication contract `GO`, expected-title replay `NO-GO`, full375 collateral `NO-GO`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop514 safe_loss 배치 품질 게이트
 
 - 근거:

@@ -1,5 +1,46 @@
 # Verification Results
 
+## 2026-07-07 Loop515 Verification
+
+- 범위: Loop514 residual `100` 중 shared gate safe57 projection `57`건을 동일 입력 runtime replay로 검증했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_515_REPORT_20260707.md`
+  - state `docs\devs\loop515_shared_gate_safe57_runtime_state_20260707.json`
+  - projection `docs\devs\loop515_residual100_shared_gate_projection.json`
+  - initial follow-up queue `docs\devs\loop515_residual100_shared_gate_followup_queue.json`
+  - runtime input manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\inputs\loop515_shared_gate_projected_safe57_runtime_replay_input_manifest.json`
+  - runtime manifest `out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop515_shared_gate_projected_safe57_runtime_replay_result_manifest.json`
+  - run health `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop515_shared_gate_projected_safe57_run_health.json`
+  - publication audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop515_shared_gate_projected_safe57_publication_contract.json`
+  - expected audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop515_shared_gate_projected_safe57_runtime_expected_audit.json`
+  - failure queue `docs\devs\loop515_after_safe57_runtime_expected_failure_queue.json`
+- Result:
+  - projection rows `57`, projected `safe_resolved 57`, validation issue `0`
+  - runtime input rows `57`, missing post_id `0`
+  - run `20260707_095930_691121`, completed/flushed/pending/failed `57/57/0/0`
+  - checkpoint/result rows `57/57`
+  - requested/effective parallel `16/16`
+  - dashboard final `57/57`, `progress_pct=100.0`, `batch_running=false`
+  - MCP search non-light health ok/failure `16/0`
+  - run health `GO / clean_completed_source`, reason errors `0`
+  - publication contract `GO / 57 rows / 0 violations`
+  - expected-title replay `NO-GO / 15 of 57`
+  - expected audit status counts `FAIL_RUNTIME_PROMOTION_BLOCKED 32`, `FAIL_SAFE_RESOLVED_TITLE_MISMATCH 10`, `PASS_EXACT_SAFE_RESOLVED 15`
+  - follow-up queue `57`, `REPROCESS 47`, `HOLD 10`, `P0 42`, `P1 15`
+- Validation:
+  - `tools\project_residual_queue_through_promotion_gate.py ... --fail-on-validation-issue` PASS, validation issue `0`.
+  - `tools\build_projection_followup_queue.py ... --fail-on-validation-issue` PASS, runtime input missing `0`.
+  - `tools\run_independent_plan.py` PASS, selected/completed runs `1/1`, dashboard already running.
+  - `tools\audit_expert_run_health.py` PASS, flush integrity `GO`.
+  - `tools\audit_publication_contract_convergence.py` PASS, violations `0`.
+  - `tools\audit_runtime_expected_titles.py` PASS, expected-title gate `NO-GO`.
+  - `tools\build_projection_followup_queue.py --prior-runtime-expected-audit ...` PASS, validation issue `0`.
+- Boundary:
+  - Runtime completion and publication contract GO do not imply semantic approval.
+  - Expected-title `NO-GO` means projection safe57 is not accepted as resolved.
+  - Full375 collateral remains `NO-GO`.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-07 Loop514 Verification
 
 - 범위: Loop513 residual `safe_loss_resolved_to_null` INFO_MISSING `41`건을 source-native/image evidence/native-web review로 처리하고, Loop514 summary와 residual action queue를 재생성했다. 새 runtime replay는 실행하지 않았다.

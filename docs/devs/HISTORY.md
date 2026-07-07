@@ -1,5 +1,18 @@
 # Development History
 
+## 2026-07-07 - Loop515 shared gate safe57 runtime replay
+
+- Loop514 residual `100` 중 shared gate safe57 projection `57`건을 생성했다.
+- Projection은 `safe_resolved 57/57`, source-native exact match `57/57`, validation issue `0`이다.
+- Runtime input은 `57/57`, missing post_id `0`이다.
+- Run `20260707_095930_691121`은 `--parallel 16`과 dashboard `http://127.0.0.1:8080`로 실행했고 completed/flushed/pending/failed `57/57/0/0`으로 완주했다.
+- Dashboard 최종 상태는 `57/57`, `progress_pct=100.0`, `batch_running=false`, active `0`이다.
+- Run health는 `GO / clean_completed_source`, publication contract는 `GO / 57 rows / 0 violations`이다.
+- Expected-title runtime 재현은 `NO-GO / 15 of 57`이며, `FAIL_RUNTIME_PROMOTION_BLOCKED 32`, `FAIL_SAFE_RESOLVED_TITLE_MISMATCH 10`, `PASS_EXACT_SAFE_RESOLVED 15`다.
+- 후속 failure queue는 `57`건으로 `REPROCESS 47`, `HOLD 10`, `P0 42`, `P1 15`다.
+- Report는 `docs/devs/loop_reports/LOOP_515_REPORT_20260707.md`, state는 `docs/devs/loop515_shared_gate_safe57_runtime_state_20260707.json`이다.
+- Gate는 runtime completion `GO_RUNTIME_COMPLETE_AUDITED`, publication contract `GO`, expected-title replay `NO-GO`, full375 collateral `NO-GO / not rerun`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop514 safe_loss INFO_MISSING batch review
 
 - Loop513 residual `safe_loss_resolved_to_null` INFO_MISSING `41`건을 source-native/image evidence/native-web 근거로 처리했다.
