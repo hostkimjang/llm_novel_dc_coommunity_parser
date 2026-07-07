@@ -1,0 +1,49 @@
+{
+  "report_type": "canonical_candidate_recheck_verdict_application",
+  "review_id": "loop539_b1_missing_candidate_verdict_application",
+  "scope": "Loop539 B1 missing candidate canonical recheck",
+  "generated_at": "2026-07-07T17:51:19",
+  "source_batch": "docs\\devs\\loop539_b1_missing_candidate_canonical_recheck11_batch.json",
+  "source_verdicts": null,
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "batch_rows": 11,
+    "verdict_rows": 0,
+    "reviewed_rows": 0,
+    "accepted_verdict_rows": 0,
+    "unreviewed_batch_rows": 11,
+    "validation_issue_count": 0,
+    "canonical_verdict_counts": {},
+    "post_verdict_next_state_counts": {},
+    "runtime_release_condition_counts": {},
+    "review_lane_counts": {},
+    "search_gate_counts": {},
+    "runtime_replay_allowed_rows": 0,
+    "contract_test_required_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "unreviewed_post_ids": [
+    11663511,
+    11666741,
+    11669913,
+    11669926,
+    11669933,
+    11677924,
+    11694068,
+    11697242,
+    11697256,
+    11706831,
+    11718114
+  ],
+  "rows": [],
+  "next_actions": [
+    "canonical verdict가 비어 있는 row는 source-native/blind 검토를 먼저 완료한다.",
+    "유효한 verdict row도 contract test 통과 전에는 runtime replay 후보로 돌리지 않는다.",
+    "runtime replay 뒤에도 full375 collateral GO 전에는 full_scan approval을 열지 않는다.",
+    "semantic_quality=REVIEW-LOCKED, full_scan_approval=false를 유지한다."
+  ]
+}

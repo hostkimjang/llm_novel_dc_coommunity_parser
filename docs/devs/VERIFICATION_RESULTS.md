@@ -1,5 +1,28 @@
 # Verification Results
 
+## 2026-07-07 Loop539 shared-gate repair queue와 canonical recheck batch
+
+- 코드:
+  - `tools/build_canonical_candidate_recheck_batch.py`가 `B1_missing_candidate_alignment_review`를 validation issue 없이 받는다.
+  - missing-candidate lane의 allowed verdict를 `EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED`, `INSUFFICIENT_EVIDENCE_HOLD`로 제한했다.
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_539_REPORT_20260707.md`
+  - `docs/devs/loop539_shared_gate_runtime_block_repair11_queue.json`
+  - `docs/devs/loop539_b1_missing_candidate_canonical_recheck11_batch.json`
+  - `docs/devs/loop539_b1_missing_candidate_verdict_template.json`
+  - `docs/devs/loop539_title_mismatch_hold3_source_native_review_packet.json`
+- 검증:
+  - py_compile: PASS.
+  - `tests.test_canonical_candidate_recheck_batch`: PASS, `4` tests.
+  - Shared-gate repair queue generation: PASS, validation issue `0`.
+  - Canonical recheck batch generation: PASS, validation issue `0`.
+  - Title mismatch review packet generation: PASS, validation issue `0`.
+- 결과:
+  - `FAIL_RUNTIME_PROMOTION_BLOCKED 11`건은 `B1_missing_candidate_alignment_review 11`로 분리했고 runtime replay allowed는 `0`이다.
+  - B1 verdict template은 `11` rows이며 reviewed `0/11`이다.
+  - `FAIL_SAFE_RESOLVED_TITLE_MISMATCH 3`건은 source-native/blind review packet으로 분리했고 runtime input candidate는 `0`이다.
+- Gate: shared-gate repair queue `REVIEW-LOCKED / 11`, B1 canonical recheck `REVIEW-LOCKED / 11`, title mismatch review packet `REVIEW-LOCKED / 3`, runtime replay `NOT_ALLOWED / 0`, full375 collateral `NO-GO / residual 100`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop538 shared-gate seeded runtime replay 실행 감사
 
 - 실행:

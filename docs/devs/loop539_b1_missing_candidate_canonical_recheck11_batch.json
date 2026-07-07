@@ -1,0 +1,1474 @@
+{
+  "report_type": "canonical_candidate_recheck_batch",
+  "batch_id": "loop539_b1_missing_candidate_canonical_recheck11_batch",
+  "generated_at": "2026-07-07T17:51:19",
+  "source_queue_id": "loop539_shared_gate_runtime_block_repair11_queue",
+  "source_gate": "REVIEW-LOCKED",
+  "selected_lanes": [
+    "B1_different_candidate_alignment_review",
+    "B1_missing_candidate_alignment_review",
+    "B1_related_candidate_alignment_review"
+  ],
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "gate": "REVIEW-LOCKED",
+  "summary": {
+    "source_queue_rows": 11,
+    "selected_rows": 11,
+    "verdict_required_rows": 11,
+    "runtime_replay_allowed_rows": 0,
+    "review_lane_counts": {
+      "B1_missing_candidate_alignment_review": 11
+    },
+    "alignment_state_counts": {
+      "missing_current_projection_candidate": 11
+    },
+    "candidate_support_state_counts": {
+      "missing_current_projection_candidate_support": 11
+    },
+    "search_gate_counts": {
+      "SEARCH_BLIND_BLOCKER": 4,
+      "SEARCH_EVIDENCE_MISSING": 1,
+      "SEARCH_OK": 1,
+      "SEARCH_RECOVERED_CONDITIONAL": 5
+    },
+    "primary_repair_lane_counts": {
+      "candidate_preservation_or_scrub_repair": 4,
+      "scope_or_nonwork_monotonicity_repair": 4,
+      "title_url_or_variant_trace_repair": 3
+    },
+    "validation_issue_count": 0
+  },
+  "validation_issues": [],
+  "review_groups": [
+    {
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "row_count": 11,
+      "candidate_support_state_counts": {
+        "missing_current_projection_candidate_support": 11
+      },
+      "search_gate_counts": {
+        "SEARCH_BLIND_BLOCKER": 4,
+        "SEARCH_EVIDENCE_MISSING": 1,
+        "SEARCH_OK": 1,
+        "SEARCH_RECOVERED_CONDITIONAL": 5
+      },
+      "primary_repair_lane_counts": {
+        "candidate_preservation_or_scrub_repair": 4,
+        "scope_or_nonwork_monotonicity_repair": 4,
+        "title_url_or_variant_trace_repair": 3
+      },
+      "post_ids": [
+        11669913,
+        11697242,
+        11697256,
+        11718114,
+        11666741,
+        11694068,
+        11663511,
+        11669926,
+        11669933,
+        11677924,
+        11706831
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11669913,
+          "review_lane": "B1_missing_candidate_alignment_review",
+          "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+          "expected_or_source_native_title": "하룬",
+          "projected_title": "하룬",
+          "current_projection_candidate_title": null,
+          "current_projection_candidate_url": null,
+          "current_projection_candidate_alignment_state": "missing_current_projection_candidate",
+          "current_projection_candidate_missing": true,
+          "candidate_support_state": "missing_current_projection_candidate_support",
+          "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+          "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+          "reason_codes": [
+            "blocked_candidate_scope_inferred_from_final_contract",
+            "exact_alias_candidate_preserved_without_work_discussion",
+            "image_ocr_without_title_anchor",
+            "nonwork_or_noise_context",
+            "scope_context_only",
+            "scope_not_current_work",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "actions": [
+            "scope_or_nonwork_monotonicity_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_recovered_conditional_tag_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "candidate_evidence_profile": {
+            "source_tiers": [],
+            "source_roles": [],
+            "negative_evidence": [],
+            "metadata_source_count": 0,
+            "image_title_match": false
+          },
+          "allowed_verdicts": [
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+            "INSUFFICIENT_EVIDENCE_HOLD"
+          ],
+          "review_questions": [
+            "current projection candidate가 누락된 이유가 후보 재구축 문제인지, expected/source-native title 자체가 packet-local 작품 근거에 맞는지 확인한다.",
+            "누락 후보 lane은 expected title 복구, hard hold, 또는 stronger native-web review 중 하나로 판정한다.",
+            "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+          ],
+          "after_verdict_contract": {
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+              "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+              "runtime_release": "blocked_until_contract_tests_pass"
+            },
+            "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+              "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+              "runtime_release": "blocked_until_expected_contract_updated"
+            },
+            "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+              "next_state": "canonical_variant_policy_contract_required",
+              "runtime_release": "blocked_until_variant_policy_tests_pass"
+            },
+            "WRONG_OR_UNRELATED_CANDIDATE": {
+              "next_state": "current_projection_candidate_scrub_required",
+              "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+            },
+            "INSUFFICIENT_EVIDENCE_HOLD": {
+              "next_state": "hard_hold_or_native_web_review_required",
+              "runtime_release": "blocked_until_stronger_evidence"
+            },
+            "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+            "runtime_replay_allowed_before_verdict": false
+          },
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11669913",
+            "prior_runtime_expected_audit#post_id=11669913",
+            "current_projection_result#post_id=11669913"
+          ],
+          "approval_boundary": {
+            "packet_generation_is_not_verdict": true,
+            "canonical_recheck_is_required_before_runtime_replay": true,
+            "full375_collateral_remains_no_go": true
+          }
+        },
+        {
+          "post_id": 11697242,
+          "review_lane": "B1_missing_candidate_alignment_review",
+          "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+          "expected_or_source_native_title": "유희왕",
+          "projected_title": "유희왕",
+          "current_projection_candidate_title": null,
+          "current_projection_candidate_url": null,
+          "current_projection_candidate_alignment_state": "missing_current_projection_candidate",
+          "current_projection_candidate_missing": true,
+          "candidate_support_state": "missing_current_projection_candidate_support",
+          "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+          "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+          "reason_codes": [
+            "community_banter",
+            "non_novel_discourse",
+            "nonwork",
+            "row_discussion_missing",
+            "scope_not_current_work",
+            "scope_platform_meta_nonwork",
+            "serialized_public_identity_scrubbed",
+            "thematic_overlap_only"
+          ],
+          "projected_reasons": [],
+          "actions": [
+            "scope_or_nonwork_monotonicity_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_recovered_conditional_tag_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "candidate_evidence_profile": {
+            "source_tiers": [],
+            "source_roles": [],
+            "negative_evidence": [],
+            "metadata_source_count": 0,
+            "image_title_match": false
+          },
+          "allowed_verdicts": [
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+            "INSUFFICIENT_EVIDENCE_HOLD"
+          ],
+          "review_questions": [
+            "current projection candidate가 누락된 이유가 후보 재구축 문제인지, expected/source-native title 자체가 packet-local 작품 근거에 맞는지 확인한다.",
+            "누락 후보 lane은 expected title 복구, hard hold, 또는 stronger native-web review 중 하나로 판정한다.",
+            "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+          ],
+          "after_verdict_contract": {
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+              "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+              "runtime_release": "blocked_until_contract_tests_pass"
+            },
+            "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+              "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+              "runtime_release": "blocked_until_expected_contract_updated"
+            },
+            "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+              "next_state": "canonical_variant_policy_contract_required",
+              "runtime_release": "blocked_until_variant_policy_tests_pass"
+            },
+            "WRONG_OR_UNRELATED_CANDIDATE": {
+              "next_state": "current_projection_candidate_scrub_required",
+              "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+            },
+            "INSUFFICIENT_EVIDENCE_HOLD": {
+              "next_state": "hard_hold_or_native_web_review_required",
+              "runtime_release": "blocked_until_stronger_evidence"
+            },
+            "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+            "runtime_replay_allowed_before_verdict": false
+          },
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11697242",
+            "prior_runtime_expected_audit#post_id=11697242",
+            "current_projection_result#post_id=11697242"
+          ],
+          "approval_boundary": {
+            "packet_generation_is_not_verdict": true,
+            "canonical_recheck_is_required_before_runtime_replay": true,
+            "full375_collateral_remains_no_go": true
+          }
+        },
+        {
+          "post_id": 11697256,
+          "review_lane": "B1_missing_candidate_alignment_review",
+          "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+          "expected_or_source_native_title": "황제의 딸로 환생했다",
+          "projected_title": "황제의 딸로 환생했다",
+          "current_projection_candidate_title": null,
+          "current_projection_candidate_url": null,
+          "current_projection_candidate_alignment_state": "missing_current_projection_candidate",
+          "current_projection_candidate_missing": true,
+          "candidate_support_state": "missing_current_projection_candidate_support",
+          "search_gate": "SEARCH_BLIND_BLOCKER",
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+          "reason_codes": [
+            "llm_only_sentence_candidate_pruned",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "actions": [
+            "candidate_preservation_or_scrub_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_blind_preflight_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "candidate_evidence_profile": {
+            "source_tiers": [],
+            "source_roles": [],
+            "negative_evidence": [],
+            "metadata_source_count": 0,
+            "image_title_match": false
+          },
+          "allowed_verdicts": [
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+            "INSUFFICIENT_EVIDENCE_HOLD"
+          ],
+          "review_questions": [
+            "current projection candidate가 누락된 이유가 후보 재구축 문제인지, expected/source-native title 자체가 packet-local 작품 근거에 맞는지 확인한다.",
+            "누락 후보 lane은 expected title 복구, hard hold, 또는 stronger native-web review 중 하나로 판정한다.",
+            "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+          ],
+          "after_verdict_contract": {
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+              "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+              "runtime_release": "blocked_until_contract_tests_pass"
+            },
+            "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+              "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+              "runtime_release": "blocked_until_expected_contract_updated"
+            },
+            "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+              "next_state": "canonical_variant_policy_contract_required",
+              "runtime_release": "blocked_until_variant_policy_tests_pass"
+            },
+            "WRONG_OR_UNRELATED_CANDIDATE": {
+              "next_state": "current_projection_candidate_scrub_required",
+              "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+            },
+            "INSUFFICIENT_EVIDENCE_HOLD": {
+              "next_state": "hard_hold_or_native_web_review_required",
+              "runtime_release": "blocked_until_stronger_evidence"
+            },
+            "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+            "runtime_replay_allowed_before_verdict": false
+          },
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11697256",
+            "prior_runtime_expected_audit#post_id=11697256",
+            "current_projection_result#post_id=11697256"
+          ],
+          "approval_boundary": {
+            "packet_generation_is_not_verdict": true,
+            "canonical_recheck_is_required_before_runtime_replay": true,
+            "full375_collateral_remains_no_go": true
+          }
+        },
+        {
+          "post_id": 11718114,
+          "review_lane": "B1_missing_candidate_alignment_review",
+          "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+          "expected_or_source_native_title": "설정값 딸깍으로 판타지 시스템 정상화",
+          "projected_title": "설정값 딸깍으로 판타지 시스템 정상화",
+          "current_projection_candidate_title": null,
+          "current_projection_candidate_url": null,
+          "current_projection_candidate_alignment_state": "missing_current_projection_candidate",
+          "current_projection_candidate_missing": true,
+          "candidate_support_state": "missing_current_projection_candidate_support",
+          "search_gate": "SEARCH_OK",
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "ok",
+          "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+          "reason_codes": [
+            "blocked_candidate_scope_inferred_from_final_contract",
+            "exact_alias_candidate_preserved_without_work_discussion",
+            "image_ocr_without_title_anchor",
+            "nonwork_or_noise_context",
+            "scope_context_only",
+            "scope_not_current_work",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "actions": [
+            "scope_or_nonwork_monotonicity_repair_required",
+            "current_projection_candidate_recheck_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "candidate_evidence_profile": {
+            "source_tiers": [],
+            "source_roles": [],
+            "negative_evidence": [],
+            "metadata_source_count": 0,
+            "image_title_match": false
+          },
+          "allowed_verdicts": [
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+            "INSUFFICIENT_EVIDENCE_HOLD"
+          ],
+          "review_questions": [
+            "current projection candidate가 누락된 이유가 후보 재구축 문제인지, expected/source-native title 자체가 packet-local 작품 근거에 맞는지 확인한다.",
+            "누락 후보 lane은 expected title 복구, hard hold, 또는 stronger native-web review 중 하나로 판정한다.",
+            "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+          ],
+          "after_verdict_contract": {
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+              "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+              "runtime_release": "blocked_until_contract_tests_pass"
+            },
+            "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+              "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+              "runtime_release": "blocked_until_expected_contract_updated"
+            },
+            "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+              "next_state": "canonical_variant_policy_contract_required",
+              "runtime_release": "blocked_until_variant_policy_tests_pass"
+            },
+            "WRONG_OR_UNRELATED_CANDIDATE": {
+              "next_state": "current_projection_candidate_scrub_required",
+              "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+            },
+            "INSUFFICIENT_EVIDENCE_HOLD": {
+              "next_state": "hard_hold_or_native_web_review_required",
+              "runtime_release": "blocked_until_stronger_evidence"
+            },
+            "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+            "runtime_replay_allowed_before_verdict": false
+          },
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11718114",
+            "prior_runtime_expected_audit#post_id=11718114",
+            "current_projection_result#post_id=11718114"
+          ],
+          "approval_boundary": {
+            "packet_generation_is_not_verdict": true,
+            "canonical_recheck_is_required_before_runtime_replay": true,
+            "full375_collateral_remains_no_go": true
+          }
+        },
+        {
+          "post_id": 11666741,
+          "review_lane": "B1_missing_candidate_alignment_review",
+          "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+          "expected_or_source_native_title": "별을 품은 소드마스터",
+          "projected_title": "별을 품은 소드마스터",
+          "current_projection_candidate_title": null,
+          "current_projection_candidate_url": null,
+          "current_projection_candidate_alignment_state": "missing_current_projection_candidate",
+          "current_projection_candidate_missing": true,
+          "candidate_support_state": "missing_current_projection_candidate_support",
+          "search_gate": "SEARCH_EVIDENCE_MISSING",
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "None",
+          "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+          "reason_codes": [
+            "promotion_blocked",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "actions": [
+            "candidate_preservation_or_scrub_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_blind_preflight_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "candidate_evidence_profile": {
+            "source_tiers": [],
+            "source_roles": [],
+            "negative_evidence": [],
+            "metadata_source_count": 0,
+            "image_title_match": false
+          },
+          "allowed_verdicts": [
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+            "INSUFFICIENT_EVIDENCE_HOLD"
+          ],
+          "review_questions": [
+            "current projection candidate가 누락된 이유가 후보 재구축 문제인지, expected/source-native title 자체가 packet-local 작품 근거에 맞는지 확인한다.",
+            "누락 후보 lane은 expected title 복구, hard hold, 또는 stronger native-web review 중 하나로 판정한다.",
+            "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+          ],
+          "after_verdict_contract": {
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+              "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+              "runtime_release": "blocked_until_contract_tests_pass"
+            },
+            "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+              "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+              "runtime_release": "blocked_until_expected_contract_updated"
+            },
+            "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+              "next_state": "canonical_variant_policy_contract_required",
+              "runtime_release": "blocked_until_variant_policy_tests_pass"
+            },
+            "WRONG_OR_UNRELATED_CANDIDATE": {
+              "next_state": "current_projection_candidate_scrub_required",
+              "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+            },
+            "INSUFFICIENT_EVIDENCE_HOLD": {
+              "next_state": "hard_hold_or_native_web_review_required",
+              "runtime_release": "blocked_until_stronger_evidence"
+            },
+            "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+            "runtime_replay_allowed_before_verdict": false
+          },
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11666741",
+            "prior_runtime_expected_audit#post_id=11666741",
+            "current_projection_result#post_id=11666741"
+          ],
+          "approval_boundary": {
+            "packet_generation_is_not_verdict": true,
+            "canonical_recheck_is_required_before_runtime_replay": true,
+            "full375_collateral_remains_no_go": true
+          }
+        },
+        {
+          "post_id": 11694068,
+          "review_lane": "B1_missing_candidate_alignment_review",
+          "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+          "expected_or_source_native_title": "트와일라잇",
+          "projected_title": "트와일라잇",
+          "current_projection_candidate_title": null,
+          "current_projection_candidate_url": null,
+          "current_projection_candidate_alignment_state": "missing_current_projection_candidate",
+          "current_projection_candidate_missing": true,
+          "candidate_support_state": "missing_current_projection_candidate_support",
+          "search_gate": "SEARCH_BLIND_BLOCKER",
+          "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+          "prior_runtime_search_status": "SEARCH_DEGRADED",
+          "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+          "reason_codes": [
+            "llm_only_sentence_candidate_pruned",
+            "serialized_public_identity_scrubbed"
+          ],
+          "projected_reasons": [],
+          "actions": [
+            "candidate_preservation_or_scrub_repair_required",
+            "current_projection_candidate_recheck_required",
+            "search_blind_preflight_required",
+            "publish_contract_trace_contract_test_required",
+            "runtime_replay_after_contract_repair",
+            "full375_collateral_recheck_after_repair"
+          ],
+          "candidate_evidence_profile": {
+            "source_tiers": [],
+            "source_roles": [],
+            "negative_evidence": [],
+            "metadata_source_count": 0,
+            "image_title_match": false
+          },
+          "allowed_verdicts": [
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+            "INSUFFICIENT_EVIDENCE_HOLD"
+          ],
+          "review_questions": [
+            "current projection candidate가 누락된 이유가 후보 재구축 문제인지, expected/source-native title 자체가 packet-local 작품 근거에 맞는지 확인한다.",
+            "누락 후보 lane은 expected title 복구, hard hold, 또는 stronger native-web review 중 하나로 판정한다.",
+            "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+          ],
+          "after_verdict_contract": {
+            "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+              "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+              "runtime_release": "blocked_until_contract_tests_pass"
+            },
+            "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+              "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+              "runtime_release": "blocked_until_expected_contract_updated"
+            },
+            "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+              "next_state": "canonical_variant_policy_contract_required",
+              "runtime_release": "blocked_until_variant_policy_tests_pass"
+            },
+            "WRONG_OR_UNRELATED_CANDIDATE": {
+              "next_state": "current_projection_candidate_scrub_required",
+              "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+            },
+            "INSUFFICIENT_EVIDENCE_HOLD": {
+              "next_state": "hard_hold_or_native_web_review_required",
+              "runtime_release": "blocked_until_stronger_evidence"
+            },
+            "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+            "runtime_replay_allowed_before_verdict": false
+          },
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11694068",
+            "prior_runtime_expected_audit#post_id=11694068",
+            "current_projection_result#post_id=11694068"
+          ],
+          "approval_boundary": {
+            "packet_generation_is_not_verdict": true,
+            "canonical_recheck_is_required_before_runtime_replay": true,
+            "full375_collateral_remains_no_go": true
+          }
+        }
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "post_id": 11669913,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "하룬",
+      "projected_title": "하룬",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "current_projection_candidate_alignment_state": "missing_current_projection_candidate",
+      "current_projection_candidate_missing": true,
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "reason_codes": [
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "nonwork_or_noise_context",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "scope_or_nonwork_monotonicity_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_recovered_conditional_tag_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [],
+        "source_roles": [],
+        "negative_evidence": [],
+        "metadata_source_count": 0,
+        "image_title_match": false
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "current projection candidate가 누락된 이유가 후보 재구축 문제인지, expected/source-native title 자체가 packet-local 작품 근거에 맞는지 확인한다.",
+        "누락 후보 lane은 expected title 복구, hard hold, 또는 stronger native-web review 중 하나로 판정한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11669913",
+        "prior_runtime_expected_audit#post_id=11669913",
+        "current_projection_result#post_id=11669913"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    },
+    {
+      "post_id": 11697242,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "유희왕",
+      "projected_title": "유희왕",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "current_projection_candidate_alignment_state": "missing_current_projection_candidate",
+      "current_projection_candidate_missing": true,
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "reason_codes": [
+        "community_banter",
+        "non_novel_discourse",
+        "nonwork",
+        "row_discussion_missing",
+        "scope_not_current_work",
+        "scope_platform_meta_nonwork",
+        "serialized_public_identity_scrubbed",
+        "thematic_overlap_only"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "scope_or_nonwork_monotonicity_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_recovered_conditional_tag_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [],
+        "source_roles": [],
+        "negative_evidence": [],
+        "metadata_source_count": 0,
+        "image_title_match": false
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "current projection candidate가 누락된 이유가 후보 재구축 문제인지, expected/source-native title 자체가 packet-local 작품 근거에 맞는지 확인한다.",
+        "누락 후보 lane은 expected title 복구, hard hold, 또는 stronger native-web review 중 하나로 판정한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11697242",
+        "prior_runtime_expected_audit#post_id=11697242",
+        "current_projection_result#post_id=11697242"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    },
+    {
+      "post_id": 11697256,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "황제의 딸로 환생했다",
+      "projected_title": "황제의 딸로 환생했다",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "current_projection_candidate_alignment_state": "missing_current_projection_candidate",
+      "current_projection_candidate_missing": true,
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+      "reason_codes": [
+        "llm_only_sentence_candidate_pruned",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "candidate_preservation_or_scrub_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [],
+        "source_roles": [],
+        "negative_evidence": [],
+        "metadata_source_count": 0,
+        "image_title_match": false
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "current projection candidate가 누락된 이유가 후보 재구축 문제인지, expected/source-native title 자체가 packet-local 작품 근거에 맞는지 확인한다.",
+        "누락 후보 lane은 expected title 복구, hard hold, 또는 stronger native-web review 중 하나로 판정한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11697256",
+        "prior_runtime_expected_audit#post_id=11697256",
+        "current_projection_result#post_id=11697256"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    },
+    {
+      "post_id": 11718114,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "설정값 딸깍으로 판타지 시스템 정상화",
+      "projected_title": "설정값 딸깍으로 판타지 시스템 정상화",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "current_projection_candidate_alignment_state": "missing_current_projection_candidate",
+      "current_projection_candidate_missing": true,
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_OK",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "ok",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "reason_codes": [
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "nonwork_or_noise_context",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "scope_or_nonwork_monotonicity_repair_required",
+        "current_projection_candidate_recheck_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [],
+        "source_roles": [],
+        "negative_evidence": [],
+        "metadata_source_count": 0,
+        "image_title_match": false
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "current projection candidate가 누락된 이유가 후보 재구축 문제인지, expected/source-native title 자체가 packet-local 작품 근거에 맞는지 확인한다.",
+        "누락 후보 lane은 expected title 복구, hard hold, 또는 stronger native-web review 중 하나로 판정한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11718114",
+        "prior_runtime_expected_audit#post_id=11718114",
+        "current_projection_result#post_id=11718114"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    },
+    {
+      "post_id": 11666741,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "별을 품은 소드마스터",
+      "projected_title": "별을 품은 소드마스터",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "current_projection_candidate_alignment_state": "missing_current_projection_candidate",
+      "current_projection_candidate_missing": true,
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_EVIDENCE_MISSING",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "None",
+      "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+      "reason_codes": [
+        "promotion_blocked",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "candidate_preservation_or_scrub_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [],
+        "source_roles": [],
+        "negative_evidence": [],
+        "metadata_source_count": 0,
+        "image_title_match": false
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "current projection candidate가 누락된 이유가 후보 재구축 문제인지, expected/source-native title 자체가 packet-local 작품 근거에 맞는지 확인한다.",
+        "누락 후보 lane은 expected title 복구, hard hold, 또는 stronger native-web review 중 하나로 판정한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11666741",
+        "prior_runtime_expected_audit#post_id=11666741",
+        "current_projection_result#post_id=11666741"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    },
+    {
+      "post_id": 11694068,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "트와일라잇",
+      "projected_title": "트와일라잇",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "current_projection_candidate_alignment_state": "missing_current_projection_candidate",
+      "current_projection_candidate_missing": true,
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+      "reason_codes": [
+        "llm_only_sentence_candidate_pruned",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "candidate_preservation_or_scrub_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [],
+        "source_roles": [],
+        "negative_evidence": [],
+        "metadata_source_count": 0,
+        "image_title_match": false
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "current projection candidate가 누락된 이유가 후보 재구축 문제인지, expected/source-native title 자체가 packet-local 작품 근거에 맞는지 확인한다.",
+        "누락 후보 lane은 expected title 복구, hard hold, 또는 stronger native-web review 중 하나로 판정한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11694068",
+        "prior_runtime_expected_audit#post_id=11694068",
+        "current_projection_result#post_id=11694068"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    },
+    {
+      "post_id": 11663511,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "부캐 키우는 황태자님",
+      "projected_title": "부캐 키우는 황태자님",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "current_projection_candidate_alignment_state": "missing_current_projection_candidate",
+      "current_projection_candidate_missing": true,
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "primary_repair_lane": "title_url_or_variant_trace_repair",
+      "reason_codes": [
+        "blocked_candidate_scope_inferred_from_search_evidence",
+        "character_bridge_variance_hold",
+        "official_detail_url_recovered_from_search_evidence",
+        "scope_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "title_url_or_variant_trace_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [],
+        "source_roles": [],
+        "negative_evidence": [],
+        "metadata_source_count": 0,
+        "image_title_match": false
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "current projection candidate가 누락된 이유가 후보 재구축 문제인지, expected/source-native title 자체가 packet-local 작품 근거에 맞는지 확인한다.",
+        "누락 후보 lane은 expected title 복구, hard hold, 또는 stronger native-web review 중 하나로 판정한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11663511",
+        "prior_runtime_expected_audit#post_id=11663511",
+        "current_projection_result#post_id=11663511"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    },
+    {
+      "post_id": 11669926,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "싸울아비 룬",
+      "projected_title": "싸울아비 룬",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "current_projection_candidate_alignment_state": "missing_current_projection_candidate",
+      "current_projection_candidate_missing": true,
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+      "reason_codes": [
+        "promotion_blocked",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "candidate_preservation_or_scrub_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_recovered_conditional_tag_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [],
+        "source_roles": [],
+        "negative_evidence": [],
+        "metadata_source_count": 0,
+        "image_title_match": false
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "current projection candidate가 누락된 이유가 후보 재구축 문제인지, expected/source-native title 자체가 packet-local 작품 근거에 맞는지 확인한다.",
+        "누락 후보 lane은 expected title 복구, hard hold, 또는 stronger native-web review 중 하나로 판정한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11669926",
+        "prior_runtime_expected_audit#post_id=11669926",
+        "current_projection_result#post_id=11669926"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    },
+    {
+      "post_id": 11669933,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "회귀수선전",
+      "projected_title": "회귀수선전",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "current_projection_candidate_alignment_state": "missing_current_projection_candidate",
+      "current_projection_candidate_missing": true,
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "primary_repair_lane": "title_url_or_variant_trace_repair",
+      "reason_codes": [
+        "blocked_candidate_scope_inferred_from_search_evidence",
+        "character_bridge_variance_hold",
+        "official_detail_url_recovered_from_search_evidence",
+        "scope_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "title_url_or_variant_trace_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_recovered_conditional_tag_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [],
+        "source_roles": [],
+        "negative_evidence": [],
+        "metadata_source_count": 0,
+        "image_title_match": false
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "current projection candidate가 누락된 이유가 후보 재구축 문제인지, expected/source-native title 자체가 packet-local 작품 근거에 맞는지 확인한다.",
+        "누락 후보 lane은 expected title 복구, hard hold, 또는 stronger native-web review 중 하나로 판정한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11669933",
+        "prior_runtime_expected_audit#post_id=11669933",
+        "current_projection_result#post_id=11669933"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    },
+    {
+      "post_id": 11677924,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "고결에 오만이 깃들 때",
+      "projected_title": "고결에 오만이 깃들 때",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "current_projection_candidate_alignment_state": "missing_current_projection_candidate",
+      "current_projection_candidate_missing": true,
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+      "primary_repair_lane": "title_url_or_variant_trace_repair",
+      "reason_codes": [
+        "blocked_candidate_scope_inferred_from_search_evidence",
+        "character_bridge_variance_hold",
+        "official_detail_url_recovered_from_search_evidence",
+        "scope_current_work",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "title_url_or_variant_trace_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_recovered_conditional_tag_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [],
+        "source_roles": [],
+        "negative_evidence": [],
+        "metadata_source_count": 0,
+        "image_title_match": false
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "current projection candidate가 누락된 이유가 후보 재구축 문제인지, expected/source-native title 자체가 packet-local 작품 근거에 맞는지 확인한다.",
+        "누락 후보 lane은 expected title 복구, hard hold, 또는 stronger native-web review 중 하나로 판정한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11677924",
+        "prior_runtime_expected_audit#post_id=11677924",
+        "current_projection_result#post_id=11677924"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    },
+    {
+      "post_id": 11706831,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
+      "expected_or_source_native_title": "소설 속 빌런은 아카데미 차석으로 살아간다",
+      "projected_title": "소설 속 빌런은 아카데미 차석으로 살아간다",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "current_projection_candidate_alignment_state": "missing_current_projection_candidate",
+      "current_projection_candidate_missing": true,
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+      "prior_runtime_search_status": "SEARCH_DEGRADED",
+      "primary_repair_lane": "scope_or_nonwork_monotonicity_repair",
+      "reason_codes": [
+        "context_only",
+        "official_detail_url",
+        "official_title_exists",
+        "row_discussion_missing",
+        "scope_not_current_work",
+        "scope_unclassified",
+        "scope_unknown",
+        "serialized_public_identity_scrubbed"
+      ],
+      "projected_reasons": [],
+      "actions": [
+        "scope_or_nonwork_monotonicity_repair_required",
+        "current_projection_candidate_recheck_required",
+        "search_blind_preflight_required",
+        "publish_contract_trace_contract_test_required",
+        "runtime_replay_after_contract_repair",
+        "full375_collateral_recheck_after_repair"
+      ],
+      "candidate_evidence_profile": {
+        "source_tiers": [],
+        "source_roles": [],
+        "negative_evidence": [],
+        "metadata_source_count": 0,
+        "image_title_match": false
+      },
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "review_questions": [
+        "current projection candidate가 누락된 이유가 후보 재구축 문제인지, expected/source-native title 자체가 packet-local 작품 근거에 맞는지 확인한다.",
+        "누락 후보 lane은 expected title 복구, hard hold, 또는 stronger native-web review 중 하나로 판정한다.",
+        "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다."
+      ],
+      "after_verdict_contract": {
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED": {
+          "next_state": "candidate_scrub_or_expected_title_restore_contract_required",
+          "runtime_release": "blocked_until_contract_tests_pass"
+        },
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED": {
+          "next_state": "source_native_expectation_update_or_blind_acceptance_required",
+          "runtime_release": "blocked_until_expected_contract_updated"
+        },
+        "RELATED_CANONICAL_VARIANT_CONFIRMED": {
+          "next_state": "canonical_variant_policy_contract_required",
+          "runtime_release": "blocked_until_variant_policy_tests_pass"
+        },
+        "WRONG_OR_UNRELATED_CANDIDATE": {
+          "next_state": "current_projection_candidate_scrub_required",
+          "runtime_release": "blocked_until_candidate_scrub_tests_pass"
+        },
+        "INSUFFICIENT_EVIDENCE_HOLD": {
+          "next_state": "hard_hold_or_native_web_review_required",
+          "runtime_release": "blocked_until_stronger_evidence"
+        },
+        "current_runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+        "runtime_replay_allowed_before_verdict": false
+      },
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11706831",
+        "prior_runtime_expected_audit#post_id=11706831",
+        "current_projection_result#post_id=11706831"
+      ],
+      "approval_boundary": {
+        "packet_generation_is_not_verdict": true,
+        "canonical_recheck_is_required_before_runtime_replay": true,
+        "full375_collateral_remains_no_go": true
+      }
+    }
+  ],
+  "approval_boundary": {
+    "batch_generation_is_not_canonical_verdict": true,
+    "runtime_replay_before_canonical_verdict_forbidden": true,
+    "hard_hold_relaxation_requires_blind_or_source_native_verdict": true,
+    "completion_gate": "full375 collateral GO + full_scan path"
+  }
+}

@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260707-539 - shared-gate repair queue와 canonical recheck batch
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_ALLOWED | 새 replay 없음, repair queue runtime allowed `0` | verdict/contract 전 replay 금지 |
+| Runtime block 11 | REVIEW-LOCKED | `B1_missing_candidate_alignment_review 11` | source-native/blind verdict 작성 |
+| Missing-candidate batch 계약 | GO_UNIT | missing candidate를 validation issue로 보지 않는 테스트 추가 | verdict 적용 도구와 계속 동기화 |
+| B1 recheck batch | REVIEW-LOCKED | selected `11`, validation issue `0`, reviewed `0/11` | verdict template 채우기 |
+| Title mismatch 3 | REVIEW-LOCKED | source-native/blind review packet `3` | variant/wrong-work 판정 |
+| Full375 collateral | NO-GO | residual `100` 유지 | contract repair 뒤 full375 재검증 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: shared-gate repair queue `REVIEW-LOCKED / 11`, B1 canonical recheck `REVIEW-LOCKED / 11`, title mismatch review packet `REVIEW-LOCKED / 3`, runtime replay `NOT_ALLOWED / 0`, full375 collateral `NO-GO / residual 100`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-538 - shared-gate seeded runtime replay 실행 감사
 
 | 항목 | 상태 | 근거 | 다음 |

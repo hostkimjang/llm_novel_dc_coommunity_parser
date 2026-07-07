@@ -95,6 +95,41 @@ class CanonicalCandidateRecheckBatchTest(unittest.TestCase):
         self.assertEqual(batch["review_groups"][0]["review_lane"], "B1_related_candidate_alignment_review")
         self.assertEqual(batch["review_groups"][0]["post_ids"], [11698859])
 
+    def test_missing_candidate_b1_rows_are_valid_rebuild_packets(self) -> None:
+        queue = {
+            "queue_id": "unit_missing_candidate_queue",
+            "summary": {"repair_rows": 1},
+            "rows": [
+                {
+                    "post_id": 11669933,
+                    "selected_title": "회귀수선전",
+                    "repair_batch_lane": "B1_missing_candidate_alignment_review",
+                    "runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+                    "runtime_replay_allowed": False,
+                    "current_projection_candidate_alignment_state": "missing_current_projection_candidate",
+                    "current_projection_candidate_alignment_requires_review": True,
+                    "candidate_support_state": "missing_current_projection_candidate_support",
+                    "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+                    "primary_repair_lane": "title_url_or_variant_trace_repair",
+                    "actions": ["current_projection_candidate_recheck_required"],
+                }
+            ],
+        }
+
+        batch = build_canonical_recheck_batch(queue, batch_id="unit_missing")
+
+        self.assertEqual(batch["gate"], "REVIEW-LOCKED")
+        self.assertEqual(batch["summary"]["selected_rows"], 1)
+        self.assertEqual(batch["summary"]["validation_issue_count"], 0)
+        row = batch["rows"][0]
+        self.assertIsNone(row["current_projection_candidate_title"])
+        self.assertTrue(row["current_projection_candidate_missing"])
+        self.assertIn("expected/source-native title 자체", row["review_questions"][0])
+        self.assertEqual(
+            row["allowed_verdicts"],
+            ["EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED", "INSUFFICIENT_EVIDENCE_HOLD"],
+        )
+
     def test_validation_issue_when_runtime_replay_is_already_open(self) -> None:
         queue = {
             "queue_id": "unit_repair_queue",

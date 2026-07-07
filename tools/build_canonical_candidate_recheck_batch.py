@@ -16,12 +16,18 @@ DEFAULT_B1_LANES = {
 
 CANONICAL_RELEASE_GATE = "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK"
 CANONICAL_RECHECK_ACTION = "current_projection_candidate_recheck_required"
+MISSING_CANDIDATE_LANE = "B1_missing_candidate_alignment_review"
 
 VERDICT_OPTIONS = [
     "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
     "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
     "RELATED_CANONICAL_VARIANT_CONFIRMED",
     "WRONG_OR_UNRELATED_CANDIDATE",
+    "INSUFFICIENT_EVIDENCE_HOLD",
+]
+
+MISSING_CANDIDATE_VERDICT_OPTIONS = [
+    "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
     "INSUFFICIENT_EVIDENCE_HOLD",
 ]
 
@@ -74,6 +80,10 @@ def _row_matches(row: dict[str, Any], lanes: set[str]) -> bool:
     return lane in lanes
 
 
+def _is_missing_candidate_lane(row: dict[str, Any]) -> bool:
+    return str(row.get("repair_batch_lane") or "") == MISSING_CANDIDATE_LANE
+
+
 def _validation_issues(row: dict[str, Any]) -> list[dict[str, Any]]:
     issues: list[dict[str, Any]] = []
     post_id = row.get("post_id")
@@ -115,11 +125,19 @@ def _validation_issues(row: dict[str, Any]) -> list[dict[str, Any]]:
                 "post_id": post_id,
             }
         )
-    if not _candidate_title(candidate):
+    if not _candidate_title(candidate) and not _is_missing_candidate_lane(row):
         issues.append(
             {
                 "code": "canonical_batch_row_missing_current_projection_candidate",
                 "post_id": post_id,
+            }
+        )
+    if _is_missing_candidate_lane(row) and row.get("current_projection_candidate_alignment_state") != "missing_current_projection_candidate":
+        issues.append(
+            {
+                "code": "missing_candidate_lane_without_missing_candidate_state",
+                "post_id": post_id,
+                "alignment_state": row.get("current_projection_candidate_alignment_state"),
             }
         )
     return issues
@@ -156,6 +174,7 @@ def _review_row(row: dict[str, Any]) -> dict[str, Any]:
     candidate = row.get("current_projection_candidate")
     if not isinstance(candidate, dict):
         candidate = {}
+    missing_candidate_lane = _is_missing_candidate_lane(row)
     return {
         "post_id": row.get("post_id"),
         "review_lane": row.get("repair_batch_lane"),
@@ -165,6 +184,7 @@ def _review_row(row: dict[str, Any]) -> dict[str, Any]:
         "current_projection_candidate_title": _candidate_title(candidate),
         "current_projection_candidate_url": _candidate_url(candidate),
         "current_projection_candidate_alignment_state": row.get("current_projection_candidate_alignment_state"),
+        "current_projection_candidate_missing": missing_candidate_lane,
         "candidate_support_state": row.get("candidate_support_state"),
         "search_gate": row.get("search_gate"),
         "prior_runtime_audit_status": row.get("prior_runtime_audit_status"),
@@ -180,10 +200,19 @@ def _review_row(row: dict[str, Any]) -> dict[str, Any]:
             "metadata_source_count": candidate.get("candidate_metadata_source_count"),
             "image_title_match": candidate.get("candidate_image_title_match"),
         },
-        "allowed_verdicts": VERDICT_OPTIONS,
+        "allowed_verdicts": MISSING_CANDIDATE_VERDICT_OPTIONS if missing_candidate_lane else VERDICT_OPTIONS,
         "review_questions": [
-            "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?",
-            "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다.",
+            (
+                "current projection candidate가 누락된 이유가 후보 재구축 문제인지, expected/source-native title 자체가 "
+                "packet-local 작품 근거에 맞는지 확인한다."
+                if missing_candidate_lane
+                else "expected/source-native title and current projection candidate 중 어느 쪽이 packet-local 작품 근거에 맞는가?"
+            ),
+            (
+                "누락 후보 lane은 expected title 복구, hard hold, 또는 stronger native-web review 중 하나로 판정한다."
+                if missing_candidate_lane
+                else "둘이 같은 작품의 canonical variant 또는 alias 관계인지, 아니면 다른 작품/비작품 후보인지 확인한다."
+            ),
             "official URL, raw post/comment surface, VLM/OCR direct title, verified character-work link를 분리해서 기록한다.",
         ],
         "after_verdict_contract": _after_verdict_contract(row),

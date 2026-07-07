@@ -1,5 +1,22 @@
 # Development Checklist
 
+## 2026-07-07 Loop539 repair/review batch 체크
+
+- [x] 새 runtime replay나 full375 대형 런을 실행하지 않았다.
+- [x] Loop538 `FAIL_RUNTIME_PROMOTION_BLOCKED 11`건을 shared-gate repair queue로 분리했다.
+- [x] Repair queue runtime replay allowed rows는 `0`이다.
+- [x] 11건 모두 `B1_missing_candidate_alignment_review`로 묶었다.
+- [x] Missing-candidate B1 lane을 canonical recheck batch에서 validation issue 없이 받도록 도구 계약을 보강했다.
+- [x] B1 canonical recheck batch `11`건을 생성했고 validation issue는 `0`이다.
+- [x] B1 verdict template을 생성했고 reviewed rows는 `0/11`이다.
+- [x] Loop538 `FAIL_SAFE_RESOLVED_TITLE_MISMATCH 3`건을 source-native/blind review packet으로 분리했다.
+- [x] py_compile PASS, `tests.test_canonical_candidate_recheck_batch` PASS `4` tests.
+- [ ] B1 missing-candidate `11`건에 source-native 또는 blind canonical verdict를 작성한다.
+- [ ] Title mismatch `3`건에 source-native 또는 blind canonical verdict를 작성한다.
+- [ ] Verdict 적용 뒤 contract test 전까지 runtime replay를 열지 않는다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: shared-gate repair queue `REVIEW-LOCKED / 11`, B1 canonical recheck `REVIEW-LOCKED / 11`, title mismatch review packet `REVIEW-LOCKED / 3`, runtime replay `NOT_ALLOWED / 0`, full375 collateral `NO-GO / residual 100`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop538 shared-gate seeded runtime replay 실행 체크
 
 - [x] Loop537 runtime replay input `35`건을 실행했다.
@@ -11,9 +28,9 @@
 - [x] Expected-title audit을 실행했고 결과는 `NO-GO / 21 of 35`다.
 - [x] 실패 `14`건을 배치 action queue로 생성했다: `REPROCESS 11 / HOLD 3`.
 - [x] Queue validation issue는 `0`이다.
-- [ ] Expected-title 실패 `14`건을 단건 반복하지 말고 배치로 처리한다.
-- [ ] `FAIL_SAFE_RESOLVED_TITLE_MISMATCH 3`건은 source-native 또는 blind canonical review로 분리한다.
-- [ ] `FAIL_RUNTIME_PROMOTION_BLOCKED 11`건은 shared-gate runtime block repair 배치로 처리한다.
+- [x] Expected-title 실패 `14`건을 단건 반복하지 말고 배치로 처리한다.
+- [x] `FAIL_SAFE_RESOLVED_TITLE_MISMATCH 3`건은 source-native 또는 blind canonical review packet으로 분리한다.
+- [x] `FAIL_RUNTIME_PROMOTION_BLOCKED 11`건은 shared-gate runtime block repair 배치로 처리한다.
 - [ ] Search degraded/timeout 흔적은 P0 search recovery에서 닫기 전까지 `REVIEW`로 유지한다.
 - [ ] Dashboard 상태를 semantic/full_scan approval 근거로 쓰지 않는다.
 - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.

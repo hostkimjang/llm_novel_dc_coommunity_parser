@@ -1,5 +1,23 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop539 repair/review batch 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_539_REPORT_20260707.md`.
+  - [x] Shared-gate repair queue 기록 완료: `docs/devs/loop539_shared_gate_runtime_block_repair11_queue.json/.md`.
+  - [x] B1 canonical recheck batch 기록 완료: `docs/devs/loop539_b1_missing_candidate_canonical_recheck11_batch.json/.md`.
+  - [x] Verdict template 기록 완료: `docs/devs/loop539_b1_missing_candidate_verdict_template.json/.md`.
+  - [x] Title mismatch review packet 기록 완료: `docs/devs/loop539_title_mismatch_hold3_source_native_review_packet.json/.md`.
+- 품질 경계:
+  - [x] 새 runtime replay나 full375 대형 런은 실행하지 않았다.
+  - [x] Runtime block `11`건은 runtime replay allowed `0`으로 유지했다.
+  - [x] Missing-candidate B1 lane validation issue는 `0`이다.
+  - [x] Title mismatch `3`건은 review packet이며 verdict가 아니다.
+  - [x] Unit test는 `4` tests PASS다.
+  - [ ] Verdict template 생성을 review 완료로 승격하지 않는다.
+  - [ ] Repair/review packet을 runtime approval이나 full375 collateral GO로 승격하지 않는다.
+- Gate: shared-gate repair queue `REVIEW-LOCKED / 11`, B1 canonical recheck `REVIEW-LOCKED / 11`, title mismatch review packet `REVIEW-LOCKED / 3`, runtime replay `NOT_ALLOWED / 0`, full375 collateral `NO-GO / residual 100`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop538 runtime replay 품질 게이트
 
 - 근거:

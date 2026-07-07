@@ -1,0 +1,107 @@
+{
+  "report_type": "source_native_or_blind_review_packet",
+  "packet_id": "loop539_title_mismatch_hold3_source_native_batch_hold_review_packet",
+  "generated_at": "2026-07-07T17:51:54",
+  "source_batch_id": "loop539_title_mismatch_hold3_source_native_batch",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "review_rows": 3,
+    "priority_counts": {
+      "P0": 3
+    },
+    "dispatch_lane_counts": {
+      "source_native_or_blind_review": 3
+    },
+    "audit_status_counts": {
+      "FAIL_SAFE_RESOLVED_TITLE_MISMATCH": 3
+    }
+  },
+  "rows": [
+    {
+      "post_id": 11660277,
+      "priority": "P0",
+      "review_label": "HOLD",
+      "dispatch_lane": "source_native_or_blind_review",
+      "audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+      "expected_title": "아카메디 아카데미 본 사람?",
+      "actual_title": "아카메디 아카데미",
+      "actual_url": null,
+      "actions": [
+        "canonical_variant_or_wrong_work_review_required",
+        "search_degraded_or_timeout_replay_required"
+      ],
+      "reason_codes": [
+        "direct_image_work_surface_bridge",
+        "ocr_catalog_official_title",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_published"
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11660277"
+      ],
+      "review_task": "정답 title variant인지 wrong-work인지 source-native 또는 blind judge로 판정한다. 판정 전 promotion hard-hold를 완화하지 않는다."
+    },
+    {
+      "post_id": 11694063,
+      "priority": "P0",
+      "review_label": "HOLD",
+      "dispatch_lane": "source_native_or_blind_review",
+      "audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+      "expected_title": "빙의한 신의 아이, 엘리시아",
+      "actual_title": "엘리시아 전기",
+      "actual_url": null,
+      "actions": [
+        "canonical_variant_or_wrong_work_review_required",
+        "search_degraded_or_timeout_replay_required"
+      ],
+      "reason_codes": [
+        "official_title_exists",
+        "official_url_withheld_by_title_mismatch",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_body_verified_competition_reconciled",
+        "serialized_public_identity_preserved_body_alias_reconciled",
+        "serialized_public_identity_published",
+        "serialized_public_identity_shared_gate_restored",
+        "title_only_publication_reconciled_to_preserved_body_alias",
+        "verified_alias_title_only_publication"
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11694063"
+      ],
+      "review_task": "정답 title variant인지 wrong-work인지 source-native 또는 blind judge로 판정한다. 판정 전 promotion hard-hold를 완화하지 않는다."
+    },
+    {
+      "post_id": 11718098,
+      "priority": "P0",
+      "review_label": "HOLD",
+      "dispatch_lane": "source_native_or_blind_review",
+      "audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+      "expected_title": "마법 좋아좋아좋아",
+      "actual_title": "마법 좋아, 마법과 좋아",
+      "actual_url": null,
+      "actions": [
+        "canonical_variant_or_wrong_work_review_required",
+        "search_degraded_or_timeout_replay_required"
+      ],
+      "reason_codes": [
+        "official_title_exists",
+        "resolved_public_title_scope",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_published"
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop538_shared_gate_seeded_runtime_expected_title_audit.json#post_id=11718098"
+      ],
+      "review_task": "정답 title variant인지 wrong-work인지 source-native 또는 blind judge로 판정한다. 판정 전 promotion hard-hold를 완화하지 않는다."
+    }
+  ],
+  "approval_boundary": {
+    "packet_generation_is_not_review_completion": true,
+    "hard_hold_relaxation_requires_review_verdict": true
+  }
+}

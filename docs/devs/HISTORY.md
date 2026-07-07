@@ -1,5 +1,19 @@
 # Development History
 
+## 2026-07-07 - Loop539 shared-gate repair queue와 canonical recheck batch
+
+- 새 runtime replay나 full375 대형 런은 실행하지 않았다.
+- Loop538 expected-title 실패 `14`건을 단건 replay하지 않고 repair/review batch로 분리했다.
+- `FAIL_RUNTIME_PROMOTION_BLOCKED 11`건은 shared-gate repair queue로 재분해했고 runtime replay allowed rows는 `0`이다.
+- Repair lane은 `candidate_preservation_or_scrub_repair 4`, `scope_or_nonwork_monotonicity_repair 4`, `title_url_or_variant_trace_repair 3`이다.
+- 11건 모두 `B1_missing_candidate_alignment_review`이며, release gate는 `BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK`다.
+- `tools/build_canonical_candidate_recheck_batch.py`는 missing-candidate B1 lane을 합법 rebuild/recheck packet으로 받게 보강했다.
+- B1 canonical recheck batch는 `11` rows, validation issue `0`, runtime replay allowed `0`이다.
+- Verdict template은 `docs/devs/loop539_b1_missing_candidate_verdict_template.json/.md`이며 아직 reviewed `0/11`이다.
+- `FAIL_SAFE_RESOLVED_TITLE_MISMATCH 3`건은 `docs/devs/loop539_title_mismatch_hold3_source_native_review_packet.json/.md`로 분리했다.
+- Report는 `docs/devs/loop_reports/LOOP_539_REPORT_20260707.md`다.
+- Gate는 shared-gate repair queue `REVIEW-LOCKED / 11`, B1 canonical recheck `REVIEW-LOCKED / 11`, title mismatch review packet `REVIEW-LOCKED / 3`, runtime replay `NOT_ALLOWED / 0`, full375 collateral `NO-GO / residual 100`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop538 shared-gate seeded runtime replay 실행 감사
 
 - Loop537 runtime replay input `35`건을 사용자 지시대로 `--parallel 16`과 dashboard ON으로 실행했다.
