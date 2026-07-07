@@ -1,5 +1,24 @@
 # Development Checklist
 
+## 2026-07-08 Loop597 remaining native evidence contract 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Loop596 remaining12를 current full375 result evidence로 batch 분류했다.
+- [x] shared `PromotionDecision` gate를 경유해 contract plan rows `8`을 생성했다.
+- [x] Release candidate `6`건과 no-publish `2`건을 projection-only application에 반영했다.
+- [x] Hold `4`건은 native-web/image evidence review lane으로 유지했다.
+- [x] Combined contract plan은 rows `35`, projection application은 applied publish `17`, restore `16`, canonical cleanup `1`로 갱신했다.
+- [x] Publication contract audit은 `GO / 375 rows / violation 0`이다.
+- [x] Residual46은 processed_or_excluded `34 -> 42`, ordinary residual `12 -> 4`로 재회계했다.
+- [x] Remaining dispatch는 `native_web_image_evidence_review 4`건이며 post_id는 `11687661`, `11716480`, `11718057`, `11671538`이다.
+- [x] Full375 collateral은 `NO-GO / raw 74 / adjusted 67 / unreviewed 49 / runtime counts missing`이다.
+- [x] Dashboard health는 `http://127.0.0.1:8080/api/health`, `ok=true`, `standalone=true`, `pid=9320`으로 확인했다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, manifest attach fallback 활성, `--no-dashboard` 금지로 실행한다.
+- [ ] Dashboard 진행률을 semantic/full_scan approval 근거로 쓰지 않는다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: native evidence contract `REVIEW-LOCKED`, residual46 `REVIEW-LOCKED / ordinary 4`, publication `GO`, full375 collateral `NO-GO / raw 74 / adjusted 67`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_597_REPORT_20260708.md`, `docs/devs/loop597_remaining12_native_evidence_contract_plan.json`, `docs/devs/loop597_residual46_native_evidence_accounting.json`, `docs/devs/loop597_residual46_remaining4_dispatch.json`, `docs/devs/loop597_remaining12_native_evidence_full375_collateral_compare.json`, `docs/devs/loop597_always_on_golden18_full375_native_evidence.json`.
+
 ## 2026-07-08 Loop596 shared gate residual12 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.

@@ -1,0 +1,1523 @@
+{
+  "report_type": "remaining_native_evidence_contract_plan",
+  "plan_id": "loop597_remaining12_native_evidence_contract_plan",
+  "generated_at": "2026-07-08T07:34:38",
+  "source_dispatch_id": "loop596_residual46_remaining12_dispatch",
+  "source_result_path": "out\\expert_result_20260702_065632_479765.json",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "source_dispatch_rows": 12,
+    "result_matched_rows": 12,
+    "contract_plan_rows": 8,
+    "release_candidate_not_approval_rows": 6,
+    "no_publish_contract_rows": 2,
+    "hold_rows": 4,
+    "validation_issue_count": 0,
+    "contract_batch_lane_counts": {
+      "NE_direct_image_work_title_publish_candidate": 4,
+      "NE_official_detail_alias_publish_candidate": 2,
+      "NE_current_result_no_publish_contract": 2
+    },
+    "contract_action_counts": {
+      "expected_title_restore_contract_case": 6,
+      "candidate_scrub_no_publish_contract_case": 2
+    },
+    "promotion_decision_status_counts": {
+      "publish": 6,
+      "reject": 2
+    },
+    "review_disposition_counts": {
+      "release_candidate_not_approval": 6,
+      "no_publish_not_approval": 2,
+      "hold_for_native_web_or_image_review": 4
+    },
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "rows": [
+    {
+      "post_id": 11661856,
+      "contract_origin": "loop597_remaining12_native_evidence_contract_plan",
+      "contract_batch_lane": "NE_direct_image_work_title_publish_candidate",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "evidence_grade": "Strong",
+      "target_title": "너랑은 절! 대! 안 사갈거니까!",
+      "target_url": null,
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "actions": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "contract_action": "expected_title_restore_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "너랑은 절! 대! 안 사갈거니까!",
+        "official_url": null,
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "direct_image_work_surface_bridge"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "NE_direct_image_work_title_publish_candidate",
+            "direct_image_work_surface"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_state": {
+        "post_id": 11661856,
+        "candidate_title": "너랑은 절! 대! 안 사갈거니까!",
+        "candidate_url": "",
+        "source": "remaining_native_evidence_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "NE_direct_image_work_title_publish_candidate",
+            "direct_image_work_surface"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "direct_image_work_surface",
+          "strength": "strong",
+          "source_path_or_snippet": "NE_direct_image_work_title_publish_candidate",
+          "supports_publish": true,
+          "reason_code": "direct_image_work_surface_bridge"
+        }
+      ],
+      "release_candidate_not_approval": true,
+      "runtime_replay_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "현재 full375 결과의 image evidence catalog에 promotion_eligible=true인 직접 작품 제목이 있고, row가 작품 논의로 판정되어 shared gate publish 후보로만 반영한다.",
+      "evidence_refs": [
+        "out/expert_result_20260702_065632_479765.json#post_id=11661856",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11661856",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11661856",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11661856"
+      ]
+    },
+    {
+      "post_id": 11665110,
+      "contract_origin": "loop597_remaining12_native_evidence_contract_plan",
+      "contract_batch_lane": "NE_official_detail_alias_publish_candidate",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "alias_or_legacy_title_needs_native_confirmation",
+      "evidence_grade": "Strong",
+      "target_title": "사이키델리아",
+      "target_url": "https://ridibooks.com/books/297056360",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "actions": [
+        "alias_relation_review_required",
+        "native_web_review_required"
+      ],
+      "contract_action": "expected_title_restore_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "사이키델리아",
+        "official_url": "https://ridibooks.com/books/297056360",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "NE_official_detail_alias_publish_candidate",
+            "official_detail_url"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_state": {
+        "post_id": 11665110,
+        "candidate_title": "사이키델리아",
+        "candidate_url": "https://ridibooks.com/books/297056360",
+        "source": "remaining_native_evidence_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "NE_official_detail_alias_publish_candidate",
+            "official_detail_url"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "official_detail_url",
+          "strength": "strong",
+          "source_path_or_snippet": "NE_official_detail_alias_publish_candidate",
+          "supports_publish": true,
+          "reason_code": "official_detail_url"
+        }
+      ],
+      "release_candidate_not_approval": true,
+      "runtime_replay_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "현재 full375 결과가 공식 상세 URL과 작품 논의 상태를 함께 보존하므로 shared gate publish 후보로만 반영한다.",
+      "evidence_refs": [
+        "out/expert_result_20260702_065632_479765.json#post_id=11665110",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11665110",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11665110",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11665110"
+      ]
+    },
+    {
+      "post_id": 11666725,
+      "contract_origin": "loop597_remaining12_native_evidence_contract_plan",
+      "contract_batch_lane": "NE_direct_image_work_title_publish_candidate",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "evidence_grade": "Strong",
+      "target_title": "학대받던 11살 고마가 각성한 이유",
+      "target_url": null,
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "actions": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "contract_action": "expected_title_restore_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "학대받던 11살 고마가 각성한 이유",
+        "official_url": null,
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "direct_image_work_surface_bridge"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "NE_direct_image_work_title_publish_candidate",
+            "direct_image_work_surface"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_state": {
+        "post_id": 11666725,
+        "candidate_title": "학대받던 11살 고마가 각성한 이유",
+        "candidate_url": "",
+        "source": "remaining_native_evidence_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "NE_direct_image_work_title_publish_candidate",
+            "direct_image_work_surface"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "direct_image_work_surface",
+          "strength": "strong",
+          "source_path_or_snippet": "NE_direct_image_work_title_publish_candidate",
+          "supports_publish": true,
+          "reason_code": "direct_image_work_surface_bridge"
+        }
+      ],
+      "release_candidate_not_approval": true,
+      "runtime_replay_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "현재 full375 결과의 image evidence catalog에 promotion_eligible=true인 직접 작품 제목이 있고, row가 작품 논의로 판정되어 shared gate publish 후보로만 반영한다.",
+      "evidence_refs": [
+        "out/expert_result_20260702_065632_479765.json#post_id=11666725",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11666725",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11666725",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11666725"
+      ]
+    },
+    {
+      "post_id": 11681178,
+      "contract_origin": "loop597_remaining12_native_evidence_contract_plan",
+      "contract_batch_lane": "NE_current_result_no_publish_contract",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "evidence_grade": "Strong",
+      "target_title": null,
+      "target_url": null,
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "actions": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "contract_action": "candidate_scrub_no_publish_contract_case",
+      "promotion_decision": {
+        "status": "reject",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": false,
+        "reason_codes": [
+          "no_candidate_title",
+          "row_discussion_missing",
+          "context_only",
+          "scope_context_only",
+          "scope_not_current_work",
+          "current_result_nonwork_or_noise_no_publish"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "context_only",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "NE_current_result_no_publish_contract",
+            "current_result_nonwork_or_policy_hold"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "current_result_nonwork_or_noise_no_publish"
+          ]
+        }
+      },
+      "promotion_gate_state": {
+        "post_id": 11681178,
+        "candidate_title": "",
+        "candidate_url": "",
+        "source": "remaining_native_evidence_contract_plan",
+        "official_title_exists": false,
+        "row_discusses_work_as_work": false,
+        "title_resolution_state": "context_only",
+        "work_resolution": "unresolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "context_only",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "NE_current_result_no_publish_contract",
+            "current_result_nonwork_or_policy_hold"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "current_result_nonwork_or_noise_no_publish"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "current_result_nonwork_or_policy_hold",
+          "strength": "strong",
+          "source_path_or_snippet": "NE_current_result_no_publish_contract",
+          "supports_publish": false,
+          "reason_code": "current_result_nonwork_or_noise_no_publish"
+        }
+      ],
+      "release_candidate_not_approval": false,
+      "runtime_replay_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "현재 full375 결과가 작품 publish를 허용하지 않는 nonwork/noise/cross-media 경계를 보존하므로 no-publish contract로만 처리한다.",
+      "evidence_refs": [
+        "out/expert_result_20260702_065632_479765.json#post_id=11681178",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11681178",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11681178",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11681178"
+      ]
+    },
+    {
+      "post_id": 11685994,
+      "contract_origin": "loop597_remaining12_native_evidence_contract_plan",
+      "contract_batch_lane": "NE_direct_image_work_title_publish_candidate",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "evidence_grade": "Strong",
+      "target_title": "교황님 아하세요 마왕 들어 가요",
+      "target_url": null,
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "actions": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "contract_action": "expected_title_restore_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "교황님 아하세요 마왕 들어 가요",
+        "official_url": null,
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "direct_image_work_surface_bridge"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "NE_direct_image_work_title_publish_candidate",
+            "direct_image_work_surface"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_state": {
+        "post_id": 11685994,
+        "candidate_title": "교황님 아하세요 마왕 들어 가요",
+        "candidate_url": "",
+        "source": "remaining_native_evidence_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "NE_direct_image_work_title_publish_candidate",
+            "direct_image_work_surface"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "direct_image_work_surface",
+          "strength": "strong",
+          "source_path_or_snippet": "NE_direct_image_work_title_publish_candidate",
+          "supports_publish": true,
+          "reason_code": "direct_image_work_surface_bridge"
+        }
+      ],
+      "release_candidate_not_approval": true,
+      "runtime_replay_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "현재 full375 결과의 image evidence catalog에 promotion_eligible=true인 직접 작품 제목이 있고, row가 작품 논의로 판정되어 shared gate publish 후보로만 반영한다.",
+      "evidence_refs": [
+        "out/expert_result_20260702_065632_479765.json#post_id=11685994",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11685994",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11685994",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11685994"
+      ]
+    },
+    {
+      "post_id": 11711632,
+      "contract_origin": "loop597_remaining12_native_evidence_contract_plan",
+      "contract_batch_lane": "NE_current_result_no_publish_contract",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "evidence_grade": "Strong",
+      "target_title": null,
+      "target_url": null,
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "actions": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "contract_action": "candidate_scrub_no_publish_contract_case",
+      "promotion_decision": {
+        "status": "reject",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": false,
+        "reason_codes": [
+          "no_candidate_title",
+          "row_discussion_missing",
+          "context_only",
+          "scope_context_only",
+          "scope_not_current_work",
+          "current_result_nonwork_or_noise_no_publish"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "context_only",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "NE_current_result_no_publish_contract",
+            "current_result_nonwork_or_policy_hold"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "current_result_nonwork_or_noise_no_publish"
+          ]
+        }
+      },
+      "promotion_gate_state": {
+        "post_id": 11711632,
+        "candidate_title": "",
+        "candidate_url": "",
+        "source": "remaining_native_evidence_contract_plan",
+        "official_title_exists": false,
+        "row_discusses_work_as_work": false,
+        "title_resolution_state": "context_only",
+        "work_resolution": "unresolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "context_only",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "NE_current_result_no_publish_contract",
+            "current_result_nonwork_or_policy_hold"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "current_result_nonwork_or_noise_no_publish"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "current_result_nonwork_or_policy_hold",
+          "strength": "strong",
+          "source_path_or_snippet": "NE_current_result_no_publish_contract",
+          "supports_publish": false,
+          "reason_code": "current_result_nonwork_or_noise_no_publish"
+        }
+      ],
+      "release_candidate_not_approval": false,
+      "runtime_replay_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "현재 full375 결과가 작품 publish를 허용하지 않는 nonwork/noise/cross-media 경계를 보존하므로 no-publish contract로만 처리한다.",
+      "evidence_refs": [
+        "out/expert_result_20260702_065632_479765.json#post_id=11711632",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11711632",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11711632",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11711632"
+      ]
+    },
+    {
+      "post_id": 11694067,
+      "contract_origin": "loop597_remaining12_native_evidence_contract_plan",
+      "contract_batch_lane": "NE_official_detail_alias_publish_candidate",
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "alias_or_character_bridge_needs_confirmation",
+      "evidence_grade": "Strong",
+      "target_title": "괴담에 휘말렸다",
+      "target_url": "https://novelpia.com/novel/363195",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "actions": [
+        "alias_relation_review_required",
+        "native_web_review_required"
+      ],
+      "contract_action": "expected_title_restore_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "괴담에 휘말렸다",
+        "official_url": "https://novelpia.com/novel/363195",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "NE_official_detail_alias_publish_candidate",
+            "official_detail_url"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_state": {
+        "post_id": 11694067,
+        "candidate_title": "괴담에 휘말렸다",
+        "candidate_url": "https://novelpia.com/novel/363195",
+        "source": "remaining_native_evidence_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "NE_official_detail_alias_publish_candidate",
+            "official_detail_url"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "official_detail_url",
+          "strength": "strong",
+          "source_path_or_snippet": "NE_official_detail_alias_publish_candidate",
+          "supports_publish": true,
+          "reason_code": "official_detail_url"
+        }
+      ],
+      "release_candidate_not_approval": true,
+      "runtime_replay_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "현재 full375 결과가 공식 상세 URL과 작품 논의 상태를 함께 보존하므로 shared gate publish 후보로만 반영한다.",
+      "evidence_refs": [
+        "out/expert_result_20260702_065632_479765.json#post_id=11694067",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop480_unsafe_promotion_from_hold_review_batch.json#post_id=11694067",
+        "https://novelpia.com/novel/363195",
+        "docs/devs/loop480_unsafe_promotion_from_hold_source_native_verdicts.json#post_id=11694067"
+      ]
+    },
+    {
+      "post_id": 11682791,
+      "contract_origin": "loop597_remaining12_native_evidence_contract_plan",
+      "contract_batch_lane": "NE_direct_image_work_title_publish_candidate",
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "image_context_required_no_textual_work_anchor",
+      "evidence_grade": "Strong",
+      "target_title": "시간을 달리는 소설가",
+      "target_url": "https://novel.munpia.com/357213",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "actions": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "contract_action": "expected_title_restore_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "시간을 달리는 소설가",
+        "official_url": "https://novel.munpia.com/357213",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "direct_image_work_surface_bridge"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "NE_direct_image_work_title_publish_candidate",
+            "direct_image_work_surface"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_state": {
+        "post_id": 11682791,
+        "candidate_title": "시간을 달리는 소설가",
+        "candidate_url": "https://novel.munpia.com/357213",
+        "source": "remaining_native_evidence_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "NE_direct_image_work_title_publish_candidate",
+            "direct_image_work_surface"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "direct_image_work_surface",
+          "strength": "strong",
+          "source_path_or_snippet": "NE_direct_image_work_title_publish_candidate",
+          "supports_publish": true,
+          "reason_code": "direct_image_work_surface_bridge"
+        }
+      ],
+      "release_candidate_not_approval": true,
+      "runtime_replay_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "현재 full375 결과의 image evidence catalog에 promotion_eligible=true인 직접 작품 제목이 있고, row가 작품 논의로 판정되어 shared gate publish 후보로만 반영한다.",
+      "evidence_refs": [
+        "out/expert_result_20260702_065632_479765.json#post_id=11682791",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json#post_id=11682791",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11682791",
+        "docs/devs/loop479_wrong_work_title_flip_source_native_verdicts.json#post_id=11682791"
+      ]
+    }
+  ],
+  "review_rows": [
+    {
+      "post_id": 11661856,
+      "contract_origin": "loop597_remaining12_native_evidence_contract_plan",
+      "contract_batch_lane": "NE_direct_image_work_title_publish_candidate",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "evidence_grade": "Strong",
+      "target_title": "너랑은 절! 대! 안 사갈거니까!",
+      "target_url": null,
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "actions": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "contract_action": "expected_title_restore_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "너랑은 절! 대! 안 사갈거니까!",
+        "official_url": null,
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "direct_image_work_surface_bridge"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "NE_direct_image_work_title_publish_candidate",
+            "direct_image_work_surface"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_state": {
+        "post_id": 11661856,
+        "candidate_title": "너랑은 절! 대! 안 사갈거니까!",
+        "candidate_url": "",
+        "source": "remaining_native_evidence_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "NE_direct_image_work_title_publish_candidate",
+            "direct_image_work_surface"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "direct_image_work_surface",
+          "strength": "strong",
+          "source_path_or_snippet": "NE_direct_image_work_title_publish_candidate",
+          "supports_publish": true,
+          "reason_code": "direct_image_work_surface_bridge"
+        }
+      ],
+      "release_candidate_not_approval": true,
+      "runtime_replay_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "현재 full375 결과의 image evidence catalog에 promotion_eligible=true인 직접 작품 제목이 있고, row가 작품 논의로 판정되어 shared gate publish 후보로만 반영한다.",
+      "evidence_refs": [
+        "out/expert_result_20260702_065632_479765.json#post_id=11661856",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11661856",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11661856",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11661856"
+      ],
+      "contract_disposition": "release_candidate_not_approval"
+    },
+    {
+      "post_id": 11665110,
+      "contract_origin": "loop597_remaining12_native_evidence_contract_plan",
+      "contract_batch_lane": "NE_official_detail_alias_publish_candidate",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "alias_or_legacy_title_needs_native_confirmation",
+      "evidence_grade": "Strong",
+      "target_title": "사이키델리아",
+      "target_url": "https://ridibooks.com/books/297056360",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "actions": [
+        "alias_relation_review_required",
+        "native_web_review_required"
+      ],
+      "contract_action": "expected_title_restore_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "사이키델리아",
+        "official_url": "https://ridibooks.com/books/297056360",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "NE_official_detail_alias_publish_candidate",
+            "official_detail_url"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_state": {
+        "post_id": 11665110,
+        "candidate_title": "사이키델리아",
+        "candidate_url": "https://ridibooks.com/books/297056360",
+        "source": "remaining_native_evidence_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "NE_official_detail_alias_publish_candidate",
+            "official_detail_url"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "official_detail_url",
+          "strength": "strong",
+          "source_path_or_snippet": "NE_official_detail_alias_publish_candidate",
+          "supports_publish": true,
+          "reason_code": "official_detail_url"
+        }
+      ],
+      "release_candidate_not_approval": true,
+      "runtime_replay_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "현재 full375 결과가 공식 상세 URL과 작품 논의 상태를 함께 보존하므로 shared gate publish 후보로만 반영한다.",
+      "evidence_refs": [
+        "out/expert_result_20260702_065632_479765.json#post_id=11665110",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11665110",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11665110",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11665110"
+      ],
+      "contract_disposition": "release_candidate_not_approval"
+    },
+    {
+      "post_id": 11666725,
+      "contract_origin": "loop597_remaining12_native_evidence_contract_plan",
+      "contract_batch_lane": "NE_direct_image_work_title_publish_candidate",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "evidence_grade": "Strong",
+      "target_title": "학대받던 11살 고마가 각성한 이유",
+      "target_url": null,
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "actions": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "contract_action": "expected_title_restore_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "학대받던 11살 고마가 각성한 이유",
+        "official_url": null,
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "direct_image_work_surface_bridge"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "NE_direct_image_work_title_publish_candidate",
+            "direct_image_work_surface"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_state": {
+        "post_id": 11666725,
+        "candidate_title": "학대받던 11살 고마가 각성한 이유",
+        "candidate_url": "",
+        "source": "remaining_native_evidence_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "NE_direct_image_work_title_publish_candidate",
+            "direct_image_work_surface"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "direct_image_work_surface",
+          "strength": "strong",
+          "source_path_or_snippet": "NE_direct_image_work_title_publish_candidate",
+          "supports_publish": true,
+          "reason_code": "direct_image_work_surface_bridge"
+        }
+      ],
+      "release_candidate_not_approval": true,
+      "runtime_replay_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "현재 full375 결과의 image evidence catalog에 promotion_eligible=true인 직접 작품 제목이 있고, row가 작품 논의로 판정되어 shared gate publish 후보로만 반영한다.",
+      "evidence_refs": [
+        "out/expert_result_20260702_065632_479765.json#post_id=11666725",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11666725",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11666725",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11666725"
+      ],
+      "contract_disposition": "release_candidate_not_approval"
+    },
+    {
+      "post_id": 11681178,
+      "contract_origin": "loop597_remaining12_native_evidence_contract_plan",
+      "contract_batch_lane": "NE_current_result_no_publish_contract",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "evidence_grade": "Strong",
+      "target_title": null,
+      "target_url": null,
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "actions": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "contract_action": "candidate_scrub_no_publish_contract_case",
+      "promotion_decision": {
+        "status": "reject",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": false,
+        "reason_codes": [
+          "no_candidate_title",
+          "row_discussion_missing",
+          "context_only",
+          "scope_context_only",
+          "scope_not_current_work",
+          "current_result_nonwork_or_noise_no_publish"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "context_only",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "NE_current_result_no_publish_contract",
+            "current_result_nonwork_or_policy_hold"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "current_result_nonwork_or_noise_no_publish"
+          ]
+        }
+      },
+      "promotion_gate_state": {
+        "post_id": 11681178,
+        "candidate_title": "",
+        "candidate_url": "",
+        "source": "remaining_native_evidence_contract_plan",
+        "official_title_exists": false,
+        "row_discusses_work_as_work": false,
+        "title_resolution_state": "context_only",
+        "work_resolution": "unresolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "context_only",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "NE_current_result_no_publish_contract",
+            "current_result_nonwork_or_policy_hold"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "current_result_nonwork_or_noise_no_publish"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "current_result_nonwork_or_policy_hold",
+          "strength": "strong",
+          "source_path_or_snippet": "NE_current_result_no_publish_contract",
+          "supports_publish": false,
+          "reason_code": "current_result_nonwork_or_noise_no_publish"
+        }
+      ],
+      "release_candidate_not_approval": false,
+      "runtime_replay_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "현재 full375 결과가 작품 publish를 허용하지 않는 nonwork/noise/cross-media 경계를 보존하므로 no-publish contract로만 처리한다.",
+      "evidence_refs": [
+        "out/expert_result_20260702_065632_479765.json#post_id=11681178",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11681178",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11681178",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11681178"
+      ],
+      "contract_disposition": "no_publish_not_approval"
+    },
+    {
+      "post_id": 11685994,
+      "contract_origin": "loop597_remaining12_native_evidence_contract_plan",
+      "contract_batch_lane": "NE_direct_image_work_title_publish_candidate",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "evidence_grade": "Strong",
+      "target_title": "교황님 아하세요 마왕 들어 가요",
+      "target_url": null,
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "actions": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "contract_action": "expected_title_restore_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "교황님 아하세요 마왕 들어 가요",
+        "official_url": null,
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "direct_image_work_surface_bridge"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "NE_direct_image_work_title_publish_candidate",
+            "direct_image_work_surface"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_state": {
+        "post_id": 11685994,
+        "candidate_title": "교황님 아하세요 마왕 들어 가요",
+        "candidate_url": "",
+        "source": "remaining_native_evidence_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "NE_direct_image_work_title_publish_candidate",
+            "direct_image_work_surface"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "direct_image_work_surface",
+          "strength": "strong",
+          "source_path_or_snippet": "NE_direct_image_work_title_publish_candidate",
+          "supports_publish": true,
+          "reason_code": "direct_image_work_surface_bridge"
+        }
+      ],
+      "release_candidate_not_approval": true,
+      "runtime_replay_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "현재 full375 결과의 image evidence catalog에 promotion_eligible=true인 직접 작품 제목이 있고, row가 작품 논의로 판정되어 shared gate publish 후보로만 반영한다.",
+      "evidence_refs": [
+        "out/expert_result_20260702_065632_479765.json#post_id=11685994",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11685994",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11685994",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11685994"
+      ],
+      "contract_disposition": "release_candidate_not_approval"
+    },
+    {
+      "post_id": 11687661,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "contract_disposition": "hold_for_native_web_or_image_review",
+      "title_resolution_state": "ocr_explicit_title_unresolved",
+      "discussion_type": "meme",
+      "rationale_ko": "현재 result evidence만으로 shared gate publish/no-publish 계약을 닫지 않는다.",
+      "evidence_refs": [
+        "out/expert_result_20260702_065632_479765.json#post_id=11687661",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11687661",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11687661",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11687661"
+      ]
+    },
+    {
+      "post_id": 11711632,
+      "contract_origin": "loop597_remaining12_native_evidence_contract_plan",
+      "contract_batch_lane": "NE_current_result_no_publish_contract",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "evidence_grade": "Strong",
+      "target_title": null,
+      "target_url": null,
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "actions": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "contract_action": "candidate_scrub_no_publish_contract_case",
+      "promotion_decision": {
+        "status": "reject",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": false,
+        "reason_codes": [
+          "no_candidate_title",
+          "row_discussion_missing",
+          "context_only",
+          "scope_context_only",
+          "scope_not_current_work",
+          "current_result_nonwork_or_noise_no_publish"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "context_only",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "NE_current_result_no_publish_contract",
+            "current_result_nonwork_or_policy_hold"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "current_result_nonwork_or_noise_no_publish"
+          ]
+        }
+      },
+      "promotion_gate_state": {
+        "post_id": 11711632,
+        "candidate_title": "",
+        "candidate_url": "",
+        "source": "remaining_native_evidence_contract_plan",
+        "official_title_exists": false,
+        "row_discusses_work_as_work": false,
+        "title_resolution_state": "context_only",
+        "work_resolution": "unresolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "context_only",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "NE_current_result_no_publish_contract",
+            "current_result_nonwork_or_policy_hold"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "current_result_nonwork_or_noise_no_publish"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "current_result_nonwork_or_policy_hold",
+          "strength": "strong",
+          "source_path_or_snippet": "NE_current_result_no_publish_contract",
+          "supports_publish": false,
+          "reason_code": "current_result_nonwork_or_noise_no_publish"
+        }
+      ],
+      "release_candidate_not_approval": false,
+      "runtime_replay_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "현재 full375 결과가 작품 publish를 허용하지 않는 nonwork/noise/cross-media 경계를 보존하므로 no-publish contract로만 처리한다.",
+      "evidence_refs": [
+        "out/expert_result_20260702_065632_479765.json#post_id=11711632",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11711632",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11711632",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11711632"
+      ],
+      "contract_disposition": "no_publish_not_approval"
+    },
+    {
+      "post_id": 11716480,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "contract_disposition": "hold_for_native_web_or_image_review",
+      "title_resolution_state": "ocr_explicit_title_unresolved",
+      "discussion_type": "review",
+      "rationale_ko": "현재 result evidence만으로 shared gate publish/no-publish 계약을 닫지 않는다.",
+      "evidence_refs": [
+        "out/expert_result_20260702_065632_479765.json#post_id=11716480",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11716480",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11716480",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11716480"
+      ]
+    },
+    {
+      "post_id": 11718057,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "generic_or_author_like_surface_needs_native_confirmation",
+      "contract_disposition": "hold_for_native_web_or_image_review",
+      "title_resolution_state": "resolved",
+      "discussion_type": "character_talk",
+      "rationale_ko": "현재 result evidence만으로 shared gate publish/no-publish 계약을 닫지 않는다.",
+      "evidence_refs": [
+        "out/expert_result_20260702_065632_479765.json#post_id=11718057",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json#post_id=11718057",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11718057",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11718057"
+      ]
+    },
+    {
+      "post_id": 11671538,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "HOLD",
+      "source_native_verdict": "character_or_deity_bridge_not_enough_without_verified_work_link",
+      "contract_disposition": "hold_for_native_web_or_image_review",
+      "title_resolution_state": "unresolved_matchable",
+      "discussion_type": "character_talk",
+      "rationale_ko": "현재 result evidence만으로 shared gate publish/no-publish 계약을 닫지 않는다.",
+      "evidence_refs": [
+        "out/expert_result_20260702_065632_479765.json#post_id=11671538",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop480_unsafe_promotion_from_hold_review_batch.json#post_id=11671538",
+        "https://series.naver.com/novel/detail.series?productNo=12696086",
+        "docs/devs/loop480_unsafe_promotion_from_hold_source_native_verdicts.json#post_id=11671538"
+      ]
+    },
+    {
+      "post_id": 11694067,
+      "contract_origin": "loop597_remaining12_native_evidence_contract_plan",
+      "contract_batch_lane": "NE_official_detail_alias_publish_candidate",
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "alias_or_character_bridge_needs_confirmation",
+      "evidence_grade": "Strong",
+      "target_title": "괴담에 휘말렸다",
+      "target_url": "https://novelpia.com/novel/363195",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "actions": [
+        "alias_relation_review_required",
+        "native_web_review_required"
+      ],
+      "contract_action": "expected_title_restore_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "괴담에 휘말렸다",
+        "official_url": "https://novelpia.com/novel/363195",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "NE_official_detail_alias_publish_candidate",
+            "official_detail_url"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_state": {
+        "post_id": 11694067,
+        "candidate_title": "괴담에 휘말렸다",
+        "candidate_url": "https://novelpia.com/novel/363195",
+        "source": "remaining_native_evidence_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "NE_official_detail_alias_publish_candidate",
+            "official_detail_url"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "official_detail_url",
+          "strength": "strong",
+          "source_path_or_snippet": "NE_official_detail_alias_publish_candidate",
+          "supports_publish": true,
+          "reason_code": "official_detail_url"
+        }
+      ],
+      "release_candidate_not_approval": true,
+      "runtime_replay_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "현재 full375 결과가 공식 상세 URL과 작품 논의 상태를 함께 보존하므로 shared gate publish 후보로만 반영한다.",
+      "evidence_refs": [
+        "out/expert_result_20260702_065632_479765.json#post_id=11694067",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop480_unsafe_promotion_from_hold_review_batch.json#post_id=11694067",
+        "https://novelpia.com/novel/363195",
+        "docs/devs/loop480_unsafe_promotion_from_hold_source_native_verdicts.json#post_id=11694067"
+      ],
+      "contract_disposition": "release_candidate_not_approval"
+    },
+    {
+      "post_id": 11682791,
+      "contract_origin": "loop597_remaining12_native_evidence_contract_plan",
+      "contract_batch_lane": "NE_direct_image_work_title_publish_candidate",
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "image_context_required_no_textual_work_anchor",
+      "evidence_grade": "Strong",
+      "target_title": "시간을 달리는 소설가",
+      "target_url": "https://novel.munpia.com/357213",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "actions": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "contract_action": "expected_title_restore_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "시간을 달리는 소설가",
+        "official_url": "https://novel.munpia.com/357213",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "direct_image_work_surface_bridge"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "NE_direct_image_work_title_publish_candidate",
+            "direct_image_work_surface"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_state": {
+        "post_id": 11682791,
+        "candidate_title": "시간을 달리는 소설가",
+        "candidate_url": "https://novel.munpia.com/357213",
+        "source": "remaining_native_evidence_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "NE_direct_image_work_title_publish_candidate",
+            "direct_image_work_surface"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "direct_image_work_surface",
+          "strength": "strong",
+          "source_path_or_snippet": "NE_direct_image_work_title_publish_candidate",
+          "supports_publish": true,
+          "reason_code": "direct_image_work_surface_bridge"
+        }
+      ],
+      "release_candidate_not_approval": true,
+      "runtime_replay_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "현재 full375 결과의 image evidence catalog에 promotion_eligible=true인 직접 작품 제목이 있고, row가 작품 논의로 판정되어 shared gate publish 후보로만 반영한다.",
+      "evidence_refs": [
+        "out/expert_result_20260702_065632_479765.json#post_id=11682791",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json#post_id=11682791",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11682791",
+        "docs/devs/loop479_wrong_work_title_flip_source_native_verdicts.json#post_id=11682791"
+      ],
+      "contract_disposition": "release_candidate_not_approval"
+    }
+  ],
+  "approval_boundary": {
+    "current_result_evidence_is_not_runtime_replay": true,
+    "release_candidate_is_not_approval": true,
+    "no_publish_contract_is_not_full_scan_approval": true,
+    "full375_collateral_remains_no_go": true
+  }
+}

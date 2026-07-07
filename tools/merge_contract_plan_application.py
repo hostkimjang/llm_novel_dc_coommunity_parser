@@ -65,11 +65,15 @@ def merge_plan(
             "promotion_decision_status_counts": _decision_counter(rows),
             "addition_plan_id": addition.get("plan_id"),
             "addition_plan_rows": len(addition_rows),
-            "addition_publish_release_candidate_rows": (addition.get("summary") or {}).get(
-                "publish_release_candidate_rows"
+            "addition_publish_release_candidate_rows": (
+                (addition.get("summary") or {}).get("publish_release_candidate_rows")
+                if (addition.get("summary") or {}).get("publish_release_candidate_rows") is not None
+                else (addition.get("summary") or {}).get("release_candidate_not_approval_rows")
             ),
-            "addition_candidate_only_no_publish_rows": (addition.get("summary") or {}).get(
-                "candidate_only_no_publish_rows"
+            "addition_candidate_only_no_publish_rows": (
+                (addition.get("summary") or {}).get("candidate_only_no_publish_rows")
+                if (addition.get("summary") or {}).get("candidate_only_no_publish_rows") is not None
+                else (addition.get("summary") or {}).get("no_publish_contract_rows")
             ),
             "runtime_replay_allowed_rows": 0,
             "full375_collateral_gate": "NO-GO",

@@ -23,8 +23,8 @@ class MergeContractPlanApplicationTest(unittest.TestCase):
         addition_plan = {
             "plan_id": "addition",
             "summary": {
-                "publish_release_candidate_rows": 1,
-                "candidate_only_no_publish_rows": 1,
+                "release_candidate_not_approval_rows": 1,
+                "no_publish_contract_rows": 1,
             },
             "validation_issues": [],
             "rows": [
@@ -48,6 +48,8 @@ class MergeContractPlanApplicationTest(unittest.TestCase):
         self.assertEqual(merged["gate"], "REVIEW-LOCKED")
         self.assertEqual(merged["summary"]["contract_plan_rows"], 3)
         self.assertEqual(merged["summary"]["addition_plan_rows"], 2)
+        self.assertEqual(merged["summary"]["addition_publish_release_candidate_rows"], 1)
+        self.assertEqual(merged["summary"]["addition_candidate_only_no_publish_rows"], 1)
         self.assertEqual(
             merged["summary"]["contract_action_counts"]["expected_title_restore_contract_case"],
             2,

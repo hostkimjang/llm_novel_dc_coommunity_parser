@@ -1,5 +1,27 @@
 # Operation Quality Checklist
 
+## 2026-07-08 Loop597 remaining native evidence contract 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_597_REPORT_20260708.md`.
+  - [x] Remaining12 native evidence contract plan/application 기록 완료.
+  - [x] Combined plan/application 기록 완료: `docs/devs/loop597_residual46_combined_contract_plan.json/.md`, `docs/devs/loop597_residual46_combined_projection_application.json/.md`.
+  - [x] Residual accounting과 remaining4 dispatch 기록 완료.
+  - [x] Publication contract audit 기록 완료: `docs/devs/loop597_remaining12_native_evidence_publication_contract_audit.json/.md`.
+  - [x] Full375 collateral compare 기록 완료: `docs/devs/loop597_remaining12_native_evidence_full375_collateral_compare.json/.md`.
+  - [x] Always-on gate 기록 완료: `docs/devs/loop597_always_on_golden18_full375_native_evidence.json/.md`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+  - [x] Release candidate `6`건은 approval이 아니며 full375 GO 전 release 금지다.
+  - [x] No-publish `2`건은 public identity publish를 열지 않는다.
+  - [x] Residual46 ordinary는 `12 -> 4`로 줄었지만 approval이 아니다.
+  - [x] Publication contract는 `GO / 375 rows / violation 0`이다.
+  - [x] Full375 collateral은 `NO-GO / raw 74 / adjusted 67 / unreviewed 49 / runtime counts missing`이다.
+  - [x] Dashboard health는 `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`으로 확인했다.
+  - [x] 다음 test/runtime run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지다.
+  - [x] Dashboard는 진행 확인 도구이며 semantic/full_scan approval 근거가 아니다.
+- Gate: native evidence contract `REVIEW-LOCKED`, residual46 `REVIEW-LOCKED / ordinary 4`, publication `GO`, full375 collateral `NO-GO / raw 74 / adjusted 67`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop596 shared gate residual12 품질 게이트
 
 - 근거:

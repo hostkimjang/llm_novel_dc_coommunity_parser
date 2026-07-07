@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260708-597 - remaining native evidence contract and dashboard visibility
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | 실제 test run만 `--parallel 16` + dashboard attached로 실행 |
+| Remaining12 contract | REVIEW-LOCKED | contract rows `8`, release candidate `6`, no-publish `2`, hold `4`, validation issue `0` | hold `4`건 native-web/image evidence review |
+| Combined contract | REVIEW-LOCKED | combined rows `35`, shared gate publish `16`, reject `15` | release candidate는 approval 금지 |
+| Publication contract | GO | `375` rows, violation `0` | collateral gate와 분리 |
+| Residual46 | REVIEW-LOCKED | processed_or_excluded `42`, ordinary residual `4` | remaining4 batch 처리 |
+| Full375 collateral | NO-GO | raw `74`, adjusted `67`, unreviewed `49`, runtime counts missing | collateral GO 전 approval 금지 |
+| Test run dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | `http://127.0.0.1:8080`, health `ok=true`, runner dashboard forced ON | 진행 관측용으로만 사용 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: native evidence contract `REVIEW-LOCKED`, residual46 `REVIEW-LOCKED / ordinary 4`, publication `GO`, full375 collateral `NO-GO / raw 74 / adjusted 67`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-596 - shared gate projection and residual12 accounting
 
 | 항목 | 상태 | 근거 | 다음 |

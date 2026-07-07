@@ -1,0 +1,108 @@
+{
+  "report_type": "post_verdict_projection_publish_contract_application",
+  "projection_id": "loop597_remaining12_native_evidence_projection_application",
+  "generated_at": "2026-07-08T07:34:59",
+  "source_contract_plan": "loop597_remaining12_native_evidence_contract_plan",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "projection_rows": 375,
+    "contract_plan_rows": 8,
+    "publish_contract_plan_rows": 6,
+    "applied_publish_contract_rows": 6,
+    "restore_plan_rows": 6,
+    "applied_restore_rows": 6,
+    "applied_expected_audit_update_rows": 0,
+    "applied_canonical_cleanup_rows": 0,
+    "applied_candidate_set_restore_rows": 0,
+    "validation_issue_count": 0,
+    "skipped_contract_action_counts": {
+      "candidate_scrub_no_publish_contract_case": 2
+    },
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "applied_rows": [
+    {
+      "post_id": 11661856,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "너랑은 절! 대! 안 사갈거니까!",
+      "target_url": null,
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11665110,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "사이키델리아",
+      "target_url": "https://ridibooks.com/books/297056360",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11666725,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "학대받던 11살 고마가 각성한 이유",
+      "target_url": null,
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11685994,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "교황님 아하세요 마왕 들어 가요",
+      "target_url": null,
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11694067,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "괴담에 휘말렸다",
+      "target_url": "https://novelpia.com/novel/363195",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11682791,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "시간을 달리는 소설가",
+      "target_url": "https://novel.munpia.com/357213",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    }
+  ],
+  "approval_boundary": {
+    "projection_application_is_not_runtime_replay": true,
+    "release_candidate_is_not_full_scan_approval": true,
+    "runtime_replay_before_full375_collateral_forbidden": true,
+    "full375_collateral_remains_no_go": true
+  }
+}
