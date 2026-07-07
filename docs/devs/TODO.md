@@ -1,5 +1,20 @@
 # Developer TODO Index
 
+## 2026-07-08 Loop579 이후
+
+- 상태 업데이트: 테스트런 진행상황 확인용 웹 dashboard를 runner-level 기본 강제 ON으로 고정했다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] `tools/run_independent_plan.py`에서 CLI `--no-dashboard`가 기본적으로 dashboard를 끄지 못하도록 막았다.
+- [x] `ALLOW_TEST_RUN_NO_DASHBOARD=1` breakglass에서만 runner-level dashboard 비활성화를 허용했다.
+- [x] 계획 내부 `command_argv`의 `--no-dashboard` 제거와 dashboard forwarding env 전달 계약을 유지했다.
+- [x] 공통 dashboard policy와 candidate-set execution contract에 runner CLI guard를 기록했다.
+- [x] Dashboard health/status를 확인했다. URL은 `http://127.0.0.1:8080`, health는 `ok=true / standalone=true / pid=9320`이다.
+- [x] Focused unittest `19`개와 py_compile을 통과했다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지 상태로 실행한다.
+- [ ] Candidate-set restore `4`건 projection application과 full375 collateral 재확인 전 approval로 세지 않는다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, full375 collateral `NO-GO / adjusted 64`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop578 이후
 
 - 상태 업데이트: Loop578은 candidate-set rebuild lane `10`건을 runtime replay로 보내지 않고 shared promotion gate 계약 계획으로 분리했다. Goal은 완료가 아니다.

@@ -1,5 +1,17 @@
 # Development History
 
+## 2026-07-08 - Loop579 test-run dashboard force-on guard
+
+- 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+- 사용자 요청에 맞춰 test/runtime run 진행률 확인용 웹 dashboard를 기본 ON 계약에서 runner-level 강제 ON 계약으로 높였다.
+- `tools/run_independent_plan.py`는 CLI `--no-dashboard`가 붙어도 기본적으로 dashboard를 끄지 않고, `ALLOW_TEST_RUN_NO_DASHBOARD=1` breakglass에서만 비활성화를 허용한다.
+- 계획 내부 `command_argv`의 `--no-dashboard` 제거, `DASHBOARD_URL/DASHBOARD_PORT/EXPERT_DASHBOARD_FORWARD=1` 전달, `dashboard_ready` 출력은 유지한다.
+- `tools/test_run_dashboard_policy.py`와 `tools/build_candidate_set_contract_plan.py` execution contract에 runner CLI guard를 기록했다.
+- Dashboard는 `http://127.0.0.1:8080`에서 `ok=true / standalone=true / pid=9320`로 확인했다. 현재 status는 마지막 runtime replay Loop564 `30/30`, `parallel_count=16`, `batch_running=false`다.
+- Focused unittest `19`개와 py_compile을 통과했다.
+- Report는 `docs/devs/loop_reports/LOOP_579_REPORT_20260708.md`, state는 `docs/devs/loop579_test_run_dashboard_force_on_state_20260708.json`이다.
+- Gate는 dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, full375 collateral `NO-GO / adjusted 64`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop578 candidate-set contract plan and dashboard contract
 
 - 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.

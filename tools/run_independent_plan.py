@@ -36,6 +36,24 @@ def _env_overrides(values: list[str]) -> dict[str, str]:
     return out
 
 
+def _env_truthy(name: str, *, env: dict[str, str] | None = None) -> bool:
+    values = os.environ if env is None else env
+    raw = str(values.get(name, "")).strip().lower()
+    return raw in {"1", "true", "yes", "on"}
+
+
+def _dashboard_enabled_from_cli(
+    no_dashboard_requested: bool,
+    *,
+    env: dict[str, str] | None = None,
+) -> tuple[bool, str]:
+    if not no_dashboard_requested:
+        return True, "default_on"
+    if _env_truthy("ALLOW_TEST_RUN_NO_DASHBOARD", env=env):
+        return False, "breakglass_disabled"
+    return True, "forced_on_no_dashboard_forbidden"
+
+
 def _safe_stem(path: str, fallback: str) -> str:
     stem = Path(path).stem
     if stem:
@@ -290,20 +308,39 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--no-dashboard",
         action="store_true",
-        help="Disable default standalone dashboard startup/forwarding for this plan.",
+        help=(
+            "Legacy breakglass only: ignored unless ALLOW_TEST_RUN_NO_DASHBOARD=1. "
+            "Test/runtime plans default to standalone dashboard forwarding."
+        ),
     )
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
+    dashboard_enabled, dashboard_policy_status = _dashboard_enabled_from_cli(bool(args.no_dashboard))
+    if args.no_dashboard:
+        print(
+            json.dumps(
+                {
+                    "event": "dashboard_policy",
+                    "requested_no_dashboard": True,
+                    "dashboard_enabled": dashboard_enabled,
+                    "dashboard_policy_status": dashboard_policy_status,
+                    "breakglass_env": "ALLOW_TEST_RUN_NO_DASHBOARD=1",
+                },
+                ensure_ascii=False,
+            ),
+            file=sys.stderr,
+            flush=True,
+        )
     return run_plan(
         plan_path=args.plan,
         log_dir=args.log_dir,
         env_updates=_env_overrides(list(args.set_env or [])),
         skip_existing=bool(args.skip_existing),
         limit=args.limit,
-        dashboard=not bool(args.no_dashboard),
+        dashboard=dashboard_enabled,
         dashboard_url=str(args.dashboard_url),
         dashboard_python=str(args.dashboard_python),
     )

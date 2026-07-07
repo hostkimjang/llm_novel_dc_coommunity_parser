@@ -1,0 +1,80 @@
+{
+  "state_id": "loop579_test_run_dashboard_force_on",
+  "generated_at": "2026-07-08",
+  "request": "테스트런 진행상황을 보기 쉽게 웹 대시보드를 붙인다.",
+  "runtime_replay_started": false,
+  "bounded_run_started": false,
+  "full375_runtime_started": false,
+  "changes": [
+    {
+      "path": "tools/run_independent_plan.py",
+      "summary": "CLI --no-dashboard가 기본적으로 dashboard ON을 끄지 못하게 강제하고, ALLOW_TEST_RUN_NO_DASHBOARD=1 breakglass에서만 비활성화를 허용한다."
+    },
+    {
+      "path": "tools/test_run_dashboard_policy.py",
+      "summary": "공통 dashboard contract에 run_independent_plan CLI guard를 추가했다."
+    },
+    {
+      "path": "tools/build_candidate_set_contract_plan.py",
+      "summary": "candidate-set execution contract에도 동일한 dashboard CLI guard를 기록한다."
+    },
+    {
+      "path": "tests/test_run_independent_plan.py",
+      "summary": "CLI --no-dashboard 기본 강제 ON과 breakglass OFF 조건을 회귀 테스트로 고정했다."
+    }
+  ],
+  "dashboard_policy": {
+    "policy": "TEST_RUNS_USE_PARALLEL_16_AND_WEB_DASHBOARD",
+    "requested_parallel": 16,
+    "dashboard_url": "http://127.0.0.1:8080",
+    "forbidden_flags": [
+      "--no-dashboard"
+    ],
+    "runner_cli_guard": "tools/run_independent_plan.py ignores --no-dashboard unless ALLOW_TEST_RUN_NO_DASHBOARD=1 is explicitly set as a breakglass override.",
+    "child_command_sanitizer": "planned command_argv에서 --no-dashboard를 제거한다.",
+    "live_forwarding_env": {
+      "DASHBOARD_URL": "http://127.0.0.1:8080",
+      "DASHBOARD_PORT": "8080",
+      "EXPERT_DASHBOARD_FORWARD": "1"
+    },
+    "fallback_attach": "python tools/attach_manifest_dashboard.py --manifest <result_manifest.json> --dashboard-url http://127.0.0.1:8080"
+  },
+  "live_dashboard_health": {
+    "ok": true,
+    "service": "expert-pipeline-monitor",
+    "standalone": true,
+    "pid": 9320
+  },
+  "latest_dashboard_status": {
+    "batch_running": false,
+    "total_posts": 30,
+    "done_count": 30,
+    "progress_pct": 100.0,
+    "input_file": "loop563_conflict_safe_p0_shared_gate_runtime_replay_input.jsonl",
+    "output_file": "loop564_conflict_safe_p0_shared_gate_runtime_replay_result.json",
+    "parallel_count": 16
+  },
+  "verification": {
+    "focused_unittest": {
+      "command": ".\\.venv312\\Scripts\\python.exe -m unittest tests.test_run_independent_plan tests.test_safe_loss_flip_rate_probe tests.test_action_queue_batch tests.test_build_candidate_set_contract_plan -v",
+      "result": "PASS",
+      "tests": 19
+    },
+    "py_compile": {
+      "command": ".\\.venv312\\Scripts\\python.exe -m py_compile tools\\run_independent_plan.py tools\\test_run_dashboard_policy.py tools\\build_candidate_set_contract_plan.py tools\\safe_loss_flip_rate_probe.py",
+      "result": "PASS"
+    },
+    "dashboard_health_status": {
+      "command": "Invoke-RestMethod http://127.0.0.1:8080/api/health and /api/status",
+      "result": "PASS"
+    }
+  },
+  "gate": {
+    "dashboard": "GO_PROGRESS_VIEW_NOT_APPROVAL",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "full375_collateral": "NO-GO / adjusted 64 inherited from Loop578",
+    "overall_goal": "ACTIVE / NOT_COMPLETE",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  }
+}

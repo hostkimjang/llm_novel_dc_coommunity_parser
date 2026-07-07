@@ -51,6 +51,10 @@ def dashboard_contract(
         "dashboard_url": dashboard_url,
         "start_dashboard_command": start_dashboard_command(python_executable=python_executable),
         "forbidden_flags": ["--no-dashboard"],
+        "runner_cli_guard": (
+            "tools/run_independent_plan.py ignores --no-dashboard unless "
+            "ALLOW_TEST_RUN_NO_DASHBOARD=1 is explicitly set as a breakglass override."
+        ),
         "live_forwarding_contract": (
             "Start tools/dashboard_server.py first; expert_main detects the standalone "
             "dashboard and forwards monitor events to it."

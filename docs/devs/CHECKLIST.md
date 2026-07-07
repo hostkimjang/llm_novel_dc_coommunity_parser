@@ -1,5 +1,21 @@
 # Development Checklist
 
+## 2026-07-08 Loop579 test-run dashboard 강제 ON 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 실행하지 않았다.
+- [x] `tools/run_independent_plan.py`의 runner-level `--no-dashboard`를 기본 무시하도록 바꿨다.
+- [x] `ALLOW_TEST_RUN_NO_DASHBOARD=1` breakglass에서만 runner-level dashboard 비활성화를 허용했다.
+- [x] 계획 내부 `command_argv`의 `--no-dashboard` 제거 계약을 유지했다.
+- [x] `DASHBOARD_URL`, `DASHBOARD_PORT`, `EXPERT_DASHBOARD_FORWARD=1` 전달과 `dashboard_ready` 출력 계약을 유지했다.
+- [x] 공통 dashboard policy와 candidate-set execution contract에 runner CLI guard를 기록했다.
+- [x] Dashboard health는 `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`으로 확인했다.
+- [x] Dashboard status는 마지막 runtime replay Loop564 `30/30`, `progress_pct=100.0`, `parallel_count=16`, `batch_running=false`로 확인했다.
+- [x] Focused unittest `19`개와 py_compile을 통과했다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 실행한다.
+- [ ] Dashboard 진행률을 semantic/full_scan approval 근거로 쓰지 않는다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, full375 collateral `NO-GO / adjusted 64`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop578 candidate-set 계약 계획 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 실행하지 않았다.

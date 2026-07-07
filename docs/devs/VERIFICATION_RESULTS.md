@@ -1,5 +1,27 @@
 # Verification Results
 
+## 2026-07-08 Loop579 test-run dashboard 강제 ON
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_579_REPORT_20260708.md`
+  - `docs/devs/loop579_test_run_dashboard_force_on_state_20260708.json`
+  - `tools/run_independent_plan.py`
+  - `tools/test_run_dashboard_policy.py`
+  - `tools/build_candidate_set_contract_plan.py`
+  - `tests/test_run_independent_plan.py`
+- 검증:
+  - Runner CLI guard: PASS, `--no-dashboard`는 기본적으로 dashboard ON을 끄지 못하고 `ALLOW_TEST_RUN_NO_DASHBOARD=1`에서만 breakglass OFF가 가능하다.
+  - Planned child command sanitizer: PASS, 기존 `--no-dashboard` 제거와 dashboard forwarding env 전달 계약 유지.
+  - Dashboard contract sync: PASS, 공통 policy와 candidate-set execution contract에 runner CLI guard 기록.
+  - Dashboard health: PASS, `http://127.0.0.1:8080/api/health`, `ok=true`, `standalone=true`, `pid=9320`.
+  - Dashboard status: 마지막 runtime replay Loop564 `30/30`, `progress_pct=100.0`, `parallel_count=16`, `batch_running=false`.
+  - Focused unittest: PASS, `19` tests.
+  - py_compile: PASS.
+- 결과:
+  - 다음 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 실행한다.
+  - Dashboard는 진행 확인 도구이며 semantic/full_scan approval 근거가 아니다.
+- Gate: dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, full375 collateral `NO-GO / adjusted 64`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop578 candidate-set 계약 계획과 dashboard 부착 재확인
 
 - 산출물:

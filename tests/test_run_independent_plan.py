@@ -7,10 +7,24 @@ from contextlib import redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
 
-from tools.run_independent_plan import run_plan
+from tools.run_independent_plan import _dashboard_enabled_from_cli, run_plan
 
 
 class RunIndependentPlanTest(unittest.TestCase):
+    def test_cli_no_dashboard_is_forced_on_without_breakglass_env(self):
+        self.assertEqual(
+            _dashboard_enabled_from_cli(True, env={}),
+            (True, "forced_on_no_dashboard_forbidden"),
+        )
+        self.assertEqual(
+            _dashboard_enabled_from_cli(True, env={"ALLOW_TEST_RUN_NO_DASHBOARD": "1"}),
+            (False, "breakglass_disabled"),
+        )
+        self.assertEqual(
+            _dashboard_enabled_from_cli(False, env={}),
+            (True, "default_on"),
+        )
+
     def test_runner_disables_interactive_llm_watchdog_by_default(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

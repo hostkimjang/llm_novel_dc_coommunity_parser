@@ -318,6 +318,10 @@ def build_plan(
                 "dashboard_policy": "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
                 "dashboard_url": "http://127.0.0.1:8080",
                 "forbidden_flags": ["--no-dashboard"],
+                "runner_cli_guard": (
+                    "tools/run_independent_plan.py ignores --no-dashboard unless "
+                    "ALLOW_TEST_RUN_NO_DASHBOARD=1 is explicitly set as a breakglass override."
+                ),
                 "attach_manifest_command": (
                     "python tools/attach_manifest_dashboard.py --manifest <result_manifest.json> "
                     "--dashboard-url http://127.0.0.1:8080"
