@@ -1,5 +1,20 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop554 ordinary restore shared-gate contract plan 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_554_REPORT_20260707.md`.
+  - [x] Contract plan 기록 완료: `docs/devs/loop554_ordinary_restore_shared_gate_contract_plan.json`.
+  - [x] Tool/test 기록 완료: `tools/build_ordinary_restore_contract_plan.py`, `tests/test_build_ordinary_restore_contract_plan.py`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 런은 실행하지 않았다.
+  - [x] Restore contract `17`건은 shared promotion gate를 경유했다.
+  - [x] `promotion_decision=publish`는 contract case일 뿐 approval로 쓰지 않는다.
+  - [x] Publish/runtime allowed rows는 `0/0`이다.
+  - [x] Search review required before approval `12`건은 full_scan approval 전 별도 확인한다.
+  - [x] Full375 collateral `GO` 전 goal completion을 선언하지 않는다.
+- Gate: ordinary restore contract plan `REVIEW-LOCKED`, runtime replay `NOT_RUN`, full375 collateral `NO-GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop553 ordinary residual64 dispatch 품질 게이트
 
 - 근거:

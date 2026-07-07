@@ -1,5 +1,20 @@
 # Development Checklist
 
+## 2026-07-07 Loop554 ordinary restore shared-gate contract plan 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 런을 실행하지 않았다.
+- [x] Loop553 `shared_gate_restore_contract_review` lane `17`건을 shared `can_publish_title` gate로 통과시켰다.
+- [x] Restore contract plan rows는 `17`, validation issue는 `0`이다.
+- [x] Contract action은 `expected_title_restore_contract_case 17`이다.
+- [x] Promotion decision은 `publish 17`이지만 approval이 아니다.
+- [x] Release candidate not approval rows는 `17`이다.
+- [x] Publish allowed rows는 `0`, runtime replay allowed rows는 `0`이다.
+- [x] Search review required before approval rows는 `12`, official support ref missing rows는 `1`이다.
+- [x] 다음 runtime/test run은 `--parallel 16`, dashboard 기본 ON으로 둔다.
+- [ ] Projection 적용/contract test/full375 재확인 전 runtime replay를 열지 않는다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: ordinary restore contract plan `REVIEW-LOCKED / 17`, runtime replay `NOT_RUN / allowed 0`, full375 collateral `NO-GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop553 ordinary residual64 dispatch 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 런을 실행하지 않았다.

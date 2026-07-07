@@ -1,5 +1,21 @@
 # Improvement Register
 
+## IMP-20260707-554 - Ordinary restore shared-gate contract plan
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 실행 없음, runtime allowed `0` | projection 적용/contract test 전 replay 금지 |
+| Restore contract plan | REVIEW-LOCKED | restore rows `17`, validation issue `0` | projection application과 contract audit |
+| Shared promotion gate | GO_CONTRACT_CASE | `can_publish_title` 결과 `publish 17` | approval과 분리 유지 |
+| Release candidate | REVIEW | release candidate not approval `17` | full375 recheck 전 승격 금지 |
+| Search evidence | REVIEW | search review required before approval `12` | full_scan approval 전 확인 |
+| Official support ref | REVIEW | missing `1` | `11681172` 근거 보강 확인 |
+| Full375 collateral | NO-GO | residual64와 full375 recheck 남음 | full375 GO와 full_scan path 정의 필요 |
+| Dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | 다음 test run은 `--parallel 16`, dashboard 기본 ON | runtime 진행 관측용으로만 사용 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: ordinary restore contract plan `REVIEW-LOCKED / 17`, runtime replay `NOT_RUN`, full375 collateral `NO-GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-553 - Ordinary residual64 dispatch
 
 | 항목 | 상태 | 근거 | 다음 |

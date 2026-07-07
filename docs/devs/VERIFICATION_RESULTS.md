@@ -1,5 +1,30 @@
 # Verification Results
 
+## 2026-07-07 Loop554 ordinary restore shared-gate contract plan
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_554_REPORT_20260707.md`
+  - `docs/devs/loop554_ordinary_restore_shared_gate_contract_plan.json`
+  - `docs/devs/loop554_ordinary_restore_shared_gate_contract_plan.md`
+  - `tools/build_ordinary_restore_contract_plan.py`
+  - `tests/test_build_ordinary_restore_contract_plan.py`
+- 검증:
+  - py_compile: PASS, `tools/build_ordinary_restore_contract_plan.py`, `tests/test_build_ordinary_restore_contract_plan.py`, dispatch/post-verdict promotion/accounting 관련 tool/test.
+  - unittest: PASS, `tests.test_build_ordinary_restore_contract_plan`, `tests.test_build_ordinary_residual_dispatch`, `tests.test_build_post_verdict_promotion_gate_contract_plan`, `tests.test_reaccount_residual_after_contract_reviews`, `tests.test_run_independent_plan`, `tests.test_attach_manifest_dashboard`, 총 `17` tests.
+  - Contract plan generation: PASS, gate `REVIEW-LOCKED`, restore rows `17`, validation issue `0`.
+  - JSON invariant check: PASS, Loop554 summary/gate counts.
+  - JSON parse: PASS, `docs/devs/loop554_ordinary_restore_shared_gate_contract_plan.json`.
+  - Dashboard health/status: PASS, `http://127.0.0.1:8080`, Loop545 `49/49`, `parallel_count=16`, `batch_running=false`.
+  - `git diff --check`: PASS. LF/CRLF warning만 있었고 whitespace error는 없었다.
+- 결과:
+  - Contract action은 `expected_title_restore_contract_case 17`이다.
+  - Promotion decision은 `publish 17`이지만 approval이 아니다.
+  - Release candidate not approval rows는 `17`이다.
+  - Search review required before approval rows는 `12`, official support ref missing rows는 `1`이다.
+  - Publish/runtime allowed rows는 `0/0`이다.
+  - Full375 collateral은 계속 `NO-GO`다.
+- Gate: ordinary restore contract plan `REVIEW-LOCKED`, runtime replay `NOT_RUN / allowed 0`, full375 collateral `NO-GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop553 ordinary residual64 dispatch
 
 - 산출물:

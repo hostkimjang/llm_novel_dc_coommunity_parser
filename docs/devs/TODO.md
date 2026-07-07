@@ -1,5 +1,20 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop554 TODO
+
+- 상태 업데이트: Loop553 shared-gate restore lane `17`건을 shared promotion gate contract plan으로 전환했다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 런을 발주하지 않았다.
+- [x] Restore contract plan rows는 `17`, validation issue는 `0`이다.
+- [x] Contract action은 `expected_title_restore_contract_case 17`이다.
+- [x] Promotion decision은 `publish 17`이지만 approval이 아니다.
+- [x] Release candidate not approval rows는 `17`, publish/runtime allowed rows는 `0/0`이다.
+- [x] Search review required before approval rows는 `12`, official support ref missing rows는 `1`이다.
+- [ ] Projection 적용/contract test/full375 재확인 전 runtime replay를 열지 않는다.
+- [ ] Search degraded/status missing 조건을 full_scan approval 전 별도 확인한다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: ordinary restore contract plan `REVIEW-LOCKED / 17`, full375 collateral `NO-GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop553 TODO
 
 - 상태 업데이트: Loop552 ordinary residual `64`건을 단건이 아니라 lane batch로 재분해했다. Goal은 완료가 아니다.

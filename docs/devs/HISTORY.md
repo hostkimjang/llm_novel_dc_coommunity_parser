@@ -1,5 +1,16 @@
 # Development History
 
+## 2026-07-07 - Loop554 ordinary restore shared-gate contract plan
+
+- 새 runtime replay, bounded run, full375 대형 런은 실행하지 않았다.
+- Loop553 `shared_gate_restore_contract_review` lane `17`건을 shared `can_publish_title` gate로 통과시켜 contract plan을 만들었다.
+- Contract action은 `expected_title_restore_contract_case 17`, promotion decision은 `publish 17`이다.
+- `promotion_decision=publish`는 contract case일 뿐 approval이 아니며 release candidate not approval rows는 `17`이다.
+- Search review required before approval rows는 `12`, official support ref missing rows는 `1`이다.
+- Publish/runtime allowed rows는 `0/0`이다.
+- Report는 `docs/devs/loop_reports/LOOP_554_REPORT_20260707.md`다.
+- Gate는 ordinary restore contract plan `REVIEW-LOCKED`, runtime replay `NOT_RUN`, full375 collateral `NO-GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop553 ordinary residual64 dispatch
 
 - 새 runtime replay, bounded run, full375 대형 런은 실행하지 않았다.
