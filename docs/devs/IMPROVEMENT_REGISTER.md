@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260708-599 - full375 unreviewed40 review batch
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | 실제 test run만 `--parallel 16` + dashboard attached로 실행 |
+| Full375 triage | NO-GO | raw regression `73`, buckets `21/21/31` | review batch 판정 전 approval 금지 |
+| Closed residual exclusion | REVIEW-LOCKED | residual46 processed/excluded `46`, triage P0 candidate excluded `33` | closed row 재심 반복 금지 |
+| Next action queue | REVIEW-LOCKED | rows `40`, `INFO_MISSING 40`, validation issue `0` | blind/source-native 판정 필요 |
+| Review batch | REVIEW-LOCKED | selected `40`, missing source/baseline/after `0/0/0` | judge verdict 작성 전 approval 금지 |
+| Splitter contract | PASS_UNIT | `REJECT` policy residual 포함, source/triage exclusion 분리 | 회계 불일치 재발 방지 |
+| Full375 collateral | NO-GO | raw `73`, adjusted `66`, runtime counts missing | collateral GO 전 approval 금지 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: loop599 batch generation `REVIEW-LOCKED`, judge verdict `NOT_RUN`, full375 collateral `NO-GO / raw 73 / adjusted 66`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-598 - remaining4 native hold convergence
 
 | 항목 | 상태 | 근거 | 다음 |

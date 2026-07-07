@@ -224,7 +224,9 @@ def _p0_rows(
     *,
     per_bucket_limit: int = 0,
     buckets: set[str] | None = None,
+    exclude_post_ids: set[int] | None = None,
 ) -> list[dict[str, Any]]:
+    exclude_post_ids = exclude_post_ids or set()
     rows = [
         row
         for row in triage_report.get("rows", [])
@@ -232,6 +234,11 @@ def _p0_rows(
     ]
     if buckets:
         rows = [row for row in rows if str(row.get("triage_bucket") or "") in buckets]
+    rows = [
+        row
+        for row in rows
+        if (_int_or_none(row.get("post_id")) or 0) not in exclude_post_ids
+    ]
     rows.sort(key=_selection_key)
     if per_bucket_limit <= 0:
         return rows
@@ -254,10 +261,28 @@ def build_review_batch(
     after_rows: dict[int, dict[str, Any]],
     per_bucket_limit: int = 0,
     buckets: set[str] | None = None,
+    exclude_post_ids: set[int] | None = None,
     scope_label: str = "collateral P0",
     generated_at: str | None = None,
 ) -> dict[str, Any]:
-    selected = _p0_rows(triage_report, per_bucket_limit=per_bucket_limit, buckets=buckets)
+    exclude_post_ids = exclude_post_ids or set()
+    pre_exclusion_p0_rows = _p0_rows(
+        triage_report,
+        per_bucket_limit=0,
+        buckets=buckets,
+        exclude_post_ids=set(),
+    )
+    excluded_p0_candidate_rows = sum(
+        1
+        for row in pre_exclusion_p0_rows
+        if (_int_or_none(row.get("post_id")) or 0) in exclude_post_ids
+    )
+    selected = _p0_rows(
+        triage_report,
+        per_bucket_limit=per_bucket_limit,
+        buckets=buckets,
+        exclude_post_ids=exclude_post_ids,
+    )
     review_rows: list[dict[str, Any]] = []
     missing = Counter()
     for triage in selected:
@@ -322,6 +347,8 @@ def build_review_batch(
             "missing_after_result_rows": missing.get("after", 0),
             "per_bucket_limit": per_bucket_limit,
             "bucket_filter": sorted(buckets or []),
+            "excluded_post_id_rows": len(exclude_post_ids),
+            "excluded_p0_candidate_rows": excluded_p0_candidate_rows,
         },
         "instructions_ko": [
             "blind judge 입력에는 source_native_packet과 blind_judge_options만 제공한다.",
@@ -345,6 +372,8 @@ def write_markdown(path: Path, report: dict[str, Any], *, inputs: dict[str, Path
         f"- search recovery gate: `{report['search_recovery_gate']}`",
         f"- promotion_blocked 해석: `{report['promotion_blocked_interpretation']}`",
         f"- selected review rows: `{summary['selected_review_rows']}`",
+        f"- excluded post_id rows: `{summary.get('excluded_post_id_rows', 0)}`",
+        f"- excluded P0 candidate rows: `{summary.get('excluded_p0_candidate_rows', 0)}`",
         "",
         "## 입력",
         "",
@@ -424,6 +453,11 @@ def parse_args() -> argparse.Namespace:
         default="collateral P0",
         help="Reader-facing scope label used in report JSON/Markdown.",
     )
+    parser.add_argument(
+        "--exclude-post-ids",
+        default="",
+        help="쉼표로 구분한 post_id 목록. 이미 닫힌 collateral row를 review batch에서 제외한다.",
+    )
     return parser.parse_args()
 
 
@@ -436,6 +470,11 @@ def main() -> None:
         after_rows=_result_rows_by_post_id(load_json(args.after_result)),
         per_bucket_limit=args.per_bucket_limit,
         buckets={bucket for bucket in args.bucket if bucket},
+        exclude_post_ids={
+            int(item.strip())
+            for item in str(args.exclude_post_ids or "").split(",")
+            if item.strip()
+        },
         scope_label=args.scope_label,
     )
     inputs = {

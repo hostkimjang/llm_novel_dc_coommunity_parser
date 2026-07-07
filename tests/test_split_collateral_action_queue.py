@@ -213,6 +213,72 @@ class SplitCollateralActionQueueTest(unittest.TestCase):
         self.assertEqual(p1_group["owner_mode"], "SOURCE_NATIVE_OR_BLIND_REVIEW")
         self.assertEqual(p1_group["post_ids"], [22])
 
+    def test_excluding_closed_triage_rows_does_not_corrupt_source_transition_expected_counts(self) -> None:
+        combined_review = {
+            "review_id": "unit_combined_p0",
+            "gate": "REVIEW-LOCKED",
+            "summary": {
+                "queue_transition": {
+                    "residual_action_queue_rows": 2,
+                    "repair_required_rows": 1,
+                    "policy_or_native_review_required_rows": 1,
+                }
+            },
+            "rows": [
+                {
+                    "post_id": 20,
+                    "triage_bucket": "safe_loss_resolved_to_null",
+                    "review_label": "REPROCESS",
+                    "action": ["repair_safe_loss"],
+                },
+                {
+                    "post_id": 21,
+                    "triage_bucket": "unsafe_promotion_from_hold",
+                    "review_label": "HOLD",
+                    "action": ["native_web_review_required"],
+                },
+            ],
+        }
+        p0_rows = [
+            {
+                "post_id": 21,
+                "status": "null_to_resolved",
+                "is_regression": True,
+                "priority": "P0",
+                "triage_bucket": "unsafe_promotion_from_hold",
+                "before_title": None,
+                "after_title": "Already Closed",
+            },
+            {
+                "post_id": 22,
+                "status": "resolved_to_different_title",
+                "is_regression": True,
+                "priority": "P0",
+                "triage_bucket": "wrong_work_title_flip",
+                "before_title": "Before",
+                "after_title": "After",
+            },
+        ]
+
+        queue = build_residual_queue(
+            combined_review,
+            generated_at="2026-07-08T00:00:00",
+            exclude_post_ids={21},
+            unreviewed_regression_rows=p0_rows,
+        )
+
+        self.assertEqual(queue["gate"], "REVIEW-LOCKED")
+        self.assertEqual(queue["summary"]["validation_issue_count"], 0)
+        self.assertEqual(queue["summary"]["residual_action_queue_rows"], 2)
+        self.assertEqual(queue["summary"]["source_excluded_residual_action_queue_rows"], 1)
+        self.assertEqual(queue["summary"]["unreviewed_excluded_regression_rows"], 1)
+        self.assertEqual(queue["summary"]["unreviewed_regression_rows_added"], 1)
+        self.assertEqual(
+            queue["summary"]["expected_from_source_transition"]["residual_action_queue_rows"],
+            2,
+        )
+        self.assertEqual([row["post_id"] for row in queue["rows"]], [20, 22])
+
     def test_source_transition_info_missing_extends_policy_review_expected_count(self) -> None:
         combined_review = {
             "review_id": "unit_combined_with_info_missing",
@@ -254,6 +320,46 @@ class SplitCollateralActionQueueTest(unittest.TestCase):
         expected = queue["summary"]["expected_from_source_transition"]
         self.assertEqual(expected["policy_or_native_review_required_rows"], 2)
         self.assertEqual(expected["source_info_missing_rows"], 1)
+
+    def test_reject_label_counts_as_policy_or_native_residual(self) -> None:
+        combined_review = {
+            "review_id": "unit_combined_with_reject",
+            "gate": "REVIEW-LOCKED",
+            "summary": {
+                "queue_transition": {
+                    "residual_action_queue_rows": 2,
+                    "repair_required_rows": 0,
+                    "policy_or_native_review_required_rows": 2,
+                }
+            },
+            "rows": [
+                {
+                    "post_id": 50,
+                    "triage_bucket": "safe_loss_resolved_to_null",
+                    "review_label": "REJECT",
+                    "action": ["wrong_work_or_cross_media_policy_hold_required"],
+                },
+                {
+                    "post_id": 51,
+                    "triage_bucket": "unsafe_promotion_from_hold",
+                    "review_label": "HOLD",
+                    "action": ["native_web_review_required"],
+                },
+            ],
+        }
+
+        queue = build_residual_queue(combined_review, generated_at="2026-07-08T00:00:00")
+
+        self.assertEqual(queue["gate"], "REVIEW-LOCKED")
+        self.assertEqual(queue["summary"]["label_counts"], {"HOLD": 1, "REJECT": 1})
+        self.assertEqual(queue["summary"]["validation_issue_count"], 0)
+        policy_group = next(
+            group
+            for group in queue["action_groups"]
+            if group["action"] == "wrong_work_or_cross_media_policy_hold_required"
+        )
+        self.assertEqual(policy_group["owner_mode"], "POLICY_OR_NATIVE_REVIEW")
+        self.assertEqual(policy_group["post_ids"], [50])
 
     def test_can_build_triage_only_residual_queue(self) -> None:
         queue = build_residual_queue(

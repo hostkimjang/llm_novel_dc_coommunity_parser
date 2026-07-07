@@ -1,5 +1,23 @@
 # Operation Quality Checklist
 
+## 2026-07-08 Loop599 full375 unreviewed40 review batch 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_599_REPORT_20260708.md`.
+  - [x] Full375 triage 기록 완료: `docs/devs/loop599_full375_after_residual46_triage.json/.md`.
+  - [x] Action queue 기록 완료: `docs/devs/loop599_full375_unreviewed40_action_queue.json/.md`.
+  - [x] Blind/source-native review batch 기록 완료: `docs/devs/loop599_full375_unreviewed40_review_batch.json/.jsonl/.md`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+  - [x] residual46 processed/excluded `46`건을 closed post_id로 제외했다.
+  - [x] always-on unreviewed `48` 중 closed 집합 포함 `8`건을 제외해 next panel `40`건으로 재회계했다.
+  - [x] `REJECT`는 approval이 아니라 policy/native residual로 분리한다.
+  - [x] Review batch missing source/baseline/after는 `0/0/0`이다.
+  - [x] Loop599 batch 생성은 judge verdict가 아니며 approval이 아니다.
+  - [x] Full375 collateral은 `NO-GO / raw 73 / adjusted 66 / runtime counts missing`이다.
+  - [x] 다음 test/runtime run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지다.
+- Gate: loop599 batch generation `REVIEW-LOCKED`, judge verdict `NOT_RUN`, full375 collateral `NO-GO / raw 73 / adjusted 66`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop598 remaining4 native hold contract 품질 게이트
 
 - 근거:

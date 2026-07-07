@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 
 
-RESIDUAL_LABELS = {"REPROCESS", "HOLD", "INFO_MISSING"}
+RESIDUAL_LABELS = {"REPROCESS", "HOLD", "REJECT", "INFO_MISSING"}
 REPAIR_PREFIXES = ("repair_",)
 REVIEW_ACTION_MARKERS = (
     "_review_required",
@@ -67,7 +67,7 @@ def _owner_mode_for_group(action: str, labels: Counter[str]) -> str:
         return "CODE_OR_RUNTIME_REPAIR"
     if labels.get("INFO_MISSING"):
         return "SOURCE_NATIVE_OR_BLIND_REVIEW"
-    if labels.get("HOLD"):
+    if labels.get("HOLD") or labels.get("REJECT"):
         return "POLICY_OR_NATIVE_REVIEW"
     return "RUNTIME_REPLAY_OR_REVIEW"
 
@@ -78,7 +78,7 @@ def _owner_mode_for_actions(actions: list[str], label: str) -> str:
         return "CODE_OR_RUNTIME_REPAIR"
     if label == "INFO_MISSING":
         return "SOURCE_NATIVE_OR_BLIND_REVIEW"
-    if label == "HOLD":
+    if label in {"HOLD", "REJECT"}:
         return "POLICY_OR_NATIVE_REVIEW"
     owner_modes = [_owner_mode_for_group(action, labels) for action in actions]
     if "POLICY_OR_NATIVE_REVIEW" in owner_modes:
@@ -145,8 +145,11 @@ def build_residual_queue(
     bucket_counts: Counter[str] = Counter()
     action_counts: Counter[str] = Counter()
     excluded_label_counts: Counter[str] = Counter()
+    source_excluded_label_counts: Counter[str] = Counter()
     groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
     excluded_rows: list[dict[str, Any]] = []
+    source_excluded_rows: list[dict[str, Any]] = []
+    unreviewed_excluded_rows: list[dict[str, Any]] = []
 
     for row in rows:
         if not isinstance(row, dict):
@@ -158,14 +161,15 @@ def build_residual_queue(
             continue
         if isinstance(post_id, int) and post_id in exclude_post_ids:
             excluded_label_counts[label] += 1
-            excluded_rows.append(
-                {
-                    "post_id": post_id,
-                    "review_label": label,
-                    "triage_bucket": row.get("triage_bucket"),
-                    "source_native_verdict": row.get("source_native_verdict"),
-                }
-            )
+            source_excluded_label_counts[label] += 1
+            excluded_row = {
+                "post_id": post_id,
+                "review_label": label,
+                "triage_bucket": row.get("triage_bucket"),
+                "source_native_verdict": row.get("source_native_verdict"),
+            }
+            excluded_rows.append(excluded_row)
+            source_excluded_rows.append(excluded_row)
             continue
         actions = normalize_actions(row.get("action") if row.get("action") is not None else row.get("actions"))
         if not actions:
@@ -201,14 +205,14 @@ def build_residual_queue(
         post_id = _coerce_post_id(row.get("post_id"))
         if isinstance(post_id, int) and post_id in exclude_post_ids:
             excluded_label_counts["INFO_MISSING"] += 1
-            excluded_rows.append(
-                {
-                    "post_id": post_id,
-                    "review_label": "INFO_MISSING",
-                    "triage_bucket": row.get("triage_bucket"),
-                    "source_native_verdict": "unreviewed_regression_row",
-                }
-            )
+            excluded_row = {
+                "post_id": post_id,
+                "review_label": "INFO_MISSING",
+                "triage_bucket": row.get("triage_bucket"),
+                "source_native_verdict": "unreviewed_regression_row",
+            }
+            excluded_rows.append(excluded_row)
+            unreviewed_excluded_rows.append(excluded_row)
             continue
         if post_id in seen_post_ids:
             continue
@@ -256,20 +260,24 @@ def build_residual_queue(
     if source_expected_policy_review is None:
         source_expected_policy_review = source_label_counts.get("HOLD", 0) + source_label_counts.get(
             "INFO_MISSING", 0
-        )
+        ) + source_label_counts.get("REJECT", 0)
     elif source_expected_info_missing is not None:
         source_expected_policy_review = int(source_expected_policy_review) + int(source_expected_info_missing)
 
     def _adjust_expected(value: Any, label: str | None = None) -> int | None:
         if value is None:
             return None
-        excluded_count = len(excluded_rows) if label is None else excluded_label_counts.get(label, 0)
+        excluded_count = (
+            len(source_excluded_rows)
+            if label is None
+            else source_excluded_label_counts.get(label, 0)
+        )
         return int(value) - excluded_count
 
     def _adjust_expected_labels(value: Any, labels: tuple[str, ...]) -> int | None:
         if value is None:
             return None
-        excluded_count = sum(excluded_label_counts.get(label, 0) for label in labels)
+        excluded_count = sum(source_excluded_label_counts.get(label, 0) for label in labels)
         return int(value) - excluded_count
 
     unreviewed_regression_count = len(
@@ -285,7 +293,10 @@ def build_residual_queue(
     if expected_residual is not None:
         expected_residual += unreviewed_regression_count
     expected_reprocess = _adjust_expected(source_expected_reprocess, "REPROCESS")
-    expected_policy_review = _adjust_expected_labels(source_expected_policy_review, ("HOLD", "INFO_MISSING"))
+    expected_policy_review = _adjust_expected_labels(
+        source_expected_policy_review,
+        ("HOLD", "REJECT", "INFO_MISSING"),
+    )
     if expected_policy_review is not None:
         expected_policy_review += unreviewed_regression_count
     validation_issues: list[dict[str, Any]] = []
@@ -305,7 +316,11 @@ def build_residual_queue(
                 "actual": label_counts.get("REPROCESS", 0),
             }
         )
-    actual_policy_review = label_counts.get("HOLD", 0) + label_counts.get("INFO_MISSING", 0)
+    actual_policy_review = (
+        label_counts.get("HOLD", 0)
+        + label_counts.get("REJECT", 0)
+        + label_counts.get("INFO_MISSING", 0)
+    )
     if expected_policy_review is not None and int(expected_policy_review) != actual_policy_review:
         validation_issues.append(
             {
@@ -346,7 +361,10 @@ def build_residual_queue(
             },
             "closed_post_ids_excluded": sorted(exclude_post_ids),
             "excluded_residual_action_queue_rows": len(excluded_rows),
+            "source_excluded_residual_action_queue_rows": len(source_excluded_rows),
+            "unreviewed_excluded_regression_rows": len(unreviewed_excluded_rows),
             "excluded_label_counts": _counter_to_dict(excluded_label_counts),
+            "source_excluded_label_counts": _counter_to_dict(source_excluded_label_counts),
             "unreviewed_regression_rows_added": unreviewed_regression_count,
             "validation_issue_count": len(validation_issues),
         },
@@ -376,6 +394,8 @@ def write_markdown(queue: dict[str, Any], path: Path) -> None:
         f"- label_counts: `{summary.get('label_counts')}`",
         f"- closed_post_ids_excluded: `{summary.get('closed_post_ids_excluded')}`",
         f"- excluded_residual_action_queue_rows: `{summary.get('excluded_residual_action_queue_rows')}`",
+        f"- source_excluded_residual_action_queue_rows: `{summary.get('source_excluded_residual_action_queue_rows')}`",
+        f"- unreviewed_excluded_regression_rows: `{summary.get('unreviewed_excluded_regression_rows')}`",
         f"- unreviewed_regression_rows_added: `{summary.get('unreviewed_regression_rows_added')}`",
         f"- action_group_count: `{summary.get('action_group_count')}`",
         f"- validation_issue_count: `{summary.get('validation_issue_count')}`",

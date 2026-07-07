@@ -1,5 +1,22 @@
 # Development Checklist
 
+## 2026-07-08 Loop599 full375 unreviewed40 review batch 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Loop598 full375 collateral compare를 현재 기준으로 triage했다.
+- [x] Current triage는 changed `152`, regression `73`, bucket `wrong_work_title_flip 21 / unsafe_promotion_from_hold 21 / safe_loss_resolved_to_null 31`이다.
+- [x] Loop598 residual46 processed/excluded `46`건을 closed post_id로 제외했다.
+- [x] Always-on unreviewed regression `48`건 중 `8`건은 closed 집합에 이미 포함되어 다음 review target은 `40`건으로 재회계했다.
+- [x] Action queue rows `40`, label `INFO_MISSING 40`, bucket `wrong_work_title_flip 11 / unsafe_promotion_from_hold 20 / safe_loss_resolved_to_null 9`, validation issue `0`을 확인했다.
+- [x] Blind/source-native review batch rows `40`, missing source/baseline/after `0/0/0`, gate `REVIEW-LOCKED`를 확인했다.
+- [x] `REJECT` 라벨을 policy/native residual로 포함하도록 splitter 계약을 보강했다.
+- [x] Review batch builder에 `--exclude-post-ids`를 추가해 closed collateral row 반복을 막았다.
+- [ ] Loop599 `INFO_MISSING 40`을 blind/source-native 또는 native-web batch로 판정한다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, manifest attach fallback 활성, `--no-dashboard` 금지로 실행한다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: loop599 batch generation `REVIEW-LOCKED`, judge verdict `NOT_RUN`, full375 collateral `NO-GO / raw 73 / adjusted 66`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_599_REPORT_20260708.md`, `docs/devs/loop599_full375_after_residual46_triage.json`, `docs/devs/loop599_full375_unreviewed40_action_queue.json`, `docs/devs/loop599_full375_unreviewed40_review_batch.json`.
+
 ## 2026-07-08 Loop598 remaining4 native hold contract 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
