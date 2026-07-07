@@ -1,5 +1,28 @@
 # Development Checklist
 
+## 2026-07-08 Loop588 native/policy preflight 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] P0 ordinary residual `10`건 중 native/policy preflight `2`건을 batch로 검토했다.
+- [x] Native/policy review 결과 reviewed `2`, restore dispatch `1`, hold `1`, validation issue `0`을 확인했다.
+- [x] `11700483`은 NovelPia official detail과 openstore 근거로 `니들 생각 다 들린다` restore dispatch에 포함했다.
+- [x] `11698859`는 exact official title `귤부인 대롱대롱`이 확인되지 않아 native-web context-only hold로 유지했다.
+- [x] Restore contract plan 결과 `expected_title_restore_contract_case 1`, promotion decision `publish 1`, runtime allowed `0`을 확인했다.
+- [x] Projection-only 적용 결과 rows `375`, applied restore `1`, validation issue `0`을 확인했다.
+- [x] Publication contract `GO / 375 rows / 0 violations`를 확인했다.
+- [x] Combined release gate `REVIEW-LOCKED / violation 0 / release candidate 6 / no-release 5`를 확인했다.
+- [x] Full375 collateral compare는 shared `375`, changed `158`, raw regression `81`, `NO-GO / runtime counts missing`임을 확인했다.
+- [x] Always-on gate는 golden18 `GO`, collateral `NO-GO / raw 81 / runtime counts missing`, 전체 `NO-GO`임을 확인했다.
+- [x] P0 residual은 ordinary `9`, official follow-up `1`; residual46은 ordinary `36`, official follow-up `1`로 재회계했다.
+- [x] Focused unittest와 py_compile을 통과했다.
+- [x] Dashboard health는 `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`으로 확인했다.
+- [x] Dashboard status는 마지막 Loop564 runtime replay `30/30`, `parallel_count=16`, `batch_running=false`로 확인했다.
+- [ ] 남은 P0 ordinary `9`건은 source-native/blind `7`, native-web hold `1`, eBook/classic follow-up `1`로 분리 처리한다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 실행한다.
+- [ ] Dashboard 진행률을 semantic/full_scan approval 근거로 쓰지 않는다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: native/policy preflight `REVIEW-LOCKED / dispatch 1 / hold 1`, publication `GO`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 81 / runtime counts missing`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop587 P0 candidate-set rebuild hold 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.

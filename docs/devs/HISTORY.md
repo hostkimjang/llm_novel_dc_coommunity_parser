@@ -1,5 +1,25 @@
 # Development History
 
+## 2026-07-08 - Loop588 native/policy preflight and full375 collateral recheck
+
+- 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+- Loop587 이후 P0 ordinary residual `10`건 중 native/policy preflight `2`건을 batch로 검토했다.
+- Native/policy review 결과는 reviewed `2`, restore dispatch `1`, hold `1`, validation issue `0`이다.
+- `11700483`은 NovelPia official detail `https://novelpia.com/novel/384318`와 openstore `https://novelpia.com/openstore_v2_detail/1696` 근거로 `니들 생각 다 들린다` restore dispatch에 포함했다.
+- `11698859`는 exact official title `귤부인 대롱대롱`이 확인되지 않고 NovelPia `#귤부인` 태그 맥락만 확인되어 context-only hold로 유지했다.
+- Restore contract plan은 rows `1`, `expected_title_restore_contract_case 1`, promotion decision `publish 1`, runtime allowed `0`이다.
+- Projection-only 적용은 rows `375`, applied publish/restore `1`, validation issue `0`이다.
+- Publication contract는 `GO / 375 rows / 0 violations`다.
+- Combined release gate는 `REVIEW-LOCKED`, violation `0`, release candidate `6`, no-release `5`다.
+- Full375 collateral은 shared `375`, changed `158`, raw regression `82 -> 81`로 줄었지만 `NO-GO / runtime counts missing`다.
+- Always-on gate는 golden18 `GO / 18 of 18`과 collateral `NO-GO / raw 81` 조합으로 전체 `NO-GO`다.
+- Residual P0 accounting은 contract processed `10`, ordinary residual `9`, official support follow-up `1`이다.
+- Residual46 accounting은 contract processed `10`, ordinary residual `36`, official support follow-up `1`이다.
+- `tools/build_native_policy_preflight_review.py`와 `tests/test_build_native_policy_preflight_review.py`를 추가했다.
+- Focused unittest `10`개와 py_compile을 통과했다.
+- Report는 `docs/devs/loop_reports/LOOP_588_REPORT_20260708.md`다.
+- Gate는 native/policy preflight `REVIEW-LOCKED / dispatch 1 / hold 1`, publication `GO`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 81`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop587 P0 candidate-set rebuild hold and residual accounting
 
 - 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.

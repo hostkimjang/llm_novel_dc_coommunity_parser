@@ -1,0 +1,103 @@
+{
+  "report_type": "native_policy_preflight_review",
+  "review_id": "loop588_native_policy_preflight_review",
+  "generated_at": "2026-07-08T05:23:36",
+  "source_contract_queue": "loop582_residual_p0_contract_queue",
+  "source_review_refs": "loop588_native_policy_preflight_review_refs",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "source_preflight_rows": 2,
+    "reviewed_rows": 2,
+    "validation_issue_count": 0,
+    "lane_counts": {
+      "native_web_image_evidence_review": 1,
+      "no_publish_guard_review": 1
+    },
+    "state_counts": {
+      "native_web_exact_title_not_found_context_only": 1,
+      "official_detail_and_store_context_confirmed": 1
+    },
+    "review_action_counts": {
+      "native_web_context_only_hold": 1,
+      "native_policy_restore_dispatch": 1
+    },
+    "restore_dispatch_rows": 1,
+    "hold_rows": 1,
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "rows": [
+    {
+      "post_id": 11698859,
+      "target_title": "귤부인 대롱대롱",
+      "dispatch_lane": "native_web_image_evidence_review",
+      "batch_lanes": [
+        "native_web_image_evidence_review",
+        "shared_gate_restore_contract_review"
+      ],
+      "native_policy_state": "native_web_exact_title_not_found_context_only",
+      "review_action": "native_web_context_only_hold",
+      "official_title": "친아들이 내게 집착한다",
+      "official_url": "https://novelpia.com/novel/197558",
+      "store_url": null,
+      "accepted_by_native_policy_contract": false,
+      "webnovel_detail_url_supported": true,
+      "title_matches_target": false,
+      "store_context_required": false,
+      "store_context_confirmed": false,
+      "restore_dispatch_row": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "source_urls": [
+        "https://m.dcinside.com/board/genrenovel/11698859",
+        "https://novelpia.com/novel/197558"
+      ],
+      "source_evidence_ko": "검색 결과에서 exact phrase `귤부인 대롱대롱`은 DC 원글로 확인되고, 노벨피아 공식 상세는 `친아들이 내게 집착한다`의 `#귤부인` 태그 맥락만 보인다.",
+      "hold_reason_ko": "target title과 일치하는 공식 작품 detail URL이 없으므로 raw/title context만으로 publish하지 않고 native-web disambiguation hold로 남긴다.",
+      "rationale_ko": "원문 제목이 `귤부인 대롱대롱`을 직접 말하고 본문은 해당 장면에 대한 감상이다. 공식 URL은 packet에 없지만 raw title surface가 강하므로 after null은 회귀이며 native-web 보강은 후속이다.",
+      "validation_issues": []
+    },
+    {
+      "post_id": 11700483,
+      "target_title": "니들 생각 다 들린다",
+      "dispatch_lane": "no_publish_guard_review",
+      "batch_lanes": [
+        "no_publish_guard_review",
+        "shared_gate_restore_contract_review"
+      ],
+      "native_policy_state": "official_detail_and_store_context_confirmed",
+      "review_action": "native_policy_restore_dispatch",
+      "official_title": "니들 생각 다 들린다",
+      "official_url": "https://novelpia.com/novel/384318",
+      "store_url": "https://novelpia.com/openstore_v2_detail/1696",
+      "accepted_by_native_policy_contract": true,
+      "webnovel_detail_url_supported": true,
+      "title_matches_target": true,
+      "store_context_required": true,
+      "store_context_confirmed": true,
+      "restore_dispatch_row": true,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "source_urls": [
+        "https://novelpia.com/novel/384318",
+        "https://novelpia.com/openstore_v2_detail/1696"
+      ],
+      "source_evidence_ko": "노벨피아 작품 상세의 official title이 `니들 생각 다 들린다`이고, 같은 작품 상세에는 `미니미콘` 공지가 있다. 노벨티콘 스토어 detail도 `니들 생각 다 들린다`와 `미니미콘`을 함께 표시한다.",
+      "hold_reason_ko": null,
+      "rationale_ko": "원문 `니생들 이모티콘`과 이미지 OCR `니들 생각 다 들린다 미니미콘`이 작품별 이모티콘 구매 맥락을 직접 지지한다. 작품 상품/이모티콘 맥락이므로 after null은 회귀다.",
+      "validation_issues": []
+    }
+  ],
+  "restore_dispatch_id": "loop588_native_policy_preflight_review_restore_dispatch",
+  "approval_boundary": {
+    "native_policy_review_is_not_runtime_replay": true,
+    "accepted_rows_must_pass_shared_restore_plan": true,
+    "native_web_context_only_rows_do_not_publish": true,
+    "held_rows_remain_ordinary_residual_followup": true,
+    "full_scan_approval": false
+  }
+}

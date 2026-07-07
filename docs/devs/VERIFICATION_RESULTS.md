@@ -1,5 +1,44 @@
 # Verification Results
 
+## 2026-07-08 Loop588 native/policy preflight와 full375 collateral 재검증
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_588_REPORT_20260708.md`
+  - `tools/build_native_policy_preflight_review.py`
+  - `tests/test_build_native_policy_preflight_review.py`
+  - `docs/devs/loop588_native_policy_preflight_review_refs.json`
+  - `docs/devs/loop588_native_policy_preflight_review.json/.md`
+  - `docs/devs/loop588_native_policy_preflight_dispatch.json`
+  - `docs/devs/loop588_native_policy_preflight_restore_contract_plan.json/.md`
+  - `docs/devs/loop588_native_policy_preflight_projection_application.json/.md`
+  - `docs/devs/loop588_native_policy_preflight_combined_contract_plan.json/.md`
+  - `docs/devs/loop588_native_policy_preflight_combined_projection_application.json/.md`
+  - `docs/devs/loop588_native_policy_preflight_combined_release_gate_audit.json/.md`
+  - `docs/devs/loop588_native_policy_preflight_publication_contract_audit.json/.md`
+  - `docs/devs/loop588_residual_p0_native_policy_preflight_accounting.json/.md`
+  - `docs/devs/loop588_residual46_native_policy_preflight_accounting.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop588_native_policy_preflight_projection_result.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop588_native_policy_preflight_full375_collateral_compare.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop588_always_on_golden18_full375_native_policy_preflight_gate.json/.md`
+- 검증:
+  - Native/policy review generation: PASS, reviewed `2`, dispatch `1`, hold `1`, validation issue `0`.
+  - Restore plan generation: PASS, rows `1`, `expected_title_restore_contract_case 1`, promotion decision `publish 1`, runtime allowed `0`.
+  - Projection application: PASS, rows `375`, applied restore `1`, validation issue `0`.
+  - Publication contract audit: PASS, `GO / 375 rows / 0 violations`.
+  - Combined release gate audit: PASS, `REVIEW-LOCKED`, violation `0`, release candidate `6`, no-release `5`.
+  - Full375 collateral compare: PASS 산출, gate `NO-GO`, shared `375`, changed `158`, raw regression `81`, runtime counts missing.
+  - Always-on gate: PASS 산출, gate `NO-GO`, golden18 `GO`, collateral `NO-GO / raw 81`.
+  - Residual accounting: PASS, P0 ordinary `9`, residual46 ordinary `36`, candidate-set no-publish/hold `4`, official support follow-up `1`, validation issue `0`.
+  - Dashboard health: PASS, `http://127.0.0.1:8080/api/health` 기준 `ok=true`, `standalone=true`, `pid=9320`.
+  - Dashboard status: PASS, 마지막 Loop564 runtime replay `30/30`, `parallel_count=16`, `batch_running=false`.
+  - `python -m unittest -q tests.test_build_native_policy_preflight_review tests.test_build_ordinary_restore_contract_plan tests.test_apply_post_verdict_expected_restore_projection_contract tests.test_audit_post_verdict_promotion_gate_release_contract tests.test_publication_contract_convergence_audit tests.test_reaccount_residual_after_contract_reviews`: PASS, `64` tests.
+  - `python -m py_compile tools\build_native_policy_preflight_review.py tools\build_ordinary_restore_contract_plan.py tools\apply_post_verdict_expected_restore_projection_contract.py tools\audit_publication_contract_convergence.py tools\audit_post_verdict_promotion_gate_release_contract.py tools\reaccount_residual_after_contract_reviews.py tools\test_run_dashboard_policy.py`: PASS.
+- 결과:
+  - `11700483`은 official detail + openstore 근거로 release candidate가 됐지만 full375 GO 전 approval이 아니다.
+  - `11698859`는 exact official title 부재로 context-only hold에 남아 publish 후보가 아니다.
+  - Full375 collateral이 `NO-GO / raw 81`이므로 release candidate `6`건과 no-release hold `5`건은 완료 근거가 아니다.
+- Gate: native/policy preflight `REVIEW-LOCKED / dispatch 1 / hold 1`, publication `GO`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 81`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop587 P0 candidate-set rebuild hold와 residual 회계 갱신
 
 - 산출물:

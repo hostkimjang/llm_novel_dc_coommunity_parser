@@ -1,5 +1,25 @@
 # Developer TODO Index
 
+## 2026-07-08 Loop588 이후
+
+- 상태 업데이트: native/policy preflight `2`건 중 `11700483`만 shared restore dispatch로 처리됐고 `11698859`는 exact 공식 title 부재로 hold 유지했다. Full375 collateral은 여전히 `NO-GO`다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Native/policy review를 생성했다: `docs/devs/loop588_native_policy_preflight_review.json/.md`.
+- [x] Reviewed refs를 보존했다: `docs/devs/loop588_native_policy_preflight_review_refs.json`.
+- [x] Restore dispatch/contract plan을 생성했다: `docs/devs/loop588_native_policy_preflight_dispatch.json`, `docs/devs/loop588_native_policy_preflight_restore_contract_plan.json/.md`.
+- [x] Projection-only 적용 결과 rows `375`, applied restore `1`, validation issue `0`을 확인했다.
+- [x] Publication contract `GO / 375 rows / 0 violations`를 확인했다.
+- [x] Combined release gate `REVIEW-LOCKED / release candidate 6 / no-release 5 / violation 0`을 확인했다.
+- [x] Full375 collateral compare를 실행했다. shared `375`, changed `158`, raw regression `81`, gate `NO-GO`.
+- [x] Always-on gate를 재산출했다. golden18 `GO`, collateral `NO-GO / raw 81 / runtime counts missing`, 전체 `NO-GO`.
+- [x] P0 residual accounting을 생성했다. contract processed `10`, ordinary residual `9`, official URL follow-up `1`.
+- [x] Residual46 accounting을 생성했다. contract processed `10`, ordinary residual `36`, official URL follow-up `1`.
+- [x] `tools/build_native_policy_preflight_review.py`와 계약 테스트를 추가했다.
+- [ ] 남은 P0 ordinary `9`건은 source-native/blind `7`, native-web hold `1`, eBook/classic follow-up `1`로 batch 처리한다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지 상태로 실행한다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: native/policy preflight `REVIEW-LOCKED / dispatch 1 / hold 1`, publication `GO`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 81`, residual46 `REVIEW-LOCKED / 36`, P0 residual `REVIEW-LOCKED / 9`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop587 이후
 
 - 상태 업데이트: P0 candidate-set rebuild `4`건은 no-release hold로 회계 처리됐지만 full375 collateral은 여전히 `NO-GO`다. Goal은 완료가 아니다.
