@@ -1,5 +1,20 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop552 residual78 contract review accounting 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_552_REPORT_20260707.md`.
+  - [x] Accounting 기록 완료: `docs/devs/loop552_residual78_after_contract_reviews_accounting.json`.
+  - [x] Tool/test 기록 완료: `tools/reaccount_residual_after_contract_reviews.py`, `tests/test_reaccount_residual_after_contract_reviews.py`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 런은 실행하지 않았다.
+  - [x] Contract-processed `14`건과 ordinary residual `64`건을 분리했다.
+  - [x] Release candidate `3`건은 approval로 쓰지 않는다.
+  - [x] No-publish/hold contract `11`건은 public publish를 열지 않는다.
+  - [x] Publish/runtime allowed rows는 `0/0`이다.
+  - [x] Full375 collateral `GO` 전 goal completion을 선언하지 않는다.
+- Gate: residual accounting `REVIEW-LOCKED`, runtime replay `NOT_RUN`, full375 collateral `NO-GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop551 C3 stronger evidence hold 품질 게이트
 
 - 근거:

@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260707-552 - Residual78 contract review accounting
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 실행 없음, runtime allowed `0` | ordinary residual batch 전 replay 금지 |
+| Residual accounting | REVIEW-LOCKED | source residual `78`, contract-processed `14`, ordinary `64` | ordinary residual `64` 재분해 |
+| Contract-processed | REVIEW | expected restore `3`, scrub `3`, variant quarantine `5`, C3 hard-hold `3` | approval과 분리 유지 |
+| Release candidate | REVIEW | release candidate not approval `3` | full375 recheck 전 승격 금지 |
+| Full375 collateral | NO-GO | ordinary residual `64`와 full375 recheck 남음 | full375 GO와 full_scan path 정의 필요 |
+| Dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | 다음 test run은 `--parallel 16`, dashboard 기본 ON | runtime 진행 관측용으로만 사용 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: residual accounting `REVIEW-LOCKED / contract-processed 14 / ordinary 64`, runtime replay `NOT_RUN`, full375 collateral `NO-GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-551 - C3 stronger evidence hard-hold review
 
 | 항목 | 상태 | 근거 | 다음 |

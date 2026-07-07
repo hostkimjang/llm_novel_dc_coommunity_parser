@@ -1,5 +1,30 @@
 # Verification Results
 
+## 2026-07-07 Loop552 residual78 contract review accounting
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_552_REPORT_20260707.md`
+  - `docs/devs/loop552_residual78_after_contract_reviews_accounting.json`
+  - `docs/devs/loop552_residual78_after_contract_reviews_accounting.md`
+  - `tools/reaccount_residual_after_contract_reviews.py`
+  - `tests/test_reaccount_residual_after_contract_reviews.py`
+- 검증:
+  - py_compile: PASS, `tools/reaccount_residual_after_contract_reviews.py`, `tests/test_reaccount_residual_after_contract_reviews.py`.
+  - unittest: PASS, `tests.test_reaccount_residual_after_contract_reviews`, `3` tests.
+  - 주변 contract tests: PASS, residual/C2/C3 promotion gate/release contract 묶음 `27` tests.
+  - Accounting generation: PASS, gate `REVIEW-LOCKED`, validation issue `0`, source residual rows `78`.
+  - JSON invariant check: PASS, Loop552 summary/gate counts.
+  - Dashboard health/status: PASS, `http://127.0.0.1:8080`, Loop545 `49/49`, `parallel_count=16`, `batch_running=false`.
+  - `git diff --check`: PASS. LF/CRLF warning만 있었고 whitespace error는 없었다.
+- 결과:
+  - Contract plan overlap rows는 `14`다.
+  - Contract-processed rows는 `14`, ordinary residual unprocessed rows는 `64`다.
+  - Contract-processed 분포는 expected restore projection applied `3`, candidate scrub no-publish `3`, variant quarantine no-publish `5`, stronger evidence hard-hold `3`이다.
+  - Release candidate `3`건은 approval이 아니고 no-publish/hold contract `11`건은 public publish를 열지 않는다.
+  - Publish/runtime allowed rows는 `0/0`이다.
+  - Full375 collateral은 계속 `NO-GO`다.
+- Gate: residual accounting `REVIEW-LOCKED`, runtime replay `NOT_RUN / allowed 0`, full375 collateral `NO-GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop551 C3 stronger evidence hold review
 
 - 산출물:

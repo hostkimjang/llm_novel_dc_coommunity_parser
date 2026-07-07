@@ -1,5 +1,15 @@
 # Development History
 
+## 2026-07-07 - Loop552 residual78 contract review accounting
+
+- 새 runtime replay, bounded run, full375 대형 런은 실행하지 않았다.
+- Loop546 residual78에 Loop548/549/550/551 post-verdict contract 결과를 결합했다.
+- Source residual rows는 `78`, contract plan overlap은 `14`, contract-processed rows는 `14`, ordinary residual unprocessed rows는 `64`다.
+- Contract-processed 분포는 expected restore projection applied `3`, candidate scrub no-publish `3`, variant quarantine no-publish `5`, stronger evidence hard-hold `3`이다.
+- Release candidate `3`건은 approval이 아니고 no-publish/hold contract `11`건은 public publish를 열지 않는다.
+- Report는 `docs/devs/loop_reports/LOOP_552_REPORT_20260707.md`다.
+- Gate는 residual accounting `REVIEW-LOCKED`, runtime replay `NOT_RUN`, full375 collateral `NO-GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop551 C3 stronger evidence hold review
 
 - 새 runtime replay, bounded run, full375 대형 런은 실행하지 않았다.

@@ -1,5 +1,19 @@
 # Development Checklist
 
+## 2026-07-07 Loop552 residual78 contract review accounting 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 런을 실행하지 않았다.
+- [x] Loop546 residual78에 Loop548/549/550/551 post-verdict contract 결과를 결합했다.
+- [x] Source residual rows는 `78`, contract plan overlap은 `14`다.
+- [x] Contract-processed rows는 `14`, ordinary residual unprocessed rows는 `64`다.
+- [x] Validation issue는 `0`이다.
+- [x] Release candidate `3`건은 approval이 아니다.
+- [x] No-publish or hold contract rows `11`건은 public publish를 열지 않는다.
+- [x] Publish allowed rows는 `0`, runtime replay allowed rows는 `0`이다.
+- [ ] Ordinary residual unprocessed `64`건을 다음 배치로 재분해한다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: residual accounting `REVIEW-LOCKED / contract-processed 14 / ordinary 64`, runtime replay `NOT_RUN / allowed 0`, full375 collateral `NO-GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop551 C3 stronger evidence hold 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 런을 실행하지 않았다.
@@ -12,7 +26,7 @@
 - [x] 다음 runtime/test run은 `--parallel 16`, dashboard 기본 ON으로 둔다.
 - [x] Full375 collateral `GO` 전 full_scan path를 완료로 선언하지 않는다.
 - [ ] C3 `3`건의 native-web/blind judge/직접 시각 bridge 증거를 실제로 닫는다.
-- [ ] Full375 collateral 재확인으로 `residual78` 회계를 갱신한다.
+- [x] Full375 residual78 회계를 Loop552에서 contract-processed `14` / ordinary `64`로 갱신했다.
 - Gate: C3 stronger evidence hold `REVIEW-LOCKED / hard-hold 3`, search evidence `REVIEW`, runtime replay `NOT_RUN / allowed 0`, full375 collateral `NO-GO / residual78 still open`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-07 Loop550 C2 canonical variant policy 체크
@@ -26,7 +40,7 @@
 - [x] Publish allowed rows는 `0`, runtime replay allowed rows는 `0`이다.
 - [x] Dashboard policy tests는 `12` tests PASS이며, 다음 테스트런은 `--parallel 16`, dashboard 기본 ON으로 둔다.
 - [x] Search blind/missing `4`건을 search 복구 전 promotion approval로 쓰지 않는다.
-- [ ] C3 stronger evidence/native-web hold `3`건을 처리한다.
+- [x] C3 stronger evidence/native-web hold `3`건은 Loop551에서 hard-hold 계약으로 처리했다.
 - [x] Full375 collateral `GO` 전 full_scan path를 완료로 선언하지 않는다.
 - Gate: C2 variant policy `REVIEW-LOCKED / no-publish quarantine 5`, search evidence `REVIEW`, runtime replay `NOT_RUN / allowed 0`, full375 collateral `NO-GO / residual78 still open`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
