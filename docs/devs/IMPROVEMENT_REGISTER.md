@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260708-595 - native-web judge batch accounting and residual15 dispatch
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | 실제 test run만 `--parallel 16` + dashboard attached로 실행 |
+| Native-web judge review | REVIEW-LOCKED | current dispatch `18`, Codex-native found/missing `9/9`, carried rows `7`, validation issue `0` | missing `9`는 native-web/image evidence 확보 |
+| Exclusion candidates | REVIEW-LOCKED | 새 `ACCEPT` 3건 + carried 4건 = `7` | approval로 세지 않음 |
+| Shared gate boundary | REVIEW-LOCKED | `11698871/11706844/11710047`은 REPROCESS지만 shared gate 전 publish 금지 | official detail 최신 검증 후 contract 처리 |
+| Policy/native hold | REVIEW-LOCKED | `11711632` REJECT, `11716480/11718057` HOLD | policy 또는 human/native-web review |
+| Residual46 | REVIEW-LOCKED | processed_or_excluded `31`, ordinary residual `15` | remaining15 batch 처리 |
+| Full375 collateral | NO-GO | raw `76`, adjusted `69`, unreviewed `51`, runtime counts missing | collateral GO 전 approval 금지 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: native-web judge batch `REVIEW-LOCKED`, residual46 `REVIEW-LOCKED / ordinary 15`, full375 collateral `NO-GO / raw 76 / adjusted 69`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-593 - canonical cleanup accounting and test-run dashboard visibility
 
 | 항목 | 상태 | 근거 | 다음 |

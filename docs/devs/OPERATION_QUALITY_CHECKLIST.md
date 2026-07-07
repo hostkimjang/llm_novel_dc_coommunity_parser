@@ -1,5 +1,24 @@
 # Operation Quality Checklist
 
+## 2026-07-08 Loop595 native-web judge batch 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_595_REPORT_20260708.md`.
+  - [x] Native-web judge review 기록 완료: `docs/devs/loop595_residual46_native_web_judge_source_native_review.json/.md`.
+  - [x] Residual accounting 기록 완료: `docs/devs/loop595_residual46_native_web_judge_accounting.json/.md`.
+  - [x] Remaining dispatch 기록 완료: `docs/devs/loop595_residual46_remaining15_dispatch.json/.md`.
+  - [x] Always-on gate 기록 완료: `docs/devs/loop595_always_on_golden18_full375_native_web_judge_gate.json/.md`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+  - [x] Current dispatch `18`건 중 Codex-native judge found `9`, missing `9`를 분리했다.
+  - [x] 새 `ACCEPT` 3건은 regression count 제외 후보일 뿐 approval이 아니다.
+  - [x] `REPROCESS` 3건은 shared promotion gate와 최신 official detail 검증 전 publish 후보로 줄이지 않았다.
+  - [x] `REJECT/HOLD/INFO_MISSING` 행은 residual에 남겼다.
+  - [x] residual46 ordinary는 `18 -> 15`로 줄었지만 approval이 아니다.
+  - [x] Full375 collateral은 `NO-GO / raw 76 / adjusted 69 / unreviewed 51 / runtime counts missing`이다.
+  - [x] Remaining dispatch는 `native_web_image_evidence_review 15`, publish/runtime allowed `0`이다.
+- Gate: native-web judge batch `REVIEW-LOCKED`, residual46 `REVIEW-LOCKED / ordinary 15`, full375 collateral `NO-GO / raw 76 / adjusted 69`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop593 canonical cleanup 품질 게이트
 
 - 근거:

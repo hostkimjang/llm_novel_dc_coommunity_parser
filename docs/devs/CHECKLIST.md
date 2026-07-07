@@ -1,5 +1,26 @@
 # Development Checklist
 
+## 2026-07-08 Loop595 native-web judge batch 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Loop593 remaining residual `18`건을 단건이 아니라 Codex-native judge batch로 재검토했다.
+- [x] `tools/build_native_web_judge_residual_review.py`와 계약 테스트를 추가했다.
+- [x] carried Loop589 `7`건과 current dispatch `18`건을 결합해 source-native/native-web review rows `25`를 생성했다.
+- [x] current dispatch `18`건 중 Codex-native judge 매칭 `9`, 누락 `9`를 분리했다.
+- [x] 새 `ACCEPT` 제외 후보 `11706867`, `11714885`, `11716505`를 regression count 제외 후보로만 반영했다.
+- [x] `11698871`, `11706844`, `11710047`은 `REPROCESS`지만 shared promotion gate와 최신 official detail 검증 전 publish 후보로 줄이지 않았다.
+- [x] `11711632`는 cross-media/wrong-work policy hold 필요로 residual에 남겼다.
+- [x] `11716480`, `11718057`은 native-web/human review hold로 남겼다.
+- [x] residual46은 processed_or_excluded `31`, ordinary residual `15`로 재회계했다.
+- [x] Remaining dispatch는 `native_web_image_evidence_review 15`건이며 publish/runtime allowed `0`이다.
+- [x] Always-on gate는 golden18 `GO`, full375 collateral `NO-GO / raw 76 / adjusted 69 / unreviewed 51 / runtime counts missing`임을 확인했다.
+- [x] Focused unittest와 py_compile을 통과했다.
+- [ ] remaining15 중 INFO_MISSING/native-web/image missing 행을 batch로 계속 처리한다.
+- [ ] `REPROCESS` 행은 shared promotion gate와 최신 official detail 검증 전 release 후보로 세지 않는다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: native-web judge batch `REVIEW-LOCKED`, residual46 `REVIEW-LOCKED / ordinary 15`, full375 collateral `NO-GO / raw 76 / adjusted 69`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_595_REPORT_20260708.md`, `docs/devs/loop595_residual46_native_web_judge_source_native_review.json`, `docs/devs/loop595_residual46_native_web_judge_accounting.json`, `docs/devs/loop595_residual46_remaining15_dispatch.json`, `docs/devs/loop595_always_on_golden18_full375_native_web_judge_gate.json`.
+
 ## 2026-07-08 Loop594 test-run dashboard attach fallback 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
