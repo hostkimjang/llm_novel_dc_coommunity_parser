@@ -7,6 +7,19 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+try:
+    from tools.test_run_dashboard_policy import (
+        dashboard_contract,
+        expected_effective_parallel,
+        requested_parallel_for_test_run,
+    )
+except ModuleNotFoundError:
+    from test_run_dashboard_policy import (  # type: ignore[no-redef]
+        dashboard_contract,
+        expected_effective_parallel,
+        requested_parallel_for_test_run,
+    )
+
 
 def load_json(path: Path) -> dict[str, Any]:
     payload = json.loads(path.read_text(encoding="utf-8-sig"))
@@ -90,19 +103,35 @@ def classify_projection_row(
 
     if status == "safe_resolved" and exact_match:
         if prior_status == "FAIL_RUNTIME_PROMOTION_BLOCKED":
+            if row.get("projected_url"):
+                return {
+                    "review_label": "REPROCESS",
+                    "priority": "P0",
+                    "owner_mode": "RUNTIME_REPLAY_WITH_SHARED_GATE_SEED",
+                    "actions": [
+                        "runtime_replay_with_projection_followup_seed_required",
+                        "full375_collateral_recheck_after_runtime",
+                    ],
+                    "rationale_ko": (
+                        "Projection은 safe_resolved exact이고 official URL을 가진 shared-gate seed를 포함한다. "
+                        "과거 runtime promotion_blocked 반복을 피하기 위해 projection seed를 runtime input에 보존한 뒤 replay한다."
+                    ),
+                    "close_condition": "projection follow-up seed가 runtime publish_contract_trace에 반영되고 같은 title/url safe_resolved를 내야 한다.",
+                }
             return {
                 "review_label": "REPROCESS",
                 "priority": "P0",
                 "owner_mode": "CODE_OR_RUNTIME_CONTRACT_REPAIR",
                 "actions": [
                     "prior_runtime_promotion_block_repair_required",
+                    "projection_followup_official_url_repair_required",
                     "shared_gate_runtime_block_repair_required",
                     "full375_collateral_recheck_after_repair",
                 ],
                 "rationale_ko": (
                     "Projection은 safe_resolved exact지만 과거 동일 계열 runtime expected-audit에서 "
-                    "promotion_blocked로 실패했다. 같은 입력을 반복 실행하기 전에 prior reason_codes와 "
-                    "publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다."
+                    "promotion_blocked로 실패했고 projection official URL이 없다. 같은 입력을 반복 실행하기 전에 "
+                    "official URL 보강, prior reason_codes, publish_contract_trace / candidate preservation / search-blind 조건을 수리해야 한다."
                 ),
                 "close_condition": "prior runtime promotion_blocked 원인을 수리한 뒤 runtime replay와 full375 collateral을 다시 확인한다.",
             }
@@ -307,6 +336,11 @@ def build_followup_queue(
             "prior_runtime_search_status": (prior_runtime_audit or {}).get("search_status"),
             "matches_source_native_title": row.get("matches_source_native_title") is True,
             "projected_reasons": sorted(_reason_set(row)),
+            "promotion_decision": row.get("promotion_decision"),
+            "promotion_gate_state": row.get("promotion_gate_state"),
+            "promotion_gate_evidence": row.get("promotion_gate_evidence") or [],
+            "publish_contract_trace": row.get("publish_contract_trace"),
+            "publish_ledger": row.get("publish_ledger"),
             "rationale_ko": classification["rationale_ko"],
             "close_condition": classification["close_condition"],
             "evidence_refs": [
@@ -371,6 +405,7 @@ def build_followup_queue(
             "action_counts": _counter_to_dict(action_counts),
             "action_group_count": len(action_groups),
             "runtime_replay_candidate_rows": action_counts.get("runtime_replay_projected_safe_resolved_exact_required", 0),
+            "runtime_seed_replay_candidate_rows": action_counts.get("runtime_replay_with_projection_followup_seed_required", 0),
             "variant_review_rows": action_counts.get("source_native_canonical_variant_review_required", 0),
             "lint_followup_rows": action_counts.get("output_consistency_lint_contract_followup_required", 0),
             "still_blocked_rows": status_counts.get("promotion_blocked", 0),
@@ -421,6 +456,14 @@ def _source_input_row(source: dict[str, Any], queue_row: dict[str, Any], queue_i
         "actions": queue_row.get("actions") or [],
         "close_condition": queue_row.get("close_condition"),
         "approval_state": "runtime_replay_required_not_approval",
+        "projected_status": queue_row.get("projected_status"),
+        "matches_source_native_title": queue_row.get("matches_source_native_title") is True,
+        "promotion_decision": queue_row.get("promotion_decision"),
+        "promotion_gate_state": queue_row.get("promotion_gate_state"),
+        "promotion_gate_evidence": queue_row.get("promotion_gate_evidence") or [],
+        "publish_contract_trace": queue_row.get("publish_contract_trace"),
+        "publish_ledger": queue_row.get("publish_ledger"),
+        "prior_runtime_audit_status": queue_row.get("prior_runtime_audit_status"),
     }
     return out
 
@@ -431,13 +474,17 @@ def build_runtime_replay_input(
     *,
     source_result_path: Path,
     output_jsonl: Path | None = None,
+    runtime_manifest_json: Path | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     source_index = {str(row.get("post_id")): row for row in source_rows if row.get("post_id") is not None}
     runtime_rows = [
         row
         for row in queue.get("rows") or []
         if isinstance(row, dict)
-        and "runtime_replay_projected_safe_resolved_exact_required" in (row.get("actions") or [])
+        and (
+            "runtime_replay_projected_safe_resolved_exact_required" in (row.get("actions") or [])
+            or "runtime_replay_with_projection_followup_seed_required" in (row.get("actions") or [])
+        )
     ]
     missing_post_ids: list[Any] = []
     input_rows: list[dict[str, Any]] = []
@@ -454,6 +501,14 @@ def build_runtime_replay_input(
         "source_result_path": source_result_path.as_posix(),
         "runtime_replay_candidate_rows": len(runtime_rows),
         "runtime_input_rows": len(input_rows),
+        "runtime_input_manifest_path": runtime_manifest_json.as_posix() if runtime_manifest_json else None,
+        "requested_parallel": requested_parallel_for_test_run(len(input_rows)),
+        "expected_effective_parallel": expected_effective_parallel(len(input_rows)),
+        "dashboard_contract": dashboard_contract(),
+        "dashboard_attach_boundary": (
+            "Attach the expert_main result manifest after runtime starts or completes; "
+            "do not attach this input-generation manifest."
+        ),
         "missing_post_ids": missing_post_ids,
         "post_ids": [row.get("post_id") for row in input_rows],
         "expected_titles": [
@@ -466,6 +521,7 @@ def build_runtime_replay_input(
             "semantic_quality": "REVIEW-LOCKED",
             "full_scan_approval": False,
             "approval_boundary": "input generation is not runtime approval",
+            "projection_followup_seed_is_not_approval": True,
         },
     }
     return input_rows, manifest
@@ -487,6 +543,7 @@ def write_markdown(queue: dict[str, Any], path: Path) -> None:
         f"- exact_match_counts: `{summary.get('exact_match_counts')}`",
         f"- prior_runtime_audit_status_counts: `{summary.get('prior_runtime_audit_status_counts')}`",
         f"- runtime_replay_candidate_rows: `{summary.get('runtime_replay_candidate_rows')}`",
+        f"- runtime_seed_replay_candidate_rows: `{summary.get('runtime_seed_replay_candidate_rows')}`",
         f"- variant_review_rows: `{summary.get('variant_review_rows')}`",
         f"- lint_followup_rows: `{summary.get('lint_followup_rows')}`",
         f"- still_blocked_rows: `{summary.get('still_blocked_rows')}`",
@@ -565,6 +622,7 @@ def main() -> int:
             load_result_rows(args.source_result),
             source_result_path=args.source_result,
             output_jsonl=args.runtime_input_jsonl,
+            runtime_manifest_json=args.runtime_manifest_json,
         )
         write_jsonl(args.runtime_input_jsonl, runtime_rows)
         args.runtime_manifest_json.parent.mkdir(parents=True, exist_ok=True)

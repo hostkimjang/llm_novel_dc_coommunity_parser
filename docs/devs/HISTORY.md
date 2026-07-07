@@ -1,5 +1,17 @@
 # Development History
 
+## 2026-07-07 - Loop537 shared-gate seed replay 입력과 dashboard 계약
+
+- 새 runtime replay나 full375 대형 런은 실행하지 않았다.
+- Loop536 residual54 follow-up을 재생성해 prior runtime `FAIL_RUNTIME_PROMOTION_BLOCKED 29`건을 official URL 보유 seed replay `20`건과 official URL/contract repair `9`건으로 나눴다.
+- 기존 `PASS_EXACT_SAFE_RESOLVED 15`건은 replay 후보로 유지했고, title mismatch `10`건은 source-native/canonical variant review hold로 유지했다.
+- Runtime replay input은 `35`건이며 missing post id는 `0`이다.
+- `tools/build_projection_followup_queue.py`는 `_loop_projection_followup`에 promotion decision/gate/trace/ledger를 보존하고, runtime manifest에 dashboard 계약과 `requested_parallel=16`을 기록한다.
+- `expert_main.py`는 projection follow-up seed를 exact source-native safe projection, current-work scope, official URL, work-as-work discussion, hard-negative flag 없음 조건에서만 적용한다.
+- Dashboard는 `http://127.0.0.1:8080`에서 `ok=true`, `standalone=true`, `pid=9320`로 응답했다. Loop537 runtime은 아직 시작하지 않았으므로 화면은 마지막 Loop515 `57/57` 완료 상태다.
+- Report는 `docs/devs/loop_reports/LOOP_537_REPORT_20260707.md`, queue는 `docs/devs/loop537_shared_gate_seeded_followup_queue.json/.md`, runtime input은 `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop537_shared_gate_seeded_runtime_replay_input.jsonl`이다.
+- Gate는 runtime input generation `GO`, runtime replay `READY_NOT_RUN`, shared-gate seed `REPLAY_HINT_NOT_APPROVAL`, full375 collateral `NO-GO / residual 100`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop536 current full375 residual 재회계와 shared-gate 수렴
 
 - 새 runtime replay나 대형 런은 실행하지 않았다.

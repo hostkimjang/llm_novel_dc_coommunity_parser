@@ -15,6 +15,7 @@ from expert_main import (
     _public_comment_metadata,
     _require_vlm_ocr_for_image_posts,
     _enforce_publish_contract_trace_convergence,
+    _apply_projection_followup_promotion_seed,
     _sync_final_publication_ledger_contract,
     _scrub_promotion_blocked_result_contract,
     _vlm_ocr_semantic_review_gate_lines,
@@ -23,6 +24,72 @@ from expert_main import (
 
 
 class ExpertMainCommentMetadataTest(unittest.TestCase):
+    def test_projection_followup_seed_restores_prior_runtime_promotion_block_for_replay(self):
+        result = {
+            "title": "마줍 얘기",
+            "content": ["마줍 주인공 관련 본문"],
+            "comments": [],
+            "identity": {
+                "candidate_ledger_status": "promotion_blocked",
+                "title_resolution_allowed": False,
+                "title_resolution_state": "unresolved_matchable",
+                "work_resolution": "unresolved",
+                "safe_resolved": False,
+                "promotion_blocked": True,
+                "novel_identity": {"official_title": None, "heretic_url": None, "confidence": "Low"},
+                "candidate_ledger": {},
+            },
+        }
+        seed = {
+            "approval_state": "runtime_replay_required_not_approval",
+            "projected_status": "safe_resolved",
+            "matches_source_native_title": True,
+            "actions": ["runtime_replay_with_projection_followup_seed_required"],
+            "projected_title": "마도서를 줍다 마법사가 되다",
+            "projected_url": "https://novelpia.com/novel/414963",
+            "source_native_verdict": "supported_safe_title_lost_to_null",
+            "promotion_decision": {
+                "status": "publish",
+                "publish_allowed": True,
+                "official_title": "마도서를 줍다 마법사가 되다",
+                "official_url": "https://novelpia.com/novel/414963",
+                "reason_codes": [
+                    "official_title_exists",
+                    "row_discusses_work_as_work",
+                    "scope_current_work",
+                ],
+                "scope": {"scope_kind": "current_work", "confidence": "high"},
+            },
+            "promotion_gate_state": {
+                "candidate_title": "마도서를 줍다 마법사가 되다",
+                "candidate_url": "https://novelpia.com/novel/414963",
+                "official_title_exists": True,
+                "row_discusses_work_as_work": True,
+                "scope": {"scope_kind": "current_work", "confidence": "high"},
+            },
+            "promotion_gate_evidence": [
+                {
+                    "kind": "source_native_review",
+                    "supports_publish": True,
+                    "reason_code": "source_native_review_current_work",
+                }
+            ],
+        }
+
+        changed = _apply_projection_followup_promotion_seed(result, seed)
+        self.assertTrue(changed)
+        _sync_final_publication_ledger_contract(result, post_title="마줍 얘기")
+
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "safe_resolved")
+        self.assertTrue(identity["title_resolution_allowed"])
+        self.assertEqual(identity["novel_identity"]["official_title"], "마도서를 줍다 마법사가 되다")
+        self.assertEqual(identity["promotion_decision"]["status"], "publish")
+        self.assertTrue(identity["promotion_decision"]["publish_allowed"])
+        self.assertIn("projection_followup_shared_gate_seed_applied", identity["promotion_decision"]["reason_codes"])
+        self.assertEqual(identity["publish_contract_trace"]["gate_decision"], identity["promotion_decision"])
+        self.assertEqual(identity["publish_ledger"]["gate_decision"], identity["promotion_decision"])
+
     def test_publish_contract_convergence_normalizes_mixed_scope_reason_codes(self):
         decision = {
             "status": "publish",

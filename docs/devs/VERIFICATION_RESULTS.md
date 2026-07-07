@@ -1,5 +1,34 @@
 # Verification Results
 
+## 2026-07-07 Loop537 shared-gate seed replay 입력과 dashboard 계약
+
+- 코드:
+  - `tools/build_projection_followup_queue.py`가 prior runtime promotion block 행을 URL 보유 seed replay와 URL/contract repair lane으로 분리한다.
+  - `_loop_projection_followup`에 `promotion_decision`, `promotion_gate_state`, `promotion_gate_evidence`, `publish_contract_trace`, `publish_ledger`를 보존한다.
+  - `expert_main.py`가 reviewed shared-gate seed를 strict guard 조건에서만 runtime replay 결과에 적용한다.
+  - `PostInput`과 loader가 `projection_followup`을 보존한다.
+  - runtime replay manifest가 `requested_parallel=16`, `expected_effective_parallel=16`, dashboard 계약을 기록한다.
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_537_REPORT_20260707.md`
+  - `docs/devs/loop537_shared_gate_seeded_followup_queue.json`
+  - `docs/devs/loop537_shared_gate_seeded_followup_queue.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop537_shared_gate_seeded_runtime_replay_input.jsonl`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop537_shared_gate_seeded_runtime_replay_manifest.json`
+- 검증:
+  - py_compile: PASS.
+  - `tests.test_projection_followup_queue`: PASS, `7` tests.
+  - focused expert seed contract test: PASS, `1` test.
+  - `tests.test_expert_main_comment_metadata`: PASS, `80` tests.
+  - `tests.test_publication_contract_convergence_audit`: PASS, `20` tests.
+  - Loop537 queue/runtime input generation with `--fail-on-validation-issue`: PASS.
+  - Dashboard health: PASS, `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`.
+- 결과:
+  - follow-up rows `54`, validation issue `0`.
+  - prior `FAIL_RUNTIME_PROMOTION_BLOCKED 29`는 seed replay `20`과 official URL/contract repair `9`로 갈라졌다.
+  - 기존 exact pass replay `15`를 포함해 runtime replay input은 `35`건이다.
+  - title mismatch `10`건은 source-native/canonical variant review hold다.
+- Gate: runtime input generation `GO`, runtime replay `READY_NOT_RUN`, shared-gate seed `REPLAY_HINT_NOT_APPROVAL`, full375 collateral `NO-GO / residual 100`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop536 current full375 residual 재회계와 shared-gate 수렴
 
 - 코드:

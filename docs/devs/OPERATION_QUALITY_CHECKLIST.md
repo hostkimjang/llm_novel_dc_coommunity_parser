@@ -1,5 +1,24 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop537 shared-gate seed replay 입력 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_537_REPORT_20260707.md`.
+  - [x] Seeded follow-up queue 기록 완료: `docs/devs/loop537_shared_gate_seeded_followup_queue.json/.md`.
+  - [x] Runtime replay input 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop537_shared_gate_seeded_runtime_replay_input.jsonl`.
+  - [x] Runtime replay manifest 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop537_shared_gate_seeded_runtime_replay_manifest.json`.
+  - [x] Dashboard 확인: `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`.
+- 품질 경계:
+  - [x] 새 runtime replay나 full375 대형 런은 실행하지 않았다.
+  - [x] Runtime replay input은 `35`건이고 missing post id는 `0`이다.
+  - [x] Prior runtime promotion block은 seed replay `20`과 repair `9`로 분리했다.
+  - [x] Title mismatch `10`건은 source-native/canonical variant review hold다.
+  - [x] Runtime manifest는 `--parallel 16`과 dashboard 기본 ON 계약을 기록한다.
+  - [ ] Runtime input generation을 runtime approval로 승격하지 않는다.
+  - [ ] Projection follow-up seed를 full375 collateral GO나 full_scan approval 근거로 쓰지 않는다.
+  - [ ] Dashboard 상태를 semantic/full_scan approval 근거로 쓰지 않는다.
+- Gate: runtime input generation `GO`, runtime replay `READY_NOT_RUN`, shared-gate seed `REPLAY_HINT_NOT_APPROVAL`, full375 collateral `NO-GO / residual 100`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop536 current full375 residual 품질 게이트
 
 - 근거:

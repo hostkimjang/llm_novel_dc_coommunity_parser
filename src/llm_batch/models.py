@@ -31,6 +31,7 @@ class PostInput(BaseModel):
     search_evidence_catalog: Optional[List[Dict[str, Any]]] = None
     native_web_seed: Optional[Dict[str, Any]] = None
     source_evidence: Optional[Dict[str, Any]] = None
+    projection_followup: Optional[Dict[str, Any]] = None
 
 
 class CommentInput(BaseModel):

@@ -1,5 +1,24 @@
 # Development Checklist
 
+## 2026-07-07 Loop537 shared-gate seed replay 입력 체크
+
+- [x] 새 runtime replay나 full375 대형 런을 실행하지 않았다.
+- [x] Loop536 residual54 follow-up queue를 current code로 재생성했다.
+- [x] prior runtime `FAIL_RUNTIME_PROMOTION_BLOCKED 29`를 seed replay `20`과 official URL/contract repair `9`로 분리했다.
+- [x] 기존 `PASS_EXACT_SAFE_RESOLVED 15`를 replay 후보로 유지했다.
+- [x] title mismatch `10`건은 source-native/canonical variant review hold로 유지했다.
+- [x] runtime replay input `35`건을 생성했고 missing post id는 `0`이다.
+- [x] runtime manifest에 `requested_parallel=16`, `expected_effective_parallel=16`, dashboard 계약을 기록했다.
+- [x] dashboard health는 `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`로 확인했다.
+- [x] focused tests, `tests.test_expert_main_comment_metadata 80`, `tests.test_publication_contract_convergence_audit 20`, queue generation은 PASS다.
+- [ ] Loop537 35건 runtime replay를 실행할 때 `--parallel 16`과 dashboard ON을 유지한다.
+- [ ] Seed replay 결과를 full375 collateral GO나 full_scan approval로 승격하지 않는다.
+- [ ] Official URL/contract repair `9`건을 replay 전에 별도 수리한다.
+- [ ] Title mismatch `10`건은 blind/source-native 검증 없이 publish로 넘기지 않는다.
+- [ ] Dashboard 상태를 semantic/full_scan approval 근거로 쓰지 않는다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: runtime input generation `GO`, runtime replay `READY_NOT_RUN`, shared-gate seed `REPLAY_HINT_NOT_APPROVAL`, full375 collateral `NO-GO / residual 100`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop536 current full375 residual 재회계 체크
 
 - [x] 새 runtime replay나 대형 런을 실행하지 않았다.

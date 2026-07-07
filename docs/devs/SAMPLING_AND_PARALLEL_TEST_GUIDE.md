@@ -1,5 +1,14 @@
 # Sampling And Parallel Test Guide
 
+## 2026-07-07 Loop537 runtime input manifest dashboard 계약
+
+- Loop537 runtime replay input manifest는 `requested_parallel=16`, `expected_effective_parallel=16`, dashboard policy `WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS`를 기록한다.
+- 다음 테스트런/검증런은 `--parallel 16`과 dashboard 기본 ON으로 실행한다. `--no-dashboard`는 사용자가 명시적으로 끌 때만 허용한다.
+- 실행 전 `http://127.0.0.1:8080/api/health`를 확인한다. 현재 확인값은 `ok=true`, `standalone=true`, `pid=9320`이다.
+- Loop537 replay가 아직 실행되지 않았으면 dashboard는 마지막 완료 run 상태를 보여줄 수 있다. 이는 정상이며, 새 runtime이 시작되면 manifest forwarding으로 진행률이 갱신된다.
+- 이미 dashboard 없이 시작된 런만 `tools/attach_manifest_dashboard.py --manifest <result_manifest.json> --dashboard-url http://127.0.0.1:8080`로 사후 부착한다. 입력 jsonl이 아니라 실행 결과 manifest를 붙인다.
+- Dashboard는 진행 관측 도구이며 `semantic_quality`, `full_scan_approval`, `full375 collateral GO` 근거가 아니다.
+
 ## 2026-07-07 Loop531 테스트런 대시보드 재확인
 
 - 현재 active `expert_main.py` runtime run은 없지만, standalone dashboard는 `http://127.0.0.1:8080`에서 `ok=true`, `standalone=true`, `pid=9320`로 응답한다.

@@ -6966,6 +6966,245 @@ def _demote_inferred_urlless_publication_contract(result_dict: Dict[str, Any], p
     return changed
 
 
+def _apply_projection_followup_promotion_seed(
+    result_dict: Dict[str, Any],
+    projection_followup: Optional[Dict[str, Any]],
+) -> bool:
+    """Apply reviewed shared-gate projection evidence to a replay row.
+
+    The seed is a replay hint, not approval. It is accepted only for exact
+    source-native safe projections with an official detail URL.
+    """
+    if not isinstance(result_dict, dict) or not isinstance(projection_followup, dict):
+        return False
+    identity = result_dict.get("identity")
+    if not isinstance(identity, dict):
+        return False
+    if projection_followup.get("approval_state") != "runtime_replay_required_not_approval":
+        return False
+    if projection_followup.get("projected_status") != "safe_resolved":
+        return False
+    if projection_followup.get("matches_source_native_title") is not True:
+        return False
+
+    actions = {
+        str(value or "").strip()
+        for value in (projection_followup.get("actions") or [])
+        if str(value or "").strip()
+    }
+    if "runtime_replay_with_projection_followup_seed_required" not in actions:
+        return False
+
+    decision = projection_followup.get("promotion_decision")
+    if not isinstance(decision, dict) or decision.get("publish_allowed") is not True:
+        return False
+    gate_state = projection_followup.get("promotion_gate_state")
+    if not isinstance(gate_state, dict):
+        return False
+    scope = gate_state.get("scope") if isinstance(gate_state.get("scope"), dict) else decision.get("scope")
+    if not isinstance(scope, dict) or str(scope.get("scope_kind") or "").strip() != "current_work":
+        return False
+    if gate_state.get("row_discusses_work_as_work") is not True:
+        return False
+    if gate_state.get("official_title_exists") is not True:
+        return False
+
+    official_title = str(
+        decision.get("official_title")
+        or projection_followup.get("projected_title")
+        or projection_followup.get("selected_title")
+        or ""
+    ).strip()
+    official_url = _canonical_official_detail_url(
+        decision.get("official_url")
+        or projection_followup.get("projected_url")
+        or ""
+    )
+    if not official_title or not official_url:
+        return False
+
+    ledger = identity.get("candidate_ledger")
+    if not isinstance(ledger, dict):
+        ledger = {}
+
+    hard_negative_flags = {
+        "recommendation_context_only_no_work_anchor",
+        "recommendation_context_only_public_title_conflict",
+        "batch_memory_alias_rescue_blocked_nonwork_context",
+        "batch_memory_alias_rescue_blocked_genre_context",
+        "semantic_seed_no_work_context",
+        "source_explicit_work_denial_title_only_publication_blocked",
+        "unresolved_worklike_hold:alias_character_discussion",
+        "inferred_publication_sentence_like_alias_overreach",
+        "low_specificity_batch_alias_counterevidence_blocked",
+    }
+    flags = {
+        str(value or "").strip()
+        for source in (identity.get("consistency_flags"), ledger.get("consistency_flags"))
+        if isinstance(source, list)
+        for value in source
+        if str(value or "").strip()
+    }
+    if flags & hard_negative_flags:
+        return False
+
+    def _title_key(value: Any) -> str:
+        return re.sub(r"[^0-9A-Za-z가-힣]+", "", str(value or "")).lower()
+
+    title_key = _title_key(official_title)
+    seed_reason_codes = [
+        str(code)
+        for code in (decision.get("reason_codes") or [])
+        if str(code).strip()
+    ]
+    for code in (
+        "projection_followup_shared_gate_seed_applied",
+        "source_native_review_current_work",
+        "official_detail_url",
+    ):
+        if code not in seed_reason_codes:
+            seed_reason_codes.append(code)
+    normalized_reasons = normalize_scope_reason_codes(seed_reason_codes, scope_kind="current_work")
+    seeded_decision = dict(decision)
+    seeded_decision.update(
+        {
+            "status": "publish",
+            "publish_allowed": True,
+            "official_title": official_title,
+            "official_url": official_url,
+            "candidate_preserved": False,
+            "reason_codes": normalized_reasons,
+            "bypassed_gate": False,
+            "scope": scope,
+        }
+    )
+
+    seeded_gate_state = dict(gate_state)
+    seeded_gate_state.update(
+        {
+            "candidate_title": official_title,
+            "candidate_url": official_url,
+            "source": "projection_followup_shared_gate_seed",
+            "official_title_exists": True,
+            "row_discusses_work_as_work": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "scope": scope,
+        }
+    )
+    seeded_evidence = [
+        item
+        for item in (projection_followup.get("promotion_gate_evidence") or [])
+        if isinstance(item, dict)
+    ]
+    if not any(
+        str(item.get("reason_code") or "") == "projection_followup_shared_gate_seed_applied"
+        for item in seeded_evidence
+    ):
+        seeded_evidence.append(
+            {
+                "kind": "projection_followup_source_native_review",
+                "strength": "strong",
+                "source_path_or_snippet": str(projection_followup.get("source_native_verdict") or ""),
+                "supports_publish": True,
+                "reason_code": "projection_followup_shared_gate_seed_applied",
+            }
+        )
+
+    candidate_item = {
+        "official_title": official_title,
+        "heretic_url": official_url,
+        "confidence": "High",
+        "source_tier": "official_detail",
+        "page_type": "novel_page",
+        "reference_role": "primary",
+        "source": "projection_followup_shared_gate_seed",
+        "source_native_verdict": projection_followup.get("source_native_verdict"),
+    }
+
+    def _upsert_candidate(container: Dict[str, Any]) -> bool:
+        values = container.get("candidate_preservation_sources")
+        if not isinstance(values, list):
+            values = []
+        changed_local = False
+        for item in values:
+            if not isinstance(item, dict):
+                continue
+            item_title = str(item.get("official_title") or item.get("title") or "").strip()
+            item_url = str(item.get("heretic_url") or item.get("official_url") or item.get("url") or "").strip()
+            if _title_key(item_title) == title_key or _canonical_official_detail_url(item_url) == official_url:
+                merged = dict(item)
+                merged.update(candidate_item)
+                if item != merged:
+                    item.update(merged)
+                    changed_local = True
+                break
+        else:
+            values.append(dict(candidate_item))
+            changed_local = True
+        if container.get("candidate_preservation_sources") != values:
+            container["candidate_preservation_sources"] = values
+            changed_local = True
+        return changed_local
+
+    changed = False
+    for key, value in (
+        ("candidate_ledger_status", "safe_resolved"),
+        ("title_resolution_allowed", True),
+        ("title_resolution_state", "resolved"),
+        ("work_resolution", "resolved"),
+        ("safe_resolved", True),
+        ("promotion_blocked", False),
+        ("is_resolved_work_discussion", True),
+        ("promotion_decision", seeded_decision),
+        ("promotion_gate_state", seeded_gate_state),
+        ("promotion_gate_evidence", seeded_evidence),
+        ("primary_work", candidate_item),
+    ):
+        if identity.get(key) != value:
+            identity[key] = value
+            changed = True
+
+    novel = identity.get("novel_identity")
+    if not isinstance(novel, dict):
+        novel = {}
+    novel_update = dict(novel)
+    novel_update.update({"official_title": official_title, "heretic_url": official_url, "confidence": "High"})
+    if identity.get("novel_identity") != novel_update:
+        identity["novel_identity"] = novel_update
+        changed = True
+
+    if _upsert_candidate(identity):
+        changed = True
+    for key, value in (
+        ("candidate_ledger_status", "safe_resolved"),
+        ("title_resolution_allowed", True),
+        ("promotion_decision", seeded_decision),
+        ("promotion_gate_state", seeded_gate_state),
+        ("promotion_gate_evidence", seeded_evidence),
+        ("primary_work", candidate_item),
+    ):
+        if ledger.get(key) != value:
+            ledger[key] = value
+            changed = True
+    if _upsert_candidate(ledger):
+        changed = True
+    if identity.get("candidate_ledger") != ledger:
+        identity["candidate_ledger"] = ledger
+        changed = True
+
+    flags = [
+        str(value)
+        for value in (identity.get("consistency_flags") or [])
+        if str(value).strip()
+    ]
+    if "projection_followup_shared_gate_seed_applied" not in flags:
+        flags.append("projection_followup_shared_gate_seed_applied")
+        identity["consistency_flags"] = flags
+        changed = True
+    return changed
+
+
 def _demote_unverified_image_ocr_publication_contract(
     result_dict: Dict[str, Any],
     post_title: Optional[str] = None,
@@ -9873,6 +10112,10 @@ def main() -> None:
                     apply_judge_seed_expected_candidate_preservation(identity_dict, getattr(post, "judge_seed", None))
                     apply_judge_seed_trope_boundary_hold_guard(identity_dict, getattr(post, "judge_seed", None))
                     apply_candidate_audit_fields(identity_dict, getattr(post, "judge_seed", None))
+                    _apply_projection_followup_promotion_seed(
+                        result_dict,
+                        getattr(post, "projection_followup", None),
+                    )
                     sync_result_dict = dict(result_dict)
                     sync_result_dict.update(
                         {
@@ -9881,6 +10124,7 @@ def main() -> None:
                             "comments": comment_texts,
                             "comment_context_lines": comment_context_lines,
                             "comment_dialogue_context_lines": comment_dialogue_context_lines,
+                            "_loop_projection_followup": getattr(post, "projection_followup", None),
                         }
                     )
                     _sync_final_publication_ledger_contract(sync_result_dict, post_title=post.title)
@@ -9941,6 +10185,8 @@ def main() -> None:
                 }
                 if getattr(post, "judge_seed", None):
                     full_result["_judge_seed"] = getattr(post, "judge_seed", None)
+                if getattr(post, "projection_followup", None):
+                    full_result["_loop_projection_followup"] = getattr(post, "projection_followup", None)
 
                 # 결과 요약 (스레드 안전 출력)
                 with _print_lock:
@@ -10867,6 +11113,11 @@ def load_jsonl_posts(path: Path) -> List:
             ),
             native_web_seed=data.get("native_web_seed") if isinstance(data.get("native_web_seed"), dict) else None,
             source_evidence=data.get("source_evidence") if isinstance(data.get("source_evidence"), dict) else None,
+            projection_followup=(
+                data.get("_loop_projection_followup")
+                if isinstance(data.get("_loop_projection_followup"), dict)
+                else None
+            ),
         ))
 
     return posts

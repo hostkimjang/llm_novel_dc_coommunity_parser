@@ -1,5 +1,18 @@
 # Improvement Register
 
+## IMP-20260707-537 - shared-gate seed replay 입력과 dashboard 계약
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Prior promotion block split | GO_INPUT | `29`건을 seed replay `20` / URL+contract repair `9`로 분리 | repair 9건은 replay 전 보강 |
+| Seed replay input | READY_NOT_RUN | 기존 exact pass `15` + seed replay `20` = runtime input `35`, missing `0` | `--parallel 16` + dashboard ON으로 실행 |
+| Title mismatch lane | HOLD | `10`건은 source-native/canonical variant review 필요 | blind/source-native 검증 뒤 재분류 |
+| Runtime seed guard | GO_UNIT | exact safe projection, current-work, official URL, hard-negative flag 없음 조건 | full replay 결과로 계약 확인 |
+| Dashboard contract | GO_PROGRESS_VIEW_NOT_APPROVAL | manifest에 `WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS`, URL `http://127.0.0.1:8080`, `--no-dashboard` 금지 기록 | approval 근거로 쓰지 않음 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: runtime input generation `GO`, runtime replay `READY_NOT_RUN`, shared-gate seed `REPLAY_HINT_NOT_APPROVAL`, full375 collateral `NO-GO / residual 100`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-536 - current full375 residual 재회계와 shared-gate 수렴
 
 | 항목 | 상태 | 근거 | 다음 |
