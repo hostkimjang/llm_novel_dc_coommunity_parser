@@ -1,5 +1,17 @@
 # Development History
 
+## 2026-07-07 - Loop516 shared gate runtime block repair queue
+
+- Loop515 expected-title runtime 재현 실패 중 `FAIL_RUNTIME_PROMOTION_BLOCKED 32`건을 동일 입력 재실행하지 않고 shared gate repair queue로 재분류했다.
+- 새 runtime replay는 실행하지 않았고, repair queue의 `runtime_replay_allowed_rows`는 `0`이다.
+- `tools/build_shared_gate_runtime_block_repair_queue.py`는 projection/runtime scope 충돌을 `projection_runtime_scope_conflict`와 `projection_runtime_scope_reconciliation_required`로 노출한다.
+- Repair lane은 `scope_or_nonwork_monotonicity_repair 10`, `candidate_preservation_or_scrub_repair 9`, `title_url_or_variant_trace_repair 7`, `image_or_alias_anchor_contract_repair 6`이다.
+- Projection/runtime scope conflict는 `13`건이며, search gate는 `SEARCH_BLIND_BLOCKER 14`, `SEARCH_EVIDENCE_MISSING 8`, `SEARCH_RECOVERED_CONDITIONAL 9`, `SEARCH_OK 1`이다.
+- `_has_verified_contextual_alias_work_bridge`는 `_post_discusses_work_as_work(..., source="verified_contextual_alias_work_bridge")`를 경유하는 compatibility wrapper임을 확인했다.
+- Verification은 py_compile PASS, `tests.test_shared_gate_runtime_block_repair_queue` `5` tests PASS, repair queue generation PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_516_REPORT_20260707.md`, state는 `docs/devs/loop516_shared_gate_runtime_block_repair32_state_20260707.json`, queue는 `docs/devs/loop516_shared_gate_runtime_block_repair32_queue.json/.md`다.
+- Gate는 repair queue `REVIEW-LOCKED`, runtime replay `NOT_RUN`, full375 collateral `NO-GO / not rerun`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop515 shared gate safe57 runtime replay
 
 - Loop514 residual `100` 중 shared gate safe57 projection `57`건을 생성했다.

@@ -1,5 +1,22 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop516 TODO
+
+- 상태 업데이트: Loop515 `FAIL_RUNTIME_PROMOTION_BLOCKED 32`건을 shared gate repair queue로 재분류했다. Goal은 완료가 아니다.
+- [x] 동일 입력 runtime replay를 반복하지 않았다.
+- [x] Repair queue는 `32`건이고 `runtime_replay_allowed_rows 0`이다.
+- [x] `projection_runtime_scope_conflict` 계약을 도구와 테스트에 추가했다.
+- [x] Scope conflict는 `13`건이다.
+- [x] Lane은 `scope_or_nonwork_monotonicity_repair 10`, `candidate_preservation_or_scrub_repair 9`, `title_url_or_variant_trace_repair 7`, `image_or_alias_anchor_contract_repair 6`이다.
+- [x] Report/state/repair queue를 기록했다.
+- [x] py_compile PASS, focused unittest `5` tests PASS.
+- [ ] `scope_or_nonwork_monotonicity_repair 10`과 scope conflict `13`건은 shared predicate 수렴 후 replay한다.
+- [ ] `candidate_preservation_or_scrub_repair 9`는 candidate ledger와 serialized public identity 보존 계약을 먼저 수리한다.
+- [ ] `title_url_or_variant_trace_repair 7`은 title/url mismatch와 character variance hold trace를 먼저 수리한다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: repair queue `REVIEW-LOCKED`, runtime replay `NOT_RUN`, full375 collateral `NO-GO`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop515 TODO
 
 - 상태 업데이트: Loop514 residual `100` 중 shared gate safe57 projection을 실제 runtime replay로 검증했다. Goal은 완료가 아니다.

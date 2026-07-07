@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260707-516 - shared gate runtime block repair queue
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime block repair queue | REVIEW-LOCKED | Loop515 `FAIL_RUNTIME_PROMOTION_BLOCKED 32`건을 repair queue로 분리 | contract repair 전 replay 금지 |
+| Replay allowed rows | GO_BLOCKED | `runtime_replay_allowed_rows 0` | 수리 뒤에만 runtime replay 후보로 복귀 |
+| Projection/runtime scope conflict | OPEN_REPAIR | conflict `13`, action `projection_runtime_scope_reconciliation_required` | `_post_discusses_work_as_work` shared predicate 기준으로 수렴 |
+| Repair lanes | OPEN_REPAIR | `scope_or_nonwork 10`, `candidate_preservation 9`, `title_url_variant 7`, `image_or_alias 6` | lane별 계약 테스트와 코드 수리 |
+| Search-blind boundary | REVIEW | `SEARCH_BLIND_BLOCKER 14`, `SEARCH_EVIDENCE_MISSING 8`, `SEARCH_RECOVERED_CONDITIONAL 9`, `SEARCH_OK 1` | search recovery 전 conditional 태그 유지 |
+| Verification | GO_UNIT | py_compile PASS, focused unittest `5` PASS, queue generation PASS | broader runtime은 아직 금지 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: repair queue `REVIEW-LOCKED`, runtime replay `NOT_RUN`, full375 collateral `NO-GO / not rerun`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-515 - shared gate safe57 runtime replay
 
 | 항목 | 상태 | 근거 | 다음 |

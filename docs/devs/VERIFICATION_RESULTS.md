@@ -1,5 +1,32 @@
 # Verification Results
 
+## 2026-07-07 Loop516 Verification
+
+- 범위: Loop515 expected-title audit의 `FAIL_RUNTIME_PROMOTION_BLOCKED 32`건을 동일 입력 replay가 아니라 shared gate contract repair queue로 재분류했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_516_REPORT_20260707.md`
+  - state `docs\devs\loop516_shared_gate_runtime_block_repair32_state_20260707.json`
+  - repair queue `docs\devs\loop516_shared_gate_runtime_block_repair32_queue.json`
+  - repair queue markdown `docs\devs\loop516_shared_gate_runtime_block_repair32_queue.md`
+  - tool `tools\build_shared_gate_runtime_block_repair_queue.py`
+  - test `tests\test_shared_gate_runtime_block_repair_queue.py`
+- Result:
+  - source queue rows `57`
+  - repair rows `32`
+  - runtime replay allowed rows `0`
+  - primary repair lanes `scope_or_nonwork_monotonicity_repair 10`, `candidate_preservation_or_scrub_repair 9`, `title_url_or_variant_trace_repair 7`, `image_or_alias_anchor_contract_repair 6`
+  - projection/runtime scope conflict `13`
+  - search gate `SEARCH_BLIND_BLOCKER 14`, `SEARCH_EVIDENCE_MISSING 8`, `SEARCH_RECOVERED_CONDITIONAL 9`, `SEARCH_OK 1`
+  - validation issue `0`
+- Validation:
+  - `python -m py_compile tools\build_shared_gate_runtime_block_repair_queue.py tests\test_shared_gate_runtime_block_repair_queue.py` PASS.
+  - `python -m unittest tests.test_shared_gate_runtime_block_repair_queue -v` PASS, `5` tests.
+  - `tools\build_shared_gate_runtime_block_repair_queue.py ... --fail-on-validation-issue` PASS.
+- Boundary:
+  - Loop516은 runtime replay가 아니다.
+  - Repair queue는 approval이 아니며, runtime replay 입력도 아니다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-07 Loop515 Verification
 
 - 범위: Loop514 residual `100` 중 shared gate safe57 projection `57`건을 동일 입력 runtime replay로 검증했다.

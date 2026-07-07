@@ -71,6 +71,31 @@ OFFICIAL_SUPPORT_MARKERS = {
     "official_title_exists",
 }
 
+PROJECTED_CURRENT_WORK_MARKERS = {
+    "source_native_review_current_work",
+    "scope_current_work",
+    "row_discusses_work_as_work",
+}
+
+RUNTIME_CURRENT_WORK_MARKERS = {
+    "scope_current_work",
+    "row_discusses_work_as_work",
+}
+
+RUNTIME_NONCURRENT_MARKERS = {
+    "context_only",
+    "scope_context_only",
+    "scope_not_current_work",
+    "scope_unknown",
+    "scope_unclassified",
+    "row_discussion_missing",
+    "nonwork",
+    "nonwork_or_noise_context",
+    "community_banter",
+    "scope_platform_meta_nonwork",
+    "non_novel_discourse",
+}
+
 
 def load_json(path: Path) -> dict[str, Any]:
     payload = json.loads(path.read_text(encoding="utf-8-sig"))
@@ -94,6 +119,13 @@ def _actions(row: dict[str, Any]) -> list[str]:
 
 def _reason_set(row: dict[str, Any]) -> set[str]:
     value = row.get("prior_runtime_reason_codes") or row.get("reason_codes") or []
+    if not isinstance(value, list):
+        value = [value]
+    return {str(item or "").strip() for item in value if str(item or "").strip()}
+
+
+def _projected_reason_set(row: dict[str, Any]) -> set[str]:
+    value = row.get("projected_reasons") or []
     if not isinstance(value, list):
         value = [value]
     return {str(item or "").strip() for item in value if str(item or "").strip()}
@@ -151,6 +183,24 @@ def _facets_for(reasons: set[str], search_gate: str) -> list[str]:
     if search_gate != "SEARCH_OK":
         facets.append("search_blind_or_missing_preflight")
     return facets
+
+
+def _scope_claim(reasons: set[str], *, projected: bool = False) -> str:
+    if projected:
+        if reasons & PROJECTED_CURRENT_WORK_MARKERS:
+            return "PROJECTED_CURRENT_WORK"
+        return "PROJECTED_SCOPE_UNSPECIFIED"
+    if reasons & RUNTIME_NONCURRENT_MARKERS:
+        return "RUNTIME_NONCURRENT_OR_CONTEXT_ONLY"
+    if reasons & RUNTIME_CURRENT_WORK_MARKERS:
+        return "RUNTIME_CURRENT_WORK"
+    return "RUNTIME_SCOPE_UNSPECIFIED"
+
+
+def _has_projection_runtime_scope_conflict(projected_reasons: set[str], runtime_reasons: set[str]) -> bool:
+    return bool(projected_reasons & PROJECTED_CURRENT_WORK_MARKERS) and bool(
+        runtime_reasons & RUNTIME_NONCURRENT_MARKERS
+    )
 
 
 def _primary_lane(reasons: set[str]) -> str:
@@ -217,15 +267,21 @@ def _contract_tests(lane: str) -> list[str]:
 
 def classify_repair_row(row: dict[str, Any]) -> dict[str, Any]:
     reasons = _reason_set(row)
+    projected_reasons = _projected_reason_set(row)
     search_gate = _search_gate(row)
     lane = _primary_lane(reasons)
     facets = _facets_for(reasons, search_gate)
+    scope_conflict = _has_projection_runtime_scope_conflict(projected_reasons, reasons)
+    if scope_conflict:
+        facets.append("projection_runtime_scope_conflict")
     actions = [
         _lane_action(lane),
         "publish_contract_trace_contract_test_required",
         "runtime_replay_after_contract_repair",
         "full375_collateral_recheck_after_repair",
     ]
+    if scope_conflict:
+        actions.insert(1, "projection_runtime_scope_reconciliation_required")
     if search_gate in {"SEARCH_BLIND_BLOCKER", "SEARCH_EVIDENCE_MISSING"}:
         actions.insert(1, "search_blind_preflight_required")
     elif search_gate == "SEARCH_RECOVERED_CONDITIONAL":
@@ -239,10 +295,13 @@ def classify_repair_row(row: dict[str, Any]) -> dict[str, Any]:
         "prior_runtime_audit_status": row.get("prior_runtime_audit_status"),
         "prior_runtime_search_status": row.get("prior_runtime_search_status"),
         "search_gate": search_gate,
+        "projected_scope_claim": _scope_claim(projected_reasons, projected=True),
+        "runtime_scope_claim": _scope_claim(reasons),
+        "projection_runtime_scope_conflict": scope_conflict,
         "primary_repair_lane": lane,
         "repair_facets": facets,
         "reason_codes": sorted(reasons),
-        "projected_reasons": row.get("projected_reasons") or [],
+        "projected_reasons": sorted(projected_reasons),
         "runtime_replay_allowed": False,
         "runtime_replay_blocker": "contract_repair_required_before_replay",
         "actions": actions,
@@ -266,6 +325,9 @@ def build_repair_queue(
     reason_counts: Counter[str] = Counter()
     search_counts = Counter(str(row["search_gate"]) for row in out_rows)
     action_counts: Counter[str] = Counter()
+    scope_conflict_counts = Counter(
+        "conflict" if row.get("projection_runtime_scope_conflict") else "no_conflict" for row in out_rows
+    )
     lane_groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for row in out_rows:
         lane_groups[str(row["primary_repair_lane"])].append(row)
@@ -286,6 +348,9 @@ def build_repair_queue(
                 "search_gate_counts": _counter_to_dict(Counter(str(row["search_gate"]) for row in group_rows)),
                 "facet_counts": _counter_to_dict(
                     Counter(facet for row in group_rows for facet in row["repair_facets"])
+                ),
+                "projection_runtime_scope_conflict_rows": sum(
+                    1 for row in group_rows if row.get("projection_runtime_scope_conflict")
                 ),
                 "post_ids": [row.get("post_id") for row in group_rows],
                 "sample_rows": group_rows[:8],
@@ -310,6 +375,7 @@ def build_repair_queue(
             "search_gate_counts": _counter_to_dict(search_counts),
             "reason_counts": _counter_to_dict(reason_counts),
             "action_counts": _counter_to_dict(action_counts),
+            "projection_runtime_scope_conflict_counts": _counter_to_dict(scope_conflict_counts),
             "validation_issue_count": len(validation_issues),
         },
         "stop_condition": {
@@ -343,6 +409,7 @@ def write_markdown(queue: dict[str, Any], path: Path) -> None:
         f"- primary_repair_lane_counts: `{summary.get('primary_repair_lane_counts')}`",
         f"- repair_facet_counts: `{summary.get('repair_facet_counts')}`",
         f"- search_gate_counts: `{summary.get('search_gate_counts')}`",
+        f"- projection_runtime_scope_conflict_counts: `{summary.get('projection_runtime_scope_conflict_counts')}`",
         f"- validation_issue_count: `{summary.get('validation_issue_count')}`",
         "- approval: `false`",
         "- semantic_quality: `REVIEW-LOCKED`",
@@ -366,6 +433,7 @@ def write_markdown(queue: dict[str, Any], path: Path) -> None:
                 f"- row_count: `{group.get('row_count')}`",
                 f"- search_gate_counts: `{group.get('search_gate_counts')}`",
                 f"- facet_counts: `{group.get('facet_counts')}`",
+                f"- projection_runtime_scope_conflict_rows: `{group.get('projection_runtime_scope_conflict_rows')}`",
                 f"- sample_post_ids: `{sample}`",
                 "",
             ]

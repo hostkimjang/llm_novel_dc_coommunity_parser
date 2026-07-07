@@ -56,6 +56,11 @@ class SharedGateRuntimeBlockRepairQueueTest(unittest.TestCase):
                         "image_ocr_without_title_anchor",
                         "serialized_public_identity_scrubbed",
                     ],
+                    "projected_reasons": [
+                        "source_native_review_current_work",
+                        "row_discusses_work_as_work",
+                        "scope_current_work",
+                    ],
                     "actions": ["shared_gate_runtime_block_repair_required"],
                 }
             ],
@@ -69,7 +74,57 @@ class SharedGateRuntimeBlockRepairQueueTest(unittest.TestCase):
         )
         self.assertEqual(repair["rows"][0]["search_gate"], "SEARCH_BLIND_BLOCKER")
         self.assertIn("search_blind_preflight_required", repair["rows"][0]["actions"])
+        self.assertTrue(repair["rows"][0]["projection_runtime_scope_conflict"])
+        self.assertEqual(
+            repair["rows"][0]["projected_scope_claim"],
+            "PROJECTED_CURRENT_WORK",
+        )
+        self.assertEqual(
+            repair["rows"][0]["runtime_scope_claim"],
+            "RUNTIME_NONCURRENT_OR_CONTEXT_ONLY",
+        )
+        self.assertIn("projection_runtime_scope_conflict", repair["rows"][0]["repair_facets"])
+        self.assertIn("projection_runtime_scope_reconciliation_required", repair["rows"][0]["actions"])
+        self.assertEqual(
+            repair["summary"]["projection_runtime_scope_conflict_counts"],
+            {"conflict": 1},
+        )
         self.assertIn("_post_discusses_work_as_work", "\n".join(repair["rows"][0]["required_contract_tests"]))
+
+    def test_runtime_current_work_does_not_count_as_projection_scope_conflict(self):
+        queue = {
+            "queue_id": "unit_followup",
+            "rows": [
+                {
+                    "post_id": 11702094,
+                    "selected_title": "#더블오",
+                    "projected_title": "#더블오",
+                    "prior_runtime_audit_status": "FAIL_RUNTIME_PROMOTION_BLOCKED",
+                    "prior_runtime_search_status": "SEARCH_DEGRADED_RECOVERED",
+                    "prior_runtime_reason_codes": [
+                        "row_discusses_work_as_work",
+                        "scope_current_work",
+                        "title_led_consumption_bridge",
+                        "serialized_public_identity_scrubbed",
+                    ],
+                    "projected_reasons": [
+                        "source_native_review_current_work",
+                        "scope_current_work",
+                    ],
+                    "actions": ["shared_gate_runtime_block_repair_required"],
+                }
+            ],
+        }
+
+        repair = build_repair_queue(queue, queue_id="unit_repair")
+
+        self.assertFalse(repair["rows"][0]["projection_runtime_scope_conflict"])
+        self.assertEqual(repair["rows"][0]["runtime_scope_claim"], "RUNTIME_CURRENT_WORK")
+        self.assertNotIn("projection_runtime_scope_reconciliation_required", repair["rows"][0]["actions"])
+        self.assertEqual(
+            repair["summary"]["projection_runtime_scope_conflict_counts"],
+            {"no_conflict": 1},
+        )
 
     def test_title_url_markers_take_priority_over_scope_markers(self):
         queue = {
