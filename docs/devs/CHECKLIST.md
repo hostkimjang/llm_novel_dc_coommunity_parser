@@ -1,5 +1,26 @@
 # Development Checklist
 
+## 2026-07-08 Loop582 residual P0 contract queue 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 실행하지 않았다.
+- [x] Loop581 P0 residual `19`건을 계약/검토 queue로 재분해했다.
+- [x] Runtime replay allowed rows는 `0`이다.
+- [x] Shared-gate clean lane은 `6`건이고, 공식 detail URL 보유 publish contract 후보는 `1`건이다.
+- [x] Official URL 보강 hold `5`건을 publish 후보와 분리했다.
+- [x] Native-web/image 사전 검토 `1`건과 no-publish guard 사전 검토 `1`건을 shared-gate restore와 분리했다.
+- [x] Candidate-set rebuild `4`건은 후보셋 재구성 전 publish 금지로 유지했다.
+- [x] Source-native/blind INFO_MISSING review `7`건은 판정 전 hard-hold 완화 금지로 유지했다.
+- [x] Shared-gate restore plan은 `expected_title_restore_contract_case 1 / official_support_missing_restore_hold_contract_case 5`다.
+- [x] Candidate-set plan은 `candidate_set_rebuild_required_before_publish 4`다.
+- [x] Dashboard health는 `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`으로 확인했다.
+- [x] 다음 test/runtime run 계약은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지다.
+- [x] Focused unittest `19`개를 통과했다.
+- [ ] Official URL 보강 hold `5`건은 canonical official detail URL 보존 전 publish하지 않는다.
+- [ ] INFO_MISSING `7`건은 source-native/blind verdict 전 hard-hold 완화 대상이 아니다.
+- [ ] Dashboard 진행률을 semantic/full_scan approval 근거로 쓰지 않는다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: contract queue `REVIEW-LOCKED / 19`, shared-gate restore `REVIEW-LOCKED / publish-contract-candidate 1 / official-url-hold 5`, candidate-set `REVIEW-LOCKED / rebuild-hold 4`, full375 collateral `NO-GO / raw 86 / adjusted residual 46`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop580 candidate-set projection과 full375 재검증 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 실행하지 않았다.

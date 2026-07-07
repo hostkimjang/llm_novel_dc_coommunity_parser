@@ -1,0 +1,456 @@
+{
+  "report_type": "candidate_set_contract_plan",
+  "plan_id": "loop582_residual_p0_candidate_set_contract_plan",
+  "generated_at": "2026-07-08T03:56:50",
+  "source_batch": "loop581_candidate_set_full375_prior_compatible_residual_p0_action_batch",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "source_batch_rows": 19,
+    "candidate_set_contract_plan_rows": 4,
+    "validation_issue_count": 0,
+    "contract_action_counts": {
+      "candidate_set_rebuild_required_before_publish": 4
+    },
+    "promotion_decision_status_counts": {
+      "reject": 4
+    },
+    "evidence_grade_counts": {
+      "Strong": 4
+    },
+    "triage_bucket_counts": {
+      "safe_loss_resolved_to_null": 4
+    },
+    "official_support_ref_missing_rows": 3,
+    "release_candidate_not_approval_rows": 0,
+    "candidate_set_rebuild_hold_rows": 4,
+    "intent_guard_hold_rows": 0,
+    "publish_allowed_rows": 0,
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "execution_contract": {
+    "runtime_replay_allowed": false,
+    "requested_parallel": 16,
+    "dashboard_contract": {
+      "dashboard_policy": "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+      "dashboard_url": "http://127.0.0.1:8080",
+      "forbidden_flags": [
+        "--no-dashboard"
+      ],
+      "runner_cli_guard": "tools/run_independent_plan.py ignores --no-dashboard unless ALLOW_TEST_RUN_NO_DASHBOARD=1 is explicitly set as a breakglass override.",
+      "attach_manifest_command": "python tools/attach_manifest_dashboard.py --manifest <result_manifest.json> --dashboard-url http://127.0.0.1:8080"
+    }
+  },
+  "validation_issues": [],
+  "rows": [
+    {
+      "post_id": 11682749,
+      "contract_origin": "refined_p0_candidate_set_dispatch",
+      "contract_batch_lane": "CS_candidate_set_contract",
+      "source_dispatch_lane": "candidate_set_rebuild_review",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "current_option_misses_mukhyang_title_source_discusses_mukhyang",
+      "evidence_grade": "Strong",
+      "target_title": null,
+      "target_url": null,
+      "official_support_refs": [],
+      "official_support_ref_count": 0,
+      "actions": [
+        "candidate_set_rebuild_required",
+        "repair_after_wrong_work",
+        "preserve_secondary_candidates"
+      ],
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "promotion_decision": {
+        "status": "reject",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": false,
+        "reason_codes": [
+          "no_candidate_title",
+          "row_discussion_missing",
+          "scope_unknown",
+          "scope_not_current_work",
+          "candidate_set_rebuild_required",
+          "candidate_set_source_native_contract_case"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11682749,
+        "candidate_title": "",
+        "candidate_url": "",
+        "source": "candidate_set_contract_plan",
+        "official_title_exists": false,
+        "row_discusses_work_as_work": false,
+        "title_resolution_state": "unresolved",
+        "work_resolution": "unresolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "unknown",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "refined_p0_candidate_set_dispatch",
+            "candidate_set_rebuild_review",
+            "candidate_set_rebuild_required_before_publish"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "candidate_set_rebuild_required"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "candidate_set_source_native_contract",
+          "strength": "strong",
+          "source_path_or_snippet": "원문과 댓글, 이미지 OCR은 모두 `묵향/DARK LADY` 맥락을 지지한다. current C1 `주인공인데 주인공이 아님`은 source-supported title이 아니므로 after null이 C1 safe-loss인 것은 아니지만 후보셋 재구성이 필요하다.",
+          "supports_publish": false,
+          "reason_code": "candidate_set_source_native_contract_case"
+        }
+      ],
+      "release_candidate_not_approval": false,
+      "candidate_set_rebuild_required_before_publish": true,
+      "intent_guard_hold_before_publish": false,
+      "official_support_missing_before_publish": false,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": false,
+      "candidate_set_rebuild_required_before_runtime": true,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "원문과 댓글, 이미지 OCR은 모두 `묵향/DARK LADY` 맥락을 지지한다. current C1 `주인공인데 주인공이 아님`은 source-supported title이 아니므로 after null이 C1 safe-loss인 것은 아니지만 후보셋 재구성이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11682749",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11682749",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11682749",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11682749",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11682749",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11682749",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11682749",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11682749",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11682749",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11682749",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11682749",
+        "docs/devs/loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json#post_id=11682749",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11682749"
+      ]
+    },
+    {
+      "post_id": 11703658,
+      "contract_origin": "refined_p0_candidate_set_dispatch",
+      "contract_batch_lane": "CS_candidate_set_contract",
+      "source_dispatch_lane": "candidate_set_rebuild_review",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "current_option_wrong_title_image_ocr_supports_africa_food_king",
+      "evidence_grade": "Strong",
+      "target_title": null,
+      "target_url": null,
+      "official_support_refs": [],
+      "official_support_ref_count": 0,
+      "actions": [
+        "candidate_set_rebuild_required",
+        "repair_after_wrong_work",
+        "image_platform_url_preference"
+      ],
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "promotion_decision": {
+        "status": "reject",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": false,
+        "reason_codes": [
+          "no_candidate_title",
+          "row_discussion_missing",
+          "scope_unknown",
+          "scope_not_current_work",
+          "candidate_set_rebuild_required",
+          "candidate_set_source_native_contract_case"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11703658,
+        "candidate_title": "",
+        "candidate_url": "",
+        "source": "candidate_set_contract_plan",
+        "official_title_exists": false,
+        "row_discusses_work_as_work": false,
+        "title_resolution_state": "unresolved",
+        "work_resolution": "unresolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "unknown",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "refined_p0_candidate_set_dispatch",
+            "candidate_set_rebuild_review",
+            "candidate_set_rebuild_required_before_publish"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "candidate_set_rebuild_required"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "candidate_set_source_native_contract",
+          "strength": "strong",
+          "source_path_or_snippet": "원문 제목과 이미지 OCR은 `아프리카 식량왕이 되었다`를 직접 말한다. current C1 `아프리카 의 독재자가 되었다 .`와 URL은 다른 작품으로 보이므로 C1 복구가 아니라 후보셋 재구성이 필요하다.",
+          "supports_publish": false,
+          "reason_code": "candidate_set_source_native_contract_case"
+        }
+      ],
+      "release_candidate_not_approval": false,
+      "candidate_set_rebuild_required_before_publish": true,
+      "intent_guard_hold_before_publish": false,
+      "official_support_missing_before_publish": false,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": false,
+      "candidate_set_rebuild_required_before_runtime": true,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "원문 제목과 이미지 OCR은 `아프리카 식량왕이 되었다`를 직접 말한다. current C1 `아프리카 의 독재자가 되었다 .`와 URL은 다른 작품으로 보이므로 C1 복구가 아니라 후보셋 재구성이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11703658",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11703658",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11703658",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11703658",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11703658",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11703658",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11703658",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11703658",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11703658",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11703658",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11703658",
+        "docs/devs/loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json#post_id=11703658",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11703658"
+      ]
+    },
+    {
+      "post_id": 11705231,
+      "contract_origin": "refined_p0_candidate_set_dispatch",
+      "contract_batch_lane": "CS_candidate_set_contract",
+      "source_dispatch_lane": "candidate_set_rebuild_review",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "current_option_wrong_work_source_discusses_seol_jihu_tamsik_context",
+      "evidence_grade": "Strong",
+      "target_title": null,
+      "target_url": null,
+      "official_support_refs": [],
+      "official_support_ref_count": 0,
+      "actions": [
+        "candidate_set_rebuild_required",
+        "repair_after_wrong_work",
+        "preserve_secondary_candidates"
+      ],
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "promotion_decision": {
+        "status": "reject",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": false,
+        "reason_codes": [
+          "no_candidate_title",
+          "row_discussion_missing",
+          "scope_unknown",
+          "scope_not_current_work",
+          "candidate_set_rebuild_required",
+          "candidate_set_source_native_contract_case"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11705231,
+        "candidate_title": "",
+        "candidate_url": "",
+        "source": "candidate_set_contract_plan",
+        "official_title_exists": false,
+        "row_discusses_work_as_work": false,
+        "title_resolution_state": "unresolved",
+        "work_resolution": "unresolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "unknown",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "refined_p0_candidate_set_dispatch",
+            "candidate_set_rebuild_review",
+            "candidate_set_rebuild_required_before_publish"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "candidate_set_rebuild_required"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "candidate_set_source_native_contract",
+          "strength": "strong",
+          "source_path_or_snippet": "원문은 설지후/로유진/유선화 자매 등 `탐식의 재림` 계열 캐릭터와 장갤 밈을 직접 논한다. current C1 `한국 레전드 프로게이머...`는 source-supported title이 아니므로 후보셋 재구성이 필요하다.",
+          "supports_publish": false,
+          "reason_code": "candidate_set_source_native_contract_case"
+        }
+      ],
+      "release_candidate_not_approval": false,
+      "candidate_set_rebuild_required_before_publish": true,
+      "intent_guard_hold_before_publish": false,
+      "official_support_missing_before_publish": false,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": false,
+      "candidate_set_rebuild_required_before_runtime": true,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "원문은 설지후/로유진/유선화 자매 등 `탐식의 재림` 계열 캐릭터와 장갤 밈을 직접 논한다. current C1 `한국 레전드 프로게이머...`는 source-supported title이 아니므로 후보셋 재구성이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11705231",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11705231",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11705231",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11705231",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11705231",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11705231",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11705231",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11705231",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11705231",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11705231",
+        "docs/devs/loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json#post_id=11705231",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11705231"
+      ]
+    },
+    {
+      "post_id": 11710036,
+      "contract_origin": "refined_p0_candidate_set_dispatch",
+      "contract_batch_lane": "CS_candidate_set_contract",
+      "source_dispatch_lane": "candidate_set_rebuild_review",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "ratdasip_source_points_to_rimworld_work_current_option_wrong",
+      "evidence_grade": "Strong",
+      "target_title": null,
+      "target_url": "https://novelpia.com/novel/382324",
+      "official_support_refs": [
+        "https://novelpia.com/novel/382324"
+      ],
+      "official_support_ref_count": 1,
+      "actions": [
+        "candidate_set_rebuild_required",
+        "repair_after_wrong_work",
+        "preserve_secondary_candidates"
+      ],
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "promotion_decision": {
+        "status": "reject",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": false,
+        "reason_codes": [
+          "no_candidate_title",
+          "row_discussion_missing",
+          "scope_unknown",
+          "scope_not_current_work",
+          "candidate_set_rebuild_required",
+          "candidate_set_source_native_contract_case",
+          "official_support_ref_present"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11710036,
+        "candidate_title": "",
+        "candidate_url": "https://novelpia.com/novel/382324",
+        "source": "candidate_set_contract_plan",
+        "official_title_exists": false,
+        "row_discusses_work_as_work": false,
+        "title_resolution_state": "unresolved",
+        "work_resolution": "unresolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "unknown",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "refined_p0_candidate_set_dispatch",
+            "candidate_set_rebuild_review",
+            "candidate_set_rebuild_required_before_publish"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "candidate_set_rebuild_required"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "candidate_set_source_native_contract",
+          "strength": "strong",
+          "source_path_or_snippet": "원문과 댓글은 `랫따싶`의 full title을 묻고 `[림월드]변방계에서 회귀자로 살아남기`로 답한다. native-web도 `#랫따싶` 태그를 확인한다. current C1 `쳇바퀴의 생쥐 사도가 되었다`는 wrong option이다.",
+          "supports_publish": false,
+          "reason_code": "candidate_set_source_native_contract_case"
+        },
+        {
+          "kind": "official_support_ref",
+          "strength": "strong",
+          "source_path_or_snippet": "https://novelpia.com/novel/382324",
+          "supports_publish": false,
+          "reason_code": "official_support_ref_present"
+        }
+      ],
+      "release_candidate_not_approval": false,
+      "candidate_set_rebuild_required_before_publish": true,
+      "intent_guard_hold_before_publish": false,
+      "official_support_missing_before_publish": false,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": false,
+      "candidate_set_rebuild_required_before_runtime": true,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "원문과 댓글은 `랫따싶`의 full title을 묻고 `[림월드]변방계에서 회귀자로 살아남기`로 답한다. native-web도 `#랫따싶` 태그를 확인한다. current C1 `쳇바퀴의 생쥐 사도가 되었다`는 wrong option이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11710036",
+        "https://novelpia.com/novel/382324",
+        "https://m.dcinside.com/board/genrenovel/11768968",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11710036",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11710036",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11710036",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11710036",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11710036",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11710036",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11710036",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11710036",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11710036",
+        "docs/devs/loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json#post_id=11710036",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11710036"
+      ]
+    }
+  ],
+  "approval_boundary": {
+    "candidate_set_contract_plan_is_not_approval": true,
+    "promotion_decision_publish_is_contract_case_only": true,
+    "candidate_set_rebuild_holds_publish": true,
+    "runtime_replay_allowed": false,
+    "full375_collateral_remains_no_go": true,
+    "full_scan_approval": false
+  }
+}

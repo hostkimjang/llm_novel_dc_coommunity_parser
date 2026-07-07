@@ -1,5 +1,29 @@
 # Verification Results
 
+## 2026-07-08 Loop582 residual P0 contract queue와 dashboard 실행 계약
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_582_REPORT_20260708.md`
+  - `tools/build_residual_p0_contract_queue.py`
+  - `tools/build_ordinary_restore_contract_plan.py`
+  - `tools/build_candidate_set_contract_plan.py`
+  - `tests/test_build_residual_p0_contract_queue.py`
+  - `tests/test_build_ordinary_restore_contract_plan.py`
+  - `docs/devs/loop582_residual_p0_contract_queue.json/.md`
+  - `docs/devs/loop582_residual_p0_shared_gate_restore_contract_plan.json/.md`
+  - `docs/devs/loop582_residual_p0_candidate_set_contract_plan.json/.md`
+- 검증:
+  - Residual P0 contract queue generation: PASS, rows `19`, validation issue `0`, runtime replay allowed `0`.
+  - Shared-gate restore plan generation: PASS, rows `6`, action `expected_title_restore_contract_case 1 / official_support_missing_restore_hold_contract_case 5`.
+  - Candidate-set contract plan generation: PASS, rows `4`, action `candidate_set_rebuild_required_before_publish 4`.
+  - Dashboard health/status: PASS, `http://127.0.0.1:8080`, health `ok=true / standalone=true / pid=9320`, status Loop564 `30/30`, `parallel_count=16`, `batch_running=false`.
+  - Focused unittest: PASS, `19` tests.
+- 결과:
+  - Loop581 P0 residual `19`건은 runtime dispatch가 아니라 계약/검토 queue로 정렬됐다.
+  - Shared-gate clean lane `6`건 중 공식 detail URL 보유 publish contract 후보는 `1`건뿐이고 `5`건은 URL 보강 hold다.
+  - 다음 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지다.
+- Gate: contract queue `REVIEW-LOCKED / 19`, shared-gate restore `REVIEW-LOCKED / publish-contract-candidate 1 / official-url-hold 5`, candidate-set `REVIEW-LOCKED / rebuild-hold 4`, full375 collateral `NO-GO / raw 86 / adjusted residual 46`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop581 residual86 prior-compatible source-native 회계
 
 - 산출물:

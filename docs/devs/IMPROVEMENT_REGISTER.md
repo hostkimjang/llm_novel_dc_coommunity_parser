@@ -1,5 +1,22 @@
 # Improvement Register
 
+## IMP-20260708-582 - Residual P0 contract queue and dashboard execution contract
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | 필요한 test run만 `--parallel 16` + dashboard attached로 실행 |
+| Residual P0 contract queue | REVIEW-LOCKED | rows `19`, validation issue `0`, runtime allowed `0` | lane별 계약/검토 선행 |
+| Shared-gate clean lane | REVIEW-LOCKED | clean lane `6`, official URL ready `1`, URL enrichment hold `5` | official detail URL 보존 전 publish 금지 |
+| Shared-gate precondition review | REVIEW-LOCKED | native-web/image `1`, no-publish guard `1` | 사전 검토 전 restore 승격 금지 |
+| Candidate-set rebuild | HARD_HOLD | rows `4`, `candidate_set_rebuild_required_before_publish 4` | source-supported title 후보셋 재구성 |
+| Source-native/blind INFO_MISSING | HARD_HOLD | rows `7` | verdict 전 hard-hold 완화 금지 |
+| Restore contract plan | REVIEW-LOCKED | `expected_title_restore_contract_case 1`, official URL hold `5` | projection/full375 전 approval 금지 |
+| Test run dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | dashboard `http://127.0.0.1:8080`, health `ok=true`, next run `--parallel 16`, `--no-dashboard` 금지 | 진행 관측용으로만 사용 |
+| Full375 collateral | NO-GO | raw `86`, adjusted residual `46`, runtime counts missing | full375 collateral GO 전 approval 금지 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: contract queue `REVIEW-LOCKED / 19`, shared-gate restore `REVIEW-LOCKED / publish-contract-candidate 1 / official-url-hold 5`, candidate-set `REVIEW-LOCKED / rebuild-hold 4`, full375 collateral `NO-GO / raw 86 / adjusted residual 46`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-581 - Residual86 prior-compatible source-native accounting
 
 | 항목 | 상태 | 근거 | 다음 |

@@ -8,6 +8,11 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+try:
+    from tools.test_run_dashboard_policy import test_run_execution_contract
+except ModuleNotFoundError:  # direct script execution: python tools/build_ordinary_restore_contract_plan.py
+    from test_run_dashboard_policy import test_run_execution_contract
+
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
 if str(SRC) not in sys.path:
@@ -24,6 +29,7 @@ from llm_batch.promotion_gate import (  # noqa: E402
 RESTORE_LANE = "shared_gate_restore_contract_review"
 RESTORE_ACTION = "expected_title_restore_contract_case"
 MISMATCH_REVIEW_ACTION = "restore_target_runtime_mismatch_review_required"
+OFFICIAL_MISSING_ACTION = "official_support_missing_restore_hold_contract_case"
 OFFICIAL_REF_MARKERS = (
     "novelpia.com",
     "novel.munpia.com",
@@ -139,6 +145,10 @@ def _runtime_target_mismatch(selected_title: str, runtime_row: dict[str, Any] | 
     return bool(selected_title and actual_title and not _same_title(selected_title, actual_title))
 
 
+def _is_restore_lane(row: dict[str, Any]) -> bool:
+    return row.get("primary_lane") == RESTORE_LANE or row.get("dispatch_lane") == RESTORE_LANE
+
+
 def _build_plan_row(row: dict[str, Any], runtime_row: dict[str, Any] | None) -> dict[str, Any]:
     post_id = _post_id(row.get("post_id"))
     selected_title = _string(row.get("selected_title"))
@@ -158,7 +168,7 @@ def _build_plan_row(row: dict[str, Any], runtime_row: dict[str, Any] | None) -> 
         candidate_title=selected_title,
         candidate_url=target_url,
         source="ordinary_residual_restore_contract_plan",
-        official_title_exists=bool(selected_title),
+        official_title_exists=bool(selected_title and refs),
         row_discusses_work_as_work=bool(selected_title),
         title_resolution_state="resolved" if selected_title else "unresolved",
         work_resolution="resolved" if selected_title else "unresolved",
@@ -176,7 +186,7 @@ def _build_plan_row(row: dict[str, Any], runtime_row: dict[str, Any] | None) -> 
             kind="ordinary_residual_source_native_restore_contract",
             strength=evidence_grade,
             source_path_or_snippet=_string(row.get("rationale_ko")),
-            supports_publish=evidence_grade in {"strong", "medium"} and bool(selected_title),
+            supports_publish=evidence_grade in {"strong", "medium"} and bool(selected_title and refs),
             reason_code="ordinary_residual_supported_restore_contract_case",
         )
     ]
@@ -236,13 +246,15 @@ def _build_plan_row(row: dict[str, Any], runtime_row: dict[str, Any] | None) -> 
             }
         )
     contract_action = RESTORE_ACTION if decision.status == "publish" else "candidate_scrub_no_publish_contract_case"
+    if selected_title and not refs and not mismatch_review_required:
+        contract_action = OFFICIAL_MISSING_ACTION
     if mismatch_review_required:
         contract_action = MISMATCH_REVIEW_ACTION
     return {
         "post_id": post_id,
         "contract_origin": "ordinary_residual_shared_gate_restore",
         "contract_batch_lane": "O1_shared_gate_restore_contract",
-        "source_dispatch_lane": row.get("primary_lane"),
+        "source_dispatch_lane": row.get("primary_lane") or row.get("dispatch_lane"),
         "triage_bucket": row.get("triage_bucket"),
         "review_label": row.get("review_label"),
         "source_native_verdict": row.get("source_native_verdict"),
@@ -261,6 +273,7 @@ def _build_plan_row(row: dict[str, Any], runtime_row: dict[str, Any] | None) -> 
         "promotion_gate_state": state_dict,
         "promotion_gate_evidence": evidence_dicts,
         "release_candidate_not_approval": contract_action == RESTORE_ACTION and decision_dict.get("status") == "publish",
+        "official_support_missing_before_publish": contract_action == OFFICIAL_MISSING_ACTION,
         "restore_target_mismatch_review_required": mismatch_review_required,
         "search_review_required_before_approval": search_condition in {
             "search_degraded_condition",
@@ -284,7 +297,7 @@ def build_plan(
     generated_at: str | None = None,
 ) -> dict[str, Any]:
     runtime_by_post_id = _index_runtime_audit(runtime_expected_audit)
-    selected = [row for row in _rows(dispatch) if row.get("primary_lane") == RESTORE_LANE]
+    selected = [row for row in _rows(dispatch) if _is_restore_lane(row)]
     rows = [_build_plan_row(row, runtime_by_post_id.get(_post_id(row.get("post_id")) or -1)) for row in selected]
     validation_issues: list[dict[str, Any]] = []
     for row in rows:
@@ -306,7 +319,7 @@ def build_plan(
         "report_type": "ordinary_residual_restore_contract_plan",
         "plan_id": plan_id,
         "generated_at": generated_at or datetime.now().replace(microsecond=0).isoformat(),
-        "source_dispatch": dispatch.get("dispatch_id"),
+        "source_dispatch": dispatch.get("dispatch_id") or dispatch.get("batch_id"),
         "gate": "NO-GO" if validation_issues else "REVIEW-LOCKED",
         "semantic_quality": "REVIEW-LOCKED",
         "full_scan_approval": False,
@@ -320,6 +333,9 @@ def build_plan(
             "runtime_expected_audit_status_counts": _counter_to_dict(runtime_audit_counts),
             "search_condition_counts": _counter_to_dict(search_counts),
             "official_support_ref_missing_rows": sum(1 for row in rows if not row.get("official_support_refs")),
+            "official_support_missing_hold_rows": sum(
+                1 for row in rows if row.get("official_support_missing_before_publish")
+            ),
             "search_review_required_before_approval_rows": sum(
                 1 for row in rows if row.get("search_review_required_before_approval")
             ),
@@ -329,6 +345,7 @@ def build_plan(
             "full375_collateral_gate": "NO-GO",
             "completion_gate": "full375 collateral GO + full_scan path",
         },
+        "execution_contract": test_run_execution_contract(len(rows)),
         "validation_issues": validation_issues,
         "rows": rows,
         "approval_boundary": {
@@ -344,10 +361,12 @@ def build_plan(
 
 def write_markdown(plan: dict[str, Any], path: Path) -> None:
     summary = plan["summary"]
+    execution_contract = plan.get("execution_contract") or {}
+    dashboard_contract = execution_contract.get("dashboard_contract") or {}
     lines = [
         f"# {plan.get('plan_id')}",
         "",
-        "Loop554는 Loop553 shared-gate restore lane을 shared `can_publish_title` gate로 통과시킨 계약 계획이다. "
+        f"`{plan.get('source_dispatch')}` shared-gate restore lane을 shared `can_publish_title` gate로 통과시킨 계약 계획이다. "
         "이 산출물은 runtime replay 허가나 full_scan approval이 아니다.",
         "",
         "## 요약",
@@ -361,6 +380,7 @@ def write_markdown(plan: dict[str, Any], path: Path) -> None:
         f"- evidence_grade_counts: `{summary.get('evidence_grade_counts')}`",
         f"- search_condition_counts: `{summary.get('search_condition_counts')}`",
         f"- official_support_ref_missing_rows: `{summary.get('official_support_ref_missing_rows')}`",
+        f"- official_support_missing_hold_rows: `{summary.get('official_support_missing_hold_rows')}`",
         f"- search_review_required_before_approval_rows: `{summary.get('search_review_required_before_approval_rows')}`",
         f"- release_candidate_not_approval_rows: `{summary.get('release_candidate_not_approval_rows')}`",
         f"- publish_allowed_rows: `{summary.get('publish_allowed_rows')}`",
@@ -368,9 +388,21 @@ def write_markdown(plan: dict[str, Any], path: Path) -> None:
         "- semantic_quality: `REVIEW-LOCKED`",
         "- full_scan_approval: `false`",
         "",
+        "## 테스트런 실행 계약",
+        "",
+        f"- policy: `{execution_contract.get('policy')}`",
+        f"- requested_parallel: `{execution_contract.get('requested_parallel')}`",
+        f"- expected_effective_parallel: `{execution_contract.get('expected_effective_parallel')}`",
+        f"- forbidden_flags: `{execution_contract.get('forbidden_flags')}`",
+        f"- dashboard_policy: `{dashboard_contract.get('dashboard_policy')}`",
+        f"- dashboard_url: `{dashboard_contract.get('dashboard_url')}`",
+        f"- dashboard_gate: `{execution_contract.get('dashboard_gate')}`",
+        "- Dashboard는 진행 확인 도구이며 semantic/full_scan approval 근거가 아니다.",
+        "",
         "## 승인 경계",
         "",
         "- `promotion_decision=publish`는 contract case일 뿐 approval이 아니다.",
+        "- 공식 detail URL이 없는 restore 후보는 `official_support_missing_restore_hold_contract_case`로 보존하고 publish하지 않는다.",
         "- Projection 적용, lane별 검증, full375 collateral 재확인 전 runtime replay를 열지 않는다.",
         "- Search degraded/status missing 조건은 full_scan approval 전에 별도 확인해야 한다.",
         "- 완료 기준은 계속 `full375 collateral GO + full_scan 경로 정의`다.",

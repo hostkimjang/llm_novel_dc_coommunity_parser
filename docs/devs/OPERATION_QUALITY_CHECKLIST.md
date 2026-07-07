@@ -1,5 +1,27 @@
 # Operation Quality Checklist
 
+## 2026-07-08 Loop582 residual P0 contract queue 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_582_REPORT_20260708.md`.
+  - [x] Residual P0 contract queue 기록 완료: `docs/devs/loop582_residual_p0_contract_queue.json/.md`.
+  - [x] Shared-gate restore plan 기록 완료: `docs/devs/loop582_residual_p0_shared_gate_restore_contract_plan.json/.md`.
+  - [x] Candidate-set contract plan 기록 완료: `docs/devs/loop582_residual_p0_candidate_set_contract_plan.json/.md`.
+  - [x] 계약 도구와 테스트 기록 완료: `tools/build_residual_p0_contract_queue.py`, `tests/test_build_residual_p0_contract_queue.py`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+  - [x] Contract queue rows `19`, validation issue `0`, runtime replay allowed `0`이다.
+  - [x] Shared-gate clean lane `6`건 중 공식 detail URL 보유 publish contract 후보는 `1`건뿐이다.
+  - [x] Official URL 보강 hold `5`건은 publish 후보가 아니다.
+  - [x] Native-web/image 사전 검토 `1`건과 no-publish guard 사전 검토 `1`건은 shared-gate restore 승격 전 판정이 필요하다.
+  - [x] Candidate-set rebuild `4`건은 후보셋 재구성 전 publish 금지다.
+  - [x] Source-native/blind INFO_MISSING review `7`건은 판정 전 hard-hold 완화 대상이 아니다.
+  - [x] Dashboard health는 `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`로 확인했다.
+  - [x] 다음 test/runtime run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지다.
+  - [x] Dashboard는 진행 확인 도구이며 semantic/full_scan approval 근거가 아니다.
+  - [x] Full375 collateral `NO-GO / raw 86 / adjusted residual 46`을 유지했다.
+- Gate: contract queue `REVIEW-LOCKED / 19`, shared-gate restore `REVIEW-LOCKED / publish-contract-candidate 1 / official-url-hold 5`, candidate-set `REVIEW-LOCKED / rebuild-hold 4`, full375 collateral `NO-GO / raw 86 / adjusted residual 46`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop581 residual86 prior-compatible source-native 품질 게이트
 
 - 근거:

@@ -1,5 +1,26 @@
 # Developer TODO Index
 
+## 2026-07-08 Loop582 이후
+
+- 상태 업데이트: Loop581 P0 residual `19`건을 새 runtime 없이 계약/검토 queue로 재분해했다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] P0 residual contract queue를 생성했다: `docs/devs/loop582_residual_p0_contract_queue.json/.md`.
+- [x] Contract queue rows `19`, validation issue `0`, runtime replay allowed `0`을 확인했다.
+- [x] Shared-gate clean lane `6`건 중 공식 detail URL 보유 publish contract 후보가 `1`건뿐임을 확인했다.
+- [x] Official URL 보강 hold `5`, native-web/image 사전 검토 `1`, no-publish guard 사전 검토 `1`로 분리했다.
+- [x] Candidate-set rebuild `4`건은 모두 `candidate_set_rebuild_required_before_publish`로 유지했다.
+- [x] Source-native/blind INFO_MISSING review `7`건은 hard-hold 완화 금지로 유지했다.
+- [x] Shared-gate restore plan을 생성했고 `expected_title_restore_contract_case 1 / official_support_missing_restore_hold_contract_case 5`를 확인했다.
+- [x] `tools/build_ordinary_restore_contract_plan.py`가 `dispatch_lane`을 읽고 공식 URL 없는 restore 후보를 hold로 보존하게 했다.
+- [x] Dashboard health/status를 확인했다. URL은 `http://127.0.0.1:8080`, health는 `ok=true / standalone=true / pid=9320`이다.
+- [x] Focused unittest `19`개를 통과했다.
+- [ ] Official URL 보강 hold `5`건은 canonical official detail URL 보존 전 publish하지 않는다.
+- [ ] Native-web/image `11698859`와 no-publish guard `11700483`은 사전 검토 전 shared-gate restore로 승격하지 않는다.
+- [ ] INFO_MISSING `7`건은 source-native/blind verdict 전 hard-hold 완화 대상이 아니다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지 상태로 실행한다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: contract queue `REVIEW-LOCKED / 19`, shared-gate restore `REVIEW-LOCKED / publish-contract-candidate 1 / official-url-hold 5`, candidate-set `REVIEW-LOCKED / rebuild-hold 4`, full375 collateral `NO-GO / raw 86 / adjusted residual 46`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop581 이후
 
 - 상태 업데이트: Loop580 raw residual `86`건은 prior-compatible source-native 회계로 재정렬됐지만 full375 collateral은 여전히 `NO-GO`다. Goal은 완료가 아니다.

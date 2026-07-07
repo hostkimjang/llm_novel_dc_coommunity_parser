@@ -288,7 +288,7 @@ def build_plan(
         "report_type": "candidate_set_contract_plan",
         "plan_id": plan_id,
         "generated_at": generated_at or datetime.now().replace(microsecond=0).isoformat(),
-        "source_batch": batch.get("dispatch_id") or batch.get("queue_id") or batch.get("plan_id"),
+        "source_batch": batch.get("dispatch_id") or batch.get("batch_id") or batch.get("queue_id") or batch.get("plan_id"),
         "gate": "NO-GO" if validation_issues else "REVIEW-LOCKED",
         "semantic_quality": "REVIEW-LOCKED",
         "full_scan_approval": False,
@@ -347,7 +347,7 @@ def write_markdown(plan: dict[str, Any], path: Path) -> None:
     lines = [
         f"# {plan.get('plan_id')}",
         "",
-        "Loop577 refined P0 dispatch의 `candidate_set_rebuild_review` 10건을 shared promotion gate 계약 계획으로 분리한 산출물이다. "
+        f"`{plan.get('source_batch')}`의 `candidate_set_rebuild_review` 행을 shared promotion gate 계약 계획으로 분리한 산출물이다. "
         "이 문서는 runtime replay 허가나 full_scan approval이 아니다.",
         "",
         "## 요약",
@@ -389,9 +389,9 @@ def write_markdown(plan: dict[str, Any], path: Path) -> None:
             "",
             "## Gate 해석",
             "",
-            "- `candidate_set_expected_restore_contract_case` 4건은 source-native 근거와 공식 detail URL을 갖춘 contract case다. 이는 release 후보 표시일 뿐 승인 완료가 아니다.",
-            "- `candidate_set_rebuild_required_before_publish` 5건은 현재 후보셋이 source-supported title을 담지 못하므로 publish 금지 상태로 둔다.",
-            "- `no_publish_intent_guard_contract_case` 1건은 고전 작품 intent guard로 같은 표면 웹소설 promotion을 막는다.",
+            "- `candidate_set_expected_restore_contract_case`는 source-native 근거와 공식 detail URL을 갖춘 contract case다. 이는 release 후보 표시일 뿐 승인 완료가 아니다.",
+            "- `candidate_set_rebuild_required_before_publish`는 현재 후보셋이 source-supported title을 담지 못하므로 publish 금지 상태로 둔다.",
+            "- `no_publish_intent_guard_contract_case`는 고전/비작품 intent guard로 같은 표면 웹소설 promotion을 막는다.",
             "- 완료 기준은 계속 `full375 collateral GO + full_scan 경로 정의`다.",
             "",
         ]

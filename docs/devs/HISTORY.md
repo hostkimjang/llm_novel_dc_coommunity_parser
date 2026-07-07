@@ -1,5 +1,22 @@
 # Development History
 
+## 2026-07-08 - Loop582 residual P0 contract queue and dashboard execution contract
+
+- 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+- Loop581 P0 residual `19`건을 `tools/build_residual_p0_contract_queue.py`로 계약/검토 queue에 재분해했다.
+- Contract queue는 rows `19`, validation issue `0`, runtime replay allowed `0`이다.
+- Shared-gate clean lane `6`건 중 공식 detail URL 보유 publish contract 후보는 `1`건뿐이고, official URL 보강 hold `5`건을 분리했다.
+- Native-web/image 사전 검토 `1`건과 no-publish guard 사전 검토 `1`건은 shared-gate restore 승격 전 판정이 필요하다.
+- Candidate-set rebuild `4`건은 모두 `candidate_set_rebuild_required_before_publish`로 유지했다.
+- Source-native/blind INFO_MISSING review `7`건은 판정 전 hard-hold 완화 대상이 아니다.
+- `tools/build_ordinary_restore_contract_plan.py`는 action batch의 `dispatch_lane`을 직접 읽고, 공식 detail URL 없는 restore 후보를 `official_support_missing_restore_hold_contract_case`로 보존한다.
+- Shared-gate restore plan은 rows `6`, action `expected_title_restore_contract_case 1 / official_support_missing_restore_hold_contract_case 5`, runtime allowed `0`이다.
+- Candidate-set plan은 rows `4`, action `candidate_set_rebuild_required_before_publish 4`, runtime allowed `0`이다.
+- Dashboard는 `http://127.0.0.1:8080`에서 `ok=true / standalone=true / pid=9320`로 확인했고, 다음 test/runtime run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지다.
+- Focused unittest `19`개를 통과했다.
+- Report는 `docs/devs/loop_reports/LOOP_582_REPORT_20260708.md`다.
+- Gate는 contract queue `REVIEW-LOCKED / 19`, shared-gate restore `REVIEW-LOCKED / publish-contract-candidate 1 / official-url-hold 5`, candidate-set `REVIEW-LOCKED / rebuild-hold 4`, full375 collateral `NO-GO / raw 86 / adjusted residual 46`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop581 residual86 prior-compatible source-native accounting
 
 - 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.

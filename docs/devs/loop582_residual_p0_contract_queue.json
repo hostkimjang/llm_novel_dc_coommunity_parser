@@ -1,0 +1,977 @@
+{
+  "report_type": "residual_p0_contract_queue",
+  "queue_id": "loop582_residual_p0_contract_queue",
+  "generated_at": "2026-07-08T03:56:26",
+  "source_batch_id": "loop581_candidate_set_full375_prior_compatible_residual_p0_action_batch",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "gate": "REVIEW-LOCKED",
+  "summary": {
+    "source_batch_rows": 19,
+    "contract_queue_rows": 19,
+    "runtime_replay_allowed_rows": 0,
+    "shared_gate_restore_clean_lane_rows": 6,
+    "shared_gate_restore_ready_with_official_url_rows": 1,
+    "shared_gate_restore_official_url_enrichment_rows": 5,
+    "shared_gate_restore_precondition_review_rows": 2,
+    "candidate_set_rebuild_required_rows": 4,
+    "source_native_or_blind_info_missing_rows": 7,
+    "validation_issue_count": 0,
+    "contract_bucket_counts": {
+      "candidate_set_rebuild_required_before_publish": 4,
+      "shared_gate_restore_contract_ready_with_official_url": 1,
+      "shared_gate_restore_requires_native_web_review": 1,
+      "shared_gate_restore_requires_no_publish_guard": 1,
+      "shared_gate_restore_requires_official_url_enrichment": 5,
+      "source_native_or_blind_info_missing_review": 7
+    },
+    "dispatch_lane_counts": {
+      "candidate_set_rebuild_review": 4,
+      "native_web_image_evidence_review": 1,
+      "no_publish_guard_review": 1,
+      "shared_gate_restore_contract_review": 6,
+      "source_native_or_blind_review": 7
+    },
+    "label_counts": {
+      "INFO_MISSING": 7,
+      "REPROCESS": 12
+    },
+    "priority_counts": {
+      "P0": 19
+    },
+    "evidence_grade_counts": {
+      "Medium": 2,
+      "Missing": 7,
+      "Strong": 10
+    },
+    "action_counts": {
+      "candidate_set_rebuild_required": 4,
+      "image_platform_url_preference": 1,
+      "merchandise_or_emoticon_work_context_guard": 1,
+      "native_web_review_required": 1,
+      "p0_safe_loss_resolved_to_null_review_required": 1,
+      "p0_wrong_work_title_flip_review_required": 6,
+      "preserve_secondary_candidates": 3,
+      "repair_after_wrong_work": 4,
+      "repair_safe_loss_restore_supported_title": 8,
+      "shared_promotion_gate_wiring_required": 8,
+      "source_native_or_blind_review_required": 7
+    },
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "execution_contract": {
+    "policy": "TEST_RUNS_USE_PARALLEL_16_AND_WEB_DASHBOARD",
+    "row_count": 19,
+    "requested_parallel": 16,
+    "expected_effective_parallel": 16,
+    "required_flags": [
+      "--parallel 16"
+    ],
+    "forbidden_flags": [
+      "--no-dashboard"
+    ],
+    "dashboard_gate": "GO_PROGRESS_VIEW_NOT_APPROVAL",
+    "dashboard_contract": {
+      "dashboard_policy": "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+      "dashboard_url": "http://127.0.0.1:8080",
+      "start_dashboard_command": "python tools/dashboard_server.py --host 127.0.0.1 --port 8080",
+      "forbidden_flags": [
+        "--no-dashboard"
+      ],
+      "runner_cli_guard": "tools/run_independent_plan.py ignores --no-dashboard unless ALLOW_TEST_RUN_NO_DASHBOARD=1 is explicitly set as a breakglass override.",
+      "live_forwarding_contract": "Start tools/dashboard_server.py first; expert_main detects the standalone dashboard and forwards monitor events to it.",
+      "fallback_attach_contract": "If a run was already started without live forwarding, attach its manifest with tools/attach_manifest_dashboard.py."
+    },
+    "approval_boundary": "Dashboard progress visibility and runtime completion are not semantic/full_scan approval."
+  },
+  "validation_issues": [],
+  "contract_groups": [
+    {
+      "contract_bucket": "candidate_set_rebuild_required_before_publish",
+      "row_count": 4,
+      "post_ids": [
+        11682749,
+        11703658,
+        11705231,
+        11710036
+      ],
+      "dispatch_lane_counts": {
+        "candidate_set_rebuild_review": 4
+      },
+      "official_support_ref_rows": 1,
+      "runtime_replay_allowed_rows": 0,
+      "next_action_ko": "현재 후보셋이 source-supported title을 담지 못하므로 후보셋 재구성 전 publish와 runtime replay를 금지한다."
+    },
+    {
+      "contract_bucket": "shared_gate_restore_contract_ready_with_official_url",
+      "row_count": 1,
+      "post_ids": [
+        11718114
+      ],
+      "dispatch_lane_counts": {
+        "shared_gate_restore_contract_review": 1
+      },
+      "official_support_ref_rows": 1,
+      "runtime_replay_allowed_rows": 0,
+      "next_action_ko": "shared promotion gate contract plan에 통과시킨 뒤 projection과 full375 collateral로 재검증한다."
+    },
+    {
+      "contract_bucket": "shared_gate_restore_requires_native_web_review",
+      "row_count": 1,
+      "post_ids": [
+        11698859
+      ],
+      "dispatch_lane_counts": {
+        "native_web_image_evidence_review": 1
+      },
+      "official_support_ref_rows": 0,
+      "runtime_replay_allowed_rows": 0,
+      "next_action_ko": "native web/image 근거를 먼저 확인하고, 이미지/플랫폼 URL 선호가 정리되기 전 publish를 금지한다."
+    },
+    {
+      "contract_bucket": "shared_gate_restore_requires_no_publish_guard",
+      "row_count": 1,
+      "post_ids": [
+        11700483
+      ],
+      "dispatch_lane_counts": {
+        "no_publish_guard_review": 1
+      },
+      "official_support_ref_rows": 0,
+      "runtime_replay_allowed_rows": 0,
+      "next_action_ko": "merchandise/emoticon 또는 no-publish guard를 먼저 판정하고, guard가 풀리기 전 publish를 금지한다."
+    },
+    {
+      "contract_bucket": "shared_gate_restore_requires_official_url_enrichment",
+      "row_count": 5,
+      "post_ids": [
+        11665124,
+        11710049,
+        11682775,
+        11700500,
+        11698870
+      ],
+      "dispatch_lane_counts": {
+        "shared_gate_restore_contract_review": 5
+      },
+      "official_support_ref_rows": 0,
+      "runtime_replay_allowed_rows": 0,
+      "next_action_ko": "공식 detail URL을 후보 ledger에 보존한 뒤에만 shared gate restore contract 후보로 승격한다."
+    },
+    {
+      "contract_bucket": "source_native_or_blind_info_missing_review",
+      "row_count": 7,
+      "post_ids": [
+        11660232,
+        11663554,
+        11682792,
+        11703674,
+        11714903,
+        11660273,
+        11671514
+      ],
+      "dispatch_lane_counts": {
+        "source_native_or_blind_review": 7
+      },
+      "official_support_ref_rows": 0,
+      "runtime_replay_allowed_rows": 0,
+      "next_action_ko": "source-native 또는 blind judge로 정답성을 확정하기 전 hard-hold 완화와 safe-loss 해소 선언을 금지한다."
+    }
+  ],
+  "rows": [
+    {
+      "post_id": 11665124,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "review_label": "REPROCESS",
+      "dispatch_lane": "shared_gate_restore_contract_review",
+      "batch_lanes": [
+        "shared_gate_restore_contract_review"
+      ],
+      "contract_bucket": "shared_gate_restore_requires_official_url_enrichment",
+      "next_action_ko": "공식 detail URL을 후보 ledger에 보존한 뒤에만 shared gate restore contract 후보로 승격한다.",
+      "target_title": "화산파(화산귀환)",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "official_support_refs": [],
+      "official_support_ref_count": 0,
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "runtime_replay_allowed": false,
+      "promotion_hard_hold_relaxation_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "댓글이 `화귀` 회차와 해남편을 직접 말해 후보 작품 맥락을 지지한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11665124",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11665124",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11665124",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11665124",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11665124",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11665124",
+        "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11665124",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11665124",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11665124",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11665124",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11665124",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11665124",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11665124",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11665124",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11665124",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11665124",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11665124",
+        "docs/devs/loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json#post_id=11665124",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11665124"
+      ]
+    },
+    {
+      "post_id": 11710049,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "review_label": "REPROCESS",
+      "dispatch_lane": "shared_gate_restore_contract_review",
+      "batch_lanes": [
+        "shared_gate_restore_contract_review"
+      ],
+      "contract_bucket": "shared_gate_restore_requires_official_url_enrichment",
+      "next_action_ko": "공식 detail URL을 후보 ledger에 보존한 뒤에만 shared gate restore contract 후보로 승격한다.",
+      "target_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_alias_and_comment_context_support_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "official_support_refs": [],
+      "official_support_ref_count": 0,
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "runtime_replay_allowed": false,
+      "promotion_hard_hold_relaxation_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "`랫따싶`, 림월드, 랫킨 설명이 후보 작품/태그 맥락을 직접 지지한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11710049",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11710049",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11710049",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11710049",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11710049",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11710049",
+        "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11710049",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11710049",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11710049",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11710049",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11710049",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11710049",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11710049",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11710049",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11710049",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11710049",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11710049",
+        "docs/devs/loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json#post_id=11710049",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11710049"
+      ]
+    },
+    {
+      "post_id": 11718114,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "review_label": "REPROCESS",
+      "dispatch_lane": "shared_gate_restore_contract_review",
+      "batch_lanes": [
+        "shared_gate_restore_contract_review"
+      ],
+      "contract_bucket": "shared_gate_restore_contract_ready_with_official_url",
+      "next_action_ko": "shared promotion gate contract plan에 통과시킨 뒤 projection과 full375 collateral로 재검증한다.",
+      "target_title": "설정값 딸깍으로 판타지 시스템 정상화",
+      "selected_option_id": "C1",
+      "source_native_verdict": "title_phrase_and_plot_context_support_safe_title_lost_to_null",
+      "evidence_grade": "Medium",
+      "official_support_refs": [
+        "https://novelpia.com/novel/383584"
+      ],
+      "official_support_ref_count": 1,
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "runtime_replay_allowed": false,
+      "promotion_hard_hold_relaxation_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "`시스템 딸깍` 설정과 마법 강사질 비판이 후보 title/설정 맥락과 직접 대응한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11718114",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11718114",
+        "https://novelpia.com/novel/383584",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11718114",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11718114",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11718114",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11718114",
+        "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11718114",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11718114",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11718114",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11718114",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11718114",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11718114",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11718114",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11718114",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11718114",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11718114",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11718114",
+        "docs/devs/loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json#post_id=11718114",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11718114"
+      ]
+    },
+    {
+      "post_id": 11682749,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "review_label": "REPROCESS",
+      "dispatch_lane": "candidate_set_rebuild_review",
+      "batch_lanes": [
+        "candidate_set_rebuild_review"
+      ],
+      "contract_bucket": "candidate_set_rebuild_required_before_publish",
+      "next_action_ko": "현재 후보셋이 source-supported title을 담지 못하므로 후보셋 재구성 전 publish와 runtime replay를 금지한다.",
+      "target_title": null,
+      "selected_option_id": "HOLD",
+      "source_native_verdict": "current_option_misses_mukhyang_title_source_discusses_mukhyang",
+      "evidence_grade": "Strong",
+      "official_support_refs": [],
+      "official_support_ref_count": 0,
+      "actions": [
+        "candidate_set_rebuild_required",
+        "repair_after_wrong_work",
+        "preserve_secondary_candidates"
+      ],
+      "runtime_replay_allowed": false,
+      "promotion_hard_hold_relaxation_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "원문과 댓글, 이미지 OCR은 모두 `묵향/DARK LADY` 맥락을 지지한다. current C1 `주인공인데 주인공이 아님`은 source-supported title이 아니므로 after null이 C1 safe-loss인 것은 아니지만 후보셋 재구성이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11682749",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11682749",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11682749",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11682749",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11682749",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11682749",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11682749",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11682749",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11682749",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11682749",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11682749",
+        "docs/devs/loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json#post_id=11682749",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11682749"
+      ]
+    },
+    {
+      "post_id": 11682775,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "review_label": "REPROCESS",
+      "dispatch_lane": "shared_gate_restore_contract_review",
+      "batch_lanes": [
+        "shared_gate_restore_contract_review"
+      ],
+      "contract_bucket": "shared_gate_restore_requires_official_url_enrichment",
+      "next_action_ko": "공식 detail URL을 후보 ledger에 보존한 뒤에만 shared gate restore contract 후보로 승격한다.",
+      "target_title": "여자가 되어서라도 복수한다",
+      "selected_option_id": "C1",
+      "source_native_verdict": "ocr_explicit_title_matches_ts_murim_request",
+      "evidence_grade": "Strong",
+      "official_support_refs": [],
+      "official_support_ref_count": 0,
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "runtime_replay_allowed": false,
+      "promotion_hard_hold_relaxation_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "원문은 TS 무협 추천/감상 질문이고 이미지 OCR은 `여자가 되어서라도 복수한다` 작품 상세와 무협/TS 태그를 직접 읽었다. after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11682775",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11682775",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11682775",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11682775",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11682775",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11682775",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11682775",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11682775",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11682775",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11682775",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11682775",
+        "docs/devs/loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json#post_id=11682775",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11682775"
+      ]
+    },
+    {
+      "post_id": 11698859,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "review_label": "REPROCESS",
+      "dispatch_lane": "native_web_image_evidence_review",
+      "batch_lanes": [
+        "native_web_image_evidence_review",
+        "shared_gate_restore_contract_review"
+      ],
+      "contract_bucket": "shared_gate_restore_requires_native_web_review",
+      "next_action_ko": "native web/image 근거를 먼저 확인하고, 이미지/플랫폼 URL 선호가 정리되기 전 publish를 금지한다.",
+      "target_title": "귤부인 대롱대롱",
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_title_surface_and_scene_reaction_support_safe_title",
+      "evidence_grade": "Medium",
+      "official_support_refs": [],
+      "official_support_ref_count": 0,
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required",
+        "native_web_review_required"
+      ],
+      "runtime_replay_allowed": false,
+      "promotion_hard_hold_relaxation_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "원문 제목이 `귤부인 대롱대롱`을 직접 말하고 본문은 해당 장면에 대한 감상이다. 공식 URL은 packet에 없지만 raw title surface가 강하므로 after null은 회귀이며 native-web 보강은 후속이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11698859",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11698859",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11698859",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11698859",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11698859",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11698859",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11698859",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11698859",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11698859",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11698859",
+        "docs/devs/loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json#post_id=11698859",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11698859"
+      ]
+    },
+    {
+      "post_id": 11700483,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "review_label": "REPROCESS",
+      "dispatch_lane": "no_publish_guard_review",
+      "batch_lanes": [
+        "no_publish_guard_review",
+        "shared_gate_restore_contract_review"
+      ],
+      "contract_bucket": "shared_gate_restore_requires_no_publish_guard",
+      "next_action_ko": "merchandise/emoticon 또는 no-publish guard를 먼저 판정하고, guard가 풀리기 전 publish를 금지한다.",
+      "target_title": "니들 생각 다 들린다",
+      "selected_option_id": "C1",
+      "source_native_verdict": "work_specific_emoticon_purchase_supports_safe_title",
+      "evidence_grade": "Strong",
+      "official_support_refs": [],
+      "official_support_ref_count": 0,
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required",
+        "merchandise_or_emoticon_work_context_guard"
+      ],
+      "runtime_replay_allowed": false,
+      "promotion_hard_hold_relaxation_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "원문 `니생들 이모티콘`과 이미지 OCR `니들 생각 다 들린다 미니미콘`이 작품별 이모티콘 구매 맥락을 직접 지지한다. 작품 상품/이모티콘 맥락이므로 after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11700483",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11700483",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11700483",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11700483",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11700483",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11700483",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11700483",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11700483",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11700483",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11700483",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11700483",
+        "docs/devs/loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json#post_id=11700483",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11700483"
+      ]
+    },
+    {
+      "post_id": 11700500,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "review_label": "REPROCESS",
+      "dispatch_lane": "shared_gate_restore_contract_review",
+      "batch_lanes": [
+        "shared_gate_restore_contract_review"
+      ],
+      "contract_bucket": "shared_gate_restore_requires_official_url_enrichment",
+      "next_action_ko": "공식 detail URL을 후보 ledger에 보존한 뒤에만 shared gate restore contract 후보로 승격한다.",
+      "target_title": "전지적 1인칭 시점",
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_abbreviation_and_character_context_support_safe_title",
+      "evidence_grade": "Strong",
+      "official_support_refs": [],
+      "official_support_ref_count": 0,
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "runtime_replay_allowed": false,
+      "promotion_hard_hold_relaxation_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "`전1시`는 C1의 직접 약칭이고 지잔든/지선/성검대/셰이 등 캐릭터 전투 맥락이 작품 토론을 지지한다. after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11700500",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11700500",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11700500",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11700500",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11700500",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11700500",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11700500",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11700500",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11700500",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11700500",
+        "docs/devs/loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json#post_id=11700500",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11700500"
+      ]
+    },
+    {
+      "post_id": 11703658,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "review_label": "REPROCESS",
+      "dispatch_lane": "candidate_set_rebuild_review",
+      "batch_lanes": [
+        "candidate_set_rebuild_review",
+        "native_web_image_evidence_review"
+      ],
+      "contract_bucket": "candidate_set_rebuild_required_before_publish",
+      "next_action_ko": "현재 후보셋이 source-supported title을 담지 못하므로 후보셋 재구성 전 publish와 runtime replay를 금지한다.",
+      "target_title": null,
+      "selected_option_id": "HOLD",
+      "source_native_verdict": "current_option_wrong_title_image_ocr_supports_africa_food_king",
+      "evidence_grade": "Strong",
+      "official_support_refs": [],
+      "official_support_ref_count": 0,
+      "actions": [
+        "candidate_set_rebuild_required",
+        "repair_after_wrong_work",
+        "image_platform_url_preference"
+      ],
+      "runtime_replay_allowed": false,
+      "promotion_hard_hold_relaxation_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "원문 제목과 이미지 OCR은 `아프리카 식량왕이 되었다`를 직접 말한다. current C1 `아프리카 의 독재자가 되었다 .`와 URL은 다른 작품으로 보이므로 C1 복구가 아니라 후보셋 재구성이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11703658",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11703658",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11703658",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11703658",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11703658",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11703658",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11703658",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11703658",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11703658",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11703658",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11703658",
+        "docs/devs/loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json#post_id=11703658",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11703658"
+      ]
+    },
+    {
+      "post_id": 11705231,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "review_label": "REPROCESS",
+      "dispatch_lane": "candidate_set_rebuild_review",
+      "batch_lanes": [
+        "candidate_set_rebuild_review"
+      ],
+      "contract_bucket": "candidate_set_rebuild_required_before_publish",
+      "next_action_ko": "현재 후보셋이 source-supported title을 담지 못하므로 후보셋 재구성 전 publish와 runtime replay를 금지한다.",
+      "target_title": null,
+      "selected_option_id": "HOLD",
+      "source_native_verdict": "current_option_wrong_work_source_discusses_seol_jihu_tamsik_context",
+      "evidence_grade": "Strong",
+      "official_support_refs": [],
+      "official_support_ref_count": 0,
+      "actions": [
+        "candidate_set_rebuild_required",
+        "repair_after_wrong_work",
+        "preserve_secondary_candidates"
+      ],
+      "runtime_replay_allowed": false,
+      "promotion_hard_hold_relaxation_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "원문은 설지후/로유진/유선화 자매 등 `탐식의 재림` 계열 캐릭터와 장갤 밈을 직접 논한다. current C1 `한국 레전드 프로게이머...`는 source-supported title이 아니므로 후보셋 재구성이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11705231",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11705231",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11705231",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11705231",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11705231",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11705231",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11705231",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11705231",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11705231",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11705231",
+        "docs/devs/loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json#post_id=11705231",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11705231"
+      ]
+    },
+    {
+      "post_id": 11710036,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "review_label": "REPROCESS",
+      "dispatch_lane": "candidate_set_rebuild_review",
+      "batch_lanes": [
+        "candidate_set_rebuild_review"
+      ],
+      "contract_bucket": "candidate_set_rebuild_required_before_publish",
+      "next_action_ko": "현재 후보셋이 source-supported title을 담지 못하므로 후보셋 재구성 전 publish와 runtime replay를 금지한다.",
+      "target_title": null,
+      "selected_option_id": "HOLD",
+      "source_native_verdict": "ratdasip_source_points_to_rimworld_work_current_option_wrong",
+      "evidence_grade": "Strong",
+      "official_support_refs": [
+        "https://novelpia.com/novel/382324"
+      ],
+      "official_support_ref_count": 1,
+      "actions": [
+        "candidate_set_rebuild_required",
+        "repair_after_wrong_work",
+        "preserve_secondary_candidates"
+      ],
+      "runtime_replay_allowed": false,
+      "promotion_hard_hold_relaxation_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "원문과 댓글은 `랫따싶`의 full title을 묻고 `[림월드]변방계에서 회귀자로 살아남기`로 답한다. native-web도 `#랫따싶` 태그를 확인한다. current C1 `쳇바퀴의 생쥐 사도가 되었다`는 wrong option이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11710036",
+        "https://novelpia.com/novel/382324",
+        "https://m.dcinside.com/board/genrenovel/11768968",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11710036",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11710036",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11710036",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11710036",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11710036",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11710036",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11710036",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11710036",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11710036",
+        "docs/devs/loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json#post_id=11710036",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11710036"
+      ]
+    },
+    {
+      "post_id": 11660232,
+      "triage_bucket": "wrong_work_title_flip",
+      "priority": "P0",
+      "review_label": "INFO_MISSING",
+      "dispatch_lane": "source_native_or_blind_review",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "contract_bucket": "source_native_or_blind_info_missing_review",
+      "next_action_ko": "source-native 또는 blind judge로 정답성을 확정하기 전 hard-hold 완화와 safe-loss 해소 선언을 금지한다.",
+      "target_title": null,
+      "selected_option_id": "HOLD",
+      "source_native_verdict": "current_regression_row_without_compatible_prior_verdict",
+      "evidence_grade": "Missing",
+      "official_support_refs": [],
+      "official_support_ref_count": 0,
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "runtime_replay_allowed": false,
+      "promotion_hard_hold_relaxation_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11660232",
+        "loop536_current_full375_prior_compatible_source_native#unreviewed_current_batch_row",
+        "docs/devs/loop536_current_full375_p0_unreviewed_placeholder_verdicts.json#post_id=11660232",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11660232",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11660232",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11660232",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11660232",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11660232",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11660232",
+        "docs/devs/loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json#post_id=11660232",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11660232"
+      ]
+    },
+    {
+      "post_id": 11663554,
+      "triage_bucket": "wrong_work_title_flip",
+      "priority": "P0",
+      "review_label": "INFO_MISSING",
+      "dispatch_lane": "source_native_or_blind_review",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "contract_bucket": "source_native_or_blind_info_missing_review",
+      "next_action_ko": "source-native 또는 blind judge로 정답성을 확정하기 전 hard-hold 완화와 safe-loss 해소 선언을 금지한다.",
+      "target_title": null,
+      "selected_option_id": "HOLD",
+      "source_native_verdict": "current_regression_row_without_compatible_prior_verdict",
+      "evidence_grade": "Missing",
+      "official_support_refs": [],
+      "official_support_ref_count": 0,
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "runtime_replay_allowed": false,
+      "promotion_hard_hold_relaxation_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11663554",
+        "loop536_current_full375_prior_compatible_source_native#unreviewed_current_batch_row",
+        "docs/devs/loop536_current_full375_p0_unreviewed_placeholder_verdicts.json#post_id=11663554",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11663554",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11663554",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11663554",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11663554",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11663554",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11663554",
+        "docs/devs/loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json#post_id=11663554",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11663554"
+      ]
+    },
+    {
+      "post_id": 11682792,
+      "triage_bucket": "wrong_work_title_flip",
+      "priority": "P0",
+      "review_label": "INFO_MISSING",
+      "dispatch_lane": "source_native_or_blind_review",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "contract_bucket": "source_native_or_blind_info_missing_review",
+      "next_action_ko": "source-native 또는 blind judge로 정답성을 확정하기 전 hard-hold 완화와 safe-loss 해소 선언을 금지한다.",
+      "target_title": null,
+      "selected_option_id": "HOLD",
+      "source_native_verdict": "current_regression_row_without_compatible_prior_verdict",
+      "evidence_grade": "Missing",
+      "official_support_refs": [],
+      "official_support_ref_count": 0,
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "runtime_replay_allowed": false,
+      "promotion_hard_hold_relaxation_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11682792",
+        "loop536_current_full375_prior_compatible_source_native#unreviewed_current_batch_row",
+        "docs/devs/loop536_current_full375_p0_unreviewed_placeholder_verdicts.json#post_id=11682792",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11682792",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11682792",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11682792",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11682792",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11682792",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11682792",
+        "docs/devs/loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json#post_id=11682792",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11682792"
+      ]
+    },
+    {
+      "post_id": 11703674,
+      "triage_bucket": "wrong_work_title_flip",
+      "priority": "P0",
+      "review_label": "INFO_MISSING",
+      "dispatch_lane": "source_native_or_blind_review",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "contract_bucket": "source_native_or_blind_info_missing_review",
+      "next_action_ko": "source-native 또는 blind judge로 정답성을 확정하기 전 hard-hold 완화와 safe-loss 해소 선언을 금지한다.",
+      "target_title": null,
+      "selected_option_id": "HOLD",
+      "source_native_verdict": "current_regression_row_without_compatible_prior_verdict",
+      "evidence_grade": "Missing",
+      "official_support_refs": [],
+      "official_support_ref_count": 0,
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "runtime_replay_allowed": false,
+      "promotion_hard_hold_relaxation_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11703674",
+        "loop536_current_full375_prior_compatible_source_native#unreviewed_current_batch_row",
+        "docs/devs/loop536_current_full375_p0_unreviewed_placeholder_verdicts.json#post_id=11703674",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11703674",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11703674",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11703674",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11703674",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11703674",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11703674",
+        "docs/devs/loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json#post_id=11703674",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11703674"
+      ]
+    },
+    {
+      "post_id": 11714903,
+      "triage_bucket": "wrong_work_title_flip",
+      "priority": "P0",
+      "review_label": "INFO_MISSING",
+      "dispatch_lane": "source_native_or_blind_review",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "contract_bucket": "source_native_or_blind_info_missing_review",
+      "next_action_ko": "source-native 또는 blind judge로 정답성을 확정하기 전 hard-hold 완화와 safe-loss 해소 선언을 금지한다.",
+      "target_title": null,
+      "selected_option_id": "HOLD",
+      "source_native_verdict": "current_regression_row_without_compatible_prior_verdict",
+      "evidence_grade": "Missing",
+      "official_support_refs": [],
+      "official_support_ref_count": 0,
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "runtime_replay_allowed": false,
+      "promotion_hard_hold_relaxation_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11714903",
+        "loop536_current_full375_prior_compatible_source_native#unreviewed_current_batch_row",
+        "docs/devs/loop536_current_full375_p0_unreviewed_placeholder_verdicts.json#post_id=11714903",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11714903",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11714903",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11714903",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11714903",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11714903",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11714903",
+        "docs/devs/loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json#post_id=11714903",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11714903"
+      ]
+    },
+    {
+      "post_id": 11698870,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "review_label": "REPROCESS",
+      "dispatch_lane": "shared_gate_restore_contract_review",
+      "batch_lanes": [
+        "shared_gate_restore_contract_review"
+      ],
+      "contract_bucket": "shared_gate_restore_requires_official_url_enrichment",
+      "next_action_ko": "공식 detail URL을 후보 ledger에 보존한 뒤에만 shared gate restore contract 후보로 승격한다.",
+      "target_title": "인간실격",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "official_support_refs": [],
+      "official_support_ref_count": 0,
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "runtime_replay_allowed": false,
+      "promotion_hard_hold_relaxation_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "post title이 `인간실격`을 직접 말하고 작가/결말 질문도 같은 작품 맥락이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11698870",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11698870",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11698870",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11698870"
+      ]
+    },
+    {
+      "post_id": 11660273,
+      "triage_bucket": "wrong_work_title_flip",
+      "priority": "P0",
+      "review_label": "INFO_MISSING",
+      "dispatch_lane": "source_native_or_blind_review",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "contract_bucket": "source_native_or_blind_info_missing_review",
+      "next_action_ko": "source-native 또는 blind judge로 정답성을 확정하기 전 hard-hold 완화와 safe-loss 해소 선언을 금지한다.",
+      "target_title": null,
+      "selected_option_id": "HOLD",
+      "source_native_verdict": "current_regression_row_without_compatible_prior_verdict",
+      "evidence_grade": "Missing",
+      "official_support_refs": [],
+      "official_support_ref_count": 0,
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "runtime_replay_allowed": false,
+      "promotion_hard_hold_relaxation_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11660273",
+        "loop581_candidate_set_full375_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11671514,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "review_label": "INFO_MISSING",
+      "dispatch_lane": "source_native_or_blind_review",
+      "batch_lanes": [
+        "source_native_or_blind_review"
+      ],
+      "contract_bucket": "source_native_or_blind_info_missing_review",
+      "next_action_ko": "source-native 또는 blind judge로 정답성을 확정하기 전 hard-hold 완화와 safe-loss 해소 선언을 금지한다.",
+      "target_title": null,
+      "selected_option_id": "HOLD",
+      "source_native_verdict": "current_regression_row_without_compatible_prior_verdict",
+      "evidence_grade": "Missing",
+      "official_support_refs": [],
+      "official_support_ref_count": 0,
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "runtime_replay_allowed": false,
+      "promotion_hard_hold_relaxation_allowed": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11671514",
+        "loop581_candidate_set_full375_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    }
+  ],
+  "approval_boundary": {
+    "contract_queue_generation_is_not_approval": true,
+    "runtime_replay_allowed": false,
+    "dashboard_is_progress_view_not_approval": true,
+    "full375_collateral_remains_no_go": true,
+    "full_scan_approval": false
+  }
+}

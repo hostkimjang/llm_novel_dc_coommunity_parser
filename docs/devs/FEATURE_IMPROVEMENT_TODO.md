@@ -8,6 +8,8 @@
 - [x] `tools/test_run_dashboard_policy.py`는 `TEST_RUNS_USE_PARALLEL_16_AND_WEB_DASHBOARD` 계약을 제공한다.
 - [x] `tools/run_independent_plan.py` 경로는 dashboard 기본 ON과 `--no-dashboard` 제거를 사용한다.
 - [x] `docs/devs/SAMPLING_AND_PARALLEL_TEST_GUIDE.md` 상단에 현재 기본값과 사후 attach 경로를 갱신했다.
+- [x] Loop582에서 현재 dashboard health/status를 확인했다. `http://127.0.0.1:8080`, health `ok=true / standalone=true / pid=9320`, status Loop564 `30/30`, `parallel_count=16`, `batch_running=false`.
+- [x] Loop582 산출물 execution contract에도 `--parallel 16`, web dashboard ON, `--no-dashboard` 금지, `GO_PROGRESS_VIEW_NOT_APPROVAL`를 기록했다.
 - [ ] 다음 실제 test/runtime run 시작 시 `http://127.0.0.1:8080` dashboard health와 진행률을 함께 보고한다.
 - Gate: dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, runtime approval 아님, full375 collateral `NO-GO`, goal `ACTIVE / NOT_COMPLETE`.
 

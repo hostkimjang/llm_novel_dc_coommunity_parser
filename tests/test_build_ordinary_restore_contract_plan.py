@@ -54,6 +54,12 @@ class BuildOrdinaryRestoreContractPlanTest(unittest.TestCase):
         self.assertEqual(plan["summary"]["publish_allowed_rows"], 0)
         self.assertEqual(plan["summary"]["runtime_replay_allowed_rows"], 0)
         self.assertEqual(plan["summary"]["search_review_required_before_approval_rows"], 1)
+        self.assertEqual(plan["execution_contract"]["requested_parallel"], 16)
+        self.assertEqual(plan["execution_contract"]["expected_effective_parallel"], 1)
+        self.assertEqual(
+            plan["execution_contract"]["dashboard_contract"]["dashboard_policy"],
+            "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+        )
 
     def test_runtime_title_mismatch_is_review_hold_not_restore_publish(self):
         audit = {
@@ -100,6 +106,56 @@ class BuildOrdinaryRestoreContractPlanTest(unittest.TestCase):
         self.assertEqual(plan["summary"]["restore_contract_plan_rows"], 0)
         self.assertEqual(plan["summary"]["validation_issue_count"], 0)
         self.assertEqual(plan["summary"]["runtime_replay_allowed_rows"], 0)
+
+    def test_action_batch_dispatch_lane_is_accepted_without_primary_lane(self):
+        dispatch = {
+            "batch_id": "loop581_p0_action_batch",
+            "rows": [
+                {
+                    "post_id": 10,
+                    "dispatch_lane": "shared_gate_restore_contract_review",
+                    "selected_title": "Expected Work",
+                    "evidence_grade": "Strong",
+                    "source_native_verdict": "supported_safe_title_lost_to_null",
+                    "rationale_ko": "원문이 Expected Work를 직접 지지한다.",
+                    "evidence_refs": ["https://novelpia.com/novel/123"],
+                }
+            ],
+        }
+
+        plan = build_plan(dispatch=dispatch, plan_id="unit")
+
+        self.assertEqual(plan["source_dispatch"], "loop581_p0_action_batch")
+        self.assertEqual(plan["summary"]["restore_contract_plan_rows"], 1)
+        self.assertEqual(plan["rows"][0]["source_dispatch_lane"], "shared_gate_restore_contract_review")
+        self.assertEqual(plan["rows"][0]["contract_action"], "expected_title_restore_contract_case")
+
+    def test_official_ref_missing_holds_before_publish(self):
+        dispatch = {
+            "dispatch_id": "unit",
+            "rows": [
+                {
+                    "post_id": 11,
+                    "primary_lane": "shared_gate_restore_contract_review",
+                    "selected_title": "Expected Work",
+                    "evidence_grade": "Strong",
+                    "source_native_verdict": "supported_safe_title_lost_to_null",
+                    "rationale_ko": "원문이 Expected Work를 직접 지지하지만 공식 detail URL은 없다.",
+                    "evidence_refs": ["docs/devs/source_native.json#post_id=11"],
+                }
+            ],
+        }
+
+        plan = build_plan(dispatch=dispatch, plan_id="unit")
+        row = plan["rows"][0]
+
+        self.assertEqual(plan["gate"], "REVIEW-LOCKED")
+        self.assertEqual(row["contract_action"], "official_support_missing_restore_hold_contract_case")
+        self.assertTrue(row["official_support_missing_before_publish"])
+        self.assertEqual(row["promotion_decision"]["status"], "hold")
+        self.assertFalse(row["promotion_decision"]["publish_allowed"])
+        self.assertEqual(plan["summary"]["official_support_ref_missing_rows"], 1)
+        self.assertEqual(plan["summary"]["official_support_missing_hold_rows"], 1)
 
 
 if __name__ == "__main__":
