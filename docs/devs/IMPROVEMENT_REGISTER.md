@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260708-578 - Candidate-set contract plan and dashboard attachment
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | 필요한 test run만 `--parallel 16` + dashboard attached로 실행 |
+| Candidate-set contract plan | REVIEW-LOCKED | rows `10`, validation issue `0` | projection application 전 approval 금지 |
+| Restore contract case | RELEASE_CANDIDATE_NOT_APPROVAL | `candidate_set_expected_restore_contract_case 4`, decision `publish 4` | full375 collateral 재확인 전 release 금지 |
+| Candidate-set rebuild hold | HARD_HOLD | `candidate_set_rebuild_required_before_publish 5`, decision `reject 5` | source-supported title을 후보셋에 재편입 |
+| Intent guard hold | HARD_HOLD | `no_publish_intent_guard_contract_case 1`, decision `candidate_only 1` | 고전/비웹소설 intent는 웹소설 same-surface publish 금지 |
+| Always-on gate | NO-GO | golden18 `GO`, full375 collateral `NO-GO / adjusted 64 / runtime counts missing` | residual 처리 후 재평가 |
+| Test run dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | dashboard URL `http://127.0.0.1:8080`, health `ok=true`, next run `--parallel 16`, `--no-dashboard` 금지 | 진행 관측용으로만 사용 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: candidate-set contract plan `REVIEW-LOCKED / 10`, golden18 `GO`, full375 collateral `NO-GO / adjusted 64`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-577 - Shared gate probe and refined P0 dispatch
 
 | 항목 | 상태 | 근거 | 다음 |

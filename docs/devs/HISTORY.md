@@ -1,5 +1,19 @@
 # Development History
 
+## 2026-07-08 - Loop578 candidate-set contract plan and dashboard contract
+
+- 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+- Loop577 refined P0 dispatch17 중 `candidate_set_rebuild_review` `10`건을 shared promotion gate 계약 계획으로 분리했다.
+- 계약 action은 `candidate_set_expected_restore_contract_case 4`, `candidate_set_rebuild_required_before_publish 5`, `no_publish_intent_guard_contract_case 1`이다.
+- Promotion decision은 `publish 4 / reject 5 / candidate_only 1`이지만 publish 4건은 release 후보 표시일 뿐 approval이 아니다.
+- Runtime replay allowed rows는 `0`, validation issue는 `0`이다.
+- Always-on gate는 golden18 `GO`, full375 collateral `NO-GO / raw 103 / adjusted 64 / runtime counts missing`다.
+- Dashboard는 `http://127.0.0.1:8080`에서 `ok=true / standalone=true / pid=9320`로 확인했다. 현재 status는 마지막 runtime replay Loop564 `30/30`, `parallel_count=16`, `batch_running=false`다.
+- 다음 test/runtime run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지로 실행한다.
+- Focused unittest `24`개, dashboard standalone unittest `26`개, py_compile을 통과했다.
+- Report는 `docs/devs/loop_reports/LOOP_578_REPORT_20260708.md`다.
+- Gate는 candidate-set contract plan `REVIEW-LOCKED / 10`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, full375 collateral `NO-GO / adjusted 64`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop577 shared gate probe and refined P0 dispatch
 
 - 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.

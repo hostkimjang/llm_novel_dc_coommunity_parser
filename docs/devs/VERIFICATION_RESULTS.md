@@ -1,5 +1,30 @@
 # Verification Results
 
+## 2026-07-08 Loop578 candidate-set 계약 계획과 dashboard 부착 재확인
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_578_REPORT_20260708.md`
+  - `docs/devs/loop578_candidate_set_contract_plan.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop578_always_on_golden18_full375_candidate_set_contract_plan_gate.json/.md`
+  - `tools/build_candidate_set_contract_plan.py`
+  - `tests/test_build_candidate_set_contract_plan.py`
+- 검증:
+  - Candidate-set contract plan: PASS, rows `10`, validation issue `0`.
+  - Contract action: `candidate_set_expected_restore_contract_case 4`, `candidate_set_rebuild_required_before_publish 5`, `no_publish_intent_guard_contract_case 1`.
+  - Promotion decision: `publish 4 / reject 5 / candidate_only 1`. 단 `publish 4`는 contract case일 뿐 approval이 아니다.
+  - Runtime replay allowed rows: `0`.
+  - Always-on gate: PASS 산출, gate `NO-GO`, golden `GO`, collateral `NO-GO / raw 103 / adjusted 64 / runtime counts missing`.
+  - Dashboard health: PASS, `http://127.0.0.1:8080/api/health`, `ok=true`, `standalone=true`, `pid=9320`.
+  - Dashboard status: 마지막 runtime replay Loop564 `30/30`, `progress_pct=100.0`, `parallel_count=16`, `batch_running=false`.
+  - Focused unittest: PASS, `24` tests.
+  - Dashboard standalone unittest: PASS, `26` tests.
+  - py_compile: PASS.
+- 결과:
+  - Loop578은 candidate-set lane을 runtime 반복 대신 계약 계획으로 분리했다.
+  - Full375 collateral은 여전히 `NO-GO`라 full_scan approval과 goal completion을 열지 않는다.
+  - 다음 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지다.
+- Gate: candidate-set contract plan `REVIEW-LOCKED / 10`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, golden18 `GO`, full375 collateral `NO-GO / adjusted 64`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop577 shared gate probe와 P0 dispatch 재분류
 
 - 산출물:

@@ -1,5 +1,26 @@
 # Operation Quality Checklist
 
+## 2026-07-08 Loop578 candidate-set 계약 계획 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_578_REPORT_20260708.md`.
+  - [x] Candidate-set contract plan 기록 완료: `docs/devs/loop578_candidate_set_contract_plan.json/.md`.
+  - [x] Adjusted always-on gate 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop578_always_on_golden18_full375_candidate_set_contract_plan_gate.json/.md`.
+  - [x] 계약 도구와 테스트 기록 완료: `tools/build_candidate_set_contract_plan.py`, `tests/test_build_candidate_set_contract_plan.py`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+  - [x] Candidate-set lane `10`건을 runtime 반복 대신 shared promotion gate 계약 계획으로 분리했다.
+  - [x] Restore contract case `4`건은 release 후보 표시일 뿐 approval로 승격하지 않았다.
+  - [x] Candidate-set rebuild `5`건은 후보셋 보강 전 publish를 금지했다.
+  - [x] Intent guard `1`건은 고전 작품 질의를 같은 표면 웹소설 publish로 올리지 않는다.
+  - [x] Runtime replay allowed rows는 `0`이다.
+  - [x] Full375 collateral은 adjusted residual `64`와 runtime counts missing 때문에 `NO-GO`를 유지했다.
+  - [x] Dashboard health는 `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`로 확인했다.
+  - [x] 다음 test/runtime run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지다.
+  - [x] Dashboard는 진행 확인 도구이며 semantic/full_scan approval 근거가 아니다.
+  - [x] Full375 collateral `GO` 전 goal completion을 선언하지 않는다.
+- Gate: candidate-set contract plan `REVIEW-LOCKED / 10`, golden18 `GO`, full375 collateral `NO-GO / adjusted residual 64`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop577 shared gate probe와 refined dispatch 품질 게이트
 
 - 근거:

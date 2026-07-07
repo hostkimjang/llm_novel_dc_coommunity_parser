@@ -1,5 +1,23 @@
 # Developer TODO Index
 
+## 2026-07-08 Loop578 이후
+
+- 상태 업데이트: Loop578은 candidate-set rebuild lane `10`건을 runtime replay로 보내지 않고 shared promotion gate 계약 계획으로 분리했다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Candidate-set contract plan을 생성했고 validation issue `0`을 확인했다.
+- [x] Restore contract case `4`건을 release 후보 표시로만 기록했다.
+- [x] Candidate-set rebuild hold `5`건은 후보셋 재구성 전 publish 금지로 유지했다.
+- [x] Intent guard hold `1`건은 고전 작품 표면을 같은 이름 웹소설 promotion으로 올리지 않게 했다.
+- [x] Runtime replay allowed rows `0`을 확인했다.
+- [x] Always-on gate를 재평가했고 full375 collateral `NO-GO / adjusted 64 / runtime counts missing`를 유지했다.
+- [x] Dashboard health를 확인했고 다음 test/runtime run 계약은 `--parallel 16`, dashboard ON, `--no-dashboard` 금지로 유지했다.
+- [x] Focused unittest `24`개, dashboard standalone unittest `26`개, py_compile을 통과했다.
+- [ ] Restore contract case `4`건은 projection application과 full375 collateral 재확인 전 approval로 세지 않는다.
+- [ ] Candidate-set rebuild hold `5`건은 source-supported title을 후보셋에 다시 넣기 전 runtime replay로 보내지 않는다.
+- [ ] Shared-gate restore contract lane `5`건과 native-web/image packet `3`건은 별도 계약/review 후 처리한다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: candidate-set contract plan `REVIEW-LOCKED / 10`, golden18 `GO`, full375 collateral `NO-GO / adjusted 64`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop577 이후
 
 - 상태 업데이트: Loop577은 safe-loss shared-gate `7`건을 실제 shared gate에 다시 통과시켰지만 publish `0`으로, non-productive runtime dispatch를 막는 refined P0 dispatch로 전환했다. Goal은 완료가 아니다.

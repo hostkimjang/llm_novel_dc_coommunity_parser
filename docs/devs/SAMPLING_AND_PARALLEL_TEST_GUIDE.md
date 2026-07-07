@@ -1,5 +1,15 @@
 # Sampling And Parallel Test Guide
 
+## 2026-07-08 Loop578 candidate-set 계약 계획과 dashboard 부착
+
+- Loop578은 projection/static 계약 계획이므로 새 runtime 진행률은 없다.
+- 다음 regression-safe grounding test/runtime run은 진행상황 확인을 위해 `http://127.0.0.1:8080` web dashboard에 붙여 실행한다.
+- 요청 병렬도는 사용자 지시에 따라 `--parallel 16`을 기본으로 둔다. 입력 수나 healthy endpoint 수가 작으면 effective parallel이 16보다 낮을 수 있으며 정상이다.
+- `--no-dashboard`는 사용자가 명시적으로 끄라고 한 경우에만 허용한다. 계획 파일, run manifest, 추천 명령에 남아 있으면 실행 직전 제거한다.
+- 현재 standalone dashboard health는 `ok=true`, `standalone=true`, `pid=9320`이고, 최신 status는 마지막 runtime replay Loop564 `30/30`, `progress_pct=100.0`, `parallel_count=16`, `batch_running=false`다.
+- 이미 dashboard 없이 시작된 런은 중단하지 말고 `python tools/attach_manifest_dashboard.py --manifest <result_manifest.json> --dashboard-url http://127.0.0.1:8080`로 사후 부착한다.
+- Dashboard는 진행상황 관측 도구이며 `semantic_quality`, `full_scan_approval`, `full375 collateral GO`의 승인 근거가 아니다.
+
 ## 2026-07-08 Loop577 refined dispatch 계약
 
 - `REPROCESS` 라벨만으로 runtime/test run을 발주하지 않는다.

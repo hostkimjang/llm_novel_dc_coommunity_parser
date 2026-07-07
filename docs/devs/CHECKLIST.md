@@ -1,5 +1,22 @@
 # Development Checklist
 
+## 2026-07-08 Loop578 candidate-set 계약 계획 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 실행하지 않았다.
+- [x] Loop577 refined P0 dispatch17 중 `candidate_set_rebuild_review` `10`건을 계약 계획으로 분리했다.
+- [x] `candidate_set_expected_restore_contract_case 4`를 release 후보 표시로만 기록했다.
+- [x] `candidate_set_rebuild_required_before_publish 5`를 후보셋 재구성 전 publish 금지로 유지했다.
+- [x] `no_publish_intent_guard_contract_case 1`로 고전 작품 표면의 웹소설 과승격을 막았다.
+- [x] Runtime replay allowed rows는 `0`이다.
+- [x] Always-on gate는 golden18 `GO`, full375 collateral `NO-GO / adjusted 64 / runtime counts missing`다.
+- [x] Dashboard health는 `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`으로 확인했다.
+- [x] 다음 test/runtime run 계약은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지다.
+- [x] Focused unittest `24`개, dashboard standalone unittest `26`개, py_compile을 통과했다.
+- [ ] Release 후보 `4`건은 projection application과 full375 collateral 재확인 전 approval로 세지 않는다.
+- [ ] 후보셋 재구축 HOLD `5`건은 source-supported title 보강 전 runtime replay로 보내지 않는다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: candidate-set contract plan `REVIEW-LOCKED / 10`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, golden18 `GO`, full375 collateral `NO-GO / adjusted 64`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop577 shared gate probe와 refined dispatch 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 실행하지 않았다.
