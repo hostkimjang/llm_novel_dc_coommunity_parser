@@ -1,0 +1,389 @@
+{
+  "report_type": "action_queue_batch",
+  "batch_id": "loop565_title_mismatch_hold2_source_native_batch",
+  "generated_at": "2026-07-07T23:57:45",
+  "source_queue_id": "loop564_conflict_safe_p0_shared_gate_runtime_expected_failures",
+  "filter": {
+    "priorities": null,
+    "labels": [
+      "HOLD"
+    ],
+    "actions": [
+      "canonical_variant_or_wrong_work_review_required"
+    ]
+  },
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "gate": "REVIEW-LOCKED",
+  "summary": {
+    "source_queue_rows": 17,
+    "selected_rows": 2,
+    "runtime_input_candidate_rows": 0,
+    "source_native_review_rows": 2,
+    "search_replay_required_rows": 1,
+    "label_counts": {
+      "HOLD": 2
+    },
+    "priority_counts": {
+      "P0": 2
+    },
+    "owner_mode_counts": {
+      "SOURCE_NATIVE_OR_BLIND_CANONICAL_REVIEW": 2
+    },
+    "audit_status_counts": {
+      "FAIL_SAFE_RESOLVED_TITLE_MISMATCH": 2
+    },
+    "action_counts": {
+      "canonical_variant_or_wrong_work_review_required": 2,
+      "search_degraded_or_timeout_replay_required": 1
+    },
+    "lane_counts": {
+      "search_replay_required": 1,
+      "source_native_or_blind_canonical_review": 2
+    },
+    "dispatch_lane_counts": {
+      "source_native_or_blind_review": 2
+    },
+    "validation_issue_count": 0
+  },
+  "validation_issues": [],
+  "action_groups": [
+    {
+      "lane": "search_replay_required",
+      "row_count": 1,
+      "label_counts": {
+        "HOLD": 1
+      },
+      "priority_counts": {
+        "P0": 1
+      },
+      "dispatch_lane_counts": {
+        "source_native_or_blind_review": 1
+      },
+      "post_ids": [
+        11673080
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11673080,
+          "order": 17,
+          "source_kind": "loop489_expected_audit_failure",
+          "audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+          "review_label": "HOLD",
+          "priority": "P0",
+          "owner_mode": "SOURCE_NATIVE_OR_BLIND_CANONICAL_REVIEW",
+          "actions": [
+            "canonical_variant_or_wrong_work_review_required",
+            "search_degraded_or_timeout_replay_required"
+          ],
+          "expected_title": "갤질하는 천재 의사",
+          "actual_title": "흔적을 보는 천재 무사",
+          "actual_url": "https://novel.munpia.com/554066",
+          "projected_status": "safe_resolved",
+          "safe_resolved": true,
+          "publish_allowed": true,
+          "candidate_ledger_status": "safe_resolved",
+          "promotion_status": "publish",
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "discussion_type": "review",
+          "search_status": "SEARCH_DEGRADED",
+          "search_degraded": 0,
+          "search_unrecovered_degraded": 0,
+          "exact_title_match": false,
+          "compact_title_match": false,
+          "reason_codes": [
+            "alias_bridge",
+            "official_detail_bracket_visual_release_context",
+            "official_detail_url",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_gate_candidate_reconciled",
+            "serialized_public_identity_published",
+            "serialized_public_identity_shared_gate_restored",
+            "title_acceptance_accept",
+            "title_led_alias_contextual_official_detail_nonblocking_competition",
+            "title_led_alias_official_detail_canonicalized",
+            "title_led_consumption_bridge"
+          ],
+          "rationale_ko": "Runtime은 safe_resolved/publish까지 갔지만 expected title과 실제 public title이 다르다. 정당 variant인지 wrong-work인지 blind/source-native review로 먼저 확정해야 한다.",
+          "close_condition": "canonical variant 또는 wrong-work 판정 뒤에만 expected gate를 닫는다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop564_conflict_safe_p0_shared_gate_runtime_expected_title_audit.json#post_id=11673080"
+          ],
+          "batch_lanes": [
+            "search_replay_required",
+            "source_native_or_blind_canonical_review"
+          ],
+          "dispatch_lane": "source_native_or_blind_review",
+          "runtime_input_eligible": false,
+          "source_native_review_required": true
+        }
+      ]
+    },
+    {
+      "lane": "source_native_or_blind_canonical_review",
+      "row_count": 2,
+      "label_counts": {
+        "HOLD": 2
+      },
+      "priority_counts": {
+        "P0": 2
+      },
+      "dispatch_lane_counts": {
+        "source_native_or_blind_review": 2
+      },
+      "post_ids": [
+        11665121,
+        11673080
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11665121,
+          "order": 13,
+          "source_kind": "loop489_expected_audit_failure",
+          "audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+          "review_label": "HOLD",
+          "priority": "P0",
+          "owner_mode": "SOURCE_NATIVE_OR_BLIND_CANONICAL_REVIEW",
+          "actions": [
+            "canonical_variant_or_wrong_work_review_required"
+          ],
+          "expected_title": "후회 안 하는 프로듀서",
+          "actual_title": "후회 안 하는 프로듀서 [독점]",
+          "actual_url": "https://series.naver.com/novel/detail.series?productNo=6137878",
+          "projected_status": "safe_resolved",
+          "safe_resolved": true,
+          "publish_allowed": true,
+          "candidate_ledger_status": "safe_resolved",
+          "promotion_status": "publish",
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "discussion_type": "review",
+          "search_status": "SEARCH_DEGRADED_RECOVERED",
+          "search_degraded": 0,
+          "search_unrecovered_degraded": 0,
+          "exact_title_match": false,
+          "compact_title_match": false,
+          "reason_codes": [
+            "alias_bridge",
+            "official_detail_bracket_visual_release_context",
+            "official_detail_url",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_published",
+            "title_acceptance_accept",
+            "title_led_consumption_bridge"
+          ],
+          "rationale_ko": "Runtime은 safe_resolved/publish까지 갔지만 expected title과 실제 public title이 다르다. 정당 variant인지 wrong-work인지 blind/source-native review로 먼저 확정해야 한다.",
+          "close_condition": "canonical variant 또는 wrong-work 판정 뒤에만 expected gate를 닫는다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop564_conflict_safe_p0_shared_gate_runtime_expected_title_audit.json#post_id=11665121"
+          ],
+          "batch_lanes": [
+            "source_native_or_blind_canonical_review"
+          ],
+          "dispatch_lane": "source_native_or_blind_review",
+          "runtime_input_eligible": false,
+          "source_native_review_required": true
+        },
+        {
+          "post_id": 11673080,
+          "order": 17,
+          "source_kind": "loop489_expected_audit_failure",
+          "audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+          "review_label": "HOLD",
+          "priority": "P0",
+          "owner_mode": "SOURCE_NATIVE_OR_BLIND_CANONICAL_REVIEW",
+          "actions": [
+            "canonical_variant_or_wrong_work_review_required",
+            "search_degraded_or_timeout_replay_required"
+          ],
+          "expected_title": "갤질하는 천재 의사",
+          "actual_title": "흔적을 보는 천재 무사",
+          "actual_url": "https://novel.munpia.com/554066",
+          "projected_status": "safe_resolved",
+          "safe_resolved": true,
+          "publish_allowed": true,
+          "candidate_ledger_status": "safe_resolved",
+          "promotion_status": "publish",
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "discussion_type": "review",
+          "search_status": "SEARCH_DEGRADED",
+          "search_degraded": 0,
+          "search_unrecovered_degraded": 0,
+          "exact_title_match": false,
+          "compact_title_match": false,
+          "reason_codes": [
+            "alias_bridge",
+            "official_detail_bracket_visual_release_context",
+            "official_detail_url",
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "serialized_public_identity_gate_candidate_reconciled",
+            "serialized_public_identity_published",
+            "serialized_public_identity_shared_gate_restored",
+            "title_acceptance_accept",
+            "title_led_alias_contextual_official_detail_nonblocking_competition",
+            "title_led_alias_official_detail_canonicalized",
+            "title_led_consumption_bridge"
+          ],
+          "rationale_ko": "Runtime은 safe_resolved/publish까지 갔지만 expected title과 실제 public title이 다르다. 정당 variant인지 wrong-work인지 blind/source-native review로 먼저 확정해야 한다.",
+          "close_condition": "canonical variant 또는 wrong-work 판정 뒤에만 expected gate를 닫는다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop564_conflict_safe_p0_shared_gate_runtime_expected_title_audit.json#post_id=11673080"
+          ],
+          "batch_lanes": [
+            "search_replay_required",
+            "source_native_or_blind_canonical_review"
+          ],
+          "dispatch_lane": "source_native_or_blind_review",
+          "runtime_input_eligible": false,
+          "source_native_review_required": true
+        }
+      ]
+    }
+  ],
+  "execution_contract": {
+    "policy": "TEST_RUNS_USE_PARALLEL_16_AND_WEB_DASHBOARD",
+    "row_count": 2,
+    "requested_parallel": 16,
+    "expected_effective_parallel": 2,
+    "required_flags": [
+      "--parallel 16"
+    ],
+    "forbidden_flags": [
+      "--no-dashboard"
+    ],
+    "dashboard_gate": "GO_PROGRESS_VIEW_NOT_APPROVAL",
+    "dashboard_contract": {
+      "dashboard_policy": "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+      "dashboard_url": "http://127.0.0.1:8080",
+      "start_dashboard_command": "python tools/dashboard_server.py --host 127.0.0.1 --port 8080",
+      "forbidden_flags": [
+        "--no-dashboard"
+      ],
+      "live_forwarding_contract": "Start tools/dashboard_server.py first; expert_main detects the standalone dashboard and forwards monitor events to it.",
+      "fallback_attach_contract": "If a run was already started without live forwarding, attach its manifest with tools/attach_manifest_dashboard.py."
+    },
+    "approval_boundary": "Dashboard progress visibility and runtime completion are not semantic/full_scan approval."
+  },
+  "rows": [
+    {
+      "post_id": 11665121,
+      "order": 13,
+      "source_kind": "loop489_expected_audit_failure",
+      "audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+      "review_label": "HOLD",
+      "priority": "P0",
+      "owner_mode": "SOURCE_NATIVE_OR_BLIND_CANONICAL_REVIEW",
+      "actions": [
+        "canonical_variant_or_wrong_work_review_required"
+      ],
+      "expected_title": "후회 안 하는 프로듀서",
+      "actual_title": "후회 안 하는 프로듀서 [독점]",
+      "actual_url": "https://series.naver.com/novel/detail.series?productNo=6137878",
+      "projected_status": "safe_resolved",
+      "safe_resolved": true,
+      "publish_allowed": true,
+      "candidate_ledger_status": "safe_resolved",
+      "promotion_status": "publish",
+      "title_resolution_state": "resolved",
+      "work_resolution": "resolved",
+      "discussion_type": "review",
+      "search_status": "SEARCH_DEGRADED_RECOVERED",
+      "search_degraded": 0,
+      "search_unrecovered_degraded": 0,
+      "exact_title_match": false,
+      "compact_title_match": false,
+      "reason_codes": [
+        "alias_bridge",
+        "official_detail_bracket_visual_release_context",
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_published",
+        "title_acceptance_accept",
+        "title_led_consumption_bridge"
+      ],
+      "rationale_ko": "Runtime은 safe_resolved/publish까지 갔지만 expected title과 실제 public title이 다르다. 정당 variant인지 wrong-work인지 blind/source-native review로 먼저 확정해야 한다.",
+      "close_condition": "canonical variant 또는 wrong-work 판정 뒤에만 expected gate를 닫는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop564_conflict_safe_p0_shared_gate_runtime_expected_title_audit.json#post_id=11665121"
+      ],
+      "batch_lanes": [
+        "source_native_or_blind_canonical_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    },
+    {
+      "post_id": 11673080,
+      "order": 17,
+      "source_kind": "loop489_expected_audit_failure",
+      "audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+      "review_label": "HOLD",
+      "priority": "P0",
+      "owner_mode": "SOURCE_NATIVE_OR_BLIND_CANONICAL_REVIEW",
+      "actions": [
+        "canonical_variant_or_wrong_work_review_required",
+        "search_degraded_or_timeout_replay_required"
+      ],
+      "expected_title": "갤질하는 천재 의사",
+      "actual_title": "흔적을 보는 천재 무사",
+      "actual_url": "https://novel.munpia.com/554066",
+      "projected_status": "safe_resolved",
+      "safe_resolved": true,
+      "publish_allowed": true,
+      "candidate_ledger_status": "safe_resolved",
+      "promotion_status": "publish",
+      "title_resolution_state": "resolved",
+      "work_resolution": "resolved",
+      "discussion_type": "review",
+      "search_status": "SEARCH_DEGRADED",
+      "search_degraded": 0,
+      "search_unrecovered_degraded": 0,
+      "exact_title_match": false,
+      "compact_title_match": false,
+      "reason_codes": [
+        "alias_bridge",
+        "official_detail_bracket_visual_release_context",
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_gate_candidate_reconciled",
+        "serialized_public_identity_published",
+        "serialized_public_identity_shared_gate_restored",
+        "title_acceptance_accept",
+        "title_led_alias_contextual_official_detail_nonblocking_competition",
+        "title_led_alias_official_detail_canonicalized",
+        "title_led_consumption_bridge"
+      ],
+      "rationale_ko": "Runtime은 safe_resolved/publish까지 갔지만 expected title과 실제 public title이 다르다. 정당 variant인지 wrong-work인지 blind/source-native review로 먼저 확정해야 한다.",
+      "close_condition": "canonical variant 또는 wrong-work 판정 뒤에만 expected gate를 닫는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop564_conflict_safe_p0_shared_gate_runtime_expected_title_audit.json#post_id=11673080"
+      ],
+      "batch_lanes": [
+        "search_replay_required",
+        "source_native_or_blind_canonical_review"
+      ],
+      "dispatch_lane": "source_native_or_blind_review",
+      "runtime_input_eligible": false,
+      "source_native_review_required": true
+    }
+  ],
+  "approval_boundary": {
+    "batch_generation_is_not_approval": true,
+    "runtime_input_generation_is_not_runtime_approval": true,
+    "source_native_packet_generation_is_not_review_completion": true,
+    "completion_gate": "full375 collateral GO + full_scan path"
+  }
+}

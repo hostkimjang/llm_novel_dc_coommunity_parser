@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260707-565 - B1 canonical recheck packet and mismatch review packet
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_ALLOWED | 새 runtime 없음, replay allowed `0` | canonical verdict/contract test 전 replay 금지 |
+| B1 canonical recheck | REVIEW-LOCKED | selected `15`, source/runtime context `15/15`, validation issue `0` | source-native/blind verdict 작성 |
+| B1 verdict state | REVIEW-LOCKED | reviewed `0/15`, unreviewed `15` | template에 verdict 채우기 |
+| Title mismatch packet | REVIEW-LOCKED | rows `2`, P0 `2`, validation issue `0` | variant/wrong-work 판정 |
+| Search evidence | REVIEW | B1 search gates `3/4/1/7`, mismatch 중 `11673080` search replay required | search-blind 조건부 유지 |
+| Full375 collateral | NO-GO | adjusted residual `87` 유지 | repair 뒤 full375 collateral 재확인 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: B1 canonical recheck packet `REVIEW-LOCKED / 15`, title mismatch packet `REVIEW-LOCKED / 2`, runtime replay `NOT_ALLOWED / 0`, full375 collateral `NO-GO / adjusted residual 87`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-564 - Dashboard-attached runtime replay and expected-title NO-GO
 
 | 항목 | 상태 | 근거 | 다음 |

@@ -1,5 +1,20 @@
 # Development Checklist
 
+## 2026-07-07 Loop565 B1 canonical recheck packet 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 run을 실행하지 않았다.
+- [x] Loop564 실패 `17`건을 동일 packet replay가 아니라 batch 판정 입력으로 분리했다.
+- [x] B1 missing-candidate canonical recheck batch `15`건을 생성했다.
+- [x] B1 batch는 source_context/runtime_context `15/15`, validation issue `0`이다.
+- [x] B1 verdict application state는 reviewed `0/15`, runtime replay allowed `0`으로 고정했다.
+- [x] B1 verdict template `15`건을 생성했다.
+- [x] Title mismatch source-native packet `2`건(`11665121`, `11673080`)을 생성했다.
+- [x] Title mismatch packet은 runtime input candidate rows `0`, validation issue `0`이다.
+- [ ] B1 `15`건의 canonical verdict를 source-native/blind 기준으로 채운다.
+- [ ] Title mismatch `2`건을 variant/wrong-work로 판정한다.
+- [ ] Contract test와 full375 collateral 재확인 전 runtime replay를 열지 않는다.
+- Gate: B1 canonical recheck packet `REVIEW-LOCKED / 15`, title mismatch packet `REVIEW-LOCKED / 2`, runtime replay `NOT_ALLOWED / 0`, full375 collateral `NO-GO / adjusted residual 87`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop564 dashboard-attached runtime replay 체크
 
 - [x] Loop563 runtime replay input `30`건을 실제 실행했다.

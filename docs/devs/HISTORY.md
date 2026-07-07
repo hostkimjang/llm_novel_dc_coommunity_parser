@@ -1,5 +1,17 @@
 # Development History
 
+## 2026-07-07 - Loop565 B1 canonical recheck and title mismatch packet
+
+- 새 runtime replay, bounded run, full375 대형 run은 실행하지 않았다.
+- Loop564 expected-title 실패 `17`건을 동일 packet replay로 보내지 않고 batch 판정 입력으로 분리했다.
+- B1 missing-candidate canonical recheck batch `15`건을 생성했다.
+- B1 batch는 source/runtime context `15/15`, validation issue `0`이며 verdict application state는 reviewed `0/15`, runtime replay allowed `0`이다.
+- B1 verdict template `15`건을 생성했다.
+- Title mismatch source-native packet `2`건을 생성했다. 대상은 `11665121`, `11673080`이다.
+- Title mismatch packet은 runtime input candidate rows `0`, validation issue `0`이다.
+- Report는 `docs/devs/loop_reports/LOOP_565_REPORT_20260707.md`다.
+- Gate는 B1 canonical recheck packet `REVIEW-LOCKED / 15`, title mismatch packet `REVIEW-LOCKED / 2`, runtime replay `NOT_ALLOWED / 0`, full375 collateral `NO-GO / adjusted residual 87`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop564 dashboard-attached runtime replay
 
 - Loop563 runtime replay input `30`건을 실제 실행했다.

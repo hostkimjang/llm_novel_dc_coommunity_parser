@@ -1,5 +1,21 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop565 B1 canonical recheck packet 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_565_REPORT_20260707.md`.
+  - [x] B1 canonical recheck batch 기록 완료: `docs/devs/loop565_b1_missing_candidate_canonical_recheck15_batch.json/.md`.
+  - [x] B1 verdict application state/template 기록 완료: `docs/devs/loop565_b1_missing_candidate_verdict_application_state_20260707.json/.md`, `docs/devs/loop565_b1_missing_candidate_verdict_template.json/.md`.
+  - [x] Title mismatch batch/review packet 기록 완료: `docs/devs/loop565_title_mismatch_hold2_source_native_batch.json/.md`, `docs/devs/loop565_title_mismatch_hold2_source_native_review_packet.json/.md`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 run은 실행하지 않았다.
+  - [x] Loop564 실패를 동일 packet replay가 아니라 source-native/blind 판정 입력으로 분리했다.
+  - [x] B1 `15`건은 canonical verdict 전까지 runtime replay allowed `0`이다.
+  - [x] Title mismatch `2`건은 variant/wrong-work 판정 전 hard-hold 완화 대상이 아니다.
+  - [x] Search-blind 조건부와 full375 collateral `NO-GO`를 유지했다.
+  - [x] Full375 collateral `GO` 전 goal completion을 선언하지 않는다.
+- Gate: B1 canonical recheck packet `REVIEW-LOCKED / 15`, title mismatch packet `REVIEW-LOCKED / 2`, runtime replay `NOT_ALLOWED / 0`, full375 collateral `NO-GO / adjusted residual 87`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop564 dashboard-attached runtime replay 품질 게이트
 
 - 근거:

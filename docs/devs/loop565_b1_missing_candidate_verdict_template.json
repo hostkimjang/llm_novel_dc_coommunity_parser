@@ -1,0 +1,307 @@
+{
+  "review_id": "loop565_b1_missing_candidate_verdict_application_template",
+  "scope": "Loop565 B1 missing candidate canonical verdict application verdict template",
+  "report_type": "canonical_candidate_recheck_verdict_template",
+  "generated_at": "2026-07-07T23:58:19",
+  "source_batch": "docs\\devs\\loop565_b1_missing_candidate_canonical_recheck15_batch.json",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "instructions_ko": [
+    "각 row의 canonical_verdict를 allowed_verdicts 중 하나로 채운다.",
+    "판정 근거는 evidence_grade, rationale_ko, evidence_refs에 남긴다.",
+    "RELATED_CANONICAL_VARIANT_CONFIRMED는 canonical_title을 반드시 채운다.",
+    "이 template 자체는 verdict가 아니며 runtime replay나 approval을 열지 않는다."
+  ],
+  "summary": {
+    "template_rows": 15,
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO"
+  },
+  "rows": [
+    {
+      "post_id": 11663557,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "expected_or_source_native_title": "퇴마록",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "canonical_verdict": "",
+      "canonical_title": "",
+      "canonical_url": "",
+      "evidence_grade": "",
+      "rationale_ko": "",
+      "evidence_refs": []
+    },
+    {
+      "post_id": 11668325,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "expected_or_source_native_title": "Fate/stay night",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "canonical_verdict": "",
+      "canonical_title": "",
+      "canonical_url": "",
+      "evidence_grade": "",
+      "rationale_ko": "",
+      "evidence_refs": []
+    },
+    {
+      "post_id": 11669913,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "expected_or_source_native_title": "하룬",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "canonical_verdict": "",
+      "canonical_title": "",
+      "canonical_url": "",
+      "evidence_grade": "",
+      "rationale_ko": "",
+      "evidence_refs": []
+    },
+    {
+      "post_id": 11697242,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "expected_or_source_native_title": "유희왕",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_EVIDENCE_MISSING",
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "canonical_verdict": "",
+      "canonical_title": "",
+      "canonical_url": "",
+      "evidence_grade": "",
+      "rationale_ko": "",
+      "evidence_refs": []
+    },
+    {
+      "post_id": 11697256,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "expected_or_source_native_title": "황제의 딸로 환생했다",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "canonical_verdict": "",
+      "canonical_title": "",
+      "canonical_url": "",
+      "evidence_grade": "",
+      "rationale_ko": "",
+      "evidence_refs": []
+    },
+    {
+      "post_id": 11714887,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "expected_or_source_native_title": "도굴왕 1 |",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "canonical_verdict": "",
+      "canonical_title": "",
+      "canonical_url": "",
+      "evidence_grade": "",
+      "rationale_ko": "",
+      "evidence_refs": []
+    },
+    {
+      "post_id": 11718114,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "expected_or_source_native_title": "설정값 딸깍으로 판타지 시스템 정상화",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_OK",
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "canonical_verdict": "",
+      "canonical_title": "",
+      "canonical_url": "",
+      "evidence_grade": "",
+      "rationale_ko": "",
+      "evidence_refs": []
+    },
+    {
+      "post_id": 11666741,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "expected_or_source_native_title": "별을 품은 소드마스터",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_EVIDENCE_MISSING",
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "canonical_verdict": "",
+      "canonical_title": "",
+      "canonical_url": "",
+      "evidence_grade": "",
+      "rationale_ko": "",
+      "evidence_refs": []
+    },
+    {
+      "post_id": 11666713,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "expected_or_source_native_title": "21세기 무림세가",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_EVIDENCE_MISSING",
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "canonical_verdict": "",
+      "canonical_title": "",
+      "canonical_url": "",
+      "evidence_grade": "",
+      "rationale_ko": "",
+      "evidence_refs": []
+    },
+    {
+      "post_id": 11669926,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "expected_or_source_native_title": "싸울아비 룬",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "canonical_verdict": "",
+      "canonical_title": "",
+      "canonical_url": "",
+      "evidence_grade": "",
+      "rationale_ko": "",
+      "evidence_refs": []
+    },
+    {
+      "post_id": 11677924,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "expected_or_source_native_title": "고결에 오만이 깃들 때",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "canonical_verdict": "",
+      "canonical_title": "",
+      "canonical_url": "",
+      "evidence_grade": "",
+      "rationale_ko": "",
+      "evidence_refs": []
+    },
+    {
+      "post_id": 11681159,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "expected_or_source_native_title": "괴담에 휘말렸다",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "canonical_verdict": "",
+      "canonical_title": "",
+      "canonical_url": "",
+      "evidence_grade": "",
+      "rationale_ko": "",
+      "evidence_refs": []
+    },
+    {
+      "post_id": 11692436,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "expected_or_source_native_title": "퍼펙트 메이지",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "canonical_verdict": "",
+      "canonical_title": "",
+      "canonical_url": "",
+      "evidence_grade": "",
+      "rationale_ko": "",
+      "evidence_refs": []
+    },
+    {
+      "post_id": 11700483,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "expected_or_source_native_title": "니들 생각 다 들린다",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_EVIDENCE_MISSING",
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "canonical_verdict": "",
+      "canonical_title": "",
+      "canonical_url": "",
+      "evidence_grade": "",
+      "rationale_ko": "",
+      "evidence_refs": []
+    },
+    {
+      "post_id": 11706831,
+      "review_lane": "B1_missing_candidate_alignment_review",
+      "expected_or_source_native_title": "소설 속 빌런은 아카데미 차석으로 살아간다",
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "candidate_support_state": "missing_current_projection_candidate_support",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "canonical_verdict": "",
+      "canonical_title": "",
+      "canonical_url": "",
+      "evidence_grade": "",
+      "rationale_ko": "",
+      "evidence_refs": []
+    }
+  ]
+}

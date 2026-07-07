@@ -1,0 +1,87 @@
+{
+  "report_type": "source_native_or_blind_review_packet",
+  "packet_id": "loop565_title_mismatch_hold2_source_native_batch_hold_review_packet",
+  "generated_at": "2026-07-07T23:57:45",
+  "source_batch_id": "loop565_title_mismatch_hold2_source_native_batch",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "review_rows": 2,
+    "priority_counts": {
+      "P0": 2
+    },
+    "dispatch_lane_counts": {
+      "source_native_or_blind_review": 2
+    },
+    "audit_status_counts": {
+      "FAIL_SAFE_RESOLVED_TITLE_MISMATCH": 2
+    }
+  },
+  "rows": [
+    {
+      "post_id": 11665121,
+      "priority": "P0",
+      "review_label": "HOLD",
+      "dispatch_lane": "source_native_or_blind_review",
+      "audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+      "expected_title": "후회 안 하는 프로듀서",
+      "actual_title": "후회 안 하는 프로듀서 [독점]",
+      "actual_url": "https://series.naver.com/novel/detail.series?productNo=6137878",
+      "actions": [
+        "canonical_variant_or_wrong_work_review_required"
+      ],
+      "reason_codes": [
+        "alias_bridge",
+        "official_detail_bracket_visual_release_context",
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_published",
+        "title_acceptance_accept",
+        "title_led_consumption_bridge"
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop564_conflict_safe_p0_shared_gate_runtime_expected_title_audit.json#post_id=11665121"
+      ],
+      "review_task": "정답 title variant인지 wrong-work인지 source-native 또는 blind judge로 판정한다. 판정 전 promotion hard-hold를 완화하지 않는다."
+    },
+    {
+      "post_id": 11673080,
+      "priority": "P0",
+      "review_label": "HOLD",
+      "dispatch_lane": "source_native_or_blind_review",
+      "audit_status": "FAIL_SAFE_RESOLVED_TITLE_MISMATCH",
+      "expected_title": "갤질하는 천재 의사",
+      "actual_title": "흔적을 보는 천재 무사",
+      "actual_url": "https://novel.munpia.com/554066",
+      "actions": [
+        "canonical_variant_or_wrong_work_review_required",
+        "search_degraded_or_timeout_replay_required"
+      ],
+      "reason_codes": [
+        "alias_bridge",
+        "official_detail_bracket_visual_release_context",
+        "official_detail_url",
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "serialized_public_identity_gate_candidate_reconciled",
+        "serialized_public_identity_published",
+        "serialized_public_identity_shared_gate_restored",
+        "title_acceptance_accept",
+        "title_led_alias_contextual_official_detail_nonblocking_competition",
+        "title_led_alias_official_detail_canonicalized",
+        "title_led_consumption_bridge"
+      ],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop564_conflict_safe_p0_shared_gate_runtime_expected_title_audit.json#post_id=11673080"
+      ],
+      "review_task": "정답 title variant인지 wrong-work인지 source-native 또는 blind judge로 판정한다. 판정 전 promotion hard-hold를 완화하지 않는다."
+    }
+  ],
+  "approval_boundary": {
+    "packet_generation_is_not_review_completion": true,
+    "hard_hold_relaxation_requires_review_verdict": true
+  }
+}

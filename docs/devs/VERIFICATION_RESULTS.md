@@ -1,5 +1,30 @@
 # Verification Results
 
+## 2026-07-07 Loop565 B1 canonical recheck and title mismatch packet
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_565_REPORT_20260707.md`
+  - `docs/devs/loop565_b1_missing_candidate_canonical_recheck15_batch.json`
+  - `docs/devs/loop565_b1_missing_candidate_canonical_recheck15_batch.md`
+  - `docs/devs/loop565_b1_missing_candidate_verdict_application_state_20260707.json`
+  - `docs/devs/loop565_b1_missing_candidate_verdict_application_state_20260707.md`
+  - `docs/devs/loop565_b1_missing_candidate_verdict_template.json`
+  - `docs/devs/loop565_b1_missing_candidate_verdict_template.md`
+  - `docs/devs/loop565_title_mismatch_hold2_source_native_batch.json`
+  - `docs/devs/loop565_title_mismatch_hold2_source_native_batch.md`
+  - `docs/devs/loop565_title_mismatch_hold2_source_native_review_packet.json`
+  - `docs/devs/loop565_title_mismatch_hold2_source_native_review_packet.md`
+- 검증:
+  - B1 batch generation: PASS, selected `15`, source/runtime context `15/15`, validation issue `0`.
+  - B1 verdict application state/template generation: PASS, reviewed `0/15`, runtime replay allowed `0`, validation issue `0`.
+  - Title mismatch batch/review packet generation: PASS, selected `2`, source-native review rows `2`, runtime input candidate rows `0`, validation issue `0`.
+- 결과:
+  - Loop564 실패 `17`건을 같은 packet replay가 아니라 B1 canonical recheck `15`건과 title mismatch source-native review `2`건으로 분리했다.
+  - B1 `15`건은 current projection candidate가 없으므로 allowed verdict가 `EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED` 또는 `INSUFFICIENT_EVIDENCE_HOLD`로 제한된다.
+  - Title mismatch `2`건은 `11665121` expected `후회 안 하는 프로듀서` vs actual `후회 안 하는 프로듀서 [독점]`, `11673080` expected `갤질하는 천재 의사` vs actual `흔적을 보는 천재 무사`다.
+  - 이번 회차는 판정 입력 생성이며 approval이나 runtime replay 허가가 아니다.
+- Gate: B1 canonical recheck packet `REVIEW-LOCKED / 15`, title mismatch source-native packet `REVIEW-LOCKED / 2`, runtime replay `NOT_ALLOWED / 0`, full375 collateral `NO-GO / adjusted residual 87`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop564 dashboard-attached runtime replay
 
 - 산출물:
