@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260707-551 - C3 stronger evidence hard-hold review
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 실행 없음, runtime allowed `0` | native-web/blind judge 전 replay 금지 |
+| C3 hard-hold | REVIEW-LOCKED | hard-hold `3`, validation issue `0` | stronger evidence 증거 닫기 |
+| Prior REPROCESS conflict | REVIEW | prior restore conflict `3`, release authority `false` | 과거 verdict와 최신 hard-hold 분리 유지 |
+| Search evidence | REVIEW | search recovery required `2` | search 복구 전 promotion approval 금지 |
+| Dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | 다음 test run은 `--parallel 16`, dashboard 기본 ON | runtime 진행 관측용으로만 사용 |
+| Full375 collateral | NO-GO | residual78 계속 open | C3 증거 닫은 뒤 full375 재확인 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: C3 stronger evidence hold `REVIEW-LOCKED / hard-hold 3`, runtime replay `NOT_RUN`, full375 collateral `NO-GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-550 - C2 canonical variant policy review
 
 | 항목 | 상태 | 근거 | 다음 |

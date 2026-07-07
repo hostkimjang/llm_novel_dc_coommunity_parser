@@ -1,5 +1,19 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop551 TODO
+
+- 상태 업데이트: Loop550 뒤 남은 C3 stronger evidence/native-web hold `3`건을 hard-hold로 계약 정리했다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 런을 발주하지 않았다.
+- [x] C3 hard-hold review rows `3/3`, validation issue `0`이다.
+- [x] `stronger_evidence_native_web_hard_hold 3`, prior `REPROCESS` restore conflict `3`이다.
+- [x] Native-web/blind judge required `3`, search recovery required `2`다.
+- [x] Publish/runtime allowed rows는 `0/0`이다.
+- [x] Prior `REPROCESS` verdict를 release authority로 쓰지 않는다.
+- [ ] C3 `3`건의 native-web/blind judge/직접 시각 bridge 증거를 실제로 닫는다.
+- [ ] Full375 collateral 재확인으로 `residual78` 회계를 갱신한다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: C3 stronger evidence hold `REVIEW-LOCKED / hard-hold 3`, search evidence `REVIEW`, full375 collateral `NO-GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop550 TODO
 
 - 상태 업데이트: Loop549 뒤 남은 C2 canonical variant policy `5`건을 no-publish quarantine으로 정리했다. Goal은 완료가 아니다.

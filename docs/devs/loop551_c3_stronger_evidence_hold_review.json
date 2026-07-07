@@ -1,0 +1,195 @@
+{
+  "report_type": "stronger_evidence_hold_review",
+  "review_id": "loop551_c3_stronger_evidence_hold_review",
+  "generated_at": "2026-07-07T21:18:36",
+  "source_contract_plan": "loop548_b1_post_verdict_promotion_gate_contract_plan",
+  "source_contract_queue": "loop548_b1_post_verdict_contract_queue",
+  "source_batch": "loop547_b1_canonical_candidate_recheck14_batch",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "source_c3_rows": 3,
+    "hard_hold_review_rows": 3,
+    "validation_issue_count": 0,
+    "policy_decision_counts": {
+      "stronger_evidence_native_web_hard_hold": 3
+    },
+    "hold_reason_counts": {
+      "franchise_or_fanfic_native_web_required": 1,
+      "generic_system_trope_direct_title_missing": 1,
+      "competing_candidate_image_or_character_bridge_required": 1
+    },
+    "search_gate_counts": {
+      "SEARCH_RECOVERED_CONDITIONAL": 1,
+      "SEARCH_EVIDENCE_MISSING": 1,
+      "SEARCH_BLIND_BLOCKER": 1
+    },
+    "prior_review_label_counts": {
+      "REPROCESS": 3
+    },
+    "prior_restore_conflict_rows": 3,
+    "search_recovery_required_rows": 2,
+    "native_web_or_blind_judge_required_rows": 3,
+    "publish_allowed_rows": 0,
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "rows": [
+    {
+      "post_id": 11697242,
+      "policy_decision": "stronger_evidence_native_web_hard_hold",
+      "hold_reason": "franchise_or_fanfic_native_web_required",
+      "expected_or_source_native_title": "유희왕",
+      "target_title": "유희왕",
+      "target_url": null,
+      "current_projection_candidate_title": "삼전의 재를 썼어야지",
+      "current_projection_candidate_url": null,
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "search_recovery_required": false,
+      "native_web_or_blind_judge_required": true,
+      "prior_source_native_verdict": "supported_safe_title_lost_to_null",
+      "prior_review_label": "REPROCESS",
+      "prior_restore_conflict": true,
+      "prior_restore_is_release_authority": false,
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "validation_issues": [],
+      "rationale_ko": "원문은 `유희왕 패러디`, 듀얼리스트, 카드 댓글처럼 프랜차이즈/패러디/밈 표면을 다룬다. 웹소설 current-work canonical title로 `유희왕`을 복구하기에는 non-novel/프랜차이즈 오버리치 위험이 남아 hard-hold로 둔다.",
+      "source_snapshot": {
+        "post_title": "유희왕 패러디 특",
+        "post_url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11697242",
+        "content_preview": [
+          "독자층이 틀딱 아니면 미친 듀얼리스트밖에 없음"
+        ],
+        "comment_preview": [
+          "삼전의 재를 썼어야지",
+          "ㅋㅋㅋㅋ"
+        ],
+        "comment_dialogue_context_preview": [
+          "#1 speaker=user1 author=ㅇㅇ role=author_match_unverified comment_id=40400002 text=삼전의 재를 썼어야지",
+          "#2 speaker=user1 author=ㅇㅇ role=author_match_unverified comment_id=40400007 text=ㅋㅋㅋㅋ"
+        ],
+        "image_count": 1,
+        "image_urls": [
+          "https://dcimg3.dcinside.co.kr/viewimage.php?id=2ab8de34e0dc37b06bb3&no=24b0d769e1d32ca73ce88ffa11d02831cb1683a5d6841fa83169d8a3677d74c0fa0d0e3f79b433351969e303efb6b4b6264a4024e872101d57b19ef5d094b26c208f230733d65e03cf23db06b5458f69"
+        ]
+      },
+      "evidence_refs": [
+        "docs/devs/loop547_b1_canonical_candidate_recheck14_batch.json#post_id=11697242",
+        "docs/devs/loop540_b1_missing_candidate_source_native_verdicts.json#post_id=11697242",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop545_current_full375_residual97_runtime_expected_title_audit.json#post_id=11697242"
+      ]
+    },
+    {
+      "post_id": 11718114,
+      "policy_decision": "stronger_evidence_native_web_hard_hold",
+      "hold_reason": "generic_system_trope_direct_title_missing",
+      "expected_or_source_native_title": "설정값 딸깍으로 판타지 시스템 정상화",
+      "target_title": "설정값 딸깍으로 판타지 시스템 정상화",
+      "target_url": null,
+      "current_projection_candidate_title": "시스템",
+      "current_projection_candidate_url": null,
+      "search_gate": "SEARCH_EVIDENCE_MISSING",
+      "search_recovery_required": true,
+      "native_web_or_blind_judge_required": true,
+      "prior_source_native_verdict": "title_phrase_and_plot_context_support_safe_title_lost_to_null",
+      "prior_review_label": "REPROCESS",
+      "prior_restore_conflict": true,
+      "prior_restore_is_release_authority": false,
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "validation_issues": [],
+      "rationale_ko": "원문은 시스템 딸깍, 상태창, 파이어볼, 마법 강사질 같은 장르/클리셰 비평이다. expected 장문 제목과 current candidate `시스템` 모두 원문 직접 작품 표면으로 확정하기 어려워 stronger evidence 전 hard-hold로 둔다.",
+      "source_snapshot": {
+        "post_title": "시스템 딸깍하는 설정 ㄹㅇ 별로임",
+        "post_url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11718114",
+        "content_preview": [
+          "주인공은 마법 좆도 이해 못했고",
+          "완전히 문외한인데 시스템 딸깍 파이어볼 ㅇㅈㄹ하는거 보면 죽빵마려움",
+          "그런주제에 나중에 마법 강사질함"
+        ],
+        "comment_preview": [
+          "현대인의 심리가 잘 반영된거다",
+          "빌어먹을 좆태창이 만악의 근원이지",
+          "솔직히 상태창 개념 삭제해도 어떤 식으로든 날먹 클리셰 굳었을거 같긴 한데",
+          "인스턴트 나름의 맛이 있어\n강사하는 건 에바긴한데",
+          "난 딸깍 파이어볼까진 괜찮은데 강사같은 거 하면 어이터짐",
+          "그런 세상에서 시스템 없이 마법 쓰는 새끼 나오는게 낭만 필수요소잖음"
+        ],
+        "comment_dialogue_context_preview": [
+          "#1 speaker=user1 author=ㅇㅇ1 ip=218.147 comment_id=40479873 text=현대인의 심리가 잘 반영된거다",
+          "#2 speaker=user2 author=ㅇㅇ role=author_match_unverified comment_id=40479881 text=빌어먹을 좆태창이 만악의 근원이지",
+          "#3 speaker=user1 author=ㅇㅇ1 ip=218.147 comment_id=40479889 text=솔직히 상태창 개념 삭제해도 어떤 식으로든 날먹 클리셰 굳었을거 같긴 한데",
+          "#4 speaker=user2 author=ㅇㅇ role=author_match_unverified comment_id=40479887 text=인스턴트 나름의 맛이 있어 강사하는 건 에바긴한데",
+          "#5 speaker=user2 author=ㅇㅇ role=author_match_unverified comment_id=40479888 text=난 딸깍 파이어볼까진 괜찮은데 강사같은 거 하면 어이터짐",
+          "#6 speaker=user3 author=ㅇㅇ2 ip=211.59 comment_id=40479896 text=그런 세상에서 시스템 없이 마법 쓰는 새끼 나오는게 낭만 필수요소잖음"
+        ],
+        "image_count": 1,
+        "image_urls": [
+          "https://dcimg7.dcinside.co.kr/viewimage.php?id=2ab8de34e0dc37b06bb3&no=24b0d769e1d32ca73ce88ffa11d02831cb1683a5d6841fa83169d8a3677674c069a547b2fdca0d9b9a62681a665aade6351bbed26f2037177f26b186257e7e89f0178465af8ba86ac276f395d648cd9b9b697c678f0537fc70098b4073e9"
+        ]
+      },
+      "evidence_refs": [
+        "docs/devs/loop547_b1_canonical_candidate_recheck14_batch.json#post_id=11718114",
+        "docs/devs/loop530_b1_canonical_source_native_verdicts.json#post_id=11718114",
+        "docs/devs/loop540_b1_missing_candidate_source_native_verdicts.json#post_id=11718114"
+      ]
+    },
+    {
+      "post_id": 11692436,
+      "policy_decision": "stronger_evidence_native_web_hard_hold",
+      "hold_reason": "competing_candidate_image_or_character_bridge_required",
+      "expected_or_source_native_title": "퍼펙트 메이지",
+      "target_title": "퍼펙트 메이지",
+      "target_url": null,
+      "current_projection_candidate_title": "죽었다 깨어도 수선",
+      "current_projection_candidate_url": "https://novelpia.com/novel/233173",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "search_recovery_required": true,
+      "native_web_or_blind_judge_required": true,
+      "prior_source_native_verdict": "character_bridge_supports_safe_title_lost_to_null",
+      "prior_review_label": "REPROCESS",
+      "prior_restore_conflict": true,
+      "prior_restore_is_release_authority": false,
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "validation_issues": [],
+      "rationale_ko": "`류서란(perfect)`와 댓글 `old girl`, 이미지/캐릭터 장면은 `퍼펙트 메이지` 가능성을 주지만 원문 텍스트만으로는 character bridge와 이미지 의존성이 크다. current candidate `죽었다 깨어도 수선`도 다른 작품 후보라, native-web/시각 근거 강화 전 hard-hold로 둔다.",
+      "source_snapshot": {
+        "post_title": "류서란(perfect)",
+        "post_url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11692436",
+        "content_preview": [
+          "- dc official App"
+        ],
+        "comment_preview": [
+          "류서란(old girl)"
+        ],
+        "comment_dialogue_context_preview": [
+          "#1 speaker=user1 author=ㅇㅇ comment_id=40382044 text=류서란(old girl)"
+        ],
+        "image_count": 1,
+        "image_urls": [
+          "https://dcimg3.dcinside.co.kr/viewimage.php?id=2ab8de34e0dc37b06bb3&no=24b0d769e1d32ca73ce88ffa11d02831cb1683a5d6841fa83169d8a3677c74c03c30c6551d8985897ace49e029f64872a098f4fd4620efc263a12804dec50d3731aa9301655164507a69be99baa264f5230d1e425de5726fdda613bb49b651d048e394a37fc68cc8f713be"
+        ]
+      },
+      "evidence_refs": [
+        "docs/devs/loop547_b1_canonical_candidate_recheck14_batch.json#post_id=11692436",
+        "docs/devs/loop492_p0_hold9_source_native_verdicts.json#post_id=11692436",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop545_current_full375_residual97_runtime_expected_title_audit.json#post_id=11692436"
+      ]
+    }
+  ],
+  "approval_boundary": {
+    "c3_review_is_not_runtime_replay": true,
+    "prior_reprocess_verdict_is_not_release_authority": true,
+    "native_web_or_blind_judge_required_before_release": true,
+    "search_recovery_required_before_promotion_if_blind_or_missing": true,
+    "full375_collateral_remains_no_go": true
+  }
+}

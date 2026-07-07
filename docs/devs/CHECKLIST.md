@@ -1,5 +1,20 @@
 # Development Checklist
 
+## 2026-07-07 Loop551 C3 stronger evidence hold 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 런을 실행하지 않았다.
+- [x] C3 stronger evidence/native-web hold `3`건을 shared promotion gate 계약 기준으로 검토했다.
+- [x] Hard-hold review rows는 `3/3`, validation issue는 `0`이다.
+- [x] `stronger_evidence_native_web_hard_hold`는 `3`건이다.
+- [x] Prior `REPROCESS` restore conflict는 `3`건이며 release authority가 아니다.
+- [x] Native-web or blind judge required rows는 `3`, search recovery required rows는 `2`이다.
+- [x] Publish allowed rows는 `0`, runtime replay allowed rows는 `0`이다.
+- [x] 다음 runtime/test run은 `--parallel 16`, dashboard 기본 ON으로 둔다.
+- [x] Full375 collateral `GO` 전 full_scan path를 완료로 선언하지 않는다.
+- [ ] C3 `3`건의 native-web/blind judge/직접 시각 bridge 증거를 실제로 닫는다.
+- [ ] Full375 collateral 재확인으로 `residual78` 회계를 갱신한다.
+- Gate: C3 stronger evidence hold `REVIEW-LOCKED / hard-hold 3`, search evidence `REVIEW`, runtime replay `NOT_RUN / allowed 0`, full375 collateral `NO-GO / residual78 still open`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop550 C2 canonical variant policy 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 런을 실행하지 않았다.
