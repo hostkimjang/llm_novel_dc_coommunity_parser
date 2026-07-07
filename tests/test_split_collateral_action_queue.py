@@ -95,7 +95,7 @@ class SplitCollateralActionQueueTest(unittest.TestCase):
             {
                 "residual_action_queue_count_mismatch",
                 "reprocess_count_mismatch",
-                "hold_count_mismatch",
+                "policy_or_native_review_count_mismatch",
             },
         )
 

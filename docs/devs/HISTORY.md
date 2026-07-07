@@ -1,5 +1,21 @@
 # Development History
 
+## 2026-07-08 - Loop576 source-native HOLD projection and unsafe promotion convergence
+
+- 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+- `tools/apply_source_native_hold_projection_contract.py`를 추가해 source-native HOLD verdict를 projection row에 적용했다.
+- `expert_main.py`에서 source-native HOLD reason이 있으면 title-only alias/image restore보다 promotion block을 우선하게 했다.
+- Loop576 application은 eligible unsafe promotion `4`, `applied_source_native_hold 4`, skipped `0`이다.
+- 닫힌 post_id는 `11657047`, `11658621`, `11690855`, `11710044`이다.
+- Publication contract는 `GO / 375 rows / 0 violations`다.
+- Full375 collateral은 changed `161`, raw regression `103`, review-adjusted residual `64`로 줄었지만 `NO-GO`다.
+- Residual action queue는 `64`건이며 bucket은 safe_loss `37`, unsafe promotion `4`, wrong_work `23`이다.
+- Remaining P0 code repair batch는 `17`건이다.
+- Dashboard는 `http://127.0.0.1:8080`에서 `ok=true / standalone=true / pid=9320`로 확인했다. 다음 test/runtime run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지로 실행한다.
+- Focused unittest `34`개, py_compile, `git diff --check`를 통과했다.
+- Report는 `docs/devs/loop_reports/LOOP_576_REPORT_20260708.md`다.
+- Gate는 golden18 `GO`, publication contract `GO`, full375 collateral `NO-GO / adjusted 64`, residual queue `REVIEW-LOCKED / 64`, P0 repair batch `REVIEW-LOCKED / 17`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop575 preserved official URL recovery and dashboard contract
 
 - 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.

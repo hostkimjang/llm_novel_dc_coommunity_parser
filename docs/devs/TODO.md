@@ -1,5 +1,21 @@
 # Developer TODO Index
 
+## 2026-07-08 Loop576 이후
+
+- 상태 업데이트: Loop576은 source-native HOLD projection으로 unsafe promotion `4`건을 닫아 raw regression `107 -> 103`, review-adjusted residual `68 -> 64`로 낮췄다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] `repair_unsafe_promotion` `4`건을 public title scrub + candidate 보존으로 수렴했다.
+- [x] Source-native HOLD reason이 있으면 title-only alias/image restore보다 HOLD가 우선하도록 했다.
+- [x] Publication contract `GO / 375 rows / 0 violations`를 확인했다.
+- [x] Full375 collateral compare와 adjusted always-on gate를 갱신했다.
+- [x] Residual64 action queue와 remaining P0 repair17 batch를 생성했다.
+- [x] Test-run dashboard health를 확인했고 remaining P0 batch execution contract에 `--parallel 16`, dashboard ON, `--no-dashboard` 금지를 유지했다.
+- [ ] Remaining P0 repair17은 코드/계약 수리 후 필요한 경우에만 dashboard attached test run으로 실행한다.
+- [ ] Remaining unsafe promotion `4`건은 source-native/native evidence 없이는 publish하지 않는다.
+- [ ] INFO_MISSING `20`건은 source-native/blind verdict 전 hard-hold 완화 대상이 아니다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: golden18 `GO`, publication contract `GO`, full375 collateral `NO-GO / adjusted 64`, residual queue `REVIEW-LOCKED / 64`, P0 repair batch `REVIEW-LOCKED / 17`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop575 이후
 
 - 상태 업데이트: Loop575는 같은 제목 candidate ledger에 보존된 official detail URL을 회수해 raw regression `109 -> 107`, review-adjusted residual `70 -> 68`로 낮췄다. Goal은 완료가 아니다.

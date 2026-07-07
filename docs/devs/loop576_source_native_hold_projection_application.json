@@ -1,0 +1,137 @@
+{
+  "application_id": "loop576_source_native_hold_projection_contract",
+  "report_type": "source_native_hold_projection_contract_application",
+  "generated_at": "2026-07-08T02:21:10",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "policy": {
+    "source_native_hold_is_not_approval": true,
+    "uses_shared_promotion_block_contract": true,
+    "runtime_replay": "NOT_RUN"
+  },
+  "summary": {
+    "projection_rows": 375,
+    "verdict_rows": 21,
+    "eligible_unsafe_promotion_rows": 4,
+    "outcome_counts": {
+      "applied_source_native_hold": 4
+    },
+    "applied_hold_rows": 4,
+    "skipped_rows": 0
+  },
+  "rows": [
+    {
+      "post_id": 11710044,
+      "outcome": "applied_source_native_hold",
+      "selected_option_id": "HOLD",
+      "source_native_verdict": "gacha_punk_alias_collision_current_option_misses_correct_work",
+      "evidence_grade": "Strong",
+      "actions": [
+        "alias_collision_guard_required",
+        "candidate_set_rebuild_required",
+        "repair_unsafe_promotion"
+      ],
+      "before_status": "safe_resolved",
+      "before_title": "퓨전 펑크 의 전생자",
+      "before_url": "https://novel.munpia.com/345929",
+      "after_status": "promotion_blocked",
+      "after_title": null,
+      "after_url": null,
+      "reason_codes": [
+        "source_native_hold_projection_contract",
+        "source_native_review_hold",
+        "serialized_public_identity_scrubbed",
+        "scope_not_current_work",
+        "gacha_punk_alias_collision_current_option_misses_correct_work",
+        "alias_collision_guard_required",
+        "candidate_set_rebuild_required",
+        "repair_unsafe_promotion",
+        "scope_unknown"
+      ]
+    },
+    {
+      "post_id": 11657047,
+      "outcome": "applied_source_native_hold",
+      "selected_option_id": "HOLD",
+      "source_native_verdict": "generic_idea_prompt_not_candidate_work_discussion",
+      "evidence_grade": "Strong",
+      "actions": [
+        "intent_guard_review",
+        "repair_unsafe_promotion"
+      ],
+      "before_status": "safe_resolved",
+      "before_title": "사이버펑크 베지테리언 매드니스",
+      "before_url": "https://novelpia.com/novel/31737",
+      "after_status": "promotion_blocked",
+      "after_title": null,
+      "after_url": null,
+      "reason_codes": [
+        "source_native_hold_projection_contract",
+        "source_native_review_hold",
+        "serialized_public_identity_scrubbed",
+        "scope_not_current_work",
+        "generic_idea_prompt_not_candidate_work_discussion",
+        "intent_guard_review",
+        "repair_unsafe_promotion",
+        "scope_context_only"
+      ]
+    },
+    {
+      "post_id": 11658621,
+      "outcome": "applied_source_native_hold",
+      "selected_option_id": "HOLD",
+      "source_native_verdict": "title_similarity_and_character_image_not_enough_for_publish",
+      "evidence_grade": "Medium",
+      "actions": [
+        "repair_unsafe_promotion",
+        "search_title_similarity_hard_hold_required"
+      ],
+      "before_status": "safe_resolved",
+      "before_title": "무능한게 아니라 전설이였다고?",
+      "before_url": "https://novelpia.com/novel/371917",
+      "after_status": "promotion_blocked",
+      "after_title": null,
+      "after_url": null,
+      "reason_codes": [
+        "source_native_hold_projection_contract",
+        "source_native_review_hold",
+        "serialized_public_identity_scrubbed",
+        "scope_not_current_work",
+        "title_similarity_and_character_image_not_enough_for_publish",
+        "repair_unsafe_promotion",
+        "search_title_similarity_hard_hold_required",
+        "scope_unknown"
+      ]
+    },
+    {
+      "post_id": 11690855,
+      "outcome": "applied_source_native_hold",
+      "selected_option_id": "HOLD",
+      "source_native_verdict": "nonwork_limbus_game_metrics_context_blocks_fanfic_title_promotion",
+      "evidence_grade": "Strong",
+      "actions": [
+        "intent_guard_review",
+        "nonwork_game_context_publish_block_required",
+        "repair_unsafe_promotion"
+      ],
+      "before_status": "safe_resolved",
+      "before_title": "[림버스] 혈귀를 미치게 하는 피를 가져버렸다.",
+      "before_url": null,
+      "after_status": "promotion_blocked",
+      "after_title": null,
+      "after_url": null,
+      "reason_codes": [
+        "source_native_hold_projection_contract",
+        "source_native_review_hold",
+        "serialized_public_identity_scrubbed",
+        "scope_not_current_work",
+        "nonwork_limbus_game_metrics_context_blocks_fanfic_title_promotion",
+        "intent_guard_review",
+        "nonwork_game_context_publish_block_required",
+        "repair_unsafe_promotion",
+        "scope_nonwork"
+      ]
+    }
+  ]
+}

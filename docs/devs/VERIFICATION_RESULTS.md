@@ -1,5 +1,38 @@
 # Verification Results
 
+## 2026-07-08 Loop576 source-native HOLD projection
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_576_REPORT_20260708.md`
+  - `docs/devs/loop576_source_native_hold_projection_application.json/.md`
+  - `docs/devs/loop576_source_native_hold_publication_contract_audit.json/.md`
+  - `docs/devs/loop576_source_native_hold_residual64_action_queue.json/.md`
+  - `docs/devs/loop576_source_native_hold_remaining_p0_code_repair17_batch.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop576_source_native_hold_projection_result.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop576_source_native_hold_collateral_compare.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop576_source_native_hold_collateral_triage.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop576_source_native_hold_combined_source_native_review.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop576_always_on_golden18_full375_source_native_hold_gate.json/.md`
+- 검증:
+  - Source-native HOLD unit: PASS, unsafe promotion public title을 scrub하고 pre-gate candidate로 보존.
+  - HOLD priority: PASS, source-native HOLD reason은 title-only alias/image restore보다 우선.
+  - Source-native HOLD application: PASS, eligible `4`, applied `4`, skipped `0`.
+  - Publication contract audit: GO, rows `375`, violation `0`.
+  - Full375 collateral compare: NO-GO, shared `375`, changed `161`, raw regression `103`.
+  - Combined source-native summary: PASS, reviewed `103/103`, decision `83`, info missing `20`, validation issue `0`.
+  - Always-on gate: PASS 산출, golden `GO`, collateral `NO-GO / adjusted 64 / runtime counts missing`.
+  - Residual queue: PASS, rows `64`, validation issue `0`.
+  - Remaining P0 batch: PASS, selected `17`, validation issue `0`, execution contract `--parallel 16` + dashboard ON.
+  - Dashboard health: PASS, `http://127.0.0.1:8080/api/health`, `ok=true`, `standalone=true`, `pid=9320`.
+  - Focused unittest: PASS, `34` tests.
+  - py_compile: PASS, expert/tool dashboard policy 관련 파일.
+  - `git diff --check`: PASS.
+- 결과:
+  - Loop576은 full375 raw regression을 `107 -> 103`, adjusted residual을 `68 -> 64`로 줄였다.
+  - Full375 collateral은 여전히 `NO-GO`라 full_scan approval과 goal completion을 열지 않는다.
+  - 다음 작업 단위는 remaining P0 repair17, missing URL 6, INFO_MISSING 20 source-native/blind review다.
+- Gate: golden18 `GO`, publication contract `GO`, full375 collateral `NO-GO / adjusted 64`, residual queue `REVIEW-LOCKED / 64`, P0 repair batch `REVIEW-LOCKED / 17`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop575 preserved official URL recovery와 dashboard 계약
 
 - 산출물:

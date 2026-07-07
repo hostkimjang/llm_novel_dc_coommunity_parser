@@ -1,5 +1,24 @@
 # Development Checklist
 
+## 2026-07-08 Loop576 source-native HOLD projection 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 실행하지 않았다.
+- [x] `repair_unsafe_promotion` `4`건을 source-native HOLD verdict로 shared publication block contract에 적용했다.
+- [x] `source_native_hold_projection_contract/source_native_review_hold/repair_unsafe_promotion` reason은 title-only alias/image restore보다 우선하도록 했다.
+- [x] HOLD application은 `applied_source_native_hold 4`, skipped `0`이다.
+- [x] 닫힌 post_id는 `11657047`, `11658621`, `11690855`, `11710044`이다.
+- [x] Publication contract는 `GO / 375 rows / 0 violations`다.
+- [x] Full375 raw regression은 `107 -> 103`, adjusted residual은 `68 -> 64`로 줄었다.
+- [x] Residual64 action queue와 remaining P0 repair17 batch를 생성했다.
+- [x] Dashboard health는 `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`으로 확인했다.
+- [x] Remaining P0 repair17 batch의 execution contract는 `--parallel 16`, dashboard ON, `--no-dashboard` 금지를 기록한다.
+- [x] Focused unittest `34`개, py_compile, `git diff --check`를 통과했다.
+- [ ] Remaining unsafe promotion `4`건은 HOLD/source-native/native review 증거 없이는 publish하지 않는다.
+- [ ] Remaining P0 repair17은 코드/계약 수리 후 필요한 경우에만 `--parallel 16` + dashboard attached test run으로 실행한다.
+- [ ] INFO_MISSING `20`건은 source-native/blind verdict 전 hard-hold 완화 대상이 아니다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: golden18 `GO`, publication contract `GO`, full375 collateral `NO-GO / adjusted 64`, residual queue `REVIEW-LOCKED / 64`, P0 repair batch `REVIEW-LOCKED / 17`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop575 preserved official URL recovery와 dashboard 계약 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 실행하지 않았다.

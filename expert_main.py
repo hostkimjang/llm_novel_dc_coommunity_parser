@@ -2945,13 +2945,31 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
         _sync_allowed_publication_result_contract(result_dict)
         return True
 
-    if _restore_blocked_candidate_when_shared_gate_allows(blocked_title, blocked_url):
+    def _has_source_native_hold_lock() -> bool:
+        hold_markers = {
+            "source_native_hold_projection_contract",
+            "source_native_review_hold",
+            "repair_unsafe_promotion",
+        }
+        for source in (identity, ledger, promotion_decision, promotion_gate_state):
+            if not isinstance(source, dict):
+                continue
+            for key in ("reason_codes", "promotion_blocked_reasons"):
+                values = source.get(key)
+                if not isinstance(values, list):
+                    continue
+                if hold_markers & {str(value or "").strip() for value in values}:
+                    return True
+        return False
+
+    source_native_hold_locked = _has_source_native_hold_lock()
+    if not source_native_hold_locked and _restore_blocked_candidate_when_shared_gate_allows(blocked_title, blocked_url):
         return True
 
-    if _restore_verified_image_ocr_work_title_only(blocked_title, blocked_url):
+    if not source_native_hold_locked and _restore_verified_image_ocr_work_title_only(blocked_title, blocked_url):
         return True
 
-    if _restore_blocked_verified_alias_title_only(blocked_title, blocked_url):
+    if not source_native_hold_locked and _restore_blocked_verified_alias_title_only(blocked_title, blocked_url):
         return True
 
     for key in ("official_title", "official_novel_title", "resolved_title"):

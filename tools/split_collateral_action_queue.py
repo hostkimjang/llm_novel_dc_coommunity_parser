@@ -247,12 +247,22 @@ def build_residual_queue(
     source_expected_residual = transition.get("residual_action_queue_rows", summary.get("residual_action_queue_rows"))
     source_label_counts = summary.get("label_counts") or {}
     source_expected_reprocess = transition.get("repair_required_rows", source_label_counts.get("REPROCESS"))
-    source_expected_hold = transition.get("policy_or_native_review_required_rows", source_label_counts.get("HOLD"))
+    source_expected_policy_review = transition.get("policy_or_native_review_required_rows")
+    if source_expected_policy_review is None:
+        source_expected_policy_review = source_label_counts.get("HOLD", 0) + source_label_counts.get(
+            "INFO_MISSING", 0
+        )
 
     def _adjust_expected(value: Any, label: str | None = None) -> int | None:
         if value is None:
             return None
         excluded_count = len(excluded_rows) if label is None else excluded_label_counts.get(label, 0)
+        return int(value) - excluded_count
+
+    def _adjust_expected_labels(value: Any, labels: tuple[str, ...]) -> int | None:
+        if value is None:
+            return None
+        excluded_count = sum(excluded_label_counts.get(label, 0) for label in labels)
         return int(value) - excluded_count
 
     unreviewed_regression_count = len(
@@ -268,7 +278,9 @@ def build_residual_queue(
     if expected_residual is not None:
         expected_residual += unreviewed_regression_count
     expected_reprocess = _adjust_expected(source_expected_reprocess, "REPROCESS")
-    expected_hold = _adjust_expected(source_expected_hold, "HOLD")
+    expected_policy_review = _adjust_expected_labels(source_expected_policy_review, ("HOLD", "INFO_MISSING"))
+    if expected_policy_review is not None:
+        expected_policy_review += unreviewed_regression_count
     validation_issues: list[dict[str, Any]] = []
     if expected_residual is not None and int(expected_residual) != len(residual_rows):
         validation_issues.append(
@@ -286,12 +298,13 @@ def build_residual_queue(
                 "actual": label_counts.get("REPROCESS", 0),
             }
         )
-    if expected_hold is not None and int(expected_hold) != label_counts.get("HOLD", 0):
+    actual_policy_review = label_counts.get("HOLD", 0) + label_counts.get("INFO_MISSING", 0)
+    if expected_policy_review is not None and int(expected_policy_review) != actual_policy_review:
         validation_issues.append(
             {
-                "code": "hold_count_mismatch",
-                "expected": expected_hold,
-                "actual": label_counts.get("HOLD", 0),
+                "code": "policy_or_native_review_count_mismatch",
+                "expected": expected_policy_review,
+                "actual": actual_policy_review,
             }
         )
 
@@ -318,10 +331,10 @@ def build_residual_queue(
             "expected_from_source_transition": {
                 "residual_action_queue_rows": expected_residual,
                 "repair_required_rows": expected_reprocess,
-                "policy_or_native_review_required_rows": expected_hold,
+                "policy_or_native_review_required_rows": expected_policy_review,
                 "source_residual_action_queue_rows": source_expected_residual,
                 "source_repair_required_rows": source_expected_reprocess,
-                "source_policy_or_native_review_required_rows": source_expected_hold,
+                "source_policy_or_native_review_required_rows": source_expected_policy_review,
             },
             "closed_post_ids_excluded": sorted(exclude_post_ids),
             "excluded_residual_action_queue_rows": len(excluded_rows),
