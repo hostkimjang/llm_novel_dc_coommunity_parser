@@ -1,0 +1,94 @@
+{
+  "report_type": "official_support_enrichment_review",
+  "review_id": "loop586_canonical_title_rewrite_review",
+  "generated_at": "2026-07-08T04:57:18",
+  "source_contract_plan": "loop585_official_support_combined_restore_contract_plan",
+  "source_review_refs": "loop586_canonical_title_rewrite_review_refs",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "source_official_missing_hold_rows": 2,
+    "reviewed_rows": 2,
+    "validation_issue_count": 0,
+    "state_counts": {
+      "official_detail_found_target_title_mismatch": 1,
+      "ebook_or_classic_policy_review_required": 1
+    },
+    "review_action_counts": {
+      "rewrite_target_to_official_restore_dispatch": 1,
+      "non_webnovel_ebook_policy_hold": 1
+    },
+    "exact_official_detail_rows": 0,
+    "enriched_restore_dispatch_rows": 1,
+    "exact_official_enriched_dispatch_rows": 0,
+    "canonical_rewrite_dispatch_rows": 1,
+    "hold_rows": 1,
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "rows": [
+    {
+      "post_id": 11665124,
+      "target_title": "화산파(화산귀환)",
+      "previous_contract_action": "official_support_missing_restore_hold_contract_case",
+      "official_support_state": "official_detail_found_target_title_mismatch",
+      "review_action": "rewrite_target_to_official_restore_dispatch",
+      "official_title": "화산귀환",
+      "official_url": "https://series.naver.com/novel/detail.series?productNo=4130558",
+      "accepted_by_shared_official_detail_contract": false,
+      "canonical_rewrite_allowed": true,
+      "canonical_rewrite_title": "화산귀환",
+      "canonical_rewrite_dispatch_row": true,
+      "webnovel_detail_url_supported": true,
+      "title_matches_target": false,
+      "enriched_restore_dispatch_row": true,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "source_urls": [
+        "https://series.naver.com/novel/detail.series?productNo=4130558"
+      ],
+      "source_evidence_ko": "Naver Series novel detail은 공식 작품 title `화산귀환`을 제공한다. 기존 target `화산파(화산귀환)`는 댓글의 `화귀`/해남편 근거가 가리키는 작품을 괄호로 품은 표현이지만 공식 작품 title 자체는 아니다.",
+      "hold_reason_ko": "canonical rewrite 계약과 shared restore plan을 통과하기 전에는 publish하지 않는다.",
+      "rewrite_reason_ko": "source-native 근거는 `화귀`와 해남편으로 `화산귀환` 작품을 지지하므로, publish 후보 title은 공식 title `화산귀환`으로 rewrite해야 한다.",
+      "rationale_ko": "댓글이 `화귀` 회차와 해남편을 직접 말해 후보 작품 맥락을 지지한다.",
+      "validation_issues": []
+    },
+    {
+      "post_id": 11698870,
+      "target_title": "인간실격",
+      "previous_contract_action": "official_support_missing_restore_hold_contract_case",
+      "official_support_state": "ebook_or_classic_policy_review_required",
+      "review_action": "non_webnovel_ebook_policy_hold",
+      "official_title": "인간실격",
+      "official_url": "https://series.naver.com/ebook/detail.series?productNo=8927664",
+      "accepted_by_shared_official_detail_contract": false,
+      "canonical_rewrite_allowed": false,
+      "canonical_rewrite_title": "인간실격",
+      "canonical_rewrite_dispatch_row": false,
+      "webnovel_detail_url_supported": false,
+      "title_matches_target": true,
+      "enriched_restore_dispatch_row": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "source_urls": [
+        "https://series.naver.com/ebook/detail.series?productNo=8927664"
+      ],
+      "source_evidence_ko": "Naver Series eBook detail은 다자이 오사무/출판사/카테고리 소설을 제공하는 eBook/고전 문학 페이지다.",
+      "hold_reason_ko": "현재 webnovel official detail 계약은 `series.naver.com/novel/detail.series`를 대상으로 하며 eBook/classic 작품을 같은 publish gate로 통과시키지 않는다.",
+      "rewrite_reason_ko": null,
+      "rationale_ko": "post title이 `인간실격`을 직접 말하고 작가/결말 질문도 같은 작품 맥락이다.",
+      "validation_issues": []
+    }
+  ],
+  "enriched_dispatch_id": "loop586_canonical_title_rewrite_review_enriched_restore_dispatch",
+  "approval_boundary": {
+    "official_support_review_is_not_runtime_replay": true,
+    "enriched_dispatch_must_pass_shared_restore_plan": true,
+    "canonical_rewrite_must_be_explicitly_allowed": true,
+    "held_rows_remain_ordinary_residual_followup": true,
+    "full_scan_approval": false
+  }
+}

@@ -1,5 +1,29 @@
 # Developer TODO Index
 
+## 2026-07-08 Loop586 이후
+
+- 상태 업데이트: `11665124` canonical rewrite 계약은 shared restore/projection/release gate를 통과했지만 full375 collateral은 여전히 `NO-GO`다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Canonical rewrite review를 생성했다: `docs/devs/loop586_canonical_title_rewrite_review.json/.md`.
+- [x] Reviewed refs를 보존했다: `docs/devs/loop586_canonical_title_rewrite_review_refs.json`.
+- [x] `11665124`를 `화산파(화산귀환)`에서 official title `화산귀환`으로 rewrite dispatch했다.
+- [x] `11698870`은 eBook/classic policy hold로 유지했다.
+- [x] Restore plan rows `1`, `expected_title_restore_contract_case 1`, promotion decision `publish 1`, runtime allowed `0`을 확인했다.
+- [x] Projection-only 적용 결과 rows `375`, applied restore `1`, validation issue `0`을 확인했다.
+- [x] Publication contract `GO / 375 rows / 0 violations`를 확인했다.
+- [x] Combined release gate `REVIEW-LOCKED / release candidate 5 / no-release hold 1 / violation 0`을 확인했다.
+- [x] Full375 collateral compare를 실행했다. shared `375`, changed `158`, raw regression `82`, gate `NO-GO`.
+- [x] Always-on gate를 재산출했다. golden18 `GO`, collateral `NO-GO / raw 82 / runtime counts missing`, 전체 `NO-GO`.
+- [x] P0 residual accounting을 생성했다. contract processed `5`, ordinary residual `14`, official URL follow-up `1`.
+- [x] Residual46 accounting을 생성했다. contract processed `5`, ordinary residual `41`, official URL follow-up `1`.
+- [x] Dashboard health를 확인했다. `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`.
+- [x] Focused unittest `68`개와 py_compile을 통과했다.
+- [ ] `11698870` eBook/classic policy는 별도 정책 검토 전 publish하지 않는다.
+- [ ] Residual46 `41`건과 P0 residual `14`건은 다음 batch lane으로 계속 처리한다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지 상태로 실행한다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: canonical rewrite `REVIEW-LOCKED / rewrite 1 / hold 1`, publication `GO`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 82`, residual46 `REVIEW-LOCKED / 41`, P0 residual `REVIEW-LOCKED / 14`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop585 이후
 
 - 상태 업데이트: Loop583 official-support-missing hold `5`건 중 exact official detail `3`건을 shared restore contract와 projection-only full375 검증에 통과시켰지만 full375 collateral은 여전히 `NO-GO`다. Goal은 완료가 아니다.

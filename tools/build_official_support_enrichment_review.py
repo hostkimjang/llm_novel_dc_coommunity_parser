@@ -24,6 +24,7 @@ TITLE_MISMATCH_STATE = "official_detail_found_target_title_mismatch"
 EBOOK_OR_CLASSIC_STATE = "ebook_or_classic_policy_review_required"
 ENRICH_ACTION = "append_official_ref_to_restore_dispatch"
 CANONICAL_REWRITE_ACTION = "canonical_title_rewrite_review_required"
+CANONICAL_REWRITE_DISPATCH_ACTION = "rewrite_target_to_official_restore_dispatch"
 EBOOK_POLICY_HOLD_ACTION = "non_webnovel_ebook_policy_hold"
 MISSING_REVIEW_ACTION = "official_support_review_missing"
 
@@ -59,6 +60,12 @@ def _compact(value: Any) -> str:
 
 def _same_title(left: Any, right: Any) -> bool:
     return bool(_compact(left) and _compact(left) == _compact(right))
+
+
+def _truthy(value: Any) -> bool:
+    if isinstance(value, bool):
+        return value
+    return _string(value).lower() in {"1", "true", "yes", "y", "go"}
 
 
 def _rows(payload: dict[str, Any]) -> list[dict[str, Any]]:
@@ -124,6 +131,42 @@ def _can_enrich(review_row: dict[str, Any] | None, plan_row: dict[str, Any]) -> 
     return _same_title(review_row.get("official_title"), plan_row.get("target_title"))
 
 
+def _canonical_rewrite_title(review_row: dict[str, Any]) -> str:
+    return _string(
+        review_row.get("canonical_rewrite_title")
+        or review_row.get("rewritten_title")
+        or review_row.get("official_title")
+    )
+
+
+def _can_canonical_rewrite(review_row: dict[str, Any] | None, plan_row: dict[str, Any]) -> bool:
+    if not review_row:
+        return False
+    if _string(review_row.get("official_support_state")) != TITLE_MISMATCH_STATE:
+        return False
+    if review_row.get("canonical_rewrite_allowed") is not True:
+        return False
+    if not _official_detail_url_supported(review_row.get("official_url")):
+        return False
+    official_title = _string(review_row.get("official_title"))
+    rewrite_title = _canonical_rewrite_title(review_row)
+    target_title = _string(plan_row.get("target_title"))
+    if not _same_title(rewrite_title, official_title):
+        return False
+    if not official_title or _same_title(official_title, target_title):
+        return False
+    if not any(
+        _truthy(review_row.get(key))
+        for key in (
+            "source_native_rewrite_support",
+            "alias_relation_supported",
+            "specific_work_target_supported",
+        )
+    ):
+        return False
+    return bool(_string(review_row.get("rewrite_reason_ko") or review_row.get("source_evidence_ko")))
+
+
 def _make_enriched_dispatch_row(plan_row: dict[str, Any], review_row: dict[str, Any], review_id: str) -> dict[str, Any]:
     official_url = _string(review_row.get("official_url"))
     official_title = _string(review_row.get("official_title"))
@@ -160,6 +203,50 @@ def _make_enriched_dispatch_row(plan_row: dict[str, Any], review_row: dict[str, 
     }
 
 
+def _make_canonical_rewrite_dispatch_row(
+    plan_row: dict[str, Any], review_row: dict[str, Any], review_id: str
+) -> dict[str, Any]:
+    official_url = _string(review_row.get("official_url"))
+    official_title = _string(review_row.get("official_title"))
+    rewrite_title = _canonical_rewrite_title(review_row)
+    previous_target = _string(plan_row.get("target_title"))
+    evidence_refs = _append_unique(
+        [official_url],
+        *[str(value) for value in plan_row.get("evidence_refs") or []],
+        *[str(value) for value in review_row.get("source_urls") or []],
+        f"docs/devs/{review_id}.json#post_id={plan_row.get('post_id')}",
+    )
+    rewrite_reason = _string(review_row.get("rewrite_reason_ko") or review_row.get("source_evidence_ko"))
+    return {
+        "post_id": plan_row.get("post_id"),
+        "dispatch_lane": RESTORE_LANE,
+        "triage_bucket": plan_row.get("triage_bucket"),
+        "review_label": plan_row.get("review_label"),
+        "selected_title": rewrite_title or official_title,
+        "selected_url": official_url,
+        "evidence_grade": plan_row.get("evidence_grade") or "Strong",
+        "source_native_verdict": plan_row.get("source_native_verdict"),
+        "rationale_ko": (
+            f"{plan_row.get('rationale_ko') or ''} "
+            f"공식 title rewrite: `{previous_target}` -> `{rewrite_title or official_title}`. {rewrite_reason}"
+        ).strip(),
+        "actions": _append_unique(
+            ["repair_safe_loss_restore_supported_title", "shared_promotion_gate_wiring_required"],
+            "official_detail_url_canonical_title_rewrite",
+        ),
+        "evidence_refs": evidence_refs,
+        "official_support_review_id": review_id,
+        "official_support_state": review_row.get("official_support_state"),
+        "official_title": official_title or None,
+        "official_url": official_url or None,
+        "canonical_rewrite_from_target_title": previous_target or None,
+        "canonical_rewrite_title": rewrite_title or official_title or None,
+        "canonical_rewrite_reason_ko": rewrite_reason or None,
+        "runtime_replay_allowed": False,
+        "full_scan_approval": False,
+    }
+
+
 def build_review(
     *,
     contract_plan: dict[str, Any],
@@ -172,6 +259,7 @@ def build_review(
     validation_issues: list[dict[str, Any]] = []
     rows: list[dict[str, Any]] = []
     enriched_rows: list[dict[str, Any]] = []
+    canonical_rewrite_rows: list[dict[str, Any]] = []
     state_counts: Counter[str] = Counter()
     action_counts: Counter[str] = Counter()
 
@@ -180,6 +268,9 @@ def build_review(
         review_row = review_by_id.get(post_id or -1)
         action = _review_action(review_row, plan_row)
         can_enrich = _can_enrich(review_row, plan_row)
+        can_canonical_rewrite = _can_canonical_rewrite(review_row, plan_row)
+        if can_canonical_rewrite:
+            action = CANONICAL_REWRITE_DISPATCH_ACTION
         state = _string((review_row or {}).get("official_support_state")) or "missing_review"
         issues: list[str] = []
         if not review_row:
@@ -188,14 +279,19 @@ def build_review(
             issues.append("official_support_exact_review_not_enrichable")
         elif can_enrich and action != ENRICH_ACTION:
             issues.append("enrichable_review_not_marked_for_dispatch")
+        elif review_row.get("canonical_rewrite_allowed") is True and not can_canonical_rewrite:
+            issues.append("canonical_rewrite_allowed_but_contract_not_satisfied")
         if issues:
             validation_issues.append({"post_id": plan_row.get("post_id"), "issues": issues})
 
         if can_enrich:
             enriched_rows.append(_make_enriched_dispatch_row(plan_row, review_row or {}, review_id))
+        if can_canonical_rewrite:
+            canonical_rewrite_rows.append(_make_canonical_rewrite_dispatch_row(plan_row, review_row or {}, review_id))
 
         state_counts[state] += 1
         action_counts[action] += 1
+        dispatch_row = can_enrich or can_canonical_rewrite
         rows.append(
             {
                 "post_id": plan_row.get("post_id"),
@@ -209,19 +305,24 @@ def build_review(
                     "accepted_by_shared_official_detail_contract"
                 )
                 is True,
+                "canonical_rewrite_allowed": (review_row or {}).get("canonical_rewrite_allowed") is True,
+                "canonical_rewrite_title": _canonical_rewrite_title(review_row or {}) or None,
+                "canonical_rewrite_dispatch_row": can_canonical_rewrite,
                 "webnovel_detail_url_supported": _official_detail_url_supported((review_row or {}).get("official_url")),
                 "title_matches_target": _same_title((review_row or {}).get("official_title"), plan_row.get("target_title")),
-                "enriched_restore_dispatch_row": can_enrich,
+                "enriched_restore_dispatch_row": dispatch_row,
                 "runtime_replay_allowed": False,
                 "full_scan_approval": False,
                 "source_urls": (review_row or {}).get("source_urls") or [],
                 "source_evidence_ko": (review_row or {}).get("source_evidence_ko"),
                 "hold_reason_ko": (review_row or {}).get("hold_reason_ko"),
+                "rewrite_reason_ko": (review_row or {}).get("rewrite_reason_ko"),
                 "rationale_ko": plan_row.get("rationale_ko"),
                 "validation_issues": issues,
             }
         )
 
+    dispatch_rows = [*enriched_rows, *canonical_rewrite_rows]
     dispatch = {
         "report_type": "official_support_enriched_restore_dispatch",
         "dispatch_id": f"{review_id}_enriched_restore_dispatch",
@@ -233,12 +334,14 @@ def build_review(
         "full_scan_approval": False,
         "summary": {
             "source_official_missing_hold_rows": len(plan_rows),
-            "enriched_restore_dispatch_rows": len(enriched_rows),
+            "enriched_restore_dispatch_rows": len(dispatch_rows),
+            "exact_official_enriched_dispatch_rows": len(enriched_rows),
+            "canonical_rewrite_dispatch_rows": len(canonical_rewrite_rows),
             "runtime_replay_allowed_rows": 0,
             "completion_gate": "full375 collateral GO + full_scan path",
         },
-        "execution_contract": test_run_execution_contract(len(enriched_rows)),
-        "rows": enriched_rows,
+        "execution_contract": test_run_execution_contract(len(dispatch_rows)),
+        "rows": dispatch_rows,
         "approval_boundary": {
             "enriched_dispatch_is_not_runtime_replay": True,
             "official_url_review_is_not_full_scan_approval": True,
@@ -261,8 +364,10 @@ def build_review(
             "state_counts": dict(state_counts),
             "review_action_counts": dict(action_counts),
             "exact_official_detail_rows": state_counts.get(EXACT_STATE, 0),
-            "enriched_restore_dispatch_rows": len(enriched_rows),
-            "hold_rows": len(rows) - len(enriched_rows),
+            "enriched_restore_dispatch_rows": len(dispatch_rows),
+            "exact_official_enriched_dispatch_rows": len(enriched_rows),
+            "canonical_rewrite_dispatch_rows": len(canonical_rewrite_rows),
+            "hold_rows": len(rows) - len(dispatch_rows),
             "runtime_replay_allowed_rows": 0,
             "full375_collateral_gate": "NO-GO",
             "completion_gate": "full375 collateral GO + full_scan path",
@@ -273,6 +378,7 @@ def build_review(
         "approval_boundary": {
             "official_support_review_is_not_runtime_replay": True,
             "enriched_dispatch_must_pass_shared_restore_plan": True,
+            "canonical_rewrite_must_be_explicitly_allowed": True,
             "held_rows_remain_ordinary_residual_followup": True,
             "full_scan_approval": False,
         },
@@ -299,6 +405,8 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
         f"- state_counts: `{summary['state_counts']}`",
         f"- review_action_counts: `{summary['review_action_counts']}`",
         f"- enriched_restore_dispatch_rows: `{summary['enriched_restore_dispatch_rows']}`",
+        f"- exact_official_enriched_dispatch_rows: `{summary['exact_official_enriched_dispatch_rows']}`",
+        f"- canonical_rewrite_dispatch_rows: `{summary['canonical_rewrite_dispatch_rows']}`",
         f"- hold_rows: `{summary['hold_rows']}`",
         f"- runtime_replay_allowed_rows: `{summary['runtime_replay_allowed_rows']}`",
         f"- full375 collateral: `{summary['full375_collateral_gate']}`",
@@ -315,7 +423,8 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
         )
     lines.extend(["", "## Gate 해석", ""])
     lines.append(
-        f"정확 공식 detail URL이 확인된 `{summary['enriched_restore_dispatch_rows']}`건만 enriched dispatch로 넘긴다. "
+        f"정확 공식 detail URL 또는 명시적 canonical rewrite 계약이 확인된 "
+        f"`{summary['enriched_restore_dispatch_rows']}`건만 enriched dispatch로 넘긴다. "
         f"나머지 `{summary['hold_rows']}`건은 canonical rewrite 또는 eBook/classic 정책 검토가 필요하므로 publish 후보로 세지 않는다. "
         "다음 단계는 enriched dispatch를 shared restore contract plan에 다시 통과시키고 projection-only full375 collateral을 재확인하는 것이다."
     )

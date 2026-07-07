@@ -1,0 +1,98 @@
+{
+  "report_type": "official_support_enriched_restore_dispatch",
+  "dispatch_id": "loop586_canonical_title_rewrite_review_enriched_restore_dispatch",
+  "generated_at": "2026-07-08T04:57:18",
+  "source_contract_plan": "loop585_official_support_combined_restore_contract_plan",
+  "source_review_refs": "loop586_canonical_title_rewrite_review_refs",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "source_official_missing_hold_rows": 2,
+    "enriched_restore_dispatch_rows": 1,
+    "exact_official_enriched_dispatch_rows": 0,
+    "canonical_rewrite_dispatch_rows": 1,
+    "runtime_replay_allowed_rows": 0,
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "execution_contract": {
+    "policy": "TEST_RUNS_USE_PARALLEL_16_AND_WEB_DASHBOARD",
+    "row_count": 1,
+    "requested_parallel": 16,
+    "expected_effective_parallel": 1,
+    "required_flags": [
+      "--parallel 16"
+    ],
+    "forbidden_flags": [
+      "--no-dashboard"
+    ],
+    "dashboard_gate": "GO_PROGRESS_VIEW_NOT_APPROVAL",
+    "dashboard_contract": {
+      "dashboard_policy": "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+      "dashboard_url": "http://127.0.0.1:8080",
+      "start_dashboard_command": "python tools/dashboard_server.py --host 127.0.0.1 --port 8080",
+      "forbidden_flags": [
+        "--no-dashboard"
+      ],
+      "runner_cli_guard": "tools/run_independent_plan.py ignores --no-dashboard unless ALLOW_TEST_RUN_NO_DASHBOARD=1 is explicitly set as a breakglass override.",
+      "live_forwarding_contract": "Start tools/dashboard_server.py first; expert_main detects the standalone dashboard and forwards monitor events to it.",
+      "fallback_attach_contract": "If a run was already started without live forwarding, attach its manifest with tools/attach_manifest_dashboard.py."
+    },
+    "approval_boundary": "Dashboard progress visibility and runtime completion are not semantic/full_scan approval."
+  },
+  "rows": [
+    {
+      "post_id": 11665124,
+      "dispatch_lane": "shared_gate_restore_contract_review",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "selected_title": "화산귀환",
+      "selected_url": "https://series.naver.com/novel/detail.series?productNo=4130558",
+      "evidence_grade": "Strong",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "rationale_ko": "댓글이 `화귀` 회차와 해남편을 직접 말해 후보 작품 맥락을 지지한다. 공식 title rewrite: `화산파(화산귀환)` -> `화산귀환`. source-native 근거는 `화귀`와 해남편으로 `화산귀환` 작품을 지지하므로, publish 후보 title은 공식 title `화산귀환`으로 rewrite해야 한다.",
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required",
+        "official_detail_url_canonical_title_rewrite"
+      ],
+      "evidence_refs": [
+        "https://series.naver.com/novel/detail.series?productNo=4130558",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11665124",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11665124",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11665124",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11665124",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11665124",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11665124",
+        "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11665124",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11665124",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11665124",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11665124",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11665124",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11665124",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11665124",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11665124",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11665124",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11665124",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11665124",
+        "docs/devs/loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json#post_id=11665124",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11665124",
+        "docs/devs/loop586_canonical_title_rewrite_review.json#post_id=11665124"
+      ],
+      "official_support_review_id": "loop586_canonical_title_rewrite_review",
+      "official_support_state": "official_detail_found_target_title_mismatch",
+      "official_title": "화산귀환",
+      "official_url": "https://series.naver.com/novel/detail.series?productNo=4130558",
+      "canonical_rewrite_from_target_title": "화산파(화산귀환)",
+      "canonical_rewrite_title": "화산귀환",
+      "canonical_rewrite_reason_ko": "source-native 근거는 `화귀`와 해남편으로 `화산귀환` 작품을 지지하므로, publish 후보 title은 공식 title `화산귀환`으로 rewrite해야 한다.",
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false
+    }
+  ],
+  "approval_boundary": {
+    "enriched_dispatch_is_not_runtime_replay": true,
+    "official_url_review_is_not_full_scan_approval": true,
+    "restore_plan_must_rerun_shared_gate": true
+  }
+}

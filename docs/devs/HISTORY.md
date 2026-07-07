@@ -1,5 +1,25 @@
 # Development History
 
+## 2026-07-08 - Loop586 canonical title rewrite and full375 collateral recheck
+
+- 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+- Loop585 official-support follow-up `2`건 중 `11665124`를 canonical title rewrite 계약으로 처리했다.
+- `11665124`는 source-native `화귀`/해남편 근거와 Naver Series novel detail URL을 바탕으로 target `화산파(화산귀환)`을 official title `화산귀환`으로 rewrite dispatch했다.
+- `11698870`은 Naver Series eBook/classic page라 현재 webnovel official detail publish gate에 넣지 않았다.
+- Canonical rewrite review 결과는 rewrite dispatch `1`, hold `1`, validation issue `0`이다.
+- Restore contract plan은 rows `1`, `expected_title_restore_contract_case 1`, promotion decision `publish 1`, runtime allowed `0`이다.
+- Projection-only 적용은 rows `375`, applied publish/restore `1`, validation issue `0`이다.
+- Publication contract는 `GO / 375 rows / 0 violations`다.
+- Combined release gate는 `REVIEW-LOCKED`, violation `0`, release candidate `5`, no-release hold `1`, runtime allowed `0`이다.
+- Full375 collateral은 shared `375`, changed `158`, raw regression `82`로 여전히 `NO-GO / runtime counts missing`다.
+- Always-on gate는 golden18 `GO / 18 of 18`과 collateral `NO-GO / raw 82` 조합으로 전체 `NO-GO`다.
+- Residual P0 accounting은 contract processed `5`, ordinary residual `14`, official support follow-up `1`이다.
+- Residual46 accounting은 contract processed `5`, ordinary residual `41`, official support follow-up `1`이다.
+- Dashboard는 `http://127.0.0.1:8080`에서 `ok=true / standalone=true / pid=9320`로 확인했고, 다음 test/runtime run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지다.
+- Focused unittest `68`개와 py_compile을 통과했다.
+- Report는 `docs/devs/loop_reports/LOOP_586_REPORT_20260708.md`다.
+- Gate는 canonical rewrite `REVIEW-LOCKED / rewrite 1 / hold 1`, publication `GO`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 82`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop585 official support enrichment and full375 collateral recheck
 
 - 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.

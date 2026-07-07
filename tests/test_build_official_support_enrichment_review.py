@@ -110,6 +110,44 @@ class BuildOfficialSupportEnrichmentReviewTest(unittest.TestCase):
         self.assertFalse(rows[3]["enriched_restore_dispatch_row"])
         self.assertEqual([row["post_id"] for row in dispatch["rows"]], [1])
 
+    def test_canonical_rewrite_allowed_title_mismatch_becomes_dispatch(self):
+        refs = self._reviewed_refs()
+        refs["rows"][1].update(
+            {
+                "canonical_rewrite_allowed": True,
+                "canonical_rewrite_title": "화산귀환",
+                "source_native_rewrite_support": True,
+                "alias_relation_supported": True,
+                "rewrite_reason_ko": "화귀/해남편 근거는 화산귀환을 가리키며 화산파는 작품 공식 title이 아니다.",
+            }
+        )
+
+        report, dispatch = build_review(
+            contract_plan=self._contract_plan(),
+            reviewed_refs=refs,
+            review_id="unit_review",
+        )
+        rows = {row["post_id"]: row for row in report["rows"]}
+
+        self.assertEqual(rows[2]["review_action"], "rewrite_target_to_official_restore_dispatch")
+        self.assertTrue(rows[2]["canonical_rewrite_dispatch_row"])
+        self.assertTrue(rows[2]["enriched_restore_dispatch_row"])
+        self.assertEqual(report["summary"]["enriched_restore_dispatch_rows"], 2)
+        self.assertEqual(report["summary"]["canonical_rewrite_dispatch_rows"], 1)
+        self.assertEqual(report["summary"]["hold_rows"], 1)
+        dispatch_by_id = {row["post_id"]: row for row in dispatch["rows"]}
+        self.assertEqual(sorted(dispatch_by_id), [1, 2])
+        self.assertEqual(dispatch_by_id[2]["selected_title"], "화산귀환")
+        self.assertEqual(
+            dispatch_by_id[2]["selected_url"],
+            "https://series.naver.com/novel/detail.series?productNo=4130558",
+        )
+        self.assertEqual(
+            dispatch_by_id[2]["evidence_refs"][0],
+            "https://series.naver.com/novel/detail.series?productNo=4130558",
+        )
+        self.assertFalse(dispatch_by_id[2]["runtime_replay_allowed"])
+
     def test_missing_review_row_is_validation_issue(self):
         refs = self._reviewed_refs()
         refs["rows"] = refs["rows"][:1]

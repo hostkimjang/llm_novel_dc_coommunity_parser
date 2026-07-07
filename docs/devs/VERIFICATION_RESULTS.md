@@ -1,5 +1,42 @@
 # Verification Results
 
+## 2026-07-08 Loop586 canonical title rewrite와 full375 collateral 재검증
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_586_REPORT_20260708.md`
+  - `tools/build_official_support_enrichment_review.py`
+  - `tests/test_build_official_support_enrichment_review.py`
+  - `docs/devs/loop586_canonical_title_rewrite_review_refs.json`
+  - `docs/devs/loop586_canonical_title_rewrite_review.json/.md`
+  - `docs/devs/loop586_canonical_title_rewrite_dispatch.json`
+  - `docs/devs/loop586_canonical_title_rewrite_restore_contract_plan.json/.md`
+  - `docs/devs/loop586_canonical_title_rewrite_projection_application.json/.md`
+  - `docs/devs/loop586_canonical_title_rewrite_publication_contract_audit.json/.md`
+  - `docs/devs/loop586_canonical_title_rewrite_combined_restore_contract_plan.json/.md`
+  - `docs/devs/loop586_canonical_title_rewrite_combined_restore_projection_application.json/.md`
+  - `docs/devs/loop586_canonical_title_rewrite_combined_release_gate_audit.json/.md`
+  - `docs/devs/loop586_residual_p0_canonical_title_rewrite_accounting.json/.md`
+  - `docs/devs/loop586_residual46_canonical_title_rewrite_accounting.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop586_canonical_title_rewrite_projection_result.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop586_canonical_title_rewrite_full375_collateral_compare.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop586_always_on_golden18_full375_canonical_rewrite_gate.json/.md`
+- 검증:
+  - Canonical rewrite review generation: PASS, rewrite dispatch `1`, hold `1`, validation issue `0`.
+  - Restore plan generation: PASS, rows `1`, `expected_title_restore_contract_case 1`, promotion decision `publish 1`, runtime allowed `0`.
+  - Projection application: PASS, rows `375`, applied restore `1`, validation issue `0`.
+  - Publication contract audit: PASS, `GO / 375 rows / 0 violations`.
+  - Combined release gate audit: PASS, `REVIEW-LOCKED`, violation `0`, release candidate `5`, no-release hold `1`.
+  - Full375 collateral compare: PASS 산출, gate `NO-GO`, shared `375`, changed `158`, raw regression `82`, runtime counts missing.
+  - Always-on gate: PASS 산출, gate `NO-GO`, golden18 `GO`, collateral `NO-GO / raw 82`.
+  - Residual accounting: PASS, P0 ordinary `14`, residual46 ordinary `41`, official support follow-up `1`, validation issue `0`.
+  - `python -m unittest tests.test_build_official_support_enrichment_review tests.test_build_ordinary_restore_contract_plan tests.test_apply_post_verdict_expected_restore_projection_contract tests.test_audit_post_verdict_promotion_gate_release_contract tests.test_reaccount_residual_after_contract_reviews tests.test_goal_test_run_contract_audit tests.test_run_independent_plan -v`: PASS, `68` tests.
+  - `python -m py_compile tools\build_official_support_enrichment_review.py tools\build_ordinary_restore_contract_plan.py tools\apply_post_verdict_expected_restore_projection_contract.py tools\audit_post_verdict_promotion_gate_release_contract.py tools\reaccount_residual_after_contract_reviews.py tools\audit_goal_test_run_contract.py tools\run_independent_plan.py tools\test_run_dashboard_policy.py`: PASS.
+- 결과:
+  - `11665124`는 explicit canonical rewrite 계약으로 `화산귀환` release candidate가 됐지만 full375 GO 전 approval이 아니다.
+  - `11698870`은 eBook/classic policy hold로 남아 publish 후보가 아니다.
+  - Full375 collateral이 `NO-GO / raw 82`이므로 release candidate `5`건과 golden18 `GO`는 approval 근거가 아니다.
+- Gate: canonical rewrite `REVIEW-LOCKED / rewrite 1 / hold 1`, publication `GO`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 82`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop585 official support enrichment와 full375 collateral 재검증
 
 - 산출물:

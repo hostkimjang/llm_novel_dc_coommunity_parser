@@ -1,5 +1,13 @@
 # Sampling And Parallel Test Guide
 
+## 2026-07-08 Loop586 dashboard health 재확인
+
+- 다음 regression-safe grounding test/runtime run은 계속 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 실행한다.
+- 현재 standalone dashboard health는 `ok=true`, `standalone=true`, `pid=9320`이고 URL은 `http://127.0.0.1:8080`이다.
+- 최신 status는 마지막 runtime replay Loop564 `30/30`, `parallel_count=16`, `batch_running=false`다.
+- Loop586은 projection/static 검증이라 새 runtime 진행률은 없었다. 새 test/runtime run이 시작되면 expert_main live forwarding 또는 manifest attach로 dashboard 진행률을 갱신한다.
+- Dashboard는 진행상황 관측 도구이며 `semantic_quality`, `full_scan_approval`, `full375 collateral GO`의 승인 근거가 아니다.
+
 ## 2026-07-08 Loop584 test-run dashboard audit gate
 
 - 다음 regression-safe grounding test/runtime run은 계속 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 실행한다.

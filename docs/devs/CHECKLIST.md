@@ -1,5 +1,27 @@
 # Development Checklist
 
+## 2026-07-08 Loop586 canonical title rewrite 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Loop585 official-support follow-up `2`건을 canonical rewrite 후보와 eBook/classic hold로 재분류했다.
+- [x] `11665124`는 `화산파(화산귀환)` target을 official title `화산귀환`으로 rewrite dispatch했다.
+- [x] `11698870`은 eBook/classic policy hold로 유지했고 webnovel publish gate에 넣지 않았다.
+- [x] Review 결과 rewrite `1`, hold `1`, validation issue `0`을 확인했다.
+- [x] Restore contract plan 결과 `expected_title_restore_contract_case 1`, promotion decision `publish 1`, runtime allowed `0`을 확인했다.
+- [x] Projection-only 적용 결과 rows `375`, applied restore `1`, validation issue `0`을 확인했다.
+- [x] Publication contract `GO / 375 rows / 0 violations`를 확인했다.
+- [x] Combined release gate `REVIEW-LOCKED / violation 0 / release candidate 5 / no-release hold 1`를 확인했다.
+- [x] Full375 collateral compare는 shared `375`, changed `158`, raw regression `82`, `NO-GO / runtime counts missing`임을 확인했다.
+- [x] Always-on gate는 golden18 `GO`, collateral `NO-GO / raw 82 / runtime counts missing`, 전체 `NO-GO`임을 확인했다.
+- [x] P0 residual은 ordinary `14`, official follow-up `1`; residual46은 ordinary `41`, official follow-up `1`로 재회계했다.
+- [x] Dashboard health는 `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`으로 확인했다.
+- [x] Focused unittest `68` tests와 py_compile을 통과했다.
+- [ ] `11698870`은 eBook/classic policy 검토 전 webnovel publish gate에 넣지 않는다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 실행한다.
+- [ ] Dashboard 진행률을 semantic/full_scan approval 근거로 쓰지 않는다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: canonical rewrite `REVIEW-LOCKED / rewrite 1 / hold 1`, publication `GO`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 82 / runtime counts missing`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop585 official support enrichment 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.

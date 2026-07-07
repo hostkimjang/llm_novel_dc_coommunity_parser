@@ -1,5 +1,23 @@
 # Improvement Register
 
+## IMP-20260708-586 - Canonical title rewrite and full375 collateral recheck
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | 실제 test run만 `--parallel 16` + dashboard attached로 실행 |
+| Canonical rewrite review | REVIEW-LOCKED | rewrite dispatch `1`, eBook/classic hold `1`, validation issue `0` | hold 1건은 별도 eBook/classic policy 검토 |
+| Restore plan | REVIEW-LOCKED | `expected_title_restore_contract_case 1`, promotion decision `publish 1`, runtime allowed `0` | release 후보를 approval로 세지 않음 |
+| Projection application | REVIEW-LOCKED | rows `375`, applied restore `1`, validation issue `0` | full375 collateral 계속 재확인 |
+| Publication contract | GO | `375` rows, violation `0` | full_scan approval과 분리 |
+| Release gate | REVIEW-LOCKED | release candidate `5`, no-release hold `1`, violation `0` | full375 GO 전 release 금지 |
+| Residual46 | REVIEW-LOCKED | contract processed `5`, ordinary residual `41`, official follow-up `1` | 다음 batch lane 처리 |
+| P0 residual19 | REVIEW-LOCKED | contract processed `5`, ordinary residual `14`, official follow-up `1` | 다음 P0 lane 처리 |
+| Dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320` | 진행 관측용, approval 근거 아님 |
+| Full375 collateral | NO-GO | raw regression `82`, runtime counts missing | collateral GO 전 approval 금지 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: canonical rewrite `REVIEW-LOCKED / rewrite 1 / hold 1`, publication `GO`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 82`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-585 - Official support enrichment and full375 collateral recheck
 
 | 항목 | 상태 | 근거 | 다음 |

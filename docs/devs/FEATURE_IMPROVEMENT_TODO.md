@@ -14,8 +14,19 @@
 - [x] Loop582 산출물 execution contract에도 `--parallel 16`, web dashboard ON, `--no-dashboard` 금지, `GO_PROGRESS_VIEW_NOT_APPROVAL`를 기록했다.
 - [x] Loop583에서 projection/static 검증 중에도 dashboard health를 다시 확인했다. `http://127.0.0.1:8080`, health `ok=true / standalone=true / pid=9320`.
 - [x] Loop584에서 dashboard status를 다시 확인했다. latest status는 Loop564 `30/30`, `parallel_count=16`, `batch_running=false`다.
+- [x] Loop586 시작 전에도 dashboard health/status를 확인했다. health `ok=true / standalone=true / pid=9320`, status Loop564 `30/30`, `parallel_count=16`, `batch_running=false`다.
 - [ ] 다음 실제 test/runtime run 시작 시 `http://127.0.0.1:8080` dashboard health와 진행률을 함께 보고한다.
 - Gate: dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, runtime approval 아님, full375 collateral `NO-GO`, goal `ACTIVE / NOT_COMPLETE`.
+
+## 2026-07-08 canonical title rewrite 후속 UX/운영 TODO
+
+- [x] Loop586에서 `11665124` target `화산파(화산귀환)`을 official title `화산귀환`으로 rewrite dispatch했다.
+- [x] Rewrite는 `canonical_rewrite_allowed=true`, source-native/alias/specific-work 근거, 공식 detail URL이 모두 있을 때만 dispatch되도록 계약화했다.
+- [x] `11698870`은 eBook/classic hold로 유지해 webnovel publish gate에 넣지 않았다.
+- [x] Full375 collateral은 raw regression `82`로 여전히 `NO-GO / runtime counts missing`임을 확인했다.
+- [ ] eBook/classic policy UX는 별도 정책으로 분리하기 전 publish하지 않는다.
+- [ ] 다음 test/runtime run은 dashboard 진행률 URL과 함께 상태를 보고하되 approval 근거로 쓰지 않는다.
+- Gate: canonical rewrite `REVIEW-LOCKED / rewrite 1 / hold 1`, full375 collateral `NO-GO / raw 82`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-08 official support enrichment 후속 UX/운영 TODO
 
