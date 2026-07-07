@@ -1337,16 +1337,16 @@ Loop 2에서는 기존 `balanced_p0_seed.jsonl`을 다시 만들지 않는다. a
 Text/URL/comment queue:
 
 ```powershell
-.venv312\Scripts\python.exe expert_main.py out\completed779_improvement_goal_20260622\inputs\reimprovement_loop2_text_url_comment.jsonl --server-type vllm --llm-endpoint http://10.20.0.101:8000 --llm-model bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4 --reuse-shards-only --no-dashboard --slang-db off --parallel min(input_count,36)
+.venv312\Scripts\python.exe expert_main.py out\completed779_improvement_goal_20260622\inputs\reimprovement_loop2_text_url_comment.jsonl --server-type vllm --llm-endpoint http://10.20.0.101:8000 --llm-model bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4 --reuse-shards-only --slang-db off --parallel 16
 ```
 
 Image/OCR queue:
 
 ```powershell
-.venv312\Scripts\python.exe expert_main.py out\completed779_improvement_goal_20260622\inputs\reimprovement_loop2_image_ocr.jsonl --server-type vllm --llm-endpoint http://10.20.0.101:8000 --llm-model bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4 --reuse-shards-only --no-dashboard --slang-db off --parallel min(input_count,36) --vlm on --ocr on --require-vlm-ocr-for-images
+.venv312\Scripts\python.exe expert_main.py out\completed779_improvement_goal_20260622\inputs\reimprovement_loop2_image_ocr.jsonl --server-type vllm --llm-endpoint http://10.20.0.101:8000 --llm-model bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4 --reuse-shards-only --slang-db off --parallel 16 --vlm on --ocr on --require-vlm-ocr-for-images
 ```
 
-PowerShell에서는 실제 실행 전에 `min(input_count,36)`을 정수로 치환한다.
+현재 테스트런/검증런 기본 계약은 `--parallel 16`과 dashboard 기본 ON이다. 직접 실행 전에 `http://127.0.0.1:8080/api/health`를 확인하고, 이미 `--no-dashboard`로 시작한 런만 `tools/attach_manifest_dashboard.py --manifest <result_manifest.json>`로 사후 부착한다.
 
 Compare:
 

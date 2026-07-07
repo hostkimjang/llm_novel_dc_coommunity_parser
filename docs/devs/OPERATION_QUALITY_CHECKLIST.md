@@ -1,5 +1,21 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop518 테스트런 웹 대시보드 템플릿 동기화 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_518_REPORT_20260707.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop518_test_run_dashboard_template_sync_state_20260707.json`.
+  - [x] Dashboard health 확인: `ok=true`, `standalone=true`, `pid=9320`.
+  - [x] 최신 dashboard status 확인: `57/57`, `progress_pct=100.0`, `parallel_count=16`, `batch_running=false`.
+- 품질 경계:
+  - [x] 새 runtime replay는 실행하지 않았다.
+  - [x] 신규 테스트런/검증런 템플릿은 `--parallel 16`을 사용한다.
+  - [x] 신규 테스트런/검증런 템플릿은 `--no-dashboard`를 기본으로 넣지 않는다.
+  - [x] 직접 `expert_main.py` 실행도 dashboard health를 먼저 확인한다.
+  - [ ] Dashboard 상태를 semantic/full_scan approval 근거로 쓰지 않는다.
+  - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: dashboard policy `WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS`, runtime parallel policy `LOCKED_TO_16_BY_USER`, runtime replay `NOT_RUN_AFTER_DOC_SYNC`, full375 collateral `NO-GO`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop517 shared gate scope conflict split 품질 게이트
 
 - 근거:

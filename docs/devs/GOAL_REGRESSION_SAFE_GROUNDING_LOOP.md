@@ -469,7 +469,7 @@ seed movement만으로 채택 금지. 모든 loop는 **3중 회귀축**을 통�
 
 ### Phase E — Targeted canary (결정적 replay)
 14. canary 입력 = queue seed + Regression Panel + 골든셋 + control sentinel. text/url/comment vs image/OCR 분리. loop prefix로 네임스페이스(덮어쓰기 금지).
-15. `expert_main.py` 실재 실행(`.venv312\Scripts\python.exe`): text `--server-type vllm --llm-endpoint http://10.20.0.101:8000 --reuse-shards-only --no-dashboard --slang-db off --parallel <min(input,36)>`; image는 `--vlm on --ocr on --require-vlm-ocr-for-images` 추가. **동결 slang_db 스냅샷 read-only**, **≥2회 재실행**으로 분산 확인. preflight 막히면 정확한 실패+resume 명령 기록(runtime 미검증 표기).
+15. `expert_main.py` 실재 실행(`.venv312\Scripts\python.exe`): text `--server-type vllm --llm-endpoint http://10.20.0.101:8000 --reuse-shards-only --slang-db off --parallel 16`; image는 `--vlm on --ocr on --require-vlm-ocr-for-images` 추가. 새 테스트런/검증런은 `--no-dashboard`를 넣지 않고 `http://127.0.0.1:8080` dashboard를 기본 부착한다. `tools/run_independent_plan.py`를 쓰면 dashboard가 자동 확인/시작되고, 이미 `--no-dashboard`로 시작한 런만 `tools/attach_manifest_dashboard.py --manifest <result_manifest.json>`로 사후 부착한다. **동결 slang_db 스냅샷 read-only**, **≥2회 재실행**으로 분산 확인. preflight 막히면 정확한 실패+resume 명령 기록(runtime 미검증 표기).
 
 ### Phase F — Compare (3중 회귀축)
 16. **seed movement**: `compare_completed779_improvement.py`로 queue seed before/after(기존).

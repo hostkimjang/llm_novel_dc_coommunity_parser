@@ -1,0 +1,46 @@
+{
+  "loop": 518,
+  "date": "2026-07-07",
+  "head": "f6fbc19c",
+  "purpose": "test_run_dashboard_template_sync",
+  "runtime_replay": "NOT_RUN_AFTER_DOC_SYNC",
+  "dashboard": {
+    "url": "http://127.0.0.1:8080",
+    "health": {
+      "ok": true,
+      "standalone": true,
+      "pid": 9320
+    },
+    "latest_status": {
+      "source": "Loop515 manifest/status",
+      "total_posts": 57,
+      "done_count": 57,
+      "progress_pct": 100.0,
+      "parallel_count": 16,
+      "batch_running": false
+    }
+  },
+  "policy": {
+    "dashboard_policy": "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+    "requested_parallel": 16,
+    "forbidden_default_flags": [
+      "--no-dashboard"
+    ],
+    "fallback_attach": "tools/attach_manifest_dashboard.py --manifest <result_manifest.json> --dashboard-url http://127.0.0.1:8080"
+  },
+  "changed_files": [
+    "goal.md",
+    "docs/devs/GOAL_REGRESSION_SAFE_GROUNDING_LOOP.md",
+    "docs/devs/SAMPLING_AND_PARALLEL_TEST_GUIDE.md",
+    "docs/devs/loop_reports/LOOP_518_REPORT_20260707.md",
+    "docs/devs/loop518_test_run_dashboard_template_sync_state_20260707.json"
+  ],
+  "gates": {
+    "full375_collateral": "NO-GO / not rerun",
+    "search_evidence": "REVIEW",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE / NOT_COMPLETE",
+    "completion_criterion": "full375 collateral GO + full_scan path definition"
+  }
+}

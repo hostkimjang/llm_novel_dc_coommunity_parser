@@ -4,6 +4,7 @@
 
 - 현재 regression-safe grounding 계열 테스트런/검증런의 기본 요청 병렬도는 사용자 지시에 따라 `--parallel 16`이다. 입력 수가 16보다 작으면 실제 worker는 manifest의 `effective_parallel=min(input_post_count, healthy_endpoint_count, 16)`로 낮아질 수 있으며 정상이다.
 - 신규 테스트런 명령, run-plan, manifest 추천 명령에는 `--no-dashboard`를 기본으로 넣지 않는다. 진행상황은 standalone dashboard `http://127.0.0.1:8080`에 붙여 확인한다.
+- 직접 `expert_main.py`를 실행할 때도 같은 규칙을 따른다. 실행 전 `http://127.0.0.1:8080/api/health`를 확인하고, 서버가 없으면 `tools/dashboard_server.py --host 127.0.0.1 --port 8080`을 먼저 띄운다.
 - plan runner를 쓸 때는 `tools/run_independent_plan.py` 기본값이 dashboard on이다. 이 runner는 dashboard를 확인/시작하고 child run에 `DASHBOARD_URL`, `DASHBOARD_PORT`, `EXPERT_DASHBOARD_FORWARD=1`을 전달하며, 계획에 남은 `--no-dashboard`도 실행 직전에 제거한다.
 - 이미 `--no-dashboard`로 시작된 런은 중단하지 말고 `tools/attach_manifest_dashboard.py --manifest <result_manifest.json> --dashboard-url http://127.0.0.1:8080`로 manifest 진행률을 사후 부착한다.
 - 과거 섹션의 `--parallel 36`, `--no-dashboard` 예시는 해당 시점의 역사 기록이다. 새 goal/test 실행 지침은 이 Loop503 섹션과 Loop499/501 보고서가 우선한다.

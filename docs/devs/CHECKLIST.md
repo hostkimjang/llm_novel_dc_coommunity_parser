@@ -1,5 +1,19 @@
 # Development Checklist
 
+## 2026-07-07 Loop518 테스트런 웹 대시보드 템플릿 동기화 체크
+
+- [x] 현재 standalone dashboard health를 확인했다: `ok=true`, `standalone=true`, `pid=9320`.
+- [x] 최신 dashboard status는 Loop515 기준 `57/57`, `progress_pct=100.0`, `parallel_count=16`, `batch_running=false`다.
+- [x] `goal.md`의 오래된 Loop 2 canary 명령에서 `--no-dashboard`를 제거했다.
+- [x] `goal.md`의 오래된 Loop 2 canary 명령을 `--parallel 16`으로 고쳤다.
+- [x] `docs/devs/GOAL_REGRESSION_SAFE_GROUNDING_LOOP.md` Targeted canary 계약을 `--parallel 16` + dashboard 기본 ON으로 고쳤다.
+- [x] `docs/devs/SAMPLING_AND_PARALLEL_TEST_GUIDE.md`에 직접 `expert_main.py` 실행 전 dashboard health 확인 규칙을 추가했다.
+- [x] Report `docs/devs/loop_reports/LOOP_518_REPORT_20260707.md`를 작성했다.
+- [x] State `docs/devs/loop518_test_run_dashboard_template_sync_state_20260707.json`을 작성했다.
+- [ ] 대시보드를 semantic/full_scan approval 근거로 쓰지 않는다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: dashboard policy `WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS`, runtime parallel policy `LOCKED_TO_16_BY_USER`, runtime replay `NOT_RUN_AFTER_DOC_SYNC`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop517 shared gate scope conflict split 체크
 
 - [x] Loop516 `projection_runtime_scope_conflict 13`건을 hard/mixed로 분리했다.
