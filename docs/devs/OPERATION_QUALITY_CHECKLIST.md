@@ -659,6 +659,22 @@
   - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
 - Gate: projection `REVIEW-LOCKED`, follow-up queue `REVIEW-LOCKED`, runtime input `GO_INPUT_ONLY`, runtime replay `NOT_RUN_AFTER_INPUT`, full375 collateral `NO-GO / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
+## 2026-07-07 Loop535 post-verdict expected-restore projection contract 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_535_REPORT_20260707.md`.
+  - [x] 최신 full375 projection 적용 state 기록 완료: `docs/devs/loop535_current_full375_post_verdict_expected_restore_projection_contract_application.json`.
+  - [x] Release gate audit 기록 완료: `docs/devs/loop535_current_full375_post_verdict_expected_restore_release_gate_audit.json`.
+  - [x] Publication contract audit 기록 완료: `docs/devs/loop535_current_full375_post_verdict_expected_restore_publication_contract_audit.json`.
+  - [x] Golden/collateral compare 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop535_current_full375_post_verdict_expected_restore_collateral_compare.json`.
+- 품질 경계:
+  - [x] 이번 회차는 projection contract 적용이며 runtime replay가 아니다.
+  - [x] Release candidate `3`은 full_scan approval이 아니라 expected-restore contract closure다.
+  - [x] 최신 full375 publication contract가 `GO`여도 collateral regression `139`가 남아 full375 collateral은 `NO-GO`다.
+  - [ ] Full375 collateral `GO` 전 full_scan path를 정의하지 않는다.
+  - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: expected-restore release contract `REVIEW-LOCKED / pending 0`, publication contract `GO_PROJECTION_CONTRACT`, runtime replay `NOT_RUN`, full375 collateral `NO-GO / 139`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop534 테스트런 대시보드 기본 부착 품질 게이트
 
 - 근거:

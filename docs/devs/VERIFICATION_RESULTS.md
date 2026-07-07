@@ -1,5 +1,25 @@
 # Verification Results
 
+## 2026-07-07 Loop535 post-verdict expected-restore projection contract
+
+- 코드:
+  - `src/llm_batch/promotion_gate.py`에 `build_publish_contract_trace()`, `build_publish_ledger()`를 추가했다.
+  - `tools/apply_post_verdict_expected_restore_projection_contract.py`로 Loop532 `expected_title_restore_contract_case`를 projection identity에 적용한다.
+  - Wrong/current projection candidate는 public identity가 아니라 `superseded_projection_candidate`로 보존한다.
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_535_REPORT_20260707.md`
+  - `docs/devs/loop535_current_full375_post_verdict_expected_restore_projection_contract_application.json`
+  - `docs/devs/loop535_current_full375_post_verdict_expected_restore_release_gate_audit.json`
+  - `docs/devs/loop535_current_full375_post_verdict_expected_restore_publication_contract_audit.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop535_current_full375_post_verdict_expected_restore_projection_result.json`
+- 검증:
+  - `.venv312\Scripts\python.exe -m py_compile src\llm_batch\promotion_gate.py tools\apply_post_verdict_expected_restore_projection_contract.py tests\test_apply_post_verdict_expected_restore_projection_contract.py tests\test_promotion_gate_contract.py`: PASS.
+  - `.venv312\Scripts\python.exe -m unittest tests.test_apply_post_verdict_expected_restore_projection_contract tests.test_promotion_gate_contract tests.test_audit_post_verdict_promotion_gate_release_contract tests.test_audit_canonical_post_verdict_projection_contract -v`: PASS, `37` tests.
+  - 57-row release audit: PASS, pending `0`, release candidate `3`, violation `0`, runtime replay allowed `0`.
+  - 최신 full375 publication contract audit: PASS, `GO / 375 rows / 0 violations`.
+  - 최신 full375 collateral compare: `NO-GO / regression candidates 139`.
+- Gate: expected-restore release contract `REVIEW-LOCKED`, publication contract `GO_PROJECTION_CONTRACT`, runtime replay `NOT_RUN`, full375 collateral `NO-GO / 139`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop534 테스트런 대시보드 기본 부착 보강
 
 - 코드:

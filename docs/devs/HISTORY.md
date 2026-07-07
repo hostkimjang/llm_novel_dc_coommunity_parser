@@ -1,5 +1,17 @@
 # Development History
 
+## 2026-07-07 - Loop535 post-verdict expected-restore projection contract
+
+- 새 runtime replay는 실행하지 않았다.
+- Loop533 pending expected-restore `3`건(`11660271`, `11706871`, `11679547`)을 shared `PromotionDecision` 기반 projection contract로 적용했다.
+- `src/llm_batch/promotion_gate.py`에 `build_publish_contract_trace()`, `build_publish_ledger()`를 추가했다.
+- `tools/apply_post_verdict_expected_restore_projection_contract.py`와 `tests/test_apply_post_verdict_expected_restore_projection_contract.py`를 추가했다.
+- 57-row release gate는 pending `0`, release candidate `3`, violation `0`, runtime replay allowed `0`이다.
+- 최신 full375 projection 기준 publication contract는 `GO / 375 rows / 0 violations`이고 release gate도 pending `0`, violation `0`이다.
+- Golden18은 `PASS / 18 of 18`이지만 full375 collateral은 regression candidates `139`로 `NO-GO`다.
+- Report는 `docs/devs/loop_reports/LOOP_535_REPORT_20260707.md`, 최신 full375 projection은 `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop535_current_full375_post_verdict_expected_restore_projection_result.json`이다.
+- Gate는 expected-restore release contract `REVIEW-LOCKED / pending 0`, publication contract `GO_PROJECTION_CONTRACT`, runtime replay `NOT_RUN`, full375 collateral `NO-GO / 139`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop533 B1 post-verdict release gate contract audit
 
 - 새 runtime replay는 실행하지 않았다.

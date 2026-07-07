@@ -1,0 +1,66 @@
+{
+  "report_type": "post_verdict_expected_restore_projection_contract_application",
+  "projection_id": "loop535_post_verdict_expected_restore_projection_contract",
+  "generated_at": "2026-07-07T15:52:17",
+  "source_contract_plan": "loop532_b1_post_verdict_promotion_gate_contract_plan",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "projection_rows": 57,
+    "contract_plan_rows": 22,
+    "restore_plan_rows": 3,
+    "applied_restore_rows": 3,
+    "validation_issue_count": 0,
+    "skipped_contract_action_counts": {
+      "candidate_scrub_no_publish_contract_case": 6,
+      "stronger_evidence_hard_hold_contract_case": 6,
+      "canonical_variant_policy_hold_contract_case": 7
+    },
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "applied_rows": [
+    {
+      "post_id": 11660271,
+      "target_title": "월야의 여인들",
+      "target_url": null,
+      "superseded_projection_candidate": {
+        "official_title": "경멸하는 여자를 굴복시키는 법",
+        "official_url": "https://novelpia.com/novel/121059",
+        "source": "current_projection_candidate_preserved_before_expected_restore"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11706871,
+      "target_title": "파우스트",
+      "target_url": null,
+      "superseded_projection_candidate": {
+        "official_title": "데빌게이머 파우스트",
+        "official_url": "https://series.naver.com/novel/detail.series?productNo=2179539",
+        "source": "current_projection_candidate_preserved_before_expected_restore"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11679547,
+      "target_title": "도굴왕",
+      "target_url": null,
+      "superseded_projection_candidate": {
+        "official_title": "나 혼자만 레벨업",
+        "official_url": "https://series.naver.com/novel/detail.series?productNo=3207276",
+        "source": "current_projection_candidate_preserved_before_expected_restore"
+      },
+      "status": "applied"
+    }
+  ],
+  "approval_boundary": {
+    "projection_application_is_not_runtime_replay": true,
+    "release_candidate_is_not_full_scan_approval": true,
+    "runtime_replay_before_full375_collateral_forbidden": true,
+    "full375_collateral_remains_no_go": true
+  }
+}

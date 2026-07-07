@@ -285,3 +285,71 @@ def can_publish_title(
         reason_codes=reason_codes,
         bypassed_gate=False,
     )
+
+
+def _as_dict(value: Any) -> Dict[str, Any]:
+    if isinstance(value, PromotionDecision):
+        return value.to_dict()
+    if isinstance(value, ScopeState):
+        return value.to_dict()
+    if isinstance(value, GroundingState):
+        return value.to_dict()
+    return dict(value) if isinstance(value, dict) else {}
+
+
+def build_publish_contract_trace(
+    decision: PromotionDecision | Dict[str, Any],
+    *,
+    scope_state: Optional[ScopeState | Dict[str, Any]] = None,
+    pre_gate_candidate: Optional[Dict[str, Any]] = None,
+    post_gate_context: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
+    """Build the shared trace payload for a PromotionDecision."""
+    gate_decision = _as_dict(decision)
+    gate_decision["bypassed_gate"] = False
+    scope_payload = _as_dict(scope_state) or _as_dict(gate_decision.get("scope"))
+    if scope_payload:
+        gate_decision["scope"] = scope_payload
+    scope_kind = str(scope_payload.get("scope_kind") or "").strip() if scope_payload else ""
+    reason_codes = gate_decision.get("reason_codes")
+    if isinstance(reason_codes, list):
+        normalized = normalize_scope_reason_codes(
+            [str(code) for code in reason_codes if str(code).strip()],
+            scope_kind=scope_kind,
+        )
+    else:
+        normalized = []
+    gate_decision["reason_codes"] = normalized
+
+    publish_allowed = gate_decision.get("publish_allowed") is True
+    official_title = gate_decision.get("official_title") if publish_allowed else None
+    official_url = gate_decision.get("official_url") if publish_allowed else None
+    pre_gate = dict(pre_gate_candidate or {})
+    pre_gate.setdefault("official_title", gate_decision.get("official_title"))
+    pre_gate.setdefault("official_url", gate_decision.get("official_url"))
+
+    post_context = dict(post_gate_context or {})
+    post_gate_identity = {
+        "official_title": official_title,
+        "official_url": official_url,
+        "title_resolution_allowed": post_context.get("title_resolution_allowed"),
+        "title_resolution_state": post_context.get("title_resolution_state"),
+        "work_resolution": post_context.get("work_resolution"),
+        "candidate_ledger_status": post_context.get("candidate_ledger_status"),
+    }
+    return {
+        "pre_gate_candidate": pre_gate,
+        "gate_decision": gate_decision,
+        "scope_state": scope_payload,
+        "post_gate_identity": post_gate_identity,
+        "reason_codes": normalized,
+        "bypassed_gate": False,
+    }
+
+
+def build_publish_ledger(trace: Dict[str, Any]) -> Dict[str, Any]:
+    return {
+        "candidate_preservation": _as_dict(trace.get("pre_gate_candidate")),
+        "public_publish": _as_dict(trace.get("post_gate_identity")),
+        "gate_decision": _as_dict(trace.get("gate_decision")),
+    }

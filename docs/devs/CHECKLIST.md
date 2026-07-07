@@ -603,6 +603,21 @@
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
 - Gate: projection `REVIEW-LOCKED`, follow-up queue `REVIEW-LOCKED`, runtime input `GO_INPUT_ONLY`, runtime replay `NOT_RUN_AFTER_INPUT`, full375 collateral `NO-GO / residual 105`, goal `ACTIVE / NOT_COMPLETE`.
 
+## 2026-07-07 Loop535 post-verdict expected-restore projection contract 체크
+
+- [x] Shared `PromotionDecision`에서 trace/ledger를 만드는 helper를 `src/llm_batch/promotion_gate.py`에 추가했다.
+- [x] `tools/apply_post_verdict_expected_restore_projection_contract.py`를 추가했다.
+- [x] Expected-restore pending `3`건(`11660271`, `11706871`, `11679547`)을 projection public title로 복구했다.
+- [x] Wrong/current projection candidate는 `superseded_projection_candidate`로 보존하고 public identity로 누출하지 않았다.
+- [x] 57-row release gate pending `0`, release candidate `3`, violation `0`.
+- [x] 최신 full375 publication contract `GO / 375 rows / 0 violations`.
+- [x] Golden18 `PASS / 18 of 18`.
+- [x] focused unittest `37`건 PASS.
+- [ ] Full375 collateral은 regression candidates `139`로 아직 `NO-GO`다.
+- [ ] Runtime replay는 실행하지 않았다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: expected-restore release contract `REVIEW-LOCKED / pending 0`, publication contract `GO_PROJECTION_CONTRACT`, runtime replay `NOT_RUN`, full375 collateral `NO-GO / 139`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop534 테스트런 대시보드 기본 부착 체크
 
 - [x] `tools/run_independent_plan.py`의 `run_plan()` 기본값을 `dashboard=True`로 바꿨다.

@@ -1,5 +1,18 @@
 # Improvement Register
 
+## IMP-20260707-535 - post-verdict expected-restore projection contract
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Shared trace/ledger helper | GO_UNIT | `build_publish_contract_trace()`/`build_publish_ledger()` 추가 | expert_main 수렴 경로와 계속 맞춘다 |
+| Expected restore pending | CLOSED_PROJECTION | `11660271`, `11706871`, `11679547` projection public title 복구 | runtime replay는 full375 collateral 전 금지 |
+| Release gate | REVIEW-LOCKED | pending `0`, release candidate `3`, violation `0` | release candidate를 approval로 승격하지 않는다 |
+| Full375 publication contract | GO_PROJECTION_CONTRACT | 최신 full375 projection `375/375`, violation `0` | collateral residual 처리 |
+| Full375 collateral | NO-GO | regression candidates `139` | residual N건 배치 또는 full375 collateral gate 수리 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: expected-restore release contract `REVIEW-LOCKED / pending 0`, publication contract `GO_PROJECTION_CONTRACT`, runtime replay `NOT_RUN`, full375 collateral `NO-GO / 139`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-533 - B1 post-verdict release gate contract audit
 
 | 항목 | 상태 | 근거 | 다음 |
