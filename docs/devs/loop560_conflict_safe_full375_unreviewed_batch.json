@@ -1,0 +1,42 @@
+{
+  "report_type": "collateral_p0_unreviewed_source_review_batch",
+  "source_report_type": "collateral_p0_blind_source_review_batch",
+  "scope_label": "full375 P0 prior-incompatible residual",
+  "generated_at": "2026-07-07T22:40:13",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "source_batch": "loop559 conflict-safe full375 P0",
+  "prior_compatible_review_id": "loop560_conflict_safe_full375_prior_compatible_source_native",
+  "prior_compatible_summary": {
+    "current_batch_rows": 126,
+    "source_verdict_rows": 576,
+    "overlap_rows": 482,
+    "compatible_rows": 126,
+    "unreviewed_current_batch_rows": 0,
+    "skip_counts": {
+      "post_id_not_in_current_batch": 94,
+      "duplicate_compatible_post_id": 333,
+      "triage_bucket_changed": 23
+    }
+  },
+  "summary": {
+    "source_review_rows": 126,
+    "prior_compatible_rows": 126,
+    "additional_covered_rows": 0,
+    "covered_post_ids": 126,
+    "unreviewed_rows": 0,
+    "counts_by_bucket": {},
+    "counts_by_collateral_status": {},
+    "image_rows": 0,
+    "text_only_rows": 0
+  },
+  "instructions_ko": [
+    "이 배치는 과거 source-native verdict와 title/url 기준으로 호환되지 않은 현재 P0 행만 포함한다.",
+    "blind judge 입력에는 source_native_packet과 blind_judge_options만 제공한다.",
+    "comparison_private_not_for_blind_judge는 전후 diff 검수용이며 blind judge에는 제공하지 않는다.",
+    "이미지 행은 VLM/OCR 또는 native/browser 확인 없이 텍스트만으로 Strong evidence로 올리지 않는다.",
+    "정답 판정 전까지 semantic_quality=REVIEW-LOCKED, full_scan_approval=false를 유지한다."
+  ],
+  "review_rows": []
+}

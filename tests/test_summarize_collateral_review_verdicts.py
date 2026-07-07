@@ -118,6 +118,48 @@ class SummarizeCollateralReviewVerdictsTest(unittest.TestCase):
         self.assertEqual(summary["summary"]["queue_transition"]["original_p0_rows"], 2)
         self.assertEqual(summary["summary"]["queue_transition"]["residual_action_queue_rows"], 2)
 
+    def test_info_missing_is_not_counted_as_source_native_decision(self):
+        batch = {
+            "review_rows": [
+                {"post_id": 1, "blind_judge_options": [{"option_id": "C1"}], "source_native_packet": {}},
+                {"post_id": 2, "blind_judge_options": [{"option_id": "C1"}], "source_native_packet": {}},
+            ]
+        }
+        verdicts = {
+            "review_id": "info_missing",
+            "rows": [
+                {
+                    "post_id": 1,
+                    "selected_option_id": "C1",
+                    "review_label": "ACCEPT",
+                    "source_native_verdict": "after_correct",
+                    "action": ["exclude_from_regression_count_after_gate_wiring"],
+                    "evidence_refs": ["unit://source"],
+                },
+                {
+                    "post_id": 2,
+                    "selected_option_id": "HOLD",
+                    "review_label": "INFO_MISSING",
+                    "source_native_verdict": "current_regression_row_without_compatible_prior_verdict",
+                    "action": ["source_native_or_blind_review_required"],
+                    "evidence_refs": ["unit://source"],
+                },
+            ],
+        }
+
+        summary = build_summary(batch=batch, verdicts=verdicts, generated_at="2026-07-02T00:00:00")
+
+        counts = summary["summary"]
+        transition = counts["queue_transition"]
+        self.assertEqual(counts["reviewed_rows"], 2)
+        self.assertEqual(counts["source_native_decision_rows"], 1)
+        self.assertEqual(counts["info_missing_rows"], 1)
+        self.assertEqual(counts["unreviewed_or_info_missing_batch_rows"], 1)
+        self.assertEqual(transition["source_native_reviewed_rows"], 2)
+        self.assertEqual(transition["source_native_decision_rows"], 1)
+        self.assertEqual(transition["info_missing_rows"], 1)
+        self.assertEqual(counts["queue_by_bucket"][""]["info_missing_rows"], 1)
+
     def test_invalid_selected_option_keeps_no_go(self):
         batch = {
             "review_rows": [

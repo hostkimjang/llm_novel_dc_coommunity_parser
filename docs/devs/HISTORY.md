@@ -1,5 +1,18 @@
 # Development History
 
+## 2026-07-07 - Loop560-562 full375 P0 prior-compatible review and dashboard batch contract
+
+- 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+- Loop559 P0 `126`건을 기존 source-native verdict와 현재 후보 post_id/bucket/title-url 호환성으로 재회계했다.
+- Source-native summary는 reviewed `126`, decision `121`, info missing `5`, validation issue `0`이다.
+- Label 분포는 `ACCEPT 39`, `REPROCESS 61`, `HOLD 21`, `INFO_MISSING 5`다.
+- Full375 raw regression `126`은 exclusion candidate `39` 반영 뒤 review-adjusted `87`로 남았고 always-on gate는 `NO-GO`다.
+- Loop561 residual action queue `87`건과 Loop562 P0 code repair batch `55`건, INFO_MISSING source-native review packet `5`건을 생성했다.
+- `tools/build_action_queue_batch.py`와 `tools/test_run_dashboard_policy.py`를 보강해 action batch/runtime input manifest에 `--parallel 16`과 web dashboard 실행 계약을 남기게 했다.
+- Dashboard는 `http://127.0.0.1:8080`, health `ok=true / standalone=true / pid=9320`로 확인했다.
+- Report는 `docs/devs/loop_reports/LOOP_560_562_REPORT_20260707.md`다.
+- Gate는 prior-compatible transfer `REVIEW-LOCKED`, always-on `NO-GO / adjusted 87`, residual queue `REVIEW-LOCKED / 87`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop557-559 conflict-safe restore mismatch guard and full375 P0 batch
 
 - 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.

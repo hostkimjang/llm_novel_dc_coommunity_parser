@@ -95,7 +95,10 @@ def _collateral_review_adjustment(
     review_gate = str(collateral_review.get("gate") or "").strip()
     batch_review_rows = _safe_int(summary.get("batch_review_rows"))
     reviewed_rows = _safe_int(summary.get("reviewed_rows"))
+    source_native_decision_rows = _safe_int(summary.get("source_native_decision_rows"))
+    info_missing_rows = _safe_int(summary.get("info_missing_rows"))
     unreviewed_batch_rows = _safe_int(summary.get("unreviewed_batch_rows"))
+    unreviewed_or_info_missing_batch_rows = _safe_int(summary.get("unreviewed_or_info_missing_batch_rows"))
     validation_issue_count = _safe_int(summary.get("validation_issue_count"))
     exclusion_candidate_rows = _safe_int(transition.get("exclusion_candidate_rows"))
     if exclusion_candidate_rows is None:
@@ -158,7 +161,10 @@ def _collateral_review_adjustment(
         ),
         "batch_review_rows": batch_review_rows,
         "reviewed_rows": reviewed_rows,
+        "source_native_decision_rows": source_native_decision_rows,
+        "info_missing_rows": info_missing_rows,
         "unreviewed_batch_rows": unreviewed_batch_rows,
+        "unreviewed_or_info_missing_batch_rows": unreviewed_or_info_missing_batch_rows,
         "unreviewed_regression_rows": unreviewed_regression_rows,
         "validation_issue_count": validation_issue_count,
         "exclusion_candidate_rows": exclusion_candidate_rows,
@@ -305,6 +311,18 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
         (
             "- review scope: "
             f"`{report['collateral']['review_adjustment'].get('review_scope')}`"
+        ),
+        (
+            "- source-native decision rows: "
+            f"`{display(report['collateral']['review_adjustment'].get('source_native_decision_rows'))}`"
+        ),
+        (
+            "- info missing rows: "
+            f"`{display(report['collateral']['review_adjustment'].get('info_missing_rows'))}`"
+        ),
+        (
+            "- unreviewed or info-missing rows: "
+            f"`{display(report['collateral']['review_adjustment'].get('unreviewed_or_info_missing_batch_rows'))}`"
         ),
         (
             "- unreviewed regression rows: "

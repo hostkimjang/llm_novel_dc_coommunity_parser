@@ -1,5 +1,23 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop560-562 full375 P0 재회계와 테스트런 dashboard 계약
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_560_562_REPORT_20260707.md`.
+  - [x] Prior-compatible verdict/state 기록 완료: `docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_*`.
+  - [x] Source-native summary와 always-on gate 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop560_*`.
+  - [x] Residual/action batch 기록 완료: `docs/devs/loop561_conflict_safe_full375_residual87_action_queue.json`, `docs/devs/loop562_conflict_safe_full375_*`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+  - [x] `INFO_MISSING 5`건은 source-native decision으로 세지 않는다.
+  - [x] Full375 review-adjusted regression `87`을 always-on `NO-GO`로 유지했다.
+  - [x] Residual `87`건은 단건 소모가 아니라 P0 code repair `55`와 INFO_MISSING review `5` 등 배치 단위로 분리했다.
+  - [x] Action batch/runtime input manifest 계약은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지다.
+  - [x] Dashboard health는 `http://127.0.0.1:8080`, `ok=true / standalone=true / pid=9320`다.
+  - [x] Dashboard는 진행 확인 도구이며 approval 근거가 아니다.
+  - [x] Full375 collateral `GO` 전 goal completion을 선언하지 않는다.
+- Gate: prior-compatible transfer `REVIEW-LOCKED / decision 121 / info_missing 5`, always-on `NO-GO / adjusted 87`, residual queue `REVIEW-LOCKED / 87`, P0 code repair `REVIEW-LOCKED / 55`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop557-559 conflict-safe restore 품질 게이트
 
 - 근거:

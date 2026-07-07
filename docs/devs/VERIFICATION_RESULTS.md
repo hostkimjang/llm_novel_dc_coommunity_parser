@@ -1,5 +1,33 @@
 # Verification Results
 
+## 2026-07-07 Loop560-562 full375 P0 prior-compatible review and dashboard batch contract
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_560_562_REPORT_20260707.md`
+  - `docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json`
+  - `docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_state_20260707.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop560_conflict_safe_full375_prior_compatible_source_native_review.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop560_always_on_golden18_full375_review_adjusted_gate.json`
+  - `docs/devs/loop561_conflict_safe_full375_residual87_action_queue.json`
+  - `docs/devs/loop562_conflict_safe_full375_p0_code_repair55_batch.json`
+  - `docs/devs/loop562_conflict_safe_full375_info_missing5_source_native_batch.json`
+  - `docs/devs/loop562_conflict_safe_full375_info_missing5_source_native_review_packet.json`
+- 검증:
+  - py_compile: PASS, `.venv312`, collateral summary/always-on/split/action batch tool 및 관련 tests.
+  - unittest focused suite: PASS, `tests.test_summarize_collateral_review_verdicts`, `tests.test_always_on_regression_gates`, `tests.test_split_collateral_action_queue`, `tests.test_action_queue_batch`, `tests.test_build_prior_compatible_collateral_verdicts`, `tests.test_run_independent_plan`, `tests.test_attach_manifest_dashboard`, 총 `36` tests.
+  - Prior-compatible verdict build: PASS, compatible rows `126`, unreviewed current batch rows `0`.
+  - Source-native summary: PASS, reviewed `126`, source-native decision `121`, info missing `5`, validation issue `0`.
+  - Always-on gate: expected NO-GO, golden `GO / 18 of 18`, collateral adjusted regression `87`.
+  - Residual queue: PASS, action queue rows `87`, validation issue `0`.
+  - Loop562 batch regeneration: PASS, P0 code repair `55`, INFO_MISSING packet `5`.
+  - Dashboard contract generation: PASS, Loop562 action batch JSON/Markdown에 `TEST_RUNS_USE_PARALLEL_16_AND_WEB_DASHBOARD`, requested parallel `16`, dashboard URL `http://127.0.0.1:8080`, forbidden `--no-dashboard` 기록.
+  - Dashboard health/status: PASS, health `ok=true / standalone=true / pid=9320`; status는 마지막 runtime replay Loop545 `49/49`, `progress_pct=100.0`, `parallel_count=16`, `batch_running=false`.
+- 결과:
+  - Full375 raw regression `126`은 review-adjusted `87`로 낮아졌지만 gate는 계속 `NO-GO`다.
+  - 다음 runtime/test run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 기본 금지로 실행한다.
+  - Dashboard는 진행 확인 도구이며 semantic/full_scan approval 근거가 아니다.
+- Gate: prior-compatible transfer `REVIEW-LOCKED`, always-on `NO-GO / adjusted 87`, residual queue `REVIEW-LOCKED / 87`, P0 code repair `REVIEW-LOCKED / 55`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop557-559 conflict-safe restore mismatch guard and full375 P0 batch
 
 - 산출물:

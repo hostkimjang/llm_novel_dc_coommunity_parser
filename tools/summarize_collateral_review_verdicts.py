@@ -89,6 +89,8 @@ def _queue_transition(
     validation_issues: list[dict[str, Any]],
 ) -> dict[str, Any]:
     label_counts = Counter(_string(row.get("review_label")) for row in rows)
+    info_missing_rows = label_counts.get("INFO_MISSING", 0)
+    decision_rows = max(len(rows) - info_missing_rows, 0)
     exclusion_candidates = sum(
         1
         for row in rows
@@ -99,6 +101,8 @@ def _queue_transition(
     return {
         "original_p0_rows": batch_row_count,
         "source_native_reviewed_rows": len(rows),
+        "source_native_decision_rows": decision_rows,
+        "info_missing_rows": info_missing_rows,
         "exclusion_candidate_rows": exclusion_candidates,
         "repair_required_rows": repair_required,
         "policy_or_native_review_required_rows": policy_or_review_required,
@@ -116,6 +120,7 @@ def _queue_by_bucket(rows: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
     out: dict[str, dict[str, Any]] = {}
     for bucket, bucket_rows in sorted(grouped.items()):
         label_counts = Counter(_string(row.get("review_label")) for row in bucket_rows)
+        info_missing_rows = label_counts.get("INFO_MISSING", 0)
         action_counts: Counter[str] = Counter()
         for row in bucket_rows:
             for action in row.get("action") or []:
@@ -123,6 +128,8 @@ def _queue_by_bucket(rows: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
         exclusion_candidates = action_counts.get("exclude_from_regression_count_after_gate_wiring", 0)
         out[bucket] = {
             "rows": len(bucket_rows),
+            "source_native_decision_rows": max(len(bucket_rows) - info_missing_rows, 0),
+            "info_missing_rows": info_missing_rows,
             "label_counts": dict(label_counts),
             "action_counts": dict(action_counts),
             "exclusion_candidate_rows": exclusion_candidates,
@@ -197,6 +204,8 @@ def build_combined_summary(
             }
         )
     label_counts = Counter(_string(row.get("review_label")) for row in out_rows)
+    info_missing_rows = label_counts.get("INFO_MISSING", 0)
+    source_native_decision_rows = max(len(out_rows) - info_missing_rows, 0)
     verdict_counts = Counter(_string(row.get("source_native_verdict")) for row in out_rows)
     bucket_counts = Counter(_string(row.get("triage_bucket")) for row in out_rows)
     action_counts: Counter[str] = Counter()
@@ -217,7 +226,10 @@ def build_combined_summary(
         "summary": {
             "batch_review_rows": len(indexed),
             "reviewed_rows": len(out_rows),
+            "source_native_decision_rows": source_native_decision_rows,
+            "info_missing_rows": info_missing_rows,
             "unreviewed_batch_rows": max(len(indexed) - len(out_rows), 0),
+            "unreviewed_or_info_missing_batch_rows": max(len(indexed) - source_native_decision_rows, 0),
             "validation_issue_count": len(validation_issues),
             "counts_by_bucket": dict(bucket_counts),
             "label_counts": dict(label_counts),
@@ -252,7 +264,10 @@ def write_markdown(path: Path, summary: dict[str, Any]) -> None:
         f"- full_scan_approval: `{str(summary['full_scan_approval']).lower()}`",
         f"- batch review rows: `{counts['batch_review_rows']}`",
         f"- reviewed rows: `{counts['reviewed_rows']}`",
+        f"- source-native decision rows: `{counts.get('source_native_decision_rows', counts['reviewed_rows'])}`",
+        f"- info missing rows: `{counts.get('info_missing_rows', 0)}`",
         f"- unreviewed batch rows: `{counts['unreviewed_batch_rows']}`",
+        f"- unreviewed or info-missing rows: `{counts.get('unreviewed_or_info_missing_batch_rows', counts['unreviewed_batch_rows'])}`",
         f"- validation issues: `{counts['validation_issue_count']}`",
         "",
         "## 버킷 집계",
@@ -275,6 +290,8 @@ def write_markdown(path: Path, summary: dict[str, Any]) -> None:
         [
             f"- 원 P0 행: `{transition.get('original_p0_rows', 0)}`",
             f"- source-native 검토 완료: `{transition.get('source_native_reviewed_rows', 0)}`",
+            f"- source-native decision rows: `{transition.get('source_native_decision_rows', transition.get('source_native_reviewed_rows', 0))}`",
+            f"- info missing rows: `{transition.get('info_missing_rows', 0)}`",
             f"- gate wiring 뒤 regression count 제외 후보: `{transition.get('exclusion_candidate_rows', 0)}`",
             f"- REPROCESS 수리 큐: `{transition.get('repair_required_rows', 0)}`",
             f"- HOLD 정책/native 추가 검토 큐: `{transition.get('policy_or_native_review_required_rows', 0)}`",
@@ -289,6 +306,8 @@ def write_markdown(path: Path, summary: dict[str, Any]) -> None:
             lines.append(
                 "- "
                 f"`{bucket}` rows=`{bucket_counts.get('rows', 0)}` "
+                f"decision=`{bucket_counts.get('source_native_decision_rows', bucket_counts.get('rows', 0))}` "
+                f"info_missing=`{bucket_counts.get('info_missing_rows', 0)}` "
                 f"exclude_candidates=`{bucket_counts.get('exclusion_candidate_rows', 0)}` "
                 f"residual=`{bucket_counts.get('residual_action_queue_rows', 0)}`"
             )

@@ -1,5 +1,14 @@
 # Sampling And Parallel Test Guide
 
+## 2026-07-07 Loop560-562 action batch dashboard 계약
+
+- `tools/test_run_dashboard_policy.py`는 `TEST_RUNS_USE_PARALLEL_16_AND_WEB_DASHBOARD` 실행 계약을 제공한다.
+- `tools/build_action_queue_batch.py`는 action batch와 runtime input manifest에 requested parallel `16`, expected effective parallel, dashboard URL `http://127.0.0.1:8080`, forbidden flag `--no-dashboard`를 기록한다.
+- Loop562 P0 code repair batch와 INFO_MISSING source-native batch JSON/Markdown은 이 계약을 포함한다.
+- 현재 dashboard health는 `ok=true`, `standalone=true`, `pid=9320`이다.
+- 다음 regression-safe grounding runtime/test run은 계속 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 기본 금지다.
+- Dashboard는 진행상황 관측 도구이며 `semantic_quality`, `full_scan_approval`, `full375 collateral GO`의 승인 근거가 아니다.
+
 ## 2026-07-07 Loop557-559 이후 테스트런 대시보드 재확인
 
 - 다음 regression-safe grounding runtime/test run은 진행상황 확인을 위해 `http://127.0.0.1:8080` standalone dashboard에 붙여 실행한다.

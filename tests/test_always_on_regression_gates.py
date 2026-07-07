@@ -110,6 +110,40 @@ class AlwaysOnRegressionGatesTest(unittest.TestCase):
             report["blockers"],
         )
 
+    def test_collateral_review_reports_info_missing_decision_gap(self):
+        review = _collateral_review(
+            summary={
+                "batch_review_rows": 10,
+                "reviewed_rows": 10,
+                "source_native_decision_rows": 8,
+                "info_missing_rows": 2,
+                "unreviewed_batch_rows": 0,
+                "unreviewed_or_info_missing_batch_rows": 2,
+                "validation_issue_count": 0,
+                "action_counts": {
+                    "exclude_from_regression_count_after_gate_wiring": 3,
+                },
+                "queue_transition": {
+                    "original_p0_rows": 10,
+                    "exclusion_candidate_rows": 3,
+                    "residual_action_queue_rows": 7,
+                },
+            }
+        )
+
+        report = evaluate_gates(
+            golden=_golden(),
+            collateral=_collateral(changed_post_count=20, collateral_regression_count=20),
+            collateral_review=review,
+        )
+
+        adjustment = report["collateral"]["review_adjustment"]
+        self.assertTrue(adjustment["applied"])
+        self.assertEqual(adjustment["source_native_decision_rows"], 8)
+        self.assertEqual(adjustment["info_missing_rows"], 2)
+        self.assertEqual(adjustment["unreviewed_or_info_missing_batch_rows"], 2)
+        self.assertEqual(report["collateral"]["review_adjusted_regression_count"], 17)
+
     def test_collateral_review_p0_scope_exclusions_apply_and_leave_unreviewed_p1_visible(self):
         p0_review = _collateral_review(
             summary={

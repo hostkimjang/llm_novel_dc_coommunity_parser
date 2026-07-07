@@ -1,5 +1,21 @@
 # Development Checklist
 
+## 2026-07-07 Loop560-562 full375 P0 재회계 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 실행하지 않았다.
+- [x] Loop559 P0 `126`건을 prior-compatible source-native verdict로 재회계했다.
+- [x] `INFO_MISSING 5`건은 `reviewed_rows` 호환 필드와 `source_native_decision_rows`에서 분리했다.
+- [x] Source-native summary는 decision `121`, validation issue `0`이다.
+- [x] Always-on gate는 golden `GO`, collateral `NO-GO / adjusted 87`, overall `NO-GO`다.
+- [x] Loop561 residual queue `87`건을 batch 처리 단위로 만들었다.
+- [x] Loop562 P0 code repair batch `55`건과 INFO_MISSING review packet `5`건을 분리했다.
+- [x] Action batch와 runtime input manifest 생성 경로에 `TEST_RUNS_USE_PARALLEL_16_AND_WEB_DASHBOARD` 실행 계약을 추가했다.
+- [x] 현재 standalone dashboard는 `http://127.0.0.1:8080`에서 `ok=true / standalone=true / pid=9320`로 응답한다.
+- [ ] 다음 runtime/test run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 기본 금지로 실행한다.
+- [ ] P0 code repair `55`건과 INFO_MISSING `5`건을 닫기 전 full_scan approval을 열지 않는다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: prior-compatible transfer `REVIEW-LOCKED`, always-on `NO-GO / adjusted 87`, residual queue `REVIEW-LOCKED / 87`, P0 code repair `REVIEW-LOCKED / 55`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop557-559 conflict-safe restore 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 실행하지 않았다.

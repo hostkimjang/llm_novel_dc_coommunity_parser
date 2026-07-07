@@ -1,5 +1,22 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop560-562 TODO
+
+- 상태 업데이트: Loop559 P0 `126`건을 prior-compatible source-native verdict로 재회계했고 full375 adjusted regression은 `87`로 남았다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Loop560 prior-compatible verdict rows는 `126`, source-native decision rows는 `121`, info missing rows는 `5`다.
+- [x] Label 분포는 `ACCEPT 39 / REPROCESS 61 / HOLD 21 / INFO_MISSING 5`다.
+- [x] Always-on gate는 golden `GO / 18 of 18`, collateral `NO-GO / adjusted 87`, overall `NO-GO`다.
+- [x] Loop561 residual action queue는 `87`건이며 safe_loss `64`, unsafe promotion `8`, wrong_work `15`다.
+- [x] Loop562 P0 code repair batch는 `55`건, INFO_MISSING source-native review packet은 `5`건이다.
+- [x] Action batch 산출물에 `TEST_RUNS_USE_PARALLEL_16_AND_WEB_DASHBOARD` 실행 계약을 붙였다.
+- [x] 현재 dashboard health는 `http://127.0.0.1:8080`, `ok=true / standalone=true / pid=9320`이다.
+- [ ] P0 code repair `55`건과 INFO_MISSING `5`건을 닫기 전 full375 동결을 해제하지 않는다.
+- [ ] 다음 runtime/test run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 기본 금지로 실행한다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: prior-compatible transfer `REVIEW-LOCKED / decision 121 / info_missing 5`, always-on `NO-GO / adjusted 87`, residual queue `REVIEW-LOCKED / 87`, P0 code repair `REVIEW-LOCKED / 55`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop557-559 TODO
 
 - 상태 업데이트: Loop555 golden 실패 `11694019`를 restore mismatch review로 되돌렸고 golden18은 회복됐지만 full375 collateral은 `126` 회귀로 `NO-GO`다. Goal은 완료가 아니다.

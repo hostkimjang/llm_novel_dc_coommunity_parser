@@ -50,6 +50,16 @@ def _priority_for_group(action: str, labels: Counter[str]) -> str:
     return "P2"
 
 
+def _priority_for_actions(actions: list[str], label: str) -> str:
+    labels = Counter({label: 1})
+    priorities = [_priority_for_group(action, labels) for action in actions]
+    if "P0" in priorities:
+        return "P0"
+    if "P1" in priorities:
+        return "P1"
+    return "P2"
+
+
 def _owner_mode_for_group(action: str, labels: Counter[str]) -> str:
     if action.startswith(REPAIR_PREFIXES):
         return "CODE_OR_RUNTIME_REPAIR"
@@ -57,6 +67,22 @@ def _owner_mode_for_group(action: str, labels: Counter[str]) -> str:
         return "SOURCE_NATIVE_OR_BLIND_REVIEW"
     if labels.get("HOLD"):
         return "POLICY_OR_NATIVE_REVIEW"
+    return "RUNTIME_REPLAY_OR_REVIEW"
+
+
+def _owner_mode_for_actions(actions: list[str], label: str) -> str:
+    labels = Counter({label: 1})
+    if any(action.startswith(REPAIR_PREFIXES) for action in actions):
+        return "CODE_OR_RUNTIME_REPAIR"
+    if label == "INFO_MISSING":
+        return "SOURCE_NATIVE_OR_BLIND_REVIEW"
+    if label == "HOLD":
+        return "POLICY_OR_NATIVE_REVIEW"
+    owner_modes = [_owner_mode_for_group(action, labels) for action in actions]
+    if "POLICY_OR_NATIVE_REVIEW" in owner_modes:
+        return "POLICY_OR_NATIVE_REVIEW"
+    if "SOURCE_NATIVE_OR_BLIND_REVIEW" in owner_modes:
+        return "SOURCE_NATIVE_OR_BLIND_REVIEW"
     return "RUNTIME_REPLAY_OR_REVIEW"
 
 
@@ -144,6 +170,8 @@ def build_residual_queue(
         entry = {
             "post_id": raw_post_id,
             "triage_bucket": bucket,
+            "priority": _priority_for_actions(actions, label),
+            "owner_mode": _owner_mode_for_actions(actions, label),
             "review_label": label,
             "source_native_verdict": row.get("source_native_verdict"),
             "selected_title": row.get("selected_title"),

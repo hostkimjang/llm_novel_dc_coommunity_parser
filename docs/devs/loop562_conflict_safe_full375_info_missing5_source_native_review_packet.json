@@ -1,0 +1,141 @@
+{
+  "report_type": "source_native_or_blind_review_packet",
+  "packet_id": "loop562_conflict_safe_full375_info_missing5_source_native_batch_hold_review_packet",
+  "generated_at": "2026-07-07T22:51:24",
+  "source_batch_id": "loop562_conflict_safe_full375_info_missing5_source_native_batch",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "review_rows": 5,
+    "priority_counts": {
+      "P1": 5
+    },
+    "dispatch_lane_counts": {
+      "source_native_or_blind_review": 5
+    },
+    "audit_status_counts": {
+      "None": 5
+    }
+  },
+  "rows": [
+    {
+      "post_id": 11660232,
+      "priority": "P1",
+      "review_label": "INFO_MISSING",
+      "dispatch_lane": "source_native_or_blind_review",
+      "audit_status": null,
+      "expected_title": null,
+      "actual_title": null,
+      "actual_url": null,
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "reason_codes": [],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11660232",
+        "loop536_current_full375_prior_compatible_source_native#unreviewed_current_batch_row",
+        "docs/devs/loop536_current_full375_p0_unreviewed_placeholder_verdicts.json#post_id=11660232",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11660232",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11660232"
+      ],
+      "review_task": "정답 title variant인지 wrong-work인지 source-native 또는 blind judge로 판정한다. 판정 전 promotion hard-hold를 완화하지 않는다."
+    },
+    {
+      "post_id": 11663554,
+      "priority": "P1",
+      "review_label": "INFO_MISSING",
+      "dispatch_lane": "source_native_or_blind_review",
+      "audit_status": null,
+      "expected_title": null,
+      "actual_title": null,
+      "actual_url": null,
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "reason_codes": [],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11663554",
+        "loop536_current_full375_prior_compatible_source_native#unreviewed_current_batch_row",
+        "docs/devs/loop536_current_full375_p0_unreviewed_placeholder_verdicts.json#post_id=11663554",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11663554",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11663554"
+      ],
+      "review_task": "정답 title variant인지 wrong-work인지 source-native 또는 blind judge로 판정한다. 판정 전 promotion hard-hold를 완화하지 않는다."
+    },
+    {
+      "post_id": 11682792,
+      "priority": "P1",
+      "review_label": "INFO_MISSING",
+      "dispatch_lane": "source_native_or_blind_review",
+      "audit_status": null,
+      "expected_title": null,
+      "actual_title": null,
+      "actual_url": null,
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "reason_codes": [],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11682792",
+        "loop536_current_full375_prior_compatible_source_native#unreviewed_current_batch_row",
+        "docs/devs/loop536_current_full375_p0_unreviewed_placeholder_verdicts.json#post_id=11682792",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11682792",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11682792"
+      ],
+      "review_task": "정답 title variant인지 wrong-work인지 source-native 또는 blind judge로 판정한다. 판정 전 promotion hard-hold를 완화하지 않는다."
+    },
+    {
+      "post_id": 11703674,
+      "priority": "P1",
+      "review_label": "INFO_MISSING",
+      "dispatch_lane": "source_native_or_blind_review",
+      "audit_status": null,
+      "expected_title": null,
+      "actual_title": null,
+      "actual_url": null,
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "reason_codes": [],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11703674",
+        "loop536_current_full375_prior_compatible_source_native#unreviewed_current_batch_row",
+        "docs/devs/loop536_current_full375_p0_unreviewed_placeholder_verdicts.json#post_id=11703674",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11703674",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11703674"
+      ],
+      "review_task": "정답 title variant인지 wrong-work인지 source-native 또는 blind judge로 판정한다. 판정 전 promotion hard-hold를 완화하지 않는다."
+    },
+    {
+      "post_id": 11714903,
+      "priority": "P1",
+      "review_label": "INFO_MISSING",
+      "dispatch_lane": "source_native_or_blind_review",
+      "audit_status": null,
+      "expected_title": null,
+      "actual_title": null,
+      "actual_url": null,
+      "actions": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "reason_codes": [],
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11714903",
+        "loop536_current_full375_prior_compatible_source_native#unreviewed_current_batch_row",
+        "docs/devs/loop536_current_full375_p0_unreviewed_placeholder_verdicts.json#post_id=11714903",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11714903",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11714903"
+      ],
+      "review_task": "정답 title variant인지 wrong-work인지 source-native 또는 blind judge로 판정한다. 판정 전 promotion hard-hold를 완화하지 않는다."
+    }
+  ],
+  "approval_boundary": {
+    "packet_generation_is_not_review_completion": true,
+    "hard_hold_relaxation_requires_review_verdict": true
+  }
+}

@@ -67,3 +67,30 @@ def dashboard_contract(
             dashboard_url=dashboard_url,
         )
     return contract
+
+
+def test_run_execution_contract(
+    row_count: int,
+    *,
+    manifest_path: str | Path | None = None,
+    python_executable: str = "python",
+    dashboard_url: str = DEFAULT_DASHBOARD_URL,
+) -> dict[str, object]:
+    count = max(0, int(row_count or 0))
+    return {
+        "policy": "TEST_RUNS_USE_PARALLEL_16_AND_WEB_DASHBOARD",
+        "row_count": count,
+        "requested_parallel": requested_parallel_for_test_run(count),
+        "expected_effective_parallel": expected_effective_parallel(count),
+        "required_flags": ["--parallel 16"] if count > 0 else [],
+        "forbidden_flags": ["--no-dashboard"],
+        "dashboard_gate": "GO_PROGRESS_VIEW_NOT_APPROVAL",
+        "dashboard_contract": dashboard_contract(
+            manifest_path=manifest_path,
+            python_executable=python_executable,
+            dashboard_url=dashboard_url,
+        ),
+        "approval_boundary": (
+            "Dashboard progress visibility and runtime completion are not semantic/full_scan approval."
+        ),
+    }

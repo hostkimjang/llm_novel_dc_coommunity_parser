@@ -1,0 +1,18 @@
+{
+  "review_id": "loop560_conflict_safe_full375_prior_compatible_source_native_unreviewed_placeholders",
+  "scope": "Loop560 conflict-safe full375 prior-compatible source-native verdicts unreviewed placeholders",
+  "source_batch": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop559_conflict_safe_full375_p0_review_batch.json",
+  "generated_at": "2026-07-07T22:40:13",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "source_review_rows": 126,
+    "prior_compatible_rows": 126,
+    "additional_covered_rows": 0,
+    "covered_post_ids": 126,
+    "placeholder_rows": 0,
+    "counts_by_bucket": {}
+  },
+  "rows": []
+}

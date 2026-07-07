@@ -1,5 +1,21 @@
 # Improvement Register
 
+## IMP-20260707-560-562 - Full375 P0 prior-compatible review and dashboard batch contract
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | repair 후에만 test run 발주 |
+| Prior-compatible transfer | REVIEW-LOCKED | compatible `126`, decision `121`, info_missing `5` | INFO_MISSING 5건 blind/source-native review |
+| Source-native summary | REVIEW-LOCKED | `ACCEPT 39 / REPROCESS 61 / HOLD 21 / INFO_MISSING 5` | REPROCESS/HOLD 배치 처리 |
+| Always-on gate | NO-GO | golden `GO`, collateral adjusted regression `87` | full375 collateral GO 필요 |
+| Residual queue | REVIEW-LOCKED | residual `87`, safe_loss `64`, unsafe `8`, wrong_work `15` | P0 code repair와 review packet 분리 처리 |
+| P0 code repair batch | REVIEW-LOCKED | selected `55`, `REPROCESS 55` | 수리 후 runtime/test replay |
+| INFO_MISSING packet | REVIEW-LOCKED | `11660232`, `11663554`, `11682792`, `11703674`, `11714903` | source-native 또는 blind judge verdict |
+| Test run dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | action batch에 `TEST_RUNS_USE_PARALLEL_16_AND_WEB_DASHBOARD`, health `ok=true`, pid `9320` | 다음 test run도 dashboard ON |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: prior-compatible transfer `REVIEW-LOCKED`, always-on `NO-GO / adjusted 87`, residual queue `REVIEW-LOCKED / 87`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-557-559 - Conflict-safe restore mismatch guard and full375 P0 batch
 
 | 항목 | 상태 | 근거 | 다음 |

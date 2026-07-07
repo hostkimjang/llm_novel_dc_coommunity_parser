@@ -62,6 +62,13 @@ class ActionQueueBatchTest(unittest.TestCase):
             batch["summary"]["dispatch_lane_counts"],
             {"runtime_repair_with_search_replay": 1, "source_native_or_blind_review": 1},
         )
+        self.assertEqual(batch["execution_contract"]["requested_parallel"], 16)
+        self.assertEqual(batch["execution_contract"]["expected_effective_parallel"], 2)
+        self.assertEqual(
+            batch["execution_contract"]["dashboard_contract"]["dashboard_policy"],
+            "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+        )
+        self.assertIn("--no-dashboard", batch["execution_contract"]["forbidden_flags"])
         self.assertTrue(batch["rows"][0]["runtime_input_eligible"])
         self.assertTrue(batch["rows"][1]["source_native_review_required"])
 
@@ -113,6 +120,13 @@ class ActionQueueBatchTest(unittest.TestCase):
         self.assertEqual(manifest["runtime_input_candidate_rows"], 1)
         self.assertEqual(manifest["runtime_input_rows"], 1)
         self.assertEqual(manifest["missing_post_ids"], [])
+        self.assertEqual(manifest["execution_contract"]["requested_parallel"], 16)
+        self.assertEqual(manifest["execution_contract"]["expected_effective_parallel"], 1)
+        self.assertEqual(
+            manifest["execution_contract"]["dashboard_contract"]["dashboard_policy"],
+            "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+        )
+        self.assertNotIn("--no-dashboard", manifest["execution_contract"]["required_flags"])
         self.assertNotIn("analysis_result", runtime_rows[0])
         self.assertEqual(runtime_rows[0]["_loop_action_batch"]["batch_id"], "unit_batch")
         self.assertEqual(packet["summary"]["review_rows"], 1)

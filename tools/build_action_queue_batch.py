@@ -7,6 +7,11 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+try:
+    from tools.test_run_dashboard_policy import test_run_execution_contract
+except ModuleNotFoundError:  # direct script execution: python tools/build_action_queue_batch.py
+    from test_run_dashboard_policy import test_run_execution_contract
+
 
 RUNTIME_REPROCESS_ACTION = "shared_gate_runtime_block_repair_required"
 SEARCH_REPLAY_ACTION = "search_degraded_or_timeout_replay_required"
@@ -253,6 +258,7 @@ def build_action_batch(
         },
         "validation_issues": validation_issues,
         "action_groups": action_groups,
+        "execution_contract": test_run_execution_contract(len(selected)),
         "rows": selected,
         "approval_boundary": {
             "batch_generation_is_not_approval": True,
@@ -299,6 +305,7 @@ def build_runtime_input(
             for row in input_rows
         ],
         "output_jsonl": output_jsonl.as_posix() if output_jsonl else None,
+        "execution_contract": test_run_execution_contract(len(input_rows)),
         "gate": {
             "runtime_input_generation": "GO" if not missing_post_ids else "NO-GO",
             "runtime_replay_after_input": "NOT_RUN_AFTER_INPUT",
@@ -355,6 +362,8 @@ def build_review_packet(batch: dict[str, Any]) -> dict[str, Any]:
 
 def write_markdown(batch: dict[str, Any], path: Path) -> None:
     summary = batch["summary"]
+    execution_contract = batch.get("execution_contract") or {}
+    dashboard_contract = execution_contract.get("dashboard_contract") or {}
     lines = [
         f"# {batch.get('batch_id')}",
         "",
@@ -373,6 +382,19 @@ def write_markdown(batch: dict[str, Any], path: Path) -> None:
         f"- validation_issue_count: `{summary.get('validation_issue_count')}`",
         "- approval: `false`",
         "- semantic_quality: `REVIEW-LOCKED`",
+        "",
+        "## 테스트런 실행 계약",
+        "",
+        f"- policy: `{execution_contract.get('policy')}`",
+        f"- row_count: `{execution_contract.get('row_count')}`",
+        f"- requested_parallel: `{execution_contract.get('requested_parallel')}`",
+        f"- expected_effective_parallel: `{execution_contract.get('expected_effective_parallel')}`",
+        f"- required_flags: `{execution_contract.get('required_flags')}`",
+        f"- forbidden_flags: `{execution_contract.get('forbidden_flags')}`",
+        f"- dashboard_policy: `{dashboard_contract.get('dashboard_policy')}`",
+        f"- dashboard_url: `{dashboard_contract.get('dashboard_url')}`",
+        f"- dashboard_gate: `{execution_contract.get('dashboard_gate')}`",
+        "- Dashboard는 진행 확인 도구이며 semantic/full_scan approval 근거가 아니다.",
         "",
         "## 승인 경계",
         "",
