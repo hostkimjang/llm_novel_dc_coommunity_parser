@@ -1,5 +1,37 @@
 # Verification Results
 
+## 2026-07-07 Loop555-556 ordinary restore projection and residual47 dispatch
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_555_556_REPORT_20260707.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop555_ordinary_restore_projection_result.json`
+  - `docs/devs/loop555_ordinary_restore_projection_contract_application.json`
+  - `docs/devs/loop555_ordinary_restore_post_apply_release_gate_audit.json`
+  - `docs/devs/loop555_ordinary_restore_publication_contract_audit.json`
+  - `docs/devs/loop555_ordinary_residual64_after_restore_contract_accounting.json`
+  - `docs/devs/loop556_ordinary_residual47_dispatch_after_restore.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop555_ordinary_restore_projection_golden_audit.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop555_ordinary_restore_projection_collateral_compare.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop555_always_on_golden18_full375_gate.json`
+- 검증:
+  - py_compile: PASS, `.venv312`, restore projection/release audit/publication audit/residual accounting/residual dispatch/golden/full375/always-on/dashboard runner 관련 tool/test.
+  - unittest: PASS, `.venv312`, restore projection/release audit/residual accounting/residual dispatch/restore plan/post-verdict promotion gate/promotion gate/dashboard policy/manifest attach 묶음 총 `61` tests.
+  - Projection application: PASS, applied `17/17`, validation issue `0`.
+  - Release audit: PASS after same-title candidate/target leak fix, violation `0`, pending `0`, release candidate `17`, runtime allowed `0`.
+  - Publication contract: PASS, `GO / 375 rows / 0 violations`.
+  - Residual accounting: PASS, ordinary `64 -> 47`, validation issue `0`.
+  - Residual dispatch: PASS, ordinary `47`, validation issue `0`.
+  - Golden audit: expected NO-GO, `17/18`, failed `11694019`.
+  - Full375 collateral compare: expected NO-GO, changed `181`, regression `119`.
+  - Always-on gate: expected NO-GO, blockers `golden_expected_answer_failures`, `golden_semantic_gate_not_pass`, `collateral_regression_count_nonzero`.
+  - Dashboard health/status: PASS, `http://127.0.0.1:8080`, Loop545 `49/49`, `progress_pct=100.0`, `parallel_count=16`, `batch_running=false`.
+  - `git diff --check`: PASS. LF/CRLF warning만 있었고 whitespace error는 없었다.
+- 결과:
+  - Release candidate `17`건은 projection contract 결과이며 approval이 아니다.
+  - Residual47은 candidate set rebuild `15`, native-web/image evidence `20`, no-publish guard `6`, source-native/blind `5`, canonical cleanup `1`로 남았다.
+  - Golden 실패 `11694019`와 collateral regression `119` 때문에 full375 동결 해제 및 full_scan approval은 불가하다.
+- Gate: projection application `REVIEW-LOCKED`, residual dispatch `REVIEW-LOCKED / ordinary 47`, golden `NO-GO`, full375 collateral `NO-GO / 119`, always-on `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop554 ordinary restore shared-gate contract plan
 
 - 산출물:

@@ -167,7 +167,13 @@ def build_accounting(
                 "validation_issues": issues,
                 "target_title": (plan_row or {}).get("target_title"),
                 "current_projection_candidate_title": (plan_row or {}).get("current_projection_candidate_title"),
-                "policy_review_ref": _policy_ref_for(action=(plan_row or {}).get("contract_action")),
+                "policy_review_ref": _policy_ref_for(
+                    action=(plan_row or {}).get("contract_action"),
+                    contract_plan=contract_plan,
+                    expected_restore_application=expected_restore_application,
+                    variant_review=variant_review,
+                    c3_review=c3_review,
+                ),
                 "rationale_ko": residual_row.get("rationale_ko"),
                 "evidence_refs": residual_row.get("evidence_refs") or [],
             }
@@ -180,7 +186,7 @@ def build_accounting(
         "report_type": "residual_contract_review_accounting",
         "accounting_id": accounting_id,
         "generated_at": generated_at or datetime.now().replace(microsecond=0).isoformat(),
-        "source_residual_queue": residual_queue.get("queue_id"),
+        "source_residual_queue": _source_id(residual_queue, fallback="residual_queue"),
         "source_contract_plan": contract_plan.get("plan_id"),
         "source_expected_restore_application": (expected_restore_application or {}).get("projection_id"),
         "source_variant_review": (variant_review or {}).get("review_id"),
@@ -225,25 +231,55 @@ def build_accounting(
     }
 
 
-def _policy_ref_for(*, action: Any) -> str | None:
+def _payload_ref(payload: dict[str, Any] | None, *, default_prefix: str) -> str | None:
+    if not isinstance(payload, dict):
+        return None
+    for key in ("projection_id", "plan_id", "review_id", "dispatch_id", "accounting_id", "queue_id"):
+        value = _string(payload.get(key))
+        if value:
+            return value
+    return default_prefix
+
+
+def _source_id(payload: dict[str, Any], *, fallback: str) -> str:
+    for key in ("queue_id", "dispatch_id", "accounting_id", "plan_id"):
+        value = _string(payload.get(key))
+        if value:
+            return value
+    return fallback
+
+
+def _policy_ref_for(
+    *,
+    action: Any,
+    contract_plan: dict[str, Any] | None = None,
+    expected_restore_application: dict[str, Any] | None = None,
+    variant_review: dict[str, Any] | None = None,
+    c3_review: dict[str, Any] | None = None,
+) -> str | None:
     action_text = _string(action)
     if action == EXPECTED_RESTORE:
-        return "docs/devs/loop549_b1_expected_restore_projection_contract_application.json"
+        return _payload_ref(
+            expected_restore_application,
+            default_prefix="expected_restore_projection_contract_application",
+        )
     if action_text in {CANDIDATE_SCRUB, EXPECTED_RESTORE}:
-        return "docs/devs/loop548_b1_post_verdict_promotion_gate_contract_plan.json"
+        return _payload_ref(contract_plan, default_prefix="promotion_gate_contract_plan")
     if action_text == VARIANT_HOLD:
-        return "docs/devs/loop550_c2_canonical_variant_policy_review.json"
+        return _payload_ref(variant_review, default_prefix="canonical_variant_policy_review")
     if action_text == STRONGER_HOLD:
-        return "docs/devs/loop551_c3_stronger_evidence_hold_review.json"
+        return _payload_ref(c3_review, default_prefix="stronger_evidence_hold_review")
     return None
 
 
 def write_markdown(path: Path, accounting: dict[str, Any]) -> None:
     summary = accounting["summary"]
+    source_residual = accounting.get("source_residual_queue") or "residual_queue"
+    source_plan = accounting.get("source_contract_plan") or "contract_plan"
     lines = [
         f"# {accounting.get('accounting_id')}",
         "",
-        "Loop546 residual78에 Loop548/549/550/551 post-verdict contract 결과를 결합한 회계 산출물이다. "
+        f"`{source_residual}`에 `{source_plan}` contract 결과를 결합한 회계 산출물이다. "
         "이 산출물은 새 runtime replay나 full375 GO가 아니며, contract 처리 상태와 아직 남은 ordinary residual을 분리한다.",
         "",
         "## 요약",
@@ -269,9 +305,10 @@ def write_markdown(path: Path, accounting: dict[str, Any]) -> None:
         lines.append(f"- `{state}`: `{count}`")
     lines.extend(["", "## Gate 해석", ""])
     lines.append(
-        "Loop548 post-verdict 14건은 최신 shared gate 산출물로 contract-processed 상태가 됐다. "
-        "하지만 release candidate `3`건은 approval이 아니고, no-publish/quarantine/hard-hold `11`건은 public publish를 열지 않는다. "
-        "ordinary residual `64`건과 full375 collateral 재확인이 남아 있으므로 goal은 `ACTIVE / NOT_COMPLETE`, "
+        f"Contract-processed `{summary['contract_processed_rows']}`건은 최신 shared gate 산출물로 처리 상태가 됐다. "
+        f"하지만 release candidate `{summary['release_candidate_not_approval_rows']}`건은 approval이 아니고, "
+        f"no-publish/hold `{summary['no_publish_or_hold_contract_rows']}`건은 public publish를 열지 않는다. "
+        f"ordinary residual `{summary['ordinary_residual_unprocessed_rows']}`건과 full375 collateral 재확인이 남아 있으므로 goal은 `ACTIVE / NOT_COMPLETE`, "
         "`semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`다."
     )
     lines.append("")

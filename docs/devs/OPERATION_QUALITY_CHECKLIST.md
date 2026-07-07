@@ -1,5 +1,20 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop555-556 ordinary restore projection 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_555_556_REPORT_20260707.md`.
+  - [x] Projection application/release/publication/accounting/dispatch 기록 완료: `docs/devs/loop555_*`, `docs/devs/loop556_*`.
+  - [x] Golden/collateral/always-on gate 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop555_*`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 런은 실행하지 않았다.
+  - [x] Release candidate `17`건은 approval이 아니다.
+  - [x] Publication contract GO는 full_scan approval이 아니다.
+  - [x] Golden `17/18` 실패와 collateral regression `119`를 always-on `NO-GO`로 유지했다.
+  - [x] Residual `47`건은 batch lane으로 남겼고 단건 소모로 전환하지 않았다.
+  - [x] Full375 collateral `GO` 전 goal completion을 선언하지 않는다.
+- Gate: projection `REVIEW-LOCKED`, residual dispatch `REVIEW-LOCKED / 47`, golden `NO-GO`, full375 collateral `NO-GO / 119`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop554 ordinary restore shared-gate contract plan 품질 게이트
 
 - 근거:

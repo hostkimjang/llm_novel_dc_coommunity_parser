@@ -98,6 +98,14 @@ def _index_rows(rows: list[Any]) -> dict[int, dict[str, Any]]:
     return indexed
 
 
+def _source_id(payload: dict[str, Any], *, fallback: str) -> str:
+    for key in ("queue_id", "dispatch_id", "accounting_id", "plan_id"):
+        value = str(payload.get(key) or "").strip()
+        if value:
+            return value
+    return fallback
+
+
 def _actions(row: dict[str, Any]) -> list[str]:
     return [str(item) for item in _as_list(row.get("actions")) if str(item)]
 
@@ -224,7 +232,7 @@ def build_dispatch(
         "dispatch_id": dispatch_id,
         "generated_at": generated_at or datetime.now().replace(microsecond=0).isoformat(),
         "source_accounting_id": accounting.get("accounting_id"),
-        "source_queue_id": source_queue.get("queue_id"),
+        "source_queue_id": _source_id(source_queue, fallback="source_queue"),
         "gate": "NO-GO" if validation_issues else "REVIEW-LOCKED",
         "semantic_quality": "REVIEW-LOCKED",
         "full_scan_approval": False,
@@ -262,7 +270,8 @@ def write_markdown(dispatch: dict[str, Any], path: Path) -> None:
     lines = [
         f"# {dispatch.get('dispatch_id')}",
         "",
-        "Loop553은 Loop552에서 남은 ordinary residual을 단건이 아니라 배치 lane으로 재분해한 회차다. 새 runtime replay, bounded run, full375 대형 런은 실행하지 않았다.",
+        "이 회차는 남은 ordinary residual을 단건이 아니라 배치 lane으로 재분해한 산출물이다. "
+        "새 runtime replay, bounded run, full375 대형 런은 실행하지 않았다.",
         "",
         "## 요약",
         "",
@@ -282,7 +291,7 @@ def write_markdown(dispatch: dict[str, Any], path: Path) -> None:
         "",
         "## 승인 경계",
         "",
-        "- 이 dispatch는 residual64 처리 순서를 정한 산출물이며 approval이 아니다.",
+        "- 이 dispatch는 residual 처리 순서를 정한 산출물이며 approval이 아니다.",
         "- 모든 lane은 review/contract/full375 재확인 전까지 `publish_allowed=false`, `runtime_replay_allowed=false`다.",
         "- Dashboard는 다음 runtime 진행 관측 도구일 뿐 semantic/full_scan approval 근거가 아니다.",
         "- 완료 기준은 계속 `full375 collateral GO + full_scan 경로 정의`다.",

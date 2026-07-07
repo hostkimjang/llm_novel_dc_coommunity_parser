@@ -1,5 +1,20 @@
 # Development Checklist
 
+## 2026-07-07 Loop555-556 ordinary restore projection 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 런을 실행하지 않았다.
+- [x] Loop554 restore contract `17`건을 current full375 projection에 projection-only로 적용했다.
+- [x] Application은 applied `17/17`, validation issue `0`이다.
+- [x] Release audit은 violation `0`, pending `0`, release candidate `17`, runtime replay allowed `0`이다.
+- [x] Publication contract는 `GO / 375 rows / 0 violations`다.
+- [x] Residual accounting은 ordinary `64 -> 47`, contract-processed `17`이다.
+- [x] Loop556 dispatch는 remaining ordinary residual `47`건을 batch lane으로 재분해했다.
+- [x] Golden audit은 `NO-GO / 17 of 18`, 실패 `11694019`를 기록했다.
+- [x] Full375 collateral compare는 changed `181`, regression `119`, always-on gate `NO-GO`다.
+- [ ] Golden `11694019`와 residual47 lane batch를 닫기 전 runtime/full_scan approval을 열지 않는다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: projection application `REVIEW-LOCKED / applied 17`, residual dispatch `REVIEW-LOCKED / ordinary 47`, golden `NO-GO`, full375 collateral `NO-GO / 119`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop554 ordinary restore shared-gate contract plan 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 런을 실행하지 않았다.

@@ -67,8 +67,30 @@ class OrdinaryResidualDispatchTests(unittest.TestCase):
         dispatch = build_dispatch(accounting=self._accounting(), source_queue=source_queue, dispatch_id="d1")
 
         self.assertEqual(dispatch["summary"]["ordinary_residual_rows"], 2)
+        self.assertEqual(dispatch["source_queue_id"], "loop546")
         self.assertEqual(dispatch["summary"]["contract_processed_rows_held"], 1)
         self.assertEqual(dispatch["summary"]["runtime_replay_allowed_rows"], 0)
+
+    def test_source_dispatch_id_is_preserved_when_queue_id_is_missing(self):
+        source_queue = {
+            "dispatch_id": "ordinary_dispatch",
+            "rows": [
+                {
+                    "post_id": 1,
+                    "review_label": "REPROCESS",
+                    "actions": ["candidate_set_rebuild_required"],
+                },
+                {
+                    "post_id": 2,
+                    "review_label": "INFO_MISSING",
+                    "actions": ["source_native_or_blind_review_required"],
+                },
+            ],
+        }
+
+        dispatch = build_dispatch(accounting=self._accounting(), source_queue=source_queue, dispatch_id="d4")
+
+        self.assertEqual(dispatch["source_queue_id"], "ordinary_dispatch")
         self.assertEqual(dispatch["summary"]["publish_allowed_rows"], 0)
         self.assertFalse(dispatch["full_scan_approval"])
         self.assertTrue(dispatch["approval_boundary"]["dispatch_generation_is_not_approval"])
@@ -76,7 +98,7 @@ class OrdinaryResidualDispatchTests(unittest.TestCase):
         self.assertEqual(
             dispatch["summary"]["lane_counts"],
             {
-                "shared_gate_restore_contract_review": 1,
+                "candidate_set_rebuild_review": 1,
                 "source_native_or_blind_review": 1,
             },
         )

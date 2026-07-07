@@ -81,6 +81,31 @@ class AuditPostVerdictPromotionGateReleaseContractTest(unittest.TestCase):
         self.assertEqual(audit["summary"]["runtime_replay_allowed_rows"], 0)
         self.assertEqual(audit["rows"][0]["release_gate_state"], "expected_restore_contract_satisfied_release_candidate")
 
+    def test_restore_plan_same_candidate_title_as_target_is_not_leak(self):
+        audit = build_audit(
+            contract_plan={
+                "plan_id": "unit",
+                "gate": "REVIEW-LOCKED",
+                "full_scan_approval": False,
+                "rows": [
+                    _plan_row(
+                        1,
+                        "expected_title_restore_contract_case",
+                        target="Same Work",
+                        candidate="Same Work",
+                    )
+                ],
+            },
+            projection_rows=[_projection(1, title="Same Work", status="safe_resolved", publish=True)],
+            audit_id="unit",
+        )
+
+        self.assertEqual(audit["gate"], "REVIEW-LOCKED")
+        self.assertEqual(audit["summary"]["violation_row_count"], 0)
+        self.assertEqual(audit["summary"]["release_candidate_after_contract_rows"], 1)
+        self.assertEqual(audit["rows"][0]["release_gate_state"], "expected_restore_contract_satisfied_release_candidate")
+        self.assertTrue(audit["rows"][0]["publish_allowed"])
+
     def test_markdown_gate_interpretation_uses_summary_counts(self):
         audit = build_audit(
             contract_plan={

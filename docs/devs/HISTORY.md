@@ -1,5 +1,20 @@
 # Development History
 
+## 2026-07-07 - Loop555-556 ordinary restore projection and residual47 dispatch
+
+- 새 runtime replay, bounded run, full375 대형 런은 실행하지 않았다.
+- Loop554 restore contract `17`건을 current full375 projection에 projection-only로 적용했다.
+- Application은 applied `17/17`, validation issue `0`이다.
+- Release audit은 violation `0`, pending `0`, release candidate `17`, runtime allowed `0`이다.
+- Publication contract는 `GO / 375 rows / 0 violations`다.
+- Same-title candidate/target을 candidate leak으로 오탐하던 release audit 술어를 수정하고 테스트를 추가했다.
+- Residual accounting은 ordinary `64 -> 47`, contract-processed `17`이다.
+- Loop556 residual47 lane은 candidate set rebuild `15`, native-web/image evidence `20`, no-publish/multi-work guard `6`, source-native/blind review `5`, canonical cleanup `1`이다.
+- Golden audit은 `NO-GO / 17 of 18`, 실패 `11694019` expected `이세계에서 사이비로 살아남기`, actual `혼후 순결`이다.
+- Full375 collateral은 changed `181`, regression `119`, always-on gate `NO-GO`다.
+- Report는 `docs/devs/loop_reports/LOOP_555_556_REPORT_20260707.md`다.
+- Gate는 projection application `REVIEW-LOCKED`, residual dispatch `REVIEW-LOCKED / 47`, golden `NO-GO`, full375 collateral `NO-GO / 119`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop554 ordinary restore shared-gate contract plan
 
 - 새 runtime replay, bounded run, full375 대형 런은 실행하지 않았다.

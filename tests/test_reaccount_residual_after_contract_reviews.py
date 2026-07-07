@@ -105,6 +105,25 @@ class ReaccountResidualAfterContractReviewsTest(unittest.TestCase):
         self.assertFalse(accounting["rows"][0]["contract_processed"])
         self.assertIn("expected_restore_application_missing", accounting["rows"][0]["validation_issues"])
 
+    def test_dispatch_source_and_application_ref_are_preserved(self):
+        accounting = build_accounting(
+            residual_queue={"dispatch_id": "ordinary_dispatch", "rows": [_residual_row(30)]},
+            contract_plan={
+                "plan_id": "ordinary_restore_plan",
+                "rows": [_plan_row(30, "expected_title_restore_contract_case")],
+            },
+            expected_restore_application={
+                "projection_id": "ordinary_restore_application",
+                "applied_rows": [{"post_id": 30, "status": "applied"}],
+            },
+            accounting_id="unit",
+        )
+
+        self.assertEqual(accounting["source_residual_queue"], "ordinary_dispatch")
+        self.assertEqual(accounting["rows"][0]["policy_review_ref"], "ordinary_restore_application")
+        self.assertEqual(accounting["summary"]["contract_processed_rows"], 1)
+        self.assertEqual(accounting["summary"]["ordinary_residual_unprocessed_rows"], 0)
+
 
 if __name__ == "__main__":
     unittest.main()

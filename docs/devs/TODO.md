@@ -1,5 +1,21 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop555-556 TODO
+
+- 상태 업데이트: Loop554 restore contract `17`건을 full375 projection에 적용했고 ordinary residual은 `47`건으로 줄었다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 런을 발주하지 않았다.
+- [x] Projection application은 applied `17/17`, validation issue `0`이다.
+- [x] Release audit은 violation `0`, pending `0`, release candidate `17`, runtime allowed `0`이다.
+- [x] Publication contract는 `GO / 375 rows / 0 violations`다.
+- [x] Residual accounting은 ordinary `64 -> 47`, contract-processed `17`이다.
+- [x] Loop556 lane은 candidate set rebuild `15`, native-web/image evidence `20`, no-publish/multi-work guard `6`, source-native/blind review `5`, canonical cleanup `1`이다.
+- [x] Golden/full375 always-on gate를 재평가했다: golden `NO-GO / 17 of 18`, collateral regression `119`, always-on `NO-GO`.
+- [ ] `11694019` golden 실패를 우선 차단 조건으로 유지한다.
+- [ ] Residual47은 lane batch로 처리하고 단건 소모로 완료를 주장하지 않는다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: projection application `REVIEW-LOCKED / applied 17`, residual dispatch `REVIEW-LOCKED / ordinary 47`, golden `NO-GO`, full375 collateral `NO-GO / 119`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop554 TODO
 
 - 상태 업데이트: Loop553 shared-gate restore lane `17`건을 shared promotion gate contract plan으로 전환했다. Goal은 완료가 아니다.

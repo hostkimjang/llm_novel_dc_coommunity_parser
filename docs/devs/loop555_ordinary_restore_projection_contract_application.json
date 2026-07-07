@@ -1,0 +1,237 @@
+{
+  "report_type": "post_verdict_projection_publish_contract_application",
+  "projection_id": "loop555_ordinary_restore_projection_contract",
+  "generated_at": "2026-07-07T22:00:37",
+  "source_contract_plan": "loop554_ordinary_restore_shared_gate_contract_plan",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "projection_rows": 375,
+    "contract_plan_rows": 17,
+    "publish_contract_plan_rows": 17,
+    "applied_publish_contract_rows": 17,
+    "restore_plan_rows": 17,
+    "applied_restore_rows": 17,
+    "applied_expected_audit_update_rows": 0,
+    "applied_canonical_cleanup_rows": 0,
+    "validation_issue_count": 0,
+    "skipped_contract_action_counts": {},
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "applied_rows": [
+    {
+      "post_id": 11660273,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "마도서를 줍다 마법사가 되다",
+      "target_url": "https://novelpia.com/novel/414963",
+      "superseded_projection_candidate": {
+        "official_title": "그리즐리 그랑",
+        "official_url": "https://novel.munpia.com/128153",
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11663511,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "부캐 키우는 황태자님",
+      "target_url": "https://novelpia.com/novel/330363",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11663535,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "퇴마록",
+      "target_url": "https://page.kakao.com/content/66470141",
+      "superseded_projection_candidate": {
+        "official_title": "퇴마록",
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11668300,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "즉사기 들고 게임 속 으로",
+      "target_url": "https://series.naver.com/novel/detail.series?productNo=8050192",
+      "superseded_projection_candidate": {
+        "official_title": "즉사기 인 줄 알았는데 지옥이었다",
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11673077,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "판초우의의 마법사",
+      "target_url": "https://novel.munpia.com/530500",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11673102,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "갤질하는 천재 의사",
+      "target_url": "https://mm.munpia.com/?menu=novel&action=view&id=556720&entry_id=next&entry_seq=-10860205",
+      "superseded_projection_candidate": {
+        "official_title": "댓글 보는 천재 의사",
+        "official_url": "https://novelpia.com/novel/372180",
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11677915,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "전지적 독자 시점",
+      "target_url": "https://novel.munpia.com/104753",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11681172,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "헌터갤러리의 국가권력급 기계공주",
+      "target_url": null,
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11689292,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "최악의 파트너",
+      "target_url": "https://novelpia.com/novel/40854",
+      "superseded_projection_candidate": {
+        "official_title": "[원신] 최악의 파트너",
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11694019,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "혼후 순결",
+      "target_url": "https://page.kakao.com/content/61863349",
+      "superseded_projection_candidate": {
+        "official_title": "이세계에서 사이비로 살아남기",
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11694063,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "빙의한 신의 아이, 엘리시아",
+      "target_url": "https://novelpia.com/novel/57074",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11694068,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "트와일라잇",
+      "target_url": "https://ridibooks.com/books/593000441",
+      "superseded_projection_candidate": {
+        "official_title": "트와일라잇 시리즈",
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11702094,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "#더블오",
+      "target_url": "https://novelpia.com/novel/417074",
+      "superseded_projection_candidate": {
+        "official_title": "댓글창이 내 흑막 연기를 너무 좋아한다",
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11705230,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "월야환담",
+      "target_url": "https://ridibooks.com/books/3685002646",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11705251,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "월야환담 창월야",
+      "target_url": "https://ridibooks.com/books/3685002646",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11706842,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "삼국지 마대 가 되었다",
+      "target_url": "https://novel.munpia.com/374118",
+      "superseded_projection_candidate": {
+        "official_title": "대마법사였던것은 다시 대마법사를 꿈꾼다",
+        "official_url": "https://novelpia.com/novel/998",
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11718110,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "지구온라인에서 쌀먹합니다",
+      "target_url": "https://novelpia.com/novel/395678",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    }
+  ],
+  "approval_boundary": {
+    "projection_application_is_not_runtime_replay": true,
+    "release_candidate_is_not_full_scan_approval": true,
+    "runtime_replay_before_full375_collateral_forbidden": true,
+    "full375_collateral_remains_no_go": true
+  }
+}

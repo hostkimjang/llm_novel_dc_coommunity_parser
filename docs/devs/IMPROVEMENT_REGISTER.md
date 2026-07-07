@@ -1,5 +1,21 @@
 # Improvement Register
 
+## IMP-20260707-555-556 - Ordinary restore projection application and residual47 dispatch
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 실행 없음 | residual47 batch 조건 전 replay 금지 |
+| Projection application | REVIEW-LOCKED | applied `17/17`, validation issue `0` | release candidate를 approval과 분리 |
+| Release audit | REVIEW-LOCKED | violation `0`, release candidate `17`, runtime allowed `0` | full375 GO 전 승격 금지 |
+| Publication contract | GO_PROJECTION_CONTRACT | `375` rows, violation `0` | full_scan approval로 오해 금지 |
+| Residual accounting | REVIEW-LOCKED | ordinary `64 -> 47`, contract-processed `17` | residual47 batch 처리 |
+| Golden audit | NO-GO | `17/18`, `11694019` wrong title | golden blocker 우선 수리 |
+| Full375 collateral | NO-GO | changed `181`, regression `119` | collateral GO 필요 |
+| Always-on gate | NO-GO | golden + collateral blockers | completion gate 미충족 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: projection application `REVIEW-LOCKED / applied 17`, residual dispatch `REVIEW-LOCKED / ordinary 47`, golden `NO-GO`, full375 collateral `NO-GO / 119`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-554 - Ordinary restore shared-gate contract plan
 
 | 항목 | 상태 | 근거 | 다음 |

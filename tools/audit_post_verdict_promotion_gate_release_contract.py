@@ -86,6 +86,9 @@ def _publish_allowed(row: dict[str, Any]) -> bool:
     ident = _identity(row)
     if isinstance(ident.get("publish_allowed"), bool):
         return bool(ident["publish_allowed"])
+    decision = ident.get("promotion_decision")
+    if isinstance(decision, dict) and isinstance(decision.get("publish_allowed"), bool):
+        return bool(decision["publish_allowed"])
     trace = ident.get("publish_contract_trace")
     if isinstance(trace, dict) and isinstance(trace.get("publish_allowed"), bool):
         return bool(trace["publish_allowed"])
@@ -138,7 +141,11 @@ def _audit_row(plan_row: dict[str, Any], projection_row: dict[str, Any] | None) 
     status = _candidate_status(projection_row)
     has_public_identity = bool(public_title or public_url or publish_allowed)
     target_published = _matches_title(public_title, target_title) or _matches_url(public_url, target_url)
-    candidate_leaked = _matches_title(public_title, candidate_title) or _matches_url(public_url, candidate_url)
+    candidate_title_leaked = _matches_title(public_title, candidate_title) and not _matches_title(
+        candidate_title, target_title
+    )
+    candidate_url_leaked = _matches_url(public_url, candidate_url) and not _matches_url(candidate_url, target_url)
+    candidate_leaked = candidate_title_leaked or candidate_url_leaked
 
     release_gate_state = "unknown_contract_action"
     violation_code = ""
