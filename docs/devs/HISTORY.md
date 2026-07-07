@@ -1,5 +1,16 @@
 # Development History
 
+## 2026-07-07 - Loop530 B1 canonical source-native verdicts
+
+- 새 runtime replay는 실행하지 않았다.
+- Loop528/529 B1 `22`건에 source-native verdict를 적용했다.
+- Verdict 결과는 `EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED 9`, `RELATED_CANONICAL_VARIANT_CONFIRMED 7`, `INSUFFICIENT_EVIDENCE_HOLD 6`이다.
+- Post-verdict contract queue를 생성했고 C1 expected restore/scrub `9`, C2 variant policy `7`, C3 stronger evidence/native-web hold `6`으로 나뉜다.
+- `tools/build_canonical_post_verdict_contract_queue.py`와 `tests/test_build_canonical_post_verdict_contract_queue.py`를 추가했다.
+- Runtime replay allowed rows는 계속 `0`이며 contract/evidence 후속 작업 전에는 replay로 넘기지 않는다.
+- Report는 `docs/devs/loop_reports/LOOP_530_REPORT_20260707.md`, verdicts는 `docs/devs/loop530_b1_canonical_source_native_verdicts.json`, queue는 `docs/devs/loop530_b1_post_verdict_contract_queue.json/.md`다.
+- Gate는 source-native verdict application `GO_REVIEWED`, post-verdict contract queue `REVIEW-LOCKED`, runtime replay `BLOCKED_UNTIL_CONTRACT_TESTS_OR_STRONGER_EVIDENCE`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop529 B1 canonical verdict application
 
 - 새 runtime replay는 실행하지 않았다.

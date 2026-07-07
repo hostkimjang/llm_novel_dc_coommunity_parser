@@ -1,5 +1,21 @@
 # Development Checklist
 
+## 2026-07-07 Loop530 B1 canonical source-native verdict 체크
+
+- [x] 새 runtime replay를 실행하지 않았다.
+- [x] Loop528/529 B1 `22`건에 source-native verdict를 적용했다.
+- [x] Verdict rows는 `22`, accepted verdict rows는 `22`, unreviewed rows는 `0`이다.
+- [x] Verdict 분포는 `EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED 9`, `RELATED_CANONICAL_VARIANT_CONFIRMED 7`, `INSUFFICIENT_EVIDENCE_HOLD 6`이다.
+- [x] Post-verdict contract queue를 생성했다: C1 `9`, C2 `7`, C3 `6`.
+- [x] `tools/build_canonical_post_verdict_contract_queue.py`를 추가했다.
+- [x] `tests/test_build_canonical_post_verdict_contract_queue.py` 계약 테스트를 추가했다.
+- [x] `runtime_replay_allowed_rows`는 `0`이다.
+- [x] Validation issue는 `0`이다.
+- [ ] C1/C2는 contract test 전 runtime replay로 넘기지 않는다.
+- [ ] C3 `6`건은 stronger evidence 또는 native-web 검증 전까지 hard hold로 유지한다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: source-native verdict application `GO_REVIEWED`, post-verdict contract queue `REVIEW-LOCKED`, runtime replay `BLOCKED_UNTIL_CONTRACT_TESTS_OR_STRONGER_EVIDENCE`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop529 B1 canonical verdict application 체크
 
 - [x] 새 runtime replay를 실행하지 않았다.

@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260707-530 - B1 source-native verdicts and post-verdict contract queue
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Source-native verdict coverage | GO_REVIEWED | B1 `22/22` verdict 적용, validation issue `0` | contract lane별 수리/검증 |
+| Expected restore/scrub lane | OPEN_CONTRACT | C1 `9` rows | expected restore 또는 current candidate scrub 계약 테스트 |
+| Variant policy lane | OPEN_CONTRACT | C2 `7` rows | canonical variant/alias 정책 계약 테스트 |
+| Hard hold evidence lane | OPEN_EVIDENCE | C3 `6` rows | stronger evidence 또는 native-web/VLM 확인 |
+| Runtime release boundary | GO_BLOCKED | `runtime_replay_allowed_rows=0` | contract/stronger evidence 전 replay 금지 |
+| Verification | GO_UNIT | py_compile PASS, focused unittest `6` PASS, application/queue generation PASS | broader runtime은 아직 금지 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: source-native verdict application `GO_REVIEWED`, post-verdict contract queue `REVIEW-LOCKED`, runtime replay `BLOCKED_UNTIL_CONTRACT_TESTS_OR_STRONGER_EVIDENCE`, full375 collateral `NO-GO`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-529 - B1 canonical verdict application gate
 
 | 항목 | 상태 | 근거 | 다음 |

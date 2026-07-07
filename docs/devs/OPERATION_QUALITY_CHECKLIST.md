@@ -1,5 +1,25 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop530 B1 canonical source-native verdict 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_530_REPORT_20260707.md`.
+  - [x] Verdict JSON 기록 완료: `docs/devs/loop530_b1_canonical_source_native_verdicts.json`.
+  - [x] Application state 기록 완료: `docs/devs/loop530_b1_canonical_source_native_verdict_application_state_20260707.json`.
+  - [x] Post-verdict contract queue 기록 완료: `docs/devs/loop530_b1_post_verdict_contract_queue.json/.md`.
+  - [x] Tool 추가 완료: `tools/build_canonical_post_verdict_contract_queue.py`.
+  - [x] Test 추가 완료: `tests/test_build_canonical_post_verdict_contract_queue.py`.
+- 품질 경계:
+  - [x] 새 runtime replay는 실행하지 않았다.
+  - [x] B1 verdict는 `22/22` 적용됐지만 runtime release는 열지 않았다.
+  - [x] C1 `9`, C2 `7`은 contract test 전 blocked다.
+  - [x] C3 `6`은 stronger evidence/native-web 확인 전 hard hold다.
+  - [x] `runtime_replay_allowed_rows`는 `0`이다.
+  - [x] Validation issue는 `0`이다.
+  - [ ] Source-native verdict 적용을 semantic/full_scan approval 근거로 쓰지 않는다.
+  - [ ] Dashboard 상태를 semantic/full_scan approval 근거로 쓰지 않는다.
+- Gate: source-native verdict application `GO_REVIEWED`, post-verdict contract queue `REVIEW-LOCKED`, runtime replay `BLOCKED_UNTIL_CONTRACT_TESTS_OR_STRONGER_EVIDENCE`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop529 B1 canonical verdict application 품질 게이트
 
 - 근거:

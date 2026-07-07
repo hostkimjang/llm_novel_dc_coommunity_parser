@@ -1,5 +1,29 @@
 # Verification Results
 
+## 2026-07-07 Loop530 B1 canonical source-native verdicts
+
+- 코드/판정:
+  - `docs/devs/loop530_b1_canonical_source_native_verdicts.json`에 B1 `22`건 source-native verdict를 기록했다.
+  - `tools/build_canonical_post_verdict_contract_queue.py`를 추가해 verdict application 결과를 contract batch lane으로 분리했다.
+  - C1/C2/C3 모두 runtime replay 허가가 아니라 contract/evidence 후속 작업이다.
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_530_REPORT_20260707.md`
+  - `docs/devs/loop530_b1_canonical_source_native_verdicts.json`
+  - `docs/devs/loop530_b1_canonical_source_native_verdict_application_state_20260707.json`
+  - `docs/devs/loop530_b1_post_verdict_contract_queue.json`
+  - `docs/devs/loop530_b1_post_verdict_contract_queue.md`
+- 검증:
+  - `python -m py_compile tools\build_canonical_post_verdict_contract_queue.py tests\test_build_canonical_post_verdict_contract_queue.py tools\apply_canonical_candidate_recheck_verdicts.py tests\test_apply_canonical_candidate_recheck_verdicts.py`: PASS.
+  - `python -m unittest tests.test_build_canonical_post_verdict_contract_queue tests.test_apply_canonical_candidate_recheck_verdicts -v`: PASS, `6` tests.
+  - Loop530 verdict application with `--fail-on-validation-issue`: PASS.
+  - Loop530 post-verdict contract queue generation with `--fail-on-validation-issue`: PASS.
+- 결과:
+  - accepted verdict rows `22/22`, validation issue `0`, unreviewed rows `0`.
+  - verdict counts: `EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED 9`, `RELATED_CANONICAL_VARIANT_CONFIRMED 7`, `INSUFFICIENT_EVIDENCE_HOLD 6`.
+  - contract queue: C1 `9`, C2 `7`, C3 `6`.
+  - runtime replay allowed `0`, full375 collateral `NO-GO`.
+- Gate: source-native verdict application `GO_REVIEWED`, post-verdict contract queue `REVIEW-LOCKED`, runtime replay `BLOCKED_UNTIL_CONTRACT_TESTS_OR_STRONGER_EVIDENCE`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop529 B1 canonical verdict application
 
 - 코드:

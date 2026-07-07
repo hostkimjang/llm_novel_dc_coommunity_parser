@@ -1,5 +1,23 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop530 TODO
+
+- 상태 업데이트: B1 `22/22` source-native verdict 적용과 post-verdict contract queue 생성을 완료했다. Goal은 완료가 아니다.
+- [x] 새 runtime replay를 발주하지 않았다.
+- [x] B1 `22`건 source-native verdict를 적용했다.
+- [x] Verdict validation issue는 `0`이다.
+- [x] Contract queue C1 `9`, C2 `7`, C3 `6`을 생성했다.
+- [x] `tools/build_canonical_post_verdict_contract_queue.py`를 추가했다.
+- [x] `tests/test_build_canonical_post_verdict_contract_queue.py`를 추가했다.
+- [x] `runtime_replay_allowed_rows=0`을 유지했다.
+- [ ] C1 expected restore/current candidate scrub contract test를 작성한다.
+- [ ] C2 canonical variant policy contract test를 작성한다.
+- [ ] C3 stronger evidence/native-web hold 6건을 별도 검증한다.
+- [ ] Contract/evidence 전에는 B1 runtime replay를 열지 않는다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: source-native verdict application `GO_REVIEWED`, post-verdict contract queue `REVIEW-LOCKED`, runtime replay `BLOCKED_UNTIL_CONTRACT_TESTS_OR_STRONGER_EVIDENCE`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop529 TODO
 
 - 상태 업데이트: B1 canonical verdict application 경로와 template을 추가했다. Goal은 완료가 아니다.

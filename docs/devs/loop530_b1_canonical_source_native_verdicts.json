@@ -1,0 +1,260 @@
+{
+  "review_id": "loop530_b1_canonical_source_native_verdicts",
+  "scope": "Loop530 B1 canonical source-native verdicts",
+  "report_type": "canonical_candidate_recheck_verdicts",
+  "source_batch": "docs/devs/loop528_b1_canonical_candidate_recheck22_batch.json",
+  "source_projection_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_final_sync_projection_result.json",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "rows": [
+    {
+      "post_id": 11660271,
+      "canonical_verdict": "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+      "evidence_grade": "Strong",
+      "rationale_ko": "본문이 `월야의 여인들`을 예시 작품으로 직접 언급하고, `경멸여자`는 댓글 추천 후보로만 등장한다. current projection 후보를 canonical로 승격할 근거는 아니다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_final_sync_projection_result.json#post_id=11660271",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11660271",
+        "docs/devs/loop528_b1_canonical_candidate_recheck22_batch.json#post_id=11660271"
+      ]
+    },
+    {
+      "post_id": 11660273,
+      "canonical_verdict": "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+      "evidence_grade": "Strong",
+      "rationale_ko": "본문의 `마줍`과 `그리즐리` 설명이 expected 작품 맥락을 지지한다. `투명인데 안키움`은 댓글 반응 표면이라 작품 canonical 후보가 아니다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_final_sync_projection_result.json#post_id=11660273",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11660273",
+        "docs/devs/loop528_b1_canonical_candidate_recheck22_batch.json#post_id=11660273"
+      ]
+    },
+    {
+      "post_id": 11665124,
+      "canonical_verdict": "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+      "evidence_grade": "Medium",
+      "rationale_ko": "댓글의 `화귀 800화`, `1250화`, `해남편` 흐름은 화산귀환 계열 논의다. current projection 후보는 이미지/검색 후보로 보존됐지만 raw discussion anchor와 맞지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_final_sync_projection_result.json#post_id=11665124",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11665124",
+        "docs/devs/loop528_b1_canonical_candidate_recheck22_batch.json#post_id=11665124"
+      ]
+    },
+    {
+      "post_id": 11669913,
+      "canonical_verdict": "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+      "evidence_grade": "Strong",
+      "rationale_ko": "게시글 제목이 `하룬`을 직접 작품 표면으로 포함한다. `팩트는`은 문장 도입부가 후보로 오염된 표면이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_final_sync_projection_result.json#post_id=11669913",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11669913",
+        "docs/devs/loop528_b1_canonical_candidate_recheck22_batch.json#post_id=11669913"
+      ]
+    },
+    {
+      "post_id": 11677926,
+      "canonical_verdict": "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+      "evidence_grade": "Strong",
+      "rationale_ko": "댓글이 `무영자 카카페 재앙급 막내공자 355`라고 작품과 회차를 직접 지정한다. `무영자 가 돌아왔다`는 author/surface 혼합 후보라 canonical 작품으로 보기 어렵다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_final_sync_projection_result.json#post_id=11677926",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11677926",
+        "docs/devs/loop528_b1_canonical_candidate_recheck22_batch.json#post_id=11677926"
+      ]
+    },
+    {
+      "post_id": 11681172,
+      "canonical_verdict": "INSUFFICIENT_EVIDENCE_HOLD",
+      "evidence_grade": "Weak",
+      "rationale_ko": "raw text는 `기계공주맛 나는 만화`뿐이고 content/comment가 비어 있다. expected 작품 약어 가능성과 current official 후보가 모두 남지만, 이미지/원문 직접 제목 검증 없이는 어느 쪽도 canonical로 확정할 수 없다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_final_sync_projection_result.json#post_id=11681172",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11681172",
+        "docs/devs/loop528_b1_canonical_candidate_recheck22_batch.json#post_id=11681172"
+      ]
+    },
+    {
+      "post_id": 11690841,
+      "canonical_verdict": "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+      "evidence_grade": "Strong",
+      "rationale_ko": "제목의 `블아`와 본문 캐릭터 맥락은 `블루 아카이브`를 가리킨다. `가츠동도 만들어줌`은 댓글 반응 표면일 뿐 작품 canonical 후보가 아니다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_final_sync_projection_result.json#post_id=11690841",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11690841",
+        "docs/devs/loop528_b1_canonical_candidate_recheck22_batch.json#post_id=11690841"
+      ]
+    },
+    {
+      "post_id": 11697242,
+      "canonical_verdict": "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+      "evidence_grade": "Strong",
+      "rationale_ko": "제목이 `유희왕 패러디`를 직접 말하고 본문도 듀얼리스트 독자층을 언급한다. `삼전의 재를 썼어야지`는 댓글의 카드/밈 표면이라 작품 title 후보가 아니다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_final_sync_projection_result.json#post_id=11697242",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11697242",
+        "docs/devs/loop528_b1_canonical_candidate_recheck22_batch.json#post_id=11697242"
+      ]
+    },
+    {
+      "post_id": 11697256,
+      "canonical_verdict": "RELATED_CANONICAL_VARIANT_CONFIRMED",
+      "canonical_title": "황제의 딸로 환생했습니다",
+      "evidence_grade": "Medium",
+      "rationale_ko": "댓글에서 `황제딸` 약칭 뒤 `황제의 딸로 환생했습니다`라고 풀네임과 노벨피아 플랫폼을 직접 제공한다. expected의 `환생했다` 표기는 같은 계열 variant로 보되 canonical 표기는 댓글 풀네임 기준으로 둔다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_final_sync_projection_result.json#post_id=11697256",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11697256",
+        "docs/devs/loop528_b1_canonical_candidate_recheck22_batch.json#post_id=11697256"
+      ]
+    },
+    {
+      "post_id": 11706871,
+      "canonical_verdict": "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+      "evidence_grade": "Strong",
+      "rationale_ko": "게시글은 독후감 목적으로 읽은 고전 `파우스트` 결말을 말한다. `데빌게이머 파우스트`는 같은 표면어를 포함한 웹소설 official 후보지만 원문 맥락과 다르다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_final_sync_projection_result.json#post_id=11706871",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11706871",
+        "docs/devs/loop528_b1_canonical_candidate_recheck22_batch.json#post_id=11706871"
+      ]
+    },
+    {
+      "post_id": 11710021,
+      "canonical_verdict": "RELATED_CANONICAL_VARIANT_CONFIRMED",
+      "canonical_title": "무한의 마법사",
+      "evidence_grade": "Medium",
+      "rationale_ko": "제목의 `무마 웹툰`과 본문의 `시로네` 맥락은 `무한의 마법사` 약칭으로 볼 수 있다. current candidate `무마`는 별도 작품이 아니라 약칭 variant다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_final_sync_projection_result.json#post_id=11710021",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11710021",
+        "docs/devs/loop528_b1_canonical_candidate_recheck22_batch.json#post_id=11710021"
+      ]
+    },
+    {
+      "post_id": 11714887,
+      "canonical_verdict": "RELATED_CANONICAL_VARIANT_CONFIRMED",
+      "canonical_title": "도굴왕",
+      "evidence_grade": "Medium",
+      "rationale_ko": "본문은 `도굴왕 PV`, `[도굴왕]` 애니 홍보를 직접 공유한다. current projection 후보는 `[도굴왕] [fate] ...` 2차/패러디형 제목으로 원문 canonical 작품과 동일하지 않다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_final_sync_projection_result.json#post_id=11714887",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11714887",
+        "docs/devs/loop528_b1_canonical_candidate_recheck22_batch.json#post_id=11714887"
+      ]
+    },
+    {
+      "post_id": 11718110,
+      "canonical_verdict": "INSUFFICIENT_EVIDENCE_HOLD",
+      "evidence_grade": "Weak",
+      "rationale_ko": "원문은 `지구온라인`만 말한다. expected `지구온라인에서 쌀먹합니다`와 current official 후보 `지구 온라인 의 플레이어가 되었다`가 모두 가능한 상태라 공식/원문 추가 확인 전에는 canonical 확정이 어렵다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_final_sync_projection_result.json#post_id=11718110",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11718110",
+        "docs/devs/loop528_b1_canonical_candidate_recheck22_batch.json#post_id=11718110"
+      ]
+    },
+    {
+      "post_id": 11718114,
+      "canonical_verdict": "INSUFFICIENT_EVIDENCE_HOLD",
+      "evidence_grade": "Weak",
+      "rationale_ko": "원문은 시스템 딸깍/상태창 클리셰 일반론이다. current 후보 `시스템`은 generic surface이고 expected 장문 title도 원문 직접 제목으로 확인되지 않아 canonical 확정이 어렵다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_final_sync_projection_result.json#post_id=11718114",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11718114",
+        "docs/devs/loop528_b1_canonical_candidate_recheck22_batch.json#post_id=11718114"
+      ]
+    },
+    {
+      "post_id": 11666741,
+      "canonical_verdict": "RELATED_CANONICAL_VARIANT_CONFIRMED",
+      "canonical_title": "별을 품은 소드마스터",
+      "evidence_grade": "Medium",
+      "rationale_ko": "제목과 본문이 `별품소` 약칭을 반복하고 기사뽕/결말 맥락을 말한다. current candidate `별품소`는 같은 작품 약칭 variant다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_final_sync_projection_result.json#post_id=11666741",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11666741",
+        "docs/devs/loop528_b1_canonical_candidate_recheck22_batch.json#post_id=11666741"
+      ]
+    },
+    {
+      "post_id": 11694068,
+      "canonical_verdict": "RELATED_CANONICAL_VARIANT_CONFIRMED",
+      "canonical_title": "트와일라잇",
+      "evidence_grade": "Medium",
+      "rationale_ko": "제목과 댓글이 `트와일라잇` 한국어판/출판 맥락을 직접 말한다. current candidate `Twilight`는 같은 작품의 영어 표기 variant로 보인다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_final_sync_projection_result.json#post_id=11694068",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11694068",
+        "docs/devs/loop528_b1_canonical_candidate_recheck22_batch.json#post_id=11694068"
+      ]
+    },
+    {
+      "post_id": 11668300,
+      "canonical_verdict": "INSUFFICIENT_EVIDENCE_HOLD",
+      "evidence_grade": "Weak",
+      "rationale_ko": "원문은 `즉사기` 약칭만 제공한다. expected `즉사기 들고 게임 속으로`와 current official 후보 `즉사기 인 줄 알았는데 지옥이었다`가 모두 같은 약칭 표면과 충돌하므로 추가 확인 전에는 canonical을 확정하지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_final_sync_projection_result.json#post_id=11668300",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11668300",
+        "docs/devs/loop528_b1_canonical_candidate_recheck22_batch.json#post_id=11668300"
+      ]
+    },
+    {
+      "post_id": 11669926,
+      "canonical_verdict": "INSUFFICIENT_EVIDENCE_HOLD",
+      "evidence_grade": "Weak",
+      "rationale_ko": "텍스트 원문만으로는 `싸울아비 룬`과 `싸울 아흔번째` 중 어느 쪽이 이미지/게시글의 canonical인지 확정할 수 없다. VLM/OCR 직접 시각 검증이 먼저 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_final_sync_projection_result.json#post_id=11669926",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11669926",
+        "docs/devs/loop528_b1_canonical_candidate_recheck22_batch.json#post_id=11669926"
+      ]
+    },
+    {
+      "post_id": 11673080,
+      "canonical_verdict": "INSUFFICIENT_EVIDENCE_HOLD",
+      "evidence_grade": "Weak",
+      "rationale_ko": "본문은 의료소송/의사물 일반 감상이고, expected와 current 후보가 모두 search/community 후보로만 남는다. 원문 직접 작품명이나 공식 title bridge가 부족해 hold가 맞다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_final_sync_projection_result.json#post_id=11673080",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11673080",
+        "docs/devs/loop528_b1_canonical_candidate_recheck22_batch.json#post_id=11673080"
+      ]
+    },
+    {
+      "post_id": 11679547,
+      "canonical_verdict": "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+      "evidence_grade": "Strong",
+      "rationale_ko": "본문이 `도굴왕 애니화`를 직접 말하고 댓글도 도굴왕 원작/웹툰/애니 맥락이다. `나혼렙`은 비교 대상이라 current projection 후보로 승격하면 안 된다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_final_sync_projection_result.json#post_id=11679547",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11679547",
+        "docs/devs/loop528_b1_canonical_candidate_recheck22_batch.json#post_id=11679547"
+      ]
+    },
+    {
+      "post_id": 11682767,
+      "canonical_verdict": "RELATED_CANONICAL_VARIANT_CONFIRMED",
+      "canonical_title": "묵향",
+      "evidence_grade": "Medium",
+      "rationale_ko": "제목과 본문이 `묵향` 및 작품 내 전개를 직접 언급한다. current candidate `묵향 1권`은 같은 작품의 권차/상세 페이지 variant다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_final_sync_projection_result.json#post_id=11682767",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11682767",
+        "docs/devs/loop528_b1_canonical_candidate_recheck22_batch.json#post_id=11682767"
+      ]
+    },
+    {
+      "post_id": 11698859,
+      "canonical_verdict": "RELATED_CANONICAL_VARIANT_CONFIRMED",
+      "canonical_title": "귤부인 대롱대롱",
+      "evidence_grade": "Medium",
+      "rationale_ko": "제목이 `귤부인 대롱대롱`을 직접 말한다. current candidate `귤부인`은 같은 표면의 축약/부분형으로 보존하되 canonical title은 원문 전체 표면을 따른다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_final_sync_projection_result.json#post_id=11698859",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop523_direct_title_surface_safe57_expected_audit.json#post_id=11698859",
+        "docs/devs/loop528_b1_canonical_candidate_recheck22_batch.json#post_id=11698859"
+      ]
+    }
+  ]
+}
