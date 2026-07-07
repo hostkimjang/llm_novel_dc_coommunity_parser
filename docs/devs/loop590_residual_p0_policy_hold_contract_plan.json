@@ -1,0 +1,247 @@
+{
+  "report_type": "post_verdict_promotion_gate_contract_plan",
+  "plan_id": "loop590_residual_p0_policy_hold_contract_plan",
+  "generated_at": "2026-07-08T06:15:54",
+  "source_contract_plans": [
+    "loop589_p0_info_missing_combined_contract_plan"
+  ],
+  "source_reviews": [
+    "loop588_native_policy_preflight_review",
+    "loop586_canonical_title_rewrite_review"
+  ],
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "execution_contract": {
+    "runtime_state": "NOT_RUN",
+    "test_runs_must_use_parallel": 16,
+    "web_dashboard_default_on": true,
+    "forbidden_flags": [
+      "--no-dashboard"
+    ],
+    "dashboard_url": "http://127.0.0.1:8080",
+    "dashboard_is_approval_evidence": false
+  },
+  "summary": {
+    "contract_plan_rows": 2,
+    "validation_issue_count": 0,
+    "contract_action_counts": {
+      "native_web_disambiguation_hold_contract_case": 1,
+      "non_webnovel_ebook_policy_hold_contract_case": 1
+    },
+    "promotion_decision_status_counts": {
+      "hold": 2
+    },
+    "release_candidate_not_approval_rows": 0,
+    "native_web_disambiguation_hold_rows": 1,
+    "non_webnovel_ebook_policy_hold_rows": 1,
+    "official_support_missing_hold_rows": 0,
+    "candidate_set_rebuild_hold_rows": 0,
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "rows": [
+    {
+      "post_id": 11698859,
+      "contract_origin": "loop590_policy_hold_batch",
+      "contract_batch_lane": "P0_native_web_context_only_hold",
+      "source_dispatch_lane": "native_web_image_evidence_review",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_title_surface_and_scene_reaction_support_safe_title",
+      "evidence_grade": "Medium",
+      "target_title": "귤부인 대롱대롱",
+      "target_url": null,
+      "official_support_refs": [],
+      "official_support_ref_count": 0,
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "runtime_expected_audit_status": null,
+      "runtime_search_status": "native_web_exact_title_not_found_context_only",
+      "search_condition_tag": "native_web_context_only_no_exact_title_publish",
+      "contract_action": "native_web_disambiguation_hold_contract_case",
+      "promotion_decision": {
+        "status": "hold",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": true,
+        "reason_codes": [
+          "native_web_exact_title_not_found_context_only",
+          "title_matches_target_false_on_official_detail",
+          "candidate_only_until_native_web_disambiguation",
+          "public_identity_scrubbed_before_publish"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11698859,
+        "candidate_title": "귤부인 대롱대롱",
+        "candidate_url": "",
+        "source": "loop590_native_web_policy_hold",
+        "official_title_exists": false,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "context_only_hold",
+        "work_resolution": "unresolved_exact_title",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": true,
+        "scope": {
+          "scope_kind": "native_web_context_only",
+          "confidence": "medium",
+          "direct_bridge_sources": [
+            "loop588_native_policy_preflight_review",
+            "loop581_source_native_verdict"
+          ],
+          "competing_candidates": [
+            "친아들이 내게 집착한다"
+          ],
+          "conflict_reason_codes": [
+            "official_detail_title_differs_from_target",
+            "tag_context_only_not_exact_title"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "native_web_context_only_hold",
+          "strength": "medium",
+          "source_path_or_snippet": "검색 결과에서 exact phrase `귤부인 대롱대롱`은 DC 원글로 확인되고, 노벨피아 공식 상세는 `친아들이 내게 집착한다`의 `#귤부인` 태그 맥락만 보인다.",
+          "supports_publish": false,
+          "reason_code": "native_web_exact_title_not_found_context_only"
+        }
+      ],
+      "release_candidate_not_approval": false,
+      "official_support_missing_before_publish": false,
+      "restore_target_mismatch_review_required": false,
+      "search_review_required_before_approval": true,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "target title과 일치하는 공식 작품 detail URL이 없으므로 raw/title context만으로 publish하지 않고 native-web disambiguation hold로 남긴다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11698859",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11698859",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11698859",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11698859",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11698859",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11698859",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11698859",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11698859",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11698859",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11698859",
+        "docs/devs/loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json#post_id=11698859",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11698859",
+        "docs/devs/loop588_native_policy_preflight_review.json#post_id=11698859",
+        "https://novelpia.com/novel/197558"
+      ],
+      "native_policy_state": "native_web_exact_title_not_found_context_only",
+      "native_policy_review_action": "native_web_context_only_hold",
+      "native_policy_official_title": "친아들이 내게 집착한다",
+      "native_policy_official_url": "https://novelpia.com/novel/197558",
+      "webnovel_detail_url_supported": true,
+      "title_matches_target": false
+    },
+    {
+      "post_id": 11698870,
+      "contract_origin": "loop590_policy_hold_batch",
+      "contract_batch_lane": "P0_non_webnovel_ebook_policy_hold",
+      "source_dispatch_lane": "shared_gate_restore_contract_review",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "target_title": "인간실격",
+      "target_url": null,
+      "official_support_refs": [],
+      "official_support_ref_count": 0,
+      "current_projection_candidate_title": null,
+      "current_projection_candidate_url": null,
+      "runtime_expected_audit_status": null,
+      "runtime_search_status": "ebook_or_classic_policy_review_required",
+      "search_condition_tag": "non_webnovel_ebook_or_classic_policy_hold",
+      "contract_action": "non_webnovel_ebook_policy_hold_contract_case",
+      "promotion_decision": {
+        "status": "hold",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": true,
+        "reason_codes": [
+          "non_webnovel_ebook_policy_hold",
+          "webnovel_detail_url_supported_false",
+          "scope_not_webnovel_publish_contract",
+          "public_identity_scrubbed_before_policy_contract"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11698870,
+        "candidate_title": "인간실격",
+        "candidate_url": "https://series.naver.com/ebook/detail.series?productNo=8927664",
+        "source": "loop590_non_webnovel_ebook_policy_hold",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved_but_out_of_publish_contract_scope",
+        "work_resolution": "resolved_policy_hold",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "non_webnovel_ebook_or_classic",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "loop586_canonical_title_rewrite_review",
+            "loop585_official_support_enrichment_review"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "webnovel_detail_url_supported_false"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "non_webnovel_ebook_policy_hold",
+          "strength": "strong",
+          "source_path_or_snippet": "Naver Series eBook detail은 다자이 오사무/출판사/카테고리 소설을 제공하는 eBook/고전 문학 페이지다.",
+          "supports_publish": false,
+          "reason_code": "scope_not_webnovel_publish_contract"
+        }
+      ],
+      "release_candidate_not_approval": false,
+      "official_support_missing_before_publish": false,
+      "restore_target_mismatch_review_required": false,
+      "search_review_required_before_approval": true,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "현재 webnovel official detail 계약은 `series.naver.com/novel/detail.series`를 대상으로 하며 eBook/classic 작품을 같은 publish gate로 통과시키지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11698870",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11698870",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11698870",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11698870",
+        "docs/devs/loop586_canonical_title_rewrite_review.json#post_id=11698870",
+        "https://series.naver.com/ebook/detail.series?productNo=8927664"
+      ],
+      "official_support_review_state": "ebook_or_classic_policy_review_required",
+      "official_support_review_action": "non_webnovel_ebook_policy_hold",
+      "official_support_review_url": "https://series.naver.com/ebook/detail.series?productNo=8927664",
+      "official_support_review_title": "인간실격",
+      "webnovel_detail_url_supported": false,
+      "title_matches_target": true
+    }
+  ],
+  "approval_boundary": {
+    "combined_contract_plan_is_not_full375_go": true,
+    "release_candidates_require_full375_recheck": true,
+    "semantic_quality_remains_review_locked": true,
+    "full_scan_approval": false
+  }
+}

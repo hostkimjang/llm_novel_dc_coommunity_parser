@@ -1,5 +1,21 @@
 # Improvement Register
 
+## IMP-20260708-590 - P0 policy hold convergence and residual accounting
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | 실제 test run만 `--parallel 16` + dashboard attached로 실행 |
+| Native-web hold | REVIEW-LOCKED | `11698859` exact official title 미확인, context-only | native-web disambiguation 전 publish 금지 |
+| eBook/classic policy hold | REVIEW-LOCKED | `11698870` webnovel publish contract 밖 | 별도 policy 없이는 public identity publish 금지 |
+| Release gate | REVIEW-LOCKED | combined release candidate `8`, no-release `7`, violation `0` | full375 GO 전 release 금지 |
+| P0 residual19 | REVIEW-LOCKED | processed_or_excluded `19`, ordinary residual `0` | approval로 세지 않음 |
+| Residual46 | REVIEW-LOCKED | processed_or_excluded `19`, ordinary residual `27` | 다음 batch lane 처리 |
+| Full375 collateral | NO-GO | raw `79`, adjusted `75`, runtime counts missing | collateral GO 전 approval 금지 |
+| Test run dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | `http://127.0.0.1:8080`, health `ok=true`, next run `--parallel 16`, `--no-dashboard` 금지 | 진행 관측용으로만 사용 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: policy hold `REVIEW-LOCKED`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 79 / adjusted 75`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-589 - P0 INFO_MISSING source-native convergence and full375 recheck
 
 | 항목 | 상태 | 근거 | 다음 |

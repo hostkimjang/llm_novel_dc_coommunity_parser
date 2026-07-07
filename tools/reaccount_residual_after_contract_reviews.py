@@ -14,7 +14,9 @@ CANDIDATE_SCRUB = "candidate_scrub_no_publish_contract_case"
 VARIANT_HOLD = "canonical_variant_policy_hold_contract_case"
 STRONGER_HOLD = "stronger_evidence_hard_hold_contract_case"
 MISMATCH_REVIEW = "restore_target_runtime_mismatch_review_required"
+NATIVE_WEB_HOLD = "native_web_disambiguation_hold_contract_case"
 OFFICIAL_SUPPORT_MISSING_RESTORE_HOLD = "official_support_missing_restore_hold_contract_case"
+NON_WEBNOVEL_EBOOK_POLICY_HOLD = "non_webnovel_ebook_policy_hold_contract_case"
 CANDIDATE_SET_REBUILD_HOLD = "candidate_set_rebuild_required_before_publish"
 NO_PUBLISH_INTENT_GUARD = "no_publish_intent_guard_contract_case"
 SOURCE_NATIVE_EXCLUDE = "exclude_from_regression_count_after_gate_wiring"
@@ -119,10 +121,22 @@ def _classification_for(
             "restore_target_mismatch_source_native_review_required",
             issues,
         )
+    if action == NATIVE_WEB_HOLD:
+        return (
+            "contract_processed_native_web_disambiguation_hold_no_publish",
+            "native_web_disambiguation_hold_not_approval",
+            issues,
+        )
     if action == OFFICIAL_SUPPORT_MISSING_RESTORE_HOLD:
         return (
             "ordinary_residual_unprocessed",
             "official_support_missing_restore_followup_required",
+            issues,
+        )
+    if action == NON_WEBNOVEL_EBOOK_POLICY_HOLD:
+        return (
+            "contract_processed_non_webnovel_ebook_policy_hold_no_publish",
+            "non_webnovel_ebook_policy_hold_not_approval",
             issues,
         )
     if action == CANDIDATE_SET_REBUILD_HOLD:
@@ -311,6 +325,12 @@ def build_accounting(
             "official_support_missing_restore_followup_rows": effect_counts.get(
                 "official_support_missing_restore_followup_required", 0
             ),
+            "native_web_disambiguation_hold_rows": effect_counts.get(
+                "native_web_disambiguation_hold_not_approval", 0
+            ),
+            "non_webnovel_ebook_policy_hold_rows": effect_counts.get(
+                "non_webnovel_ebook_policy_hold_not_approval", 0
+            ),
             "candidate_set_rebuild_hold_rows": effect_counts.get("candidate_set_rebuild_hold_not_approval", 0),
             "no_publish_intent_guard_rows": effect_counts.get("no_publish_intent_guard_not_approval", 0),
             "source_native_exclusion_candidate_rows": effect_counts.get(
@@ -368,7 +388,13 @@ def _policy_ref_for(
             expected_restore_application,
             default_prefix="expected_restore_projection_contract_application",
         )
-    if action_text in {CANDIDATE_SCRUB, EXPECTED_RESTORE, OFFICIAL_SUPPORT_MISSING_RESTORE_HOLD}:
+    if action_text in {
+        CANDIDATE_SCRUB,
+        EXPECTED_RESTORE,
+        NATIVE_WEB_HOLD,
+        OFFICIAL_SUPPORT_MISSING_RESTORE_HOLD,
+        NON_WEBNOVEL_EBOOK_POLICY_HOLD,
+    }:
         return _payload_ref(contract_plan, default_prefix="promotion_gate_contract_plan")
     if action_text == VARIANT_HOLD:
         return _payload_ref(variant_review, default_prefix="canonical_variant_policy_review")
@@ -404,6 +430,8 @@ def write_markdown(path: Path, accounting: dict[str, Any]) -> None:
         f"- release_candidate_not_approval_rows: `{summary['release_candidate_not_approval_rows']}`",
         f"- no_publish_or_hold_contract_rows: `{summary['no_publish_or_hold_contract_rows']}`",
         f"- official_support_missing_restore_followup_rows: `{summary['official_support_missing_restore_followup_rows']}`",
+        f"- native_web_disambiguation_hold_rows: `{summary.get('native_web_disambiguation_hold_rows', 0)}`",
+        f"- non_webnovel_ebook_policy_hold_rows: `{summary.get('non_webnovel_ebook_policy_hold_rows', 0)}`",
         f"- candidate_set_rebuild_hold_rows: `{summary['candidate_set_rebuild_hold_rows']}`",
         f"- no_publish_intent_guard_rows: `{summary['no_publish_intent_guard_rows']}`",
         f"- source_native_exclusion_candidate_rows: `{summary.get('source_native_exclusion_candidate_rows', 0)}`",
@@ -422,6 +450,9 @@ def write_markdown(path: Path, accounting: dict[str, Any]) -> None:
         f"source-native exclusion 후보 `{summary.get('source_native_exclusion_candidate_rows', 0)}`건은 regression count 제외 후보로 분리됐지만 approval은 아니다. "
         f"하지만 release candidate `{summary['release_candidate_not_approval_rows']}`건은 approval이 아니고, "
         f"no-publish/hold `{summary['no_publish_or_hold_contract_rows']}`건은 public publish를 열지 않는다. "
+        f"native-web disambiguation hold `{summary.get('native_web_disambiguation_hold_rows', 0)}`건과 "
+        f"비웹소설 eBook/classic policy hold `{summary.get('non_webnovel_ebook_policy_hold_rows', 0)}`건은 "
+        "닫힌 계약 행이지만 approval은 아니다. "
         f"공식 detail URL 보강 follow-up `{summary['official_support_missing_restore_followup_rows']}`건은 닫힌 행이 아니라 ordinary residual로 유지한다. "
         f"ordinary residual `{summary['ordinary_residual_unprocessed_rows']}`건과 full375 collateral 재확인이 남아 있으므로 goal은 `ACTIVE / NOT_COMPLETE`, "
         "`semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`다."

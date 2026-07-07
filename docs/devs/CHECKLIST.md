@@ -1,5 +1,24 @@
 # Development Checklist
 
+## 2026-07-08 Loop590 P0 policy hold 수렴 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] P0 ordinary residual `2`건을 단건 반복이 아니라 policy hold batch로 처리했다.
+- [x] `11698859`는 native-web exact title 미확인/context-only 근거로 `native_web_disambiguation_hold_contract_case`에 넣었다.
+- [x] `11698870`은 eBook/classic 범위 밖 정책으로 `non_webnovel_ebook_policy_hold_contract_case`에 넣었다.
+- [x] Policy release audit rows `2`, violation `0`, no-release `2`, release candidate `0`을 확인했다.
+- [x] Combined release audit rows `15`, violation `0`, release candidate `8`, no-release `7`, runtime allowed `0`을 확인했다.
+- [x] P0 residual19는 processed_or_excluded `19`, ordinary residual `0`으로 재회계했다.
+- [x] Residual46은 processed_or_excluded `19`, ordinary residual `27`로 재회계했다.
+- [x] Full375 collateral은 projection 변경 없음으로 Loop589 기준 `NO-GO / raw 79 / adjusted 75 / runtime counts missing`을 유지했다.
+- [x] Dashboard health는 `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`으로 확인했다.
+- [x] Dashboard status는 마지막 Loop564 runtime replay `30/30`, `parallel_count=16`, `batch_running=false`로 확인했다.
+- [x] Focused unittest `26` tests를 통과했다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 실행한다.
+- [ ] Dashboard 진행률을 semantic/full_scan approval 근거로 쓰지 않는다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: policy hold `REVIEW-LOCKED`, release `REVIEW-LOCKED`, P0 residual `REVIEW-LOCKED / 0`, residual46 `REVIEW-LOCKED / 27`, full375 collateral `NO-GO / raw 79 / adjusted 75`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop589 P0 INFO_MISSING source-native 수렴 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.

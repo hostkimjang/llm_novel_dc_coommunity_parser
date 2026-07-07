@@ -20,6 +20,7 @@ CANDIDATE_SET_RESTORE = "candidate_set_expected_restore_contract_case"
 CANDIDATE_SET_REBUILD_HOLD = "candidate_set_rebuild_required_before_publish"
 NO_PUBLISH_INTENT_GUARD = "no_publish_intent_guard_contract_case"
 OFFICIAL_SUPPORT_MISSING_RESTORE_HOLD = "official_support_missing_restore_hold_contract_case"
+NON_WEBNOVEL_EBOOK_POLICY_HOLD = "non_webnovel_ebook_policy_hold_contract_case"
 
 
 def load_json(path: Path) -> Any:
@@ -288,6 +289,14 @@ def _audit_row(plan_row: dict[str, Any], projection_row: dict[str, Any] | None) 
             violation_code = "official_support_missing_hold_published_before_official_detail_url"
         else:
             release_gate_state = "official_support_missing_restore_hold_preserved_no_release"
+            satisfied_no_release = True
+    elif action == NON_WEBNOVEL_EBOOK_POLICY_HOLD:
+        if has_public_identity:
+            release_gate_state = "non_webnovel_ebook_policy_hold_public_identity_violation"
+            violation = True
+            violation_code = "non_webnovel_ebook_policy_published_before_policy_contract"
+        else:
+            release_gate_state = "non_webnovel_ebook_policy_hold_preserved_no_release"
             satisfied_no_release = True
 
     return {

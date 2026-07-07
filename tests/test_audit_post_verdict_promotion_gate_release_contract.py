@@ -314,6 +314,43 @@ class AuditPostVerdictPromotionGateReleaseContractTest(unittest.TestCase):
             "native_web_disambiguation_hold_preserved_no_release",
         )
 
+    def test_non_webnovel_ebook_policy_hold_preserves_no_release(self):
+        audit = build_audit(
+            contract_plan={
+                "plan_id": "unit",
+                "gate": "REVIEW-LOCKED",
+                "full_scan_approval": False,
+                "rows": [_plan_row(7, "non_webnovel_ebook_policy_hold_contract_case")],
+            },
+            projection_rows=[_projection(7)],
+            audit_id="unit",
+        )
+
+        self.assertEqual(audit["gate"], "REVIEW-LOCKED")
+        self.assertEqual(audit["summary"]["satisfied_no_release_rows"], 1)
+        self.assertEqual(
+            audit["rows"][0]["release_gate_state"],
+            "non_webnovel_ebook_policy_hold_preserved_no_release",
+        )
+
+    def test_non_webnovel_ebook_policy_hold_flags_public_identity(self):
+        audit = build_audit(
+            contract_plan={
+                "plan_id": "unit",
+                "gate": "REVIEW-LOCKED",
+                "full_scan_approval": False,
+                "rows": [_plan_row(7, "non_webnovel_ebook_policy_hold_contract_case")],
+            },
+            projection_rows=[_projection(7, title="인간실격", status="safe_resolved", publish=True)],
+            audit_id="unit",
+        )
+
+        self.assertEqual(audit["gate"], "NO-GO")
+        self.assertEqual(
+            audit["rows"][0]["violation_code"],
+            "non_webnovel_ebook_policy_published_before_policy_contract",
+        )
+
     def test_canonical_cleanup_contaminated_actual_leak_is_violation(self):
         audit = build_audit(
             contract_plan={

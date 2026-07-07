@@ -1,5 +1,22 @@
 # Development History
 
+## 2026-07-08 - Loop590 P0 policy hold convergence and residual accounting
+
+- 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+- Loop589 뒤 P0 ordinary residual `2`건을 policy hold batch로 처리했다.
+- `11698859`는 NovelPia 공식 상세가 `친아들이 내게 집착한다`이고 `#귤부인` 태그/문맥만 확인되어 `native_web_disambiguation_hold_contract_case`로 no-release 유지했다.
+- `11698870`은 Naver Series eBook/classic detail 근거가 있으나 현재 webnovel publish contract 범위 밖이라 `non_webnovel_ebook_policy_hold_contract_case`로 no-release 유지했다.
+- Policy release audit은 rows `2`, violation `0`, no-release `2`, release candidate `0`이다.
+- Combined release audit은 rows `15`, violation `0`, release candidate `8`, no-release `7`, runtime allowed `0`이다.
+- P0 residual19 accounting은 contract processed `15`, source-native exclusion candidate `4`, processed_or_excluded `19`, ordinary residual `0`이다.
+- Residual46 accounting은 contract processed `15`, source-native exclusion candidate `4`, processed_or_excluded `19`, ordinary residual `27`이다.
+- `tools/audit_post_verdict_promotion_gate_release_contract.py`와 `tools/reaccount_residual_after_contract_reviews.py`에 non-webnovel eBook/classic policy hold와 native-web hold 회계를 보강했다.
+- Focused unittest `26`개를 통과했다.
+- Dashboard는 `http://127.0.0.1:8080`에서 `ok=true / standalone=true / pid=9320`로 확인했고, 다음 test/runtime run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지다.
+- Full375 collateral은 projection 변경 없음으로 Loop589 기준 `NO-GO / raw 79 / adjusted 75 / runtime counts missing`을 유지한다.
+- Report는 `docs/devs/loop_reports/LOOP_590_REPORT_20260708.md`다.
+- Gate는 policy hold `REVIEW-LOCKED`, release `REVIEW-LOCKED`, P0 residual `REVIEW-LOCKED / ordinary 0`, residual46 `REVIEW-LOCKED / ordinary 27`, full375 collateral `NO-GO / raw 79 / adjusted 75`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop588 native/policy preflight and full375 collateral recheck
 
 - 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.

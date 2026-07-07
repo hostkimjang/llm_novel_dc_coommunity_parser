@@ -1,5 +1,31 @@
 # Verification Results
 
+## 2026-07-08 Loop590 P0 policy hold 수렴과 residual 회계 갱신
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_590_REPORT_20260708.md`
+  - `docs/devs/loop590_residual_p0_policy_hold_contract_plan.json/.md`
+  - `docs/devs/loop590_residual_p0_combined_contract_plan.json/.md`
+  - `docs/devs/loop590_residual_p0_policy_hold_release_gate_audit.json/.md`
+  - `docs/devs/loop590_residual_p0_combined_release_gate_audit.json/.md`
+  - `docs/devs/loop590_residual_p0_policy_hold_accounting.json/.md`
+  - `docs/devs/loop590_residual46_policy_hold_accounting.json/.md`
+  - `tools/audit_post_verdict_promotion_gate_release_contract.py`
+  - `tools/reaccount_residual_after_contract_reviews.py`
+- 검증:
+  - Policy hold plan generation: PASS, rows `2`, native-web hold `1`, non-webnovel eBook/classic hold `1`, runtime allowed `0`.
+  - Policy release gate audit: PASS, `REVIEW-LOCKED`, violation `0`, no-release `2`, release candidate `0`.
+  - Combined release gate audit: PASS, `REVIEW-LOCKED`, violation `0`, release candidate `8`, no-release `7`.
+  - P0 residual accounting: PASS, processed_or_excluded `19`, ordinary residual `0`, validation issue `0`.
+  - Residual46 accounting: PASS, processed_or_excluded `19`, ordinary residual `27`, validation issue `0`.
+  - Dashboard health: PASS, `http://127.0.0.1:8080/api/health` 기준 `ok=true`, `standalone=true`, `pid=9320`.
+  - Dashboard status: PASS, 마지막 Loop564 runtime replay `30/30`, `parallel_count=16`, `batch_running=false`.
+  - `python -m unittest tests.test_audit_post_verdict_promotion_gate_release_contract tests.test_reaccount_residual_after_contract_reviews -v`: PASS, `26` tests.
+- 결과:
+  - P0 ordinary residual은 `0`이지만 full375 collateral GO가 아니므로 approval이 아니다.
+  - Full375 collateral은 projection 변경 없음으로 Loop589 기준 `NO-GO / raw 79 / adjusted 75 / runtime counts missing`을 유지한다.
+- Gate: policy hold `REVIEW-LOCKED`, release `REVIEW-LOCKED`, P0 residual `REVIEW-LOCKED / 0`, residual46 `REVIEW-LOCKED / 27`, full375 collateral `NO-GO / raw 79 / adjusted 75`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop588 native/policy preflight와 full375 collateral 재검증
 
 - 산출물:

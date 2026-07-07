@@ -72,6 +72,63 @@ class ReaccountResidualAfterContractReviewsTest(unittest.TestCase):
         self.assertEqual(accounting["rows"][0]["contract_accounting_state"], "source_native_reviewed_exclusion_candidate")
         self.assertFalse(accounting["rows"][0]["publish_allowed"])
 
+    def test_policy_holds_reduce_ordinary_residual_without_approval(self):
+        residual_queue = {
+            "queue_id": "unit_residual",
+            "rows": [
+                {
+                    "post_id": 11698859,
+                    "triage_bucket": "safe_loss_resolved_to_null",
+                    "review_label": "REPROCESS",
+                    "actions": ["native_web_review_required"],
+                },
+                {
+                    "post_id": 11698870,
+                    "triage_bucket": "safe_loss_resolved_to_null",
+                    "review_label": "REPROCESS",
+                    "actions": ["official_detail_url_enrichment_required"],
+                },
+            ],
+        }
+        contract_plan = {
+            "plan_id": "unit_plan",
+            "rows": [
+                {
+                    "post_id": 11698859,
+                    "contract_action": "native_web_disambiguation_hold_contract_case",
+                    "target_title": "귤부인 대롱대롱",
+                },
+                {
+                    "post_id": 11698870,
+                    "contract_action": "non_webnovel_ebook_policy_hold_contract_case",
+                    "target_title": "인간실격",
+                },
+            ],
+        }
+
+        accounting = build_accounting(
+            residual_queue=residual_queue,
+            contract_plan=contract_plan,
+            accounting_id="unit",
+        )
+
+        summary = accounting["summary"]
+        self.assertEqual(summary["contract_processed_rows"], 2)
+        self.assertEqual(summary["ordinary_residual_unprocessed_rows"], 0)
+        self.assertEqual(summary["native_web_disambiguation_hold_rows"], 1)
+        self.assertEqual(summary["non_webnovel_ebook_policy_hold_rows"], 1)
+        self.assertEqual(summary["release_candidate_not_approval_rows"], 0)
+        self.assertEqual(summary["publish_allowed_rows"], 0)
+        self.assertFalse(accounting["full_scan_approval"])
+        self.assertEqual(
+            accounting["rows"][0]["contract_accounting_state"],
+            "contract_processed_native_web_disambiguation_hold_no_publish",
+        )
+        self.assertEqual(
+            accounting["rows"][1]["contract_accounting_state"],
+            "contract_processed_non_webnovel_ebook_policy_hold_no_publish",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
