@@ -123,6 +123,81 @@ class RunIndependentPlanTest(unittest.TestCase):
             dashboard_marker = root / "logs" / "dashboard.marker.log"
             self.assertIn("status=already_running", dashboard_marker.read_text(encoding="utf-8"))
 
+    def test_runner_starts_manifest_attach_for_dashboard_progress(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            plan_path = root / "plan.json"
+            result_path = root / "result.json"
+            manifest_path = root / "result_manifest.json"
+            checkpoint_path = root / "result_checkpoint.jsonl"
+            code = (
+                "import json,pathlib,time;"
+                f"result=pathlib.Path({str(result_path)!r});"
+                f"manifest=pathlib.Path({str(manifest_path)!r});"
+                f"checkpoint=pathlib.Path({str(checkpoint_path)!r});"
+                "time.sleep(0.2);"
+                "result.write_text('[]',encoding='utf-8');"
+                "checkpoint.write_text('',encoding='utf-8');"
+                "manifest.write_text(json.dumps({"
+                "'run_id':'20260708_010203_000000',"
+                "'input_post_count':1,"
+                "'completed_count':1,"
+                "'flushed_count':1,"
+                "'pending_count':0,"
+                "'failed_count':0,"
+                "'large_run_complete':True,"
+                "'parallel_count':16,"
+                f"'output_file':{str(result_path)!r},"
+                f"'checkpoint_jsonl':{str(checkpoint_path)!r}"
+                "}),encoding='utf-8')"
+            )
+            plan_path.write_text(
+                json.dumps(
+                    {
+                        "planned_runs": [
+                            {
+                                "post_id": 1,
+                                "repeat_index": 1,
+                                "output_json": str(result_path),
+                                "manifest_json": str(manifest_path),
+                                "command_argv": [sys.executable, "-c", code],
+                            }
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            with patch(
+                "tools.run_independent_plan._ensure_dashboard",
+                return_value={
+                    "status": "already_running",
+                    "ok": True,
+                    "standalone": True,
+                    "url": "http://127.0.0.1:18080",
+                },
+            ):
+                output = io.StringIO()
+                with redirect_stdout(output):
+                    rc = run_plan(
+                        plan_path=plan_path,
+                        log_dir=root / "logs",
+                        env_updates={},
+                        skip_existing=False,
+                        limit=None,
+                        dashboard_url="http://127.0.0.1:18080",
+                        dashboard_python=sys.executable,
+                    )
+
+            self.assertEqual(rc, 0)
+            self.assertIn('"dashboard_attach_started_runs": 1', output.getvalue())
+            marker = root / "logs" / "result.marker.log"
+            marker_text = marker.read_text(encoding="utf-8")
+            self.assertIn("dashboard_attach_pid=", marker_text)
+            self.assertIn(f"manifest={manifest_path}", marker_text)
+            attach_log = root / "logs" / "result.dashboard_attach.log"
+            self.assertIn("START_ATTACH", attach_log.read_text(encoding="utf-8"))
+
 
 if __name__ == "__main__":
     unittest.main()

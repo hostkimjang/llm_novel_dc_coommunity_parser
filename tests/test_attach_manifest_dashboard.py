@@ -1,7 +1,11 @@
+import json
+import tempfile
+import threading
 import time
 import unittest
+from pathlib import Path
 
-from tools.attach_manifest_dashboard import _snapshot, _started_at_from_manifest
+from tools.attach_manifest_dashboard import _load_json_when_ready, _snapshot, _started_at_from_manifest
 
 
 class AttachManifestDashboardTest(unittest.TestCase):
@@ -36,6 +40,23 @@ class AttachManifestDashboardTest(unittest.TestCase):
         self.assertEqual(snap["parallel_count"], 16)
         self.assertEqual(snap["search_hits"], 16)
         self.assertEqual(snap["attach_manifest"]["pending_count"], 1)
+
+    def test_load_json_when_ready_waits_for_manifest_creation(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "run_manifest.json"
+
+            def write_later() -> None:
+                time.sleep(0.1)
+                path.write_text(json.dumps({"large_run_complete": True}), encoding="utf-8")
+
+            thread = threading.Thread(target=write_later)
+            thread.start()
+            try:
+                payload = _load_json_when_ready(path, wait_sec=2.0, retry_sec=0.05)
+            finally:
+                thread.join(timeout=2.0)
+
+        self.assertEqual(payload["large_run_complete"], True)
 
 
 if __name__ == "__main__":

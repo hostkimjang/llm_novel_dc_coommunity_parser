@@ -13,12 +13,24 @@ import time
 import urllib.error
 import urllib.request
 from datetime import datetime
+from json import JSONDecodeError
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 
 
 def _load_json(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _load_json_when_ready(path: Path, *, wait_sec: float = 0.0, retry_sec: float = 0.5) -> Any:
+    deadline = time.time() + max(0.0, wait_sec)
+    while True:
+        try:
+            return _load_json(path)
+        except (FileNotFoundError, JSONDecodeError, OSError) as exc:
+            if time.time() >= deadline:
+                raise
+            time.sleep(max(0.1, retry_sec))
 
 
 def _read_json_array(path: Path, *, limit: int = 500) -> List[Dict[str, Any]]:
@@ -178,14 +190,32 @@ def main() -> int:
     parser.add_argument("--summary-limit", type=int, default=500, help="max live result summaries to push")
     parser.add_argument("--once", action="store_true", help="push one snapshot and exit")
     parser.add_argument("--token", default="", help="DASHBOARD_INGEST_TOKEN if configured")
+    parser.add_argument(
+        "--wait-for-manifest-sec",
+        type=float,
+        default=0.0,
+        help="wait this long for a manifest that is being created by a just-started run",
+    )
     args = parser.parse_args()
 
     manifest_path = Path(args.manifest)
     started_at: Optional[float] = None
     last_completed: Optional[int] = None
+    first_load = True
 
     while True:
-        manifest = _load_json(manifest_path)
+        try:
+            manifest = _load_json_when_ready(
+                manifest_path,
+                wait_sec=args.wait_for_manifest_sec if first_load else min(args.interval_sec, 2.0),
+            )
+        except (FileNotFoundError, JSONDecodeError, OSError) as exc:
+            print(
+                f"[attach_manifest_dashboard] manifest not ready: {manifest_path} ({exc})",
+                flush=True,
+            )
+            return 2
+        first_load = False
         if started_at is None:
             started_at = _started_at_from_manifest(manifest)
         completed = int(manifest.get("completed_count") or 0)

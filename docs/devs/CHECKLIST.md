@@ -1,5 +1,23 @@
 # Development Checklist
 
+## 2026-07-08 Loop594 test-run dashboard attach fallback 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] `tools/run_independent_plan.py`가 dashboard 기본 ON일 때 planned run별 manifest attach 프로세스를 시작하도록 보강했다.
+- [x] planned run의 `manifest_json`이 없으면 `output_json`에서 `<stem>_manifest.json` 경로를 추론하도록 했다.
+- [x] `tools/attach_manifest_dashboard.py`가 `--wait-for-manifest-sec` 동안 막 시작한 run의 manifest 생성을 기다리도록 했다.
+- [x] Runner marker와 JSON 출력에 dashboard attach pid, manifest path, attach log, exit 상태를 남기도록 했다.
+- [x] Dashboard 기본 환경 `DASHBOARD_URL`, `DASHBOARD_PORT`, `EXPERT_DASHBOARD_FORWARD=1` 전달과 `--no-dashboard` 제거 계약은 유지했다.
+- [x] Focused unittest `15`개를 통과했다.
+- [x] `tools/run_independent_plan.py`, `tools/attach_manifest_dashboard.py`, `tools/test_run_dashboard_policy.py` py_compile을 통과했다.
+- [x] Dashboard health는 `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`으로 확인했다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, manifest attach fallback 활성, `--no-dashboard` 금지로 실행한다.
+- [ ] Dashboard 진행률을 semantic/full_scan approval 근거로 쓰지 않는다.
+- [ ] Remaining residual46 ordinary `18`건은 native-web/image evidence batch로 처리한다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, runtime replay `NOT_RUN`, residual46 `REVIEW-LOCKED / ordinary 18`, full375 collateral `NO-GO / raw 76 / adjusted 72 / runtime counts missing`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop594_test_run_dashboard_attach_fallback_report.md`, `docs/devs/loop594_test_run_dashboard_attach_fallback_report.json`.
+
 ## 2026-07-08 Loop593 canonical cleanup과 dashboard 계약 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.

@@ -16,6 +16,9 @@ from urllib.request import urlopen
 from tools.test_run_dashboard_policy import DEFAULT_DASHBOARD_URL, strip_no_dashboard
 
 
+MANIFEST_ATTACH_WAIT_SECONDS = 120.0
+
+
 def _load_json(path: Path) -> dict[str, Any]:
     payload = json.loads(path.read_text(encoding="utf-8-sig"))
     if not isinstance(payload, dict):
@@ -95,6 +98,79 @@ def _dashboard_host_port(dashboard_url: str) -> tuple[str, int]:
     host = parsed.hostname or "127.0.0.1"
     port = int(parsed.port or (443 if parsed.scheme == "https" else 80))
     return host, port
+
+
+def _manifest_path_for_run(run: dict[str, Any], output_path: Path | None) -> Path | None:
+    raw_manifest = str(run.get("manifest_json") or "").strip()
+    if raw_manifest:
+        return Path(raw_manifest)
+    if output_path is None:
+        return None
+    return output_path.with_name(output_path.stem + "_manifest.json")
+
+
+def _start_manifest_attach(
+    *,
+    manifest_path: Path,
+    dashboard_url: str,
+    log_path: Path,
+    python_executable: str,
+    wait_sec: float = MANIFEST_ATTACH_WAIT_SECONDS,
+) -> tuple[subprocess.Popen[Any], dict[str, Any]]:
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    argv = [
+        python_executable,
+        "tools/attach_manifest_dashboard.py",
+        "--manifest",
+        str(manifest_path),
+        "--dashboard-url",
+        dashboard_url,
+        "--wait-for-manifest-sec",
+        str(max(0.0, wait_sec)),
+    ]
+    token = os.environ.get("DASHBOARD_INGEST_TOKEN", "").strip()
+    if token:
+        argv.extend(["--token", token])
+    with log_path.open("a", encoding="utf-8", errors="replace", newline="\n") as log_file:
+        log_file.write(
+            f"START_ATTACH {datetime.now().isoformat()} COMMAND {subprocess.list2cmdline(argv)}\n"
+        )
+        log_file.flush()
+        proc = subprocess.Popen(
+            argv,
+            cwd=Path.cwd(),
+            stdout=log_file,
+            stderr=subprocess.STDOUT,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+        )
+    return proc, {
+        "pid": proc.pid,
+        "manifest": str(manifest_path),
+        "log": str(log_path),
+        "command": subprocess.list2cmdline(argv),
+    }
+
+
+def _finish_manifest_attach(
+    proc: subprocess.Popen[Any],
+    *,
+    run_returncode: int,
+    timeout_sec: float = 10.0,
+) -> int | str | None:
+    try:
+        return proc.wait(timeout=timeout_sec)
+    except subprocess.TimeoutExpired:
+        if run_returncode == 0:
+            proc.terminate()
+        else:
+            proc.kill()
+        try:
+            return proc.wait(timeout=3.0)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            return "killed_after_timeout"
 
 
 def _ensure_dashboard(
@@ -213,6 +289,8 @@ def run_plan(
     completed = 0
     skipped = 0
     stripped_no_dashboard = 0
+    dashboard_attach_started = 0
+    dashboard_attach_records: list[dict[str, Any]] = []
     for index, run in enumerate(selected, start=1):
         if not isinstance(run, dict):
             raise ValueError(f"planned_runs[{index}] is not an object")
@@ -228,18 +306,33 @@ def run_plan(
         stem = _safe_stem(output_json, f"run_{index:03d}")
         marker = log_dir / f"{stem}.marker.log"
         combined = log_dir / f"{stem}.combined.log"
+        manifest_path = _manifest_path_for_run(run, output_path)
 
         if skip_existing and output_path is not None and output_path.exists():
             skipped += 1
             _write_line(marker, f"SKIP {datetime.now().isoformat()} index={index} output={output_path}")
             continue
 
+        attach_proc: subprocess.Popen[Any] | None = None
+        attach_record: dict[str, Any] | None = None
+        if dashboard and manifest_path is not None:
+            attach_proc, attach_record = _start_manifest_attach(
+                manifest_path=manifest_path,
+                dashboard_url=dashboard_url,
+                log_path=log_dir / f"{stem}.dashboard_attach.log",
+                python_executable=dashboard_python or sys.executable,
+            )
+            dashboard_attach_started += 1
+            dashboard_attach_records.append({"index": index, **attach_record})
+
         _write_line(
             marker,
             (
                 f"START {datetime.now().isoformat()} index={index} "
                 f"post_id={run.get('post_id')} repeat={run.get('repeat_index')} output={output_json} "
-                f"dashboard={dashboard_state.get('status')}"
+                f"dashboard={dashboard_state.get('status')} "
+                f"dashboard_attach_pid={(attach_record or {}).get('pid', '')} "
+                f"manifest={manifest_path or ''}"
             ),
         )
         with combined.open("a", encoding="utf-8", errors="replace", newline="\n") as log_file:
@@ -263,8 +356,16 @@ def run_plan(
                 rc = proc.wait()
             finally:
                 proc.stdout.close()
+        attach_exit: int | str | None = None
+        if attach_proc is not None:
+            attach_exit = _finish_manifest_attach(attach_proc, run_returncode=rc)
+            if attach_record is not None:
+                attach_record["exit"] = attach_exit
         exists = bool(output_path and output_path.exists())
-        _write_line(marker, f"END {datetime.now().isoformat()} exit={rc} exists={exists}")
+        _write_line(
+            marker,
+            f"END {datetime.now().isoformat()} exit={rc} exists={exists} dashboard_attach_exit={attach_exit}",
+        )
         if rc != 0:
             return rc
         completed += 1
@@ -280,6 +381,8 @@ def run_plan(
                 "env_overrides": sorted(env_updates),
                 "dashboard": dashboard_state,
                 "stripped_no_dashboard_flags": stripped_no_dashboard,
+                "dashboard_attach_started_runs": dashboard_attach_started,
+                "dashboard_attach_processes": dashboard_attach_records,
             },
             ensure_ascii=False,
             indent=2,

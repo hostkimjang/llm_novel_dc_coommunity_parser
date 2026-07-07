@@ -1,0 +1,48 @@
+{
+  "report_id": "loop594_test_run_dashboard_attach_fallback",
+  "status": "REVIEW-LOCKED",
+  "runtime_replay": "NOT_RUN",
+  "bounded_run": "NOT_RUN",
+  "full375_runtime_run": "NOT_RUN",
+  "changed_files": [
+    "tools/run_independent_plan.py",
+    "tools/attach_manifest_dashboard.py",
+    "tests/test_run_independent_plan.py",
+    "tests/test_attach_manifest_dashboard.py"
+  ],
+  "dashboard_contract": {
+    "url": "http://127.0.0.1:8080",
+    "mode": "standalone_forward_plus_manifest_attach_fallback",
+    "forbidden_flags": [
+      "--no-dashboard"
+    ],
+    "requested_parallel": 16,
+    "gate": "GO_PROGRESS_VIEW_NOT_APPROVAL"
+  },
+  "dashboard_health": {
+    "ok": true,
+    "service": "expert-pipeline-monitor",
+    "standalone": true,
+    "pid": 9320
+  },
+  "verification": [
+    {
+      "command": "python -m unittest tests.test_run_independent_plan tests.test_attach_manifest_dashboard tests.test_safe_loss_flip_rate_probe",
+      "result": "PASS",
+      "tests": 15
+    },
+    {
+      "command": "python -m py_compile tools\\run_independent_plan.py tools\\attach_manifest_dashboard.py tools\\test_run_dashboard_policy.py",
+      "result": "PASS"
+    }
+  ],
+  "gates": {
+    "dashboard": "GO_PROGRESS_VIEW_NOT_APPROVAL",
+    "runtime_replay": "NOT_RUN",
+    "residual46": "REVIEW-LOCKED / ordinary 18",
+    "full375_collateral": "NO-GO / raw 76 / adjusted 72 / runtime counts missing",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  }
+}
