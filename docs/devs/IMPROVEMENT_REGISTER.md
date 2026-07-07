@@ -1,5 +1,22 @@
 # Improvement Register
 
+## IMP-20260708-577 - Shared gate probe and refined P0 dispatch
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | 필요한 test run만 `--parallel 16` + dashboard attached로 실행 |
+| Safe-loss shared gate probe | REVIEW-LOCKED | eligible `7`, publish `0`, missing URL `6`, shared gate skip `1` | official detail/native evidence 없이는 publish 금지 |
+| Projection identity | GO_IDENTITY | Loop576 result 대비 rows `375`, changed `0`, sha256 동일 | full375 수치는 Loop576 gate 상속 |
+| Publication contract | GO_PROJECTION_CONTRACT | `375` rows, violation `0` | full_scan approval로 오해 금지 |
+| Full375 collateral | NO-GO | raw `103`, adjusted residual `64`, runtime counts missing | remaining residual 처리 후 재평가 |
+| Batch dispatch contract | GO_UNIT | `REPROCESS` fallback runtime dispatch 제거 | 명시적 runtime/search action 없는 행은 review/contract lane 유지 |
+| Refined P0 dispatch | REVIEW-LOCKED | rows `17`, runtime input candidate `0` | candidate-set `10`부터 계약 테스트 |
+| Native-web/image packet | REVIEW-LOCKED | rows `3` | source-native/native verdict 전 hard-hold 유지 |
+| Test run dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | dashboard URL `http://127.0.0.1:8080`, health `ok=true`, next run `--parallel 16`, `--no-dashboard` 금지 | 진행 관측용으로만 사용 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: golden18 `GO`, publication contract `GO`, full375 collateral `NO-GO / adjusted 64`, residual queue `REVIEW-LOCKED / 64`, refined P0 dispatch `REVIEW-LOCKED / 17 / runtime_input_candidate_rows 0`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-576 - Source-native HOLD projection and unsafe promotion convergence
 
 | 항목 | 상태 | 근거 | 다음 |

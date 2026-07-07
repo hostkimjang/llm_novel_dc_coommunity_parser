@@ -1,0 +1,102 @@
+{
+  "application_id": "loop577_safe_loss_shared_gate_projection_contract",
+  "report_type": "source_native_repair_projection_contract_application",
+  "generated_at": "2026-07-08T02:34:32",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "policy": {
+    "source_native_seed_is_not_approval": true,
+    "uses_shared_promotion_seed_helper": true,
+    "uses_final_publication_ledger_sync": true,
+    "runtime_replay": "NOT_RUN"
+  },
+  "summary": {
+    "projection_rows": 375,
+    "verdict_rows": 17,
+    "eligible_safe_loss_rows": 7,
+    "outcome_counts": {
+      "skipped_by_shared_gate": 1,
+      "skipped_missing_official_detail_url": 6
+    },
+    "applied_publish_rows": 0,
+    "post_sync_held_rows": 0,
+    "skipped_rows": 7
+  },
+  "rows": [
+    {
+      "post_id": 11718114,
+      "outcome": "skipped_by_shared_gate",
+      "selected_title": "설정값 딸깍으로 판타지 시스템 정상화",
+      "selected_url": "https://novelpia.com/novel/383584",
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "after_status": "promotion_blocked",
+      "after_title": null,
+      "after_url": null,
+      "source_native_verdict": "title_phrase_and_plot_context_support_safe_title_lost_to_null",
+      "evidence_grade": "Medium",
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "gate_reason_codes": [
+        "scope_context_only",
+        "scope_not_current_work",
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "nonwork_or_noise_context",
+        "serialized_public_identity_scrubbed"
+      ]
+    },
+    {
+      "post_id": 11665124,
+      "outcome": "skipped_missing_official_detail_url",
+      "selected_title": "화산파(화산귀환)",
+      "selected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null
+    },
+    {
+      "post_id": 11698859,
+      "outcome": "skipped_missing_official_detail_url",
+      "selected_title": "귤부인 대롱대롱",
+      "selected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null
+    },
+    {
+      "post_id": 11700500,
+      "outcome": "skipped_missing_official_detail_url",
+      "selected_title": "전지적 1인칭 시점",
+      "selected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null
+    },
+    {
+      "post_id": 11682775,
+      "outcome": "skipped_missing_official_detail_url",
+      "selected_title": "여자가 되어서라도 복수한다",
+      "selected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null
+    },
+    {
+      "post_id": 11700483,
+      "outcome": "skipped_missing_official_detail_url",
+      "selected_title": "니들 생각 다 들린다",
+      "selected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null
+    },
+    {
+      "post_id": 11710049,
+      "outcome": "skipped_missing_official_detail_url",
+      "selected_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "selected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null
+    }
+  ]
+}

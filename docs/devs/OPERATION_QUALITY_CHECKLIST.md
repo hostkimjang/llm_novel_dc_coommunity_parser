@@ -1,5 +1,30 @@
 # Operation Quality Checklist
 
+## 2026-07-08 Loop577 shared gate probe와 refined dispatch 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_577_REPORT_20260708.md`.
+  - [x] Safe-loss shared gate projection application 기록 완료: `docs/devs/loop577_safe_loss_shared_gate_projection_application.json/.md`.
+  - [x] Projection identity audit 기록 완료: `docs/devs/loop577_safe_loss_shared_gate_projection_identity_audit.json/.md`.
+  - [x] Publication contract audit 기록 완료: `docs/devs/loop577_safe_loss_shared_gate_publication_contract_audit.json/.md`.
+  - [x] Refined P0 dispatch17 batch 기록 완료: `docs/devs/loop577_shared_gate_probe_refined_p0_dispatch17_batch.json/.md`.
+  - [x] Native-web/image review packet 기록 완료: `docs/devs/loop577_shared_gate_probe_native_web3_review_packet.json/.md`.
+  - [x] Adjusted always-on gate 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop577_always_on_golden18_full375_safe_loss_gate_probe.json/.md`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+  - [x] Shared gate probe는 eligible `7`건 중 publish `0`으로 남겼다.
+  - [x] Missing official detail URL `6`건과 shared gate skip `1`건은 publish로 완화하지 않았다.
+  - [x] Loop577 projection result는 Loop576 result와 changed `0`이다.
+  - [x] Publication contract는 `GO / 375 rows / 0 violations`지만 full375 approval로 승격하지 않았다.
+  - [x] Full375 raw regression `103`, adjusted residual `64`가 유지되어 collateral `NO-GO`를 유지했다.
+  - [x] `REPROCESS` fallback runtime dispatch를 제거해 runtime input candidate `0`을 명시했다.
+  - [x] Refined dispatch lane은 candidate-set `10`, shared-gate contract `5`, native-web/image `1`, no-publish guard `1`이다.
+  - [x] Dashboard health는 `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`로 확인했다.
+  - [x] 다음 test/runtime run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지다.
+  - [x] Dashboard는 진행 확인 도구이며 semantic/full_scan approval 근거가 아니다.
+  - [x] Full375 collateral `GO` 전 goal completion을 선언하지 않는다.
+- Gate: golden18 `GO`, publication contract `GO`, full375 collateral `NO-GO / adjusted residual 64`, residual queue `REVIEW-LOCKED / 64`, refined P0 dispatch `REVIEW-LOCKED / 17 / runtime_input_candidate_rows 0`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop576 source-native HOLD projection 품질 게이트
 
 - 근거:

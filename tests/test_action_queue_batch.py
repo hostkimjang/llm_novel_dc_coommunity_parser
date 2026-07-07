@@ -165,6 +165,39 @@ class ActionQueueBatchTest(unittest.TestCase):
         self.assertEqual(packet["summary"]["review_rows"], 1)
         self.assertEqual(packet["rows"][0]["post_id"], 42)
 
+    def test_shared_gate_restore_without_runtime_action_is_not_runtime_dispatch(self) -> None:
+        queue = {
+            "queue_id": "unit_queue",
+            "summary": {"action_queue_rows": 1},
+            "rows": [
+                {
+                    "post_id": 77,
+                    "priority": "P0",
+                    "review_label": "REPROCESS",
+                    "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+                    "triage_bucket": "safe_loss_resolved_to_null",
+                    "selected_title": "화산파(화산귀환)",
+                    "actions": [
+                        "repair_safe_loss_restore_supported_title",
+                        "shared_promotion_gate_wiring_required",
+                    ],
+                }
+            ],
+        }
+
+        batch = build_action_batch(queue, batch_id="unit_shared_gate", priorities={"P0"})
+
+        self.assertEqual(batch["summary"]["selected_rows"], 1)
+        self.assertEqual(batch["summary"]["runtime_input_candidate_rows"], 0)
+        self.assertEqual(batch["summary"]["source_native_review_rows"], 0)
+        self.assertEqual(
+            batch["summary"]["dispatch_lane_counts"],
+            {"shared_gate_restore_contract_review": 1},
+        )
+        self.assertFalse(batch["rows"][0]["runtime_input_eligible"])
+        self.assertFalse(batch["rows"][0]["source_native_review_required"])
+        self.assertEqual(batch["rows"][0]["dispatch_lane"], "shared_gate_restore_contract_review")
+
 
 if __name__ == "__main__":
     unittest.main()

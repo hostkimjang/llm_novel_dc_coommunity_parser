@@ -1,5 +1,25 @@
 # Development Checklist
 
+## 2026-07-08 Loop577 shared gate probe와 refined dispatch 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 실행하지 않았다.
+- [x] Safe-loss shared-gate `7`건을 shared promotion seed helper에 projection-only로 통과시켰다.
+- [x] Applied publish는 `0`이고 skip은 `skipped_missing_official_detail_url 6`, `skipped_by_shared_gate 1`이다.
+- [x] Loop577 projection result는 Loop576 result와 rows `375`, changed `0`, sha256 동일이다.
+- [x] Publication contract는 `GO / 375 rows / 0 violations`다.
+- [x] Always-on gate는 golden18 `GO`, full375 collateral `NO-GO / adjusted 64`다.
+- [x] `build_action_queue_batch`에서 `REPROCESS` fallback runtime dispatch를 제거했다.
+- [x] Refined P0 dispatch17은 runtime input candidate `0`이다.
+- [x] Dispatch lane은 `candidate_set_rebuild_review 10`, `shared_gate_restore_contract_review 5`, `native_web_image_evidence_review 1`, `no_publish_guard_review 1`이다.
+- [x] Native-web/image review packet `3`건을 생성했다.
+- [x] Dashboard health는 `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`으로 확인했다.
+- [x] Focused unittest `37`개를 통과했다.
+- [ ] Candidate-set rebuild lane `10`건은 후보셋 재구성 계약 테스트 전 runtime replay로 보내지 않는다.
+- [ ] Shared-gate restore contract lane `5`건은 official detail URL/native evidence 보강 전 publish하지 않는다.
+- [ ] Native-web/image packet `3`건은 source-native/native verdict 전 hard-hold 완화 대상이 아니다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: golden18 `GO`, publication contract `GO`, full375 collateral `NO-GO / adjusted 64`, residual queue `REVIEW-LOCKED / 64`, refined P0 dispatch `REVIEW-LOCKED / 17 / runtime_input_candidate_rows 0`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop576 source-native HOLD projection 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 실행하지 않았다.

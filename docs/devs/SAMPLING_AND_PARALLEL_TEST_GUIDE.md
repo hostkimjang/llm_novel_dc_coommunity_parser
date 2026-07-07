@@ -1,5 +1,13 @@
 # Sampling And Parallel Test Guide
 
+## 2026-07-08 Loop577 refined dispatch 계약
+
+- `REPROCESS` 라벨만으로 runtime/test run을 발주하지 않는다.
+- `tools/build_action_queue_batch.py` 기준 `runtime_input_candidate_rows=0`이면 같은 batch를 `runtime_repair_without_search_replay`로 반복 dispatch하지 않는다.
+- Loop577 refined P0 dispatch17은 runtime input candidate `0`이다. 다음 작업은 candidate-set rebuild `10`, shared-gate contract review `5`, native-web/image evidence `1`, no-publish guard `1` 순서로 분리한다.
+- Runtime/test run을 실제로 발주할 때만 `--parallel 16`, dashboard ON, `--no-dashboard` 금지를 적용한다. 입력 수가 16보다 작으면 manifest에서 effective parallel을 확인한다.
+- Dashboard는 진행상황 관측 도구이며 `semantic_quality`, `full_scan_approval`, `full375 collateral GO`의 승인 근거가 아니다.
+
 ## 2026-07-08 Loop576 테스트런 dashboard 계약 재확인
 
 - 현재 standalone dashboard는 `http://127.0.0.1:8080`에서 `ok=true`, `standalone=true`, `pid=9320`로 응답한다.

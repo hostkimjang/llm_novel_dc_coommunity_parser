@@ -1,5 +1,21 @@
 # Development History
 
+## 2026-07-08 - Loop577 shared gate probe and refined P0 dispatch
+
+- 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+- Loop576 remaining P0 repair17 중 safe-loss shared-gate `7`건을 shared promotion seed helper에 다시 통과시켰다.
+- Projection 결과는 applied publish `0`, `skipped_missing_official_detail_url 6`, `skipped_by_shared_gate 1`이다.
+- Loop577 projection result는 Loop576 result와 row `375`, changed `0`, sha256 동일이다.
+- Publication contract는 `GO / 375 rows / 0 violations`다.
+- Full375 collateral은 raw `103`, review-adjusted residual `64`로 유지되고 `NO-GO`다.
+- `tools/build_action_queue_batch.py`는 `REPROCESS` 라벨만으로 runtime dispatch를 배정하지 않고, 명시적 runtime/search action이 없으면 review/contract lane으로 분리한다.
+- Refined P0 dispatch17은 runtime input candidate `0`, dispatch lane `candidate_set_rebuild_review 10`, `shared_gate_restore_contract_review 5`, `native_web_image_evidence_review 1`, `no_publish_guard_review 1`이다.
+- Native-web/image review packet은 `3`건이다.
+- Dashboard는 `http://127.0.0.1:8080`에서 `ok=true / standalone=true / pid=9320`로 확인했다. 다음 test/runtime run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지로 실행한다.
+- Focused unittest `37`개를 통과했다.
+- Report는 `docs/devs/loop_reports/LOOP_577_REPORT_20260708.md`다.
+- Gate는 golden18 `GO`, publication contract `GO`, full375 collateral `NO-GO / adjusted 64`, residual queue `REVIEW-LOCKED / 64`, refined P0 dispatch `REVIEW-LOCKED / 17 / runtime_input_candidate_rows 0`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop576 source-native HOLD projection and unsafe promotion convergence
 
 - 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.

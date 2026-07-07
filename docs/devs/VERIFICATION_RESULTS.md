@@ -1,5 +1,33 @@
 # Verification Results
 
+## 2026-07-08 Loop577 shared gate probe와 P0 dispatch 재분류
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_577_REPORT_20260708.md`
+  - `docs/devs/loop577_safe_loss_shared_gate_projection_application.json/.md`
+  - `docs/devs/loop577_safe_loss_shared_gate_projection_identity_audit.json/.md`
+  - `docs/devs/loop577_safe_loss_shared_gate_publication_contract_audit.json/.md`
+  - `docs/devs/loop577_shared_gate_probe_refined_p0_dispatch17_batch.json/.md`
+  - `docs/devs/loop577_shared_gate_probe_native_web3_review_packet.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop577_safe_loss_shared_gate_projection_result.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop577_always_on_golden18_full375_safe_loss_gate_probe.json/.md`
+- 검증:
+  - Safe-loss shared gate projection: PASS 산출, eligible `7`, applied publish `0`, skipped `7`.
+  - Skip breakdown: `skipped_missing_official_detail_url 6`, `skipped_by_shared_gate 1`.
+  - Projection identity audit: PASS, Loop576 result 대비 row `375`, changed `0`, sha256 동일.
+  - Publication contract audit: GO, rows `375`, violation `0`.
+  - Always-on gate: PASS 산출, golden `GO`, collateral `NO-GO / raw 103 / adjusted 64 / runtime counts missing`.
+  - Refined P0 dispatch: PASS, selected `17`, runtime input candidate `0`, validation issue `0`.
+  - Dispatch lanes: `candidate_set_rebuild_review 10`, `shared_gate_restore_contract_review 5`, `native_web_image_evidence_review 1`, `no_publish_guard_review 1`.
+  - Native-web/image review packet: PASS, rows `3`.
+  - Dashboard health: PASS, `http://127.0.0.1:8080/api/health`, `ok=true`, `standalone=true`, `pid=9320`.
+  - Focused unittest: PASS, `37` tests.
+- 결과:
+  - Loop577은 full375 collateral 수치를 줄이지 않았다. 결과 동일성 audit으로 raw `103`, adjusted `64`를 상속했다.
+  - 대신 remaining P0 repair17의 runtime dispatch를 차단하고, 실제 다음 lane을 candidate-set/native-web/shared-gate contract로 분리했다.
+  - Full375 collateral은 여전히 `NO-GO`라 full_scan approval과 goal completion을 열지 않는다.
+- Gate: golden18 `GO`, publication contract `GO`, full375 collateral `NO-GO / adjusted 64`, residual queue `REVIEW-LOCKED / 64`, refined P0 dispatch `REVIEW-LOCKED / 17 / runtime_input_candidate_rows 0`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop576 source-native HOLD projection
 
 - 산출물:

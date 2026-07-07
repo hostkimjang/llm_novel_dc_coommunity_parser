@@ -18,6 +18,38 @@ SEARCH_REPLAY_ACTION = "search_degraded_or_timeout_replay_required"
 CANONICAL_REVIEW_ACTION = "canonical_variant_or_wrong_work_review_required"
 VARIANT_POLICY_ACTION = "spacing_or_canonical_variant_policy_review_required"
 SOURCE_NATIVE_REVIEW_ACTION = "source_native_or_blind_review_required"
+SAFE_LOSS_RESTORE_ACTION = "repair_safe_loss_restore_supported_title"
+SHARED_GATE_ACTION = "shared_promotion_gate_wiring_required"
+CANDIDATE_SET_ACTIONS = {
+    "candidate_set_rebuild_required",
+    "repair_after_wrong_work",
+    "preserve_secondary_candidates",
+}
+NATIVE_WEB_IMAGE_ACTIONS = {
+    "native_web_review_required",
+    "image_native_review_required",
+    "image_listing_multi_work_guard_required",
+    "image_multi_panel_review_required",
+    "image_platform_url_preference",
+}
+NO_PUBLISH_GUARD_ACTIONS = {
+    "repair_unsafe_promotion",
+    "intent_guard_review",
+    "multi_work_guard_required",
+    "nonwork_game_context_publish_block_required",
+    "search_title_similarity_hard_hold_required",
+    "alias_collision_guard_required",
+    "merchandise_or_emoticon_work_context_guard",
+}
+CANONICAL_POLICY_ACTIONS = {
+    "canonical_alias_competition_guard_required",
+    "canonical_title_cleanup_required",
+    "policy_or_canonical_title_review_required",
+    "title_url_or_variant_trace_repair",
+    "title_surface_specificity_review_required",
+    "alias_relation_review_required",
+    "character_bridge_review_required",
+}
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -88,16 +120,24 @@ def _lanes_for(row: dict[str, Any]) -> list[str]:
     actions = set(_actions(row))
     label = str(row.get("review_label") or "")
     lanes: list[str] = []
-    if SOURCE_NATIVE_REVIEW_ACTION in actions:
+    if SOURCE_NATIVE_REVIEW_ACTION in actions or label == "INFO_MISSING":
         lanes.append("source_native_or_blind_review")
     if label == "REPROCESS" and RUNTIME_REPROCESS_ACTION in actions:
         lanes.append("runtime_repair_replay")
     if SEARCH_REPLAY_ACTION in actions:
         lanes.append("search_replay_required")
-    if CANONICAL_REVIEW_ACTION in actions:
+    if actions & CANDIDATE_SET_ACTIONS:
+        lanes.append("candidate_set_rebuild_review")
+    if actions & NO_PUBLISH_GUARD_ACTIONS:
+        lanes.append("no_publish_guard_review")
+    if actions & NATIVE_WEB_IMAGE_ACTIONS:
+        lanes.append("native_web_image_evidence_review")
+    if CANONICAL_REVIEW_ACTION in actions or actions & CANONICAL_POLICY_ACTIONS:
         lanes.append("source_native_or_blind_canonical_review")
-    if VARIANT_POLICY_ACTION in actions:
+    if VARIANT_POLICY_ACTION in actions or actions & CANONICAL_POLICY_ACTIONS:
         lanes.append("canonical_variant_policy_review")
+    if SAFE_LOSS_RESTORE_ACTION in actions or SHARED_GATE_ACTION in actions:
+        lanes.append("shared_gate_restore_contract_review")
     if not lanes:
         lanes.append("manual_review")
     return lanes
@@ -114,8 +154,18 @@ def _dispatch_lane(row: dict[str, Any]) -> str:
         return "source_native_or_blind_review"
     if label == "REPROCESS" and "search_replay_required" in lanes:
         return "runtime_repair_with_search_replay"
-    if label == "REPROCESS":
+    if label == "REPROCESS" and "runtime_repair_replay" in lanes:
         return "runtime_repair_without_search_replay"
+    for lane in (
+        "candidate_set_rebuild_review",
+        "no_publish_guard_review",
+        "native_web_image_evidence_review",
+        "source_native_or_blind_canonical_review",
+        "canonical_variant_policy_review",
+        "shared_gate_restore_contract_review",
+    ):
+        if lane in lanes:
+            return lane
     return "manual_review"
 
 
@@ -197,8 +247,11 @@ def build_action_batch(
                 str(row.get("review_label")) == "REPROCESS"
                 and RUNTIME_REPROCESS_ACTION in _actions(row)
             ),
-            "source_native_review_required": SOURCE_NATIVE_REVIEW_ACTION in _actions(row)
-            or str(row.get("review_label")) == "HOLD",
+            "source_native_review_required": (
+                SOURCE_NATIVE_REVIEW_ACTION in _actions(row)
+                or str(row.get("review_label")) in {"HOLD", "INFO_MISSING"}
+                or "native_web_image_evidence_review" in lanes
+            ),
         }
         selected.append(entry)
         label_counts[str(entry.get("review_label"))] += 1

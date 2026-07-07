@@ -1,5 +1,23 @@
 # Developer TODO Index
 
+## 2026-07-08 Loop577 이후
+
+- 상태 업데이트: Loop577은 safe-loss shared-gate `7`건을 실제 shared gate에 다시 통과시켰지만 publish `0`으로, non-productive runtime dispatch를 막는 refined P0 dispatch로 전환했다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Safe-loss shared-gate projection application을 생성했고 `skipped_missing_official_detail_url 6`, `skipped_by_shared_gate 1`을 확인했다.
+- [x] Loop577 projection result와 Loop576 result가 row `375`, changed `0`, sha256 동일임을 확인했다.
+- [x] Publication contract `GO / 375 rows / 0 violations`를 확인했다.
+- [x] Always-on gate를 재평가했고 full375 collateral `NO-GO / adjusted 64`를 유지했다.
+- [x] `REPROCESS` 라벨만으로 runtime dispatch를 배정하지 않도록 `build_action_queue_batch` dispatch 계약을 수정했다.
+- [x] Refined P0 dispatch17은 runtime input candidate `0`으로 기록했다.
+- [x] Native-web/image review packet `3`건을 생성했다.
+- [x] Dashboard health를 확인했고 다음 test/runtime run 계약은 `--parallel 16`, dashboard ON, `--no-dashboard` 금지로 유지했다.
+- [ ] Candidate-set rebuild lane `10`건은 후보셋 재구성 계약 테스트 전 runtime replay로 보내지 않는다.
+- [ ] Shared-gate restore contract lane `5`건은 official detail URL/native evidence 보강 전 publish하지 않는다.
+- [ ] Native-web/image packet `3`건은 source-native/native verdict 전 hard-hold 완화 대상이 아니다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: golden18 `GO`, publication contract `GO`, full375 collateral `NO-GO / adjusted 64`, residual queue `REVIEW-LOCKED / 64`, refined P0 dispatch `REVIEW-LOCKED / 17 / runtime_input_candidate_rows 0`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop576 이후
 
 - 상태 업데이트: Loop576은 source-native HOLD projection으로 unsafe promotion `4`건을 닫아 raw regression `107 -> 103`, review-adjusted residual `68 -> 64`로 낮췄다. Goal은 완료가 아니다.
