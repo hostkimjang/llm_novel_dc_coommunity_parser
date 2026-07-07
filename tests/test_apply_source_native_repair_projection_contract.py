@@ -111,6 +111,108 @@ class ApplySourceNativeRepairProjectionContractTest(unittest.TestCase):
         self.assertEqual(identity["candidate_ledger_status"], "promotion_blocked")
         self.assertFalse(identity["title_resolution_allowed"])
 
+    def test_recovers_matching_preserved_official_url_from_projection_row(self):
+        projection = [
+            {
+                "post_id": 22,
+                "title": "무마 웹툰 보는데",
+                "content": ["무마랑 시로네 얘기"],
+                "comments": [],
+                "analysis_result": {
+                    "identity": {
+                        "candidate_ledger_status": "promotion_blocked",
+                        "title_resolution_allowed": False,
+                        "title_resolution_state": "unresolved_matchable",
+                        "work_resolution": "unresolved",
+                        "novel_identity": None,
+                        "candidate_ledger": {
+                            "candidate_preservation_sources": [
+                                {
+                                    "official_title": "무한의 마법사",
+                                    "heretic_url": "https://novel.munpia.com/490453",
+                                    "source_tier": "official_detail",
+                                }
+                            ]
+                        },
+                    }
+                },
+            }
+        ]
+        verdicts = {
+            "rows": [
+                {
+                    "post_id": 22,
+                    "review_label": "REPROCESS",
+                    "selected_title": "무한의 마법사",
+                    "selected_url": None,
+                    "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+                    "evidence_grade": "Strong",
+                    "action": [
+                        "repair_safe_loss_restore_supported_title",
+                        "shared_promotion_gate_wiring_required",
+                    ],
+                    "rationale_ko": "원문 약칭과 캐릭터 맥락이 같은 작품을 직접 지지한다.",
+                }
+            ]
+        }
+
+        result_rows, application = apply_contract(projection, verdicts, application_id="unit")
+
+        identity = result_rows[0]["analysis_result"]["identity"]
+        self.assertEqual(application["summary"]["applied_publish_rows"], 1)
+        self.assertEqual(application["rows"][0]["selected_url"], "https://novel.munpia.com/490453")
+        self.assertEqual(identity["candidate_ledger_status"], "safe_resolved")
+        self.assertEqual(identity["novel_identity"]["official_title"], "무한의 마법사")
+
+    def test_does_not_recover_preserved_url_from_different_candidate_title(self):
+        projection = [
+            {
+                "post_id": 23,
+                "title": "랫따싶 풀네임",
+                "content": ["랫따싶이 뭔데"],
+                "comments": [],
+                "analysis_result": {
+                    "identity": {
+                        "candidate_ledger_status": "promotion_blocked",
+                        "title_resolution_allowed": False,
+                        "novel_identity": None,
+                        "candidate_ledger": {
+                            "candidate_preservation_sources": [
+                                {
+                                    "official_title": "다른 림월드 팬픽",
+                                    "heretic_url": "https://novelpia.com/novel/409182",
+                                    "source_tier": "official_detail",
+                                }
+                            ]
+                        },
+                    }
+                },
+            }
+        ]
+        verdicts = {
+            "rows": [
+                {
+                    "post_id": 23,
+                    "review_label": "REPROCESS",
+                    "selected_title": "[림월드]변방계에서 회귀자로 살아남기",
+                    "selected_url": None,
+                    "source_native_verdict": "direct_alias_and_comment_context_support_safe_title_lost_to_null",
+                    "evidence_grade": "Strong",
+                    "action": [
+                        "repair_safe_loss_restore_supported_title",
+                        "shared_promotion_gate_wiring_required",
+                    ],
+                }
+            ]
+        }
+
+        result_rows, application = apply_contract(projection, verdicts, application_id="unit")
+
+        identity = result_rows[0]["analysis_result"]["identity"]
+        self.assertEqual(application["summary"]["applied_publish_rows"], 0)
+        self.assertEqual(application["rows"][0]["outcome"], "skipped_missing_official_detail_url")
+        self.assertEqual(identity["candidate_ledger_status"], "promotion_blocked")
+
     def test_strong_source_native_verdict_overrides_reviewed_stale_context_hold(self):
         projection = [
             {

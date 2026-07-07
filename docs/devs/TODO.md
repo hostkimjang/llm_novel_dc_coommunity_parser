@@ -1,5 +1,22 @@
 # Developer TODO Index
 
+## 2026-07-08 Loop575 이후
+
+- 상태 업데이트: Loop575는 같은 제목 candidate ledger에 보존된 official detail URL을 회수해 raw regression `109 -> 107`, review-adjusted residual `70 -> 68`로 낮췄다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Preserved official URL 회수는 같은 제목 canonical official detail URL로 제한했다.
+- [x] 제목 불일치 URL과 noncanonical URL은 publish seed에서 제외했다.
+- [x] Projection application `9`건을 생성했고 `applied_shared_gate_publish 2`, `post_sync_held 0`을 확인했다.
+- [x] Publication contract `GO / 375 rows / 0 violations`를 확인했다.
+- [x] Full375 collateral compare와 adjusted always-on gate를 갱신했다.
+- [x] Residual68 action queue와 remaining P0 repair21 batch를 생성했다.
+- [x] Test-run dashboard health를 확인했고 remaining P0 batch execution contract에 `--parallel 16`, dashboard ON, `--no-dashboard` 금지를 유지했다.
+- [ ] `skipped_missing_official_detail_url 6`은 official detail URL/native evidence 보강 전 publish하지 않는다.
+- [ ] Remaining P0 repair21은 코드/계약 수리 후 필요한 경우에만 dashboard attached test run으로 실행한다.
+- [ ] INFO_MISSING `20`건은 source-native/blind verdict 전 hard-hold 완화 대상이 아니다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: golden18 `GO`, publication contract `GO`, full375 collateral `NO-GO / adjusted 68`, residual queue `REVIEW-LOCKED / 68`, P0 repair batch `REVIEW-LOCKED / 21`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop574 이후
 
 - 상태 업데이트: Loop574는 Strong source-native direct support를 final sync에 연결해 raw regression `111 -> 109`, review-adjusted residual `72 -> 70`으로 낮췄다. Goal은 완료가 아니다.

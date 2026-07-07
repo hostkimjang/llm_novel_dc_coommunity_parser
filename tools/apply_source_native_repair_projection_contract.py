@@ -93,6 +93,51 @@ def _candidate_url(row: dict[str, Any]) -> str:
     return _canonical_official_detail_url(row.get("selected_url")) or _official_ref_from_evidence_refs(row)
 
 
+def _iter_candidate_like_items(value: Any) -> list[dict[str, Any]]:
+    if isinstance(value, dict):
+        items = [value]
+        for key in (
+            "candidate_ledger",
+            "candidate_preservation_sources",
+            "title_candidates",
+            "mentioned_works",
+            "primary_work",
+        ):
+            nested = value.get(key)
+            if nested is not None:
+                items.extend(_iter_candidate_like_items(nested))
+        return items
+    if isinstance(value, list):
+        items: list[dict[str, Any]] = []
+        for item in value:
+            items.extend(_iter_candidate_like_items(item))
+        return items
+    return []
+
+
+def _candidate_url_from_projection_row(verdict: dict[str, Any], projection_row: dict[str, Any]) -> str:
+    selected_title = _string(verdict.get("selected_title"))
+    if not selected_title:
+        return ""
+    identity = _identity(projection_row)
+    for item in _iter_candidate_like_items(identity):
+        item_title = item.get("official_title") or item.get("title") or item.get("blocked_official_title")
+        if not _same_title(item_title, selected_title):
+            continue
+        url = _canonical_official_detail_url(
+            item.get("heretic_url")
+            or item.get("official_url")
+            or item.get("blocked_official_title_url")
+        )
+        if url:
+            return url
+    return ""
+
+
+def _candidate_url_for_seed(verdict: dict[str, Any], projection_row: dict[str, Any]) -> str:
+    return _candidate_url(verdict) or _candidate_url_from_projection_row(verdict, projection_row)
+
+
 def _actions(row: dict[str, Any]) -> set[str]:
     return {_string(value) for value in (row.get("action") or row.get("actions") or []) if _string(value)}
 
@@ -107,9 +152,9 @@ def _eligible(row: dict[str, Any]) -> bool:
     )
 
 
-def _build_seed(row: dict[str, Any]) -> dict[str, Any] | None:
+def _build_seed(row: dict[str, Any], projection_row: dict[str, Any]) -> dict[str, Any] | None:
     title = _string(row.get("selected_title"))
-    url = _candidate_url(row)
+    url = _candidate_url_for_seed(row, projection_row)
     if not title or not url:
         return None
     evidence_grade = _string(row.get("evidence_grade")).lower()
@@ -196,7 +241,7 @@ def apply_contract(
         identity = _identity(row)
         before_status = identity.get("candidate_ledger_status")
         before_title = (identity.get("novel_identity") or {}).get("official_title") if isinstance(identity.get("novel_identity"), dict) else None
-        seed = _build_seed(verdict)
+        seed = _build_seed(verdict, row)
         if seed is None:
             outcome = "skipped_missing_official_detail_url"
             counters[outcome] += 1

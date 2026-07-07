@@ -1,5 +1,21 @@
 # Development History
 
+## 2026-07-08 - Loop575 preserved official URL recovery and dashboard contract
+
+- 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+- `tools/apply_source_native_repair_projection_contract.py`에서 verdict URL이 비어도 같은 제목 candidate ledger에 보존된 canonical official detail URL을 shared promotion seed로 회수하게 했다.
+- 제목이 다른 candidate URL과 canonical official detail이 아닌 URL은 계속 publish seed에서 제외한다.
+- Loop575 application은 eligible safe-loss `9`, `applied_shared_gate_publish 2`, `post_sync_held 0`, `skipped_missing_official_detail_url 6`, `skipped_by_shared_gate 1`이다.
+- 닫힌 post_id는 `11710021`, `11669921`이다.
+- Publication contract는 `GO / 375 rows / 0 violations`다.
+- Full375 collateral은 changed `165`, raw regression `107`, review-adjusted residual `68`로 줄었지만 `NO-GO`다.
+- Residual action queue는 `68`건이며 bucket은 safe_loss `37`, unsafe promotion `8`, wrong_work `23`이다.
+- Remaining P0 code repair batch는 `21`건이다.
+- Dashboard는 `http://127.0.0.1:8080`에서 `ok=true / standalone=true / pid=9320`로 확인했다. 다음 test/runtime run은 사용자 요청대로 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지로 실행한다.
+- Focused unittest `32`개, py_compile, `git diff --check`를 통과했다.
+- Report는 `docs/devs/loop_reports/LOOP_575_REPORT_20260708.md`다.
+- Gate는 golden18 `GO`, publication contract `GO`, full375 collateral `NO-GO / adjusted 68`, residual queue `REVIEW-LOCKED / 68`, P0 repair batch `REVIEW-LOCKED / 21`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop574 source-native direct support repair and dashboard run visibility
 
 - 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
