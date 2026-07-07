@@ -1,5 +1,15 @@
 # Development History
 
+## 2026-07-08 - Loop602 corrected full375 unreviewed13 review batch
+
+- 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+- Loop601 corrected residual29 중 unreviewed raw regression `13`건을 source-native/blind review batch로 고정했다.
+- `tools/build_collateral_triage_review_batch.py`에 `--include-post-ids`를 추가했다.
+- Loop602 batch는 selected `13`, bucket `safe_loss_resolved_to_null 12 / wrong_work_title_flip 1`, missing source/baseline/after `0/0/0`이다.
+- Verdict는 아직 `NOT_RUN`이며 approval이 아니다.
+- Report는 `docs/devs/loop_reports/LOOP_602_REPORT_20260708.md`다.
+- Gate는 loop602 batch generation `REVIEW-LOCKED`, corrected always-on `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop601 full375 post_id overlap gate correction
 
 - 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.

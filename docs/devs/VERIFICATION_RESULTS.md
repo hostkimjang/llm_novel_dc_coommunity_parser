@@ -1,5 +1,20 @@
 # Verification Results
 
+## 2026-07-08 Loop602 corrected full375 unreviewed13 batch
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_602_REPORT_20260708.md`
+  - `docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json/.jsonl/.md`
+  - `tools/build_collateral_triage_review_batch.py`
+  - `tests/test_build_collateral_triage_review_batch.py`
+- 검증:
+  - Include filter: PASS, 지정 post_id만 P0 review batch에 포함.
+  - Batch generation: PASS, selected `13`, bucket `safe_loss_resolved_to_null 12 / wrong_work_title_flip 1`, missing source/baseline/after `0/0/0`.
+- 결과:
+  - Batch는 verdict 입력이며 approval이 아니다.
+  - Corrected residual29와 full375 `NO-GO` 상태를 유지한다.
+- Gate: loop602 batch generation `REVIEW-LOCKED`, verdict `NOT_RUN`, corrected always-on `NO-GO / adjusted 29 / unreviewed 13 / runtime missing`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop601 full375 post_id overlap gate 교정
 
 - 산출물:

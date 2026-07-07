@@ -1,5 +1,17 @@
 # Improvement Register
 
+## IMP-20260708-602 - corrected full375 unreviewed13 review batch
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | 실제 test run만 `--parallel 16` + dashboard attached로 실행 |
+| Include filter | PASS_UNIT | `--include-post-ids` 추가와 테스트 PASS | 특정 residual subset batch 재사용 |
+| Review batch | REVIEW-LOCKED | selected `13`, safe-loss `12`, wrong-work/variant `1`, missing `0/0/0` | source-native/blind verdict 작성 |
+| Corrected always-on | NO-GO | adjusted `29`, unreviewed `13`, runtime counts missing | full375 GO 전 approval 금지 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: loop602 batch generation `REVIEW-LOCKED`, verdict `NOT_RUN`, corrected always-on `NO-GO`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-601 - full375 post_id overlap gate correction
 
 | 항목 | 상태 | 근거 | 다음 |

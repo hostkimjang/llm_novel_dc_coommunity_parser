@@ -1,5 +1,17 @@
 # Developer TODO Index
 
+## 2026-07-08 Loop602 이후
+
+- 상태 업데이트: corrected residual29 중 unreviewed raw regression `13`건을 Loop602 source-native/blind review batch로 고정했다. Verdict는 아직 `NOT_RUN`이다.
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] `--include-post-ids` filter를 review batch builder에 추가했다.
+- [x] Loop602 batch를 생성했다. selected `13`, missing source/baseline/after `0/0/0`.
+- [ ] Loop602 batch 13건 source-native/blind verdict를 작성한다.
+- [ ] Corrected residual29 중 reviewed raw residual `16`건을 lane별 계약/native review로 처리한다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지 상태로 실행한다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: loop602 batch `REVIEW-LOCKED / verdict NOT_RUN`, corrected always-on `NO-GO`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop601 이후
 
 - 상태 업데이트: Loop600 always-on gate의 count-only `unreviewed regression 8`을 post_id overlap 기준으로 교정했고, corrected residual queue는 `29`건이다. Full375 collateral은 여전히 `NO-GO`다. Goal은 완료가 아니다.

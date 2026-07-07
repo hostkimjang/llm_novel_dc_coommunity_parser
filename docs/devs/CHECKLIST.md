@@ -1,5 +1,19 @@
 # Development Checklist
 
+## 2026-07-08 Loop602 corrected full375 unreviewed13 review batch 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Loop601 corrected residual29 중 `unreviewed_raw_regression 13`건을 N건 배치로 분리했다.
+- [x] `tools/build_collateral_triage_review_batch.py`에 `--include-post-ids`를 추가했다.
+- [x] Loop602 review batch는 selected `13`, bucket `safe_loss_resolved_to_null 12 / wrong_work_title_flip 1`, missing source/baseline/after `0/0/0`이다.
+- [x] Batch gate는 `REVIEW-LOCKED`이고 verdict는 아직 `NOT_RUN`이다.
+- [ ] Loop602 batch 13건을 source-native/blind verdict로 판정한다.
+- [ ] Corrected residual29 중 reviewed raw residual `16`건은 lane별 계약/native review로 별도 처리한다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, manifest attach fallback 활성, `--no-dashboard` 금지로 실행한다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: loop602 batch generation `REVIEW-LOCKED`, verdict `NOT_RUN`, corrected always-on `NO-GO / adjusted 29 / unreviewed 13 / runtime missing`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_602_REPORT_20260708.md`, `docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json`, `docs/devs/loop602_corrected_full375_unreviewed13_review_batch.jsonl`, `docs/devs/loop602_corrected_full375_unreviewed13_review_batch.md`.
+
 ## 2026-07-08 Loop601 full375 post_id overlap gate 교정 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.

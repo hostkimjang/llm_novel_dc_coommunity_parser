@@ -224,6 +224,7 @@ def _p0_rows(
     *,
     per_bucket_limit: int = 0,
     buckets: set[str] | None = None,
+    include_post_ids: set[int] | None = None,
     exclude_post_ids: set[int] | None = None,
 ) -> list[dict[str, Any]]:
     exclude_post_ids = exclude_post_ids or set()
@@ -234,6 +235,12 @@ def _p0_rows(
     ]
     if buckets:
         rows = [row for row in rows if str(row.get("triage_bucket") or "") in buckets]
+    if include_post_ids:
+        rows = [
+            row
+            for row in rows
+            if (_int_or_none(row.get("post_id")) or 0) in include_post_ids
+        ]
     rows = [
         row
         for row in rows
@@ -261,6 +268,7 @@ def build_review_batch(
     after_rows: dict[int, dict[str, Any]],
     per_bucket_limit: int = 0,
     buckets: set[str] | None = None,
+    include_post_ids: set[int] | None = None,
     exclude_post_ids: set[int] | None = None,
     scope_label: str = "collateral P0",
     generated_at: str | None = None,
@@ -270,6 +278,7 @@ def build_review_batch(
         triage_report,
         per_bucket_limit=0,
         buckets=buckets,
+        include_post_ids=include_post_ids,
         exclude_post_ids=set(),
     )
     excluded_p0_candidate_rows = sum(
@@ -281,6 +290,7 @@ def build_review_batch(
         triage_report,
         per_bucket_limit=per_bucket_limit,
         buckets=buckets,
+        include_post_ids=include_post_ids,
         exclude_post_ids=exclude_post_ids,
     )
     review_rows: list[dict[str, Any]] = []
@@ -347,6 +357,7 @@ def build_review_batch(
             "missing_after_result_rows": missing.get("after", 0),
             "per_bucket_limit": per_bucket_limit,
             "bucket_filter": sorted(buckets or []),
+            "include_post_ids": sorted(include_post_ids or []),
             "excluded_post_id_rows": len(exclude_post_ids),
             "excluded_p0_candidate_rows": excluded_p0_candidate_rows,
         },
@@ -458,6 +469,11 @@ def parse_args() -> argparse.Namespace:
         default="",
         help="쉼표로 구분한 post_id 목록. 이미 닫힌 collateral row를 review batch에서 제외한다.",
     )
+    parser.add_argument(
+        "--include-post-ids",
+        default="",
+        help="쉼표로 구분한 post_id 목록. 지정하면 해당 P0 collateral row만 review batch에 포함한다.",
+    )
     return parser.parse_args()
 
 
@@ -470,6 +486,11 @@ def main() -> None:
         after_rows=_result_rows_by_post_id(load_json(args.after_result)),
         per_bucket_limit=args.per_bucket_limit,
         buckets={bucket for bucket in args.bucket if bucket},
+        include_post_ids={
+            int(item.strip())
+            for item in str(args.include_post_ids or "").split(",")
+            if item.strip()
+        } or None,
         exclude_post_ids={
             int(item.strip())
             for item in str(args.exclude_post_ids or "").split(",")

@@ -141,6 +141,26 @@ class BuildCollateralTriageReviewBatchTest(unittest.TestCase):
             {"safe_loss_resolved_to_null": 1, "wrong_work_title_flip": 1},
         )
 
+    def test_include_post_ids_selects_specific_p0_rows(self):
+        report = build_review_batch(
+            triage_report={
+                "rows": [
+                    _triage_row(20, "safe_loss_resolved_to_null", "resolved_to_null", "A", None),
+                    _triage_row(18, "unsafe_promotion_from_hold", "null_to_resolved", None, "C"),
+                    _triage_row(17, "wrong_work_title_flip", "resolved_to_different_title", "D", "E"),
+                ]
+            },
+            panel_rows={post_id: {"post_id": post_id, "title": f"post {post_id}"} for post_id in (17, 18, 20)},
+            baseline_rows={},
+            after_rows={},
+            include_post_ids={18, 20},
+            generated_at="2026-07-08T00:00:00",
+        )
+
+        self.assertEqual([row["post_id"] for row in report["review_rows"]], [18, 20])
+        self.assertEqual(report["summary"]["include_post_ids"], [18, 20])
+        self.assertEqual(report["summary"]["selected_review_rows"], 2)
+
     def test_scope_label_is_configurable(self):
         report = build_review_batch(
             triage_report={

@@ -1,5 +1,19 @@
 # Operation Quality Checklist
 
+## 2026-07-08 Loop602 unreviewed13 batch 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_602_REPORT_20260708.md`.
+  - [x] Review batch 기록 완료: `docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json/.jsonl/.md`.
+  - [x] Include post_id filter 테스트 기록 완료.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+  - [x] Batch는 selected `13`, missing source/baseline/after `0/0/0`이다.
+  - [x] Batch 생성은 verdict나 approval이 아니다.
+  - [x] Corrected always-on gate는 여전히 `NO-GO / adjusted 29 / unreviewed 13 / runtime missing`이다.
+  - [x] 다음 test/runtime run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지다.
+- Gate: loop602 batch generation `REVIEW-LOCKED`, verdict `NOT_RUN`, corrected always-on `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop601 post_id overlap gate 교정 품질 게이트
 
 - 근거:
