@@ -1,5 +1,24 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop533 B1 post-verdict release gate 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_533_REPORT_20260707.md`.
+  - [x] Release audit JSON 기록 완료: `docs/devs/loop533_b1_post_verdict_release_gate_contract_audit.json`.
+  - [x] Tool 추가 완료: `tools/audit_post_verdict_promotion_gate_release_contract.py`.
+  - [x] Test 추가 완료: `tests/test_audit_post_verdict_promotion_gate_release_contract.py`.
+  - [x] Dashboard 확인: `http://127.0.0.1:8080`, `57/57`, `parallel_count=16`, `batch_running=false`.
+- 품질 경계:
+  - [x] 새 runtime replay는 실행하지 않았다.
+  - [x] Release gate violation은 `0`건이다.
+  - [x] Expected restore `3`건은 아직 projection public title로 복구되지 않아 pending이다.
+  - [x] Scrub/variant/stronger-hold `19`건은 no-release 상태다.
+  - [x] Release candidate after contract rows는 `0`건이다.
+  - [x] `runtime_replay_allowed_rows`는 `0`이다.
+  - [ ] Release audit를 semantic/full_scan approval 근거로 쓰지 않는다.
+  - [ ] Dashboard 상태를 semantic/full_scan approval 근거로 쓰지 않는다.
+- Gate: release gate contract audit `REVIEW-LOCKED`, runtime replay `BLOCKED_NO_RELEASE_CANDIDATE`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop532 B1 post-verdict promotion gate 품질 게이트
 
 - 근거:

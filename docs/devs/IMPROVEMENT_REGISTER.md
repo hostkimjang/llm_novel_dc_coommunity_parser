@@ -1,5 +1,18 @@
 # Improvement Register
 
+## IMP-20260707-533 - B1 post-verdict release gate contract audit
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Release gate audit | REVIEW-LOCKED | Loop532 plan `22`건과 Loop523 projection 대조, violation `0` | expected restore pending 3건 수리 |
+| Expected restore lane | OPEN_CONTRACT | `11660271`, `11706871`, `11679547`은 projection public title 미복구 | source-context/projection 수리 전 release 금지 |
+| No-release lanes | HOLD_PRESERVED | scrub `6`, variant hold `7`, stronger evidence hold `6` | no-release 상태 유지 |
+| Release candidate | CLOSED_EMPTY | release candidate after contract `0` | runtime replay 발주 금지 |
+| Runtime release boundary | GO_BLOCKED | `runtime_replay_allowed_rows=0` | full375 collateral 전 replay 금지 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: release gate contract audit `REVIEW-LOCKED`, runtime replay `BLOCKED_NO_RELEASE_CANDIDATE`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-532 - B1 post-verdict promotion gate contract plan
 
 | 항목 | 상태 | 근거 | 다음 |

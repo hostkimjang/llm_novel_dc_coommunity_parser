@@ -1,5 +1,30 @@
 # Verification Results
 
+## 2026-07-07 Loop533 B1 post-verdict release gate contract audit
+
+- 코드:
+  - `tools/audit_post_verdict_promotion_gate_release_contract.py`를 추가했다.
+  - Loop532 promotion-gate contract plan을 current projection result에 대조해 release candidate, pending, no-release, violation을 분리한다.
+  - 이 감사는 runtime replay가 아니며 release candidate가 있어도 full375 collateral GO 전에는 approval 근거가 아니다.
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_533_REPORT_20260707.md`
+  - `docs/devs/loop533_b1_post_verdict_release_gate_contract_audit.json`
+  - `tools/audit_post_verdict_promotion_gate_release_contract.py`
+  - `tests/test_audit_post_verdict_promotion_gate_release_contract.py`
+- 검증:
+  - `python -m py_compile tools\audit_post_verdict_promotion_gate_release_contract.py tests\test_audit_post_verdict_promotion_gate_release_contract.py`: PASS.
+  - `python -m unittest tests.test_audit_post_verdict_promotion_gate_release_contract -v`: PASS, `6` tests.
+  - `python -m unittest tests.test_audit_post_verdict_promotion_gate_release_contract tests.test_build_post_verdict_promotion_gate_contract_plan tests.test_audit_canonical_post_verdict_projection_contract tests.test_promotion_gate_contract tests.test_build_canonical_post_verdict_contract_queue tests.test_apply_canonical_candidate_recheck_verdicts tests.test_canonical_candidate_recheck_batch tests.test_shared_gate_runtime_block_repair_queue -v`: PASS, `58` tests.
+  - Loop533 release audit generation with `--fail-on-violation`: PASS.
+  - Dashboard health/status: PASS, `http://127.0.0.1:8080`, `57/57`, `parallel_count=16`.
+- 결과:
+  - contract plan rows `22`, projection rows `57`.
+  - validation issue `0`, violation rows `0`.
+  - pending contract rows `3`: `11660271`, `11706871`, `11679547`.
+  - satisfied no-release rows `19`.
+  - release candidate after contract rows `0`, runtime replay allowed `0`, full375 collateral `NO-GO`.
+- Gate: release gate contract audit `REVIEW-LOCKED`, runtime replay `BLOCKED_NO_RELEASE_CANDIDATE`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop532 B1 post-verdict promotion gate contract plan
 
 - 코드:

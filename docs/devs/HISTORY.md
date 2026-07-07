@@ -1,5 +1,16 @@
 # Development History
 
+## 2026-07-07 - Loop533 B1 post-verdict release gate contract audit
+
+- 새 runtime replay는 실행하지 않았다.
+- Loop532 promotion-gate contract plan `22`건을 Loop523 current projection result에 대조했다.
+- `tools/audit_post_verdict_promotion_gate_release_contract.py`와 `tests/test_audit_post_verdict_promotion_gate_release_contract.py`를 추가했다.
+- Release gate audit 결과는 validation issue `0`, violation `0`, pending contract `3`, satisfied no-release `19`, release candidate after contract `0`, runtime replay allowed `0`이다.
+- Pending `3`건은 `11660271`, `11706871`, `11679547` expected restore contract가 아직 projection public title로 복구되지 않은 상태다.
+- Scrub `6`, variant hold `7`, stronger evidence hold `6`은 no-release로 유지된다.
+- Report는 `docs/devs/loop_reports/LOOP_533_REPORT_20260707.md`, audit는 `docs/devs/loop533_b1_post_verdict_release_gate_contract_audit.json`이다.
+- Gate는 release gate contract audit `REVIEW-LOCKED`, runtime replay `BLOCKED_NO_RELEASE_CANDIDATE`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop532 B1 post-verdict promotion gate contract plan
 
 - 새 runtime replay는 실행하지 않았다.

@@ -1,5 +1,24 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop533 TODO
+
+- 상태 업데이트: Loop532 promotion-gate plan을 current projection release gate로 감사했다. Goal은 완료가 아니다.
+- [x] 새 runtime replay를 발주하지 않았다.
+- [x] `tools/audit_post_verdict_promotion_gate_release_contract.py`를 추가했다.
+- [x] `tests/test_audit_post_verdict_promotion_gate_release_contract.py`를 추가했다.
+- [x] Loop533 release audit/report를 생성했다.
+- [x] Release gate validation issue는 `0`, violation은 `0`이다.
+- [x] Pending expected restore rows는 `3`건이다: `11660271`, `11706871`, `11679547`.
+- [x] Satisfied no-release rows는 `19`건이다.
+- [x] Release candidate after contract rows는 `0`건이다.
+- [x] `runtime_replay_allowed_rows=0`을 유지했다.
+- [ ] Expected restore `3`건은 projection public title 복구 계약을 먼저 닫는다.
+- [ ] No-release `19`건은 full375 collateral 전 release 후보로 넘기지 않는다.
+- [ ] 다음 runtime/test run은 `--parallel 16`과 dashboard 기본 ON으로 실행한다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: release gate contract audit `REVIEW-LOCKED`, runtime replay `BLOCKED_NO_RELEASE_CANDIDATE`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop532 TODO
 
 - 상태 업데이트: Loop530 post-verdict queue를 shared promotion gate contract plan으로 투영했다. Goal은 완료가 아니다.

@@ -1,5 +1,24 @@
 # Development Checklist
 
+## 2026-07-07 Loop533 B1 post-verdict release gate contract audit 체크
+
+- [x] 새 runtime replay를 실행하지 않았다.
+- [x] Loop532 contract plan `22`건을 Loop523 current projection result에 대조했다.
+- [x] `tools/audit_post_verdict_promotion_gate_release_contract.py`를 추가했다.
+- [x] `tests/test_audit_post_verdict_promotion_gate_release_contract.py` 계약 테스트를 추가했다.
+- [x] Release gate audit validation issue는 `0`건이다.
+- [x] Release gate violation은 `0`건이다.
+- [x] Expected restore pending은 `3`건이다: `11660271`, `11706871`, `11679547`.
+- [x] Satisfied no-release rows는 `19`건이다.
+- [x] Release candidate after contract rows는 `0`건이다.
+- [x] `runtime_replay_allowed_rows`는 `0`이다.
+- [x] Dashboard는 `http://127.0.0.1:8080`, `57/57`, `parallel_count=16`, `batch_running=false`로 확인했다.
+- [ ] Expected restore `3`건을 projection 복구 없이 release 후보로 넘기지 않는다.
+- [ ] Scrub/variant/stronger-hold `19`건을 no-release 상태로 유지한다.
+- [ ] 다음 runtime/test run은 `--parallel 16`과 dashboard 기본 ON으로 실행한다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: release gate contract audit `REVIEW-LOCKED`, runtime replay `BLOCKED_NO_RELEASE_CANDIDATE`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop532 B1 post-verdict promotion gate contract plan 체크
 
 - [x] 새 runtime replay를 실행하지 않았다.
