@@ -1,5 +1,22 @@
 # Development Checklist
 
+## 2026-07-08 Loop574 source-native direct support 수리와 dashboard 보강 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 실행하지 않았다.
+- [x] Strong source-native seed의 `source_native_review_current_work` 근거를 final publication ledger sync의 direct source support로 경유시켰다.
+- [x] Projection application은 `applied_shared_gate_publish 2`, `post_sync_held 0`, `skipped_missing_official_detail_url 8`, `skipped_by_shared_gate 1`이다.
+- [x] 닫힌 post_id는 `11718099`, `11668300`이다.
+- [x] Publication contract는 `GO / 375 rows / 0 violations`다.
+- [x] Full375 raw regression은 `111 -> 109`, adjusted residual은 `72 -> 70`으로 줄었다.
+- [x] Residual70 action queue와 remaining P0 repair23 batch를 생성했다.
+- [x] `tools/run_independent_plan.py`가 dashboard 기본 모드에서 `dashboard_ready`를 출력하도록 했다.
+- [x] `expert_main.py` manifest가 `dashboard_mode`, `dashboard_url`, `dashboard_standalone_forwarding`을 기록하도록 했다.
+- [x] Dashboard health는 `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`으로 확인했다.
+- [ ] `skipped_missing_official_detail_url 8`은 official detail URL/native evidence 보강 전 publish하지 않는다.
+- [ ] Remaining P0 repair23은 코드/계약 수리 후 필요한 경우에만 `--parallel 16` + dashboard attached test run으로 실행한다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: golden18 `GO`, publication contract `GO`, full375 collateral `NO-GO / adjusted 70`, residual queue `REVIEW-LOCKED / 70`, P0 repair batch `REVIEW-LOCKED / 23`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop573 official detail URL canonical 수리 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 실행하지 않았다.

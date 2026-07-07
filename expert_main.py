@@ -2310,6 +2310,12 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
                         not candidate_url_key or _official_url_key(item_url) != candidate_url_key
                     ):
                         continue
+                    if (
+                        item.get("source_native_direct_source_support") is True
+                        and str(item.get("source_native_evidence_strength") or "").strip().lower() == "strong"
+                        and str(item.get("source") or "").strip() == "projection_followup_shared_gate_seed"
+                    ):
+                        return True
                     for key in ("alias_or_mention", "matched_alias", "anchor_text", "resolved_recall_anchor"):
                         alias_text = str(item.get(key) or "").strip()
                         alias_key = _title_key(alias_text)
@@ -7160,6 +7166,14 @@ def _apply_projection_followup_promotion_seed(
             }
         )
 
+    source_native_direct_support = any(
+        isinstance(item, dict)
+        and item.get("supports_publish") is True
+        and str(item.get("reason_code") or "").strip() == "source_native_review_current_work"
+        and str(item.get("strength") or "").strip().lower() == "strong"
+        for item in seeded_evidence
+    )
+
     candidate_item = {
         "official_title": official_title,
         "heretic_url": official_url,
@@ -7169,6 +7183,8 @@ def _apply_projection_followup_promotion_seed(
         "reference_role": "primary",
         "source": "projection_followup_shared_gate_seed",
         "source_native_verdict": projection_followup.get("source_native_verdict"),
+        "source_native_direct_source_support": source_native_direct_support,
+        "source_native_evidence_strength": "strong" if source_native_direct_support else "",
     }
 
     def _upsert_candidate(container: Dict[str, Any]) -> bool:
@@ -9401,6 +9417,11 @@ def main() -> None:
         sys.stderr = _Tee(_orig_err, f)
 
         _dashboard_forwarder = None
+        _dashboard_enabled = not _NO_DASHBOARD
+        _dashboard_mode = "disabled" if _NO_DASHBOARD else "unavailable"
+        _dashboard_url = ""
+        _dashboard_standalone_forwarding = False
+        _dashboard_start_error = ""
         try:
             # 대시보드 서버 기동 (외부 standalone 대시보드 감지 시 양보 + 포워딩)
             if not _NO_DASHBOARD:
@@ -9420,10 +9441,15 @@ def main() -> None:
                         )
                         _dashboard_forwarder.start()
                         _monitor.attach_forwarder(_dashboard_forwarder)
+                        _dashboard_mode = "standalone_forward"
+                        _dashboard_url = _ext_dash_url
+                        _dashboard_standalone_forwarding = True
                     else:
                         from llm_batch.monitor.server import start_dashboard
                         _dash_thread = start_dashboard(port=_dash_port)
                         _dash_actual_port = int(getattr(_dash_thread, "dashboard_port", _dash_port))
+                        _dashboard_mode = "embedded"
+                        _dashboard_url = f"http://127.0.0.1:{_dash_actual_port}"
                     # _Tee가 초기에 monitor import를 놓쳐도 즉시 연결되도록 재주입
                     for _tee_stream in (sys.stdout, sys.stderr):
                         try:
@@ -9448,6 +9474,8 @@ def main() -> None:
                     # 실패 원인도 로그 파일에 남겨 실행 중 추적 가능하게 한다.
                     print(f"[expert_main] ⚠️ 대시보드 기동 실패: {_e}", file=sys.stderr, flush=True)
                     _monitor = None
+                    _dashboard_mode = "unavailable"
+                    _dashboard_start_error = repr(_e)
             else:
                 _monitor = None
 
@@ -10355,6 +10383,11 @@ def main() -> None:
                         "LLM_STREAM_SIGNAL_IDLE_TIMEOUT_SECONDS",
                         "",
                     ),
+                    "dashboard_enabled": _dashboard_enabled,
+                    "dashboard_mode": _dashboard_mode,
+                    "dashboard_url": _dashboard_url,
+                    "dashboard_standalone_forwarding": _dashboard_standalone_forwarding,
+                    "dashboard_start_error": _dashboard_start_error,
                     "input_post_count": len(posts),
                     "vlm_enabled": vlm_enabled,
                     "ocr_enabled": ocr_enabled,

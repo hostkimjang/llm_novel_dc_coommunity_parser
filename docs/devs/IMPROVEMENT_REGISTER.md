@@ -1,5 +1,22 @@
 # Improvement Register
 
+## IMP-20260708-574 - Source-native direct support repair and dashboard run visibility
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | 필요한 test run만 `--parallel 16` + dashboard attached로 실행 |
+| Direct source support | GO_UNIT | Strong `source_native_review_current_work` seed를 final sync direct support로 인정 | Medium/weak seed는 계속 hard-hold |
+| Application | REVIEW-LOCKED | eligible `11`, publish `2`, post-sync held `0`, missing URL `8`, shared-gate skip `1` | missing URL 후속 처리 |
+| Publication contract | GO_PROJECTION_CONTRACT | `375` rows, violation `0` | full_scan approval로 오해 금지 |
+| Full375 collateral | NO-GO | raw `111 -> 109`, changed `165` | remaining residual 처리 후 재평가 |
+| Review adjustment | APPLIED_NOT_APPROVAL | exclusion `39`, adjusted residual `70` | full375 GO 전 approval 금지 |
+| Residual queue | REVIEW-LOCKED | rows `70`, safe_loss `39`, unsafe `8`, wrong_work `23` | batch 단위로 계속 처리 |
+| Remaining P0 repair | REVIEW-LOCKED | rows `23`, `repair_safe_loss_restore_supported_title 9 / repair_after_wrong_work 10 / repair_unsafe_promotion 4` | 코드/계약 수리 선행 |
+| Test run dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | dashboard URL `http://127.0.0.1:8080`, runner `dashboard_ready`, expert manifest dashboard fields | 진행 관측용으로만 사용 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: golden18 `GO`, publication contract `GO`, full375 collateral `NO-GO / adjusted 70`, residual queue `REVIEW-LOCKED / 70`, P0 repair batch `REVIEW-LOCKED / 23`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-573 - Official detail URL canonical repair
 
 | 항목 | 상태 | 근거 | 다음 |

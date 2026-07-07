@@ -170,6 +170,20 @@ def run_plan(
             log_dir=log_dir,
             python_executable=dashboard_python or sys.executable,
         )
+        print(
+            json.dumps(
+                {
+                    "event": "dashboard_ready",
+                    "dashboard_url": dashboard_url,
+                    "dashboard_status": dashboard_state.get("status"),
+                    "dashboard_ok": dashboard_state.get("ok"),
+                    "dashboard_standalone": dashboard_state.get("standalone"),
+                    "dashboard_log": dashboard_state.get("log", ""),
+                },
+                ensure_ascii=False,
+            ),
+            flush=True,
+        )
         _write_line(
             log_dir / "dashboard.marker.log",
             (

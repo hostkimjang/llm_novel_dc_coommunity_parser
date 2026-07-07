@@ -1,7 +1,9 @@
 import json
+import io
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
 
@@ -88,18 +90,22 @@ class RunIndependentPlanTest(unittest.TestCase):
                     "url": "http://127.0.0.1:18080",
                 },
             ):
-                rc = run_plan(
-                    plan_path=plan_path,
-                    log_dir=root / "logs",
-                    env_updates={},
-                    skip_existing=False,
-                    limit=None,
-                    dashboard_url="http://127.0.0.1:18080",
-                    dashboard_python=sys.executable,
-                )
+                output = io.StringIO()
+                with redirect_stdout(output):
+                    rc = run_plan(
+                        plan_path=plan_path,
+                        log_dir=root / "logs",
+                        env_updates={},
+                        skip_existing=False,
+                        limit=None,
+                        dashboard_url="http://127.0.0.1:18080",
+                        dashboard_python=sys.executable,
+                    )
 
             self.assertEqual(rc, 0)
             self.assertEqual(env_path.read_text(encoding="utf-8"), "http://127.0.0.1:18080|18080|1|False")
+            self.assertIn('"event": "dashboard_ready"', output.getvalue())
+            self.assertIn('"dashboard_url": "http://127.0.0.1:18080"', output.getvalue())
             dashboard_marker = root / "logs" / "dashboard.marker.log"
             self.assertIn("status=already_running", dashboard_marker.read_text(encoding="utf-8"))
 

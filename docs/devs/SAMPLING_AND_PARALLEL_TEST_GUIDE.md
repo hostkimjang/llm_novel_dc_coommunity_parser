@@ -1,5 +1,16 @@
 # Sampling And Parallel Test Guide
 
+## 2026-07-08 Loop574 테스트런 dashboard 보강
+
+- 현재 standalone dashboard는 `http://127.0.0.1:8080`에서 `ok=true`, `standalone=true`, `pid=9320`로 응답한다.
+- Loop574는 projection/static 검증이라 새 runtime 진행률이 없었다. 새 runtime/test run이 시작되면 dashboard 진행률이 갱신되어야 한다.
+- 다음 regression-safe grounding test/runtime run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지로 실행한다.
+- `tools/run_independent_plan.py`는 기본 dashboard 모드에서 서버를 확인/시작하고 `dashboard_ready` JSON을 즉시 출력한다.
+- `expert_main.py` 결과 manifest는 `dashboard_enabled`, `dashboard_mode`, `dashboard_url`, `dashboard_standalone_forwarding`, `dashboard_start_error`를 기록한다.
+- 직접 `expert_main.py`를 실행할 때도 `--no-dashboard`를 넣지 않는다. standalone 서버가 살아 있으면 live forwarding으로 붙고, 없으면 내장 dashboard가 열린다.
+- 이미 dashboard 없이 시작된 런은 중단하지 말고 `python tools/attach_manifest_dashboard.py --manifest <result_manifest.json> --dashboard-url http://127.0.0.1:8080`로 사후 부착한다.
+- Dashboard는 진행상황 관측 도구이며 `semantic_quality`, `full_scan_approval`, `full375 collateral GO`의 승인 근거가 아니다.
+
 ## 2026-07-08 Loop573 테스트런 dashboard 재확인
 
 - 현재 standalone dashboard는 `http://127.0.0.1:8080`에서 `ok=true`, `standalone=true`, `pid=9320`로 응답한다.

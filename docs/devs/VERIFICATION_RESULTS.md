@@ -1,5 +1,35 @@
 # Verification Results
 
+## 2026-07-08 Loop574 source-native direct support 수리와 dashboard 보강
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_574_REPORT_20260708.md`
+  - `docs/devs/loop574_source_native_direct_support_projection_application.json/.md`
+  - `docs/devs/loop574_source_native_direct_support_publication_contract_audit.json/.md`
+  - `docs/devs/loop574_source_native_direct_support_residual70_action_queue.json/.md`
+  - `docs/devs/loop574_source_native_direct_support_remaining_p0_code_repair23_batch.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop574_source_native_direct_support_projection_result.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop574_source_native_direct_support_collateral_compare.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop574_source_native_direct_support_collateral_triage.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop574_source_native_direct_support_combined_source_native_review.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop574_always_on_golden18_full375_source_native_direct_support_gate.json/.md`
+- 검증:
+  - Source-native direct support unit: PASS, alias-only post text에서도 Strong source-native seed가 final sync demotion을 통과.
+  - Dashboard runner unit: PASS, `run_independent_plan`이 dashboard 기본 모드에서 `dashboard_ready`를 출력하고 `--no-dashboard`를 제거.
+  - Source-native projection application: PASS, eligible `11`, publish `2`, held `0`, missing URL `8`, shared-gate skip `1`.
+  - Publication contract audit: GO, rows `375`, violation `0`.
+  - Full375 collateral compare: NO-GO, shared `375`, changed `165`, raw regression `109`.
+  - Combined source-native summary: PASS, reviewed `109/109`, decision `89`, info missing `20`, validation issue `0`.
+  - Always-on gate: PASS 산출, golden `GO`, collateral `NO-GO / adjusted 70 / runtime counts missing`.
+  - Residual queue: PASS, rows `70`, validation issue `0`.
+  - Remaining P0 batch: PASS, selected `23`, validation issue `0`, execution contract `--parallel 16` + dashboard ON.
+  - Dashboard health: PASS, `http://127.0.0.1:8080/api/health`, `ok=true`, `standalone=true`, `pid=9320`.
+- 결과:
+  - Loop574는 full375 raw regression을 `111 -> 109`, adjusted residual을 `72 -> 70`으로 줄였다.
+  - Full375 collateral은 여전히 `NO-GO`라 full_scan approval과 goal completion을 열지 않는다.
+  - 다음 작업 단위는 remaining P0 repair23, missing URL 8, INFO_MISSING 20 source-native/blind review다.
+- Gate: golden18 `GO`, publication contract `GO`, full375 collateral `NO-GO / adjusted 70`, residual queue `REVIEW-LOCKED / 70`, P0 repair batch `REVIEW-LOCKED / 23`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop573 official detail URL canonical 수리
 
 - 산출물:

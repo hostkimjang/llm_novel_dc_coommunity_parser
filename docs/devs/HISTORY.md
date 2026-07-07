@@ -1,5 +1,20 @@
 # Development History
 
+## 2026-07-08 - Loop574 source-native direct support repair and dashboard run visibility
+
+- 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+- `expert_main.py`에서 Strong source-native projection seed가 `source_native_review_current_work` 근거를 가진 경우 final publication ledger sync가 direct source support로 인정하게 했다.
+- Loop573 `post_sync_held 2`는 `11718099`, `11668300`이고 이번 projection에서 둘 다 `safe_resolved`로 닫혔다.
+- Loop574 application은 eligible safe-loss `11`, `applied_shared_gate_publish 2`, `post_sync_held 0`, `skipped_missing_official_detail_url 8`, `skipped_by_shared_gate 1`이다.
+- Publication contract는 `GO / 375 rows / 0 violations`다.
+- Full375 collateral은 changed `165`, raw regression `109`, review-adjusted residual `70`으로 줄었지만 `NO-GO`다.
+- Residual action queue는 `70`건이며 bucket은 safe_loss `39`, unsafe promotion `8`, wrong_work `23`이다.
+- Remaining P0 code repair batch는 `23`건이다.
+- `tools/run_independent_plan.py`는 dashboard 기본 모드에서 `dashboard_ready` 이벤트를 출력하고, `expert_main.py` manifest는 dashboard mode/url/forwarding 상태를 기록한다.
+- Dashboard는 `http://127.0.0.1:8080`에서 `ok=true / standalone=true / pid=9320`로 확인했다. 이번 회차는 projection/static 검증이라 새 runtime 진행률은 없었다.
+- Report는 `docs/devs/loop_reports/LOOP_574_REPORT_20260708.md`다.
+- Gate는 golden18 `GO`, publication contract `GO`, full375 collateral `NO-GO / adjusted 70`, residual queue `REVIEW-LOCKED / 70`, P0 repair batch `REVIEW-LOCKED / 23`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop573 official detail URL canonical repair
 
 - 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.

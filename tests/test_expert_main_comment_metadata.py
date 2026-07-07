@@ -160,6 +160,78 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
             identity["consistency_flags"],
         )
 
+    def test_source_native_projection_direct_support_survives_final_sync_alias_only_post_text(self):
+        result = {
+            "title": "빌환 표지변경됨",
+            "content": ["표지 바뀐 거 보고 다시 보러감"],
+            "comments": [],
+            "identity": {
+                "candidate_ledger_status": "promotion_blocked",
+                "title_resolution_allowed": False,
+                "title_resolution_state": "unresolved_matchable",
+                "work_resolution": "unresolved",
+                "novel_identity": {"official_title": None, "heretic_url": None},
+                "candidate_ledger": {},
+            },
+        }
+        seed = {
+            "approval_state": "source_native_projection_contract_not_approval",
+            "projected_status": "safe_resolved",
+            "matches_source_native_title": True,
+            "actions": [
+                "repair_safe_loss_restore_supported_title",
+                "shared_promotion_gate_wiring_required",
+            ],
+            "projected_title": "빌어먹을 환생",
+            "projected_url": "https://novel.munpia.com/222360",
+            "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+            "stale_context_hard_negative_reviewed": True,
+            "promotion_decision": {
+                "status": "publish",
+                "publish_allowed": True,
+                "official_title": "빌어먹을 환생",
+                "official_url": "https://novel.munpia.com/222360",
+                "reason_codes": [
+                    "official_title_exists",
+                    "row_discusses_work_as_work",
+                    "scope_current_work",
+                ],
+                "scope": {"scope_kind": "current_work", "confidence": "high"},
+            },
+            "promotion_gate_state": {
+                "candidate_title": "빌어먹을 환생",
+                "candidate_url": "https://novel.munpia.com/222360",
+                "official_title_exists": True,
+                "row_discusses_work_as_work": True,
+                "scope": {"scope_kind": "current_work", "confidence": "high"},
+            },
+            "promotion_gate_evidence": [
+                {
+                    "kind": "source_native_review",
+                    "strength": "strong",
+                    "supports_publish": True,
+                    "reason_code": "source_native_review_current_work",
+                    "source_path_or_snippet": "`빌환`은 후보 title의 직접 약칭이고 표지 변경 감상 맥락이다.",
+                }
+            ],
+        }
+
+        self.assertTrue(_apply_projection_followup_promotion_seed(result, seed))
+        changed = _sync_final_publication_ledger_contract(result, post_title=result["title"])
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "safe_resolved")
+        self.assertTrue(identity["title_resolution_allowed"])
+        self.assertEqual(identity["novel_identity"]["official_title"], "빌어먹을 환생")
+        self.assertEqual(identity["novel_identity"]["heretic_url"], "https://novel.munpia.com/222360")
+        self.assertTrue(identity["promotion_decision"]["publish_allowed"])
+        self.assertNotIn(
+            "official_detail_url_missing_direct_source_support",
+            identity["promotion_decision"]["reason_codes"],
+        )
+        self.assertTrue(identity["primary_work"]["source_native_direct_source_support"])
+
     def test_source_native_projection_does_not_override_critical_negative_flags(self):
         result = {
             "identity": {
