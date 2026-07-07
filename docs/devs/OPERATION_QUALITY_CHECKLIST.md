@@ -1,5 +1,25 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop532 B1 post-verdict promotion gate 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_532_REPORT_20260707.md`.
+  - [x] Contract plan JSON 기록 완료: `docs/devs/loop532_b1_post_verdict_promotion_gate_contract_plan.json`.
+  - [x] Tool 추가 완료: `tools/build_post_verdict_promotion_gate_contract_plan.py`.
+  - [x] Test 추가 완료: `tests/test_build_post_verdict_promotion_gate_contract_plan.py`.
+  - [x] Shared gate 보강 완료: `src/llm_batch/promotion_gate.py`.
+  - [x] Dashboard 확인: `http://127.0.0.1:8080`, `57/57`, `parallel_count=16`, `batch_running=false`.
+- 품질 경계:
+  - [x] 새 runtime replay는 실행하지 않았다.
+  - [x] Contract plan rows는 `22`, validation issue는 `0`이다.
+  - [x] C1 expected title restore contract case `3`건은 release가 아니라 contract 입력이다.
+  - [x] C1 scrub/no-publish `6`, C2 variant policy hold `7`, C3 stronger evidence hold `6`은 `candidate_only` 또는 hard hold로 유지한다.
+  - [x] `runtime_replay_allowed_rows`는 `0`이다.
+  - [ ] Promotion decision `publish 3`을 semantic/full_scan approval 근거로 쓰지 않는다.
+  - [ ] Dashboard 상태를 semantic/full_scan approval 근거로 쓰지 않는다.
+  - [ ] 다음 runtime/test run은 `--parallel 16`과 dashboard 기본 ON으로 실행한다.
+- Gate: post-verdict promotion gate contract plan `REVIEW-LOCKED`, runtime replay `BLOCKED_UNTIL_CONTRACT_TESTS_OR_STRONGER_EVIDENCE`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop531 B1 projection contract audit 품질 게이트
 
 - 근거:

@@ -1,5 +1,25 @@
 # Development Checklist
 
+## 2026-07-07 Loop532 B1 post-verdict promotion gate contract plan 체크
+
+- [x] 새 runtime replay를 실행하지 않았다.
+- [x] Loop530 post-verdict contract queue `22`건을 shared `can_publish_title` gate 입력으로 변환했다.
+- [x] `src/llm_batch/promotion_gate.py`에 post-verdict 계약 blocker가 current-work publish를 우회하지 못하는 공통 경계를 추가했다.
+- [x] `tools/build_post_verdict_promotion_gate_contract_plan.py`를 추가했다.
+- [x] `tests/test_build_post_verdict_promotion_gate_contract_plan.py` 계약 테스트를 추가했다.
+- [x] Contract plan rows는 `22`, validation issue는 `0`이다.
+- [x] C1은 expected title restore contract case `3`, candidate scrub/no-publish contract case `6`으로 분리했다.
+- [x] C2 canonical variant policy hold contract case는 `7`건이다.
+- [x] C3 stronger evidence hard hold contract case는 `6`건이다.
+- [x] `runtime_replay_allowed_rows`는 `0`이다.
+- [x] Dashboard는 `http://127.0.0.1:8080`, latest attach `57/57`, `parallel_count=16`, `batch_running=false`다.
+- [ ] C1 publish decision `3`건은 contract case일 뿐 runtime release가 아니다.
+- [ ] C2 `7`건은 variant policy가 닫히기 전 candidate-only로 유지한다.
+- [ ] C3 `6`건은 stronger evidence/native-web 검증 전까지 hard hold로 유지한다.
+- [ ] 다음 runtime/test run은 `--parallel 16`과 dashboard 기본 ON으로 실행한다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: post-verdict promotion gate contract plan `REVIEW-LOCKED`, runtime replay `BLOCKED_UNTIL_CONTRACT_TESTS_OR_STRONGER_EVIDENCE`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop531 B1 post-verdict projection contract audit 체크
 
 - [x] 새 runtime replay를 실행하지 않았다.

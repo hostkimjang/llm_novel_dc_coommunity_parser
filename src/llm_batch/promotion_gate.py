@@ -44,6 +44,13 @@ HARD_BLOCKING_REASON_CODES = {
     "thematic_overlap_only",
 }
 
+CONTRACT_BLOCKING_REASON_CODES = {
+    "search_blind_condition",
+    "search_evidence_missing",
+    "canonical_variant_policy_pending",
+    "stronger_evidence_required",
+}
+
 SCOPE_CURRENT_WORK = "current_work"
 SCOPE_KINDS = {
     SCOPE_CURRENT_WORK,
@@ -246,11 +253,14 @@ def can_publish_title(
     supports_publish = any(record.supports_publish for record in records)
     blocking_reasons = BLOCKING_REASON_CODES.intersection(reason_codes)
     hard_blocking_reasons = HARD_BLOCKING_REASON_CODES.intersection(reason_codes)
+    contract_blocking_reasons = CONTRACT_BLOCKING_REASON_CODES.intersection(reason_codes)
     scope_kind = state.scope.normalized_kind() if isinstance(state.scope, ScopeState) else ""
     scope_blocks_publish = bool(scope_kind and scope_kind != SCOPE_CURRENT_WORK)
     if state.prior_variance_quarantine or state.same_title_source_movement:
         status = "quarantine"
     elif scope_blocks_publish:
+        status = "candidate_only"
+    elif contract_blocking_reasons:
         status = "candidate_only"
     elif hard_blocking_reasons and not state.row_discusses_work_as_work:
         status = "candidate_only"

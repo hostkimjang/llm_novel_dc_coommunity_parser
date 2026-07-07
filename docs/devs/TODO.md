@@ -1,5 +1,25 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop532 TODO
+
+- 상태 업데이트: Loop530 post-verdict queue를 shared promotion gate contract plan으로 투영했다. Goal은 완료가 아니다.
+- [x] 새 runtime replay를 발주하지 않았다.
+- [x] `src/llm_batch/promotion_gate.py`에 post-verdict 계약 blocker boundary를 추가했다.
+- [x] `tools/build_post_verdict_promotion_gate_contract_plan.py`를 추가했다.
+- [x] `tests/test_build_post_verdict_promotion_gate_contract_plan.py`를 추가했다.
+- [x] Loop532 plan/report를 생성했다.
+- [x] Contract plan rows는 `22`, validation issue는 `0`이다.
+- [x] C1 expected restore `3`, C1 scrub/no-publish `6`, C2 variant hold `7`, C3 stronger evidence hold `6`으로 분리했다.
+- [x] `runtime_replay_allowed_rows=0`을 유지했다.
+- [x] Dashboard는 `http://127.0.0.1:8080`, `57/57`, `parallel_count=16`, `batch_running=false`로 확인했다.
+- [ ] C1 publish decision `3`건은 contract test로 고정한 뒤에만 runtime release 후보로 검토한다.
+- [ ] C2 canonical variant policy `7`건은 alias/variant 정책 전 candidate-only로 유지한다.
+- [ ] C3 stronger evidence hold `6`건은 native-web/VLM/stronger evidence 검증 전 release하지 않는다.
+- [ ] 다음 runtime/test run은 `--parallel 16`과 dashboard 기본 ON으로 실행한다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: post-verdict promotion gate contract plan `REVIEW-LOCKED`, runtime replay `BLOCKED_UNTIL_CONTRACT_TESTS_OR_STRONGER_EVIDENCE`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop531 TODO
 
 - 상태 업데이트: Loop530 post-verdict contract queue를 current projection에 대조했고, violation은 없지만 C1/C2 pending 때문에 runtime release는 열지 않았다. Goal은 완료가 아니다.

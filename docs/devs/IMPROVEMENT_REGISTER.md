@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260707-532 - B1 post-verdict promotion gate contract plan
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Shared gate contract blockers | GO_UNIT | post-verdict blocker reason이 publish보다 먼저 `candidate_only`로 막힘 | focused contract tests 유지 |
+| Contract plan | REVIEW-LOCKED | Loop530 queue `22`건 투영, validation issue `0` | C1/C2 contract case 후속 수리 |
+| C1 expected restore/scrub split | REVIEW | restore case `3`, scrub/no-publish case `6` | restore case도 runtime release 전 contract test 필요 |
+| C2 variant policy | REVIEW | variant policy hold `7` | alias/variant 정책 닫기 전 publish 금지 |
+| C3 stronger evidence | HOLD | hard hold `6` | native-web/VLM/stronger evidence 검증 전 유지 |
+| Runtime release boundary | GO_BLOCKED | `runtime_replay_allowed_rows=0` | contract/evidence 전 replay 금지 |
+| Dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | `http://127.0.0.1:8080`, latest attach `57/57`, `parallel_count=16` | 다음 테스트런도 dashboard 기본 ON |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: post-verdict promotion gate contract plan `REVIEW-LOCKED`, runtime replay `BLOCKED_UNTIL_CONTRACT_TESTS_OR_STRONGER_EVIDENCE`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-531 - B1 post-verdict projection contract audit
 
 | 항목 | 상태 | 근거 | 다음 |

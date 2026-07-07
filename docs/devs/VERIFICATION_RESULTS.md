@@ -1,5 +1,28 @@
 # Verification Results
 
+## 2026-07-07 Loop532 B1 post-verdict promotion gate contract plan
+
+- 코드:
+  - `src/llm_batch/promotion_gate.py`에 post-verdict 계약 blocker reason을 추가했다.
+  - `tools/build_post_verdict_promotion_gate_contract_plan.py`로 Loop530 queue를 shared `can_publish_title` gate 입력으로 변환한다.
+  - 계약 blocker는 current-work publish보다 먼저 `candidate_only`로 수렴한다.
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_532_REPORT_20260707.md`
+  - `docs/devs/loop532_b1_post_verdict_promotion_gate_contract_plan.json`
+  - `tools/build_post_verdict_promotion_gate_contract_plan.py`
+  - `tests/test_build_post_verdict_promotion_gate_contract_plan.py`
+- 검증:
+  - `python -m py_compile src\llm_batch\promotion_gate.py tools\build_post_verdict_promotion_gate_contract_plan.py tests\test_build_post_verdict_promotion_gate_contract_plan.py`: PASS.
+  - `python -m unittest tests.test_build_post_verdict_promotion_gate_contract_plan tests.test_promotion_gate_contract -v`: PASS, `28` tests.
+  - Loop532 plan generation with `--fail-on-validation-issue`: PASS.
+  - Dashboard health/status: PASS, `http://127.0.0.1:8080`, `57/57`, `parallel_count=16`.
+- 결과:
+  - contract plan rows `22`, validation issue `0`.
+  - action counts: expected restore `3`, scrub/no-publish `6`, variant hold `7`, stronger evidence hold `6`.
+  - promotion decision: `publish 3 / candidate_only 19`; publish `3`은 contract case이며 release가 아니다.
+  - runtime replay allowed `0`, full375 collateral `NO-GO`.
+- Gate: post-verdict promotion gate contract plan `REVIEW-LOCKED`, runtime replay `BLOCKED_UNTIL_CONTRACT_TESTS_OR_STRONGER_EVIDENCE`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop531 B1 post-verdict projection contract audit
 
 - 코드:

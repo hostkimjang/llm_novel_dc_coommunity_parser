@@ -1,5 +1,17 @@
 # Development History
 
+## 2026-07-07 - Loop532 B1 post-verdict promotion gate contract plan
+
+- 새 runtime replay는 실행하지 않았다.
+- Loop530 post-verdict contract queue `22`건을 shared `can_publish_title` gate 입력으로 변환했다.
+- `src/llm_batch/promotion_gate.py`에 post-verdict 계약 blocker가 current-work publish를 우회하지 못하는 공통 경계를 추가했다.
+- `tools/build_post_verdict_promotion_gate_contract_plan.py`와 `tests/test_build_post_verdict_promotion_gate_contract_plan.py`를 추가했다.
+- 결과는 contract plan rows `22`, validation issue `0`, expected restore contract case `3`, scrub/no-publish `6`, variant policy hold `7`, stronger evidence hold `6`이다.
+- Promotion decision은 `publish 3 / candidate_only 19`지만, publish `3`건은 runtime release가 아니라 contract case다.
+- Dashboard는 `http://127.0.0.1:8080`에서 최신 Loop515 manifest를 보여주며 `57/57`, `parallel_count=16`, `batch_running=false`다. 다음 테스트런도 `--parallel 16`과 dashboard 기본 ON을 유지한다.
+- Report는 `docs/devs/loop_reports/LOOP_532_REPORT_20260707.md`, plan은 `docs/devs/loop532_b1_post_verdict_promotion_gate_contract_plan.json`이다.
+- Gate는 post-verdict promotion gate contract plan `REVIEW-LOCKED`, runtime replay `BLOCKED_UNTIL_CONTRACT_TESTS_OR_STRONGER_EVIDENCE`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop531 B1 post-verdict projection contract audit
 
 - 새 runtime replay는 실행하지 않았다.
