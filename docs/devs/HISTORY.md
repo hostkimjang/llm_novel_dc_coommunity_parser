@@ -1,5 +1,20 @@
 # Development History
 
+## 2026-07-08 - Loop572 P0 repair31 shared-gate hard-hold repair
+
+- 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+- `expert_main.py`에서 Strong source-native projection seed가 재검토한 stale context-only hard-hold만 넘길 수 있게 했다.
+- Critical hard-negative는 계속 차단한다.
+- `tools/apply_source_native_repair_projection_contract.py`는 `Strong` verdict에만 `stale_context_hard_negative_reviewed=true`를 붙인다.
+- Loop571 P0 repair31 중 eligible safe-loss `17`건 결과는 `applied_shared_gate_publish 4`, `post_sync_held 2`, `skipped_missing_official_detail_url 10`, `skipped_by_shared_gate 1`이다.
+- 닫힌 post_id는 `11666741`, `11694065`, `11697256`, `11708478`이다.
+- Full375 collateral은 changed `168`, raw regression `113`, review-adjusted residual `74`로 줄었지만 `NO-GO`다.
+- Residual action queue는 `74`건이며 bucket은 safe_loss `43`, unsafe promotion `8`, wrong_work `23`이다.
+- Remaining P0 code repair batch는 `27`건이다.
+- Focused contract tests `7`개를 통과했다.
+- Report는 `docs/devs/loop_reports/LOOP_572_REPORT_20260708.md`다.
+- Gate는 golden18 `GO`, full375 collateral `NO-GO / adjusted 74`, residual queue `REVIEW-LOCKED / 74`, P0 repair batch `REVIEW-LOCKED / 27`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop570-571 full375 after Loop569 adjusted accounting
 
 - 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.

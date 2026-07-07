@@ -90,6 +90,124 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         self.assertEqual(identity["publish_contract_trace"]["gate_decision"], identity["promotion_decision"])
         self.assertEqual(identity["publish_ledger"]["gate_decision"], identity["promotion_decision"])
 
+    def test_source_native_projection_can_override_reviewed_stale_context_hard_hold(self):
+        result = {
+            "identity": {
+                "candidate_ledger_status": "promotion_blocked",
+                "title_resolution_allowed": False,
+                "title_resolution_state": "context_only",
+                "work_resolution": "unresolved",
+                "consistency_flags": [
+                    "recommendation_context_only_no_work_anchor",
+                    "batch_memory_alias_rescue_blocked_nonwork_context",
+                ],
+                "novel_identity": {"official_title": None, "heretic_url": None},
+                "candidate_ledger": {},
+            }
+        }
+        seed = {
+            "approval_state": "source_native_projection_contract_not_approval",
+            "projected_status": "safe_resolved",
+            "matches_source_native_title": True,
+            "actions": [
+                "repair_safe_loss_restore_supported_title",
+                "shared_promotion_gate_wiring_required",
+            ],
+            "projected_title": "별을 품은 소드마스터",
+            "projected_url": "https://novel.munpia.com/254718",
+            "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+            "stale_context_hard_negative_reviewed": True,
+            "promotion_decision": {
+                "status": "publish",
+                "publish_allowed": True,
+                "official_title": "별을 품은 소드마스터",
+                "official_url": "https://novel.munpia.com/254718",
+                "reason_codes": [
+                    "official_title_exists",
+                    "row_discusses_work_as_work",
+                    "scope_current_work",
+                ],
+                "scope": {"scope_kind": "current_work", "confidence": "high"},
+            },
+            "promotion_gate_state": {
+                "candidate_title": "별을 품은 소드마스터",
+                "candidate_url": "https://novel.munpia.com/254718",
+                "official_title_exists": True,
+                "row_discusses_work_as_work": True,
+                "scope": {"scope_kind": "current_work", "confidence": "high"},
+            },
+            "promotion_gate_evidence": [
+                {
+                    "kind": "source_native_review",
+                    "supports_publish": True,
+                    "reason_code": "source_native_review_current_work",
+                }
+            ],
+        }
+
+        changed = _apply_projection_followup_promotion_seed(result, seed)
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "safe_resolved")
+        self.assertTrue(identity["promotion_decision"]["publish_allowed"])
+        self.assertIn(
+            "source_native_review_overrode_stale_context_hard_hold",
+            identity["promotion_decision"]["reason_codes"],
+        )
+        self.assertIn(
+            "source_native_review_overrode_stale_context_hard_hold",
+            identity["consistency_flags"],
+        )
+
+    def test_source_native_projection_does_not_override_critical_negative_flags(self):
+        result = {
+            "identity": {
+                "candidate_ledger_status": "promotion_blocked",
+                "title_resolution_allowed": False,
+                "consistency_flags": [
+                    "source_explicit_work_denial_title_only_publication_blocked",
+                    "recommendation_context_only_no_work_anchor",
+                ],
+                "novel_identity": {"official_title": None, "heretic_url": None},
+                "candidate_ledger": {},
+            }
+        }
+        seed = {
+            "approval_state": "source_native_projection_contract_not_approval",
+            "projected_status": "safe_resolved",
+            "matches_source_native_title": True,
+            "actions": ["repair_safe_loss_restore_supported_title"],
+            "projected_title": "테스트 작품",
+            "projected_url": "https://novelpia.com/novel/1",
+            "stale_context_hard_negative_reviewed": True,
+            "promotion_decision": {
+                "status": "publish",
+                "publish_allowed": True,
+                "official_title": "테스트 작품",
+                "official_url": "https://novelpia.com/novel/1",
+                "reason_codes": ["official_title_exists", "row_discusses_work_as_work"],
+                "scope": {"scope_kind": "current_work", "confidence": "high"},
+            },
+            "promotion_gate_state": {
+                "official_title_exists": True,
+                "row_discusses_work_as_work": True,
+                "scope": {"scope_kind": "current_work", "confidence": "high"},
+            },
+            "promotion_gate_evidence": [
+                {
+                    "kind": "source_native_review",
+                    "supports_publish": True,
+                    "reason_code": "source_native_review_current_work",
+                }
+            ],
+        }
+
+        changed = _apply_projection_followup_promotion_seed(result, seed)
+
+        self.assertFalse(changed)
+        self.assertEqual(result["identity"]["candidate_ledger_status"], "promotion_blocked")
+
     def test_publish_contract_convergence_normalizes_mixed_scope_reason_codes(self):
         decision = {
             "status": "publish",

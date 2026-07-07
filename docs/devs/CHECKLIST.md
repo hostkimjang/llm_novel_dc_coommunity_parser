@@ -1,5 +1,20 @@
 # Development Checklist
 
+## 2026-07-08 Loop572 P0 repair31 shared-gate hard-hold 수리 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 실행하지 않았다.
+- [x] Strong source-native seed가 재검토한 stale context-only hard-hold만 shared promotion gate에서 완화했다.
+- [x] Critical hard-negative는 계속 차단한다.
+- [x] Projection application은 `applied_shared_gate_publish 4`, `post_sync_held 2`, `skipped_missing_official_detail_url 10`, `skipped_by_shared_gate 1`이다.
+- [x] Full375 raw regression은 `117 -> 113`, adjusted residual은 `78 -> 74`로 줄었다.
+- [x] Residual74 action queue를 생성했다.
+- [x] Remaining P0 code repair batch `27`건을 생성했고 dashboard execution contract를 포함했다.
+- [x] Focused contract tests `7`개를 통과했다.
+- [ ] `post_sync_held 2`와 `missing_official_detail_url 10`은 근거 보강 전 publish하지 않는다.
+- [ ] Remaining P0 repair27은 코드/계약 수리 후 필요한 경우에만 dashboard attached test run으로 실행한다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: golden18 `GO`, full375 collateral `NO-GO / adjusted 74`, residual queue `REVIEW-LOCKED / 74`, P0 repair batch `REVIEW-LOCKED / 27`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop570-571 full375 after Loop569 재회계 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 실행하지 않았다.

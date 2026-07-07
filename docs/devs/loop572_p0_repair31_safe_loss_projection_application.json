@@ -1,0 +1,304 @@
+{
+  "application_id": "loop572_p0_repair31_safe_loss_projection_contract",
+  "report_type": "source_native_repair_projection_contract_application",
+  "generated_at": "2026-07-08T01:30:05",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "policy": {
+    "source_native_seed_is_not_approval": true,
+    "uses_shared_promotion_seed_helper": true,
+    "uses_final_publication_ledger_sync": true,
+    "runtime_replay": "NOT_RUN"
+  },
+  "summary": {
+    "projection_rows": 375,
+    "verdict_rows": 31,
+    "eligible_safe_loss_rows": 17,
+    "outcome_counts": {
+      "skipped_by_shared_gate": 1,
+      "skipped_missing_official_detail_url": 10,
+      "applied_shared_gate_publish": 4,
+      "post_sync_held": 2
+    },
+    "applied_publish_rows": 4,
+    "post_sync_held_rows": 2,
+    "skipped_rows": 11
+  },
+  "rows": [
+    {
+      "post_id": 11718114,
+      "outcome": "skipped_by_shared_gate",
+      "selected_title": "설정값 딸깍으로 판타지 시스템 정상화",
+      "selected_url": "https://novelpia.com/novel/383584",
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "after_status": "promotion_blocked",
+      "after_title": null,
+      "after_url": null,
+      "source_native_verdict": "title_phrase_and_plot_context_support_safe_title_lost_to_null",
+      "evidence_grade": "Medium",
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "gate_reason_codes": [
+        "scope_context_only",
+        "scope_not_current_work",
+        "blocked_candidate_scope_inferred_from_final_contract",
+        "exact_alias_candidate_preserved_without_work_discussion",
+        "image_ocr_without_title_anchor",
+        "nonwork_or_noise_context",
+        "serialized_public_identity_scrubbed"
+      ]
+    },
+    {
+      "post_id": 11697242,
+      "outcome": "skipped_missing_official_detail_url",
+      "selected_title": "유희왕",
+      "selected_url": null,
+      "before_status": "output_consistency_lint",
+      "before_title": null
+    },
+    {
+      "post_id": 11710021,
+      "outcome": "skipped_missing_official_detail_url",
+      "selected_title": "무한의 마법사",
+      "selected_url": null,
+      "before_status": "output_consistency_lint",
+      "before_title": null
+    },
+    {
+      "post_id": 11665124,
+      "outcome": "skipped_missing_official_detail_url",
+      "selected_title": "화산파(화산귀환)",
+      "selected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null
+    },
+    {
+      "post_id": 11666741,
+      "outcome": "applied_shared_gate_publish",
+      "selected_title": "별을 품은 소드마스터",
+      "selected_url": "https://novel.munpia.com/254718",
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "after_status": "safe_resolved",
+      "after_title": "별을 품은 소드마스터",
+      "after_url": "https://novel.munpia.com/254718",
+      "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "gate_reason_codes": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "projection_followup_shared_gate_seed_applied",
+        "source_native_review_current_work",
+        "official_detail_url",
+        "source_native_review_overrode_stale_context_hard_hold",
+        "serialized_public_identity_published"
+      ]
+    },
+    {
+      "post_id": 11694065,
+      "outcome": "applied_shared_gate_publish",
+      "selected_title": "아카데미에서 살아남기",
+      "selected_url": "https://novel.munpia.com/240910",
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "after_status": "safe_resolved",
+      "after_title": "아카데미에서 살아남기",
+      "after_url": "https://novel.munpia.com/240910",
+      "source_native_verdict": "direct_abbreviation_and_character_names_support_safe_title",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "gate_reason_codes": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "projection_followup_shared_gate_seed_applied",
+        "source_native_review_current_work",
+        "official_detail_url",
+        "source_native_review_overrode_stale_context_hard_hold",
+        "serialized_public_identity_published"
+      ]
+    },
+    {
+      "post_id": 11698859,
+      "outcome": "skipped_missing_official_detail_url",
+      "selected_title": "귤부인 대롱대롱",
+      "selected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null
+    },
+    {
+      "post_id": 11708447,
+      "outcome": "skipped_missing_official_detail_url",
+      "selected_title": "잠룡회귀",
+      "selected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null
+    },
+    {
+      "post_id": 11700500,
+      "outcome": "skipped_missing_official_detail_url",
+      "selected_title": "전지적 1인칭 시점",
+      "selected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null
+    },
+    {
+      "post_id": 11718099,
+      "outcome": "post_sync_held",
+      "selected_title": "빌어먹을 환생",
+      "selected_url": "https://novel.munpia.com/222360",
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "after_status": "promotion_blocked",
+      "after_title": null,
+      "after_url": null,
+      "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "gate_reason_codes": [
+        "official_title_exists",
+        "row_discussion_present_noncurrent_scope",
+        "projection_followup_shared_gate_seed_applied",
+        "source_native_review_current_work",
+        "official_detail_url",
+        "official_detail_url_missing_direct_source_support",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed",
+        "promoted_image_work_title_conflicts_with_public_title",
+        "official_url_recall_candidate_preserved",
+        "official_url_recall_candidate_source_preserved"
+      ]
+    },
+    {
+      "post_id": 11668300,
+      "outcome": "post_sync_held",
+      "selected_title": "즉사기 들고 게임 속 으로",
+      "selected_url": "https://series.naver.com/novel/detail.series?productNo=8050192",
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "after_status": "promotion_blocked",
+      "after_title": null,
+      "after_url": null,
+      "source_native_verdict": "direct_short_title_supports_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "gate_reason_codes": [
+        "official_title_exists",
+        "row_discussion_present_noncurrent_scope",
+        "projection_followup_shared_gate_seed_applied",
+        "source_native_review_current_work",
+        "official_detail_url",
+        "official_detail_url_missing_direct_source_support",
+        "scope_context_only",
+        "scope_not_current_work",
+        "serialized_public_identity_scrubbed",
+        "short_lead_surface_public_title_bridge"
+      ]
+    },
+    {
+      "post_id": 11697256,
+      "outcome": "applied_shared_gate_publish",
+      "selected_title": "황제의 딸로 환생했다",
+      "selected_url": "https://novelpia.com/novel/250464",
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "after_status": "safe_resolved",
+      "after_title": "황제의 딸로 환생했다",
+      "after_url": "https://novelpia.com/novel/250464",
+      "source_native_verdict": "comment_answer_directly_supports_safe_title_lost_to_null",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "gate_reason_codes": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "projection_followup_shared_gate_seed_applied",
+        "source_native_review_current_work",
+        "official_detail_url",
+        "source_native_review_overrode_stale_context_hard_hold",
+        "serialized_public_identity_published"
+      ]
+    },
+    {
+      "post_id": 11708478,
+      "outcome": "applied_shared_gate_publish",
+      "selected_title": "사연 있는 악역으로 착각 당한다",
+      "selected_url": "https://novelpia.com/novel/396159",
+      "before_status": "promotion_blocked",
+      "before_title": null,
+      "after_status": "safe_resolved",
+      "after_title": "사연 있는 악역으로 착각 당한다",
+      "after_url": "https://novelpia.com/novel/396159",
+      "source_native_verdict": "comment_answer_and_scene_ocr_support_safe_title",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "gate_reason_codes": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "projection_followup_shared_gate_seed_applied",
+        "source_native_review_current_work",
+        "official_detail_url",
+        "source_native_review_overrode_stale_context_hard_hold",
+        "serialized_public_identity_published"
+      ]
+    },
+    {
+      "post_id": 11682775,
+      "outcome": "skipped_missing_official_detail_url",
+      "selected_title": "여자가 되어서라도 복수한다",
+      "selected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null
+    },
+    {
+      "post_id": 11700483,
+      "outcome": "skipped_missing_official_detail_url",
+      "selected_title": "니들 생각 다 들린다",
+      "selected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null
+    },
+    {
+      "post_id": 11710049,
+      "outcome": "skipped_missing_official_detail_url",
+      "selected_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "selected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null
+    },
+    {
+      "post_id": 11669921,
+      "outcome": "skipped_missing_official_detail_url",
+      "selected_title": "악당은 살고 싶다",
+      "selected_url": null,
+      "before_status": "promotion_blocked",
+      "before_title": null
+    }
+  ]
+}

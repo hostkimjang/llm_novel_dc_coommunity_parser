@@ -1,5 +1,34 @@
 # Verification Results
 
+## 2026-07-08 Loop572 P0 repair31 shared-gate hard-hold 수리
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_572_REPORT_20260708.md`
+  - `docs/devs/loop572_p0_repair31_safe_loss_projection_application.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop572_p0_repair31_safe_loss_projection_result.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop572_p0_repair31_safe_loss_collateral_compare.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop572_p0_repair31_safe_loss_collateral_triage.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop572_full375_after_p0_repair31_combined_source_native_review.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop572_always_on_golden18_full375_p0_repair31_gate.json/.md`
+  - `docs/devs/loop572_p0_repair31_publication_contract_audit.json/.md`
+  - `docs/devs/loop572_full375_after_p0_repair31_residual74_action_queue.json/.md`
+  - `docs/devs/loop572_full375_after_p0_repair31_remaining_p0_code_repair27_batch.json/.md`
+- 검증:
+  - Source-native projection application: PASS, eligible `17`, publish `4`, held `2`, missing URL `10`, shared-gate skip `1`.
+  - Full375 collateral compare: NO-GO, shared `375`, changed `168`, raw regression `113`.
+  - Publication contract audit: GO, rows `375`, violation `0`.
+  - Combined source-native summary: PASS, reviewed `113/113`, decision `93`, info missing `20`, validation issue `0`.
+  - Always-on gate: PASS 산출, golden `GO`, collateral `NO-GO / adjusted 74`.
+  - Residual queue: PASS, rows `74`, validation issue `0`.
+  - Remaining P0 batch: PASS, selected `27`, validation issue `0`, execution contract `--parallel 16` + dashboard ON.
+  - Focused unittest: PASS, `tests.test_apply_source_native_repair_projection_contract`, `4` tests.
+  - Focused expert helper unittest: PASS, projection follow-up seed tests `3` tests.
+- 결과:
+  - Loop572는 full375 raw regression을 `117 -> 113`, adjusted residual을 `78 -> 74`로 줄였다.
+  - Full375 collateral은 여전히 `NO-GO`라 full_scan approval과 goal completion을 열지 않는다.
+  - 다음 작업 단위는 remaining P0 repair27, held/missing URL follow-up, INFO_MISSING 20 source-native/blind review다.
+- Gate: golden18 `GO`, full375 collateral `NO-GO / adjusted 74`, residual queue `REVIEW-LOCKED / 74`, P0 repair batch `REVIEW-LOCKED / 27`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop570-571 full375 after Loop569 adjusted accounting
 
 - 산출물:

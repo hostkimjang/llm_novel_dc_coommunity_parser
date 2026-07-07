@@ -112,6 +112,8 @@ def _build_seed(row: dict[str, Any]) -> dict[str, Any] | None:
     url = _candidate_url(row)
     if not title or not url:
         return None
+    evidence_grade = _string(row.get("evidence_grade")).lower()
+    source_native_confidence = "high" if evidence_grade == "strong" else "medium"
     return {
         "approval_state": "source_native_projection_contract_not_approval",
         "projected_status": "safe_resolved",
@@ -121,6 +123,7 @@ def _build_seed(row: dict[str, Any]) -> dict[str, Any] | None:
         "projected_url": url,
         "selected_title": title,
         "source_native_verdict": row.get("source_native_verdict"),
+        "stale_context_hard_negative_reviewed": evidence_grade == "strong",
         "promotion_decision": {
             "status": "publish",
             "publish_allowed": True,
@@ -133,7 +136,7 @@ def _build_seed(row: dict[str, Any]) -> dict[str, Any] | None:
             ],
             "scope": {
                 "scope_kind": "current_work",
-                "confidence": "high" if _string(row.get("evidence_grade")).lower() == "strong" else "medium",
+                "confidence": source_native_confidence,
                 "direct_bridge_sources": ["source_native_review_current_work"],
             },
         },
@@ -144,14 +147,14 @@ def _build_seed(row: dict[str, Any]) -> dict[str, Any] | None:
             "row_discusses_work_as_work": True,
             "scope": {
                 "scope_kind": "current_work",
-                "confidence": "high" if _string(row.get("evidence_grade")).lower() == "strong" else "medium",
+                "confidence": source_native_confidence,
                 "direct_bridge_sources": ["source_native_review_current_work"],
             },
         },
         "promotion_gate_evidence": [
             {
                 "kind": "source_native_review",
-                "strength": _string(row.get("evidence_grade")).lower() or "medium",
+                "strength": evidence_grade or "medium",
                 "source_path_or_snippet": _string(row.get("rationale_ko")),
                 "supports_publish": True,
                 "reason_code": "source_native_review_current_work",

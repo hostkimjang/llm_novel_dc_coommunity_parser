@@ -1,5 +1,22 @@
 # Developer TODO Index
 
+## 2026-07-08 Loop572 이후
+
+- 상태 업데이트: Loop572는 Strong source-native shared-gate seed로 stale context-only hard-hold 일부를 수리해 raw regression `117 -> 113`, review-adjusted residual `78 -> 74`로 낮췄다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] `expert_main.py`에서 stale context-only hard-hold override를 Strong source-native seed 계약으로 제한했다.
+- [x] Critical hard-negative 차단을 유지했다.
+- [x] Projection application `17`건을 생성했고 `applied_shared_gate_publish 4`를 확인했다.
+- [x] Full375 collateral compare와 adjusted always-on gate를 갱신했다.
+- [x] Residual74 action queue와 remaining P0 repair27 batch를 생성했다.
+- [x] 다음 runtime/test run 계약을 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 유지했다.
+- [ ] `post_sync_held 2`는 final publication ledger sync가 막은 사유를 별도 batch로 분해한다.
+- [ ] `skipped_missing_official_detail_url 10`은 official detail URL/native evidence 보강 전 publish하지 않는다.
+- [ ] Remaining P0 repair27은 코드/계약 수리 후 필요한 경우에만 dashboard attached test run으로 실행한다.
+- [ ] INFO_MISSING `20`건은 source-native/blind verdict 전 hard-hold 완화 대상이 아니다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: golden18 `GO`, full375 collateral `NO-GO / adjusted 74`, residual queue `REVIEW-LOCKED / 74`, P0 repair batch `REVIEW-LOCKED / 27`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop570-571 이후
 
 - 상태 업데이트: Loop569 raw regression `117`은 새 기준 review-adjusted residual `78`로 재회계됐다. Goal은 완료가 아니다.

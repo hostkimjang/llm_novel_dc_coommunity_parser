@@ -1,5 +1,21 @@
 # Improvement Register
 
+## IMP-20260708-572 - P0 repair31 shared-gate hard-hold 수리
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | 필요한 test run만 `--parallel 16` + dashboard attached로 실행 |
+| Hard-hold override | GO_UNIT | Strong source-native seed + `source_native_review_current_work`만 stale context-only hard-hold 완화 | critical hard-negative 차단 유지 |
+| Application | REVIEW-LOCKED | eligible `17`, publish `4`, post-sync held `2`, missing URL `10`, shared-gate skip `1` | missing URL/held/remaining repair batch 처리 |
+| Full375 collateral | NO-GO | raw `117 -> 113`, changed `168` | remaining residual 처리 후 재평가 |
+| Review adjustment | APPLIED_NOT_APPROVAL | exclusion `39`, adjusted residual `74` | full375 GO 전 approval 금지 |
+| Residual queue | REVIEW-LOCKED | rows `74`, safe_loss `43`, unsafe `8`, wrong_work `23` | batch 단위로 계속 처리 |
+| Remaining P0 repair | REVIEW-LOCKED | rows `27`, `repair_safe_loss_restore_supported_title 13 / repair_after_wrong_work 10 / repair_unsafe_promotion 4` | 코드/계약 수리 선행 |
+| Test run dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | 다음 run `--parallel 16`, dashboard URL `http://127.0.0.1:8080`, `--no-dashboard` 금지 | 진행 관측용으로만 사용 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: golden18 `GO`, full375 collateral `NO-GO / adjusted 74`, residual queue `REVIEW-LOCKED / 74`, P0 repair batch `REVIEW-LOCKED / 27`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-570-571 - Full375 after Loop569 adjusted residual78 and P0 repair31
 
 | 항목 | 상태 | 근거 | 다음 |

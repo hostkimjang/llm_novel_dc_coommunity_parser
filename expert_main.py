@@ -7053,12 +7053,14 @@ def _apply_projection_followup_promotion_seed(
     if not isinstance(ledger, dict):
         ledger = {}
 
-    hard_negative_flags = {
+    stale_context_negative_flags = {
         "recommendation_context_only_no_work_anchor",
-        "recommendation_context_only_public_title_conflict",
         "batch_memory_alias_rescue_blocked_nonwork_context",
         "batch_memory_alias_rescue_blocked_genre_context",
         "semantic_seed_no_work_context",
+    }
+    critical_negative_flags = {
+        "recommendation_context_only_public_title_conflict",
         "source_explicit_work_denial_title_only_publication_blocked",
         "unresolved_worklike_hold:alias_character_discussion",
         "inferred_publication_sentence_like_alias_overreach",
@@ -7071,7 +7073,20 @@ def _apply_projection_followup_promotion_seed(
         for value in source
         if str(value or "").strip()
     }
-    if flags & hard_negative_flags:
+    if flags & critical_negative_flags:
+        return False
+    stale_context_hits = flags & stale_context_negative_flags
+    stale_context_reviewed = (
+        approval_state == "source_native_projection_contract_not_approval"
+        and projection_followup.get("stale_context_hard_negative_reviewed") is True
+        and any(
+            isinstance(item, dict)
+            and item.get("supports_publish") is True
+            and str(item.get("reason_code") or "").strip() == "source_native_review_current_work"
+            for item in (projection_followup.get("promotion_gate_evidence") or [])
+        )
+    )
+    if stale_context_hits and not stale_context_reviewed:
         return False
 
     def _title_key(value: Any) -> str:
@@ -7090,6 +7105,8 @@ def _apply_projection_followup_promotion_seed(
     ):
         if code not in seed_reason_codes:
             seed_reason_codes.append(code)
+    if stale_context_hits:
+        seed_reason_codes.append("source_native_review_overrode_stale_context_hard_hold")
     normalized_reasons = normalize_scope_reason_codes(seed_reason_codes, scope_kind="current_work")
     seeded_decision = dict(decision)
     seeded_decision.update(
@@ -7226,6 +7243,10 @@ def _apply_projection_followup_promotion_seed(
     ]
     if "projection_followup_shared_gate_seed_applied" not in flags:
         flags.append("projection_followup_shared_gate_seed_applied")
+        identity["consistency_flags"] = flags
+        changed = True
+    if stale_context_hits and "source_native_review_overrode_stale_context_hard_hold" not in flags:
+        flags.append("source_native_review_overrode_stale_context_hard_hold")
         identity["consistency_flags"] = flags
         changed = True
     return changed
