@@ -1,5 +1,20 @@
 # Development History
 
+## 2026-07-08 - Loop570-571 full375 after Loop569 adjusted accounting
+
+- 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+- Loop569 full375 collateral raw regression `117`을 새 P0 blind/source-native batch로 고정했다.
+- Batch bucket은 `wrong_work_title_flip 33`, `unsafe_promotion_from_hold 28`, `safe_loss_resolved_to_null 56`이고 missing source/baseline/after는 `0/0/0`이다.
+- Prior-compatible verdict는 `102`, prior-incompatible 현재 row는 `15`다.
+- Combined summary는 reviewed `117/117`, source-native decision `97`, info missing `20`, validation issue `0`이다.
+- Label은 `ACCEPT 39 / REPROCESS 37 / HOLD 21 / INFO_MISSING 20`이다.
+- Always-on gate는 golden18 `GO`, full375 collateral `NO-GO / raw 117 / adjusted residual 78`이다.
+- Residual action queue는 `78`건이며 bucket은 safe_loss `47`, unsafe promotion `8`, wrong_work `23`이다.
+- P0 code repair batch는 `31`건이며 action은 `repair_safe_loss_restore_supported_title 17`, `repair_after_wrong_work 10`, `repair_unsafe_promotion 4`다.
+- 다음 runtime/test run은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 실행한다.
+- Report는 `docs/devs/loop_reports/LOOP_570_571_REPORT_20260708.md`다.
+- Gate는 combined source-native summary `REVIEW-LOCKED`, residual queue `REVIEW-LOCKED / 78`, P0 repair batch `REVIEW-LOCKED / 31`, full375 collateral `NO-GO / adjusted 78`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop569 source-native safe-loss projection contract
 
 - 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.

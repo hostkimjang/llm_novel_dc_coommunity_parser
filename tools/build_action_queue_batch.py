@@ -403,7 +403,7 @@ def write_markdown(batch: dict[str, Any], path: Path) -> None:
         "- `HOLD`/`INFO_MISSING` 행은 source-native/blind review 전까지 hard-hold 완화 대상이 아니다.",
         "- 완료 기준은 계속 `full375 collateral GO + full_scan 경로 정의`다.",
         "",
-        "## Lanes",
+        "## 처리 lane",
         "",
     ]
     for group in batch.get("action_groups") or []:

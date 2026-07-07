@@ -1,5 +1,21 @@
 # Developer TODO Index
 
+## 2026-07-08 Loop570-571 이후
+
+- 상태 업데이트: Loop569 raw regression `117`은 새 기준 review-adjusted residual `78`로 재회계됐다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Loop570 P0 review batch `117`건을 생성했다.
+- [x] Prior-compatible verdict `102`건과 prior-incompatible `15`건을 분리했다.
+- [x] INFO_MISSING placeholder verdict를 생성했다.
+- [x] Combined summary는 reviewed `117/117`, label `ACCEPT 39 / REPROCESS 37 / HOLD 21 / INFO_MISSING 20`이다.
+- [x] Always-on gate는 `NO-GO / adjusted 78`로 갱신했다.
+- [x] Residual78 action queue와 P0 repair31 batch를 생성했다.
+- [x] 다음 runtime/test run 계약을 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 유지했다.
+- [ ] P0 repair31은 코드/계약 수리 후 필요한 경우에만 dashboard attached test run으로 실행한다.
+- [ ] INFO_MISSING `20`건은 source-native/blind verdict 전 hard-hold 완화 대상이 아니다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: combined source-native summary `REVIEW-LOCKED`, residual queue `REVIEW-LOCKED / 78`, P0 repair batch `REVIEW-LOCKED / 31`, full375 collateral `NO-GO / adjusted 78`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop569 이후
 
 - 상태 업데이트: Source-native safe-loss projection contract는 실코드/계약 테스트로 들어갔지만 full375 collateral은 raw regression `117`로 `NO-GO`다. Goal은 완료가 아니다.

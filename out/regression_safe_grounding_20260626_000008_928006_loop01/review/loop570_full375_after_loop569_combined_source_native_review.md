@@ -1,0 +1,369 @@
+# Loop570 full375 after Loop569 combined source-native review
+
+- gate: `REVIEW-LOCKED`
+- semantic_quality: `REVIEW-LOCKED`
+- full_scan_approval: `false`
+- batch review rows: `117`
+- reviewed rows: `117`
+- source-native decision rows: `97`
+- info missing rows: `20`
+- unreviewed batch rows: `0`
+- unreviewed or info-missing rows: `20`
+- validation issues: `0`
+
+## 버킷 집계
+
+- `safe_loss_resolved_to_null`: `56`
+- `unsafe_promotion_from_hold`: `28`
+- `wrong_work_title_flip`: `33`
+
+## 라벨 집계
+
+- `ACCEPT`: `39`
+- `HOLD`: `21`
+- `INFO_MISSING`: `20`
+- `REPROCESS`: `37`
+
+## Action queue 전환
+
+- 원 P0 행: `117`
+- source-native 검토 완료: `117`
+- source-native decision rows: `97`
+- info missing rows: `20`
+- gate wiring 뒤 regression count 제외 후보: `39`
+- REPROCESS 수리 큐: `37`
+- HOLD 정책/native 추가 검토 큐: `21`
+- 잔여 action queue: `78`
+- full collateral approval open: `false`
+
+## 버킷별 action queue
+
+- `safe_loss_resolved_to_null` rows=`56` decision=`49` info_missing=`7` exclude_candidates=`9` residual=`47`
+- `unsafe_promotion_from_hold` rows=`28` decision=`28` info_missing=`0` exclude_candidates=`20` residual=`8`
+- `wrong_work_title_flip` rows=`33` decision=`20` info_missing=`13` exclude_candidates=`10` residual=`23`
+
+## Source-native verdict 집계
+
+- `after_canonical_bracket_title_supported_by_official_detail_and_image_anchor`: `1`
+- `after_title_supported_as_primary_work_with_secondary_comparison`: `1`
+- `after_title_supported_by_abbreviation_and_plot_context`: `1`
+- `after_title_supported_by_direct_abbreviation`: `1`
+- `after_title_supported_by_direct_evil_party_alias_and_munpia_official_detail`: `1`
+- `after_title_supported_by_direct_short_title_before_title_is_comparator`: `1`
+- `after_title_supported_by_raw_abbreviation`: `2`
+- `after_title_supported_by_raw_abbreviation_character_and_author_context`: `1`
+- `after_title_supported_by_short_title_alias`: `1`
+- `alias_or_character_bridge_needs_confirmation`: `1`
+- `alias_or_legacy_title_needs_native_confirmation`: `1`
+- `asenggal_alias_supported_but_current_option_wrong`: `1`
+- `author_surface_and_native_web_support_title_promotion`: `1`
+- `before_canonical_title_supported_after_page_title_suffix_contaminated`: `1`
+- `before_title_supported_by_itr_alias_and_tower_lord_context`: `1`
+- `bugipia_event_context_comment_mentions_machine_princess_only_incidentally`: `1`
+- `burgerpia_event_reservation_not_novel_work`: `1`
+- `candidate_set_incomplete_correct_title_known_from_prior_closure`: `1`
+- `candidate_set_incomplete_yukari_parody_context_conflicts_with_promoted_kingdom_title`: `1`
+- `character_or_deity_bridge_not_enough_without_verified_work_link`: `1`
+- `character_surface_and_official_detail_support_work_bridge`: `1`
+- `character_vs_work_policy_review_required`: `1`
+- `classic_japanese_novel_context_blocks_same_surface_webnovel_promotion`: `1`
+- `comment_answer_and_scene_ocr_support_safe_title`: `1`
+- `comment_answer_directly_supports_safe_title_lost_to_null`: `1`
+- `comparison_plagiarism_context_not_single_work_publish_ready`: `1`
+- `current_option_misses_mukhyang_title_source_discusses_mukhyang`: `1`
+- `current_option_wrong_title_image_ocr_supports_africa_food_king`: `1`
+- `current_option_wrong_work_source_discusses_seol_jihu_tamsik_context`: `1`
+- `current_options_miss_official_fighting_genius_title`: `1`
+- `current_regression_row_without_compatible_prior_verdict`: `20`
+- `direct_abbreviation_and_character_bridge_support_promotion`: `1`
+- `direct_abbreviation_and_character_context_support_promotion`: `1`
+- `direct_abbreviation_and_character_context_support_safe_title`: `1`
+- `direct_abbreviation_and_character_names_support_safe_title`: `1`
+- `direct_abbreviation_and_character_support_safe_title_lost_to_null`: `1`
+- `direct_abbreviation_and_paid_episode_context_support_safe_title`: `1`
+- `direct_abbreviation_and_platform_context_support_promotion`: `1`
+- `direct_abbreviation_and_plot_context_support_promotion`: `1`
+- `direct_abbreviation_and_recommendation_context_support_promotion`: `1`
+- `direct_abbreviation_and_trope_context_support_promotion`: `1`
+- `direct_abbreviation_supports_promotion`: `2`
+- `direct_abbreviation_supports_safe_title_lost_to_null`: `2`
+- `direct_alias_and_character_context_support_promotion`: `1`
+- `direct_alias_and_comment_context_support_safe_title_lost_to_null`: `1`
+- `direct_alias_supported_but_multi_work_question_requires_candidate_preservation`: `1`
+- `direct_image_work_surface_and_ocr_catalog_support_promotion`: `1`
+- `direct_short_title_and_platform_context_support_promotion`: `1`
+- `direct_short_title_and_review_context_support_promotion`: `1`
+- `direct_short_title_supports_before_after_url_only_title_invalid`: `1`
+- `direct_short_title_supports_safe_title_lost_to_null`: `1`
+- `direct_title_and_character_context_support_promotion`: `1`
+- `direct_title_supports_promotion`: `1`
+- `direct_title_surface_and_character_context_support_promotion`: `1`
+- `direct_title_surface_and_scene_reaction_support_safe_title`: `1`
+- `gacha_punk_alias_collision_current_option_misses_correct_work`: `1`
+- `gallery_homage_abbreviation_and_character_context_support_promotion`: `1`
+- `gallery_homage_abbreviation_and_plot_context_support_promotion`: `1`
+- `generic_idea_prompt_not_candidate_work_discussion`: `1`
+- `generic_or_author_like_surface_needs_native_confirmation`: `1`
+- `hirohiro_fanart_native_web_supports_hero_in_heroine`: `1`
+- `image_context_required_no_textual_work_anchor`: `1`
+- `image_or_context_required_for_safe_title`: `10`
+- `image_or_native_confirmation_required_for_safe_title`: `1`
+- `image_screenshot_required_for_quote_work_evidence`: `1`
+- `multi_work_platform_listing_single_title_promotion_incomplete`: `1`
+- `nonwork_limbus_game_metrics_context_blocks_fanfic_title_promotion`: `1`
+- `novelpia_animation_listing_not_single_work_discussion`: `1`
+- `null_or_hold_preferred_candidate_not_source_supported`: `3`
+- `null_or_hold_preferred_explicit_candidate_rejected`: `1`
+- `null_or_hold_preferred_generic_surface`: `1`
+- `ocr_explicit_title_matches_ts_murim_request`: `1`
+- `platform_listing_two_works_single_title_incomplete`: `1`
+- `ratdasip_source_points_to_rimworld_work_current_option_wrong`: `1`
+- `ratdasip_term_question_blocks_wrong_mouse_apostle_title`: `1`
+- `rezero_character_discussion_character_page_not_work_title`: `1`
+- `source_link_and_plot_context_support_before_title_after_title_surface_collision`: `1`
+- `supported_safe_title_lost_to_null`: `3`
+- `title_phrase_and_plot_context_support_safe_title_lost_to_null`: `1`
+- `title_similarity_and_character_image_not_enough_for_publish`: `1`
+- `vlm_ocr_supports_clean_title_after_title_polluted_by_spoiler_prefix`: `1`
+- `work_specific_emoticon_purchase_supports_safe_title`: `1`
+
+## 행별 판정
+
+- `11665099` `ACCEPT` `after_title_supported_by_abbreviation_and_plot_context` selected=`옥탑방의 천재 마물 소환사` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문 제목의 `옥천마`와 본문의 소환수/연참/205화 감상은 `옥탑방의 천재 마물 소환사` 약칭과 작품 소비 맥락으로 이어진다. C1 `옥천마 출정`은 raw surface를 제목처럼 보존한 후보에 가깝고 URL도 없다.
+- `11669929` `ACCEPT` `after_title_supported_by_short_title_alias` selected=`헌터갤러리의 국가권력급 기계공주` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문은 `기계공주`를 직접 작품 감상 대상으로 말하고, 후보 C2는 같은 표면을 포함한 공식 full title이다. `갤러리` 표면은 현실 DC 갤러리 단정이 아니라 웹소설 제목/작중 커뮤니티 오마주 표면일 수 있으므로 C2 승격이 타당하다.
+- `11671500` `ACCEPT` `after_title_supported_by_raw_abbreviation` selected=`악당은 살고 싶다` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: `악살싶`은 `악당은 살고 싶다`의 직접 약칭으로 읽히며, 말투 강제/강의씬 감상도 해당 작품 소비 맥락이다. C1 `악당도 살고 싶다`는 제목 변형 충돌이다.
+- `11671514` `REPROCESS` `candidate_set_incomplete_correct_title_known_from_prior_closure` selected=`None` action=`repair_after_wrong_work, candidate_set_rebuild_required`
+  - 근거: Loop474에서 같은 post는 `악신이 총애하는 모험가`로 닫혔다. 현재 후보 C1/C2는 그 교정 제목을 포함하지 않으므로 blind 후보셋 자체가 불완전하며, after C2를 정답으로 세우면 잘못된 작품 승격이다.
+- `11682791` `HOLD` `image_context_required_no_textual_work_anchor` selected=`None` action=`image_native_review_required, native_web_review_required`
+  - 근거: 텍스트에는 `아령`, `핑크덤벨`만 있고 후보 C1/C2를 직접 지지하는 작품 표면이 없다. 이미지 앞부분이 판단 근거일 수 있으므로 시각 근거 확인 전까지 HOLD가 맞다.
+- `11718097` `ACCEPT` `after_title_supported_by_raw_abbreviation_character_and_author_context` selected=`망겜의 힐러` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: `망겜힐`은 C2 약칭으로 읽히며, 오행복/박태양/검미성/TS녀 맥락도 같은 작품 논의로 이어진다. C1 `라디오에서 우리의 노래가 나오면`을 지지하는 원문 표면은 없다.
+- `11658637` `ACCEPT` `direct_abbreviation_and_character_bridge_support_promotion` selected=`재벌집 막내아들` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: `재막아`는 `재벌집 막내아들` 약칭이고, 영기/진양철/윤기 인물 맥락도 같은 작품을 직접 지지한다.
+- `11669928` `ACCEPT` `direct_abbreviation_and_platform_context_support_promotion` selected=`탑의 성좌들이 날 애호한다` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: `탑성좌애호`와 노벨피아/연중 반응이 C1 title을 직접 지지한다. 경쟁 작품 표면은 없다.
+- `11671501` `ACCEPT` `direct_abbreviation_and_plot_context_support_promotion` selected=`판초우의의 마법사` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: `판초법사`는 C1의 안정 약칭으로 보이며, 게이트/국군/괴물 최초 발견 시점 같은 본문과 댓글도 같은 작품 전개 맥락이다.
+- `11671538` `HOLD` `character_or_deity_bridge_not_enough_without_verified_work_link` selected=`None` action=`native_web_review_required, character_bridge_review_required`
+  - 근거: 원문은 `여우비의 신`과 `마커스`를 말하지만, 후보 C1 `망한 교단의 성기사`와의 직접 title/alias relation이 packet text만으로는 충분히 드러나지 않는다.
+- `11676317` `ACCEPT` `direct_abbreviation_supports_promotion` selected=`마도서를 줍다 마법사가 되다` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: `마도서줍`은 C1 title의 직접 약칭이고, 완결에 닿지 않는 연재 감상도 작품 소비 맥락이다.
+- `11682768` `ACCEPT` `direct_title_surface_and_character_context_support_promotion` selected=`마법소녀ㄴ은 은퇴하고 싶다` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문 제목의 `마법소녀ㄴ`은 C1 title surface와 직접 맞고, 세진/세린/앨리스 댓글 맥락도 같은 작품 내부 설정으로 보인다.
+- `11687618` `ACCEPT` `gallery_homage_abbreviation_and_character_context_support_promotion` selected=`아카데미 생존 갤러리` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: `아생갤`은 `아카데미 생존 갤러리` 약칭일 수 있고, 라나/엘리/클레어/아레스 맥락이 작품 내부 논의를 지지한다. `갤러리` 표면은 현실 DC 갤러리명으로 단정하지 않는다.
+- `11694067` `HOLD` `alias_or_character_bridge_needs_confirmation` selected=`None` action=`native_web_review_required, alias_relation_review_required`
+  - 근거: `김괴라리`, 그롱, 달콤살벌한 양다리 썸 에피 맥락은 작품 내부 논의처럼 보이지만, C1 `괴담에 휘말렸다`와의 직접 title/alias relation은 packet text만으로 충분하지 않다.
+- `11697231` `ACCEPT` `gallery_homage_abbreviation_and_plot_context_support_promotion` selected=`아카데미 생존 갤러리` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: `아생갤`과 현실쪽 위기/괴담/판타지 기대 맥락은 `아카데미 생존 갤러리` 작품 논의로 읽힌다. `갤러리`를 현실 커뮤니티명으로만 해석하지 않는다.
+- `11706852` `ACCEPT` `direct_abbreviation_and_recommendation_context_support_promotion` selected=`판초우의의 마법사` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: `판초법사`는 C1의 안정 약칭이고, 댓글도 아포물/문피아/즉사무림과 함께 작품 추천 신뢰를 논한다. promotion은 source-native로 타당하다.
+- `11710037` `ACCEPT` `direct_abbreviation_and_trope_context_support_promotion` selected=`괴담 호텔 탈출기` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: `담텔기`는 C1의 약칭이고, 상식의 엇갈림/괴담/세계관 서술트릭 감상은 같은 작품 소비 맥락이다.
+- `11661856` `HOLD` `image_or_context_required_for_safe_title` selected=`None` action=`image_native_review_required, native_web_review_required`
+  - 근거: source text에는 후보 title을 직접 지지하는 표면이 없고 이미지/탭 맥락에서 온 title일 가능성이 있어 null 회귀로 단정할 수 없다.
+- `11665110` `HOLD` `alias_or_legacy_title_needs_native_confirmation` selected=`None` action=`native_web_review_required, alias_relation_review_required`
+  - 근거: source text는 `사이키델리아`만 직접 말하고 후보 C1 `낭만적인 초능력을 위하여`와의 alias 관계는 source-native만으로 확정하기 어렵다.
+- `11665124` `REPROCESS` `supported_safe_title_lost_to_null` selected=`화산파(화산귀환)` action=`repair_safe_loss_restore_supported_title, shared_promotion_gate_wiring_required`
+  - 근거: 댓글이 `화귀` 회차와 해남편을 직접 말해 후보 작품 맥락을 지지한다.
+- `11666725` `HOLD` `image_or_context_required_for_safe_title` selected=`None` action=`image_native_review_required, native_web_review_required`
+  - 근거: post는 이미지 기반 감상으로 보이고 source text만으로 후보 title을 직접 확인할 수 없다.
+- `11668278` `ACCEPT` `null_or_hold_preferred_candidate_not_source_supported` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문은 실제 음식 `짜장면` 재료 이야기이며 작품 title로 볼 결속 근거가 없다. after null이 더 안전하다.
+- `11668305` `ACCEPT` `null_or_hold_preferred_candidate_not_source_supported` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문은 실제 마파두부 가게 추억이고 후보 `Fate/stay night`를 지지하는 source-native 표면이 없다.
+- `11681178` `HOLD` `image_or_context_required_for_safe_title` selected=`None` action=`image_native_review_required, native_web_review_required`
+  - 근거: 본문은 보일러/반려견 사고 농담만 있고 후보 title 결속은 이미지 확인이 필요하다.
+- `11685994` `HOLD` `image_or_context_required_for_safe_title` selected=`None` action=`image_native_review_required, native_web_review_required`
+  - 근거: source text는 `외신소환 주문`만 말하고 후보 긴 title은 이미지/원글 맥락 없이 확정하기 어렵다.
+- `11687661` `HOLD` `image_or_context_required_for_safe_title` selected=`None` action=`image_native_review_required, native_web_review_required`
+  - 근거: 광고 이미지 기반으로 보이며 source text만으로 후보 `약혼녀가 소천마였다`를 확인할 수 없다.
+- `11697239` `ACCEPT` `null_or_hold_preferred_candidate_not_source_supported` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문은 조혈모세포 기증 신청/우편 수령 이야기이며 작품 title 결속이 없다.
+- `11697242` `REPROCESS` `supported_safe_title_lost_to_null` selected=`유희왕` action=`repair_safe_loss_restore_supported_title, shared_promotion_gate_wiring_required`
+  - 근거: `유희왕 패러디`와 듀얼리스트/삼전의 재 댓글이 후보 작품/프랜차이즈를 직접 지지한다.
+- `11697256` `REPROCESS` `comment_answer_directly_supports_safe_title_lost_to_null` selected=`황제의 딸로 환생했다` action=`repair_safe_loss_restore_supported_title, shared_promotion_gate_wiring_required`
+  - 근거: 댓글이 `황제의 딸로 환생했습니다`, 플랫폼, 내용 요약까지 직접 답해 후보 title을 지지한다.
+- `11698871` `HOLD` `character_vs_work_policy_review_required` selected=`None` action=`policy_or_canonical_title_review_required, native_web_review_required`
+  - 근거: source는 `리제로`와 렘 캐릭터를 직접 말하지만 후보 title은 캐릭터 항목 형태다. final identity를 작품 title로 둘지 캐릭터로 둘지 정책 판정이 필요하다.
+- `11698904` `ACCEPT` `null_or_hold_preferred_generic_surface` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: `타락`은 추천 요청의 일반 장르/상태 표면이며 특정 작품 title로 확정할 수 없다.
+- `11706844` `HOLD` `image_or_native_confirmation_required_for_safe_title` selected=`None` action=`image_native_review_required, native_web_review_required`
+  - 근거: source text는 `편곤 괴이물 신작`만 말하고 후보 title은 직접 보이지 않는다. 이미지/작가 공지 확인이 필요하다.
+- `11708447` `REPROCESS` `supported_safe_title_lost_to_null` selected=`잠룡회귀` action=`repair_safe_loss_restore_supported_title, shared_promotion_gate_wiring_required`
+  - 근거: post title이 `잠룡회귀`를 직접 말하고 하렘/순애 질문이 같은 작품 독서 의사다.
+- `11710021` `REPROCESS` `direct_abbreviation_and_character_support_safe_title_lost_to_null` selected=`무한의 마법사` action=`repair_safe_loss_restore_supported_title, shared_promotion_gate_wiring_required`
+  - 근거: `무마`는 후보 title 약칭이고 시로네/히로인 장면 맥락이 작품을 직접 지지한다.
+- `11710047` `HOLD` `image_or_context_required_for_safe_title` selected=`None` action=`image_native_review_required, native_web_review_required`
+  - 근거: 본문은 소개문/캐릭터 수 반응만 있고 후보 title은 source text에 없다. 이미지/소개문 확인이 필요하다.
+- `11710049` `REPROCESS` `direct_alias_and_comment_context_support_safe_title_lost_to_null` selected=`[림월드]변방계에서 회귀자로 살아남기` action=`repair_safe_loss_restore_supported_title, shared_promotion_gate_wiring_required`
+  - 근거: `랫따싶`, 림월드, 랫킨 설명이 후보 작품/태그 맥락을 직접 지지한다.
+- `11711632` `HOLD` `image_or_context_required_for_safe_title` selected=`None` action=`image_native_review_required, native_web_review_required`
+  - 근거: source text는 `의외로 10년된 것`과 일본 기준뿐이라 후보 `유어 네임`은 이미지 확인 없이는 확정할 수 없다.
+- `11714885` `HOLD` `image_or_context_required_for_safe_title` selected=`None` action=`image_native_review_required, native_web_review_required`
+  - 근거: 본문은 환생/몸 갈아타기 줄거리만 말하고 후보 title은 직접 보이지 않는다. 이미지/원문 확인이 필요하다.
+- `11714892` `ACCEPT` `null_or_hold_preferred_explicit_candidate_rejected` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 본문이 `기계공주는 ㄴㄴ`라고 후보를 명시적으로 제외한다. after null은 기존 후보 제거 관점에서 정당하다.
+- `11716480` `HOLD` `image_or_context_required_for_safe_title` selected=`None` action=`image_native_review_required, native_web_review_required`
+  - 근거: source text는 `포티햄` 반응과 이미지 의존 내용뿐이라 후보 title 확인이 필요하다.
+- `11716505` `HOLD` `image_or_context_required_for_safe_title` selected=`None` action=`image_native_review_required, native_web_review_required`
+  - 근거: source text는 로판/단어 논쟁 일반론이고 후보 title 표면은 이미지 또는 외부 맥락 없이는 확정되지 않는다.
+- `11718099` `REPROCESS` `direct_abbreviation_supports_safe_title_lost_to_null` selected=`빌어먹을 환생` action=`repair_safe_loss_restore_supported_title, shared_promotion_gate_wiring_required`
+  - 근거: `빌환`은 후보 title의 직접 약칭이고 표지 변경 감상 맥락이다.
+- `11718114` `REPROCESS` `title_phrase_and_plot_context_support_safe_title_lost_to_null` selected=`설정값 딸깍으로 판타지 시스템 정상화` action=`repair_safe_loss_restore_supported_title, shared_promotion_gate_wiring_required`
+  - 근거: `시스템 딸깍` 설정과 마법 강사질 비판이 후보 title/설정 맥락과 직접 대응한다.
+- `11666700` `ACCEPT` `after_title_supported_by_direct_short_title_before_title_is_comparator` selected=`내 고향엔 무림인이 산다` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문 제목의 `내고향무림`이 C1 `내 고향엔 무림인이 산다`를 직접 가리키며, 본문 `하남자탑등반`은 도파민 비교 대상으로 언급된다. C2는 current work가 아니라 비교작이다.
+- `11716464` `REPROCESS` `before_canonical_title_supported_after_page_title_suffix_contaminated` selected=`슈라라펜란트` action=`repair_after_wrong_work, canonical_title_cleanup_required`
+  - 근거: 원문은 `슈라라펜란트`를 말한다. C2는 같은 리디 상세의 페이지/카테고리성 제목 `- 판타지 웹소설`이 붙은 형태라 canonical public title로 쓰기 부적절하다.
+- `11666741` `REPROCESS` `direct_abbreviation_supports_safe_title_lost_to_null` selected=`별을 품은 소드마스터` action=`repair_safe_loss_restore_supported_title, shared_promotion_gate_wiring_required`
+  - 근거: 원문 `별품소`와 기사뽕/웹툰 감상 맥락은 C1 `별을 품은 소드마스터`의 약칭 소비 맥락이다. after null은 safe title loss다.
+- `11718057` `HOLD` `generic_or_author_like_surface_needs_native_confirmation` selected=`None` action=`native_web_review_required, title_surface_specificity_review_required`
+  - 근거: 원문 `컵라면 이ㅅㄲ`는 작품명일 수도 있지만 작가/사용자/별칭처럼도 읽히는 짧은 일반명사 표면이다. C1을 작품으로 복원하려면 native 확인이 필요하다.
+- `11663514` `REPROCESS` `source_link_and_plot_context_support_before_title_after_title_surface_collision` selected=`마탄 속의 제국` action=`repair_after_wrong_work, native_web_review_required`
+  - 근거: 본문의 Munpia URL, 리겔/느와르/범죄수사/게파르토 제국 소개문은 C1 쪽 작품 설명으로 읽힌다. 제목의 슬라임 표면만으로 C2를 final로 올린 것은 후보 충돌이다.
+- `11674694` `REPROCESS` `direct_short_title_supports_before_after_url_only_title_invalid` selected=`21세기 무림세가` action=`repair_after_wrong_work, canonical_title_cleanup_required`
+  - 근거: 제목과 본문이 반복해서 `21세기무림`을 말한다. after의 `novel.munpia.com`은 URL 문자열이 title로 오른 형태라 public title로 부적절하고, C1 canonical으로 되돌려야 한다.
+- `11676314` `ACCEPT` `after_title_supported_by_direct_abbreviation` selected=`마도서를 줍다 마법사가 되다` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문 제목 `마도줍`은 C1 `마도서를 줍다 마법사가 되다`의 직접 약칭으로 읽힌다. C2 `소설 속 엑스트라`를 지지하는 표면은 없다.
+- `11657047` `REPROCESS` `generic_idea_prompt_not_candidate_work_discussion` selected=`None` action=`repair_unsafe_promotion, intent_guard_review`
+  - 근거: 원문은 `베지테리언이 정육점 사장이 됐다` 같은 소설 아이디어를 말할 뿐 C1 `사이버펑크 베지테리언 매드니스`를 직접 논의하지 않는다. 단어 충돌 승격으로 보인다.
+- `11673086` `ACCEPT` `direct_alias_and_character_context_support_promotion` selected=`[림월드]변방계에서 회귀자로 살아남기` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: `랫따싶`, 칸시, 시트러스 등 캐릭터 맥락이 C1 작품을 직접 지지한다. hold에서 resolved로 오른 것은 정당 후보로 본다.
+- `11674703` `ACCEPT` `direct_title_supports_promotion` selected=`도굴왕` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문 제목과 본문은 `도굴왕` 애니화 난이도를 직접 논의한다. C1 승격은 source-supported다.
+- `11681177` `ACCEPT` `direct_short_title_and_platform_context_support_promotion` selected=`격투 천재 여고생이 되었다` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문 `격투 천재 재밌다`, `노피아` 맥락은 C1 `격투 천재 여고생이 되었다`를 직접 지지한다.
+- `11695611` `ACCEPT` `direct_abbreviation_supports_promotion` selected=`여신이 나만 애호함` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: `여신애호`와 홍보/디시콘 맥락이 C1 `여신이 나만 애호함`을 직접 지지한다.
+- `11706867` `HOLD` `image_screenshot_required_for_quote_work_evidence` selected=`None` action=`image_native_review_required, native_web_review_required`
+  - 근거: 본문은 비어 있고 이미지 2장과 댓글만 있다. C1 `따옴표`가 실제 이미지 대상인지 확인하기 전에는 safe title 복원이 불가하다.
+- `11660262` `ACCEPT` `after_title_supported_by_raw_abbreviation` selected=`로판에 도파민을 풀었다` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문 제목의 `로파민`과 본문 완결/AI 논란 맥락은 `로판에 도파민을 풀었다` 약칭으로 읽힌다. C1 `그렇게, 그 괴물과 두 번 결혼했다`를 지지하는 원문 표면은 없다.
+- `11694044` `ACCEPT` `after_title_supported_as_primary_work_with_secondary_comparison` selected=`즉사기 들고 무림에 떨어지다` action=`exclude_from_regression_count_after_gate_wiring, preserve_secondary_candidates`
+  - 근거: 원문 제목의 주어는 `즉사무림 유료화`이고 본문은 `판초우의`와 비교한다. C1은 primary work로 타당하지만 C2는 secondary comparison 후보로 보존해야 한다.
+- `11660241` `REPROCESS` `before_title_supported_by_itr_alias_and_tower_lord_context` selected=`이세계 TRPG 게임마스터` action=`repair_after_wrong_work, canonical_alias_competition_guard_required`
+  - 근거: 원문은 `이티알`, `trpg 파트`, `현실쪽 주인공`, `탑주`를 함께 말한다. native-web 보강에서도 `이세계 TRPG 게임마스터`가 `이티알` 약칭과 탑주 맥락으로 확인된다. after C1은 별도 제목 표면에 끌린 wrong-work flip이다.
+- `11669907` `REPROCESS` `vlm_ocr_supports_clean_title_after_title_polluted_by_spoiler_prefix` selected=`마법 좋아좋아좋아` action=`canonical_title_cleanup_required, title_url_or_variant_trace_repair`
+  - 근거: Loop511 결과의 candidate ledger에는 `마법 좋아좋아좋아`가 VLM/OCR explicit work title로 남아 있고, after public title은 `약스포)` 접두가 붙은 검색/제목 오염형이다. clean title로 정리하되 URL 보존 경로는 별도 gate 수리가 필요하다.
+- `11671512` `REPROCESS` `candidate_set_incomplete_yukari_parody_context_conflicts_with_promoted_kingdom_title` selected=`None` action=`candidate_set_rebuild_required, image_native_review_required, native_web_review_required`
+  - 근거: 원문은 `유카리 히로인` 맥락이라 C2 `킹덤, 전국의 패왕 [킹덤 패러디 ]`로 곧장 승격하기 어렵다. Loop511 candidate ledger에도 image work title conflict와 조아라 `삼시세끼 , 심야식당` 후보가 같이 남아 있어, 현재 C1/C2 중 하나를 정답으로 닫기보다 후보셋 재구축이 필요하다.
+- `11681152` `ACCEPT` `after_canonical_bracket_title_supported_by_official_detail_and_image_anchor` selected=`[포켓몬] 체육관 챌린지에서 살아남기` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: after는 URL이 붙은 bracket canonical title C1로 정리됐고, Loop511 결과도 official_detail/page 후보를 primary로 들고 있다. before C2는 같은 작품의 축약 표면이라 wrong-work 회귀에서 제외할 수 있다.
+- `11694041` `REPROCESS` `current_options_miss_official_fighting_genius_title` selected=`None` action=`candidate_set_rebuild_required, canonical_title_cleanup_required, native_web_review_required`
+  - 근거: 원문 `격투천재`와 댓글의 격투/경녀 감상은 작품 논의지만, 현재 C1/C2는 official title을 정확히 담지 못한다. native-web 보강과 Loop511 candidate ledger는 `격투 천재가 되었다 [독점]` 계열을 별도 후보로 보여주므로, C2 `격투기 천재`를 그대로 public title로 닫으면 안 된다.
+- `11698870` `REPROCESS` `classic_japanese_novel_context_blocks_same_surface_webnovel_promotion` selected=`인간실격` action=`repair_after_wrong_work, intent_guard_review`
+  - 근거: 원문은 `그 일본쪽에 유명한거`와 댓글 `작가가 살자하긴 함`으로 다자이 오사무의 고전 `인간실격`을 묻는다. after C2는 같은 표면을 가진 별도 웹소설로 과승격된 상태다.
+- `11703631` `ACCEPT` `after_title_supported_by_direct_evil_party_alias_and_munpia_official_detail` selected=`이블 파티 대 헌터` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문 제목의 `이블파티`는 C2 `이블 파티 대 헌터`와 직접 연결되고, native-web 보강에서 문피아 작품 페이지가 확인된다. before C1 `나의 악당들`은 댓글의 `승수` 표면에 끌린 adjacent 후보로 보이며, current after는 wrong-work 회귀로 세지 않는다.
+- `11658621` `REPROCESS` `title_similarity_and_character_image_not_enough_for_publish` selected=`None` action=`repair_unsafe_promotion, search_title_similarity_hard_hold_required`
+  - 근거: 원문은 `진짜였다고`, 실제 이름, 편결 도전 맥락만 말하고 이미지도 character_visual_only다. C1 존재는 native-web으로 확인되지만, 원문 표면과 C1 `무능한게 아니라 전설이였다고?` 사이의 직접 작품 앵커가 약해 promotion_blocked를 풀 근거로 부족하다.
+- `11660238` `ACCEPT` `direct_abbreviation_and_character_context_support_promotion` selected=`무림마조` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문 `림조`, `한서진`, `청월`은 같은 작품 소비/캐릭터 맥락이고, native-web에서도 `림조 청월`이 `무림마조` 맥락으로 확인된다. after C1 promotion은 source-native로 정당하다.
+- `11668324` `REPROCESS` `direct_alias_supported_but_multi_work_question_requires_candidate_preservation` selected=`니들 생각 다 들린다` action=`multi_work_guard_required, preserve_secondary_candidates`
+  - 근거: `니생들`은 `니들 생각 다 들린다` 약칭으로 source-native와 native-web 근거가 있다. 그러나 원문은 `니생들이랑 김괴라리`를 함께 묻는 다작품 질문이라 C1 단일 public identity만 남기면 후보 보존이 불완전하다.
+- `11677957` `ACCEPT` `author_surface_and_native_web_support_title_promotion` selected=`음악 천재가 불륜을 못 숨김` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문 `페도부이`는 작가 표면이고, native-web에서 `음악 천재가 불륜을 못 숨김`의 작가명/랭킹 표면과 연결된다. after title은 정당한 작품 승격이며 URL 누락은 collateral unsafe promotion으로 세지 않는다.
+- `11687635` `ACCEPT` `direct_image_work_surface_and_ocr_catalog_support_promotion` selected=`아포칼립스의 던전주가 되었다` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 이미지 evidence catalog가 `아포칼립스의 던전주가 되었다`와 작가명을 OCR explicit work title로 잡고, 공식 URL도 같은 제목을 지지한다. 추천글 맥락이지만 source-native 현재 작품 앵커는 충분하다.
+- `11690855` `REPROCESS` `nonwork_limbus_game_metrics_context_blocks_fanfic_title_promotion` selected=`None` action=`repair_unsafe_promotion, intent_guard_review, nonwork_game_context_publish_block_required`
+  - 근거: 원문은 `림버스` 게임의 유저 수/씹덕겜 순위 이야기이고 이미지도 MAU 그래프와 게임 관련 장면이다. C1은 림버스 2차 창작 웹소설로, 원문 intent와 다른 후보를 검색/제목 표면으로 과승격한 상태다.
+- `11705256` `ACCEPT` `direct_short_title_and_review_context_support_promotion` selected=`하남자의 탑 공략법` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문 `하남자 탑`은 `하남자의 탑 공략법` 약칭으로 읽히고, `하차함`, `50대 틀딱이면 좋아할 맛`은 작품 소비/리뷰 맥락이다. native-web도 같은 약칭과 작품명을 지지한다.
+- `11705257` `ACCEPT` `hirohiro_fanart_native_web_supports_hero_in_heroine` selected=`히어로 IN 히로인` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문 `히로히로 팬아트`와 댓글 `시아루트`는 작품 팬아트 맥락이고, native-web에서 `히어로 IN 히로인` 공식/외전 페이지가 `히로히로 팬아트` 표면을 직접 보인다. after C1은 정당하다.
+- `11708466` `ACCEPT` `direct_title_and_character_context_support_promotion` selected=`매국노` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문 제목이 `매국노`를 직접 부르고, 본문 `하루토`, `이설`, `유하은`은 같은 작품 캐릭터 문맥으로 native-web 커뮤니티 근거에서도 확인된다. after C1 promotion은 source-native로 정당하다.
+- `11710044` `REPROCESS` `gacha_punk_alias_collision_current_option_misses_correct_work` selected=`None` action=`repair_unsafe_promotion, candidate_set_rebuild_required, alias_collision_guard_required`
+  - 근거: 원문 `가챠펑크`는 `가챠 중독자의 퓨전펑크 생활` 계열 약칭으로 쓰이는 표면이다. after C1 `퓨전 펑크 의 전생자`는 `퓨전펑크` 공유 토큰에 끌린 다른 작품 후보라 현재 옵션으로 정답을 닫을 수 없다.
+- `11714913` `ACCEPT` `character_surface_and_official_detail_support_work_bridge` selected=`전 버튜버가 하고 싶은데요` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문 `주서연`은 `전 버튜버가 하고 싶은데요`의 캐릭터 표면으로 검색/공식 URL과 결합된다. 이미지는 character_visual_only라 단독 근거는 아니지만, 제목의 캐릭터 표면과 official detail이 함께 있어 C1 승격은 제외 후보로 볼 수 있다.
+- `11718105` `REPROCESS` `multi_work_platform_listing_single_title_promotion_incomplete` selected=`몰락민족의 천재 기사` action=`multi_work_guard_required, image_listing_multi_work_guard_required, preserve_secondary_candidates`
+  - 근거: 이미지 목록과 댓글에는 `트럭커`, `몰락`, `망배우`, `뇌조꺼` 등 여러 작품이 동시에 나온다. C1은 그중 하나로 source-supported지만, 단일 public title로 닫으면 다작품/목록 맥락을 잃으므로 promotion gate는 multi-work 보존 경로로 수리해야 한다.
+- `11660254` `ACCEPT` `novelpia_animation_listing_not_single_work_discussion` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문은 글로벌 노피아의 Animation 목록/AI 표지 여부를 묻는 글이고 OCR도 여러 작품 카드 목록이다. C1 `푸푸푸 랜드의 두가지 일상`을 단일 작품 토론으로 publish한 before가 과승격이며 after null/hold가 더 안전하다.
+- `11661863` `HOLD` `platform_listing_two_works_single_title_incomplete` selected=`None` action=`image_listing_multi_work_guard_required, preserve_secondary_candidates, native_web_review_required`
+  - 근거: 이미지 OCR은 같은 작가의 두 작품 `저주받은 영애가 되었습니다`와 `용의 신부로 바쳐지고 말았다`가 동시에 올라온 플랫폼 목록이다. C1은 목록 중 하나로 지지되지만 원문은 두 작품 동시 업로드 맥락이라 단일 title publish는 불완전하다.
+- `11668300` `REPROCESS` `direct_short_title_supports_safe_title_lost_to_null` selected=`즉사기 들고 게임 속 으로` action=`repair_safe_loss_restore_supported_title, shared_promotion_gate_wiring_required`
+  - 근거: 원문 제목 `즉사기`와 `보러간다`가 C1의 직접 약칭과 독서 의사를 함께 제공한다. 캐릭터 이미지가 약해도 텍스트 앵커가 충분하므로 after null은 회귀다.
+- `11669921` `REPROCESS` `direct_abbreviation_and_paid_episode_context_support_safe_title` selected=`악당은 살고 싶다` action=`repair_safe_loss_restore_supported_title, shared_promotion_gate_wiring_required`
+  - 근거: `악살싶`은 C1의 직접 약칭이고 `유료분`, 용두용미 질문, 댓글의 회차 평가가 모두 같은 작품 소비 맥락이다. after null은 safe-loss다.
+- `11682749` `REPROCESS` `current_option_misses_mukhyang_title_source_discusses_mukhyang` selected=`None` action=`candidate_set_rebuild_required, repair_after_wrong_work, preserve_secondary_candidates`
+  - 근거: 원문과 댓글, 이미지 OCR은 모두 `묵향/DARK LADY` 맥락을 지지한다. current C1 `주인공인데 주인공이 아님`은 source-supported title이 아니므로 after null이 C1 safe-loss인 것은 아니지만 후보셋 재구성이 필요하다.
+- `11682775` `REPROCESS` `ocr_explicit_title_matches_ts_murim_request` selected=`여자가 되어서라도 복수한다` action=`repair_safe_loss_restore_supported_title, shared_promotion_gate_wiring_required`
+  - 근거: 원문은 TS 무협 추천/감상 질문이고 이미지 OCR은 `여자가 되어서라도 복수한다` 작품 상세와 무협/TS 태그를 직접 읽었다. after null은 회귀다.
+- `11694035` `REPROCESS` `asenggal_alias_supported_but_current_option_wrong` selected=`None` action=`candidate_set_rebuild_required, multi_work_guard_required, preserve_secondary_candidates`
+  - 근거: `아생갤`은 `아카데미 생존 갤러리` 같은 작품 약어일 수 있고, 원문도 폐허 도심/현생 서사 같은 작품 내부 장면을 말한다. 그러나 current C1 `시로코의 제멋대로 일상 단편선`은 source-supported target이 아니므로 후보셋 재구성이 필요하다.
+- `11694065` `REPROCESS` `direct_abbreviation_and_character_names_support_safe_title` selected=`아카데미에서 살아남기` action=`repair_safe_loss_restore_supported_title, shared_promotion_gate_wiring_required`
+  - 근거: `아카살`은 C1의 직접 약칭이고 이미지 OCR의 아니스/클라라/예니카/에드도 같은 작품 캐릭터 맥락이다. after null은 회귀다.
+- `11695609` `ACCEPT` `ratdasip_term_question_blocks_wrong_mouse_apostle_title` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문은 `랫따싶`이 퍼리/캐릭터 이름인지 묻고 댓글은 림월드 밈이라고 정정한다. native-web상 `랫따싶`은 `[림월드]변방계에서 회귀자로 살아남기` 태그/별칭으로 확인되지만 current C1 `쳇바퀴의 생쥐 사도가 되었다`는 지지되지 않는다. after null/hold가 before보다 안전하다.
+- `11697249` `ACCEPT` `burgerpia_event_reservation_not_novel_work` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문과 이미지 OCR은 노벨피아의 `버거피아` 행사 예약/합석 안내를 말한다. 이는 작품 title publish 대상이 아니라 행사/플랫폼 이벤트 맥락이므로 after null/hold가 정당하다.
+- `11698859` `REPROCESS` `direct_title_surface_and_scene_reaction_support_safe_title` selected=`귤부인 대롱대롱` action=`repair_safe_loss_restore_supported_title, shared_promotion_gate_wiring_required, native_web_review_required`
+  - 근거: 원문 제목이 `귤부인 대롱대롱`을 직접 말하고 본문은 해당 장면에 대한 감상이다. 공식 URL은 packet에 없지만 raw title surface가 강하므로 after null은 회귀이며 native-web 보강은 후속이다.
+- `11698865` `HOLD` `rezero_character_discussion_character_page_not_work_title` selected=`None` action=`policy_or_canonical_title_review_required, candidate_set_rebuild_required`
+  - 근거: 원문은 스바루/리제로 6장/7장 감상으로 특정 작품 맥락이 있지만 current C1은 작품 title이 아니라 `나츠키 스바루/작중 행적/5~8장` 같은 character/page title이다. null로 닫기보다 canonical work title 정책 검토가 필요하다.
+- `11700483` `REPROCESS` `work_specific_emoticon_purchase_supports_safe_title` selected=`니들 생각 다 들린다` action=`repair_safe_loss_restore_supported_title, shared_promotion_gate_wiring_required, merchandise_or_emoticon_work_context_guard`
+  - 근거: 원문 `니생들 이모티콘`과 이미지 OCR `니들 생각 다 들린다 미니미콘`이 작품별 이모티콘 구매 맥락을 직접 지지한다. 작품 상품/이모티콘 맥락이므로 after null은 회귀다.
+- `11700500` `REPROCESS` `direct_abbreviation_and_character_context_support_safe_title` selected=`전지적 1인칭 시점` action=`repair_safe_loss_restore_supported_title, shared_promotion_gate_wiring_required`
+  - 근거: `전1시`는 C1의 직접 약칭이고 지잔든/지선/성검대/셰이 등 캐릭터 전투 맥락이 작품 토론을 지지한다. after null은 회귀다.
+- `11703640` `ACCEPT` `bugipia_event_context_comment_mentions_machine_princess_only_incidentally` selected=`None` action=`exclude_from_regression_count_after_gate_wiring`
+  - 근거: 원문은 `부기피아` 행사/현장 경험이고, 댓글의 `기계공주 보냐`는 현장 대화 농담에 가깝다. C1 작품 존재는 native-web으로 확인되지만 post target이 C1은 아니므로 after null/hold가 더 안전하다.
+- `11703658` `REPROCESS` `current_option_wrong_title_image_ocr_supports_africa_food_king` selected=`None` action=`candidate_set_rebuild_required, repair_after_wrong_work, image_platform_url_preference`
+  - 근거: 원문 제목과 이미지 OCR은 `아프리카 식량왕이 되었다`를 직접 말한다. current C1 `아프리카 의 독재자가 되었다 .`와 URL은 다른 작품으로 보이므로 C1 복구가 아니라 후보셋 재구성이 필요하다.
+- `11705231` `REPROCESS` `current_option_wrong_work_source_discusses_seol_jihu_tamsik_context` selected=`None` action=`candidate_set_rebuild_required, repair_after_wrong_work, preserve_secondary_candidates`
+  - 근거: 원문은 설지후/로유진/유선화 자매 등 `탐식의 재림` 계열 캐릭터와 장갤 밈을 직접 논한다. current C1 `한국 레전드 프로게이머...`는 source-supported title이 아니므로 후보셋 재구성이 필요하다.
+- `11708453` `HOLD` `comparison_plagiarism_context_not_single_work_publish_ready` selected=`None` action=`multi_work_guard_required, policy_or_canonical_title_review_required, native_web_review_required`
+  - 근거: 원문은 `미츄리`, `이불사`, `검머외`, 댓글의 `감옥학원 아카편` 등 여러 작품/표절 비교 맥락이다. C1은 관련 후보일 수 있지만 단일 current work publish로 확정하기에는 약하다.
+- `11708478` `REPROCESS` `comment_answer_and_scene_ocr_support_safe_title` selected=`사연 있는 악역으로 착각 당한다` action=`repair_safe_loss_restore_supported_title, shared_promotion_gate_wiring_required`
+  - 근거: 댓글이 제목 질문에 `사연있는악역착각`이라고 답하고, 이미지 본문도 드릴머리 영애 장면을 보여준다. C1 title 복구가 맞고 after null은 회귀다.
+- `11710036` `REPROCESS` `ratdasip_source_points_to_rimworld_work_current_option_wrong` selected=`None` action=`candidate_set_rebuild_required, repair_after_wrong_work, preserve_secondary_candidates`
+  - 근거: 원문과 댓글은 `랫따싶`의 full title을 묻고 `[림월드]변방계에서 회귀자로 살아남기`로 답한다. native-web도 `#랫따싶` 태그를 확인한다. current C1 `쳇바퀴의 생쥐 사도가 되었다`는 wrong option이다.
+- `11660232` `INFO_MISSING` `current_regression_row_without_compatible_prior_verdict` selected=`None` action=`source_native_or_blind_review_required, p0_wrong_work_title_flip_review_required`
+  - 근거: 현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.
+- `11663554` `INFO_MISSING` `current_regression_row_without_compatible_prior_verdict` selected=`None` action=`source_native_or_blind_review_required, p0_wrong_work_title_flip_review_required`
+  - 근거: 현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.
+- `11682792` `INFO_MISSING` `current_regression_row_without_compatible_prior_verdict` selected=`None` action=`source_native_or_blind_review_required, p0_wrong_work_title_flip_review_required`
+  - 근거: 현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.
+- `11703674` `INFO_MISSING` `current_regression_row_without_compatible_prior_verdict` selected=`None` action=`source_native_or_blind_review_required, p0_wrong_work_title_flip_review_required`
+  - 근거: 현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.
+- `11714903` `INFO_MISSING` `current_regression_row_without_compatible_prior_verdict` selected=`None` action=`source_native_or_blind_review_required, p0_wrong_work_title_flip_review_required`
+  - 근거: 현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.
+- `11660237` `INFO_MISSING` `current_regression_row_without_compatible_prior_verdict` selected=`None` action=`source_native_or_blind_review_required, p0_wrong_work_title_flip_review_required`
+  - 근거: 현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.
+- `11660273` `INFO_MISSING` `current_regression_row_without_compatible_prior_verdict` selected=`None` action=`source_native_or_blind_review_required, p0_wrong_work_title_flip_review_required`
+  - 근거: 현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.
+- `11663521` `INFO_MISSING` `current_regression_row_without_compatible_prior_verdict` selected=`None` action=`source_native_or_blind_review_required, p0_wrong_work_title_flip_review_required`
+  - 근거: 현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.
+- `11663540` `INFO_MISSING` `current_regression_row_without_compatible_prior_verdict` selected=`None` action=`source_native_or_blind_review_required, p0_wrong_work_title_flip_review_required`
+  - 근거: 현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.
+- `11668307` `INFO_MISSING` `current_regression_row_without_compatible_prior_verdict` selected=`None` action=`source_native_or_blind_review_required, p0_wrong_work_title_flip_review_required`
+  - 근거: 현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.
+- `11698897` `INFO_MISSING` `current_regression_row_without_compatible_prior_verdict` selected=`None` action=`source_native_or_blind_review_required, p0_wrong_work_title_flip_review_required`
+  - 근거: 현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.
+- `11706842` `INFO_MISSING` `current_regression_row_without_compatible_prior_verdict` selected=`None` action=`source_native_or_blind_review_required, p0_wrong_work_title_flip_review_required`
+  - 근거: 현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.
+- `11713222` `INFO_MISSING` `current_regression_row_without_compatible_prior_verdict` selected=`None` action=`source_native_or_blind_review_required, p0_wrong_work_title_flip_review_required`
+  - 근거: 현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.
+- `11661857` `INFO_MISSING` `current_regression_row_without_compatible_prior_verdict` selected=`None` action=`source_native_or_blind_review_required, p0_safe_loss_resolved_to_null_review_required`
+  - 근거: 현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.
+- `11669930` `INFO_MISSING` `current_regression_row_without_compatible_prior_verdict` selected=`None` action=`source_native_or_blind_review_required, p0_safe_loss_resolved_to_null_review_required`
+  - 근거: 현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.
+- `11673082` `INFO_MISSING` `current_regression_row_without_compatible_prior_verdict` selected=`None` action=`source_native_or_blind_review_required, p0_safe_loss_resolved_to_null_review_required`
+  - 근거: 현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.
+- `11684371` `INFO_MISSING` `current_regression_row_without_compatible_prior_verdict` selected=`None` action=`source_native_or_blind_review_required, p0_safe_loss_resolved_to_null_review_required`
+  - 근거: 현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.
+- `11700470` `INFO_MISSING` `current_regression_row_without_compatible_prior_verdict` selected=`None` action=`source_native_or_blind_review_required, p0_safe_loss_resolved_to_null_review_required`
+  - 근거: 현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.
+- `11705245` `INFO_MISSING` `current_regression_row_without_compatible_prior_verdict` selected=`None` action=`source_native_or_blind_review_required, p0_safe_loss_resolved_to_null_review_required`
+  - 근거: 현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.
+- `11713212` `INFO_MISSING` `current_regression_row_without_compatible_prior_verdict` selected=`None` action=`source_native_or_blind_review_required, p0_safe_loss_resolved_to_null_review_required`
+  - 근거: 현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.
+
+## Gate 해석
+
+이 검토는 collateral P0 bucket의 source-native 라벨 산출물이다. REPROCESS/HOLD 또는 validation issue가 남아 있으면 full collateral approval은 열리지 않는다.

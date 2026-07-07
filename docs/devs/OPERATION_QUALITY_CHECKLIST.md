@@ -1,5 +1,25 @@
 # Operation Quality Checklist
 
+## 2026-07-08 Loop570-571 full375 after Loop569 재회계 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_570_571_REPORT_20260708.md`.
+  - [x] Loop570 P0 review batch 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json/.jsonl/.md`.
+  - [x] Prior-compatible verdict/state와 prior-incompatible batch 기록 완료: `docs/devs/loop570_full375_after_loop569_*`.
+  - [x] Combined source-native summary 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_combined_source_native_review.json/.md`.
+  - [x] Adjusted always-on gate 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_always_on_golden18_full375_after_loop569_adjusted_gate.json/.md`.
+  - [x] Residual78 queue와 P0 repair31 batch 기록 완료: `docs/devs/loop570_full375_after_loop569_residual78_action_queue.json/.md`, `docs/devs/loop571_full375_after_loop569_p0_code_repair31_batch.json/.md`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+  - [x] Prior-compatible verdict는 동일 post_id, 동일 bucket, 현재 option title/url 일치 조건으로만 재사용했다.
+  - [x] `ACCEPT 39`는 review-adjusted exclusion candidate일 뿐 approval이 아니다.
+  - [x] `REPROCESS 37`, `HOLD 21`, `INFO_MISSING 20`이 남아 full375 collateral `NO-GO`를 유지했다.
+  - [x] Golden18 `GO`를 full_scan approval로 승격하지 않았다.
+  - [x] 다음 test/runtime run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지다.
+  - [x] Dashboard는 진행 확인 도구이며 semantic/full_scan approval 근거가 아니다.
+  - [x] Full375 collateral `GO` 전 goal completion을 선언하지 않는다.
+- Gate: combined source-native summary `REVIEW-LOCKED`, residual queue `REVIEW-LOCKED / 78`, P0 repair batch `REVIEW-LOCKED / 31`, full375 collateral `NO-GO / adjusted 78`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop569 source-native safe-loss projection 품질 게이트
 
 - 근거:

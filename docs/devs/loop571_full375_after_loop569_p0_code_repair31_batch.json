@@ -1,0 +1,1698 @@
+{
+  "report_type": "action_queue_batch",
+  "batch_id": "loop571_full375_after_loop569_p0_code_repair31_batch",
+  "generated_at": "2026-07-08T01:16:38",
+  "source_queue_id": "loop570_full375_after_loop569_residual78_action_queue",
+  "filter": {
+    "priorities": [
+      "P0"
+    ],
+    "labels": [
+      "REPROCESS"
+    ],
+    "actions": null
+  },
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "gate": "REVIEW-LOCKED",
+  "summary": {
+    "source_queue_rows": 78,
+    "selected_rows": 31,
+    "runtime_input_candidate_rows": 0,
+    "source_native_review_rows": 0,
+    "search_replay_required_rows": 0,
+    "label_counts": {
+      "REPROCESS": 31
+    },
+    "priority_counts": {
+      "P0": 31
+    },
+    "owner_mode_counts": {
+      "CODE_OR_RUNTIME_REPAIR": 31
+    },
+    "audit_status_counts": {
+      "None": 31
+    },
+    "action_counts": {
+      "alias_collision_guard_required": 1,
+      "candidate_set_rebuild_required": 6,
+      "canonical_alias_competition_guard_required": 1,
+      "canonical_title_cleanup_required": 2,
+      "image_platform_url_preference": 1,
+      "intent_guard_review": 3,
+      "merchandise_or_emoticon_work_context_guard": 1,
+      "native_web_review_required": 2,
+      "nonwork_game_context_publish_block_required": 1,
+      "preserve_secondary_candidates": 3,
+      "repair_after_wrong_work": 10,
+      "repair_safe_loss_restore_supported_title": 17,
+      "repair_unsafe_promotion": 4,
+      "search_title_similarity_hard_hold_required": 1,
+      "shared_promotion_gate_wiring_required": 17
+    },
+    "lane_counts": {
+      "manual_review": 31
+    },
+    "dispatch_lane_counts": {
+      "runtime_repair_without_search_replay": 31
+    },
+    "validation_issue_count": 0
+  },
+  "validation_issues": [],
+  "action_groups": [
+    {
+      "lane": "manual_review",
+      "row_count": 31,
+      "label_counts": {
+        "REPROCESS": 31
+      },
+      "priority_counts": {
+        "P0": 31
+      },
+      "dispatch_lane_counts": {
+        "runtime_repair_without_search_replay": 31
+      },
+      "post_ids": [
+        11671514,
+        11665124,
+        11697242,
+        11697256,
+        11708447,
+        11710021,
+        11710049,
+        11718099,
+        11718114,
+        11716464,
+        11666741,
+        11663514,
+        11674694,
+        11657047,
+        11660241,
+        11698870,
+        11658621,
+        11690855,
+        11710044,
+        11668300,
+        11669921,
+        11682749,
+        11682775,
+        11694065,
+        11698859,
+        11700483,
+        11700500,
+        11703658,
+        11705231,
+        11708478,
+        11710036
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11671514,
+          "triage_bucket": "wrong_work_title_flip",
+          "priority": "P0",
+          "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "candidate_set_incomplete_correct_title_known_from_prior_closure",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Strong",
+          "actions": [
+            "repair_after_wrong_work",
+            "candidate_set_rebuild_required"
+          ],
+          "rationale_ko": "Loop474에서 같은 post는 `악신이 총애하는 모험가`로 닫혔다. 현재 후보 C1/C2는 그 교정 제목을 포함하지 않으므로 blind 후보셋 자체가 불완전하며, after C2를 정답으로 세우면 잘못된 작품 승격이다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json#post_id=11671514",
+            "docs/devs/loop474_11671514_aksin_chongaes_safe_loss_runtime_20260705.json",
+            "docs/devs/loop_reports/LOOP_474_REPORT_20260705.md",
+            "docs/devs/loop479_wrong_work_title_flip_source_native_verdicts.json#post_id=11671514",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11671514",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11671514",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11671514",
+            "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11671514",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11671514",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11671514",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11671514",
+            "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11671514",
+            "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11671514",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11671514",
+            "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11671514",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11671514",
+            "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11671514",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11671514"
+          ],
+          "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+          "batch_lanes": [
+            "manual_review"
+          ],
+          "dispatch_lane": "runtime_repair_without_search_replay",
+          "runtime_input_eligible": false,
+          "source_native_review_required": false
+        },
+        {
+          "post_id": 11665124,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "priority": "P0",
+          "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "selected_title": "화산파(화산귀환)",
+          "selected_option_id": "C1",
+          "evidence_grade": "Strong",
+          "actions": [
+            "repair_safe_loss_restore_supported_title",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "rationale_ko": "댓글이 `화귀` 회차와 해남편을 직접 말해 후보 작품 맥락을 지지한다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11665124",
+            "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11665124",
+            "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11665124",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11665124",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11665124",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11665124",
+            "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11665124",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11665124",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11665124",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11665124",
+            "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11665124",
+            "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11665124",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11665124",
+            "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11665124",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11665124",
+            "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11665124",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11665124"
+          ],
+          "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+          "batch_lanes": [
+            "manual_review"
+          ],
+          "dispatch_lane": "runtime_repair_without_search_replay",
+          "runtime_input_eligible": false,
+          "source_native_review_required": false
+        },
+        {
+          "post_id": 11697242,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "priority": "P0",
+          "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "selected_title": "유희왕",
+          "selected_option_id": "C1",
+          "evidence_grade": "Strong",
+          "actions": [
+            "repair_safe_loss_restore_supported_title",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "rationale_ko": "`유희왕 패러디`와 듀얼리스트/삼전의 재 댓글이 후보 작품/프랜차이즈를 직접 지지한다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11697242",
+            "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11697242",
+            "https://m.munpia.com/novel/detail/567990",
+            "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11697242",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11697242",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11697242",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11697242",
+            "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11697242",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11697242",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11697242",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11697242",
+            "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11697242",
+            "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11697242",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11697242",
+            "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11697242",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11697242",
+            "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11697242",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11697242"
+          ],
+          "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+          "batch_lanes": [
+            "manual_review"
+          ],
+          "dispatch_lane": "runtime_repair_without_search_replay",
+          "runtime_input_eligible": false,
+          "source_native_review_required": false
+        },
+        {
+          "post_id": 11697256,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "priority": "P0",
+          "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "comment_answer_directly_supports_safe_title_lost_to_null",
+          "selected_title": "황제의 딸로 환생했다",
+          "selected_option_id": "C1",
+          "evidence_grade": "Strong",
+          "actions": [
+            "repair_safe_loss_restore_supported_title",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "rationale_ko": "댓글이 `황제의 딸로 환생했습니다`, 플랫폼, 내용 요약까지 직접 답해 후보 title을 지지한다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11697256",
+            "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11697256",
+            "https://novelpia.com/novel/250464",
+            "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11697256",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11697256",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11697256",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11697256",
+            "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11697256",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11697256",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11697256",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11697256",
+            "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11697256",
+            "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11697256",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11697256",
+            "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11697256",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11697256",
+            "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11697256",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11697256"
+          ],
+          "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+          "batch_lanes": [
+            "manual_review"
+          ],
+          "dispatch_lane": "runtime_repair_without_search_replay",
+          "runtime_input_eligible": false,
+          "source_native_review_required": false
+        },
+        {
+          "post_id": 11708447,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "priority": "P0",
+          "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "supported_safe_title_lost_to_null",
+          "selected_title": "잠룡회귀",
+          "selected_option_id": "C1",
+          "evidence_grade": "Strong",
+          "actions": [
+            "repair_safe_loss_restore_supported_title",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "rationale_ko": "post title이 `잠룡회귀`를 직접 말하고 하렘/순애 질문이 같은 작품 독서 의사다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11708447",
+            "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11708447",
+            "https://ridibooks.com/books/425439440",
+            "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11708447",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11708447",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11708447",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11708447",
+            "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11708447",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11708447",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11708447",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11708447",
+            "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11708447",
+            "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11708447",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11708447",
+            "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11708447",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11708447",
+            "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11708447",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11708447"
+          ],
+          "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+          "batch_lanes": [
+            "manual_review"
+          ],
+          "dispatch_lane": "runtime_repair_without_search_replay",
+          "runtime_input_eligible": false,
+          "source_native_review_required": false
+        },
+        {
+          "post_id": 11710021,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "priority": "P0",
+          "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "direct_abbreviation_and_character_support_safe_title_lost_to_null",
+          "selected_title": "무한의 마법사",
+          "selected_option_id": "C1",
+          "evidence_grade": "Strong",
+          "actions": [
+            "repair_safe_loss_restore_supported_title",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "rationale_ko": "`무마`는 후보 title 약칭이고 시로네/히로인 장면 맥락이 작품을 직접 지지한다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11710021",
+            "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11710021",
+            "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11710021",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11710021",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11710021",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11710021",
+            "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11710021",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11710021",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11710021",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11710021",
+            "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11710021",
+            "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11710021",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11710021",
+            "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11710021",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11710021",
+            "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11710021",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11710021"
+          ],
+          "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+          "batch_lanes": [
+            "manual_review"
+          ],
+          "dispatch_lane": "runtime_repair_without_search_replay",
+          "runtime_input_eligible": false,
+          "source_native_review_required": false
+        },
+        {
+          "post_id": 11710049,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "priority": "P0",
+          "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "direct_alias_and_comment_context_support_safe_title_lost_to_null",
+          "selected_title": "[림월드]변방계에서 회귀자로 살아남기",
+          "selected_option_id": "C1",
+          "evidence_grade": "Strong",
+          "actions": [
+            "repair_safe_loss_restore_supported_title",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "rationale_ko": "`랫따싶`, 림월드, 랫킨 설명이 후보 작품/태그 맥락을 직접 지지한다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11710049",
+            "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11710049",
+            "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11710049",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11710049",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11710049",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11710049",
+            "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11710049",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11710049",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11710049",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11710049",
+            "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11710049",
+            "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11710049",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11710049",
+            "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11710049",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11710049",
+            "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11710049",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11710049"
+          ],
+          "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+          "batch_lanes": [
+            "manual_review"
+          ],
+          "dispatch_lane": "runtime_repair_without_search_replay",
+          "runtime_input_eligible": false,
+          "source_native_review_required": false
+        },
+        {
+          "post_id": 11718099,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "priority": "P0",
+          "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+          "selected_title": "빌어먹을 환생",
+          "selected_option_id": "C1",
+          "evidence_grade": "Strong",
+          "actions": [
+            "repair_safe_loss_restore_supported_title",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "rationale_ko": "`빌환`은 후보 title의 직접 약칭이고 표지 변경 감상 맥락이다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11718099",
+            "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11718099",
+            "https://novel.munpia.com/222360",
+            "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11718099",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11718099",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11718099",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11718099",
+            "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11718099",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11718099",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11718099",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11718099",
+            "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11718099",
+            "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11718099",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11718099",
+            "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11718099",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11718099",
+            "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11718099",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11718099"
+          ],
+          "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+          "batch_lanes": [
+            "manual_review"
+          ],
+          "dispatch_lane": "runtime_repair_without_search_replay",
+          "runtime_input_eligible": false,
+          "source_native_review_required": false
+        }
+      ]
+    }
+  ],
+  "execution_contract": {
+    "policy": "TEST_RUNS_USE_PARALLEL_16_AND_WEB_DASHBOARD",
+    "row_count": 31,
+    "requested_parallel": 16,
+    "expected_effective_parallel": 16,
+    "required_flags": [
+      "--parallel 16"
+    ],
+    "forbidden_flags": [
+      "--no-dashboard"
+    ],
+    "dashboard_gate": "GO_PROGRESS_VIEW_NOT_APPROVAL",
+    "dashboard_contract": {
+      "dashboard_policy": "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+      "dashboard_url": "http://127.0.0.1:8080",
+      "start_dashboard_command": "python tools/dashboard_server.py --host 127.0.0.1 --port 8080",
+      "forbidden_flags": [
+        "--no-dashboard"
+      ],
+      "live_forwarding_contract": "Start tools/dashboard_server.py first; expert_main detects the standalone dashboard and forwards monitor events to it.",
+      "fallback_attach_contract": "If a run was already started without live forwarding, attach its manifest with tools/attach_manifest_dashboard.py."
+    },
+    "approval_boundary": "Dashboard progress visibility and runtime completion are not semantic/full_scan approval."
+  },
+  "rows": [
+    {
+      "post_id": 11671514,
+      "triage_bucket": "wrong_work_title_flip",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "candidate_set_incomplete_correct_title_known_from_prior_closure",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_after_wrong_work",
+        "candidate_set_rebuild_required"
+      ],
+      "rationale_ko": "Loop474에서 같은 post는 `악신이 총애하는 모험가`로 닫혔다. 현재 후보 C1/C2는 그 교정 제목을 포함하지 않으므로 blind 후보셋 자체가 불완전하며, after C2를 정답으로 세우면 잘못된 작품 승격이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json#post_id=11671514",
+        "docs/devs/loop474_11671514_aksin_chongaes_safe_loss_runtime_20260705.json",
+        "docs/devs/loop_reports/LOOP_474_REPORT_20260705.md",
+        "docs/devs/loop479_wrong_work_title_flip_source_native_verdicts.json#post_id=11671514",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11671514",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11671514",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11671514",
+        "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11671514",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11671514",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11671514",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11671514",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11671514",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11671514",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11671514",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11671514",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11671514",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11671514",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11671514"
+      ],
+      "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+      "batch_lanes": [
+        "manual_review"
+      ],
+      "dispatch_lane": "runtime_repair_without_search_replay",
+      "runtime_input_eligible": false,
+      "source_native_review_required": false
+    },
+    {
+      "post_id": 11665124,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "selected_title": "화산파(화산귀환)",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "댓글이 `화귀` 회차와 해남편을 직접 말해 후보 작품 맥락을 지지한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11665124",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11665124",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11665124",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11665124",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11665124",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11665124",
+        "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11665124",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11665124",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11665124",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11665124",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11665124",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11665124",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11665124",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11665124",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11665124",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11665124",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11665124"
+      ],
+      "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+      "batch_lanes": [
+        "manual_review"
+      ],
+      "dispatch_lane": "runtime_repair_without_search_replay",
+      "runtime_input_eligible": false,
+      "source_native_review_required": false
+    },
+    {
+      "post_id": 11697242,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "selected_title": "유희왕",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`유희왕 패러디`와 듀얼리스트/삼전의 재 댓글이 후보 작품/프랜차이즈를 직접 지지한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11697242",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11697242",
+        "https://m.munpia.com/novel/detail/567990",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11697242",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11697242",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11697242",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11697242",
+        "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11697242",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11697242",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11697242",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11697242",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11697242",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11697242",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11697242",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11697242",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11697242",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11697242",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11697242"
+      ],
+      "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+      "batch_lanes": [
+        "manual_review"
+      ],
+      "dispatch_lane": "runtime_repair_without_search_replay",
+      "runtime_input_eligible": false,
+      "source_native_review_required": false
+    },
+    {
+      "post_id": 11697256,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "comment_answer_directly_supports_safe_title_lost_to_null",
+      "selected_title": "황제의 딸로 환생했다",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "댓글이 `황제의 딸로 환생했습니다`, 플랫폼, 내용 요약까지 직접 답해 후보 title을 지지한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11697256",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11697256",
+        "https://novelpia.com/novel/250464",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11697256",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11697256",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11697256",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11697256",
+        "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11697256",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11697256",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11697256",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11697256",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11697256",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11697256",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11697256",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11697256",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11697256",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11697256",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11697256"
+      ],
+      "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+      "batch_lanes": [
+        "manual_review"
+      ],
+      "dispatch_lane": "runtime_repair_without_search_replay",
+      "runtime_input_eligible": false,
+      "source_native_review_required": false
+    },
+    {
+      "post_id": 11708447,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "selected_title": "잠룡회귀",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "post title이 `잠룡회귀`를 직접 말하고 하렘/순애 질문이 같은 작품 독서 의사다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11708447",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11708447",
+        "https://ridibooks.com/books/425439440",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11708447",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11708447",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11708447",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11708447",
+        "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11708447",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11708447",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11708447",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11708447",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11708447",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11708447",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11708447",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11708447",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11708447",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11708447",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11708447"
+      ],
+      "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+      "batch_lanes": [
+        "manual_review"
+      ],
+      "dispatch_lane": "runtime_repair_without_search_replay",
+      "runtime_input_eligible": false,
+      "source_native_review_required": false
+    },
+    {
+      "post_id": 11710021,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_abbreviation_and_character_support_safe_title_lost_to_null",
+      "selected_title": "무한의 마법사",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`무마`는 후보 title 약칭이고 시로네/히로인 장면 맥락이 작품을 직접 지지한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11710021",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11710021",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11710021",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11710021",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11710021",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11710021",
+        "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11710021",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11710021",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11710021",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11710021",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11710021",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11710021",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11710021",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11710021",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11710021",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11710021",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11710021"
+      ],
+      "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+      "batch_lanes": [
+        "manual_review"
+      ],
+      "dispatch_lane": "runtime_repair_without_search_replay",
+      "runtime_input_eligible": false,
+      "source_native_review_required": false
+    },
+    {
+      "post_id": 11710049,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_alias_and_comment_context_support_safe_title_lost_to_null",
+      "selected_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`랫따싶`, 림월드, 랫킨 설명이 후보 작품/태그 맥락을 직접 지지한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11710049",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11710049",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11710049",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11710049",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11710049",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11710049",
+        "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11710049",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11710049",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11710049",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11710049",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11710049",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11710049",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11710049",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11710049",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11710049",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11710049",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11710049"
+      ],
+      "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+      "batch_lanes": [
+        "manual_review"
+      ],
+      "dispatch_lane": "runtime_repair_without_search_replay",
+      "runtime_input_eligible": false,
+      "source_native_review_required": false
+    },
+    {
+      "post_id": 11718099,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+      "selected_title": "빌어먹을 환생",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`빌환`은 후보 title의 직접 약칭이고 표지 변경 감상 맥락이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11718099",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11718099",
+        "https://novel.munpia.com/222360",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11718099",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11718099",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11718099",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11718099",
+        "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11718099",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11718099",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11718099",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11718099",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11718099",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11718099",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11718099",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11718099",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11718099",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11718099",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11718099"
+      ],
+      "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+      "batch_lanes": [
+        "manual_review"
+      ],
+      "dispatch_lane": "runtime_repair_without_search_replay",
+      "runtime_input_eligible": false,
+      "source_native_review_required": false
+    },
+    {
+      "post_id": 11718114,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "title_phrase_and_plot_context_support_safe_title_lost_to_null",
+      "selected_title": "설정값 딸깍으로 판타지 시스템 정상화",
+      "selected_option_id": "C1",
+      "evidence_grade": "Medium",
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`시스템 딸깍` 설정과 마법 강사질 비판이 후보 title/설정 맥락과 직접 대응한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11718114",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11718114",
+        "https://novelpia.com/novel/383584",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11718114",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11718114",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11718114",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11718114",
+        "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11718114",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11718114",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11718114",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11718114",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11718114",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11718114",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11718114",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11718114",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11718114",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11718114",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11718114"
+      ],
+      "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+      "batch_lanes": [
+        "manual_review"
+      ],
+      "dispatch_lane": "runtime_repair_without_search_replay",
+      "runtime_input_eligible": false,
+      "source_native_review_required": false
+    },
+    {
+      "post_id": 11716464,
+      "triage_bucket": "wrong_work_title_flip",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_canonical_title_supported_after_page_title_suffix_contaminated",
+      "selected_title": "슈라라펜란트",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_after_wrong_work",
+        "canonical_title_cleanup_required"
+      ],
+      "rationale_ko": "원문은 `슈라라펜란트`를 말한다. C2는 같은 리디 상세의 페이지/카테고리성 제목 `- 판타지 웹소설`이 붙은 형태라 canonical public title로 쓰기 부적절하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json#post_id=11716464",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11716464",
+        "https://ridibooks.com/books/875100425",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11716464",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11716464",
+        "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11716464",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11716464",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11716464",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11716464",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11716464",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11716464",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11716464",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11716464",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11716464",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11716464",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11716464"
+      ],
+      "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+      "batch_lanes": [
+        "manual_review"
+      ],
+      "dispatch_lane": "runtime_repair_without_search_replay",
+      "runtime_input_eligible": false,
+      "source_native_review_required": false
+    },
+    {
+      "post_id": 11666741,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+      "selected_title": "별을 품은 소드마스터",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "원문 `별품소`와 기사뽕/웹툰 감상 맥락은 C1 `별을 품은 소드마스터`의 약칭 소비 맥락이다. after null은 safe title loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json#post_id=11666741",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11666741",
+        "https://novel.munpia.com/254718",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11666741",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11666741",
+        "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11666741",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11666741",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11666741",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11666741",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11666741",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11666741",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11666741",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11666741",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11666741",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11666741",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11666741"
+      ],
+      "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+      "batch_lanes": [
+        "manual_review"
+      ],
+      "dispatch_lane": "runtime_repair_without_search_replay",
+      "runtime_input_eligible": false,
+      "source_native_review_required": false
+    },
+    {
+      "post_id": 11663514,
+      "triage_bucket": "wrong_work_title_flip",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "source_link_and_plot_context_support_before_title_after_title_surface_collision",
+      "selected_title": "마탄 속의 제국",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_after_wrong_work",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "본문의 Munpia URL, 리겔/느와르/범죄수사/게파르토 제국 소개문은 C1 쪽 작품 설명으로 읽힌다. 제목의 슬라임 표면만으로 C2를 final로 올린 것은 후보 충돌이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json#post_id=11663514",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11663514",
+        "https://novel.munpia.com/486006",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11663514",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11663514",
+        "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11663514",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11663514",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11663514",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11663514",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11663514",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11663514",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11663514",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11663514",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11663514",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11663514",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11663514"
+      ],
+      "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+      "batch_lanes": [
+        "manual_review"
+      ],
+      "dispatch_lane": "runtime_repair_without_search_replay",
+      "runtime_input_eligible": false,
+      "source_native_review_required": false
+    },
+    {
+      "post_id": 11674694,
+      "triage_bucket": "wrong_work_title_flip",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_short_title_supports_before_after_url_only_title_invalid",
+      "selected_title": "21세기 무림세가",
+      "selected_option_id": "C2",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_after_wrong_work",
+        "canonical_title_cleanup_required"
+      ],
+      "rationale_ko": "제목과 본문이 반복해서 `21세기무림`을 말한다. after의 `novel.munpia.com`은 URL 문자열이 title로 오른 형태라 public title로 부적절하고, C1 canonical으로 되돌려야 한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json#post_id=11674694",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11674694",
+        "https://page.kakao.com/content/49668687",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11674694",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11674694",
+        "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11674694",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11674694",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11674694",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11674694",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11674694",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11674694",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11674694",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11674694",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11674694",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11674694",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11674694"
+      ],
+      "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+      "batch_lanes": [
+        "manual_review"
+      ],
+      "dispatch_lane": "runtime_repair_without_search_replay",
+      "runtime_input_eligible": false,
+      "source_native_review_required": false
+    },
+    {
+      "post_id": 11657047,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "generic_idea_prompt_not_candidate_work_discussion",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_unsafe_promotion",
+        "intent_guard_review"
+      ],
+      "rationale_ko": "원문은 `베지테리언이 정육점 사장이 됐다` 같은 소설 아이디어를 말할 뿐 C1 `사이버펑크 베지테리언 매드니스`를 직접 논의하지 않는다. 단어 충돌 승격으로 보인다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json#post_id=11657047",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11657047",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11657047",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11657047",
+        "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11657047",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11657047",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11657047",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11657047",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11657047",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11657047",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11657047",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11657047",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11657047",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11657047",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11657047"
+      ],
+      "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+      "batch_lanes": [
+        "manual_review"
+      ],
+      "dispatch_lane": "runtime_repair_without_search_replay",
+      "runtime_input_eligible": false,
+      "source_native_review_required": false
+    },
+    {
+      "post_id": 11660241,
+      "triage_bucket": "wrong_work_title_flip",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_title_supported_by_itr_alias_and_tower_lord_context",
+      "selected_title": "이세계 TRPG 게임마스터",
+      "selected_option_id": "C2",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_after_wrong_work",
+        "canonical_alias_competition_guard_required"
+      ],
+      "rationale_ko": "원문은 `이티알`, `trpg 파트`, `현실쪽 주인공`, `탑주`를 함께 말한다. native-web 보강에서도 `이세계 TRPG 게임마스터`가 `이티알` 약칭과 탑주 맥락으로 확인된다. after C1은 별도 제목 표면에 끌린 wrong-work flip이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_unreviewed_batch.json#post_id=11660241",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11660241",
+        "https://www.typemoon.net/review/523474",
+        "https://m.ruliweb.com/community/board/300143/read/66916142",
+        "https://novelpia.com/novel/242412",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11660241",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11660241",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11660241",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11660241",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11660241",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11660241",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11660241",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11660241",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11660241"
+      ],
+      "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+      "batch_lanes": [
+        "manual_review"
+      ],
+      "dispatch_lane": "runtime_repair_without_search_replay",
+      "runtime_input_eligible": false,
+      "source_native_review_required": false
+    },
+    {
+      "post_id": 11698870,
+      "triage_bucket": "wrong_work_title_flip",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "classic_japanese_novel_context_blocks_same_surface_webnovel_promotion",
+      "selected_title": "인간실격",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_after_wrong_work",
+        "intent_guard_review"
+      ],
+      "rationale_ko": "원문은 `그 일본쪽에 유명한거`와 댓글 `작가가 살자하긴 함`으로 다자이 오사무의 고전 `인간실격`을 묻는다. after C2는 같은 표면을 가진 별도 웹소설로 과승격된 상태다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_unreviewed_batch.json#post_id=11698870",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11698870",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11698870",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11698870",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11698870",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11698870",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11698870",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11698870",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11698870",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11698870",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11698870"
+      ],
+      "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+      "batch_lanes": [
+        "manual_review"
+      ],
+      "dispatch_lane": "runtime_repair_without_search_replay",
+      "runtime_input_eligible": false,
+      "source_native_review_required": false
+    },
+    {
+      "post_id": 11658621,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "title_similarity_and_character_image_not_enough_for_publish",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Medium",
+      "actions": [
+        "repair_unsafe_promotion",
+        "search_title_similarity_hard_hold_required"
+      ],
+      "rationale_ko": "원문은 `진짜였다고`, 실제 이름, 편결 도전 맥락만 말하고 이미지도 character_visual_only다. C1 존재는 native-web으로 확인되지만, 원문 표면과 C1 `무능한게 아니라 전설이였다고?` 사이의 직접 작품 앵커가 약해 promotion_blocked를 풀 근거로 부족하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_unreviewed_batch.json#post_id=11658621",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11658621",
+        "https://novelpia.com/novel/371917",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11658621",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11658621",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11658621",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11658621",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11658621",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11658621",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11658621",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11658621",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11658621"
+      ],
+      "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+      "batch_lanes": [
+        "manual_review"
+      ],
+      "dispatch_lane": "runtime_repair_without_search_replay",
+      "runtime_input_eligible": false,
+      "source_native_review_required": false
+    },
+    {
+      "post_id": 11690855,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "nonwork_limbus_game_metrics_context_blocks_fanfic_title_promotion",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_unsafe_promotion",
+        "intent_guard_review",
+        "nonwork_game_context_publish_block_required"
+      ],
+      "rationale_ko": "원문은 `림버스` 게임의 유저 수/씹덕겜 순위 이야기이고 이미지도 MAU 그래프와 게임 관련 장면이다. C1은 림버스 2차 창작 웹소설로, 원문 intent와 다른 후보를 검색/제목 표면으로 과승격한 상태다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_unreviewed_batch.json#post_id=11690855",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11690855",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11690855",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11690855",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11690855",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11690855",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11690855",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11690855",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11690855",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11690855",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11690855"
+      ],
+      "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+      "batch_lanes": [
+        "manual_review"
+      ],
+      "dispatch_lane": "runtime_repair_without_search_replay",
+      "runtime_input_eligible": false,
+      "source_native_review_required": false
+    },
+    {
+      "post_id": 11710044,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "gacha_punk_alias_collision_current_option_misses_correct_work",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_unsafe_promotion",
+        "candidate_set_rebuild_required",
+        "alias_collision_guard_required"
+      ],
+      "rationale_ko": "원문 `가챠펑크`는 `가챠 중독자의 퓨전펑크 생활` 계열 약칭으로 쓰이는 표면이다. after C1 `퓨전 펑크 의 전생자`는 `퓨전펑크` 공유 토큰에 끌린 다른 작품 후보라 현재 옵션으로 정답을 닫을 수 없다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_unreviewed_batch.json#post_id=11710044",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11710044",
+        "https://m.dcinside.com/board/genrenovel/11902382",
+        "https://novelpia.com/fanart/34/12",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11710044",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11710044",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11710044",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11710044",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11710044",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11710044",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11710044",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11710044",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11710044"
+      ],
+      "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+      "batch_lanes": [
+        "manual_review"
+      ],
+      "dispatch_lane": "runtime_repair_without_search_replay",
+      "runtime_input_eligible": false,
+      "source_native_review_required": false
+    },
+    {
+      "post_id": 11668300,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_short_title_supports_safe_title_lost_to_null",
+      "selected_title": "즉사기 들고 게임 속 으로",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "원문 제목 `즉사기`와 `보러간다`가 C1의 직접 약칭과 독서 의사를 함께 제공한다. 캐릭터 이미지가 약해도 텍스트 앵커가 충분하므로 after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11668300",
+        "https://series.naver.com/novel/detail.series?productNo=8050192",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11668300",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11668300",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11668300",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11668300",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11668300",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11668300",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11668300",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11668300",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11668300"
+      ],
+      "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+      "batch_lanes": [
+        "manual_review"
+      ],
+      "dispatch_lane": "runtime_repair_without_search_replay",
+      "runtime_input_eligible": false,
+      "source_native_review_required": false
+    },
+    {
+      "post_id": 11669921,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_abbreviation_and_paid_episode_context_support_safe_title",
+      "selected_title": "악당은 살고 싶다",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`악살싶`은 C1의 직접 약칭이고 `유료분`, 용두용미 질문, 댓글의 회차 평가가 모두 같은 작품 소비 맥락이다. after null은 safe-loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11669921",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11669921",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11669921",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11669921",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11669921",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11669921",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11669921",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11669921",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11669921",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11669921"
+      ],
+      "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+      "batch_lanes": [
+        "manual_review"
+      ],
+      "dispatch_lane": "runtime_repair_without_search_replay",
+      "runtime_input_eligible": false,
+      "source_native_review_required": false
+    },
+    {
+      "post_id": 11682749,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "current_option_misses_mukhyang_title_source_discusses_mukhyang",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Strong",
+      "actions": [
+        "candidate_set_rebuild_required",
+        "repair_after_wrong_work",
+        "preserve_secondary_candidates"
+      ],
+      "rationale_ko": "원문과 댓글, 이미지 OCR은 모두 `묵향/DARK LADY` 맥락을 지지한다. current C1 `주인공인데 주인공이 아님`은 source-supported title이 아니므로 after null이 C1 safe-loss인 것은 아니지만 후보셋 재구성이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11682749",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11682749",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11682749",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11682749",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11682749",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11682749",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11682749",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11682749",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11682749",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11682749",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11682749"
+      ],
+      "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+      "batch_lanes": [
+        "manual_review"
+      ],
+      "dispatch_lane": "runtime_repair_without_search_replay",
+      "runtime_input_eligible": false,
+      "source_native_review_required": false
+    },
+    {
+      "post_id": 11682775,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "ocr_explicit_title_matches_ts_murim_request",
+      "selected_title": "여자가 되어서라도 복수한다",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "원문은 TS 무협 추천/감상 질문이고 이미지 OCR은 `여자가 되어서라도 복수한다` 작품 상세와 무협/TS 태그를 직접 읽었다. after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11682775",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11682775",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11682775",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11682775",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11682775",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11682775",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11682775",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11682775",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11682775",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11682775",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11682775"
+      ],
+      "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+      "batch_lanes": [
+        "manual_review"
+      ],
+      "dispatch_lane": "runtime_repair_without_search_replay",
+      "runtime_input_eligible": false,
+      "source_native_review_required": false
+    },
+    {
+      "post_id": 11694065,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_abbreviation_and_character_names_support_safe_title",
+      "selected_title": "아카데미에서 살아남기",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`아카살`은 C1의 직접 약칭이고 이미지 OCR의 아니스/클라라/예니카/에드도 같은 작품 캐릭터 맥락이다. after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11694065",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11694065",
+        "https://mm.munpia.com/?menu=novel&action=view&id=240910&entry_id=4262178",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11694065",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11694065",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11694065",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11694065",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11694065",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11694065",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11694065",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11694065",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11694065"
+      ],
+      "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+      "batch_lanes": [
+        "manual_review"
+      ],
+      "dispatch_lane": "runtime_repair_without_search_replay",
+      "runtime_input_eligible": false,
+      "source_native_review_required": false
+    },
+    {
+      "post_id": 11698859,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_title_surface_and_scene_reaction_support_safe_title",
+      "selected_title": "귤부인 대롱대롱",
+      "selected_option_id": "C1",
+      "evidence_grade": "Medium",
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required",
+        "native_web_review_required"
+      ],
+      "rationale_ko": "원문 제목이 `귤부인 대롱대롱`을 직접 말하고 본문은 해당 장면에 대한 감상이다. 공식 URL은 packet에 없지만 raw title surface가 강하므로 after null은 회귀이며 native-web 보강은 후속이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11698859",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11698859",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11698859",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11698859",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11698859",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11698859",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11698859",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11698859",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11698859",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11698859"
+      ],
+      "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+      "batch_lanes": [
+        "manual_review"
+      ],
+      "dispatch_lane": "runtime_repair_without_search_replay",
+      "runtime_input_eligible": false,
+      "source_native_review_required": false
+    },
+    {
+      "post_id": 11700483,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "work_specific_emoticon_purchase_supports_safe_title",
+      "selected_title": "니들 생각 다 들린다",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required",
+        "merchandise_or_emoticon_work_context_guard"
+      ],
+      "rationale_ko": "원문 `니생들 이모티콘`과 이미지 OCR `니들 생각 다 들린다 미니미콘`이 작품별 이모티콘 구매 맥락을 직접 지지한다. 작품 상품/이모티콘 맥락이므로 after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11700483",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11700483",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11700483",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11700483",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11700483",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11700483",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11700483",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11700483",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11700483",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11700483",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11700483"
+      ],
+      "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+      "batch_lanes": [
+        "manual_review"
+      ],
+      "dispatch_lane": "runtime_repair_without_search_replay",
+      "runtime_input_eligible": false,
+      "source_native_review_required": false
+    },
+    {
+      "post_id": 11700500,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "direct_abbreviation_and_character_context_support_safe_title",
+      "selected_title": "전지적 1인칭 시점",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "`전1시`는 C1의 직접 약칭이고 지잔든/지선/성검대/셰이 등 캐릭터 전투 맥락이 작품 토론을 지지한다. after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11700500",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11700500",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11700500",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11700500",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11700500",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11700500",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11700500",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11700500",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11700500",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11700500"
+      ],
+      "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+      "batch_lanes": [
+        "manual_review"
+      ],
+      "dispatch_lane": "runtime_repair_without_search_replay",
+      "runtime_input_eligible": false,
+      "source_native_review_required": false
+    },
+    {
+      "post_id": 11703658,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "current_option_wrong_title_image_ocr_supports_africa_food_king",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Strong",
+      "actions": [
+        "candidate_set_rebuild_required",
+        "repair_after_wrong_work",
+        "image_platform_url_preference"
+      ],
+      "rationale_ko": "원문 제목과 이미지 OCR은 `아프리카 식량왕이 되었다`를 직접 말한다. current C1 `아프리카 의 독재자가 되었다 .`와 URL은 다른 작품으로 보이므로 C1 복구가 아니라 후보셋 재구성이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11703658",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11703658",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11703658",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11703658",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11703658",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11703658",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11703658",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11703658",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11703658",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11703658",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11703658"
+      ],
+      "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+      "batch_lanes": [
+        "manual_review"
+      ],
+      "dispatch_lane": "runtime_repair_without_search_replay",
+      "runtime_input_eligible": false,
+      "source_native_review_required": false
+    },
+    {
+      "post_id": 11705231,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "current_option_wrong_work_source_discusses_seol_jihu_tamsik_context",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Strong",
+      "actions": [
+        "candidate_set_rebuild_required",
+        "repair_after_wrong_work",
+        "preserve_secondary_candidates"
+      ],
+      "rationale_ko": "원문은 설지후/로유진/유선화 자매 등 `탐식의 재림` 계열 캐릭터와 장갤 밈을 직접 논한다. current C1 `한국 레전드 프로게이머...`는 source-supported title이 아니므로 후보셋 재구성이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11705231",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11705231",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11705231",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11705231",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11705231",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11705231",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11705231",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11705231",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11705231",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11705231"
+      ],
+      "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+      "batch_lanes": [
+        "manual_review"
+      ],
+      "dispatch_lane": "runtime_repair_without_search_replay",
+      "runtime_input_eligible": false,
+      "source_native_review_required": false
+    },
+    {
+      "post_id": 11708478,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "comment_answer_and_scene_ocr_support_safe_title",
+      "selected_title": "사연 있는 악역으로 착각 당한다",
+      "selected_option_id": "C1",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "댓글이 제목 질문에 `사연있는악역착각`이라고 답하고, 이미지 본문도 드릴머리 영애 장면을 보여준다. C1 title 복구가 맞고 after null은 회귀다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11708478",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11708478",
+        "https://novelpia.com/novel/396159",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11708478",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11708478",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11708478",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11708478",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11708478",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11708478",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11708478",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11708478",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11708478"
+      ],
+      "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+      "batch_lanes": [
+        "manual_review"
+      ],
+      "dispatch_lane": "runtime_repair_without_search_replay",
+      "runtime_input_eligible": false,
+      "source_native_review_required": false
+    },
+    {
+      "post_id": 11710036,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "priority": "P0",
+      "owner_mode": "CODE_OR_RUNTIME_REPAIR",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "ratdasip_source_points_to_rimworld_work_current_option_wrong",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Strong",
+      "actions": [
+        "candidate_set_rebuild_required",
+        "repair_after_wrong_work",
+        "preserve_secondary_candidates"
+      ],
+      "rationale_ko": "원문과 댓글은 `랫따싶`의 full title을 묻고 `[림월드]변방계에서 회귀자로 살아남기`로 답한다. native-web도 `#랫따싶` 태그를 확인한다. current C1 `쳇바퀴의 생쥐 사도가 되었다`는 wrong option이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop513_projected_loop511_p0_unreviewed_batch.json#post_id=11710036",
+        "https://novelpia.com/novel/382324",
+        "https://m.dcinside.com/board/genrenovel/11768968",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11710036",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11710036",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11710036",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11710036",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11710036",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11710036",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11710036",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11710036",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11710036"
+      ],
+      "source_review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+      "batch_lanes": [
+        "manual_review"
+      ],
+      "dispatch_lane": "runtime_repair_without_search_replay",
+      "runtime_input_eligible": false,
+      "source_native_review_required": false
+    }
+  ],
+  "approval_boundary": {
+    "batch_generation_is_not_approval": true,
+    "runtime_input_generation_is_not_runtime_approval": true,
+    "source_native_packet_generation_is_not_review_completion": true,
+    "completion_gate": "full375 collateral GO + full_scan path"
+  }
+}

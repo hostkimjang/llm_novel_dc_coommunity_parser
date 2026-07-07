@@ -367,7 +367,7 @@ def write_markdown(queue: dict[str, Any], path: Path) -> None:
         "- search recovery가 `unrecovered_degraded=0`으로 닫히기 전까지 `promotion_blocked`는 `search-blind conditional`이다.",
         "- `REPROCESS`는 코드/계약/runtime replay 후보이고, `HOLD`는 native image/web/source 또는 policy review 후보다.",
         "",
-        "## Action groups",
+        "## 실행 그룹",
         "",
     ]
     for group in queue.get("action_groups") or []:

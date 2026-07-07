@@ -1,5 +1,22 @@
 # Development Checklist
 
+## 2026-07-08 Loop570-571 full375 after Loop569 재회계 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 실행하지 않았다.
+- [x] Loop569 raw regression `117`을 full375 P0 blind/source-native batch로 고정했다.
+- [x] Batch는 `117`건이며 bucket은 `wrong_work_title_flip 33 / unsafe_promotion_from_hold 28 / safe_loss_resolved_to_null 56`이다.
+- [x] Missing source/baseline/after는 `0/0/0`이다.
+- [x] Prior-compatible verdict `102`건과 prior-incompatible `15`건을 분리했다.
+- [x] Combined summary는 reviewed `117/117`, decision `97`, info missing `20`, validation issue `0`이다.
+- [x] Label은 `ACCEPT 39 / REPROCESS 37 / HOLD 21 / INFO_MISSING 20`이다.
+- [x] Always-on gate는 golden `GO`, full375 collateral `NO-GO / adjusted 78`이다.
+- [x] Residual78 action queue를 생성했다.
+- [x] Loop571 P0 code repair batch `31`건을 생성했고 dashboard execution contract를 포함했다.
+- [ ] P0 repair31을 코드/계약 수리로 닫기 전 runtime replay를 반복하지 않는다.
+- [ ] INFO_MISSING `20`건은 blind/source-native verdict 전 publish/hard-hold 완화 대상이 아니다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: combined source-native summary `REVIEW-LOCKED`, residual queue `REVIEW-LOCKED / 78`, P0 repair batch `REVIEW-LOCKED / 31`, full375 collateral `NO-GO / adjusted 78`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop569 source-native safe-loss projection contract 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 실행하지 않았다.

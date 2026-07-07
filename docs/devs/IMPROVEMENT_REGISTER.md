@@ -1,5 +1,21 @@
 # Improvement Register
 
+## IMP-20260708-570-571 - Full375 after Loop569 adjusted residual78 and P0 repair31
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | P0 repair 뒤 필요한 test run만 dashboard attached로 실행 |
+| P0 review batch | REVIEW-LOCKED | rows `117`, missing `0/0/0` | prior-compatible transfer와 placeholder 분리 유지 |
+| Prior-compatible verdicts | REVIEW-LOCKED | compatible `102`, prior-incompatible `15` | prior-incompatible은 blind/source-native verdict 필요 |
+| Combined summary | REVIEW-LOCKED | reviewed `117/117`, decision `97`, info missing `20`, validation issue `0` | INFO_MISSING을 approval로 승격 금지 |
+| Review adjustment | APPLIED_NOT_APPROVAL | raw `117`, exclusion candidates `39`, adjusted residual `78` | residual78 batch 처리 후 재평가 |
+| Residual queue | REVIEW-LOCKED | rows `78`, safe_loss `47`, unsafe `8`, wrong_work `23` | 단건 소모 대신 batch 처리 |
+| P0 repair batch | REVIEW-LOCKED | rows `31`, safe-loss restore `17`, wrong-work repair `10`, unsafe promotion repair `4` | 코드/계약 수리 선행 |
+| Test run dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | next run `--parallel 16`, dashboard URL `http://127.0.0.1:8080`, `--no-dashboard` 금지 | 진행 관측용으로만 사용 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: combined source-native summary `REVIEW-LOCKED`, residual queue `REVIEW-LOCKED / 78`, P0 repair batch `REVIEW-LOCKED / 31`, full375 collateral `NO-GO / adjusted 78`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-569 - Source-native safe-loss projection contract
 
 | 항목 | 상태 | 근거 | 다음 |

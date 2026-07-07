@@ -1,0 +1,152 @@
+{
+  "report_type": "prior_compatible_collateral_verdicts_state",
+  "review_id": "loop570_full375_after_loop569_prior_compatible_source_native",
+  "scope": "Loop570 full375 after Loop569 prior-compatible source-native",
+  "generated_at": "2026-07-08T01:15:05",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "current_batch_rows": 117,
+    "source_verdict_rows": 118,
+    "overlap_rows": 104,
+    "compatible_rows": 102,
+    "unreviewed_current_batch_rows": 15,
+    "skip_counts": {
+      "triage_bucket_changed": 2,
+      "post_id_not_in_current_batch": 14
+    }
+  },
+  "source_verdicts": [
+    {
+      "path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json",
+      "expected_triage_bucket": "*"
+    }
+  ],
+  "skipped_rows": [
+    {
+      "post_id": 11660273,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11673102,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11677926,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11690841,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11694019,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11702094,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11666713,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11669926,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11682767,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11689292,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11692436,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11692444,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11706831,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11706842,
+      "reason": "triage_bucket_changed",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json",
+      "source_bucket": "safe_loss_resolved_to_null",
+      "current_bucket": "wrong_work_title_flip"
+    },
+    {
+      "post_id": 11708470,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    },
+    {
+      "post_id": 11710046,
+      "reason": "post_id_not_in_current_batch",
+      "source_path": "docs\\devs\\loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json"
+    }
+  ],
+  "unreviewed_batch": {
+    "gate": "REVIEW-LOCKED",
+    "summary": {
+      "source_review_rows": 117,
+      "prior_compatible_rows": 102,
+      "additional_covered_rows": 0,
+      "covered_post_ids": 102,
+      "unreviewed_rows": 15,
+      "counts_by_bucket": {
+        "wrong_work_title_flip": 8,
+        "safe_loss_resolved_to_null": 7
+      },
+      "counts_by_collateral_status": {
+        "resolved_to_different_title": 8,
+        "resolved_to_null": 7
+      },
+      "image_rows": 12,
+      "text_only_rows": 3
+    },
+    "artifacts": {
+      "json": "docs\\devs\\loop570_full375_after_loop569_prior_incompatible_review_batch.json",
+      "jsonl": "docs\\devs\\loop570_full375_after_loop569_prior_incompatible_review_batch.jsonl",
+      "markdown": "docs\\devs\\loop570_full375_after_loop569_prior_incompatible_review_batch.md"
+    }
+  },
+  "unreviewed_placeholder_verdicts": {
+    "gate": "REVIEW-LOCKED",
+    "summary": {
+      "source_review_rows": 117,
+      "prior_compatible_rows": 102,
+      "additional_covered_rows": 0,
+      "covered_post_ids": 102,
+      "placeholder_rows": 15,
+      "counts_by_bucket": {
+        "wrong_work_title_flip": 8,
+        "safe_loss_resolved_to_null": 7
+      }
+    },
+    "artifact": "docs\\devs\\loop570_full375_after_loop569_info_missing_placeholder_verdicts.json"
+  }
+}

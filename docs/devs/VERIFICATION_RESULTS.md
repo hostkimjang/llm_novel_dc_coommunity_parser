@@ -1,5 +1,32 @@
 # Verification Results
 
+## 2026-07-08 Loop570-571 full375 after Loop569 adjusted accounting
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_570_571_REPORT_20260708.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json/.jsonl/.md`
+  - `docs/devs/loop570_full375_after_loop569_prior_compatible_source_native_verdicts.json`
+  - `docs/devs/loop570_full375_after_loop569_prior_compatible_source_native_state_20260708.json/.md`
+  - `docs/devs/loop570_full375_after_loop569_prior_incompatible_review_batch.json/.jsonl/.md`
+  - `docs/devs/loop570_full375_after_loop569_info_missing_placeholder_verdicts.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_combined_source_native_review.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_always_on_golden18_full375_after_loop569_adjusted_gate.json/.md`
+  - `docs/devs/loop570_full375_after_loop569_residual78_action_queue.json/.md`
+  - `docs/devs/loop571_full375_after_loop569_p0_code_repair31_batch.json/.md`
+- 검증:
+  - P0 review batch generation: PASS, selected `117`, missing source/baseline/after `0/0/0`.
+  - Prior-compatible transfer: PASS, compatible `102`, prior-incompatible `15`.
+  - Placeholder verdicts: PASS, prior-incompatible `15`를 INFO_MISSING으로 보존.
+  - Combined source-native summary: PASS, reviewed `117/117`, decision `97`, info missing `20`, validation issue `0`.
+  - Always-on gate: PASS 산출, golden `GO`, collateral `NO-GO / adjusted 78`.
+  - Residual queue: PASS, rows `78`, validation issue `0`.
+  - P0 repair batch: PASS, selected `31`, validation issue `0`, execution contract `--parallel 16` + dashboard ON.
+- 결과:
+  - Loop569 raw `117`은 새 기준 adjusted residual `78`로 재회계됐다.
+  - Full375 collateral은 여전히 `NO-GO`라 full_scan approval과 goal completion을 열지 않는다.
+  - 다음 작업 단위는 P0 repair31 batch와 INFO_MISSING 20 source-native/blind review다.
+- Gate: combined source-native summary `REVIEW-LOCKED`, residual queue `REVIEW-LOCKED / 78`, P0 repair batch `REVIEW-LOCKED / 31`, full375 collateral `NO-GO / adjusted 78`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop569 source-native safe-loss projection contract
 
 - 산출물:
