@@ -659,6 +659,23 @@
   - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
 - Gate: projection `REVIEW-LOCKED`, follow-up queue `REVIEW-LOCKED`, runtime input `GO_INPUT_ONLY`, runtime replay `NOT_RUN_AFTER_INPUT`, full375 collateral `NO-GO / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
+## 2026-07-07 Loop534 테스트런 대시보드 기본 부착 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_534_REPORT_20260707.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop534_test_run_dashboard_default_on_state_20260707.json`.
+  - [x] `tools/run_independent_plan.py`의 `run_plan()` 기본값을 dashboard ON으로 변경.
+  - [x] API 직접 호출 기본 ON 계약을 `tests/test_run_independent_plan.py`에서 검증.
+  - [x] 현재 standalone dashboard health `GO / pid=9320`.
+  - [x] 최신 dashboard status `57/57`, `progress_pct=100.0`, `parallel_count=16`, `batch_running=false`.
+- 품질 경계:
+  - [x] 웹 대시보드는 진행 관측 도구이며 semantic/full_scan approval 증거가 아니다.
+  - [x] 신규 테스트런/검증런은 명시적 반대 지시가 없으면 `--parallel 16`을 유지한다.
+  - [x] 이번 회차는 runtime replay가 아니라 실행 정책 보강이다.
+  - [ ] Full375 collateral `GO` 전 full_scan path를 정의하지 않는다.
+  - [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: dashboard policy `WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS`, runtime parallel policy `LOCKED_TO_16_BY_USER`, runtime replay `NOT_RUN_POLICY_ONLY`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop499 테스트런 대시보드 부착 계약 품질 게이트
 
 - 근거:

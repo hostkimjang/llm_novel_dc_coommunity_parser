@@ -1,5 +1,22 @@
 # Verification Results
 
+## 2026-07-07 Loop534 테스트런 대시보드 기본 부착 보강
+
+- 코드:
+  - `tools/run_independent_plan.py`의 `run_plan()` 기본값을 `dashboard=True`로 바꿨다.
+  - 이제 CLI뿐 아니라 API 직접 호출도 명시적으로 끄지 않는 한 standalone dashboard 시작/사용, forwarding env 전달, `--no-dashboard` 제거를 수행한다.
+  - `tests/test_run_independent_plan.py`는 dashboard OFF가 필요한 테스트만 `dashboard=False`를 명시하고, 기본 ON 계약을 별도 검증한다.
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_534_REPORT_20260707.md`
+  - `docs/devs/loop534_test_run_dashboard_default_on_state_20260707.json`
+  - `tools/run_independent_plan.py`
+  - `tests/test_run_independent_plan.py`
+- 검증:
+  - `python -m py_compile tools\run_independent_plan.py tools\test_run_dashboard_policy.py tools\attach_manifest_dashboard.py tests\test_run_independent_plan.py`: PASS.
+  - `python -m unittest tests.test_run_independent_plan tests.test_attach_manifest_dashboard -v`: PASS, `4` tests.
+  - Dashboard health/status: PASS, `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`, latest status `57/57`, `parallel_count=16`, `batch_running=false`.
+- Gate: dashboard policy `WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS`, runtime parallel policy `LOCKED_TO_16_BY_USER`, runtime replay `NOT_RUN_POLICY_ONLY`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop533 B1 post-verdict release gate contract audit
 
 - 코드:

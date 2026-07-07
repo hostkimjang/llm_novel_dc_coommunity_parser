@@ -44,12 +44,13 @@ class RunIndependentPlanTest(unittest.TestCase):
                 env_updates={},
                 skip_existing=False,
                 limit=None,
+                dashboard=False,
             )
 
             self.assertEqual(rc, 0)
             self.assertEqual(env_path.read_text(encoding="utf-8"), "0|0|45|45")
 
-    def test_runner_dashboard_mode_sets_forwarding_env_and_strips_no_dashboard(self):
+    def test_runner_defaults_to_dashboard_mode_sets_forwarding_env_and_strips_no_dashboard(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             env_path = root / "env.txt"
@@ -93,7 +94,6 @@ class RunIndependentPlanTest(unittest.TestCase):
                     env_updates={},
                     skip_existing=False,
                     limit=None,
-                    dashboard=True,
                     dashboard_url="http://127.0.0.1:18080",
                     dashboard_python=sys.executable,
                 )

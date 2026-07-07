@@ -1,0 +1,65 @@
+{
+  "loop": 534,
+  "date": "2026-07-07",
+  "purpose": "테스트런/검증런 진행상황을 보기 쉽게 run_independent_plan API 기본값까지 웹 대시보드 ON으로 고정한다.",
+  "runtime_replay": {
+    "new_runtime_replay_started": false,
+    "reason": "이번 회차는 테스트런 실행 정책 보강이며 residual/runtime row 재처리가 아니다."
+  },
+  "code_changes": {
+    "tools/run_independent_plan.py": {
+      "run_plan_dashboard_default": true,
+      "meaning": "CLI뿐 아니라 run_plan() 직접 호출도 기본적으로 standalone dashboard를 시작/사용하고 expert_main forwarding env를 전달한다."
+    },
+    "tests/test_run_independent_plan.py": {
+      "explicit_dashboard_off_test": true,
+      "default_dashboard_on_test": true,
+      "meaning": "watchdog 기본값 테스트는 dashboard=False를 명시하고, dashboard 기본 ON 테스트는 별도 플래그 없이 forwarding env와 --no-dashboard 제거를 검증한다."
+    }
+  },
+  "dashboard_status": {
+    "url": "http://127.0.0.1:8080",
+    "health": "GO",
+    "standalone": true,
+    "pid": 9320,
+    "latest_status": {
+      "batch_running": false,
+      "done_count": 57,
+      "total_posts": 57,
+      "progress_pct": 100.0,
+      "parallel_count": 16
+    },
+    "meaning": "현재 active runtime batch는 없고, 다음 테스트런부터 기본 ON 경로로 진행률이 붙는다."
+  },
+  "verification": [
+    {
+      "command": "python -m py_compile tools\\run_independent_plan.py tools\\test_run_dashboard_policy.py tools\\attach_manifest_dashboard.py tests\\test_run_independent_plan.py",
+      "status": "PASS"
+    },
+    {
+      "command": "python -m unittest tests.test_run_independent_plan tests.test_attach_manifest_dashboard -v",
+      "status": "PASS",
+      "tests": 4
+    },
+    {
+      "command": "Invoke-RestMethod http://127.0.0.1:8080/api/health",
+      "status": "PASS",
+      "result": "ok=true standalone=true pid=9320"
+    },
+    {
+      "command": "Invoke-RestMethod http://127.0.0.1:8080/api/status",
+      "status": "PASS",
+      "result": "57/57 progress_pct=100.0 parallel_count=16 batch_running=false"
+    }
+  ],
+  "gates": {
+    "dashboard_policy": "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+    "runtime_parallel_policy": "LOCKED_TO_16_BY_USER",
+    "runtime_replay": "NOT_RUN_POLICY_ONLY",
+    "full375_collateral": "NO-GO",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE_NOT_COMPLETE",
+    "completion_gate": "full375 collateral GO + full_scan 경로 정의"
+  }
+}

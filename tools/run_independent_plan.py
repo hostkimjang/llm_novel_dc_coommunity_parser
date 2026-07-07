@@ -140,7 +140,7 @@ def run_plan(
     env_updates: dict[str, str],
     skip_existing: bool,
     limit: int | None,
-    dashboard: bool = False,
+    dashboard: bool = True,
     dashboard_url: str = DEFAULT_DASHBOARD_URL,
     dashboard_python: str | None = None,
 ) -> int:

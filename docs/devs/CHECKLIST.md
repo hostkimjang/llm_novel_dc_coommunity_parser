@@ -603,6 +603,20 @@
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
 - Gate: projection `REVIEW-LOCKED`, follow-up queue `REVIEW-LOCKED`, runtime input `GO_INPUT_ONLY`, runtime replay `NOT_RUN_AFTER_INPUT`, full375 collateral `NO-GO / residual 105`, goal `ACTIVE / NOT_COMPLETE`.
 
+## 2026-07-07 Loop534 테스트런 대시보드 기본 부착 체크
+
+- [x] `tools/run_independent_plan.py`의 `run_plan()` 기본값을 `dashboard=True`로 바꿨다.
+- [x] CLI뿐 아니라 API 직접 호출도 기본적으로 standalone dashboard 시작/사용, forwarding env 전달, `--no-dashboard` 제거를 수행한다.
+- [x] dashboard OFF가 필요한 테스트는 `dashboard=False`를 명시하도록 정리했다.
+- [x] 기본 ON 테스트는 `DASHBOARD_URL`, `DASHBOARD_PORT`, `EXPERT_DASHBOARD_FORWARD=1`, `--no-dashboard` 제거를 검증한다.
+- [x] 현재 standalone dashboard health는 `GO / pid=9320`이다.
+- [x] 최신 dashboard status는 `57/57`, `progress_pct=100.0`, `parallel_count=16`, `batch_running=false`다.
+- [x] py_compile PASS.
+- [x] focused unittest `4`건 PASS.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: dashboard policy `WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS`, runtime parallel policy `LOCKED_TO_16_BY_USER`, runtime replay `NOT_RUN_POLICY_ONLY`, full375 collateral `NO-GO`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-06 Loop499 테스트런 대시보드 부착 계약 체크
 
 - [x] 공통 helper `tools/test_run_dashboard_policy.py`를 추가했다.
