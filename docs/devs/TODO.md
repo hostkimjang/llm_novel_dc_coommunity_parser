@@ -1,5 +1,21 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop547 TODO
+
+- 상태 업데이트: Loop545 repair queue `22`건 중 B1 canonical recheck 대상 `14`건을 원문/runtime context 포함 packet으로 만들었다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 런을 발주하지 않았다.
+- [x] B1 canonical recheck batch `14`건을 생성했다.
+- [x] Source/runtime context rows는 `14/14`다.
+- [x] Verdict template과 application state를 생성했다.
+- [x] Runtime replay allowed rows는 `0`이다.
+- [x] py_compile PASS, focused unittest `5` tests PASS다.
+- [ ] `docs/devs/loop547_b1_canonical_candidate_verdict_template.json`의 `14`건을 source-native/blind canonical verdict로 채운다.
+- [ ] Verdict 적용 뒤 contract test를 통과하기 전 runtime replay를 열지 않는다.
+- [ ] `SEARCH_BLIND_BLOCKER`/`SEARCH_EVIDENCE_MISSING` 행은 search 복구 전 promotion approval로 쓰지 않는다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: B1 canonical packet `REVIEW-LOCKED / 14`, canonical verdict `NOT_RUN_AFTER_PACKET`, runtime replay `BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK_VERDICT_AND_CONTRACT_TESTS`, full375 collateral `NO-GO`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop546 TODO
 
 - 상태 업데이트: Loop544 full375 재회계와 Loop545 49건 runtime replay를 마쳤고, Loop546에서 publication trace convergence를 보강했다. Goal은 완료가 아니다.

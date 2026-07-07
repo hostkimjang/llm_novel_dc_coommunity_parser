@@ -1,5 +1,30 @@
 # Verification Results
 
+## 2026-07-07 Loop547 B1 canonical candidate recheck14 packet
+
+- 코드:
+  - `tools/build_canonical_candidate_recheck_batch.py`가 `--source-jsonl`과 `--runtime-result-json`을 받아 source/runtime context를 review row에 붙인다.
+  - `tests/test_canonical_candidate_recheck_batch.py`에 source/runtime context attachment 테스트를 추가했다.
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_547_REPORT_20260707.md`
+  - `docs/devs/loop547_b1_canonical_candidate_recheck14_batch.json`
+  - `docs/devs/loop547_b1_canonical_candidate_recheck14_batch.md`
+  - `docs/devs/loop547_b1_canonical_candidate_verdict_template.json`
+  - `docs/devs/loop547_b1_canonical_candidate_verdict_template.md`
+  - `docs/devs/loop547_b1_canonical_candidate_verdict_application_state_20260707.json`
+  - `docs/devs/loop547_b1_canonical_candidate_verdict_application_state_20260707.md`
+- 검증:
+  - Batch generation: PASS, selected rows `14`, validation issue `0`.
+  - Source/runtime context attachment: PASS, `14/14`.
+  - Verdict application state generation: PASS, reviewed `0/14`, validation issue `0`.
+  - py_compile: PASS, `tools/build_canonical_candidate_recheck_batch.py`, `tests/test_canonical_candidate_recheck_batch.py`.
+  - unittest: PASS, `tests.test_canonical_candidate_recheck_batch`, `5` tests.
+- 결과:
+  - B1 canonical candidate alignment review는 판정 입력 단계로 이동했다.
+  - Runtime replay allowed rows는 계속 `0`이다.
+  - Verdict와 후속 contract test 전에는 hard-hold를 완화하지 않는다.
+- Gate: B1 canonical packet `REVIEW-LOCKED / 14`, canonical verdict `NOT_RUN_AFTER_PACKET`, runtime replay `BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK_VERDICT_AND_CONTRACT_TESTS`, full375 collateral `NO-GO`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop544-546 full375 재회계, runtime replay, contract normalization
 
 - 코드:

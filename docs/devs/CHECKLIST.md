@@ -1,5 +1,22 @@
 # Development Checklist
 
+## 2026-07-07 Loop547 B1 canonical candidate recheck14 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 런을 실행하지 않았다.
+- [x] Loop545 repair queue `22`건 중 B1 canonical recheck 대상 `14`건을 선택했다.
+- [x] `B1_different_candidate_alignment_review 7`, `B1_related_candidate_alignment_review 7`로 분리했다.
+- [x] `tools/build_canonical_candidate_recheck_batch.py`에 source/runtime context attachment 옵션을 추가했다.
+- [x] Batch source/runtime context rows는 `14/14`다.
+- [x] Verdict template을 생성했고 reviewed rows는 `0/14`다.
+- [x] Runtime replay allowed rows는 `0`이다.
+- [x] py_compile PASS, `tests.test_canonical_candidate_recheck_batch` PASS `5` tests다.
+- [ ] Loop547 verdict template `14`건을 source-native/blind canonical 판정으로 채운다.
+- [ ] Verdict 뒤 contract test 전 runtime replay를 열지 않는다.
+- [ ] Search blind/missing row는 search 복구 전 promotion approval로 쓰지 않는다.
+- [ ] Dashboard 상태를 semantic/full_scan approval 근거로 쓰지 않는다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: B1 canonical recheck packet `REVIEW-LOCKED / 14`, canonical verdict `NOT_RUN_AFTER_PACKET`, runtime replay `BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK_VERDICT_AND_CONTRACT_TESTS`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop544-546 residual97 runtime replay와 residual78 체크
 
 - [x] Loop544에서 full375 collateral을 재회계했다: golden18 `18/18 PASS`, raw regression `136`, review-adjusted residual `97`.

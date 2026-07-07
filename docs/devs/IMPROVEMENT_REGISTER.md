@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260707-547 - B1 canonical candidate recheck14 context packet
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | BLOCKED | 새 runtime/bounded/full375 실행 없음, runtime allowed `0` | canonical verdict와 contract test 전 replay 금지 |
+| B1 canonical packet | REVIEW-LOCKED | selected `14`, validation issue `0` | verdict template 채우기 |
+| Context enrichment | GO_UNIT | source/runtime context rows `14/14` | 후속 verdict가 원문과 runtime 후보 오염을 같이 보게 유지 |
+| Candidate lanes | REVIEW | `B1_different 7 / B1_related 7` | source-native/blind canonical 판정 |
+| Search evidence | REVIEW | `SEARCH_BLIND_BLOCKER 6`, `SEARCH_EVIDENCE_MISSING 3` | search 복구 전 promotion approval 금지 |
+| Verdict state | OPEN | reviewed `0/14`, unreviewed `14` | verdict 적용 뒤 contract queue로 전환 |
+| Full375 collateral | NO-GO | residual78 계속 open | verdict/contract 뒤 full375 재확인 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: B1 canonical recheck packet `REVIEW-LOCKED / 14`, canonical verdict `NOT_RUN_AFTER_PACKET`, runtime replay `BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK_VERDICT_AND_CONTRACT_TESTS`, full375 collateral `NO-GO`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-546 - Residual97 runtime replay와 publication trace convergence
 
 | 항목 | 상태 | 근거 | 다음 |

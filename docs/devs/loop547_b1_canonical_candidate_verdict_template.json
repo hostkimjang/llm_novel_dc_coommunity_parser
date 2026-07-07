@@ -1,0 +1,330 @@
+{
+  "review_id": "loop547_b1_canonical_candidate_verdict_application_template",
+  "scope": "Loop547 B1 canonical candidate verdict application verdict template",
+  "report_type": "canonical_candidate_recheck_verdict_template",
+  "generated_at": "2026-07-07T20:24:37",
+  "source_batch": "docs\\devs\\loop547_b1_canonical_candidate_recheck14_batch.json",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "instructions_ko": [
+    "각 row의 canonical_verdict를 allowed_verdicts 중 하나로 채운다.",
+    "판정 근거는 evidence_grade, rationale_ko, evidence_refs에 남긴다.",
+    "RELATED_CANONICAL_VARIANT_CONFIRMED는 canonical_title을 반드시 채운다.",
+    "이 template 자체는 verdict가 아니며 runtime replay나 approval을 열지 않는다."
+  ],
+  "summary": {
+    "template_rows": 14,
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO"
+  },
+  "rows": [
+    {
+      "post_id": 11665124,
+      "review_lane": "B1_different_candidate_alignment_review",
+      "expected_or_source_native_title": "화산파(화산귀환)",
+      "current_projection_candidate_title": "네이버 시리즈",
+      "current_projection_candidate_url": "https://series.naver.com/novel/detail.series?productNo=2244809",
+      "candidate_support_state": "official_url_candidate_support",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "canonical_verdict": "",
+      "canonical_title": "",
+      "canonical_url": "",
+      "evidence_grade": "",
+      "rationale_ko": "",
+      "evidence_refs": []
+    },
+    {
+      "post_id": 11668325,
+      "review_lane": "B1_different_candidate_alignment_review",
+      "expected_or_source_native_title": "Fate/stay night",
+      "current_projection_candidate_title": "마파두부를 너무나도 좋아하는 신부님의 키보토스 생활",
+      "current_projection_candidate_url": "https://novelpia.com/novel/392916",
+      "candidate_support_state": "official_url_candidate_support",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "canonical_verdict": "",
+      "canonical_title": "",
+      "canonical_url": "",
+      "evidence_grade": "",
+      "rationale_ko": "",
+      "evidence_refs": []
+    },
+    {
+      "post_id": 11690841,
+      "review_lane": "B1_different_candidate_alignment_review",
+      "expected_or_source_native_title": "블루 아카이브",
+      "current_projection_candidate_title": "가츠동도 만들어줌",
+      "current_projection_candidate_url": null,
+      "candidate_support_state": "non_official_candidate_preservation_only",
+      "search_gate": "SEARCH_EVIDENCE_MISSING",
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "canonical_verdict": "",
+      "canonical_title": "",
+      "canonical_url": "",
+      "evidence_grade": "",
+      "rationale_ko": "",
+      "evidence_refs": []
+    },
+    {
+      "post_id": 11697242,
+      "review_lane": "B1_different_candidate_alignment_review",
+      "expected_or_source_native_title": "유희왕",
+      "current_projection_candidate_title": "삼전의 재를 썼어야지",
+      "current_projection_candidate_url": null,
+      "candidate_support_state": "non_official_candidate_preservation_only",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "canonical_verdict": "",
+      "canonical_title": "",
+      "canonical_url": "",
+      "evidence_grade": "",
+      "rationale_ko": "",
+      "evidence_refs": []
+    },
+    {
+      "post_id": 11697256,
+      "review_lane": "B1_related_candidate_alignment_review",
+      "expected_or_source_native_title": "황제의 딸로 환생했다",
+      "current_projection_candidate_title": "황제의 딸로 환생했습니다",
+      "current_projection_candidate_url": "https://novelpia.com/novel/250464",
+      "candidate_support_state": "official_url_candidate_support",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "canonical_verdict": "",
+      "canonical_title": "",
+      "canonical_url": "",
+      "evidence_grade": "",
+      "rationale_ko": "",
+      "evidence_refs": []
+    },
+    {
+      "post_id": 11710021,
+      "review_lane": "B1_related_candidate_alignment_review",
+      "expected_or_source_native_title": "무한의 마법사",
+      "current_projection_candidate_title": "무마",
+      "current_projection_candidate_url": null,
+      "candidate_support_state": "non_official_candidate_preservation_only",
+      "search_gate": "SEARCH_EVIDENCE_MISSING",
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "canonical_verdict": "",
+      "canonical_title": "",
+      "canonical_url": "",
+      "evidence_grade": "",
+      "rationale_ko": "",
+      "evidence_refs": []
+    },
+    {
+      "post_id": 11710049,
+      "review_lane": "B1_different_candidate_alignment_review",
+      "expected_or_source_native_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "current_projection_candidate_title": "변방계 행성 하렘 생존기",
+      "current_projection_candidate_url": "https://novelpia.com/novel/196996",
+      "candidate_support_state": "official_url_candidate_support",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "canonical_verdict": "",
+      "canonical_title": "",
+      "canonical_url": "",
+      "evidence_grade": "",
+      "rationale_ko": "",
+      "evidence_refs": []
+    },
+    {
+      "post_id": 11714887,
+      "review_lane": "B1_related_candidate_alignment_review",
+      "expected_or_source_native_title": "도굴왕 1 |",
+      "current_projection_candidate_title": "도굴왕",
+      "current_projection_candidate_url": null,
+      "candidate_support_state": "image_ocr_preservation_pending_official_url",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "canonical_verdict": "",
+      "canonical_title": "",
+      "canonical_url": "",
+      "evidence_grade": "",
+      "rationale_ko": "",
+      "evidence_refs": []
+    },
+    {
+      "post_id": 11718099,
+      "review_lane": "B1_related_candidate_alignment_review",
+      "expected_or_source_native_title": "빌어먹을 환생",
+      "current_projection_candidate_title": "불을 먹을 환생",
+      "current_projection_candidate_url": "https://novel.munpia.com/385432",
+      "candidate_support_state": "official_url_candidate_support",
+      "search_gate": "SEARCH_RECOVERED_CONDITIONAL",
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "canonical_verdict": "",
+      "canonical_title": "",
+      "canonical_url": "",
+      "evidence_grade": "",
+      "rationale_ko": "",
+      "evidence_refs": []
+    },
+    {
+      "post_id": 11718114,
+      "review_lane": "B1_related_candidate_alignment_review",
+      "expected_or_source_native_title": "설정값 딸깍으로 판타지 시스템 정상화",
+      "current_projection_candidate_title": "시스템",
+      "current_projection_candidate_url": null,
+      "candidate_support_state": "non_official_candidate_preservation_only",
+      "search_gate": "SEARCH_EVIDENCE_MISSING",
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "canonical_verdict": "",
+      "canonical_title": "",
+      "canonical_url": "",
+      "evidence_grade": "",
+      "rationale_ko": "",
+      "evidence_refs": []
+    },
+    {
+      "post_id": 11682767,
+      "review_lane": "B1_related_candidate_alignment_review",
+      "expected_or_source_native_title": "묵향",
+      "current_projection_candidate_title": "묵향 1권",
+      "current_projection_candidate_url": "https://mm.munpia.com/?menu=novel&action=view&id=51088&entry_id=776982",
+      "candidate_support_state": "official_url_candidate_support",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "canonical_verdict": "",
+      "canonical_title": "",
+      "canonical_url": "",
+      "evidence_grade": "",
+      "rationale_ko": "",
+      "evidence_refs": []
+    },
+    {
+      "post_id": 11692436,
+      "review_lane": "B1_different_candidate_alignment_review",
+      "expected_or_source_native_title": "퍼펙트 메이지",
+      "current_projection_candidate_title": "죽었다 깨어도 수선",
+      "current_projection_candidate_url": "https://novelpia.com/novel/233173",
+      "candidate_support_state": "official_url_candidate_support",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "canonical_verdict": "",
+      "canonical_title": "",
+      "canonical_url": "",
+      "evidence_grade": "",
+      "rationale_ko": "",
+      "evidence_refs": []
+    },
+    {
+      "post_id": 11698859,
+      "review_lane": "B1_related_candidate_alignment_review",
+      "expected_or_source_native_title": "귤부인 대롱대롱",
+      "current_projection_candidate_title": "귤부인",
+      "current_projection_candidate_url": null,
+      "candidate_support_state": "non_official_candidate_preservation_only",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "canonical_verdict": "",
+      "canonical_title": "",
+      "canonical_url": "",
+      "evidence_grade": "",
+      "rationale_ko": "",
+      "evidence_refs": []
+    },
+    {
+      "post_id": 11710046,
+      "review_lane": "B1_different_candidate_alignment_review",
+      "expected_or_source_native_title": "샷건 치는 병약 천사님",
+      "current_projection_candidate_title": "병약 미소녀가 되었다.",
+      "current_projection_candidate_url": "https://novelpia.com/novel/322179",
+      "candidate_support_state": "official_url_candidate_support",
+      "search_gate": "SEARCH_BLIND_BLOCKER",
+      "allowed_verdicts": [
+        "EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED",
+        "CURRENT_PROJECTION_CANDIDATE_CONFIRMED",
+        "RELATED_CANONICAL_VARIANT_CONFIRMED",
+        "WRONG_OR_UNRELATED_CANDIDATE",
+        "INSUFFICIENT_EVIDENCE_HOLD"
+      ],
+      "canonical_verdict": "",
+      "canonical_title": "",
+      "canonical_url": "",
+      "evidence_grade": "",
+      "rationale_ko": "",
+      "evidence_refs": []
+    }
+  ]
+}

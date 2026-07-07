@@ -1,5 +1,18 @@
 # Development History
 
+## 2026-07-07 - Loop547 B1 canonical candidate recheck14 packet
+
+- 새 runtime replay, bounded run, full375 대형 런은 실행하지 않았다.
+- Loop545 promotion-block repair queue `22`건 중 B1 canonical candidate recheck 대상 `14`건을 선택했다.
+- B1 lane은 `B1_different_candidate_alignment_review 7`, `B1_related_candidate_alignment_review 7`이다.
+- `tools/build_canonical_candidate_recheck_batch.py`에 `--source-jsonl`, `--runtime-result-json` 옵션을 추가해 source/runtime context를 batch row에 붙인다.
+- Source/runtime context rows는 `14/14`, validation issue는 `0`이다.
+- Verdict template은 generated 상태이고 reviewed rows는 `0/14`다.
+- Runtime replay allowed rows는 `0`이다.
+- 검증은 py_compile PASS, `tests.test_canonical_candidate_recheck_batch` PASS `5` tests, batch/template generation PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_547_REPORT_20260707.md`다.
+- Gate는 B1 canonical packet `REVIEW-LOCKED / 14`, runtime replay `BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK_VERDICT_AND_CONTRACT_TESTS`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop544-546 full375 재회계와 residual78 수렴
 
 - Loop544에서 Loop543 projection 기준 full375 collateral을 재회계했다.

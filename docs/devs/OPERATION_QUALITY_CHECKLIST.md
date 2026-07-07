@@ -1,5 +1,24 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop547 B1 canonical packet 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_547_REPORT_20260707.md`.
+  - [x] B1 canonical recheck batch 기록 완료: `docs/devs/loop547_b1_canonical_candidate_recheck14_batch.json`.
+  - [x] Verdict template 기록 완료: `docs/devs/loop547_b1_canonical_candidate_verdict_template.json`.
+  - [x] Verdict application state 기록 완료: `docs/devs/loop547_b1_canonical_candidate_verdict_application_state_20260707.json`.
+  - [x] Source/runtime context 근거 연결 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop544_current_full375_residual97_runtime_replay_input.jsonl`, `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop545_current_full375_residual97_runtime_replay_result.json`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 런은 실행하지 않았다.
+  - [x] B1 `14`건은 runtime replay allowed `0`으로 유지했다.
+  - [x] Batch generation validation issue는 `0`이다.
+  - [x] Source/runtime context rows는 `14/14`다.
+  - [x] Verdict template 생성은 review 완료가 아니다.
+  - [ ] Canonical verdict와 contract test 없이 B1 row를 runtime release하지 않는다.
+  - [ ] Search evidence `REVIEW`를 복구 전 promotion approval로 쓰지 않는다.
+  - [ ] Dashboard 상태를 semantic/full_scan approval 근거로 쓰지 않는다.
+- Gate: B1 canonical recheck packet `REVIEW-LOCKED / 14`, canonical verdict `NOT_RUN_AFTER_PACKET`, runtime replay `BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK_VERDICT_AND_CONTRACT_TESTS`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop544-546 runtime/dashboard 품질 게이트
 
 - 근거:

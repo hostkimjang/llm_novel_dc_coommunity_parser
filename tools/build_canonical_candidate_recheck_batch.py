@@ -39,6 +39,32 @@ def load_json(path: Path) -> dict[str, Any]:
     return payload
 
 
+def load_jsonl(path: Path) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    with path.open("r", encoding="utf-8-sig") as f:
+        for line_no, raw_line in enumerate(f, start=1):
+            raw_line = raw_line.strip()
+            if not raw_line:
+                continue
+            payload = json.loads(raw_line)
+            if not isinstance(payload, dict):
+                raise ValueError(f"Expected JSON object at {path}:{line_no}")
+            rows.append(payload)
+    return rows
+
+
+def load_result_rows(path: Path) -> list[dict[str, Any]]:
+    payload = json.loads(path.read_text(encoding="utf-8-sig"))
+    if isinstance(payload, list):
+        return [row for row in payload if isinstance(row, dict)]
+    if isinstance(payload, dict):
+        for key in ("results", "rows", "items", "data"):
+            rows = payload.get(key)
+            if isinstance(rows, list):
+                return [row for row in rows if isinstance(row, dict)]
+    raise ValueError(f"Expected result row list: {path}")
+
+
 def _split_csv(value: str | None) -> set[str] | None:
     if value is None:
         return None
@@ -73,6 +99,120 @@ def _candidate_url(candidate: Any) -> Any:
     if not isinstance(candidate, dict):
         return None
     return candidate.get("official_url") or candidate.get("blocked_official_url")
+
+
+def _post_id_key(value: Any) -> str:
+    return str(value or "").strip()
+
+
+def _index_rows(rows: list[dict[str, Any]] | None) -> dict[str, dict[str, Any]]:
+    indexed: dict[str, dict[str, Any]] = {}
+    for row in rows or []:
+        if not isinstance(row, dict):
+            continue
+        result = row.get("result")
+        source = result if isinstance(result, dict) else row
+        post_id = _post_id_key(source.get("post_id"))
+        if post_id and post_id not in indexed:
+            indexed[post_id] = source
+    return indexed
+
+
+def _preview_lines(value: Any, *, limit: int = 6, max_chars: int = 240) -> list[str]:
+    if value is None:
+        return []
+    raw_items = value if isinstance(value, list) else [value]
+    out: list[str] = []
+    for item in raw_items:
+        if isinstance(item, dict):
+            text = item.get("text") or item.get("content") or item.get("body") or item.get("title")
+        else:
+            text = item
+        text = str(text or "").strip()
+        if not text:
+            continue
+        if len(text) > max_chars:
+            text = text[: max_chars - 3].rstrip() + "..."
+        out.append(text)
+        if len(out) >= limit:
+            break
+    return out
+
+
+def _compact_projection_followup(source: dict[str, Any]) -> dict[str, Any] | None:
+    followup = source.get("_loop_projection_followup")
+    if not isinstance(followup, dict):
+        return None
+    gate = followup.get("promotion_gate_state")
+    trace = followup.get("publish_contract_trace")
+    gate_scope = gate.get("scope") if isinstance(gate, dict) and isinstance(gate.get("scope"), dict) else {}
+    trace_scope = trace.get("scope_state") if isinstance(trace, dict) and isinstance(trace.get("scope_state"), dict) else {}
+    return {
+        "queue_id": followup.get("queue_id"),
+        "source_native_verdict": followup.get("source_native_verdict"),
+        "selected_title": followup.get("selected_title"),
+        "projected_title": followup.get("projected_title"),
+        "projected_url": followup.get("projected_url"),
+        "actions": followup.get("actions") or [],
+        "promotion_decision": followup.get("promotion_decision"),
+        "promotion_gate_scope": gate_scope,
+        "publish_contract_scope": trace_scope,
+        "promotion_gate_evidence": followup.get("promotion_gate_evidence") or [],
+    }
+
+
+def _source_context(source: dict[str, Any] | None) -> dict[str, Any] | None:
+    if not source:
+        return None
+    image_urls = source.get("image_urls") if isinstance(source.get("image_urls"), list) else []
+    return {
+        "post_title": source.get("title"),
+        "post_url": source.get("url"),
+        "gallery_id": source.get("gallery_id"),
+        "created_at": source.get("created_at"),
+        "content_preview": _preview_lines(source.get("content") or source.get("content_blocks")),
+        "comment_preview": _preview_lines(source.get("comments"), limit=8),
+        "comment_context_preview": _preview_lines(source.get("comment_context_lines"), limit=8),
+        "comment_dialogue_context_preview": _preview_lines(source.get("comment_dialogue_context_lines"), limit=8),
+        "image_count": source.get("image_count"),
+        "image_urls": image_urls[:4],
+        "projection_followup": _compact_projection_followup(source),
+    }
+
+
+def _runtime_identity(runtime_row: dict[str, Any] | None) -> dict[str, Any]:
+    if not runtime_row:
+        return {}
+    analysis = runtime_row.get("analysis_result")
+    if isinstance(analysis, dict) and isinstance(analysis.get("identity"), dict):
+        return analysis["identity"]
+    identity = runtime_row.get("identity")
+    return identity if isinstance(identity, dict) else {}
+
+
+def _runtime_context(runtime_row: dict[str, Any] | None) -> dict[str, Any] | None:
+    identity = _runtime_identity(runtime_row)
+    if not identity:
+        return None
+    promotion = identity.get("promotion_decision") if isinstance(identity.get("promotion_decision"), dict) else {}
+    trace = identity.get("publish_contract_trace") if isinstance(identity.get("publish_contract_trace"), dict) else {}
+    ledger = identity.get("candidate_ledger") if isinstance(identity.get("candidate_ledger"), dict) else {}
+    candidate_sources = ledger.get("candidate_preservation_sources")
+    if not isinstance(candidate_sources, list):
+        candidate_sources = []
+    return {
+        "candidate_ledger_status": identity.get("candidate_ledger_status"),
+        "blocked_official_title": identity.get("blocked_official_title"),
+        "blocked_official_title_url": identity.get("blocked_official_title_url"),
+        "title_resolution_state": identity.get("title_resolution_state"),
+        "work_resolution": identity.get("work_resolution"),
+        "promotion_decision_status": promotion.get("status"),
+        "promotion_decision_reason_codes": promotion.get("reason_codes") or [],
+        "publish_contract_scope": trace.get("scope_state"),
+        "candidate_titles_preview": _preview_lines(ledger.get("title_candidates"), limit=12),
+        "candidate_preservation_sources_preview": candidate_sources[:6],
+        "reason_preview": _preview_lines(identity.get("reason_lines") or identity.get("reason"), limit=6),
+    }
 
 
 def _row_matches(row: dict[str, Any], lanes: set[str]) -> bool:
@@ -170,12 +310,17 @@ def _after_verdict_contract(row: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _review_row(row: dict[str, Any]) -> dict[str, Any]:
+def _review_row(
+    row: dict[str, Any],
+    *,
+    source_row: dict[str, Any] | None = None,
+    runtime_row: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     candidate = row.get("current_projection_candidate")
     if not isinstance(candidate, dict):
         candidate = {}
     missing_candidate_lane = _is_missing_candidate_lane(row)
-    return {
+    out = {
         "post_id": row.get("post_id"),
         "review_lane": row.get("repair_batch_lane"),
         "canonical_review_state": "NEEDS_SOURCE_NATIVE_OR_BLIND_CANONICAL_RECHECK",
@@ -223,6 +368,13 @@ def _review_row(row: dict[str, Any]) -> dict[str, Any]:
             "full375_collateral_remains_no_go": True,
         },
     }
+    source_context = _source_context(source_row)
+    runtime_context = _runtime_context(runtime_row)
+    if source_context is not None:
+        out["source_context"] = source_context
+    if runtime_context is not None:
+        out["runtime_context"] = runtime_context
+    return out
 
 
 def build_canonical_recheck_batch(
@@ -231,12 +383,16 @@ def build_canonical_recheck_batch(
     batch_id: str = "canonical_candidate_recheck_batch",
     lanes: set[str] | None = None,
     generated_at: str | None = None,
+    source_rows: list[dict[str, Any]] | None = None,
+    runtime_rows: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     rows = queue.get("rows") or []
     if not isinstance(rows, list):
         raise ValueError("queue.rows must be a list")
 
     selected_lanes = lanes or set(DEFAULT_B1_LANES)
+    source_index = _index_rows(source_rows)
+    runtime_index = _index_rows(runtime_rows)
     selected: list[dict[str, Any]] = []
     validation_issues: list[dict[str, Any]] = []
     for idx, row in enumerate(rows):
@@ -246,7 +402,14 @@ def build_canonical_recheck_batch(
         if not _row_matches(row, selected_lanes):
             continue
         validation_issues.extend(_validation_issues(row))
-        selected.append(_review_row(row))
+        post_id = _post_id_key(row.get("post_id"))
+        selected.append(
+            _review_row(
+                row,
+                source_row=source_index.get(post_id),
+                runtime_row=runtime_index.get(post_id),
+            )
+        )
 
     lane_groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for row in selected:
@@ -300,6 +463,8 @@ def build_canonical_recheck_batch(
             "primary_repair_lane_counts": _counter_to_dict(
                 Counter(str(row.get("primary_repair_lane") or "missing") for row in selected)
             ),
+            "source_context_rows": sum(1 for row in selected if isinstance(row.get("source_context"), dict)),
+            "runtime_context_rows": sum(1 for row in selected if isinstance(row.get("runtime_context"), dict)),
             "validation_issue_count": len(validation_issues),
         },
         "validation_issues": validation_issues,
@@ -331,6 +496,8 @@ def write_markdown(batch: dict[str, Any], path: Path) -> None:
         f"- candidate_support_state_counts: `{summary.get('candidate_support_state_counts')}`",
         f"- search_gate_counts: `{summary.get('search_gate_counts')}`",
         f"- primary_repair_lane_counts: `{summary.get('primary_repair_lane_counts')}`",
+        f"- source_context_rows: `{summary.get('source_context_rows')}`",
+        f"- runtime_context_rows: `{summary.get('runtime_context_rows')}`",
         f"- validation_issue_count: `{summary.get('validation_issue_count')}`",
         "- approval: `false`",
         "- semantic_quality: `REVIEW-LOCKED`",
@@ -383,6 +550,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--lanes", default=None)
     parser.add_argument("--output-json", required=True, type=Path)
     parser.add_argument("--output-md", required=True, type=Path)
+    parser.add_argument("--source-jsonl", type=Path, default=None)
+    parser.add_argument("--runtime-result-json", type=Path, default=None)
     parser.add_argument("--fail-on-validation-issue", action="store_true")
     return parser.parse_args()
 
@@ -393,6 +562,8 @@ def main() -> int:
         load_json(args.queue),
         batch_id=args.batch_id,
         lanes=_split_csv(args.lanes),
+        source_rows=load_jsonl(args.source_jsonl) if args.source_jsonl else None,
+        runtime_rows=load_result_rows(args.runtime_result_json) if args.runtime_result_json else None,
     )
     args.output_json.parent.mkdir(parents=True, exist_ok=True)
     args.output_json.write_text(

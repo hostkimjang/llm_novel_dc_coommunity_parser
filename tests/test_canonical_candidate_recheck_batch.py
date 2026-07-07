@@ -95,6 +95,74 @@ class CanonicalCandidateRecheckBatchTest(unittest.TestCase):
         self.assertEqual(batch["review_groups"][0]["review_lane"], "B1_related_candidate_alignment_review")
         self.assertEqual(batch["review_groups"][0]["post_ids"], [11698859])
 
+    def test_optional_source_and_runtime_context_are_attached(self) -> None:
+        queue = {
+            "queue_id": "unit_repair_queue",
+            "summary": {"repair_rows": 1},
+            "rows": [
+                {
+                    "post_id": 11665124,
+                    "selected_title": "화산파(화산귀환)",
+                    "repair_batch_lane": "B1_different_candidate_alignment_review",
+                    "runtime_release_gate": "BLOCKED_UNTIL_CANONICAL_CANDIDATE_RECHECK",
+                    "runtime_replay_allowed": False,
+                    "current_projection_candidate_alignment_state": "different_title_candidate_review",
+                    "current_projection_candidate_alignment_requires_review": True,
+                    "candidate_support_state": "official_url_candidate_support",
+                    "search_gate": "SEARCH_BLIND_BLOCKER",
+                    "primary_repair_lane": "candidate_preservation_or_scrub_repair",
+                    "current_projection_candidate": {"official_title": "네이버 시리즈"},
+                    "actions": ["current_projection_candidate_recheck_required"],
+                }
+            ],
+        }
+
+        batch = build_canonical_recheck_batch(
+            queue,
+            batch_id="unit_context",
+            source_rows=[
+                {
+                    "post_id": 11665124,
+                    "title": "난 시리즈 댓글은 정말 많이 달았었음",
+                    "content": ["하나같이 욕이었지만"],
+                    "comments": ["내친구 화귀 800화까지봤는데"],
+                    "_loop_projection_followup": {
+                        "queue_id": "unit_followup",
+                        "selected_title": "화산파(화산귀환)",
+                        "promotion_gate_evidence": [{"kind": "source_native_review"}],
+                    },
+                }
+            ],
+            runtime_rows=[
+                {
+                    "post_id": 11665124,
+                    "analysis_result": {
+                        "identity": {
+                            "candidate_ledger_status": "promotion_blocked",
+                            "blocked_official_title": "네이버 시리즈",
+                            "title_resolution_state": "ocr_explicit_title_unresolved",
+                            "promotion_decision": {
+                                "status": "candidate_only",
+                                "reason_codes": ["serialized_public_identity_scrubbed"],
+                            },
+                            "candidate_ledger": {
+                                "title_candidates": ["네이버 시리즈", "화산귀환"],
+                            },
+                        }
+                    },
+                }
+            ],
+        )
+
+        self.assertEqual(batch["summary"]["source_context_rows"], 1)
+        self.assertEqual(batch["summary"]["runtime_context_rows"], 1)
+        row = batch["rows"][0]
+        self.assertEqual(row["source_context"]["post_title"], "난 시리즈 댓글은 정말 많이 달았었음")
+        self.assertIn("하나같이 욕이었지만", row["source_context"]["content_preview"])
+        self.assertEqual(row["source_context"]["projection_followup"]["queue_id"], "unit_followup")
+        self.assertEqual(row["runtime_context"]["candidate_ledger_status"], "promotion_blocked")
+        self.assertIn("화산귀환", row["runtime_context"]["candidate_titles_preview"])
+
     def test_missing_candidate_b1_rows_are_valid_rebuild_packets(self) -> None:
         queue = {
             "queue_id": "unit_missing_candidate_queue",
