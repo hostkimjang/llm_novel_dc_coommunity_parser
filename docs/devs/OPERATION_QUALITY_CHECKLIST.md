@@ -1,5 +1,23 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop531 B1 projection contract audit 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_531_REPORT_20260707.md`.
+  - [x] Audit JSON 기록 완료: `docs/devs/loop531_b1_post_verdict_projection_contract_audit.json`.
+  - [x] Tool 추가 완료: `tools/audit_canonical_post_verdict_projection_contract.py`.
+  - [x] Test 추가 완료: `tests/test_audit_canonical_post_verdict_projection_contract.py`.
+  - [x] Dashboard 재부착 확인: `http://127.0.0.1:8080`, `57/57`, `parallel_count=16`.
+- 품질 경계:
+  - [x] 새 runtime replay는 실행하지 않았다.
+  - [x] Projection public identity에서 current candidate leak violation은 `0`건이다.
+  - [x] C1/C2는 pending이므로 runtime release로 보지 않는다.
+  - [x] C3 hard-hold preserved `6`건은 satisfied지만 stronger evidence 통과가 아니다.
+  - [x] `runtime_replay_allowed_rows`는 `0`이다.
+  - [ ] Projection audit를 semantic/full_scan approval 근거로 쓰지 않는다.
+  - [ ] Dashboard 상태를 semantic/full_scan approval 근거로 쓰지 않는다.
+- Gate: projection contract audit `REVIEW-LOCKED`, runtime replay `BLOCKED_UNTIL_C1_C2_CONTRACT_TESTS_OR_C3_STRONGER_EVIDENCE`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop530 B1 canonical source-native verdict 품질 게이트
 
 - 근거:

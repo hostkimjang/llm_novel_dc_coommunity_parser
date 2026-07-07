@@ -1,5 +1,24 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop531 TODO
+
+- 상태 업데이트: Loop530 post-verdict contract queue를 current projection에 대조했고, violation은 없지만 C1/C2 pending 때문에 runtime release는 열지 않았다. Goal은 완료가 아니다.
+- [x] 새 runtime replay를 발주하지 않았다.
+- [x] `tools/audit_canonical_post_verdict_projection_contract.py`를 추가했다.
+- [x] `tests/test_audit_canonical_post_verdict_projection_contract.py`를 추가했다.
+- [x] Loop531 audit/report를 생성했다.
+- [x] Projection contract violation은 `0`건이다.
+- [x] C3 hard-hold preserved `6`건을 확인했다.
+- [x] Dashboard를 `http://127.0.0.1:8080`에 재부착했고 최신 상태는 `57/57`, `parallel_count=16`이다.
+- [x] `runtime_replay_allowed_rows=0`을 유지했다.
+- [ ] C1 expected restore/current candidate scrub contract test를 작성한다.
+- [ ] C2 canonical variant policy contract test를 작성한다.
+- [ ] C3 stronger evidence/native-web hold 6건은 release 근거를 별도 검증한다.
+- [ ] 다음 runtime/test run은 `--parallel 16`과 dashboard 기본 ON으로 실행한다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: projection contract audit `REVIEW-LOCKED`, runtime replay `BLOCKED_UNTIL_C1_C2_CONTRACT_TESTS_OR_C3_STRONGER_EVIDENCE`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop530 TODO
 
 - 상태 업데이트: B1 `22/22` source-native verdict 적용과 post-verdict contract queue 생성을 완료했다. Goal은 완료가 아니다.

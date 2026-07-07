@@ -1,5 +1,28 @@
 # Verification Results
 
+## 2026-07-07 Loop531 B1 post-verdict projection contract audit
+
+- 코드:
+  - `tools/audit_canonical_post_verdict_projection_contract.py`를 추가했다.
+  - Loop530 post-verdict contract queue를 current projection result에 대조해 C1/C2/C3별 public identity leak, premature publish, hard-hold release를 감사한다.
+  - 위반이 없어도 `runtime_replay_allowed_rows=0`을 유지한다.
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_531_REPORT_20260707.md`
+  - `docs/devs/loop531_b1_post_verdict_projection_contract_audit.json`
+  - `tools/audit_canonical_post_verdict_projection_contract.py`
+  - `tests/test_audit_canonical_post_verdict_projection_contract.py`
+- 검증:
+  - `python -m py_compile tools\audit_canonical_post_verdict_projection_contract.py tests\test_audit_canonical_post_verdict_projection_contract.py`: PASS.
+  - `python -m unittest tests.test_audit_canonical_post_verdict_projection_contract -v`: PASS, `4` tests.
+  - Loop531 audit generation with `--fail-on-violation`: PASS.
+  - Dashboard health/status 확인과 최신 manifest attach: PASS, `http://127.0.0.1:8080`, `57/57`, `parallel_count=16`.
+- 결과:
+  - contract queue rows `22`, projection rows `57`.
+  - violation rows `0`, pending contract rows `16`, satisfied rows `6`.
+  - outcome counts: `candidate_scrub_satisfied_expected_restore_pending 9`, `variant_policy_pending_no_publish 7`, `hard_hold_preserved 6`.
+  - runtime replay allowed `0`, full375 collateral `NO-GO`.
+- Gate: projection contract audit `REVIEW-LOCKED`, runtime replay `BLOCKED_UNTIL_C1_C2_CONTRACT_TESTS_OR_C3_STRONGER_EVIDENCE`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop530 B1 canonical source-native verdicts
 
 - 코드/판정:

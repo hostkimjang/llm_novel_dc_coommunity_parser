@@ -1,5 +1,16 @@
 # Development History
 
+## 2026-07-07 - Loop531 B1 post-verdict projection contract audit
+
+- 새 runtime replay는 실행하지 않았다.
+- Loop530 post-verdict contract queue `22`건을 Loop523 current projection 결과에 대조했다.
+- `tools/audit_canonical_post_verdict_projection_contract.py`와 `tests/test_audit_canonical_post_verdict_projection_contract.py`를 추가했다.
+- Projection contract audit 결과는 violation `0`, pending `16`, satisfied `6`, runtime replay allowed `0`이다.
+- C1 `9`건은 current candidate 누출 없이 expected restore pending이고, C2 `7`건은 publish 없이 variant policy pending이며, C3 `6`건은 hard-hold preserved다.
+- Dashboard는 `http://127.0.0.1:8080`에 최신 Loop515 manifest를 재부착했고 상태는 `57/57`, `parallel_count=16`, `batch_running=false`다. 다음 테스트런도 `--parallel 16`과 dashboard 기본 ON을 유지한다.
+- Report는 `docs/devs/loop_reports/LOOP_531_REPORT_20260707.md`, audit는 `docs/devs/loop531_b1_post_verdict_projection_contract_audit.json`이다.
+- Gate는 projection contract audit `REVIEW-LOCKED`, runtime replay `BLOCKED_UNTIL_C1_C2_CONTRACT_TESTS_OR_C3_STRONGER_EVIDENCE`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop530 B1 canonical source-native verdicts
 
 - 새 runtime replay는 실행하지 않았다.

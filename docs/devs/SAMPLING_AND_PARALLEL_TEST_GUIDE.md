@@ -1,5 +1,13 @@
 # Sampling And Parallel Test Guide
 
+## 2026-07-07 Loop531 테스트런 대시보드 재확인
+
+- 현재 active `expert_main.py` runtime run은 없지만, standalone dashboard는 `http://127.0.0.1:8080`에서 `ok=true`, `standalone=true`, `pid=9320`로 응답한다.
+- 최신 Loop515 runtime manifest를 재부착했고 `/api/status`는 `57/57`, `progress_pct=100.0`, `parallel_count=16`, `batch_running=false`다.
+- 다음 regression-safe grounding 테스트런/검증런은 계속 `--parallel 16`과 dashboard 기본 ON으로 실행한다. `--no-dashboard`는 사용자가 명시적으로 끌 때만 둔다.
+- 이미 시작된 런이 dashboard 없이 돌고 있으면 중단하지 말고 `tools/attach_manifest_dashboard.py --manifest <result_manifest.json> --dashboard-url http://127.0.0.1:8080`로 사후 부착한다.
+- Dashboard는 진행상황 관측 도구이며 `semantic_quality`, `full_scan_approval`, `full375 collateral GO` 근거가 아니다.
+
 ## 2026-07-07 Loop523 테스트런 대시보드 운영 확인
 
 - 다음 regression-safe grounding 테스트런/검증런도 `--parallel 16`과 standalone dashboard `http://127.0.0.1:8080` 기본 부착을 유지한다.

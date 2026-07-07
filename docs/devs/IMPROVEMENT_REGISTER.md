@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260707-531 - B1 post-verdict projection contract audit
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Projection contract audit | REVIEW-LOCKED | Loop530 queue `22`건 대조, violation `0` | C1/C2 contract test 작성 |
+| Expected restore/scrub lane | OPEN_CONTRACT | C1 `9`건은 candidate leak 없이 expected restore pending | expected restore 또는 explicit scrub 계약 |
+| Variant policy lane | OPEN_CONTRACT | C2 `7`건은 premature publish 없이 policy pending | variant/alias 정책 계약 |
+| Hard hold lane | HOLD_PRESERVED | C3 `6`건 hard-hold preserved | stronger evidence/native-web 검증 전 유지 |
+| Runtime release boundary | GO_BLOCKED | `runtime_replay_allowed_rows=0` | contract/evidence 전 replay 금지 |
+| Dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | `http://127.0.0.1:8080`, latest attach `57/57`, `parallel_count=16` | 다음 테스트런도 dashboard 기본 ON |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: projection contract audit `REVIEW-LOCKED`, runtime replay `BLOCKED_UNTIL_C1_C2_CONTRACT_TESTS_OR_C3_STRONGER_EVIDENCE`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-530 - B1 source-native verdicts and post-verdict contract queue
 
 | 항목 | 상태 | 근거 | 다음 |

@@ -1,5 +1,23 @@
 # Development Checklist
 
+## 2026-07-07 Loop531 B1 post-verdict projection contract audit 체크
+
+- [x] 새 runtime replay를 실행하지 않았다.
+- [x] Loop530 post-verdict contract queue `22`건을 Loop523 current projection 결과에 대조했다.
+- [x] `tools/audit_canonical_post_verdict_projection_contract.py`를 추가했다.
+- [x] `tests/test_audit_canonical_post_verdict_projection_contract.py` 계약 테스트를 추가했다.
+- [x] Projection contract violation은 `0`건이다.
+- [x] Pending contract rows는 `16`건이다: C1 expected restore/scrub `9`, C2 variant policy `7`.
+- [x] Satisfied rows는 C3 hard-hold preserved `6`건이다.
+- [x] `runtime_replay_allowed_rows`는 `0`이다.
+- [x] Dashboard를 `http://127.0.0.1:8080`에 재부착했고 최신 상태는 `57/57`, `parallel_count=16`, `batch_running=false`다.
+- [ ] C1 expected restore/current candidate scrub contract test를 작성한다.
+- [ ] C2 canonical variant policy contract test를 작성한다.
+- [ ] C3 `6`건은 stronger evidence 또는 native-web 검증 전까지 hard hold로 유지한다.
+- [ ] 다음 runtime/test run은 `--parallel 16`과 dashboard 기본 ON으로 실행한다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: projection contract audit `REVIEW-LOCKED`, runtime replay `BLOCKED_UNTIL_C1_C2_CONTRACT_TESTS_OR_C3_STRONGER_EVIDENCE`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop530 B1 canonical source-native verdict 체크
 
 - [x] 새 runtime replay를 실행하지 않았다.
