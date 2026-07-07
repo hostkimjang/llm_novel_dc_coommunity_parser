@@ -1,0 +1,67 @@
+# Loop566 B1 missing candidate verdict application
+
+이 보고서는 canonical candidate recheck verdict를 gate/action queue로 전환하는 적용 결과다. verdict 자체가 없거나 계약 테스트가 닫히지 않으면 runtime replay와 approval은 열리지 않는다.
+
+## 요약
+
+- gate: `REVIEW-LOCKED`
+- semantic_quality: `REVIEW-LOCKED`
+- full_scan_approval: `false`
+- source batch: `docs\devs\loop565_b1_missing_candidate_canonical_recheck15_batch.json`
+- source verdicts: `docs\devs\loop566_b1_missing_candidate_source_native_verdicts.json`
+- batch rows: `15`
+- verdict rows: `15`
+- reviewed rows: `15`
+- accepted verdict rows: `15`
+- unreviewed batch rows: `0`
+- validation issues: `0`
+- runtime_replay_allowed_rows: `0`
+- full375 collateral: `NO-GO`
+- completion gate: `full375 collateral GO + full_scan path`
+
+## Verdict 집계
+
+- `EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED`: `12`
+- `INSUFFICIENT_EVIDENCE_HOLD`: `3`
+
+## 다음 상태 집계
+
+- `candidate_scrub_or_expected_title_restore_contract_required`: `12`
+- `hard_hold_or_native_web_review_required`: `3`
+
+## 행별 적용
+
+- `11663557` verdict=`EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED` next=`candidate_scrub_or_expected_title_restore_contract_required` runtime_release=`blocked_until_contract_tests_pass`
+  - 근거: 제목 `퇴마록`과 본문 `애니`, `이우혁` 언급이 같은 작품 맥락을 직접 지지한다. runtime의 `퇴마록 1` 후보는 URL/title variant trace를 정리해야 하지만 source-native expected title 자체는 유지한다.
+- `11666713` verdict=`EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED` next=`candidate_scrub_or_expected_title_restore_contract_required` runtime_release=`blocked_until_contract_tests_pass`
+  - 근거: 원문 제목의 `21세기 무림`과 본문 `무협스러움` 감상이 `21세기 무림세가`를 직접 지지한다. runtime 후보 `21세기 학교에서 노비 탈출기`는 현재 source-native title과 맞지 않는 오염 후보로 보아 contract 정리가 필요하다.
+- `11666741` verdict=`EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED` next=`candidate_scrub_or_expected_title_restore_contract_required` runtime_release=`blocked_until_contract_tests_pass`
+  - 근거: 제목 `별품소 웹툰`과 본문 `별품소`, `기사뽕`, `결말` 감상이 `별을 품은 소드마스터` 약칭 소비 맥락을 직접 지지한다. runtime이 약칭만 후보로 보존하고 publish를 막은 상태라 expected restore/candidate contract가 필요하다.
+- `11668325` verdict=`EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED` next=`candidate_scrub_or_expected_title_restore_contract_required` runtime_release=`blocked_until_contract_tests_pass`
+  - 근거: 댓글 대화에서 post author가 `마파두부` 밈을 `페이트스테이나이트`와 직접 연결한다. 다만 이미지/밈 중심 문맥이라 current-work publish는 contract test 전까지 열지 않는다.
+- `11669913` verdict=`EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED` next=`candidate_scrub_or_expected_title_restore_contract_required` runtime_release=`blocked_until_contract_tests_pass`
+  - 근거: post title이 `하룬`을 직접 말하고 본문은 수학 마법 평가로 이어진다. 댓글 `판수대`가 competing surface로 남지만 source-native expected title은 현재 글 제목과 본문 감상에 의해 지지된다.
+- `11669926` verdict=`EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED` next=`candidate_scrub_or_expected_title_restore_contract_required` runtime_release=`blocked_until_contract_tests_pass`
+  - 근거: 이미지 OCR의 표지/작가/장르 정보와 원문 미적분 마법/마녀 캐릭터 맥락이 `싸울아비 룬` 장면으로 수렴한다. OCR 오독 후보는 보존하되 expected title restore contract로 넘긴다.
+- `11677924` verdict=`EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED` next=`candidate_scrub_or_expected_title_restore_contract_required` runtime_release=`blocked_until_contract_tests_pass`
+  - 근거: 첨부 이미지 중 하나가 `고결에 오만이 깃들 때` 작품 상세와 작가명을 직접 보여주고, 본문은 남캐 일러/갑옷 감상으로 같은 이미지 맥락을 다룬다. 다중 이미지 후보 정리는 필요하지만 expected title 자체는 source-native로 확인된다.
+- `11681159` verdict=`EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED` next=`candidate_scrub_or_expected_title_restore_contract_required` runtime_release=`blocked_until_contract_tests_pass`
+  - 근거: `김괴라리` 표면과 김어니언, 괴이, 스팡달, 상태창 같은 plot context가 `괴담에 휘말렸다` 토론을 직접 지지한다. runtime 후보 오염을 contract로 정리해야 한다.
+- `11692436` verdict=`INSUFFICIENT_EVIDENCE_HOLD` next=`hard_hold_or_native_web_review_required` runtime_release=`blocked_until_stronger_evidence`
+  - 근거: `류서란(perfect)`와 이미지/캐릭터 bridge는 `퍼펙트 메이지` 가능성을 주지만, Loop551에서 current candidate 충돌과 직접 시각/캐릭터 bridge 미검증 때문에 hard-hold였다. 이번 packet만으로 hard-hold를 완화하지 않고 stronger native-web 또는 blind judge로 남긴다.
+- `11697242` verdict=`INSUFFICIENT_EVIDENCE_HOLD` next=`hard_hold_or_native_web_review_required` runtime_release=`blocked_until_stronger_evidence`
+  - 근거: 원문은 `유희왕 패러디`, 듀얼리스트, 카드 댓글처럼 프랜차이즈/패러디 표면을 다룬다. Loop551에서 non-novel/current-work 오버리치 위험으로 hard-hold였고, 이번 source packet만으로 이를 해제할 blind/native 증거가 충분하지 않다.
+- `11697256` verdict=`EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED` next=`candidate_scrub_or_expected_title_restore_contract_required` runtime_release=`blocked_until_contract_tests_pass`
+  - 근거: 댓글이 `황제의 딸로 환생했습니다`, 플랫폼, 내용 요약을 직접 답한다. expected 표기 `황제의 딸로 환생했다`와 풀네임 variant 정리는 필요하지만 source-native expected 계열은 확인된다.
+- `11700483` verdict=`EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED` next=`candidate_scrub_or_expected_title_restore_contract_required` runtime_release=`blocked_until_contract_tests_pass`
+  - 근거: 원문 `니생들 이모티콘`과 이미지 OCR `니들 생각 다 들린다 미니미콘`이 작품별 이모티콘 구매 맥락을 직접 지지한다. 상품/이모티콘 맥락이라 URL은 후속 contract에서 별도 정리한다.
+- `11706831` verdict=`EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED` next=`candidate_scrub_or_expected_title_restore_contract_required` runtime_release=`blocked_until_contract_tests_pass`
+  - 근거: `빌런차석`은 expected title의 직접 약칭이고 댓글 `연재는 하고 있음`이 같은 작품 상태 질문에 답한다. source-native expected title은 확인되며 search-blind 조건은 contract 단계에서 유지한다.
+- `11714887` verdict=`EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED` next=`candidate_scrub_or_expected_title_restore_contract_required` runtime_release=`blocked_until_contract_tests_pass`
+  - 근거: post title과 본문 링크/영상 제목이 `도굴왕` PV를 직접 지지한다. expected title의 `1 |` 표기는 canonical cleanup 대상이지만 source-native current work는 `도굴왕` 계열로 확인된다.
+- `11718114` verdict=`INSUFFICIENT_EVIDENCE_HOLD` next=`hard_hold_or_native_web_review_required` runtime_release=`blocked_until_stronger_evidence`
+  - 근거: `시스템 딸깍`, 상태창, 파이어볼, 마법 강사질은 후보 작품 설정과 맞을 수 있지만 장르/클리셰 비평으로도 읽힌다. Loop551에서 direct title/search evidence 부족 hard-hold였으므로 이번 packet만으로 public restore를 열지 않는다.
+
+## Gate 해석
+
+이 회차는 residual 단건 replay가 아니라 verdict 적용 경로의 계약화다. canonical verdict와 후속 contract test가 닫히기 전에는 B1 row를 runtime replay로 되돌리지 않는다. full375 collateral은 계속 `NO-GO`이고 goal은 `ACTIVE / NOT_COMPLETE`다.

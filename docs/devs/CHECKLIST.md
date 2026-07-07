@@ -1,5 +1,22 @@
 # Development Checklist
 
+## 2026-07-08 Loop566 verdict contract projection 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 run을 실행하지 않았다.
+- [x] B1 `15`건의 canonical verdict를 source-native/blind 기준으로 채웠다.
+- [x] B1 verdict application은 reviewed `15/15`, validation issue `0`, runtime replay allowed `0`이다.
+- [x] B1 post-verdict shared-gate contract plan을 만들었다.
+- [x] B1 release audit은 violation `0`, pending `0`, release candidate `6`, no-release `9`다.
+- [x] Title mismatch `2`건을 variant/wrong-work로 판정했다.
+- [x] `11665121`은 공식 bracketed canonical variant라 `ACCEPT`로 기록했다.
+- [x] `11673080`은 wrong-work actual이라 `REPROCESS`로 기록했다.
+- [x] Title mismatch release audit은 violation `0`, pending `0`, release candidate `2`다.
+- [x] Combined publication contract convergence는 `GO / 30 rows / 0 violations`다.
+- [x] Release candidate를 approval로 승격하지 않고 full375 collateral `NO-GO`를 유지했다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- [ ] 다음 검증은 residual 단건 소모가 아니라 full375 collateral 재확인 또는 남은 residual lane batch로 진행한다.
+- Gate: B1/title mismatch contract `REVIEW-LOCKED`, publication contract `GO`, runtime replay `NOT_RUN / allowed 0`, full375 collateral `NO-GO / adjusted residual 87`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop565 B1 canonical recheck packet 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 run을 실행하지 않았다.
@@ -10,9 +27,9 @@
 - [x] B1 verdict template `15`건을 생성했다.
 - [x] Title mismatch source-native packet `2`건(`11665121`, `11673080`)을 생성했다.
 - [x] Title mismatch packet은 runtime input candidate rows `0`, validation issue `0`이다.
-- [ ] B1 `15`건의 canonical verdict를 source-native/blind 기준으로 채운다.
-- [ ] Title mismatch `2`건을 variant/wrong-work로 판정한다.
-- [ ] Contract test와 full375 collateral 재확인 전 runtime replay를 열지 않는다.
+- [x] B1 `15`건의 canonical verdict를 source-native/blind 기준으로 채웠다. Loop566에서 reviewed `15/15`로 닫았다.
+- [x] Title mismatch `2`건을 variant/wrong-work로 판정했다. Loop566에서 `ACCEPT 1 / REPROCESS 1`로 닫았다.
+- [x] Contract test와 full375 collateral 재확인 전 runtime replay를 열지 않는다. Loop566도 runtime replay allowed `0`으로 유지했다.
 - Gate: B1 canonical recheck packet `REVIEW-LOCKED / 15`, title mismatch packet `REVIEW-LOCKED / 2`, runtime replay `NOT_ALLOWED / 0`, full375 collateral `NO-GO / adjusted residual 87`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-07 Loop564 dashboard-attached runtime replay 체크
@@ -25,8 +42,8 @@
 - [x] Expected-title replay는 `NO-GO / 13 of 30`으로 기록했다.
 - [x] Runtime failure action queue `17`건과 shared-gate block repair queue `15`건을 batch로 생성했고 validation issue는 `0`이다.
 - [x] 동일 packet replay는 canonical candidate recheck와 shared-gate repair 전 금지한다.
-- [ ] `FAIL_RUNTIME_PROMOTION_BLOCKED 15`건의 `B1_missing_candidate_alignment_review`를 닫는다.
-- [ ] `FAIL_SAFE_RESOLVED_TITLE_MISMATCH 2`건(`11665121`, `11673080`)을 source-native/blind canonical review로 닫는다.
+- [x] `FAIL_RUNTIME_PROMOTION_BLOCKED 15`건의 `B1_missing_candidate_alignment_review`를 닫았다. Loop566 B1 verdict/release audit으로 reviewed `15/15`, pending `0`이다.
+- [x] `FAIL_SAFE_RESOLVED_TITLE_MISMATCH 2`건(`11665121`, `11673080`)을 source-native/blind canonical review로 닫았다. Loop566에서 `ACCEPT 1 / REPROCESS 1`이다.
 - [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
 - Gate: runtime replay `GO_RUNTIME_COMPLETE_AUDITED / 30`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, publication contract `GO`, expected-title `NO-GO / 13 of 30`, repair queue `REVIEW-LOCKED / 17`, full375 collateral `NO-GO / adjusted residual 87`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 

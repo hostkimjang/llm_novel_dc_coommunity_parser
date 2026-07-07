@@ -1,0 +1,197 @@
+{
+  "report_type": "title_mismatch_verdict_contract_plan",
+  "plan_id": "loop566_title_mismatch_shared_gate_contract_plan",
+  "generated_at": "2026-07-08T00:11:50",
+  "source_verdicts": "loop566_title_mismatch_hold2_source_native_verdicts",
+  "source_batch": "docs/devs/loop565_title_mismatch_hold2_source_native_batch.json",
+  "source_packet": "docs/devs/loop565_title_mismatch_hold2_source_native_review_packet.json",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "source_verdict_rows": 2,
+    "contract_plan_rows": 2,
+    "validation_issue_count": 0,
+    "review_label_counts": {
+      "ACCEPT": 1,
+      "REPROCESS": 1
+    },
+    "contract_batch_lane_counts": {
+      "T1_expected_audit_update_or_blind_acceptance_contract": 1,
+      "T3_canonical_cleanup_or_url_correction_contract": 1
+    },
+    "contract_action_counts": {
+      "expected_audit_update_exclusion_contract_case": 1,
+      "canonical_cleanup_or_url_correction_contract_case": 1
+    },
+    "promotion_decision_status_counts": {
+      "publish": 1,
+      "candidate_only": 1
+    },
+    "contract_blocking_reason_counts": {
+      "canonical_cleanup_required": 1
+    },
+    "runtime_replay_allowed_rows": 0,
+    "contract_test_required_rows": 2,
+    "stronger_evidence_required_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "rows": [
+    {
+      "post_id": 11665121,
+      "contract_batch_lane": "T1_expected_audit_update_or_blind_acceptance_contract",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "actual_bracketed_official_title_is_canonical_variant_expected_was_compact_title",
+      "evidence_grade": "Strong",
+      "expected_title": "후회 안 하는 프로듀서",
+      "actual_title": "후회 안 하는 프로듀서 [독점]",
+      "target_title": "후회 안 하는 프로듀서 [독점]",
+      "target_url": "https://series.naver.com/novel/detail.series?productNo=6137878",
+      "contract_blocking_reason": null,
+      "contract_action": "expected_audit_update_exclusion_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "후회 안 하는 프로듀서 [독점]",
+        "official_url": "https://series.naver.com/novel/detail.series?productNo=6137878",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "title_mismatch_expected_update_contract_case"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11665121,
+        "candidate_title": "후회 안 하는 프로듀서 [독점]",
+        "candidate_url": "https://series.naver.com/novel/detail.series?productNo=6137878",
+        "source": "title_mismatch_verdict_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "title_mismatch_source_native_verdict",
+            "T1_expected_audit_update_or_blind_acceptance_contract"
+          ],
+          "competing_candidates": [
+            "후회 안 하는 프로듀서 [독점]",
+            "후회 안 하는 프로듀서"
+          ],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "title_mismatch_source_native_verdict",
+          "strength": "strong",
+          "source_path_or_snippet": "댓글 `후회 프듀`가 작품 약칭을 직접 지지하고 runtime actual은 네이버 시리즈 공식 상세 제목 `후회 안 하는 프로듀서 [독점]`이다. expected `후회 안 하는 프로듀서`는 bracket suffix를 뺀 compact title이므로 actual을 정당 canonical variant로 본다.",
+          "supports_publish": true,
+          "reason_code": "title_mismatch_expected_update_contract_case"
+        }
+      ],
+      "runtime_replay_allowed": false,
+      "contract_test_required_before_runtime": true,
+      "stronger_evidence_required_before_runtime": false,
+      "rationale_ko": "댓글 `후회 프듀`가 작품 약칭을 직접 지지하고 runtime actual은 네이버 시리즈 공식 상세 제목 `후회 안 하는 프로듀서 [독점]`이다. expected `후회 안 하는 프로듀서`는 bracket suffix를 뺀 compact title이므로 actual을 정당 canonical variant로 본다.",
+      "evidence_refs": [
+        "docs/devs/loop565_title_mismatch_hold2_source_native_batch.json#post_id=11665121",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop563_conflict_safe_p0_shared_gate_runtime_replay_input.jsonl#post_id=11665121",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop564_conflict_safe_p0_shared_gate_runtime_replay_result.json#post_id=11665121"
+      ]
+    },
+    {
+      "post_id": 11673080,
+      "contract_batch_lane": "T3_canonical_cleanup_or_url_correction_contract",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "image_ocr_and_medical_context_support_expected_actual_is_wrong_work",
+      "evidence_grade": "Strong",
+      "expected_title": "갤질하는 천재 의사",
+      "actual_title": "흔적을 보는 천재 무사",
+      "target_title": "갤질하는 천재 의사",
+      "target_url": null,
+      "contract_blocking_reason": "canonical_cleanup_required",
+      "contract_action": "canonical_cleanup_or_url_correction_contract_case",
+      "promotion_decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": true,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discussion_missing",
+          "context_only",
+          "scope_context_only",
+          "scope_not_current_work",
+          "canonical_cleanup_required"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11673080,
+        "candidate_title": "갤질하는 천재 의사",
+        "candidate_url": "",
+        "source": "title_mismatch_verdict_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": false,
+        "title_resolution_state": "context_only",
+        "work_resolution": "unresolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "context_only",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "title_mismatch_source_native_verdict",
+            "T3_canonical_cleanup_or_url_correction_contract"
+          ],
+          "competing_candidates": [
+            "흔적을 보는 천재 무사",
+            "갤질하는 천재 의사"
+          ],
+          "conflict_reason_codes": [
+            "canonical_cleanup_required"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "title_mismatch_source_native_verdict",
+          "strength": "strong",
+          "source_path_or_snippet": "본문은 의사물/의료사고 소송 맥락이고 source projection follow-up은 이미지 OCR이 `갤질하는 천재 의사` 작품 상세와 작가/태그를 직접 읽었다고 기록한다. runtime actual `흔적을 보는 천재 무사`는 같은 packet의 의사물/OCR 근거와 맞지 않는 wrong-work publish이므로 canonical cleanup으로 재처리한다.",
+          "supports_publish": false,
+          "reason_code": "canonical_cleanup_required"
+        }
+      ],
+      "runtime_replay_allowed": false,
+      "contract_test_required_before_runtime": true,
+      "stronger_evidence_required_before_runtime": false,
+      "rationale_ko": "본문은 의사물/의료사고 소송 맥락이고 source projection follow-up은 이미지 OCR이 `갤질하는 천재 의사` 작품 상세와 작가/태그를 직접 읽었다고 기록한다. runtime actual `흔적을 보는 천재 무사`는 같은 packet의 의사물/OCR 근거와 맞지 않는 wrong-work publish이므로 canonical cleanup으로 재처리한다.",
+      "evidence_refs": [
+        "docs/devs/loop565_title_mismatch_hold2_source_native_batch.json#post_id=11673080",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop563_conflict_safe_p0_shared_gate_runtime_replay_input.jsonl#post_id=11673080._loop_projection_followup",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop564_conflict_safe_p0_shared_gate_runtime_replay_result.json#post_id=11673080"
+      ]
+    }
+  ],
+  "approval_boundary": {
+    "title_mismatch_plan_is_not_runtime_replay": true,
+    "accept_label_is_expected_audit_update_contract_only": true,
+    "runtime_replay_before_contract_tests_forbidden": true,
+    "full375_collateral_remains_no_go": true
+  }
+}

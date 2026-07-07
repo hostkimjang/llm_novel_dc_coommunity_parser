@@ -1,5 +1,11 @@
 # Developer TODO Index
 
+## 2026-07-08 Loop566 이후
+
+- [ ] Loop566 release candidate `8`건은 approval이 아니라 projection contract 결과로만 유지한다.
+- [ ] 다음 단계는 residual 단건 반복이 아니라 full375 collateral 재확인 또는 남은 residual lane batch 처리로 진행한다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 유지한다.
+
 ## 2026-07-07 Loop560-562 TODO
 
 - 상태 업데이트: Loop559 P0 `126`건을 prior-compatible source-native verdict로 재회계했고 full375 adjusted regression은 `87`로 남았다. Goal은 완료가 아니다.

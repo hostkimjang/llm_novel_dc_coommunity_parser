@@ -1,5 +1,21 @@
 # Improvement Register
 
+## IMP-20260708-566 - B1/title-mismatch verdict contract projection
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 실행 없음, allowed `0` | full375 collateral 확인 전 반복 replay 금지 |
+| B1 verdict | REVIEW-LOCKED | reviewed `15/15`, validation issue `0`, `EXPECTED 12 / HOLD 3` | release candidate와 no-release를 full375에서 재확인 |
+| B1 shared gate | REVIEW-LOCKED | restore `6`, scrub `6`, hard-hold `3` | scrub/hard-hold는 no-release 유지 |
+| B1 release audit | REVIEW-LOCKED | violation `0`, pending `0`, release candidate `6`, no-release `9` | release candidate를 approval로 승격 금지 |
+| Title mismatch verdict | REVIEW-LOCKED | `11665121 ACCEPT`, `11673080 REPROCESS` | expected audit update와 canonical cleanup 반영 |
+| Title mismatch release audit | REVIEW-LOCKED | violation `0`, pending `0`, release candidate `2` | full375 collateral에서 회귀 여부 확인 |
+| Publication contract | GO_PROJECTION_CONTRACT | combined `30` rows, violation `0` | full_scan approval로 오해 금지 |
+| Full375 collateral | NO-GO | adjusted residual `87` 유지 | full375 collateral GO 필요 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: B1/title mismatch contract `REVIEW-LOCKED`, publication contract `GO`, runtime replay `NOT_RUN / allowed 0`, full375 collateral `NO-GO / adjusted residual 87`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-565 - B1 canonical recheck packet and mismatch review packet
 
 | 항목 | 상태 | 근거 | 다음 |

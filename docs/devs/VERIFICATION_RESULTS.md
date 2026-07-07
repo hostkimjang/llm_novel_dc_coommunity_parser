@@ -1,5 +1,34 @@
 # Verification Results
 
+## 2026-07-08 Loop566 B1/title-mismatch verdict contract projection
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_566_REPORT_20260708.md`
+  - `docs/devs/loop566_b1_missing_candidate_source_native_verdicts.json`
+  - `docs/devs/loop566_b1_missing_candidate_verdict_application_state_20260708.json/.md`
+  - `docs/devs/loop566_b1_post_verdict_contract_queue.json/.md`
+  - `docs/devs/loop566_b1_post_verdict_promotion_gate_contract_plan.json/.md`
+  - `docs/devs/loop566_b1_expected_restore_projection_contract_application.json/.md`
+  - `docs/devs/loop566_b1_post_apply_release_gate_audit.json/.md`
+  - `docs/devs/loop566_title_mismatch_hold2_source_native_verdicts.json/.md`
+  - `docs/devs/loop566_title_mismatch_shared_gate_contract_plan.json/.md`
+  - `docs/devs/loop566_title_mismatch_projection_contract_application.json/.md`
+  - `docs/devs/loop566_title_mismatch_post_apply_release_gate_audit.json/.md`
+  - `docs/devs/loop566_b1_and_title_mismatch_projection_publication_contract_audit.json/.md`
+- 검증:
+  - JSON parse: PASS, Loop566 JSON artifact `14` files.
+  - py_compile: PASS, post-verdict/projection/release/publication audit tools.
+  - unittest: PASS, `tests.test_apply_canonical_candidate_recheck_verdicts`, `tests.test_build_canonical_post_verdict_contract_queue`, `tests.test_build_post_verdict_promotion_gate_contract_plan`, `tests.test_build_title_mismatch_verdict_contract_plan`, `tests.test_apply_post_verdict_expected_restore_projection_contract`, `tests.test_audit_post_verdict_promotion_gate_release_contract`, 총 `34` tests.
+  - B1 verdict application: PASS, reviewed `15/15`, validation issue `0`, runtime replay allowed `0`.
+  - B1 release audit: PASS, violation `0`, pending `0`, release candidate `6`, no-release `9`.
+  - Title mismatch verdict/projection: PASS, `ACCEPT 1 / REPROCESS 1`, post-apply violation `0`, pending `0`, release candidate `2`.
+  - Publication contract convergence: PASS, `GO / 30 rows / 0 violations`.
+- 결과:
+  - Loop565 미판정 B1 `15`건과 title mismatch `2`건을 동일 packet runtime 반복 없이 source-native/blind verdict와 shared-gate projection contract로 닫았다.
+  - Release candidate는 contract projection 결과이며 full375 collateral GO 또는 full_scan approval이 아니다.
+  - Runtime replay allowed는 계속 `0`이다.
+- Gate: B1/title mismatch contract `REVIEW-LOCKED`, publication contract `GO`, runtime replay `NOT_RUN / allowed 0`, full375 collateral `NO-GO / adjusted residual 87`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop565 B1 canonical recheck and title mismatch packet
 
 - 산출물:

@@ -1,5 +1,18 @@
 # Development History
 
+## 2026-07-08 - Loop566 B1/title-mismatch verdict contract projection
+
+- 새 runtime replay, bounded run, full375 대형 run은 실행하지 않았다.
+- Loop565 B1 missing-candidate `15`건에 source-native verdict를 적용했고 reviewed `15/15`, validation issue `0`이다.
+- Verdict 분포는 `EXPECTED_SOURCE_NATIVE_TITLE_CONFIRMED 12`, `INSUFFICIENT_EVIDENCE_HOLD 3`이다.
+- B1 post-verdict shared-gate contract plan은 expected restore `6`, candidate scrub no-publish `6`, stronger-evidence hard-hold `3`으로 나뉜다.
+- B1 post-apply release audit은 violation `0`, pending `0`, release candidate `6`, no-release `9`, runtime replay allowed `0`이다.
+- Title mismatch `2`건은 `11665121 ACCEPT`, `11673080 REPROCESS`로 판정했다.
+- Title mismatch post-apply release audit은 violation `0`, pending `0`, release candidate `2`, runtime replay allowed `0`이다.
+- Combined publication contract convergence는 `GO / 30 rows / 0 violations`다.
+- Report는 `docs/devs/loop_reports/LOOP_566_REPORT_20260708.md`다.
+- Gate는 B1/title mismatch contract `REVIEW-LOCKED`, publication contract `GO`, runtime replay `NOT_RUN / allowed 0`, full375 collateral `NO-GO / adjusted residual 87`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop565 B1 canonical recheck and title mismatch packet
 
 - 새 runtime replay, bounded run, full375 대형 run은 실행하지 않았다.

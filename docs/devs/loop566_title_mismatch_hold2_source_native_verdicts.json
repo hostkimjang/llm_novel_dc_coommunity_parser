@@ -1,0 +1,84 @@
+{
+  "review_id": "loop566_title_mismatch_hold2_source_native_verdicts",
+  "scope": "Loop565 title mismatch HOLD 2 source-native/blind verdicts",
+  "report_type": "title_mismatch_source_native_review",
+  "generated_at": "2026-07-08T00:00:00+09:00",
+  "source_batch": "docs/devs/loop565_title_mismatch_hold2_source_native_batch.json",
+  "source_packet": "docs/devs/loop565_title_mismatch_hold2_source_native_review_packet.json",
+  "source_runtime_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop564_conflict_safe_p0_shared_gate_runtime_replay_result.json",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "gate": "REVIEW-LOCKED",
+  "summary": {
+    "review_rows": 2,
+    "review_label_counts": {
+      "ACCEPT": 1,
+      "REPROCESS": 1
+    },
+    "evidence_grade_counts": {
+      "Strong": 2
+    },
+    "regression_exclusion_candidates_after_gate_wiring": 1,
+    "repair_required_rows": 1,
+    "hard_hold_or_native_review_rows": 0,
+    "runtime_replay_after_review": "NOT_RUN_AFTER_REVIEW",
+    "full375_collateral": "NO-GO",
+    "overall_goal": "ACTIVE / NOT_COMPLETE"
+  },
+  "rows": [
+    {
+      "post_id": 11665121,
+      "expected_title": "후회 안 하는 프로듀서",
+      "actual_title": "후회 안 하는 프로듀서 [독점]",
+      "selected_option_id": "ACTUAL_CANONICAL_BRACKET_VARIANT",
+      "selected_title": "후회 안 하는 프로듀서 [독점]",
+      "selected_url": "https://series.naver.com/novel/detail.series?productNo=6137878",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "actual_bracketed_official_title_is_canonical_variant_expected_was_compact_title",
+      "evidence_grade": "Strong",
+      "native_web_checked": false,
+      "action": [
+        "expected_audit_baseline_update_required",
+        "exclude_from_expected_title_mismatch_after_gate_wiring",
+        "preserve_actual_public_title"
+      ],
+      "rationale_ko": "댓글 `후회 프듀`가 작품 약칭을 직접 지지하고 runtime actual은 네이버 시리즈 공식 상세 제목 `후회 안 하는 프로듀서 [독점]`이다. expected `후회 안 하는 프로듀서`는 bracket suffix를 뺀 compact title이므로 actual을 정당 canonical variant로 본다.",
+      "evidence_refs": [
+        "docs/devs/loop565_title_mismatch_hold2_source_native_batch.json#post_id=11665121",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop563_conflict_safe_p0_shared_gate_runtime_replay_input.jsonl#post_id=11665121",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop564_conflict_safe_p0_shared_gate_runtime_replay_result.json#post_id=11665121"
+      ]
+    },
+    {
+      "post_id": 11673080,
+      "expected_title": "갤질하는 천재 의사",
+      "actual_title": "흔적을 보는 천재 무사",
+      "selected_option_id": "EXPECTED_IMAGE_OCR_CANONICAL",
+      "selected_title": "갤질하는 천재 의사",
+      "selected_url": "https://novelpia.com/novel/372180",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "image_ocr_and_medical_context_support_expected_actual_is_wrong_work",
+      "evidence_grade": "Strong",
+      "native_web_checked": false,
+      "action": [
+        "repair_after_wrong_work",
+        "canonical_title_cleanup_required",
+        "official_url_correction_required",
+        "search_replay_after_cleanup_required"
+      ],
+      "rationale_ko": "본문은 의사물/의료사고 소송 맥락이고 source projection follow-up은 이미지 OCR이 `갤질하는 천재 의사` 작품 상세와 작가/태그를 직접 읽었다고 기록한다. runtime actual `흔적을 보는 천재 무사`는 같은 packet의 의사물/OCR 근거와 맞지 않는 wrong-work publish이므로 canonical cleanup으로 재처리한다.",
+      "evidence_refs": [
+        "docs/devs/loop565_title_mismatch_hold2_source_native_batch.json#post_id=11673080",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop563_conflict_safe_p0_shared_gate_runtime_replay_input.jsonl#post_id=11673080._loop_projection_followup",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop564_conflict_safe_p0_shared_gate_runtime_replay_result.json#post_id=11673080"
+      ]
+    }
+  ],
+  "approval_boundary": {
+    "source_native_verdict_is_not_runtime_release": true,
+    "accept_rows_require_gate_wiring_before_count_exclusion": true,
+    "reprocess_rows_require_contract_or_runtime_followup": true,
+    "hold_rows_require_stronger_native_web_or_blind_judge": true,
+    "full_scan_approval": false
+  }
+}

@@ -1,5 +1,22 @@
 # Operation Quality Checklist
 
+## 2026-07-08 Loop566 verdict contract projection 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_566_REPORT_20260708.md`.
+  - [x] B1 verdict/application/contract/release audit 기록 완료: `docs/devs/loop566_b1_*`.
+  - [x] Title mismatch verdict/projection/release audit 기록 완료: `docs/devs/loop566_title_mismatch_*`.
+  - [x] Combined publication contract audit 기록 완료: `docs/devs/loop566_b1_and_title_mismatch_projection_publication_contract_audit.json/.md`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 run은 실행하지 않았다.
+  - [x] B1 `15`건과 title mismatch `2`건은 동일 packet runtime 반복이 아니라 source-native/blind verdict와 shared-gate contract로 닫았다.
+  - [x] Release candidate `8`건은 contract projection 결과이며 approval 근거가 아니다.
+  - [x] Candidate scrub/hard-hold no-release `9`건은 public publish를 열지 않는다.
+  - [x] Publication contract `GO / 30 rows / 0 violations`는 trace convergence 근거일 뿐 full_scan approval이 아니다.
+  - [x] Runtime replay allowed `0`과 full375 collateral `NO-GO`를 유지했다.
+  - [x] Full375 collateral `GO` 전 goal completion을 선언하지 않는다.
+- Gate: B1/title mismatch contract `REVIEW-LOCKED`, publication contract `GO`, runtime replay `NOT_RUN / allowed 0`, full375 collateral `NO-GO / adjusted residual 87`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop565 B1 canonical recheck packet 품질 게이트
 
 - 근거:
