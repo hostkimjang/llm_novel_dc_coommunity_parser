@@ -1,5 +1,23 @@
 # Development Checklist
 
+## 2026-07-07 Loop522 context-preserving projection sync 체크
+
+- [x] 새 runtime replay를 실행하지 않았다.
+- [x] stored result row wrapper sync가 runtime postprocess source context를 보존하도록 `expert_main.py`를 보강했다.
+- [x] 댓글 alias current-work bridge 보존 계약 테스트를 추가했다.
+- [x] Loop515 context-preserving projection result를 생성했다.
+- [x] `11708478`은 `safe_resolved/publish`로 유지되고 repair queue에서 빠졌다.
+- [x] Expected-title gate는 `NO-GO / 15 of 57`이다.
+- [x] Failure queue는 `43 -> 42`, repair queue는 `33 -> 32`로 줄었다.
+- [x] Publication contract는 `GO / 0 violations`다.
+- [x] Data Analytics artifact validate/render PASS.
+- [x] Report `docs/devs/loop_reports/LOOP_522_REPORT_20260707.md`를 작성했다.
+- [x] State `docs/devs/loop522_context_preserving_projection_state_20260707.json`을 작성했다.
+- [ ] Projection GO를 runtime proof나 semantic/full_scan approval로 쓰지 않는다.
+- [ ] Repair queue `32`건은 contract/source-context 수리 전 runtime replay 입력으로 쓰지 않는다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: source-context projection contract `GO_UNIT_AND_PROJECTION`, expected-title `NO-GO / 15 of 57`, repair queue `REVIEW-LOCKED / 32`, runtime replay `NOT_RUN_PROJECTION_ONLY`, full375 collateral `NO-GO`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop521 post-Loop520 queue refresh 체크
 
 - [x] 새 runtime replay를 실행하지 않았다.

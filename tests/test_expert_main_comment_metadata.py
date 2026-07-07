@@ -3895,6 +3895,183 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         self.assertFalse(trace["gate_decision"]["publish_allowed"])
         self.assertIsNone(trace["post_gate_identity"]["official_title"])
 
+    def test_stored_result_row_sync_preserves_comment_alias_current_work_bridge(self):
+        def _analysis_result():
+            return {
+                "identity": {
+                    "candidate_ledger_status": "safe_resolved",
+                    "title_resolution_allowed": True,
+                    "title_resolution_state": "resolved",
+                    "work_resolution": "resolved",
+                    "is_resolved_work_discussion": True,
+                    "safe_resolved": True,
+                    "promotion_blocked": False,
+                    "context_sources": ["title", "comments", "search", "image"],
+                    "consistency_flags": [
+                        "unconfirmed_alias_official_detail_bridge",
+                        "local_candidate_hold_preserved",
+                        "llm_only_sentence_candidate_pruned",
+                        "verified_alias_title_only_publication",
+                        "serialized_public_identity_shared_gate_restored",
+                    ],
+                    "novel_identity": {
+                        "official_title": "사연 있는 악역으로 착각 당한다",
+                        "heretic_url": None,
+                        "confidence": "High",
+                    },
+                    "primary_work": {
+                        "official_title": "사연 있는 악역으로 착각 당한다",
+                        "heretic_url": None,
+                        "confidence": "High",
+                        "source_tier": "official_detail",
+                        "page_type": "novel_page",
+                        "reference_role": "primary",
+                    },
+                    "title_candidates": [
+                        {
+                            "official_title": "사연 있는 악역으로 착각 당한다",
+                            "heretic_url": None,
+                            "confidence": "High",
+                            "alias_or_mention": "사연있는악역착각",
+                            "source_tier": "official_detail",
+                            "page_type": "novel_page",
+                            "content_status": "active",
+                            "negative_evidence": ["unconfirmed_alias_official_detail_bridge"],
+                            "reference_role": "primary",
+                        },
+                        {
+                            "official_title": "사연있는악역착각",
+                            "confidence": "Medium",
+                            "source_tier": "llm_only",
+                            "reference_role": "candidate",
+                        },
+                    ],
+                    "reason_lines": [
+                        "관련 포스트로 판정되었으나 정식 제목은 미확정입니다.",
+                        "- 공식 제목: 미확정",
+                        "- official_title_evidence: true",
+                        "- 제목/본문 앵커와 검색 근거를 종합하여 관련 작품 토론으로 판정했습니다.",
+                    ],
+                    "candidate_preservation_sources": [
+                        {
+                            "official_title": "사연 있는 악역으로 착각 당한다",
+                            "heretic_url": None,
+                            "confidence": "High",
+                            "alias_or_mention": "사연있는악역착각",
+                            "source_tier": "official_detail",
+                            "page_type": "novel_page",
+                            "content_status": "active",
+                            "negative_evidence": ["unconfirmed_alias_official_detail_bridge"],
+                            "reference_role": "primary",
+                            "preservation_role": "title_candidate",
+                        }
+                    ],
+                    "search_evidence_catalog": [
+                        {
+                            "title": "사연 있는 악역으로 착각 당한다",
+                            "url": "https://novelpia.com/novel/396159",
+                            "source_tier": "novel_platform",
+                        }
+                    ],
+                    "promotion_decision": {
+                        "status": "publish",
+                        "publish_allowed": True,
+                        "official_title": "사연 있는 악역으로 착각 당한다",
+                        "official_url": None,
+                        "candidate_preserved": False,
+                        "reason_codes": [
+                            "official_title_exists",
+                            "row_discusses_work_as_work",
+                            "scope_current_work",
+                            "verified_alias_title_only_publication",
+                            "official_url_withheld_by_title_mismatch",
+                            "serialized_public_identity_shared_gate_restored",
+                            "serialized_public_identity_published",
+                        ],
+                        "bypassed_gate": False,
+                        "scope": {
+                            "scope_kind": "current_work",
+                            "confidence": "high",
+                            "direct_bridge_sources": [
+                                "verified_alias_title_only_publication",
+                                "post_title_alias",
+                                "title",
+                                "search",
+                                "comments",
+                            ],
+                            "conflict_reason_codes": [
+                                "official_url_withheld_by_title_mismatch",
+                                "verified_alias_title_only_publication",
+                            ],
+                        },
+                    },
+                    "candidate_ledger": {
+                        "candidate_preservation_sources": [
+                            {
+                                "official_title": "사연 있는 악역으로 착각 당한다",
+                                "heretic_url": None,
+                                "confidence": "High",
+                                "alias_or_mention": "사연있는악역착각",
+                                "source_tier": "official_detail",
+                                "page_type": "novel_page",
+                                "content_status": "active",
+                                "negative_evidence": ["unconfirmed_alias_official_detail_bridge"],
+                                "reference_role": "primary",
+                                "preservation_role": "title_candidate",
+                            }
+                        ],
+                        "title_candidates": [
+                            "사연 있는 악역으로 착각 당한다",
+                            "사연있는악역착각",
+                        ],
+                    },
+                },
+            }
+
+        stored_row = {
+            "post_id": 11708478,
+            "title": "사와요드릴머리영애등장 ㄷㄷ",
+            "content": [],
+            "comments": [
+                "비단 털부채 ㅇㄷ?",
+                "요즘 보기 드문 롤빵영애라니",
+                "제목 - dc App",
+                "사연있는악역착각",
+                "클래식이네",
+            ],
+            "comment_dialogue_context_lines": [
+                "#4 speaker=post_author author=앙냥 role=post_author comment_id=40442937 text=사연있는악역착각",
+            ],
+            "analysis_result": _analysis_result(),
+        }
+
+        changed = _sync_final_publication_ledger_contract(
+            stored_row,
+            post_title=stored_row["title"],
+        )
+
+        self.assertTrue(changed)
+        identity = stored_row["analysis_result"]["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "safe_resolved")
+        self.assertTrue(identity["safe_resolved"])
+        self.assertEqual(
+            identity["novel_identity"]["official_title"],
+            "사연 있는 악역으로 착각 당한다",
+        )
+        decision = identity["promotion_decision"]
+        self.assertEqual(decision["status"], "publish")
+        self.assertTrue(decision["publish_allowed"])
+        self.assertNotIn(
+            "verified_alias_title_only_counterevidence_blocked",
+            decision["reason_codes"],
+        )
+        trace = identity["publish_contract_trace"]
+        self.assertTrue(trace["gate_decision"]["publish_allowed"])
+        self.assertEqual(
+            trace["post_gate_identity"]["official_title"],
+            "사연 있는 악역으로 착각 당한다",
+        )
+
     def test_title_only_publication_with_source_denial_is_demoted(self):
         result = {
             "post_id": 11713212,

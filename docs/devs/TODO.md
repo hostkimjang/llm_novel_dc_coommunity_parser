@@ -1,5 +1,23 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop522 TODO
+
+- 상태 업데이트: stored result row projection이 runtime source context를 보존하도록 고쳤고 `11708478` source-context artifact를 repair queue에서 제거했다. Goal은 완료가 아니다.
+- [x] 새 runtime replay를 발주하지 않았다.
+- [x] `_sync_final_publication_ledger_contract(...)`가 `analysis_result` wrapper row를 처리하도록 보강했다.
+- [x] 댓글 alias current-work bridge 보존 계약 테스트를 추가했다.
+- [x] Loop515 context-preserving projection result를 생성했다.
+- [x] Expected-title projection audit는 `NO-GO / 15 of 57`이다.
+- [x] Failure queue는 `42`건, repair queue는 `32`건이다.
+- [x] `11708478`은 repair queue에서 빠졌다.
+- [x] Publication contract audit는 `GO / 0 violations`다.
+- [x] Data Analytics validate/render PASS.
+- [ ] 남은 repair queue `32`건을 lane별 N건 배치로 처리한다.
+- [ ] Runtime replay는 `runtime_replay_allowed_rows=0`이므로 contract/source-context 수리 뒤에만 재개한다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: source-context projection contract `GO_UNIT_AND_PROJECTION`, expected-title `NO-GO / 15 of 57`, repair queue `REVIEW-LOCKED / 32`, runtime replay `NOT_RUN_PROJECTION_ONLY`, full375 collateral `NO-GO`, search evidence `REVIEW`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop521 TODO
 
 - 상태 업데이트: Loop520 projection을 expected-title/repair queue에 다시 연결했고 queue schema 호환성 문제를 고쳤다. Goal은 완료가 아니다.

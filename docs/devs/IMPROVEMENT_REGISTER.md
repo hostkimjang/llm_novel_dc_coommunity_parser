@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260707-522 - stored result source-context projection sync
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Stored row wrapper sync | GO_UNIT | `_sync_final_publication_ledger_contract(...)`가 wrapper row의 source context를 nested sync payload에 주입 | full result row projection 경로 유지 |
+| Comment alias bridge preservation | GO_UNIT | focused unittest PASS, `11708478` `safe_resolved/publish` 유지 | 유사 댓글 alias current-work bridge row를 repair32 lane에서 처리 |
+| Expected-title refresh | NO-GO | `15/57` pass | 남은 failure `42`를 N건 배치로 처리 |
+| Repair queue | REVIEW-LOCKED | `33 -> 32`, `runtime_replay_allowed_rows=0` | contract/source-context 수리 뒤 replay 후보로 복귀 |
+| Publication contract | GO_PROJECTION | `57 rows / 0 violations` | runtime proof로 승격 금지 |
+| Dashboard policy | GO_PROGRESS_VIEW | 다음 runtime/test run `--parallel 16` + `http://127.0.0.1:8080` 기본 부착 | 진행 확인 전용, approval 근거 아님 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: source-context projection contract `GO_UNIT_AND_PROJECTION`, expected-title `NO-GO / 15 of 57`, repair queue `REVIEW-LOCKED / 32`, runtime replay `NOT_RUN_PROJECTION_ONLY`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-521 - post-projection queue refresh schema compatibility
 
 | 항목 | 상태 | 근거 | 다음 |

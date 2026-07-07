@@ -1,5 +1,38 @@
 # Verification Results
 
+## 2026-07-07 Loop522 Verification
+
+- 범위: stored result row projection에서 runtime source context를 보존하고 Loop521의 `11708478` source-context artifact를 제거했다.
+- Artifacts:
+  - report `docs\devs\loop_reports\LOOP_522_REPORT_20260707.md`
+  - state `docs\devs\loop522_context_preserving_projection_state_20260707.json`
+  - Data Analytics artifact `docs\devs\loop522_context_preserving_data_analytics_artifact.json`
+  - expected audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop522_context_preserving_safe57_expected_audit.json`
+  - failure queue `docs\devs\loop522_context_preserving_safe57_expected_failure_queue.json`
+  - repair queue `docs\devs\loop522_context_preserving_repair32_queue.json`
+  - publication contract audit `out\regression_safe_grounding_20260626_000008_928006_loop01\review\loop522_context_preserving_publication_contract_audit.json`
+  - code `expert_main.py`
+  - test `tests\test_expert_main_comment_metadata.py`
+- Result:
+  - `11708478` projected status `safe_resolved/publish`
+  - expected-title gate `NO-GO / 15 of 57`
+  - failure queue rows `42`
+  - repair queue rows `32`
+  - runtime replay allowed rows `0`
+  - publication contract `GO / 57 rows / 0 violations`
+  - expected pass Loop521 대비 `14 -> 15`
+  - failure queue Loop521 대비 `43 -> 42`
+  - repair queue Loop521 대비 `33 -> 32`
+- Validation:
+  - `python -m py_compile expert_main.py tests\test_expert_main_comment_metadata.py` PASS.
+  - focused stored-row source-context unittest PASS.
+  - Data Analytics validate/render PASS.
+- Boundary:
+  - Loop522는 runtime replay가 아니다.
+  - Projection contract GO는 expected-title, full375 collateral, search evidence, full_scan approval을 대체하지 않는다.
+  - 다음 runtime/test run은 `--parallel 16`과 웹 dashboard `http://127.0.0.1:8080` 기본 부착을 유지하되 dashboard는 승인 근거가 아니다.
+  - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+
 ## 2026-07-07 Loop521 Verification
 
 - 범위: Loop520 projection result를 expected-title/repair queue에 다시 연결하고 repair queue builder의 최신 failure queue schema 호환성을 검증했다.

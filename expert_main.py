@@ -7249,6 +7249,18 @@ def _demote_unverified_image_ocr_publication_contract(
 
 def _sync_final_publication_ledger_contract(result_dict: Dict[str, Any], post_title: Optional[str] = None) -> bool:
     """Normalize blocked and allowed publication ledgers after candidate audit."""
+    if isinstance(result_dict, dict) and not isinstance(result_dict.get("identity"), dict):
+        analysis_result = result_dict.get("analysis_result")
+        if isinstance(analysis_result, dict) and isinstance(analysis_result.get("identity"), dict):
+            sync_result_dict = dict(analysis_result)
+            for key in ("title", "content", "comments", "comment_context_lines", "comment_dialogue_context_lines"):
+                if key in result_dict and key not in sync_result_dict:
+                    sync_result_dict[key] = result_dict.get(key)
+            return _sync_final_publication_ledger_contract(
+                sync_result_dict,
+                post_title=post_title or result_dict.get("title"),
+            )
+
     changed = _demote_unsafe_url_title_verified_publication_contract(result_dict, post_title=post_title)
     if _demote_context_only_thematic_overlap_publication_contract(result_dict, post_title=post_title):
         changed = True

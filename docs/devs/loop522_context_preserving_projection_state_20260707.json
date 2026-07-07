@@ -1,0 +1,136 @@
+{
+  "loop": 522,
+  "date": "2026-07-07",
+  "title": "context-preserving stored result projection sync",
+  "goal_status": "ACTIVE_NOT_COMPLETE",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "runtime_replay": {
+    "status": "NOT_RUN_PROJECTION_ONLY",
+    "reason": "Loop515 stored result rows에 current-code final sync를 재적용했으며 새 expert_main runtime replay는 실행하지 않았다."
+  },
+  "test_run_dashboard_policy": {
+    "status": "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+    "requested_parallel": 16,
+    "dashboard_url": "http://127.0.0.1:8080",
+    "approval_boundary": "dashboard는 진행 확인 도구이며 semantic_quality나 full_scan_approval 근거가 아니다."
+  },
+  "code_changes": [
+    {
+      "file": "expert_main.py",
+      "change": "_sync_final_publication_ledger_contract(...)가 analysis_result wrapper row를 받으면 runtime postprocess와 같은 title/content/comments/comment_context_lines/comment_dialogue_context_lines source context를 nested analysis_result에 주입해 수렴한다."
+    },
+    {
+      "file": "tests/test_expert_main_comment_metadata.py",
+      "change": "stored result row wrapper sync가 댓글 alias current-work bridge를 보존하고 publish_contract_trace를 생성하는 계약 테스트를 추가했다."
+    }
+  ],
+  "artifacts": {
+    "projection_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop522_loop515_context_preserving_final_sync_projection_result.json",
+    "expected_audit_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop522_context_preserving_safe57_expected_audit.json",
+    "expected_audit_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop522_context_preserving_safe57_expected_audit.md",
+    "failure_queue_json": "docs/devs/loop522_context_preserving_safe57_expected_failure_queue.json",
+    "failure_queue_md": "docs/devs/loop522_context_preserving_safe57_expected_failure_queue.md",
+    "repair_queue_json": "docs/devs/loop522_context_preserving_repair32_queue.json",
+    "repair_queue_md": "docs/devs/loop522_context_preserving_repair32_queue.md",
+    "publication_contract_audit_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop522_context_preserving_publication_contract_audit.json",
+    "publication_contract_audit_md": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop522_context_preserving_publication_contract_audit.md",
+    "data_analytics_artifact": "docs/devs/loop522_context_preserving_data_analytics_artifact.json",
+    "report": "docs/devs/loop_reports/LOOP_522_REPORT_20260707.md"
+  },
+  "projection_summary": {
+    "source_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop515_shared_gate_projected_safe57_runtime_replay_result.json",
+    "row_count": 57,
+    "changed_row_count": 41,
+    "post_11708478": {
+      "candidate_ledger_status": "safe_resolved",
+      "safe_resolved": true,
+      "official_title": "사연 있는 악역으로 착각 당한다",
+      "promotion_status": "publish",
+      "publish_allowed": true
+    }
+  },
+  "loop521_to_loop522_delta": {
+    "expected_safe_resolved_pass": {
+      "loop521": 14,
+      "loop522": 15,
+      "delta": 1
+    },
+    "failure_queue_rows": {
+      "loop521": 43,
+      "loop522": 42,
+      "delta": -1
+    },
+    "repair_queue_rows": {
+      "loop521": 33,
+      "loop522": 32,
+      "delta": -1
+    },
+    "post_11708478_in_repair_queue": {
+      "loop521": true,
+      "loop522": false
+    }
+  },
+  "expected_title_audit": {
+    "gate": "NO-GO",
+    "row_count": 57,
+    "exact_safe_resolved_pass": 15,
+    "exact_safe_resolved_fail": 42,
+    "runtime_safe_resolved_count": 25,
+    "runtime_publish_allowed_count": 25,
+    "runtime_promotion_blocked_count": 32,
+    "status_counts": {
+      "FAIL_RUNTIME_PROMOTION_BLOCKED": 32,
+      "FAIL_SAFE_RESOLVED_TITLE_MISMATCH": 10,
+      "PASS_EXACT_SAFE_RESOLVED": 15
+    }
+  },
+  "failure_queue": {
+    "action_queue_rows": 42,
+    "label_counts": {
+      "HOLD": 10,
+      "REPROCESS": 32
+    },
+    "priority_counts": {
+      "P0": 10,
+      "P1": 32
+    },
+    "validation_issue_count": 0
+  },
+  "repair_queue": {
+    "repair_rows": 32,
+    "runtime_replay_allowed_rows": 0,
+    "primary_repair_lane_counts": {
+      "candidate_preservation_or_scrub_repair": 9,
+      "image_or_alias_anchor_contract_repair": 6,
+      "scope_or_nonwork_monotonicity_repair": 10,
+      "title_url_or_variant_trace_repair": 7
+    },
+    "projection_runtime_scope_conflict_kind_counts": {
+      "none": 32
+    },
+    "validation_issue_count": 0
+  },
+  "publication_contract": {
+    "gate": "GO",
+    "row_count": 57,
+    "violation_row_count": 0
+  },
+  "data_analytics": {
+    "status": "validate_render_pass",
+    "title": "Loop522 context-preserving projection 큐 감소 요약"
+  },
+  "gates": {
+    "source_context_projection_contract": "GO_UNIT_AND_PROJECTION",
+    "expected_title_projection_audit": "NO-GO_15_OF_57",
+    "repair_queue": "REVIEW-LOCKED_32_ROWS",
+    "runtime_replay": "NOT_RUN_PROJECTION_ONLY",
+    "dashboard": "GO_PROGRESS_VIEW_NOT_APPROVAL",
+    "full375_collateral": "NO-GO",
+    "search_evidence": "REVIEW",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "goal": "ACTIVE_NOT_COMPLETE",
+    "completion_criterion": "full375 collateral GO + full_scan 경로 정의"
+  }
+}

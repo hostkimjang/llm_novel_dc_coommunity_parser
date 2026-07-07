@@ -1,5 +1,25 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop522 context-preserving projection sync 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_522_REPORT_20260707.md`.
+  - [x] State JSON 기록 완료: `docs/devs/loop522_context_preserving_projection_state_20260707.json`.
+  - [x] Data Analytics artifact 기록 완료: `docs/devs/loop522_context_preserving_data_analytics_artifact.json`.
+  - [x] Expected audit 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop522_context_preserving_safe57_expected_audit.json/.md`.
+  - [x] Failure queue 기록 완료: `docs/devs/loop522_context_preserving_safe57_expected_failure_queue.json/.md`.
+  - [x] Repair queue 기록 완료: `docs/devs/loop522_context_preserving_repair32_queue.json/.md`.
+  - [x] Publication contract audit 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop522_context_preserving_publication_contract_audit.json/.md`.
+- 품질 경계:
+  - [x] 새 runtime replay는 실행하지 않았다.
+  - [x] `11708478`은 source context 보존 projection에서 `safe_resolved/publish`로 유지됐다.
+  - [x] Expected-title pass는 `14 -> 15`로 늘었다.
+  - [x] Repair queue는 `33 -> 32`로 줄었다.
+  - [x] Validation issue는 `0`이다.
+  - [ ] Projection 결과를 semantic/full_scan approval 근거로 쓰지 않는다.
+  - [ ] Full375 collateral GO 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- Gate: source-context projection contract `GO_UNIT_AND_PROJECTION`, expected-title `NO-GO / 15 of 57`, repair queue `REVIEW-LOCKED / 32`, runtime replay `NOT_RUN_PROJECTION_ONLY`, full375 collateral `NO-GO`, search evidence `REVIEW`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop521 post-Loop520 queue refresh 품질 게이트
 
 - 근거:

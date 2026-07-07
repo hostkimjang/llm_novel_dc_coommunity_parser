@@ -1,0 +1,178 @@
+{
+  "title": "Loop522 context-preserving projection 큐 감소 요약",
+  "status": "rendered",
+  "language": "ko",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "Loop522 context-preserving projection 큐 감소 요약",
+    "generatedAt": "2026-07-07T13:00:00+09:00",
+    "blocks": [
+      {
+        "id": "intro",
+        "type": "markdown",
+        "body": "# Loop522 context-preserving projection 큐 감소 요약\n\nLoop522는 새 runtime replay가 아니라 stored result row의 source context를 보존한 final publication sync projection이다. Loop521에서 새로 repair queue에 들어간 11708478은 댓글 작성자 답변 alias와 검색/공식 근거가 함께 보존되면 safe_resolved/publish로 유지된다. 이 결과로 expected-title pass는 14에서 15로 늘고 repair queue는 33에서 32로 줄었다. 단 full375 collateral은 여전히 NO-GO이며 semantic_quality=REVIEW-LOCKED, full_scan_approval=false를 유지한다."
+      },
+      {
+        "id": "chart_block",
+        "type": "chart",
+        "chartId": "queue_delta_chart"
+      },
+      {
+        "id": "table_block",
+        "type": "table",
+        "tableId": "gate_delta_table"
+      }
+    ],
+    "charts": [
+      {
+        "id": "queue_delta_chart",
+        "title": "Loop521 대비 Loop522 큐 변화",
+        "subtitle": "source context 보존 projection으로 actionable repair queue가 1건 감소했다.",
+        "dataset": "queue_delta_long",
+        "type": "bar",
+        "source": {
+          "query": {
+            "description": "Loop521과 Loop522의 expected-title pass, failure queue, repair queue 행 수 비교",
+            "sql": "SELECT metric, loop, value FROM queue_delta_long"
+          }
+        },
+        "encodings": {
+          "x": {
+            "field": "metric"
+          },
+          "y": {
+            "field": "value"
+          },
+          "color": {
+            "field": "loop"
+          }
+        }
+      }
+    ],
+    "tables": [
+      {
+        "id": "gate_delta_table",
+        "title": "Loop522 gate delta",
+        "dataset": "gate_delta",
+        "source": {
+          "query": {
+            "description": "Loop521 대비 Loop522 expected-title audit과 repair queue 변화 요약",
+            "sql": "SELECT metric, loop521, loop522, delta, gate_boundary FROM gate_delta"
+          }
+        },
+        "columns": [
+          {
+            "field": "metric",
+            "label": "항목"
+          },
+          {
+            "field": "loop521",
+            "label": "Loop521"
+          },
+          {
+            "field": "loop522",
+            "label": "Loop522"
+          },
+          {
+            "field": "delta",
+            "label": "변화"
+          },
+          {
+            "field": "gate_boundary",
+            "label": "게이트 경계"
+          }
+        ],
+        "defaultSort": {
+          "field": "metric",
+          "direction": "asc"
+        }
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "status": "ready",
+    "generatedAt": "2026-07-07T13:00:00+09:00",
+    "datasets": {
+      "gate_delta": [
+        {
+          "metric": "expected_safe_resolved_pass",
+          "loop521": 14,
+          "loop522": 15,
+          "delta": 1,
+          "gate_boundary": "NO-GO 유지"
+        },
+        {
+          "metric": "failure_queue_rows",
+          "loop521": 43,
+          "loop522": 42,
+          "delta": -1,
+          "gate_boundary": "actionable 감소"
+        },
+        {
+          "metric": "repair_queue_rows",
+          "loop521": 33,
+          "loop522": 32,
+          "delta": -1,
+          "gate_boundary": "runtime replay allowed 0"
+        },
+        {
+          "metric": "publication_contract_violations",
+          "loop521": 0,
+          "loop522": 0,
+          "delta": 0,
+          "gate_boundary": "GO 유지"
+        },
+        {
+          "metric": "post_11708478_queue_presence",
+          "loop521": 1,
+          "loop522": 0,
+          "delta": -1,
+          "gate_boundary": "source-context artifact 해소"
+        }
+      ],
+      "queue_delta_long": [
+        {
+          "metric": "expected pass",
+          "loop": "Loop521",
+          "value": 14
+        },
+        {
+          "metric": "expected pass",
+          "loop": "Loop522",
+          "value": 15
+        },
+        {
+          "metric": "failure queue",
+          "loop": "Loop521",
+          "value": 43
+        },
+        {
+          "metric": "failure queue",
+          "loop": "Loop522",
+          "value": 42
+        },
+        {
+          "metric": "repair queue",
+          "loop": "Loop521",
+          "value": 33
+        },
+        {
+          "metric": "repair queue",
+          "loop": "Loop522",
+          "value": 32
+        }
+      ]
+    }
+  },
+  "validation": {
+    "validate_artifact": "PASS",
+    "render_artifact": "PASS"
+  },
+  "gate": {
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "completion_criterion": "full375 collateral GO + full_scan 경로 정의"
+  }
+}

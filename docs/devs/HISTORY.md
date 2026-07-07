@@ -1,5 +1,18 @@
 # Development History
 
+## 2026-07-07 - Loop522 context-preserving projection sync
+
+- `_sync_final_publication_ledger_contract(...)`가 stored result row wrapper를 받으면 runtime postprocess와 같은 source context를 nested `analysis_result` sync payload에 주입하도록 보강했다.
+- `tests/test_expert_main_comment_metadata.py`에 댓글 alias current-work bridge 보존 계약 테스트를 추가했다.
+- 새 runtime replay는 실행하지 않았고, Loop515 runtime result를 current-code context-preserving projection으로 다시 생성했다.
+- `11708478`은 `safe_resolved/publish`로 유지되어 Loop522 repair queue에서 빠졌다.
+- Expected-title audit는 `NO-GO / 15 of 57`, failure queue는 `42`, repair queue는 `32`다.
+- Publication contract는 `GO / 57 rows / 0 violations`다.
+- Data Analytics artifact는 `docs/devs/loop522_context_preserving_data_analytics_artifact.json`이고 validate/render PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_522_REPORT_20260707.md`, state는 `docs/devs/loop522_context_preserving_projection_state_20260707.json`이다.
+- 다음 runtime/test run은 사용자 지시에 따라 `--parallel 16`과 웹 dashboard `http://127.0.0.1:8080` 기본 부착을 유지한다.
+- Gate는 source-context projection contract `GO_UNIT_AND_PROJECTION`, runtime replay `NOT_RUN_PROJECTION_ONLY`, full375 collateral `NO-GO`, search evidence `REVIEW`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop521 post-Loop520 queue refresh
 
 - 새 runtime replay는 실행하지 않고 Loop520 projection result를 expected-title audit과 repair queue에 다시 연결했다.
