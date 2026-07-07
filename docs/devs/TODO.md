@@ -1,5 +1,22 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop543 TODO
+
+- 상태 업데이트: Loop542 title mismatch pending `2`건을 projection-only publish-class contract로 닫았다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 런을 발주하지 않았다.
+- [x] `11660277` expected audit update/exclusion projection contract를 닫았다.
+- [x] `11718098` canonical cleanup/URL correction projection contract를 닫았다.
+- [x] `11694063` native-web disambiguation hold를 유지했다.
+- [x] Publication contract는 `GO / 375 rows / 0 violations`다.
+- [x] Title mismatch post-apply release audit은 pending `0`, no-release `1`, release candidate `2`, runtime allowed `0`이다.
+- [x] B1 release audit은 release candidate `1`, runtime allowed `0`으로 유지됐다.
+- [x] py_compile PASS, 관련 unittest `17` tests PASS다.
+- [ ] `11660277`/`11718098` release candidate를 runtime/full_scan approval로 승격하지 않는다.
+- [ ] `11694063` native-web disambiguation을 수행한다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: title mismatch release `REVIEW-LOCKED / pending 0 / release candidate 2 / runtime allowed 0`, B1 release `REVIEW-LOCKED / release candidate 1 / runtime allowed 0`, publication contract `GO`, full375 collateral `NO-GO / residual 100`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop542 TODO
 
 - 상태 업데이트: B1 expected-restore `11669933`을 projection-only로 적용하고 B1/title mismatch release audit을 갱신했다. Goal은 완료가 아니다.
@@ -10,10 +27,10 @@
 - [x] B1 post-apply release audit은 pending `0`, no-release `10`, release candidate `1`, runtime allowed `0`이다.
 - [x] Title mismatch release audit은 pending `2`, no-release `1`, runtime allowed `0`이다.
 - [x] Title mismatch release audit enum과 focused tests를 추가했다.
-- [x] JSON parse PASS, py_compile PASS, 관련 unittest `15` tests PASS, `git diff --check` PASS다.
+- [x] JSON parse PASS, py_compile PASS, 관련 unittest `19` tests PASS, `git diff --check` PASS다.
 - [ ] `11669933` release candidate를 runtime/full_scan approval로 승격하지 않는다.
-- [ ] `11660277` expected audit update/exclusion projection contract를 닫는다.
-- [ ] `11718098` canonical cleanup/official URL correction projection contract를 닫는다.
+- [x] `11660277` expected audit update/exclusion projection contract를 Loop543에서 닫았다.
+- [x] `11718098` canonical cleanup/official URL correction projection contract를 Loop543에서 닫았다.
 - [ ] `11694063` native-web disambiguation hold를 유지한다.
 - [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.

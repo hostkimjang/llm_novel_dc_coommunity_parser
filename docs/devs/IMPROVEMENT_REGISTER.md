@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260707-543 - Title mismatch publish-class projection contract
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | BLOCKED | 새 runtime/bounded/full375 실행 없음, allowed rows `0` | full375 collateral 전 replay 금지 |
+| Title mismatch pending | CLOSED_PROJECTION | pending `2 -> 0`, applied `2` | release candidate를 approval로 승격 금지 |
+| 11660277 | REVIEW-LOCKED | `아카메디 아카데미` release candidate | expected audit update 증거로만 보존 |
+| 11718098 | REVIEW-LOCKED | `마법 좋아좋아좋아`, public URL `null` | 오염 URL 재게시 금지 |
+| 11694063 | HOLD | native-web disambiguation hold/no-release | stronger native-web 검증 전 유지 |
+| Publication contract | GO | `375` rows, violation `0` | collateral gate와 분리 유지 |
+| Full375 collateral | NO-GO | residual `100` 유지 | full375 재검증 전 승인 금지 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: title mismatch release `REVIEW-LOCKED / pending 0 / release candidate 2 / runtime allowed 0`, B1 release `REVIEW-LOCKED / release candidate 1 / runtime allowed 0`, publication contract `GO`, full375 collateral `NO-GO / residual 100`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-542 - B1 expected-restore projection 적용과 title mismatch release audit
 
 | 항목 | 상태 | 근거 | 다음 |

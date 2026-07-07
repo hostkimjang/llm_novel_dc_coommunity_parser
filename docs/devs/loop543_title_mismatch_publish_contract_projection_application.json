@@ -1,0 +1,59 @@
+{
+  "report_type": "post_verdict_projection_publish_contract_application",
+  "projection_id": "loop543_title_mismatch_publish_contract_projection",
+  "generated_at": "2026-07-07T18:41:47",
+  "source_contract_plan": "loop541_title_mismatch_shared_gate_contract_plan",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "projection_rows": 375,
+    "contract_plan_rows": 3,
+    "publish_contract_plan_rows": 2,
+    "applied_publish_contract_rows": 2,
+    "restore_plan_rows": 0,
+    "applied_restore_rows": 0,
+    "applied_expected_audit_update_rows": 1,
+    "applied_canonical_cleanup_rows": 1,
+    "validation_issue_count": 0,
+    "skipped_contract_action_counts": {
+      "native_web_disambiguation_hold_contract_case": 1
+    },
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "applied_rows": [
+    {
+      "post_id": 11660277,
+      "contract_action": "expected_audit_update_exclusion_contract_case",
+      "target_title": "아카메디 아카데미",
+      "target_url": "https://novelpia.com/novel/22299",
+      "superseded_projection_candidate": {
+        "official_title": "아카메디 아카데미 본 사람?",
+        "official_url": null,
+        "source": "expected_audit_update_exclusion_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11718098,
+      "contract_action": "canonical_cleanup_or_url_correction_contract_case",
+      "target_title": "마법 좋아좋아좋아",
+      "target_url": null,
+      "superseded_projection_candidate": {
+        "official_title": "마법 좋아, 마법과 좋아",
+        "official_url": null,
+        "source": "canonical_cleanup_or_url_correction_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    }
+  ],
+  "approval_boundary": {
+    "projection_application_is_not_runtime_replay": true,
+    "release_candidate_is_not_full_scan_approval": true,
+    "runtime_replay_before_full375_collateral_forbidden": true,
+    "full375_collateral_remains_no_go": true
+  }
+}

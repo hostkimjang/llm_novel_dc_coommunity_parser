@@ -1,5 +1,22 @@
 # Development Checklist
 
+## 2026-07-07 Loop543 title mismatch publish-class contract projection 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 런을 실행하지 않았다.
+- [x] `expected_audit_update_exclusion_contract_case`와 `canonical_cleanup_or_url_correction_contract_case`를 projection-only publish-class contract로 적용했다.
+- [x] `11660277`은 public title `아카메디 아카데미`, URL `https://novelpia.com/novel/22299`로 수렴했다.
+- [x] `11718098`은 public title `마법 좋아좋아좋아`, URL `null`로 수렴했다.
+- [x] `11694063`은 native-web disambiguation hold/no-release로 유지했다.
+- [x] Publication contract는 `GO / 375 rows / 0 violations`다.
+- [x] Title mismatch release audit은 pending `0`, no-release `1`, release candidate `2`, violation `0`, runtime allowed `0`이다.
+- [x] B1 release audit은 pending `0`, no-release `10`, release candidate `1`, runtime allowed `0`으로 유지됐다.
+- [x] py_compile PASS, 관련 unittest `17` tests PASS다.
+- [ ] Release candidate `11660277`/`11718098`을 runtime/full_scan approval로 승격하지 않는다.
+- [ ] `11694063`은 native-web disambiguation 전 hard-hold를 유지한다.
+- [ ] Dashboard 상태를 semantic/full_scan approval 근거로 쓰지 않는다.
+- [ ] 완료 기준은 `full375 collateral GO + full_scan 경로 정의`다.
+- Gate: title mismatch release `REVIEW-LOCKED / pending 0 / release candidate 2 / runtime allowed 0`, B1 release `REVIEW-LOCKED / release candidate 1 / runtime allowed 0`, publication contract `GO`, full375 collateral `NO-GO / residual 100`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop542 expected-restore/release audit 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 런을 실행하지 않았다.
@@ -9,7 +26,7 @@
 - [x] B1 post-apply release audit은 pending `0`, no-release `10`, release candidate `1`, violation `0`, runtime allowed `0`이다.
 - [x] Title mismatch release audit action enum을 확장했다.
 - [x] Title mismatch release audit은 pending `2`, no-release `1`, release candidate `0`, violation `0`, runtime allowed `0`이다.
-- [x] JSON parse PASS, py_compile PASS, 관련 unittest `15` tests PASS, `git diff --check` PASS다.
+- [x] JSON parse PASS, py_compile PASS, 관련 unittest `19` tests PASS, `git diff --check` PASS다.
 - [ ] B1 release candidate `11669933`을 runtime/full_scan approval로 승격하지 않는다.
 - [ ] `11660277` expected audit update/exclusion projection contract를 별도로 닫는다.
 - [ ] `11718098` canonical cleanup/URL correction projection contract를 별도로 닫는다.

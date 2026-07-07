@@ -1,5 +1,29 @@
 # Verification Results
 
+## 2026-07-07 Loop543 title mismatch publish-class contract projection 적용
+
+- 코드:
+  - `tools/apply_post_verdict_expected_restore_projection_contract.py`가 `expected_audit_update_exclusion_contract_case`와 `canonical_cleanup_or_url_correction_contract_case`를 projection-only publish-class contract로 적용한다.
+  - `tests/test_apply_post_verdict_expected_restore_projection_contract.py`에 expected audit update와 canonical cleanup 적용 테스트를 추가했다.
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_543_REPORT_20260707.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop543_title_mismatch_publish_contract_projection_result.json`
+  - `docs/devs/loop543_title_mismatch_publish_contract_projection_application.json`
+  - `docs/devs/loop543_title_mismatch_post_apply_release_gate_audit.json`
+  - `docs/devs/loop543_title_mismatch_publish_contract_publication_contract_audit.json`
+- 검증:
+  - Title mismatch projection application: PASS, applied `2`, validation issue `0`.
+  - Publication contract: PASS, `GO / 375 rows / 0 violations`.
+  - Title mismatch post-apply release audit: PASS, pending `0`, no-release `1`, release candidate `2`, runtime allowed `0`.
+  - B1 release audit after projection: PASS, pending `0`, no-release `10`, release candidate `1`, runtime allowed `0`.
+  - py_compile: PASS, related tool/test.
+  - unittest: PASS, `17` tests.
+- 결과:
+  - `11660277`은 `아카메디 아카데미` release candidate가 됐다.
+  - `11718098`은 `마법 좋아좋아좋아` release candidate가 됐고 public URL은 `null`로 유지했다.
+  - `11694063`은 native-web disambiguation hold가 no-release로 보존됐다.
+- Gate: title mismatch release `REVIEW-LOCKED / pending 0 / no-release 1 / release candidate 2 / runtime allowed 0`, B1 release `REVIEW-LOCKED / release candidate 1 / runtime allowed 0`, publication contract `GO`, full375 collateral `NO-GO / residual 100`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop542 B1 expected-restore projection 적용과 title mismatch release audit
 
 - 코드:

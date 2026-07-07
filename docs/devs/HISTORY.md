@@ -1,5 +1,19 @@
 # Development History
 
+## 2026-07-07 - Loop543 title mismatch publish-class contract projection 적용
+
+- 새 runtime replay, bounded run, full375 대형 런은 실행하지 않았다.
+- Loop542 title mismatch pending `2`건을 projection-only publish-class contract로 닫았다.
+- `11660277`은 `아카메디 아카데미` release candidate가 됐고 URL은 `https://novelpia.com/novel/22299`다.
+- `11718098`은 `마법 좋아좋아좋아` release candidate가 됐고 public URL은 오염 URL 방지를 위해 `null`이다.
+- `11694063`은 native-web disambiguation hold/no-release로 유지했다.
+- Publication contract는 `GO / 375 rows / 0 violations`다.
+- Title mismatch post-apply release audit은 pending `0`, no-release `1`, release candidate `2`, violation `0`, runtime allowed `0`이다.
+- B1 release audit은 pending `0`, no-release `10`, release candidate `1`, runtime allowed `0`으로 유지됐다.
+- 검증은 py_compile PASS, 관련 unittest `17` tests PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_543_REPORT_20260707.md`다.
+- Gate는 title mismatch release `REVIEW-LOCKED / pending 0 / release candidate 2`, B1 release `REVIEW-LOCKED / release candidate 1`, publication contract `GO`, full375 collateral `NO-GO / residual 100`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop542 B1 expected-restore projection 적용과 title mismatch release audit
 
 - 새 runtime replay, bounded run, full375 대형 런은 실행하지 않았다.
@@ -10,7 +24,7 @@
 - `tools/audit_post_verdict_promotion_gate_release_contract.py`는 title mismatch `expected_audit_update`, `native_web_disambiguation_hold`, `canonical_cleanup` action을 해석한다.
 - Title mismatch release audit은 pending `2`, no-release `1`, release candidate `0`, violation `0`, runtime allowed `0`이다.
 - `11660277`과 `11718098`은 projection contract pending이고, `11694063`은 no-release hold가 보존됐다.
-- 검증은 JSON parse PASS, py_compile PASS, 관련 unittest `15` tests PASS, `git diff --check` PASS다.
+- 검증은 JSON parse PASS, py_compile PASS, 관련 unittest `19` tests PASS, `git diff --check` PASS다.
 - Report는 `docs/devs/loop_reports/LOOP_542_REPORT_20260707.md`다.
 - Gate는 B1 release `REVIEW-LOCKED / release candidate 1`, title mismatch `REVIEW-LOCKED / pending 2`, publication contract `GO`, full375 collateral `NO-GO / residual 100`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
 
