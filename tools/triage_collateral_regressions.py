@@ -128,9 +128,9 @@ def build_report(compare: dict[str, Any], *, sample_limit: int = 12) -> dict[str
         "samples_by_regression_bucket": samples,
         "rows": triaged,
         "next_actions": [
-            "P0 wrong_work_title_flip/null_to_resolved/resolved_to_null rows must receive blind judge or source-native review before any collateral approval.",
-            "Background full375/bounded runs remain monitoring evidence only until their own result and manifest complete.",
-            "Keep semantic_quality=REVIEW-LOCKED and full_scan_approval=false.",
+            "P0 wrong_work_title_flip/null_to_resolved/resolved_to_null 행은 collateral approval 전에 blind judge 또는 source-native review를 받아야 한다.",
+            "background full375/bounded run은 자체 결과와 manifest가 완료되기 전까지 monitoring evidence로만 둔다.",
+            "semantic_quality=REVIEW-LOCKED, full_scan_approval=false를 유지한다.",
         ],
     }
 
@@ -138,7 +138,7 @@ def build_report(compare: dict[str, Any], *, sample_limit: int = 12) -> dict[str
 def write_markdown(path: Path, report: dict[str, Any], *, compare_path: Path) -> None:
     summary = report["summary"]
     lines = [
-        "# Collateral 183 regression triage",
+        f"# Collateral {summary['triaged_regression_rows']} regression triage",
         "",
         f"- source compare: `{compare_path.as_posix()}`",
         f"- gate: `{report['gate']}`",

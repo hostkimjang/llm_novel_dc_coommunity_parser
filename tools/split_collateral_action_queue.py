@@ -43,6 +43,8 @@ def _counter_to_dict(counter: Counter[str]) -> dict[str, int]:
 def _priority_for_group(action: str, labels: Counter[str]) -> str:
     if labels.get("REPROCESS") and action.startswith(REPAIR_PREFIXES):
         return "P0"
+    if action.startswith("p0_"):
+        return "P0"
     if labels.get("INFO_MISSING") or action.startswith("p1_"):
         return "P1"
     if labels.get("REPROCESS"):
@@ -95,9 +97,11 @@ def _coerce_post_id(value: Any) -> int | Any:
 
 def _unreviewed_regression_entry(row: dict[str, Any], source_review_id: str | None) -> dict[str, Any]:
     bucket = str(row.get("triage_bucket") or "unknown")
+    priority = str(row.get("priority") or "P1").strip().upper()
+    action_priority = priority.lower() if priority in {"P0", "P1", "P2"} else "p1"
     actions = [
         "source_native_or_blind_review_required",
-        f"p1_{bucket}_review_required",
+        f"{action_priority}_{bucket}_review_required",
     ]
     return {
         "post_id": row.get("post_id"),
@@ -118,7 +122,7 @@ def _unreviewed_regression_entry(row: dict[str, Any], source_review_id: str | No
         "after_title": row.get("after_title"),
         "before_url": row.get("before_url"),
         "after_url": row.get("after_url"),
-        "priority": row.get("priority"),
+        "priority": priority,
         "collateral_status": row.get("status"),
     }
 
@@ -407,7 +411,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Split a combined collateral source-native review into residual action groups."
     )
-    parser.add_argument("--combined-review", required=True, type=Path)
+    parser.add_argument("--combined-review", type=Path, default=None)
     parser.add_argument("--queue-id", default="collateral_residual_action_queue")
     parser.add_argument("--collateral-triage", type=Path, default=None)
     parser.add_argument(
@@ -449,8 +453,18 @@ def main() -> int:
             and row.get("is_regression") is True
             and str(row.get("priority") or "") in include_priorities
         ]
+    combined_review = (
+        load_json(args.combined_review)
+        if args.combined_review
+        else {
+            "review_id": f"{args.queue_id}_triage_only_source",
+            "gate": "REVIEW-LOCKED",
+            "summary": {},
+            "rows": [],
+        }
+    )
     queue = build_residual_queue(
-        load_json(args.combined_review),
+        combined_review,
         queue_id=args.queue_id,
         exclude_post_ids=exclude_post_ids,
         unreviewed_regression_rows=unreviewed_rows,

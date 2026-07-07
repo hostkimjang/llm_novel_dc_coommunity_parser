@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260708-580 - Candidate-set projection contract and full375 recheck
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | 필요한 test run만 `--parallel 16` + dashboard attached로 실행 |
+| Candidate-set projection | REVIEW-LOCKED | 계약 `10`, restore `4`, hold `6`, validation issue `0` | release 후보를 approval로 세지 않음 |
+| Release audit | REVIEW-LOCKED | violation `0`, pending `0`, release candidate `4`, no-release `6` | full375 GO 전 release 금지 |
+| Publication contract | GO_PROJECTION_CONTRACT | `375` rows, violation `0` | full_scan approval로 오해 금지 |
+| Full375 collateral | NO-GO | changed `159`, raw regression `86`, runtime counts missing | P0 86 배치 review 후 재평가 |
+| Residual batch queue | REVIEW-LOCKED | P0 `86`, safe_loss `41`, unsafe promotion `24`, wrong_work `21` | source-native 또는 blind judge 배치 처리 |
+| Test run dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | 다음 run `--parallel 16`, dashboard ON, `--no-dashboard` 금지 | 진행 관측용으로만 사용 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: candidate-set projection `REVIEW-LOCKED / 10`, publication contract `GO`, full375 collateral `NO-GO / raw 86`, residual batch queue `REVIEW-LOCKED / 86`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-578 - Candidate-set contract plan and dashboard attachment
 
 | 항목 | 상태 | 근거 | 다음 |

@@ -1,5 +1,40 @@
 # Verification Results
 
+## 2026-07-08 Loop580 candidate-set projection contract와 full375 collateral 재검증
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_580_REPORT_20260708.md`
+  - `tools/apply_candidate_set_projection_contract.py`
+  - `tools/compare_projection_collateral.py`
+  - `tools/triage_collateral_regressions.py`
+  - `tools/split_collateral_action_queue.py`
+  - `tests/test_apply_candidate_set_projection_contract.py`
+  - `tests/test_audit_post_verdict_promotion_gate_release_contract.py`
+  - `tests/test_split_collateral_action_queue.py`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop580_candidate_set_projection_contract_result.json`
+  - `docs/devs/loop580_candidate_set_projection_contract_application.json/.md`
+  - `docs/devs/loop580_candidate_set_release_contract_audit.json/.md`
+  - `docs/devs/loop580_candidate_set_publication_contract_audit.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop580_candidate_set_full375_projection_collateral_compare.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop580_candidate_set_full375_collateral_triage.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop580_always_on_golden18_full375_candidate_set_projection_gate.json/.md`
+  - `docs/devs/loop580_candidate_set_full375_residual86_batch_action_queue.json/.md`
+- 검증:
+  - Candidate-set projection application: PASS 산출, rows `10`, restore `4`, hold `6`, validation issue `0`.
+  - Release audit: PASS 산출, gate `REVIEW-LOCKED`, violation `0`, pending `0`, release candidate `4`, no-release `6`.
+  - Publication contract convergence: PASS, gate `GO`, row `375`, violation `0`.
+  - Full375 projection collateral compare: PASS 산출, shared `375`, changed `159`, raw regression `86`, gate `NO-GO`.
+  - Always-on gate: PASS 산출, golden18 `GO`, collateral `NO-GO / raw 86 / runtime counts missing`, 전체 `NO-GO`.
+  - Residual batch queue: PASS 산출, P0 `86`, safe_loss `41`, unsafe promotion `24`, wrong_work `21`, validation issue `0`.
+  - Focused unittest: PASS, `46` tests.
+  - Triage/queue unittest: PASS, `6` tests와 보정 후 `5` tests.
+  - py_compile: PASS.
+- 결과:
+  - Candidate-set 계약은 projection/release/publication contract 관점에서 닫혔다.
+  - Full375 collateral은 여전히 시끄러우므로 golden18 PASS는 approval 또는 goal 완료 근거가 아니다.
+  - 다음 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지다.
+- Gate: candidate-set projection `REVIEW-LOCKED / 10`, publication contract `GO`, full375 collateral `NO-GO / raw 86`, residual batch queue `REVIEW-LOCKED / 86`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop579 test-run dashboard 강제 ON
 
 - 산출물:

@@ -1,5 +1,21 @@
 # Developer TODO Index
 
+## 2026-07-08 Loop580 이후
+
+- 상태 업데이트: Candidate-set 계약 적용은 projection/release/publication audit에서 닫혔지만 full375 collateral은 raw `86`건으로 여전히 `NO-GO`다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] `tools/apply_candidate_set_projection_contract.py`로 Loop578 candidate-set 계약 `10`건을 projection-only 적용했다.
+- [x] Restore `4`건, hold `6`건, public identity scrub `2`건, already-blocked 유지 `4`건을 확인했다.
+- [x] Release audit violation `0`, pending `0`, release candidate `4`, no-release `6`을 확인했다.
+- [x] Publication contract convergence `GO / 375 rows / 0 violations`를 확인했다.
+- [x] Full375 정적 collateral compare를 실행했고 changed `159`, raw regression `86`을 확인했다.
+- [x] Always-on gate를 갱신했고 golden18 `GO` + collateral `NO-GO / raw 86 / runtime counts missing`로 전체 `NO-GO`를 유지했다.
+- [x] Residual queue를 단건이 아니라 P0 `86`건 batch로 재구성했다.
+- [ ] P0 `86`건은 source-native 또는 blind judge 배치로 처리한다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지 상태로 실행한다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: candidate-set projection `REVIEW-LOCKED / 10`, publication contract `GO`, full375 collateral `NO-GO / raw 86`, residual batch queue `REVIEW-LOCKED / 86`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop579 이후
 
 - 상태 업데이트: 테스트런 진행상황 확인용 웹 dashboard를 runner-level 기본 강제 ON으로 고정했다. Goal은 완료가 아니다.

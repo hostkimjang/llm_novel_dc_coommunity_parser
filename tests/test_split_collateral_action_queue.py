@@ -213,6 +213,53 @@ class SplitCollateralActionQueueTest(unittest.TestCase):
         self.assertEqual(p1_group["owner_mode"], "SOURCE_NATIVE_OR_BLIND_REVIEW")
         self.assertEqual(p1_group["post_ids"], [22])
 
+    def test_can_build_triage_only_residual_queue(self) -> None:
+        queue = build_residual_queue(
+            {
+                "review_id": "unit_triage_only",
+                "gate": "REVIEW-LOCKED",
+                "summary": {},
+                "rows": [],
+            },
+            generated_at="2026-07-08T00:00:00",
+            queue_id="unit_triage_only_queue",
+            unreviewed_regression_rows=[
+                {
+                    "post_id": 30,
+                    "status": "resolved_to_different_title",
+                    "is_regression": True,
+                    "priority": "P0",
+                    "triage_bucket": "wrong_work_title_flip",
+                    "before_title": "Before",
+                    "after_title": "After",
+                },
+                {
+                    "post_id": 31,
+                    "status": "resolved_to_null",
+                    "is_regression": True,
+                    "priority": "P0",
+                    "triage_bucket": "safe_loss_resolved_to_null",
+                    "before_title": "Before Null",
+                    "after_title": None,
+                },
+            ],
+        )
+
+        self.assertEqual(queue["gate"], "REVIEW-LOCKED")
+        self.assertEqual(queue["summary"]["source_rows"], 0)
+        self.assertEqual(queue["summary"]["residual_action_queue_rows"], 2)
+        self.assertEqual(queue["summary"]["unreviewed_regression_rows_added"], 2)
+        self.assertEqual(queue["summary"]["label_counts"], {"INFO_MISSING": 2})
+        self.assertEqual(queue["summary"]["validation_issue_count"], 0)
+        self.assertEqual([row["post_id"] for row in queue["rows"]], [30, 31])
+        wrong_work_group = next(
+            group
+            for group in queue["action_groups"]
+            if group["action"] == "p0_wrong_work_title_flip_review_required"
+        )
+        self.assertEqual(wrong_work_group["priority"], "P0")
+        self.assertEqual(wrong_work_group["post_ids"], [30])
+
 
 if __name__ == "__main__":
     unittest.main()

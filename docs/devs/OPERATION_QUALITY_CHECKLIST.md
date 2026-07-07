@@ -1,5 +1,27 @@
 # Operation Quality Checklist
 
+## 2026-07-08 Loop580 candidate-set projection/full375 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_580_REPORT_20260708.md`.
+  - [x] Candidate-set projection application 기록 완료: `docs/devs/loop580_candidate_set_projection_contract_application.json/.md`.
+  - [x] Release audit 기록 완료: `docs/devs/loop580_candidate_set_release_contract_audit.json/.md`.
+  - [x] Publication contract audit 기록 완료: `docs/devs/loop580_candidate_set_publication_contract_audit.json/.md`.
+  - [x] Full375 collateral compare/triage 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop580_candidate_set_full375_projection_collateral_compare.json/.md`, `loop580_candidate_set_full375_collateral_triage.json/.md`.
+  - [x] Always-on gate 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop580_always_on_golden18_full375_candidate_set_projection_gate.json/.md`.
+  - [x] Residual batch queue 기록 완료: `docs/devs/loop580_candidate_set_full375_residual86_batch_action_queue.json/.md`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+  - [x] Restore `4`건은 release 후보일 뿐 approval로 승격하지 않았다.
+  - [x] Hold `6`건은 public identity scrub + candidate 보존으로 수렴했다.
+  - [x] Publication contract는 `GO / 375 rows / 0 violations`지만 full375 approval로 승격하지 않았다.
+  - [x] Full375 raw regression `86`이 남아 collateral `NO-GO`를 유지했다.
+  - [x] Residual은 P0 `86`건 batch로 처리하도록 재구성했다.
+  - [x] 다음 test/runtime run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지다.
+  - [x] Dashboard는 진행 확인 도구이며 semantic/full_scan approval 근거가 아니다.
+  - [x] Full375 collateral `GO` 전 goal completion을 선언하지 않는다.
+- Gate: candidate-set projection `REVIEW-LOCKED / 10`, publication contract `GO`, full375 collateral `NO-GO / raw 86`, residual batch queue `REVIEW-LOCKED / 86`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop578 candidate-set 계약 계획 품질 게이트
 
 - 근거:

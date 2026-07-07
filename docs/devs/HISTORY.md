@@ -1,5 +1,21 @@
 # Development History
 
+## 2026-07-08 - Loop580 candidate-set projection contract and full375 collateral recheck
+
+- 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+- `tools/apply_candidate_set_projection_contract.py`를 추가해 Loop578 candidate-set 계약 계획 `10`건을 Loop577 full375 projection에 적용했다.
+- 적용 결과는 restore `4`, hold `6`, public identity scrub `2`, already-blocked 유지 `4`, validation issue `0`이다.
+- `tools/audit_post_verdict_promotion_gate_release_contract.py`는 candidate-set restore/rebuild/no-publish action을 release audit enum으로 다룬다.
+- Release audit은 violation `0`, pending `0`, release candidate `4`, no-release `6`이다.
+- Publication contract convergence는 `GO / 375 rows / 0 violations`다.
+- `tools/compare_projection_collateral.py`를 추가해 projection-only full375 collateral compare를 재사용 가능하게 했다.
+- Full375 정적 collateral은 changed `159`, raw regression `86`으로 줄었지만 `NO-GO`다.
+- Always-on gate는 golden18 `GO`, collateral `NO-GO / raw 86 / runtime counts missing`로 전체 `NO-GO`다.
+- `tools/split_collateral_action_queue.py`는 triage-only residual batch queue를 만들 수 있게 됐고, residual P0 `86`건을 batch로 묶었다.
+- Report는 `docs/devs/loop_reports/LOOP_580_REPORT_20260708.md`다.
+- 다음 test/runtime run은 계속 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 실행한다.
+- Gate는 candidate-set projection `REVIEW-LOCKED / 10`, publication contract `GO`, full375 collateral `NO-GO / raw 86`, residual batch queue `REVIEW-LOCKED / 86`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop579 test-run dashboard force-on guard
 
 - 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.

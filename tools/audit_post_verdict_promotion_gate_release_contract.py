@@ -16,6 +16,9 @@ MISMATCH_REVIEW = "restore_target_runtime_mismatch_review_required"
 EXPECTED_AUDIT_UPDATE = "expected_audit_update_exclusion_contract_case"
 NATIVE_WEB_HOLD = "native_web_disambiguation_hold_contract_case"
 CANONICAL_CLEANUP = "canonical_cleanup_or_url_correction_contract_case"
+CANDIDATE_SET_RESTORE = "candidate_set_expected_restore_contract_case"
+CANDIDATE_SET_REBUILD_HOLD = "candidate_set_rebuild_required_before_publish"
+NO_PUBLISH_INTENT_GUARD = "no_publish_intent_guard_contract_case"
 
 
 def load_json(path: Path) -> Any:
@@ -155,23 +158,31 @@ def _audit_row(plan_row: dict[str, Any], projection_row: dict[str, Any] | None) 
     satisfied_no_release = False
     release_candidate = False
 
-    if action == RESTORE:
+    if action in {RESTORE, CANDIDATE_SET_RESTORE}:
+        if action == CANDIDATE_SET_RESTORE:
+            restore_prefix = "candidate_set_expected_restore"
+            candidate_leak_code = "current_candidate_leaked_after_candidate_set_restore_plan"
+            unexpected_code = "unexpected_public_identity_after_candidate_set_restore_plan"
+        else:
+            restore_prefix = "expected_restore"
+            candidate_leak_code = "current_candidate_leaked_after_expected_restore_plan"
+            unexpected_code = "unexpected_public_identity_after_expected_restore_plan"
         if candidate_leaked:
-            release_gate_state = "expected_restore_current_candidate_leak_violation"
+            release_gate_state = f"{restore_prefix}_current_candidate_leak_violation"
             violation = True
-            violation_code = "current_candidate_leaked_after_expected_restore_plan"
+            violation_code = candidate_leak_code
         elif target_published:
-            release_gate_state = "expected_restore_contract_satisfied_release_candidate"
+            release_gate_state = f"{restore_prefix}_contract_satisfied_release_candidate"
             release_candidate = True
         elif not has_public_identity and status == "promotion_blocked":
-            release_gate_state = "expected_restore_contract_pending_projection_not_restored"
+            release_gate_state = f"{restore_prefix}_contract_pending_projection_not_restored"
             pending_contract = True
         elif has_public_identity:
-            release_gate_state = "expected_restore_unexpected_public_identity_violation"
+            release_gate_state = f"{restore_prefix}_unexpected_public_identity_violation"
             violation = True
-            violation_code = "unexpected_public_identity_after_expected_restore_plan"
+            violation_code = unexpected_code
         else:
-            release_gate_state = "expected_restore_contract_pending_unknown_projection_state"
+            release_gate_state = f"{restore_prefix}_contract_pending_unknown_projection_state"
             pending_contract = True
     elif action == SCRUB:
         if candidate_leaked:
@@ -253,6 +264,22 @@ def _audit_row(plan_row: dict[str, Any], projection_row: dict[str, Any] | None) 
         else:
             release_gate_state = "canonical_cleanup_contract_pending_unknown_projection_state"
             pending_contract = True
+    elif action == CANDIDATE_SET_REBUILD_HOLD:
+        if has_public_identity:
+            release_gate_state = "candidate_set_rebuild_hold_public_identity_violation"
+            violation = True
+            violation_code = "candidate_set_rebuild_published_before_candidate_rebuild"
+        else:
+            release_gate_state = "candidate_set_rebuild_preserved_no_release"
+            satisfied_no_release = True
+    elif action == NO_PUBLISH_INTENT_GUARD:
+        if has_public_identity:
+            release_gate_state = "no_publish_intent_guard_public_identity_violation"
+            violation = True
+            violation_code = "intent_guard_published_before_no_publish_contract"
+        else:
+            release_gate_state = "no_publish_intent_guard_preserved_no_release"
+            satisfied_no_release = True
 
     return {
         "post_id": post_id,

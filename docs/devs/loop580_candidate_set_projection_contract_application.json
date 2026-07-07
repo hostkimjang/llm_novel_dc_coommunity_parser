@@ -1,0 +1,128 @@
+{
+  "report_type": "candidate_set_projection_contract_application",
+  "projection_id": "loop580_candidate_set_projection_contract_application",
+  "generated_at": "2026-07-08T03:21:50",
+  "source_contract_plan": "loop578_candidate_set_contract_plan",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "projection_rows": 375,
+    "contract_plan_rows": 10,
+    "candidate_set_contract_rows": 10,
+    "applied_restore_rows": 4,
+    "applied_hold_rows": 6,
+    "applied_candidate_set_rebuild_hold_rows": 5,
+    "applied_no_publish_intent_guard_rows": 1,
+    "scrubbed_public_identity_rows": 2,
+    "already_blocked_hold_rows": 4,
+    "validation_issue_count": 0,
+    "skipped_contract_action_counts": {},
+    "runtime_replay_allowed_rows": 0,
+    "requested_parallel_for_future_runtime": 16,
+    "dashboard_policy": "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+    "dashboard_url": "http://127.0.0.1:8080",
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "applied_rows": [
+    {
+      "post_id": 11660241,
+      "contract_action": "candidate_set_expected_restore_contract_case",
+      "target_title": "이세계 TRPG 게임마스터",
+      "target_url": "https://novelpia.com/novel/242412",
+      "superseded_projection_candidate": {
+        "official_title": "[ 이티알 ] 이 세계 TRPG 마스터",
+        "official_url": "https://novelpia.com/novel/271517",
+        "source": "candidate_set_expected_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11663514,
+      "contract_action": "candidate_set_expected_restore_contract_case",
+      "target_title": "마탄 속의 제국",
+      "target_url": "https://novel.munpia.com/486006",
+      "superseded_projection_candidate": {
+        "official_title": "올바른 슬라임 사용법",
+        "official_url": "https://novelpia.com/novel/268424",
+        "source": "candidate_set_expected_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11671514,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "악신의 총애를 받는 성직자가 되었다",
+      "preserved_candidate_url": "https://ridibooks.com/books/3228117968",
+      "status": "scrubbed_public_identity"
+    },
+    {
+      "post_id": 11674694,
+      "contract_action": "candidate_set_expected_restore_contract_case",
+      "target_title": "21세기 무림세가",
+      "target_url": "https://page.kakao.com/content/49668687",
+      "superseded_projection_candidate": {
+        "official_title": "21세기 무림 인",
+        "official_url": "https://novel.munpia.com/470250",
+        "source": "candidate_set_expected_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11682749,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "묵향",
+      "preserved_candidate_url": "https://series.naver.com/novel/detail.series?productNo=1820151",
+      "status": "preserved_no_release"
+    },
+    {
+      "post_id": 11698870,
+      "contract_action": "no_publish_intent_guard_contract_case",
+      "preserved_candidate_title": "인간실격 히로인들을 수집해버렸다",
+      "preserved_candidate_url": "https://novelpia.com/novel/424663",
+      "status": "scrubbed_public_identity"
+    },
+    {
+      "post_id": 11703658,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "novel.munpia.com›neSrl",
+      "preserved_candidate_url": "https://novel.munpia.com/528703",
+      "status": "preserved_no_release"
+    },
+    {
+      "post_id": 11705231,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "탐식의 재림",
+      "preserved_candidate_url": "https://ridibooks.com/books/2008016338?srsltid=AfmBOor0D2eQqJHQhQ5MP_YVO9iFbWmBP6Mb_pxl60TSAUvek1EgsqiC",
+      "status": "preserved_no_release"
+    },
+    {
+      "post_id": 11710036,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "preserved_candidate_url": "https://novelpia.com/novel/382324",
+      "status": "preserved_no_release"
+    },
+    {
+      "post_id": 11716464,
+      "contract_action": "candidate_set_expected_restore_contract_case",
+      "target_title": "슈라라펜란트",
+      "target_url": "https://ridibooks.com/books/875100425",
+      "superseded_projection_candidate": {
+        "official_title": "슈라라펜란트 - 판타지 웹소설",
+        "official_url": null,
+        "source": "candidate_set_expected_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    }
+  ],
+  "approval_boundary": {
+    "projection_application_is_not_runtime_replay": true,
+    "release_candidate_is_not_full_scan_approval": true,
+    "runtime_replay_before_full375_collateral_forbidden": true,
+    "full375_collateral_remains_no_go": true,
+    "test_runs_require_parallel_16_and_web_dashboard": true
+  }
+}

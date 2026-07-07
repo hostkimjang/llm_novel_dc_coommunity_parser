@@ -23,7 +23,8 @@ from llm_batch.promotion_gate import (  # noqa: E402
 RESTORE = "expected_title_restore_contract_case"
 EXPECTED_AUDIT_UPDATE = "expected_audit_update_exclusion_contract_case"
 CANONICAL_CLEANUP = "canonical_cleanup_or_url_correction_contract_case"
-PUBLISH_CONTRACT_ACTIONS = {RESTORE, EXPECTED_AUDIT_UPDATE, CANONICAL_CLEANUP}
+CANDIDATE_SET_RESTORE = "candidate_set_expected_restore_contract_case"
+PUBLISH_CONTRACT_ACTIONS = {RESTORE, EXPECTED_AUDIT_UPDATE, CANONICAL_CLEANUP, CANDIDATE_SET_RESTORE}
 
 
 def load_json(path: Path) -> Any:
@@ -107,6 +108,7 @@ def _contract_source(action: str) -> str:
         RESTORE: "post_verdict_expected_restore_contract",
         EXPECTED_AUDIT_UPDATE: "post_verdict_expected_audit_update_contract",
         CANONICAL_CLEANUP: "post_verdict_canonical_cleanup_contract",
+        CANDIDATE_SET_RESTORE: "candidate_set_expected_restore_contract",
     }.get(action, "post_verdict_projection_publish_contract")
 
 
@@ -115,6 +117,7 @@ def _contract_metadata_key(action: str) -> str:
         RESTORE: "post_verdict_expected_restore_contract",
         EXPECTED_AUDIT_UPDATE: "post_verdict_expected_audit_update_contract",
         CANONICAL_CLEANUP: "post_verdict_canonical_cleanup_contract",
+        CANDIDATE_SET_RESTORE: "candidate_set_expected_restore_contract",
     }.get(action, "post_verdict_projection_publish_contract")
 
 
@@ -123,6 +126,7 @@ def _contract_applied_reason(action: str) -> str:
         RESTORE: "post_verdict_expected_restore_contract_applied",
         EXPECTED_AUDIT_UPDATE: "post_verdict_expected_audit_update_contract_applied",
         CANONICAL_CLEANUP: "post_verdict_canonical_cleanup_contract_applied",
+        CANDIDATE_SET_RESTORE: "candidate_set_expected_restore_contract_applied",
     }.get(action, "post_verdict_projection_publish_contract_applied")
 
 
@@ -394,6 +398,7 @@ def apply_expected_restore_contract(
         "applied_restore_rows": sum(1 for row in applied_rows if row.get("contract_action") == RESTORE),
         "applied_expected_audit_update_rows": sum(1 for row in applied_rows if row.get("contract_action") == EXPECTED_AUDIT_UPDATE),
         "applied_canonical_cleanup_rows": sum(1 for row in applied_rows if row.get("contract_action") == CANONICAL_CLEANUP),
+        "applied_candidate_set_restore_rows": sum(1 for row in applied_rows if row.get("contract_action") == CANDIDATE_SET_RESTORE),
         "validation_issue_count": len(validation_issues),
         "skipped_contract_action_counts": dict(skipped_counts),
         "runtime_replay_allowed_rows": 0,

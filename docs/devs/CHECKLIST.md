@@ -1,5 +1,23 @@
 # Development Checklist
 
+## 2026-07-08 Loop580 candidate-set projection과 full375 재검증 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 실행하지 않았다.
+- [x] Loop578 candidate-set 계약 `10`건을 Loop577 full375 projection에 projection-only 적용했다.
+- [x] Restore `4`건은 target public identity로 수렴했고 release 후보로만 기록했다.
+- [x] Hold `6`건은 serialized public identity를 scrub하고 candidate ledger/trace에 후보를 보존했다.
+- [x] Release audit은 violation `0`, pending `0`, release candidate `4`, no-release `6`이다.
+- [x] Publication contract는 `GO / 375 rows / 0 violations`다.
+- [x] Full375 collateral compare는 changed `159`, raw regression `86`으로 `NO-GO`다.
+- [x] Always-on gate는 golden18 `GO`, collateral `NO-GO / raw 86 / runtime counts missing`로 전체 `NO-GO`다.
+- [x] Residual은 P0 `86`건 batch queue로 묶었다.
+- [x] Residual bucket은 safe_loss `41`, unsafe promotion `24`, wrong_work `21`이다.
+- [x] 다음 test/runtime run 계약은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지다.
+- [ ] P0 `86`건은 source-native 또는 blind judge 배치로 처리한다.
+- [ ] Dashboard 진행률을 semantic/full_scan approval 근거로 쓰지 않는다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: candidate-set projection `REVIEW-LOCKED / 10`, publication contract `GO`, full375 collateral `NO-GO / raw 86`, residual batch queue `REVIEW-LOCKED / 86`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop579 test-run dashboard 강제 ON 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 실행하지 않았다.

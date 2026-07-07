@@ -326,6 +326,91 @@ class AuditPostVerdictPromotionGateReleaseContractTest(unittest.TestCase):
             "canonical_cleanup_contract_satisfied_release_candidate",
         )
 
+    def test_candidate_set_restore_target_publish_is_release_candidate(self):
+        audit = build_audit(
+            contract_plan={
+                "plan_id": "unit",
+                "gate": "REVIEW-LOCKED",
+                "full_scan_approval": False,
+                "rows": [_plan_row(9, "candidate_set_expected_restore_contract_case")],
+            },
+            projection_rows=[_projection(9, title="Expected", status="safe_resolved", publish=True)],
+            audit_id="unit",
+        )
+
+        self.assertEqual(audit["gate"], "REVIEW-LOCKED")
+        self.assertEqual(audit["summary"]["release_candidate_after_contract_rows"], 1)
+        self.assertEqual(
+            audit["rows"][0]["release_gate_state"],
+            "candidate_set_expected_restore_contract_satisfied_release_candidate",
+        )
+
+    def test_candidate_set_rebuild_hold_blocks_public_identity(self):
+        audit = build_audit(
+            contract_plan={
+                "plan_id": "unit",
+                "gate": "REVIEW-LOCKED",
+                "full_scan_approval": False,
+                "rows": [_plan_row(10, "candidate_set_rebuild_required_before_publish")],
+            },
+            projection_rows=[_projection(10, title="Wrong", status="safe_resolved", publish=True)],
+            audit_id="unit",
+        )
+
+        self.assertEqual(audit["gate"], "NO-GO")
+        self.assertEqual(
+            audit["rows"][0]["violation_code"],
+            "candidate_set_rebuild_published_before_candidate_rebuild",
+        )
+
+    def test_candidate_set_rebuild_hold_preserves_no_release_when_blocked(self):
+        audit = build_audit(
+            contract_plan={
+                "plan_id": "unit",
+                "gate": "REVIEW-LOCKED",
+                "full_scan_approval": False,
+                "rows": [_plan_row(11, "candidate_set_rebuild_required_before_publish")],
+            },
+            projection_rows=[_projection(11)],
+            audit_id="unit",
+        )
+
+        self.assertEqual(audit["summary"]["satisfied_no_release_rows"], 1)
+        self.assertEqual(audit["rows"][0]["release_gate_state"], "candidate_set_rebuild_preserved_no_release")
+
+    def test_no_publish_intent_guard_blocks_public_identity(self):
+        audit = build_audit(
+            contract_plan={
+                "plan_id": "unit",
+                "gate": "REVIEW-LOCKED",
+                "full_scan_approval": False,
+                "rows": [_plan_row(12, "no_publish_intent_guard_contract_case")],
+            },
+            projection_rows=[_projection(12, title="Same Surface Webnovel", status="safe_resolved", publish=True)],
+            audit_id="unit",
+        )
+
+        self.assertEqual(audit["gate"], "NO-GO")
+        self.assertEqual(
+            audit["rows"][0]["violation_code"],
+            "intent_guard_published_before_no_publish_contract",
+        )
+
+    def test_no_publish_intent_guard_preserves_no_release_when_blocked(self):
+        audit = build_audit(
+            contract_plan={
+                "plan_id": "unit",
+                "gate": "REVIEW-LOCKED",
+                "full_scan_approval": False,
+                "rows": [_plan_row(13, "no_publish_intent_guard_contract_case")],
+            },
+            projection_rows=[_projection(13)],
+            audit_id="unit",
+        )
+
+        self.assertEqual(audit["summary"]["satisfied_no_release_rows"], 1)
+        self.assertEqual(audit["rows"][0]["release_gate_state"], "no_publish_intent_guard_preserved_no_release")
+
 
 if __name__ == "__main__":
     unittest.main()
