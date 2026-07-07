@@ -69,6 +69,68 @@ class ApplySourceNativeRepairProjectionContractTest(unittest.TestCase):
         )
         self.assertEqual(identity["publish_contract_trace"]["gate_decision"], identity["promotion_decision"])
 
+    def test_applies_wrong_work_restore_action_through_shared_seed(self):
+        projection = [
+            {
+                "post_id": 12,
+                "title": "무친년은 노맨스여서 별로임",
+                "content": ["거의 1000회찬데 로맨스 없는게"],
+                "comments": ["착즙각은 주시자나"],
+                "analysis_result": {
+                    "identity": {
+                        "candidate_ledger_status": "safe_resolved",
+                        "title_resolution_allowed": True,
+                        "title_resolution_state": "resolved",
+                        "work_resolution": "resolved",
+                        "novel_identity": {
+                            "official_title": "[무친년]이 무림의 미친놈",
+                            "heretic_url": None,
+                            "confidence": "High",
+                        },
+                        "candidate_ledger": {
+                            "candidate_preservation_sources": [
+                                {
+                                    "official_title": "이 무림의 미친년은 나야",
+                                    "heretic_url": "https://novelpia.com/novel/217943",
+                                    "source_tier": "official_detail",
+                                }
+                            ]
+                        },
+                    }
+                },
+            }
+        ]
+        verdicts = {
+            "rows": [
+                {
+                    "post_id": 12,
+                    "review_label": "REPROCESS",
+                    "selected_title": "이 무림의 미친년은 나야",
+                    "selected_url": None,
+                    "source_native_verdict": "source_alias_supports_official_title_after_variant_wrong_work",
+                    "evidence_grade": "Strong",
+                    "action": [
+                        "repair_after_wrong_work",
+                        "shared_promotion_gate_wiring_required",
+                    ],
+                    "rationale_ko": "`무친년`은 원문 작품 별칭이고 C1은 title variant/wrong work다.",
+                }
+            ]
+        }
+
+        result_rows, application = apply_contract(projection, verdicts, application_id="unit")
+
+        identity = result_rows[0]["analysis_result"]["identity"]
+        self.assertEqual(application["summary"]["eligible_restore_rows"], 1)
+        self.assertEqual(application["summary"]["eligible_safe_loss_rows"], 0)
+        self.assertEqual(application["summary"]["eligible_wrong_work_repair_rows"], 1)
+        self.assertEqual(application["summary"]["applied_publish_rows"], 1)
+        self.assertEqual(application["rows"][0]["outcome"], "applied_shared_gate_publish")
+        self.assertIn("repair_after_wrong_work", application["rows"][0]["actions"])
+        self.assertEqual(identity["candidate_ledger_status"], "safe_resolved")
+        self.assertEqual(identity["novel_identity"]["official_title"], "이 무림의 미친년은 나야")
+        self.assertEqual(identity["novel_identity"]["heretic_url"], "https://novelpia.com/novel/217943")
+
     def test_missing_official_url_stays_unpublished(self):
         projection = [
             {

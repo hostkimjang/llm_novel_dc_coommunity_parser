@@ -4242,6 +4242,16 @@ def _sync_allowed_publication_result_contract(
             for value in (scope_state.get("direct_bridge_sources") or [])
             if str(value or "").strip()
         }
+        source_native_projection_seed_publication = bool(
+            "projection_followup_shared_gate_seed_applied" in reason_code_set
+            and (
+                "source_native_review_current_work" in reason_code_set
+                or "source_native_review_current_work" in scope_sources
+            )
+            and _official_detail_url(public_url)
+        )
+        if source_native_projection_seed_publication:
+            return None
         gate_source = ""
         if isinstance(gate_state, dict):
             gate_source = str(gate_state.get("source") or "").strip()
@@ -7135,6 +7145,8 @@ def _apply_projection_followup_promotion_seed(
     ):
         if code not in seed_reason_codes:
             seed_reason_codes.append(code)
+    if "repair_after_wrong_work" in actions:
+        seed_reason_codes.append("source_native_review_overrode_wrong_work_competition")
     if stale_context_hits:
         seed_reason_codes.append("source_native_review_overrode_stale_context_hard_hold")
     normalized_reasons = normalize_scope_reason_codes(seed_reason_codes, scope_kind="current_work")

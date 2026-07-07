@@ -1,5 +1,29 @@
 # Operation Quality Checklist
 
+## 2026-07-08 Loop589 P0 INFO_MISSING source-native 수렴 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_589_REPORT_20260708.md`.
+  - [x] Source-native batch/review 기록 완료: `docs/devs/loop589_p0_info_missing_source_native_batch.json/.md`, `docs/devs/loop589_p0_info_missing_source_native_review.json/.md`, `docs/devs/loop589_p0_info_missing_source_native_verdicts.json/.md`.
+  - [x] Restore application/result 기록 완료: `docs/devs/loop589_p0_info_missing_source_native_restore_projection_application.json/.md`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop589_p0_info_missing_source_native_restore_projection_result.json`.
+  - [x] Candidate-set hold plan/application 기록 완료: `docs/devs/loop589_p0_info_missing_candidate_set_contract_plan.json/.md`, `docs/devs/loop589_p0_info_missing_candidate_set_projection_application.json/.md`.
+  - [x] Combined plan/application/release gate 기록 완료: `docs/devs/loop589_p0_info_missing_combined_contract_plan.json/.md`, `docs/devs/loop589_p0_info_missing_combined_projection_application.json/.md`, `docs/devs/loop589_p0_info_missing_combined_release_gate_audit.json/.md`.
+  - [x] Full375 collateral compare와 always-on gate 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop589_p0_info_missing_full375_collateral_compare.json/.md`, `loop589_always_on_golden18_full375_p0_info_missing_gate.json/.md`.
+  - [x] Residual accounting 기록 완료: `docs/devs/loop589_residual_p0_info_missing_accounting.json/.md`, `docs/devs/loop589_residual46_info_missing_accounting.json/.md`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+  - [x] ACCEPT `4`건은 source-native exclusion 후보일 뿐 approval로 세지 않았다.
+  - [x] Wrong-work restore `2`건은 shared projection seed를 통과했고 publication path violation 없이 release candidate로만 남겼다.
+  - [x] Candidate-set hold `1`건은 후보셋 재구성 전 no-release로 유지했다.
+  - [x] Combined release gate는 violation `0`, release candidate `8`, no-release `6`, runtime allowed `0`이다.
+  - [x] Residual46은 ordinary `29`건 남고, P0 residual은 ordinary `2`건 남는다.
+  - [x] Full375 collateral은 `NO-GO / raw 79 / adjusted 75 / runtime counts missing`이다.
+  - [x] 다음 test/runtime run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지다.
+  - [x] Dashboard health는 `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`로 확인했다.
+  - [x] Dashboard status는 마지막 Loop564 runtime replay `30/30`, `parallel_count=16`, `batch_running=false`다.
+  - [x] Dashboard는 진행 확인 도구이며 semantic/full_scan approval 근거가 아니다.
+- Gate: source-native `REVIEW-LOCKED / ACCEPT 4 / REPROCESS 3`, release `REVIEW-LOCKED`, residual46 `REVIEW-LOCKED / 29`, P0 residual `REVIEW-LOCKED / 2`, full375 collateral `NO-GO / raw 79 / adjusted 75`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop588 native/policy preflight 품질 게이트
 
 - 근거:

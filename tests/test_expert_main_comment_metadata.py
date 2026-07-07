@@ -90,6 +90,137 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         self.assertEqual(identity["publish_contract_trace"]["gate_decision"], identity["promotion_decision"])
         self.assertEqual(identity["publish_ledger"]["gate_decision"], identity["promotion_decision"])
 
+    def test_source_native_wrong_work_projection_seed_survives_competing_candidate_sync(self):
+        result = {
+            "title": "무친년은 노맨스여서 별로임",
+            "content": ["거의 1000회찬데 로맨스 없는게"],
+            "comments": ["착즙각은 주시자나"],
+            "identity": {
+                "candidate_ledger_status": "safe_resolved",
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "safe_resolved": True,
+                "promotion_blocked": False,
+                "consistency_flags": [
+                    "official_url_recall_blocked_body_verified_character_work_competes",
+                    "body_verified_character_work_competes_with_title_led_alias",
+                ],
+                "novel_identity": {
+                    "official_title": "[무친년]이 무림의 미친놈",
+                    "heretic_url": None,
+                    "confidence": "High",
+                },
+                "title_candidates": [
+                    {
+                        "official_title": "[무친년]이 무림의 미친놈",
+                        "heretic_url": None,
+                        "confidence": "High",
+                        "alias_or_mention": "무친년",
+                        "source_tier": "official_detail",
+                        "reference_role": "primary",
+                    },
+                    {
+                        "official_title": "이 무림의 미친년은 나야",
+                        "heretic_url": "https://novelpia.com/novel/217943",
+                        "confidence": "High",
+                        "alias_or_mention": "무친년",
+                        "source_tier": "official_detail",
+                        "reference_role": "candidate",
+                    },
+                ],
+                "candidate_preservation_sources": [
+                    {
+                        "official_title": "[무친년]이 무림의 미친놈",
+                        "heretic_url": None,
+                        "confidence": "High",
+                        "alias_or_mention": "무친년",
+                        "source_tier": "official_detail",
+                        "reference_role": "primary",
+                    },
+                    {
+                        "official_title": "이 무림의 미친년은 나야",
+                        "heretic_url": "https://novelpia.com/novel/217943",
+                        "confidence": "High",
+                        "alias_or_mention": "무친년",
+                        "source_tier": "official_detail",
+                        "reference_role": "candidate",
+                    },
+                ],
+                "search_evidence_catalog": [
+                    {
+                        "title": "[무친년]이 무림의 미친놈",
+                        "url": "https://example.invalid/wrong-title-surface",
+                        "snippet": "무친년 표면 후보",
+                        "source_tier": "community",
+                    }
+                ],
+                "candidate_ledger": {},
+            },
+        }
+        seed = {
+            "approval_state": "source_native_projection_contract_not_approval",
+            "projected_status": "safe_resolved",
+            "matches_source_native_title": True,
+            "actions": [
+                "repair_after_wrong_work",
+                "shared_promotion_gate_wiring_required",
+            ],
+            "projected_title": "이 무림의 미친년은 나야",
+            "projected_url": "https://novelpia.com/novel/217943",
+            "source_native_verdict": "source_alias_supports_official_title_after_variant_wrong_work",
+            "promotion_decision": {
+                "status": "publish",
+                "publish_allowed": True,
+                "official_title": "이 무림의 미친년은 나야",
+                "official_url": "https://novelpia.com/novel/217943",
+                "reason_codes": [
+                    "official_title_exists",
+                    "row_discusses_work_as_work",
+                    "scope_current_work",
+                ],
+                "scope": {"scope_kind": "current_work", "confidence": "high"},
+            },
+            "promotion_gate_state": {
+                "candidate_title": "이 무림의 미친년은 나야",
+                "candidate_url": "https://novelpia.com/novel/217943",
+                "official_title_exists": True,
+                "row_discusses_work_as_work": True,
+                "scope": {
+                    "scope_kind": "current_work",
+                    "confidence": "high",
+                    "direct_bridge_sources": ["source_native_review_current_work"],
+                },
+            },
+            "promotion_gate_evidence": [
+                {
+                    "kind": "source_native_review",
+                    "strength": "strong",
+                    "supports_publish": True,
+                    "reason_code": "source_native_review_current_work",
+                }
+            ],
+        }
+
+        changed = _apply_projection_followup_promotion_seed(result, seed)
+        self.assertTrue(changed)
+        _sync_final_publication_ledger_contract(result, post_title=result["title"])
+
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "safe_resolved")
+        self.assertTrue(identity["title_resolution_allowed"])
+        self.assertEqual(identity["novel_identity"]["official_title"], "이 무림의 미친년은 나야")
+        self.assertEqual(identity["novel_identity"]["heretic_url"], "https://novelpia.com/novel/217943")
+        self.assertEqual(identity["promotion_decision"]["official_title"], "이 무림의 미친년은 나야")
+        self.assertIn(
+            "source_native_review_overrode_wrong_work_competition",
+            identity["promotion_decision"]["reason_codes"],
+        )
+        self.assertNotIn(
+            "title_led_publication_blocked_by_verified_alias_competition",
+            identity["promotion_decision"]["reason_codes"],
+        )
+
     def test_source_native_projection_can_override_reviewed_stale_context_hard_hold(self):
         result = {
             "identity": {

@@ -1,0 +1,140 @@
+{
+  "report_type": "candidate_set_projection_contract_plan",
+  "plan_id": "loop589_p0_info_missing_candidate_set_contract_plan",
+  "generated_at": "2026-07-08T05:54:34",
+  "source_verdicts": "docs/devs/loop589_p0_info_missing_source_native_verdicts.json",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "execution_contract": {
+    "runtime_replay": "NOT_RUN",
+    "test_run_policy_if_needed_later": "TEST_RUNS_USE_PARALLEL_16_AND_WEB_DASHBOARD",
+    "requested_parallel_if_runtime": 16,
+    "dashboard_url": "http://127.0.0.1:8080",
+    "forbidden_flags": [
+      "--no-dashboard"
+    ],
+    "dashboard_is_approval_evidence": false
+  },
+  "summary": {
+    "contract_plan_rows": 1,
+    "validation_issue_count": 0,
+    "contract_action_counts": {
+      "candidate_set_rebuild_required_before_publish": 1
+    },
+    "release_candidate_not_approval_rows": 0,
+    "candidate_set_rebuild_hold_rows": 1,
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "rows": [
+    {
+      "post_id": 11671514,
+      "contract_origin": "loop589_p0_info_missing_source_native_verdicts",
+      "contract_batch_lane": "CS_candidate_set_contract",
+      "source_dispatch_lane": "p0_info_missing_candidate_set_rebuild_hold",
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "candidate_set_incomplete_correct_title_known_from_prior_closure",
+      "evidence_grade": "Strong",
+      "target_title": null,
+      "target_url": null,
+      "official_support_refs": [],
+      "official_support_ref_count": 0,
+      "actions": [
+        "repair_after_wrong_work",
+        "candidate_set_rebuild_required"
+      ],
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "promotion_decision": {
+        "status": "reject",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": false,
+        "reason_codes": [
+          "no_candidate_title",
+          "row_discussion_missing",
+          "scope_unknown",
+          "scope_not_current_work",
+          "candidate_set_rebuild_required",
+          "candidate_set_source_native_contract_case"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11671514,
+        "candidate_title": "",
+        "candidate_url": "",
+        "source": "candidate_set_contract_plan",
+        "official_title_exists": false,
+        "row_discusses_work_as_work": false,
+        "title_resolution_state": "unresolved",
+        "work_resolution": "unresolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "unknown",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "refined_p0_candidate_set_dispatch",
+            "candidate_set_rebuild_review",
+            "candidate_set_rebuild_required_before_publish"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "candidate_set_rebuild_required"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "candidate_set_source_native_contract",
+          "strength": "strong",
+          "source_path_or_snippet": "Loop474에서 같은 post는 `악신이 총애하는 모험가`로 닫혔다. 현재 후보 C1/C2는 그 교정 제목을 포함하지 않으므로 blind 후보셋 자체가 불완전하며, after C2를 정답으로 세우면 잘못된 작품 승격이다.",
+          "supports_publish": false,
+          "reason_code": "candidate_set_source_native_contract_case"
+        }
+      ],
+      "release_candidate_not_approval": false,
+      "candidate_set_rebuild_required_before_publish": true,
+      "intent_guard_hold_before_publish": false,
+      "official_support_missing_before_publish": false,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": false,
+      "candidate_set_rebuild_required_before_runtime": true,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "Loop474에서 같은 post는 `악신이 총애하는 모험가`로 닫혔다. 현재 후보 C1/C2는 그 교정 제목을 포함하지 않으므로 blind 후보셋 자체가 불완전하며, after C2를 정답으로 세우면 잘못된 작품 승격이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json#post_id=11671514",
+        "docs/devs/loop474_11671514_aksin_chongaes_safe_loss_runtime_20260705.json",
+        "docs/devs/loop_reports/LOOP_474_REPORT_20260705.md",
+        "docs/devs/loop479_wrong_work_title_flip_source_native_verdicts.json#post_id=11671514",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11671514",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11671514",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11671514",
+        "docs/devs/loop498_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11671514",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11671514",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop514_projected_loop511_after_safe_loss41_review_summary.json#post_id=11671514",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop536_current_full375_p0_review_batch.json#post_id=11671514",
+        "docs/devs/loop536_current_full375_prior_compatible_source_native_verdicts.json#post_id=11671514",
+        "docs/devs/loop544_current_full375_carried_forward_source_native_verdicts.json#post_id=11671514",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop559_conflict_safe_full375_p0_review_batch.json#post_id=11671514",
+        "docs/devs/loop560_conflict_safe_full375_prior_compatible_source_native_verdicts.json#post_id=11671514",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop567_full375_after_loop566_p0_review_batch.json#post_id=11671514",
+        "docs/devs/loop567_full375_after_loop566_prior_compatible_source_native_verdicts.json#post_id=11671514",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop570_full375_after_loop569_p0_review_batch.json#post_id=11671514",
+        "docs/devs/loop589_p0_info_missing_source_native_verdicts.json#post_id=11671514"
+      ]
+    }
+  ],
+  "approval_boundary": {
+    "candidate_set_hold_is_not_publish": true,
+    "runtime_replay_allowed_rows_remain_zero": true,
+    "full_scan_approval": false
+  }
+}

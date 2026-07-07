@@ -1,0 +1,20 @@
+{
+  "report_type": "golden18_gate_input",
+  "gate_input_id": "loop589_golden18_gate_input_from_loop588_always_on",
+  "source_always_on_gate": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop588_always_on_golden18_full375_native_policy_preflight_gate.json",
+  "source_note_ko": "Loop589에서는 새 golden runtime replay를 실행하지 않았고, 최신 Loop588 always-on gate의 golden18 GO 결과를 상시 게이트 입력 형식으로 재사용한다.",
+  "row_count": 18,
+  "passed_count": 18,
+  "failed_count": 0,
+  "canary_semantic_gate": "PASS",
+  "runtime": {
+    "completed_count": 18,
+    "pending_count": 0,
+    "failed_count": 0,
+    "runtime_complete": true
+  },
+  "approval_boundary": {
+    "golden18_reuse_is_not_full_scan_approval": true,
+    "full375_collateral_still_required": true
+  }
+}

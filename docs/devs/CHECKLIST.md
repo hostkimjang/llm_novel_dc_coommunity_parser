@@ -1,5 +1,26 @@
 # Development Checklist
 
+## 2026-07-08 Loop589 P0 INFO_MISSING source-native 수렴 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] P0 INFO_MISSING source-native/blind `7`건을 batch로 검토했다.
+- [x] Source-native review 결과 reviewed `7`, ACCEPT `4`, REPROCESS `3`, validation issue `0`을 확인했다.
+- [x] ACCEPT `4`건은 approval이 아니라 regression count 제외 후보로만 분리했다.
+- [x] `11682792`와 `11660273`은 source-native wrong-work restore를 shared projection seed로 적용했다.
+- [x] `11671514`는 candidate-set rebuild 전 public publish 금지 hold로 유지했다.
+- [x] Combined plan rows `14`, expected restore `8`, candidate-set hold `5`, official-support hold `1`, runtime allowed `0`을 확인했다.
+- [x] Combined release gate `REVIEW-LOCKED / violation 0 / release candidate 8 / no-release 6`을 확인했다.
+- [x] Full375 collateral compare는 shared `375`, changed `156`, raw regression `79`, `NO-GO / runtime counts missing`임을 확인했다.
+- [x] Always-on gate는 golden18 `GO`, collateral `NO-GO / raw 79 / adjusted 75 / unreviewed 72 / runtime counts missing`, 전체 `NO-GO`임을 확인했다.
+- [x] P0 residual은 ordinary `2`; residual46은 ordinary `29`로 재회계했다.
+- [x] Dashboard health는 `http://127.0.0.1:8080`, `ok=true`, `standalone=true`, `pid=9320`으로 확인했다.
+- [x] Dashboard status는 마지막 Loop564 runtime replay `30/30`, `parallel_count=16`, `batch_running=false`로 확인했다.
+- [ ] 남은 P0 ordinary `2`건은 native-web hold `11698859`와 eBook/classic follow-up `11698870`으로 분리 처리한다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 실행한다.
+- [ ] Dashboard 진행률을 semantic/full_scan approval 근거로 쓰지 않는다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: source-native `REVIEW-LOCKED / ACCEPT 4 / REPROCESS 3`, release `REVIEW-LOCKED`, residual46 `REVIEW-LOCKED / 29`, P0 residual `REVIEW-LOCKED / 2`, full375 collateral `NO-GO / raw 79 / adjusted 75`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop588 native/policy preflight 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.

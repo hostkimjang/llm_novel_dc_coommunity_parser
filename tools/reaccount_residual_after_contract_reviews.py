@@ -17,6 +17,7 @@ MISMATCH_REVIEW = "restore_target_runtime_mismatch_review_required"
 OFFICIAL_SUPPORT_MISSING_RESTORE_HOLD = "official_support_missing_restore_hold_contract_case"
 CANDIDATE_SET_REBUILD_HOLD = "candidate_set_rebuild_required_before_publish"
 NO_PUBLISH_INTENT_GUARD = "no_publish_intent_guard_contract_case"
+SOURCE_NATIVE_EXCLUDE = "exclude_from_regression_count_after_gate_wiring"
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -53,6 +54,13 @@ def _applied_by_post_id(application: dict[str, Any] | None) -> dict[str, dict[st
     return {_string(row.get("post_id")): row for row in rows if isinstance(row, dict) and _string(row.get("post_id"))}
 
 
+def _source_native_by_post_id(review: dict[str, Any] | None) -> dict[str, dict[str, Any]]:
+    rows = (review or {}).get("rows") or []
+    if not isinstance(rows, list):
+        return {}
+    return {_string(row.get("post_id")): row for row in rows if isinstance(row, dict) and _string(row.get("post_id"))}
+
+
 def _classification_for(
     residual_row: dict[str, Any],
     *,
@@ -60,8 +68,26 @@ def _classification_for(
     applied_row: dict[str, Any] | None,
     variant_row: dict[str, Any] | None,
     c3_row: dict[str, Any] | None,
+    source_native_row: dict[str, Any] | None,
 ) -> tuple[str, str, list[str]]:
     if not plan_row:
+        source_native_actions = set()
+        if isinstance(source_native_row, dict):
+            source_native_actions = {
+                _string(value)
+                for value in (source_native_row.get("action") or source_native_row.get("actions") or [])
+                if _string(value)
+            }
+        if (
+            isinstance(source_native_row, dict)
+            and _string(source_native_row.get("review_label")) == "ACCEPT"
+            and SOURCE_NATIVE_EXCLUDE in source_native_actions
+        ):
+            return (
+                "source_native_reviewed_exclusion_candidate",
+                "source_native_exclusion_candidate_not_approval",
+                [],
+            )
         return "ordinary_residual_unprocessed", "residual_queue_followup_required", []
 
     issues: list[str] = []
@@ -152,12 +178,14 @@ def build_accounting(
     expected_restore_application: dict[str, Any] | None = None,
     variant_review: dict[str, Any] | None = None,
     c3_review: dict[str, Any] | None = None,
+    source_native_review: dict[str, Any] | None = None,
     accounting_id: str,
     generated_at: str | None = None,
 ) -> dict[str, Any]:
     residual_rows = _rows(residual_queue)
     plan_by_id = _by_post_id(_rows(contract_plan))
     applied_by_id = _applied_by_post_id(expected_restore_application)
+    source_native_by_id = _source_native_by_post_id(source_native_review)
     variant_by_id = _by_post_id(_rows(variant_review)) if variant_review else {}
     c3_by_id = _by_post_id(_rows(c3_review)) if c3_review else {}
 
@@ -176,12 +204,14 @@ def build_accounting(
         variant_row = variant_by_id.get(post_id)
         c3_row = c3_by_id.get(post_id)
         applied_row = applied_by_id.get(post_id)
+        source_native_row = source_native_by_id.get(post_id)
         state, effect, issues = _classification_for(
             residual_row,
             plan_row=plan_row,
             applied_row=applied_row,
             variant_row=variant_row,
             c3_row=c3_row,
+            source_native_row=source_native_row,
         )
         if issues:
             validation_issues.append({"post_id": residual_row.get("post_id"), "issues": issues})
@@ -216,6 +246,7 @@ def build_accounting(
                 "contract_accounting_state": state,
                 "contract_accounting_effect": effect,
                 "contract_processed": state.startswith("contract_processed_"),
+                "source_native_processed": state == "source_native_reviewed_exclusion_candidate",
                 "ordinary_residual_unprocessed": state == "ordinary_residual_unprocessed",
                 "publish_allowed": False,
                 "runtime_replay_allowed": False,
@@ -231,12 +262,15 @@ def build_accounting(
                     c3_review=c3_review,
                 ),
                 "rationale_ko": residual_row.get("rationale_ko"),
+                "source_native_review_label": (source_native_row or {}).get("review_label"),
+                "source_native_review_effect": effect if state == "source_native_reviewed_exclusion_candidate" else None,
                 "evidence_refs": residual_row.get("evidence_refs") or [],
             }
         )
 
     source_summary = residual_queue.get("summary") or {}
     contract_processed_rows = sum(1 for row in rows if row.get("contract_processed"))
+    source_native_processed_rows = sum(1 for row in rows if row.get("source_native_processed"))
     ordinary_unprocessed_rows = sum(1 for row in rows if row.get("ordinary_residual_unprocessed"))
     return {
         "report_type": "residual_contract_review_accounting",
@@ -247,6 +281,7 @@ def build_accounting(
         "source_expected_restore_application": (expected_restore_application or {}).get("projection_id"),
         "source_variant_review": (variant_review or {}).get("review_id"),
         "source_c3_review": (c3_review or {}).get("review_id"),
+        "source_source_native_review": (source_native_review or {}).get("review_id"),
         "gate": "NO-GO" if validation_issues else "REVIEW-LOCKED",
         "semantic_quality": "REVIEW-LOCKED",
         "full_scan_approval": False,
@@ -255,6 +290,8 @@ def build_accounting(
             "source_residual_action_queue_rows": source_summary.get("residual_action_queue_rows"),
             "contract_plan_overlap_rows": sum(1 for row in rows if row.get("contract_action")),
             "contract_processed_rows": contract_processed_rows,
+            "source_native_processed_rows": source_native_processed_rows,
+            "processed_or_excluded_rows": contract_processed_rows + source_native_processed_rows,
             "ordinary_residual_unprocessed_rows": ordinary_unprocessed_rows,
             "validation_issue_count": len(validation_issues),
             "contract_accounting_state_counts": dict(state_counts),
@@ -276,6 +313,9 @@ def build_accounting(
             ),
             "candidate_set_rebuild_hold_rows": effect_counts.get("candidate_set_rebuild_hold_not_approval", 0),
             "no_publish_intent_guard_rows": effect_counts.get("no_publish_intent_guard_not_approval", 0),
+            "source_native_exclusion_candidate_rows": effect_counts.get(
+                "source_native_exclusion_candidate_not_approval", 0
+            ),
             "publish_allowed_rows": 0,
             "runtime_replay_allowed_rows": 0,
             "full375_collateral_gate": "NO-GO",
@@ -285,6 +325,7 @@ def build_accounting(
         "rows": rows,
         "unprocessed_rows": [row for row in rows if row.get("ordinary_residual_unprocessed")],
         "contract_processed_rows": [row for row in rows if row.get("contract_processed")],
+        "source_native_processed_rows": [row for row in rows if row.get("source_native_processed")],
         "approval_boundary": {
             "contract_accounting_is_not_full375_go": True,
             "contract_processed_rows_are_not_full_scan_approval": True,
@@ -356,6 +397,8 @@ def write_markdown(path: Path, accounting: dict[str, Any]) -> None:
         f"- source_residual_rows: `{summary['source_residual_rows']}`",
         f"- contract_plan_overlap_rows: `{summary['contract_plan_overlap_rows']}`",
         f"- contract_processed_rows: `{summary['contract_processed_rows']}`",
+        f"- source_native_processed_rows: `{summary.get('source_native_processed_rows', 0)}`",
+        f"- processed_or_excluded_rows: `{summary.get('processed_or_excluded_rows', summary['contract_processed_rows'])}`",
         f"- ordinary_residual_unprocessed_rows: `{summary['ordinary_residual_unprocessed_rows']}`",
         f"- validation_issue_count: `{summary['validation_issue_count']}`",
         f"- release_candidate_not_approval_rows: `{summary['release_candidate_not_approval_rows']}`",
@@ -363,6 +406,7 @@ def write_markdown(path: Path, accounting: dict[str, Any]) -> None:
         f"- official_support_missing_restore_followup_rows: `{summary['official_support_missing_restore_followup_rows']}`",
         f"- candidate_set_rebuild_hold_rows: `{summary['candidate_set_rebuild_hold_rows']}`",
         f"- no_publish_intent_guard_rows: `{summary['no_publish_intent_guard_rows']}`",
+        f"- source_native_exclusion_candidate_rows: `{summary.get('source_native_exclusion_candidate_rows', 0)}`",
         f"- publish_allowed_rows: `{summary['publish_allowed_rows']}`",
         f"- runtime_replay_allowed_rows: `{summary['runtime_replay_allowed_rows']}`",
         f"- full375 collateral: `{summary['full375_collateral_gate']}`",
@@ -375,6 +419,7 @@ def write_markdown(path: Path, accounting: dict[str, Any]) -> None:
     lines.extend(["", "## Gate 해석", ""])
     lines.append(
         f"Contract-processed `{summary['contract_processed_rows']}`건은 최신 shared gate 산출물로 처리 상태가 됐다. "
+        f"source-native exclusion 후보 `{summary.get('source_native_exclusion_candidate_rows', 0)}`건은 regression count 제외 후보로 분리됐지만 approval은 아니다. "
         f"하지만 release candidate `{summary['release_candidate_not_approval_rows']}`건은 approval이 아니고, "
         f"no-publish/hold `{summary['no_publish_or_hold_contract_rows']}`건은 public publish를 열지 않는다. "
         f"공식 detail URL 보강 follow-up `{summary['official_support_missing_restore_followup_rows']}`건은 닫힌 행이 아니라 ordinary residual로 유지한다. "
@@ -393,6 +438,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--expected-restore-application", type=Path)
     parser.add_argument("--variant-review", type=Path)
     parser.add_argument("--c3-review", type=Path)
+    parser.add_argument("--source-native-review", type=Path)
     parser.add_argument("--accounting-id", default="residual_contract_review_accounting")
     parser.add_argument("--output-json", required=True, type=Path)
     parser.add_argument("--output-md", required=True, type=Path)
@@ -410,6 +456,7 @@ def main() -> int:
         else None,
         variant_review=load_json(args.variant_review) if args.variant_review else None,
         c3_review=load_json(args.c3_review) if args.c3_review else None,
+        source_native_review=load_json(args.source_native_review) if args.source_native_review else None,
         accounting_id=args.accounting_id,
     )
     write_json(args.output_json, accounting)

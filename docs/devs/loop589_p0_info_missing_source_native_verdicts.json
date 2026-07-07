@@ -1,0 +1,143 @@
+{
+  "review_id": "loop589_p0_info_missing_source_native_verdicts",
+  "scope": "Loop588 P0 ordinary source-native/blind INFO_MISSING 7건 판정",
+  "source_batch": "docs/devs/loop589_p0_info_missing_source_native_batch.json",
+  "generated_at": "2026-07-08T05:48:06",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "rows": [
+    {
+      "post_id": 11660232,
+      "selected_option_id": "C2",
+      "selected_title": "괴담 호텔 탈출기",
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "current_after_primary_work_correct_secondary_reference_only",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "제목의 `괴담텔`이 현재 글의 주 작품이고 `괴담동이 살짝 생각나네`는 비교 또는 2차 참조 표현이다. 본문도 유선아와 표독미 회상으로 비교 감상에 가깝기 때문에 after의 `괴담 호텔 탈출기`는 wrong-work 회귀로 세지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11660232",
+        "docs/devs/loop588_residual_p0_native_policy_preflight_accounting.json#post_id=11660232"
+      ]
+    },
+    {
+      "post_id": 11663554,
+      "selected_option_id": "C1",
+      "selected_title": "전 버튜버가 하고 싶은데요",
+      "selected_url": "https://novelpia.com/novel/275975",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "same_work_canonical_title_after_preferred",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "`주서연`은 C1 작품 내부 인물 또는 표면으로 보이고 C1/C2는 같은 URL의 같은 작품이다. after는 인물명 괄호 표면을 제거한 canonical title 정리이므로 wrong-work 회귀에서 제외할 수 있다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11663554",
+        "docs/devs/loop479_wrong_work_title_flip_source_native_verdicts.json#post_id=11663554",
+        "https://novelpia.com/novel/275975"
+      ]
+    },
+    {
+      "post_id": 11682792,
+      "selected_option_id": "C2",
+      "selected_title": "이 무림의 미친년은 나야",
+      "selected_url": "https://novelpia.com/novel/217943",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "source_alias_supports_official_title_after_variant_wrong_work",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_after_wrong_work",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "원문 제목의 `무친년`은 작품 별칭이고 본문은 1000회차와 노맨스 감상으로 작품 소비 맥락을 직접 말한다. C2가 공식 제목이고, after의 C1 `[무친년]이 무림의 미친놈`은 title variant/wrong-work 표면이므로 shared promotion gate를 통한 restore 대상이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11682792",
+        "docs/devs/loop588_residual_p0_native_policy_preflight_accounting.json#post_id=11682792",
+        "https://novelpia.com/novel/217943"
+      ]
+    },
+    {
+      "post_id": 11703674,
+      "selected_option_id": "C2",
+      "selected_title": "아카데미의 마피아가 되었다",
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "current_after_primary_work_correct_previous_work_secondary_reference",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "제목이 `아카데미 마피아`를 현재 작품으로 직접 지정하고, 댓글도 `도굴꾼? ㄴㄴ 연중임`, `아카마피아`처럼 이전작과 현재작을 구분한다. `게임 속 도굴꾼이 되었다`는 작가의 과거작 참조라 after의 C2를 wrong-work 회귀로 세지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11703674",
+        "docs/devs/loop588_residual_p0_native_policy_preflight_accounting.json#post_id=11703674"
+      ]
+    },
+    {
+      "post_id": 11714903,
+      "selected_option_id": "C1",
+      "selected_title": "괴담 호텔 탈출기",
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "current_after_primary_work_correct_phrase_surface_not_title",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "본문이 `그냥 온 세상이 버튜버구나 괴담텔은`이라고 직접 말하므로 현재 작품은 C1 `괴담 호텔 탈출기`다. `온세상이`는 문장형 감탄 또는 표현 표면이며 C2 작품명으로 볼 직접 근거가 부족하므로 after를 wrong-work 회귀로 세지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11714903",
+        "docs/devs/loop588_residual_p0_native_policy_preflight_accounting.json#post_id=11714903"
+      ]
+    },
+    {
+      "post_id": 11660273,
+      "selected_option_id": "C2",
+      "selected_title": "마도서를 줍다 마법사가 되다",
+      "selected_url": "https://novelpia.com/novel/414963",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "source_context_identifies_internal_entity_after_wrong_work",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_after_wrong_work",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "본문이 `그리즐리는 마줍에 나오는 투명 우주 흡혈귀`라고 직접 설명한다. `그리즐리`는 C2 작품 내부 존재 또는 설정이지 별도 작품 제목이 아니므로 after의 `그리즐리 그랑`은 wrong-work이며, C2를 shared promotion gate restore 대상으로 둔다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11660273",
+        "docs/devs/loop588_residual_p0_native_policy_preflight_accounting.json#post_id=11660273",
+        "https://novelpia.com/novel/414963"
+      ]
+    },
+    {
+      "post_id": 11671514,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "candidate_set_incomplete_correct_title_known_from_prior_closure",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_after_wrong_work",
+        "candidate_set_rebuild_required"
+      ],
+      "rationale_ko": "`악신총애`와 하진우/세라/미궁의 주인 문맥은 작품 토론이지만, 현재 blind 후보 C1은 prior closure의 교정 제목을 포함하지 않는다. 정확한 후보셋 재구성 전에는 public publish 금지 hold로 유지한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11671514",
+        "docs/devs/loop474_11671514_aksin_chongaes_safe_loss_runtime_20260705.json",
+        "docs/devs/loop578_candidate_set_contract_plan.json#post_id=11671514"
+      ]
+    }
+  ],
+  "approval_boundary": {
+    "source_native_verdict_is_not_runtime_replay": true,
+    "accept_exclusion_requires_gate_wiring": true,
+    "reprocess_requires_shared_promotion_gate_or_candidate_set_hold": true,
+    "full375_collateral_go_required_for_completion": true
+  }
+}

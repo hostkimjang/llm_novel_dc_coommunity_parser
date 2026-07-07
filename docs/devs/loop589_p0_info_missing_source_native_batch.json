@@ -1,0 +1,921 @@
+{
+  "batch_id": "loop589_p0_info_missing_source_native_batch",
+  "report_type": "collateral_source_native_review_batch",
+  "generated_at": "2026-07-08T05:48:06",
+  "source_batch": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json",
+  "scope": "Loop588 P0 ordinary source-native/blind INFO_MISSING 7건",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "review_rows": [
+    {
+      "post_id": 11660232,
+      "priority": "P0",
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "review_gate": "REVIEW-LOCKED",
+      "search_state_tag": "search-blind conditional until search degraded P0 recovers",
+      "blind_judge_question_ko": "원문만 보고 후보 C들 중 실제로 논의된 작품이 무엇인지, 둘 다 아니면 hold가 맞는지 판정한다.",
+      "blind_judge_options": [
+        {
+          "option_id": "C1",
+          "official_title": "괴담 동아리",
+          "heretic_url": "https://page.kakao.com/content/54701995"
+        },
+        {
+          "option_id": "C2",
+          "official_title": "괴담 호텔 탈출기",
+          "heretic_url": null
+        }
+      ],
+      "blind_judge_hold_option": {
+        "option_id": "HOLD",
+        "meaning": "원문만으로 작품 확정 불가, 또는 후보가 모두 부정확함"
+      },
+      "source_native_packet": {
+        "missing_source_row": false,
+        "post_id": 11660232,
+        "gallery_id": "genrenovel",
+        "post_title": "괴담텔 이번 전개는 괴담동이 살짝 생각나네",
+        "post_url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11660232",
+        "created_at": "2026-01-15 00:54:03",
+        "author": "수준드러나고",
+        "content": [
+          "방해되고 표독하고 쓸모없어서 정상화당한 5% 유선아가 생각나네요....",
+          "그립진 않습니다 표독미로......"
+        ],
+        "comments": [],
+        "comment_dialogue_context_lines": [],
+        "image_count": 1,
+        "image_urls": [
+          "https://dcimg4.dcinside.co.kr/viewimage.php?id=2ab8de34e0dc37b06bb3&no=29bcc427b69d39b37ab0ccaf17dd6b6f62b51b91c5c0132d1b5fd7cb9cbe37c2ce2aa562eaa3109a4d6eb9f255b6354e45ecbf467b6001769dcd2f4ed93ad7de2b30888000a48b8df6ff10cb21a0f51579c2eda5018da0"
+        ],
+        "panel_roles": [
+          "survey_error_136",
+          "phase2_queue"
+        ],
+        "judge_seed": {
+          "seed_group": "precision_wrong_work_control",
+          "disagreement_type": "wrong_work",
+          "severity": "high",
+          "shadow_label_before": "safe_resolved",
+          "source_path": null,
+          "source_has_image_url": true,
+          "source_img_count": 1
+        }
+      },
+      "comparison_private_not_for_blind_judge": {
+        "before_triage_identity": {
+          "official_title": "괴담 동아리",
+          "heretic_url": "https://page.kakao.com/content/54701995",
+          "candidate_ledger_status": "safe_resolved",
+          "title_resolution_state": "resolved",
+          "candidate_count": 1
+        },
+        "after_triage_identity": {
+          "official_title": "괴담 호텔 탈출기",
+          "heretic_url": null,
+          "candidate_ledger_status": "safe_resolved",
+          "title_resolution_state": "resolved",
+          "candidate_count": 4
+        },
+        "baseline_result_identity": {
+          "official_title": "괴담 동아리",
+          "heretic_url": "https://page.kakao.com/content/54701995",
+          "confidence": "High",
+          "title_resolution_state": "resolved",
+          "candidate_ledger_status": "safe_resolved",
+          "work_resolution": "resolved",
+          "discussion_type": "character_talk",
+          "topicality": "core_relevant",
+          "candidate_count": 1,
+          "title_candidates": [
+            "괴담 호텔 탈출기"
+          ],
+          "blocked_official_title": null,
+          "blocked_official_title_url": null,
+          "promotion_blocked_reasons": []
+        },
+        "after_result_identity": {
+          "official_title": "괴담 호텔 탈출기",
+          "heretic_url": null,
+          "confidence": "High",
+          "title_resolution_state": "resolved",
+          "candidate_ledger_status": "safe_resolved",
+          "work_resolution": "resolved",
+          "discussion_type": "character_talk",
+          "topicality": "core_relevant",
+          "candidate_count": 4,
+          "title_candidates": [
+            "괴담 동아리",
+            "괴담 호텔 탈출기",
+            "괴담텔",
+            "유선아"
+          ],
+          "blocked_official_title": null,
+          "blocked_official_title_url": null,
+          "promotion_blocked_reasons": []
+        }
+      },
+      "review_decision_schema": {
+        "selected_option_id": null,
+        "resolved_title": null,
+        "resolved_url": null,
+        "decision": "pending",
+        "needs_native_web_check": true,
+        "judge_evidence_note_ko": null
+      }
+    },
+    {
+      "post_id": 11663554,
+      "priority": "P0",
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "review_gate": "REVIEW-LOCKED",
+      "search_state_tag": "search-blind conditional until search degraded P0 recovers",
+      "blind_judge_question_ko": "원문만 보고 후보 C들 중 실제로 논의된 작품이 무엇인지, 둘 다 아니면 hold가 맞는지 판정한다.",
+      "blind_judge_options": [
+        {
+          "option_id": "C1",
+          "official_title": "전 버튜버가 하고 싶은데요",
+          "heretic_url": "https://novelpia.com/novel/275975"
+        },
+        {
+          "option_id": "C2",
+          "official_title": "주서연 ( 전 버튜버가 하고 싶은데요 )",
+          "heretic_url": "https://novelpia.com/novel/275975"
+        }
+      ],
+      "blind_judge_hold_option": {
+        "option_id": "HOLD",
+        "meaning": "원문만으로 작품 확정 불가, 또는 후보가 모두 부정확함"
+      },
+      "source_native_packet": {
+        "missing_source_row": false,
+        "post_id": 11663554,
+        "gallery_id": "genrenovel",
+        "post_title": "TS) 주서연 영화개봉 했는데 1엄복동도 못되면",
+        "post_url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11663554",
+        "created_at": "2026-01-15 21:32:41",
+        "author": "ㅇㅇ",
+        "content": [
+          "수치심에 연예계 은퇴함?"
+        ],
+        "comments": [
+          "미국이 위기감 느끼고 알바써서 영화보게 함"
+        ],
+        "comment_dialogue_context_lines": [
+          "#1 speaker=user1 author=공심 comment_id=40275234 text=미국이 위기감 느끼고 알바써서 영화보게 함"
+        ],
+        "image_count": 1,
+        "image_urls": [
+          "https://dcimg4.dcinside.co.kr/viewimage.php?id=2ab8de34e0dc37b06bb3&no=24b0d769e1d32ca73ce88ffa11d02831cb1683a5d6841fa83169d8a3647b74c0edab5b7a8d06e5ab768e493046d5bf2065a176d8b5f97f25eff35b90f82964458b3b0a19e9e271bc0b0d8943fba7af7ddecccfdf37a6978ed6edbe4990be2fb27e4314fba3"
+        ],
+        "panel_roles": [
+          "survey_error_136"
+        ],
+        "judge_seed": {
+          "seed_group": "precision_identity_high",
+          "disagreement_type": "garbage_title",
+          "severity": "med",
+          "shadow_label_before": "safe_resolved",
+          "source_path": null,
+          "source_has_image_url": true,
+          "source_img_count": 1
+        }
+      },
+      "comparison_private_not_for_blind_judge": {
+        "before_triage_identity": {
+          "official_title": "주서연 ( 전 버튜버가 하고 싶은데요 )",
+          "heretic_url": "https://novelpia.com/novel/275975",
+          "candidate_ledger_status": "safe_resolved",
+          "title_resolution_state": "resolved",
+          "candidate_count": 3
+        },
+        "after_triage_identity": {
+          "official_title": "전 버튜버가 하고 싶은데요",
+          "heretic_url": "https://novelpia.com/novel/275975",
+          "candidate_ledger_status": "safe_resolved",
+          "title_resolution_state": "resolved",
+          "candidate_count": 0
+        },
+        "baseline_result_identity": {
+          "official_title": "주서연 ( 전 버튜버가 하고 싶은데요 )",
+          "heretic_url": "https://novelpia.com/novel/275975",
+          "confidence": "High",
+          "title_resolution_state": "resolved",
+          "candidate_ledger_status": "safe_resolved",
+          "work_resolution": "resolved",
+          "discussion_type": "character_talk",
+          "topicality": "core_relevant",
+          "candidate_count": 3,
+          "title_candidates": [
+            "전 버튜버가 하고 싶은데요",
+            "미국이 위기감 느끼고 알바써서 영화보게 함",
+            "전버튜버가 하고 싶은데요"
+          ],
+          "blocked_official_title": null,
+          "blocked_official_title_url": null,
+          "promotion_blocked_reasons": []
+        },
+        "after_result_identity": {
+          "official_title": "전 버튜버가 하고 싶은데요",
+          "heretic_url": "https://novelpia.com/novel/275975",
+          "confidence": "High",
+          "title_resolution_state": "resolved",
+          "candidate_ledger_status": "safe_resolved",
+          "work_resolution": "resolved",
+          "discussion_type": "character_talk",
+          "topicality": "core_relevant",
+          "candidate_count": 0,
+          "title_candidates": [],
+          "blocked_official_title": null,
+          "blocked_official_title_url": null,
+          "promotion_blocked_reasons": []
+        }
+      },
+      "review_decision_schema": {
+        "selected_option_id": null,
+        "resolved_title": null,
+        "resolved_url": null,
+        "decision": "pending",
+        "needs_native_web_check": true,
+        "judge_evidence_note_ko": null
+      }
+    },
+    {
+      "post_id": 11682792,
+      "priority": "P0",
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "review_gate": "REVIEW-LOCKED",
+      "search_state_tag": "search-blind conditional until search degraded P0 recovers",
+      "blind_judge_question_ko": "원문만 보고 후보 C들 중 실제로 논의된 작품이 무엇인지, 둘 다 아니면 hold가 맞는지 판정한다.",
+      "blind_judge_options": [
+        {
+          "option_id": "C1",
+          "official_title": "[무친년]이 무림의 미친놈",
+          "heretic_url": null
+        },
+        {
+          "option_id": "C2",
+          "official_title": "이 무림의 미친년은 나야",
+          "heretic_url": "https://novelpia.com/novel/217943"
+        }
+      ],
+      "blind_judge_hold_option": {
+        "option_id": "HOLD",
+        "meaning": "원문만으로 작품 확정 불가, 또는 후보가 모두 부정확함"
+      },
+      "source_native_packet": {
+        "missing_source_row": false,
+        "post_id": 11682792,
+        "gallery_id": "genrenovel",
+        "post_title": "무친년은 노맨스여서 별로임",
+        "post_url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11682792",
+        "created_at": "2026-01-20 13:38:47",
+        "author": "ㅇㅇ",
+        "content": [
+          "거의 1000회찬데 로맨스 없는게",
+          "말이안됨"
+        ],
+        "comments": [
+          "착즙각은 주시자나  - dc App",
+          "난 여캐들이 자꾸 달라 붙어서 그닥",
+          "그건 지금도 달라붙는데 뭔소리지",
+          "그니까 달라붙어서 별로라고; 난독있냐"
+        ],
+        "comment_dialogue_context_lines": [
+          "#1 speaker=user1 author=ㅇㅇ role=author_match_unverified comment_id=40345675 text=착즙각은 주시자나 - dc App",
+          "#2 speaker=user2 author=ㅇㅇ role=author_match_unverified ip=59.13 comment_id=40345749 text=난 여캐들이 자꾸 달라 붙어서 그닥",
+          "#3 speaker=user3 author=ㅇㅇ role=author_match_unverified ip=118.35 comment_id=40345776 text=그건 지금도 달라붙는데 뭔소리지",
+          "#4 speaker=user2 author=ㅇㅇ role=author_match_unverified ip=59.13 comment_id=40346147 text=그니까 달라붙어서 별로라고; 난독있냐"
+        ],
+        "image_count": 0,
+        "image_urls": [],
+        "panel_roles": [
+          "phase2_queue"
+        ],
+        "judge_seed": {
+          "seed_group": "excluded",
+          "disagreement_type": "uncertain",
+          "severity": "med",
+          "shadow_label_before": "safe_resolved",
+          "source_path": null,
+          "source_has_image_url": true,
+          "source_img_count": 0
+        }
+      },
+      "comparison_private_not_for_blind_judge": {
+        "before_triage_identity": {
+          "official_title": "이 무림의 미친년은 나야",
+          "heretic_url": "https://novelpia.com/novel/217943",
+          "candidate_ledger_status": "safe_resolved",
+          "title_resolution_state": "resolved",
+          "candidate_count": 2
+        },
+        "after_triage_identity": {
+          "official_title": "[무친년]이 무림의 미친놈",
+          "heretic_url": null,
+          "candidate_ledger_status": "safe_resolved",
+          "title_resolution_state": "resolved",
+          "candidate_count": 6
+        },
+        "baseline_result_identity": {
+          "official_title": "이 무림의 미친년은 나야",
+          "heretic_url": "https://novelpia.com/novel/217943",
+          "confidence": "Medium",
+          "title_resolution_state": "resolved",
+          "candidate_ledger_status": "safe_resolved",
+          "work_resolution": "resolved",
+          "discussion_type": "review",
+          "topicality": "core_relevant",
+          "candidate_count": 2,
+          "title_candidates": [
+            "그건 지금도 달라붙는데 뭔소리지",
+            "착즙각은 주시자나"
+          ],
+          "blocked_official_title": null,
+          "blocked_official_title_url": null,
+          "promotion_blocked_reasons": []
+        },
+        "after_result_identity": {
+          "official_title": "[무친년]이 무림의 미친놈",
+          "heretic_url": null,
+          "confidence": "High",
+          "title_resolution_state": "resolved",
+          "candidate_ledger_status": "safe_resolved",
+          "work_resolution": "resolved",
+          "discussion_type": "review",
+          "topicality": "core_relevant",
+          "candidate_count": 6,
+          "title_candidates": [
+            "[무친년]이 무림의 미친놈",
+            "이 무림의 미친년은 나야",
+            "그건 지금도 달라붙는데 뭔소리지",
+            "착즙각은 주시자나",
+            "그니까 달라붙어서 별로라고",
+            "난독있냐"
+          ],
+          "blocked_official_title": null,
+          "blocked_official_title_url": null,
+          "promotion_blocked_reasons": []
+        }
+      },
+      "review_decision_schema": {
+        "selected_option_id": null,
+        "resolved_title": null,
+        "resolved_url": null,
+        "decision": "pending",
+        "needs_native_web_check": true,
+        "judge_evidence_note_ko": null
+      }
+    },
+    {
+      "post_id": 11703674,
+      "priority": "P0",
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "review_gate": "REVIEW-LOCKED",
+      "search_state_tag": "search-blind conditional until search degraded P0 recovers",
+      "blind_judge_question_ko": "원문만 보고 후보 C들 중 실제로 논의된 작품이 무엇인지, 둘 다 아니면 hold가 맞는지 판정한다.",
+      "blind_judge_options": [
+        {
+          "option_id": "C1",
+          "official_title": "게임 속 도굴꾼이 되었다",
+          "heretic_url": "https://novelpia.com/novel/49730"
+        },
+        {
+          "option_id": "C2",
+          "official_title": "아카데미의 마피아가 되었다",
+          "heretic_url": null
+        }
+      ],
+      "blind_judge_hold_option": {
+        "option_id": "HOLD",
+        "meaning": "원문만으로 작품 확정 불가, 또는 후보가 모두 부정확함"
+      },
+      "source_native_packet": {
+        "missing_source_row": false,
+        "post_id": 11703674,
+        "gallery_id": "genrenovel",
+        "post_title": "아니 뭐야 아카데미 마피아 이거 씨즐꺼였네",
+        "post_url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11703674",
+        "created_at": "2026-01-25 14:11:53",
+        "author": "프리논",
+        "content": [
+          "얘 걔잖아 옛날에 노피아에서 도굴꾼 연재하던애",
+          "작품 유기하고 편결로 갔구만..."
+        ],
+        "comments": [
+          "재밌음?",
+          "도굴꾼은 재밌게 봤음 아카마피아는 몰?루",
+          "그거 공지써서 독자사이에서는 정상참작이었나 예전엔 그랬던걸로 기억하는데 지금도 연재해 그거??",
+          "도굴꾼? ㄴㄴ 연중임",
+          "아카마피아 씹 연금작 같더라",
+          "근데 씨즐 노피아 계정은 살아있는듯? 누적 읽은 회차수 계속 오르더라",
+          "편결에서 연금작으로 돈맛좀 보더니 유기했구만"
+        ],
+        "comment_dialogue_context_lines": [
+          "#1 speaker=user1 author=Gi comment_id=40423698 text=재밌음?",
+          "#2 speaker=post_author author=프리논 role=post_author comment_id=40423706 text=도굴꾼은 재밌게 봤음 아카마피아는 몰?루",
+          "#3 speaker=user2 author=SHO comment_id=40423713 text=그거 공지써서 독자사이에서는 정상참작이었나 예전엔 그랬던걸로 기억하는데 지금도 연재해 그거??",
+          "#4 speaker=post_author author=프리논 role=post_author comment_id=40423749 text=도굴꾼? ㄴㄴ 연중임",
+          "#5 speaker=user3 author=ㅇㅇ comment_id=40423756 text=아카마피아 씹 연금작 같더라",
+          "#6 speaker=user3 author=ㅇㅇ comment_id=40423771 text=근데 씨즐 노피아 계정은 살아있는듯? 누적 읽은 회차수 계속 오르더라",
+          "#7 speaker=post_author author=프리논 role=post_author comment_id=40423788 text=편결에서 연금작으로 돈맛좀 보더니 유기했구만"
+        ],
+        "image_count": 2,
+        "image_urls": [
+          "https://dcimg3.dcinside.co.kr/viewimage.php?id=2ab8de34e0dc37b06bb3&no=29bcc427b69d39b37ab0ccaf17dd6b6f62b51b91c5c0132c1e5fd6ce96b23ec7c6018fdd991517fe1ec15b55477783bc8ee871d37d745140873d001bae1df82b12",
+          "https://dcimg5.dcinside.com/dccon.php?no=62b5df2be09d3ca567b1c5bc12d46b394aa3b1058c6e4d0ca41648b658ea2670533b35490cc266f07671eb7dca04e463187b0dbae0fab3b021328466b7db6218e976ae7feeaa6b1af5aa16"
+        ],
+        "panel_roles": [
+          "survey_error_136"
+        ],
+        "judge_seed": {
+          "seed_group": "precision_wrong_work_control",
+          "disagreement_type": "wrong_work",
+          "severity": "high",
+          "shadow_label_before": "safe_resolved",
+          "source_path": null,
+          "source_has_image_url": true,
+          "source_img_count": 2
+        }
+      },
+      "comparison_private_not_for_blind_judge": {
+        "before_triage_identity": {
+          "official_title": "게임 속 도굴꾼이 되었다",
+          "heretic_url": "https://novelpia.com/novel/49730",
+          "candidate_ledger_status": "safe_resolved",
+          "title_resolution_state": "resolved",
+          "candidate_count": 3
+        },
+        "after_triage_identity": {
+          "official_title": "아카데미의 마피아가 되었다",
+          "heretic_url": null,
+          "candidate_ledger_status": "safe_resolved",
+          "title_resolution_state": "resolved",
+          "candidate_count": 4
+        },
+        "baseline_result_identity": {
+          "official_title": "게임 속 도굴꾼이 되었다",
+          "heretic_url": "https://novelpia.com/novel/49730",
+          "confidence": "High",
+          "title_resolution_state": "resolved",
+          "candidate_ledger_status": "safe_resolved",
+          "work_resolution": "resolved",
+          "discussion_type": "general",
+          "topicality": "core_relevant",
+          "candidate_count": 3,
+          "title_candidates": [
+            "아카데미의 마피아가 되었다",
+            "아카마피아 씹 연금작 같더라",
+            "아카데미 야겜에 빙의했다."
+          ],
+          "blocked_official_title": null,
+          "blocked_official_title_url": null,
+          "promotion_blocked_reasons": []
+        },
+        "after_result_identity": {
+          "official_title": "아카데미의 마피아가 되었다",
+          "heretic_url": null,
+          "confidence": "High",
+          "title_resolution_state": "resolved",
+          "candidate_ledger_status": "safe_resolved",
+          "work_resolution": "resolved",
+          "discussion_type": "general",
+          "topicality": "core_relevant",
+          "candidate_count": 4,
+          "title_candidates": [
+            "게임 속 도굴꾼이 되었다",
+            "마피아42",
+            "다키스트 던전",
+            "아카마피아 씹 연금작 같더라"
+          ],
+          "blocked_official_title": null,
+          "blocked_official_title_url": null,
+          "promotion_blocked_reasons": []
+        }
+      },
+      "review_decision_schema": {
+        "selected_option_id": null,
+        "resolved_title": null,
+        "resolved_url": null,
+        "decision": "pending",
+        "needs_native_web_check": true,
+        "judge_evidence_note_ko": null
+      }
+    },
+    {
+      "post_id": 11714903,
+      "priority": "P0",
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "review_gate": "REVIEW-LOCKED",
+      "search_state_tag": "search-blind conditional until search degraded P0 recovers",
+      "blind_judge_question_ko": "원문만 보고 후보 C들 중 실제로 논의된 작품이 무엇인지, 둘 다 아니면 hold가 맞는지 판정한다.",
+      "blind_judge_options": [
+        {
+          "option_id": "C1",
+          "official_title": "괴담 호텔 탈출기",
+          "heretic_url": null
+        },
+        {
+          "option_id": "C2",
+          "official_title": "온 세상이 정신이상자다",
+          "heretic_url": "https://novelpia.com/novel/380804"
+        }
+      ],
+      "blind_judge_hold_option": {
+        "option_id": "HOLD",
+        "meaning": "원문만으로 작품 확정 불가, 또는 후보가 모두 부정확함"
+      },
+      "source_native_packet": {
+        "missing_source_row": false,
+        "post_id": 11714903,
+        "gallery_id": "genrenovel",
+        "post_title": "온세상이 버튜버다",
+        "post_url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11714903",
+        "created_at": "2026-01-28 00:30:49",
+        "author": "막싸는계정",
+        "content": [
+          "아리 버튜버 가인",
+          "가인 버튜버 심판자",
+          "그냥 온 세상이 버튜버구나 괴담텔은",
+          "- dc official App"
+        ],
+        "comments": [
+          "어차피 모두가 결국은 한가인인것을"
+        ],
+        "comment_dialogue_context_lines": [
+          "#1 speaker=user1 author=ㅇㅇ ip=175.112 comment_id=40467334 text=어차피 모두가 결국은 한가인인것을"
+        ],
+        "image_count": 1,
+        "image_urls": [
+          "https://dcimg7.dcinside.co.kr/viewimage.php?id=2ab8de34e0dc37b06bb3&no=24b0d769e1d32ca73ce88ffa11d02831cb1683a5d6841fa83169d8a3677674c069a547b2fdca0d9b9a622d493130a8e59c6e392c593926fa216f70f443989635e54ed3c3460853d535abd065739b8b6a7edf07fc00"
+        ],
+        "panel_roles": [
+          "survey_error_136",
+          "phase2_queue"
+        ],
+        "judge_seed": {
+          "seed_group": "candidate_comment_multi",
+          "disagreement_type": "wrong_relevance",
+          "severity": "high",
+          "shadow_label_before": "safe_resolved",
+          "source_path": null,
+          "source_has_image_url": true,
+          "source_img_count": 1
+        }
+      },
+      "comparison_private_not_for_blind_judge": {
+        "before_triage_identity": {
+          "official_title": "온 세상이 정신이상자다",
+          "heretic_url": "https://novelpia.com/novel/380804",
+          "candidate_ledger_status": "safe_resolved",
+          "title_resolution_state": "resolved",
+          "candidate_count": 2
+        },
+        "after_triage_identity": {
+          "official_title": "괴담 호텔 탈출기",
+          "heretic_url": null,
+          "candidate_ledger_status": "safe_resolved",
+          "title_resolution_state": "resolved",
+          "candidate_count": 6
+        },
+        "baseline_result_identity": {
+          "official_title": "온 세상이 정신이상자다",
+          "heretic_url": "https://novelpia.com/novel/380804",
+          "confidence": "High",
+          "title_resolution_state": "resolved",
+          "candidate_ledger_status": "safe_resolved",
+          "work_resolution": "resolved",
+          "discussion_type": "character_talk",
+          "topicality": "core_relevant",
+          "candidate_count": 2,
+          "title_candidates": [
+            "괴담 호텔 탈출기",
+            "어차피 모두가 결국은 한가인인것을"
+          ],
+          "blocked_official_title": null,
+          "blocked_official_title_url": null,
+          "promotion_blocked_reasons": []
+        },
+        "after_result_identity": {
+          "official_title": "괴담 호텔 탈출기",
+          "heretic_url": null,
+          "confidence": "High",
+          "title_resolution_state": "resolved",
+          "candidate_ledger_status": "safe_resolved",
+          "work_resolution": "resolved",
+          "discussion_type": "meme",
+          "topicality": "core_relevant",
+          "candidate_count": 6,
+          "title_candidates": [
+            "온 세상이 정신이상자다",
+            "괴담 호텔 탈출기",
+            "어차피 모두가 결국은 한가인인것을",
+            "온세상이",
+            "아리",
+            "가인"
+          ],
+          "blocked_official_title": null,
+          "blocked_official_title_url": null,
+          "promotion_blocked_reasons": []
+        }
+      },
+      "review_decision_schema": {
+        "selected_option_id": null,
+        "resolved_title": null,
+        "resolved_url": null,
+        "decision": "pending",
+        "needs_native_web_check": true,
+        "judge_evidence_note_ko": null
+      }
+    },
+    {
+      "post_id": 11660273,
+      "priority": "P0",
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "review_gate": "REVIEW-LOCKED",
+      "search_state_tag": "search-blind conditional until search degraded P0 recovers",
+      "blind_judge_question_ko": "원문만 보고 후보 C들 중 실제로 논의된 작품이 무엇인지, 둘 다 아니면 hold가 맞는지 판정한다.",
+      "blind_judge_options": [
+        {
+          "option_id": "C1",
+          "official_title": "그리즐리 그랑",
+          "heretic_url": null
+        },
+        {
+          "option_id": "C2",
+          "official_title": "마도서를 줍다 마법사가 되다",
+          "heretic_url": "https://novelpia.com/novel/414963"
+        }
+      ],
+      "blind_judge_hold_option": {
+        "option_id": "HOLD",
+        "meaning": "원문만으로 작품 확정 불가, 또는 후보가 모두 부정확함"
+      },
+      "source_native_packet": {
+        "missing_source_row": false,
+        "post_id": 11660273,
+        "gallery_id": "genrenovel",
+        "post_title": "장빙이들 그리즐리 주면 키울거임?",
+        "post_url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11660273",
+        "created_at": "2026-01-15 01:02:34",
+        "author": "완장바라기",
+        "content": [
+          "참고로 그리즐리는 마줍에 나오는 투명 우주 흡혈귀임",
+          "멋진 단어가 두 개나 들어가서 존나 셈",
+          "- dc official App"
+        ],
+        "comments": [
+          "투명인데 안키움",
+          "하는 짓은 귀엽긴한데 갸아아 - dc App",
+          "투명 우주 흡혈귀를 참음?",
+          "개간지임 ㄹㅇ  - dc App",
+          "내 월급 거덜남",
+          "많이 먹긴 해 우유랑 고기랑 - dc App",
+          "그리즐리 생기면 해외로 떠서 장물아비로 살듯. 그리즐리보고 훔치라하고",
+          "주면 키우지",
+          "웅!  - dc App",
+          "내가 마도서가 있는 것도 아니고 걔를 통제할 자신이 읍따"
+        ],
+        "comment_dialogue_context_lines": [
+          "#1 speaker=user1 author=키리키리 comment_id=40263237 text=투명인데 안키움",
+          "#2 speaker=post_author author=완장바라기 role=post_author comment_id=40263251 text=하는 짓은 귀엽긴한데 갸아아 - dc App",
+          "#3 speaker=user2 author=라치치 comment_id=40263248 text=투명 우주 흡혈귀를 참음?",
+          "#4 speaker=post_author author=완장바라기 role=post_author comment_id=40263253 text=개간지임 ㄹㅇ - dc App",
+          "#5 speaker=user3 author=Llein comment_id=40263263 text=내 월급 거덜남",
+          "#6 speaker=post_author author=완장바라기 role=post_author comment_id=40263278 text=많이 먹긴 해 우유랑 고기랑 - dc App",
+          "#7 speaker=user3 author=Llein comment_id=40263288 text=그리즐리 생기면 해외로 떠서 장물아비로 살듯. 그리즐리보고 훔치라하고",
+          "#8 speaker=user4 author=ㅇㅇ comment_id=40263264 text=주면 키우지",
+          "#10 speaker=user5 author=으에우으아 comment_id=40263266 text=웅! - dc App",
+          "#12 speaker=user6 author=Volta comment_id=40263304 text=내가 마도서가 있는 것도 아니고 걔를 통제할 자신이 읍따"
+        ],
+        "image_count": 1,
+        "image_urls": [
+          "https://dcimg4.dcinside.co.kr/viewimage.php?id=2ab8de34e0dc37b06bb3&no=24b0d769e1d32ca73ce88ffa11d02831cb1683a5d6841fa83169d8a3647b74c0edab5b7a8d06e5ab768e493046b8d62290dfc0dd0a1130c4427eb1bfc7ad75f5e8044003cf5212b82a101a6db20b5c48b5de7a6572c5f83adbf9ed58335d2c5ba962fedf16c52c1260f7"
+        ],
+        "panel_roles": [
+          "phase2_queue"
+        ],
+        "judge_seed": {
+          "seed_group": "excluded",
+          "disagreement_type": "none",
+          "severity": "low",
+          "shadow_label_before": "safe_resolved",
+          "source_path": null,
+          "source_has_image_url": true,
+          "source_img_count": 1
+        }
+      },
+      "comparison_private_not_for_blind_judge": {
+        "before_triage_identity": {
+          "official_title": "마도서를 줍다 마법사가 되다",
+          "heretic_url": "https://novelpia.com/novel/414963",
+          "candidate_ledger_status": "safe_resolved",
+          "title_resolution_state": "resolved",
+          "candidate_count": 5
+        },
+        "after_triage_identity": {
+          "official_title": "그리즐리 그랑",
+          "heretic_url": null,
+          "candidate_ledger_status": "safe_resolved",
+          "title_resolution_state": "resolved",
+          "candidate_count": 11
+        },
+        "baseline_result_identity": {
+          "official_title": "마도서를 줍다 마법사가 되다",
+          "heretic_url": "https://novelpia.com/novel/414963",
+          "confidence": "Medium",
+          "title_resolution_state": "resolved",
+          "candidate_ledger_status": "safe_resolved",
+          "work_resolution": "resolved",
+          "discussion_type": "general",
+          "topicality": "core_relevant",
+          "candidate_count": 5,
+          "title_candidates": [
+            "하는 짓은 귀엽긴한데 갸아아",
+            "많이 먹긴 해 우유랑 고기랑",
+            "투명인데 안키움",
+            "그리즐리",
+            "내가 마도서가 있는 것도 아니고 걔를 통제할 자신이 읍따"
+          ],
+          "blocked_official_title": null,
+          "blocked_official_title_url": null,
+          "promotion_blocked_reasons": []
+        },
+        "after_result_identity": {
+          "official_title": "그리즐리 그랑",
+          "heretic_url": null,
+          "confidence": "High",
+          "title_resolution_state": "resolved",
+          "candidate_ledger_status": "safe_resolved",
+          "work_resolution": "resolved",
+          "discussion_type": "character_talk",
+          "topicality": "core_relevant",
+          "candidate_count": 11,
+          "title_candidates": [
+            "마도서를 줍다 마법사가 되다",
+            "그리즐리 그랑",
+            "하는 짓은 귀엽긴한데 갸아아",
+            "많이 먹긴 해 우유랑 고기랑",
+            "투명인데 안키움",
+            "투명 우주 흡혈귀를 참음",
+            "내 월급 거덜남",
+            "주면 키우지",
+            "그리즐리 생기면 해외로 떠서 장물아비로 살듯. 그리즐리보고 훔치라하고",
+            "내가 마도서가 있는 것도 아니고 걔를 통제할 자신이 읍따",
+            "그리즐리"
+          ],
+          "blocked_official_title": "마도서를 줍다 마법사가 되다",
+          "blocked_official_title_url": "https://novel.munpia.com/477135",
+          "promotion_blocked_reasons": []
+        }
+      },
+      "review_decision_schema": {
+        "selected_option_id": null,
+        "resolved_title": null,
+        "resolved_url": null,
+        "decision": "pending",
+        "needs_native_web_check": true,
+        "judge_evidence_note_ko": null
+      }
+    },
+    {
+      "post_id": 11671514,
+      "priority": "P0",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "collateral_status": "resolved_to_null",
+      "review_gate": "REVIEW-LOCKED",
+      "search_state_tag": "search-blind conditional until search degraded P0 recovers",
+      "blind_judge_question_ko": "원문과 source-native 근거만 보고 기존 safe title이 정당했는지, 아니면 null/hold로 내린 것이 정당한지 판정한다.",
+      "blind_judge_options": [
+        {
+          "option_id": "C1",
+          "official_title": "악신에게 총애받는 자",
+          "heretic_url": "https://novelpia.com/novel/137926"
+        }
+      ],
+      "blind_judge_hold_option": {
+        "option_id": "HOLD",
+        "meaning": "원문만으로 작품 확정 불가, 또는 후보가 모두 부정확함"
+      },
+      "source_native_packet": {
+        "missing_source_row": false,
+        "post_id": 11671514,
+        "gallery_id": "genrenovel",
+        "post_title": "악신총애) 마왕이 말하는거 의미심장한데",
+        "post_url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11671514",
+        "created_at": "2026-01-17 22:34:25",
+        "author": "ㅇㅇ",
+        "content": [
+          "점마 본인을 하진우의 그림자에 먹일려고 물어보는거 같은데"
+        ],
+        "comments": [
+          "악신총애 전처 나왔냐?",
+          "미궁의 주인 세라는 아직이고 그냥 세라는 전에 한번 나옴"
+        ],
+        "comment_dialogue_context_lines": [
+          "#1 speaker=user1 author=ㅇㅇ role=author_match_unverified comment_id=40304323 text=악신총애 전처 나왔냐?",
+          "#2 speaker=user1 author=ㅇㅇ role=author_match_unverified comment_id=40304330 text=미궁의 주인 세라는 아직이고 그냥 세라는 전에 한번 나옴"
+        ],
+        "image_count": 2,
+        "image_urls": [
+          "https://dcimg3.dcinside.co.kr/viewimage.php?id=2ab8de34e0dc37b06bb3&no=24b0d769e1d32ca73ce88ffa1bd62531fb627d466152f0768651601e7f3f93f3b829182742e395b63096c4c6557c69ddb657eda218a914aa853613feba8d98bc61b3a4db244f31",
+          "https://dcimg5.dcinside.com/dccon.php?no=62b5df2be09d3ca567b1c5bc12d46b394aa3b1058c6e4d0ca41648b658ef2771340e87630f288c389054c23373f7a64f75756de21c4ee85afae95a145f51d66b111a2a68d5f1b5f5"
+        ],
+        "panel_roles": [
+          "survey_error_136",
+          "phase2_queue"
+        ],
+        "judge_seed": {
+          "seed_group": "precision_wrong_work_control",
+          "disagreement_type": "wrong_work",
+          "severity": "med",
+          "shadow_label_before": "safe_resolved",
+          "source_path": null,
+          "source_has_image_url": true,
+          "source_img_count": 2
+        }
+      },
+      "comparison_private_not_for_blind_judge": {
+        "before_triage_identity": {
+          "official_title": "악신에게 총애받는 자",
+          "heretic_url": "https://novelpia.com/novel/137926",
+          "candidate_ledger_status": "safe_resolved",
+          "title_resolution_state": "resolved",
+          "candidate_count": 1
+        },
+        "after_triage_identity": {
+          "official_title": null,
+          "heretic_url": null,
+          "candidate_ledger_status": "promotion_blocked",
+          "title_resolution_state": "unresolved_matchable",
+          "candidate_count": 0
+        },
+        "baseline_result_identity": {
+          "official_title": "악신에게 총애받는 자",
+          "heretic_url": "https://novelpia.com/novel/137926",
+          "confidence": "High",
+          "title_resolution_state": "resolved",
+          "candidate_ledger_status": "safe_resolved",
+          "work_resolution": "resolved",
+          "discussion_type": "character_talk",
+          "topicality": "core_relevant",
+          "candidate_count": 1,
+          "title_candidates": [
+            "폐급 악신들의 총애를 독차지했다"
+          ],
+          "blocked_official_title": null,
+          "blocked_official_title_url": null,
+          "promotion_blocked_reasons": []
+        },
+        "after_result_identity": {
+          "official_title": null,
+          "heretic_url": null,
+          "confidence": "Hold",
+          "title_resolution_state": "unresolved_matchable",
+          "candidate_ledger_status": "promotion_blocked",
+          "work_resolution": "unresolved",
+          "discussion_type": "character_talk",
+          "topicality": "core_relevant",
+          "candidate_count": 0,
+          "title_candidates": [],
+          "blocked_official_title": "악신의 총애를 받는 성직자가 되었다",
+          "blocked_official_title_url": "https://ridibooks.com/books/3228117968",
+          "promotion_blocked_reasons": [
+            "row_discussion_missing",
+            "scope_unknown",
+            "scope_not_current_work",
+            "candidate_set_rebuild_required",
+            "candidate_set_source_native_contract_case",
+            "serialized_public_identity_scrubbed"
+          ]
+        }
+      },
+      "review_decision_schema": {
+        "selected_option_id": null,
+        "resolved_title": null,
+        "resolved_url": null,
+        "decision": "pending",
+        "needs_native_web_check": true,
+        "judge_evidence_note_ko": null
+      }
+    }
+  ],
+  "execution_contract": {
+    "policy": "NO_RUNTIME_REPLAY_SOURCE_NATIVE_BLIND_REVIEW_ONLY",
+    "runtime_replay": "NOT_RUN",
+    "test_run_policy_if_needed_later": "TEST_RUNS_USE_PARALLEL_16_AND_WEB_DASHBOARD",
+    "requested_parallel_if_runtime": 16,
+    "dashboard_url": "http://127.0.0.1:8080",
+    "forbidden_flags": [
+      "--no-dashboard"
+    ],
+    "dashboard_is_approval_evidence": false
+  }
+}

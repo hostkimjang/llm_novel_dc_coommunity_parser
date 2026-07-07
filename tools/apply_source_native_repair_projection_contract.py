@@ -22,7 +22,9 @@ from expert_main import (  # noqa: E402
 
 
 SAFE_LOSS_ACTION = "repair_safe_loss_restore_supported_title"
+WRONG_WORK_REPAIR_ACTION = "repair_after_wrong_work"
 SHARED_GATE_ACTION = "shared_promotion_gate_wiring_required"
+RESTORE_ACTIONS = {SAFE_LOSS_ACTION, WRONG_WORK_REPAIR_ACTION}
 
 
 def load_json(path: Path) -> Any:
@@ -146,7 +148,7 @@ def _eligible(row: dict[str, Any]) -> bool:
     actions = _actions(row)
     return bool(
         _string(row.get("review_label")) == "REPROCESS"
-        and SAFE_LOSS_ACTION in actions
+        and bool(actions & RESTORE_ACTIONS)
         and SHARED_GATE_ACTION in actions
         and _string(row.get("selected_title"))
     )
@@ -159,11 +161,13 @@ def _build_seed(row: dict[str, Any], projection_row: dict[str, Any]) -> dict[str
         return None
     evidence_grade = _string(row.get("evidence_grade")).lower()
     source_native_confidence = "high" if evidence_grade == "strong" else "medium"
+    actions = _actions(row)
+    restore_actions = sorted((actions & RESTORE_ACTIONS) | {SHARED_GATE_ACTION})
     return {
         "approval_state": "source_native_projection_contract_not_approval",
         "projected_status": "safe_resolved",
         "matches_source_native_title": True,
-        "actions": [SAFE_LOSS_ACTION, SHARED_GATE_ACTION],
+        "actions": restore_actions,
         "projected_title": title,
         "projected_url": url,
         "selected_title": title,
@@ -231,6 +235,7 @@ def apply_contract(
 
     application_rows: list[dict[str, Any]] = []
     counters: Counter[str] = Counter()
+    eligible_action_counts: Counter[str] = Counter()
     eligible_count = 0
     for row in result_rows:
         post_id = _post_id(row.get("post_id"))
@@ -238,6 +243,8 @@ def apply_contract(
         if not isinstance(verdict, dict) or not _eligible(verdict):
             continue
         eligible_count += 1
+        for action in sorted(_actions(verdict) & RESTORE_ACTIONS):
+            eligible_action_counts[action] += 1
         identity = _identity(row)
         before_status = identity.get("candidate_ledger_status")
         before_title = (identity.get("novel_identity") or {}).get("official_title") if isinstance(identity.get("novel_identity"), dict) else None
@@ -313,7 +320,10 @@ def apply_contract(
         "summary": {
             "projection_rows": len(result_rows),
             "verdict_rows": len(verdict_rows),
-            "eligible_safe_loss_rows": eligible_count,
+            "eligible_restore_rows": eligible_count,
+            "eligible_safe_loss_rows": eligible_action_counts.get(SAFE_LOSS_ACTION, 0),
+            "eligible_wrong_work_repair_rows": eligible_action_counts.get(WRONG_WORK_REPAIR_ACTION, 0),
+            "eligible_restore_action_counts": dict(eligible_action_counts),
             "outcome_counts": dict(counters),
             "applied_publish_rows": counters.get("applied_shared_gate_publish", 0),
             "post_sync_held_rows": counters.get("post_sync_held", 0),
@@ -335,7 +345,9 @@ def write_markdown(path: Path, application: dict[str, Any], *, result_path: Path
         f"- semantic_quality: `{application['semantic_quality']}`",
         f"- full_scan_approval: `{str(application['full_scan_approval']).lower()}`",
         f"- projection 행 수: `{summary['projection_rows']}`",
+        f"- eligible restore 행 수: `{summary.get('eligible_restore_rows', summary['eligible_safe_loss_rows'])}`",
         f"- eligible safe-loss 행 수: `{summary['eligible_safe_loss_rows']}`",
+        f"- eligible wrong-work 수리 행 수: `{summary.get('eligible_wrong_work_repair_rows', 0)}`",
         f"- publish 적용 행 수: `{summary['applied_publish_rows']}`",
         f"- post-sync hold 행 수: `{summary['post_sync_held_rows']}`",
         f"- skip 행 수: `{summary['skipped_rows']}`",
@@ -346,6 +358,11 @@ def write_markdown(path: Path, application: dict[str, Any], *, result_path: Path
     for key, value in sorted((summary.get("outcome_counts") or {}).items()):
         lines.append(f"- `{key}`: `{value}`")
     if not summary.get("outcome_counts"):
+        lines.append("- 없음")
+    lines.extend(["", "## Eligible action 집계", ""])
+    for key, value in sorted((summary.get("eligible_restore_action_counts") or {}).items()):
+        lines.append(f"- `{key}`: `{value}`")
+    if not summary.get("eligible_restore_action_counts"):
         lines.append("- 없음")
     lines.extend(["", "## Gate 해석", ""])
     lines.append(

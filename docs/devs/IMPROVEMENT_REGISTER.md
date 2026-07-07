@@ -1,5 +1,23 @@
 # Improvement Register
 
+## IMP-20260708-589 - P0 INFO_MISSING source-native convergence and full375 recheck
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | 실제 test run만 `--parallel 16` + dashboard attached로 실행 |
+| Source-native review | REVIEW-LOCKED | reviewed `7`, ACCEPT `4`, REPROCESS `3`, validation issue `0` | REPROCESS `3`은 restore/hold 계약으로만 처리 |
+| Exclusion candidates | REVIEW-LOCKED | ACCEPT `4`는 regression count 제외 후보 | approval로 세지 않음 |
+| Wrong-work restore | REVIEW-LOCKED | `11682792`, `11660273` restore projection applied | release 후보를 approval로 세지 않음 |
+| Candidate-set hold | HARD_HOLD | `11671514` candidate-set rebuild required | 후보셋 재구성 전 publish 금지 |
+| Release gate | REVIEW-LOCKED | release candidate `8`, no-release `6`, violation `0` | full375 GO 전 release 금지 |
+| Residual46 | REVIEW-LOCKED | contract processed `13`, exclusion candidate `4`, ordinary residual `29` | 다음 batch lane 처리 |
+| P0 residual19 | REVIEW-LOCKED | contract processed `13`, exclusion candidate `4`, ordinary residual `2` | `11698859`, `11698870` follow-up 처리 |
+| Full375 collateral | NO-GO | raw `79`, adjusted `75`, runtime counts missing | collateral GO 전 approval 금지 |
+| Test run dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | `http://127.0.0.1:8080`, health `ok=true`, next run `--parallel 16`, `--no-dashboard` 금지 | 진행 관측용으로만 사용 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: source-native `REVIEW-LOCKED / ACCEPT 4 / REPROCESS 3`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / raw 79 / adjusted 75`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-588 - Native/policy preflight and full375 collateral recheck
 
 | 항목 | 상태 | 근거 | 다음 |

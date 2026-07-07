@@ -1,0 +1,86 @@
+{
+  "application_id": "loop589_p0_info_missing_source_native_restore_projection_application",
+  "report_type": "source_native_repair_projection_contract_application",
+  "generated_at": "2026-07-08T05:54:16",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "policy": {
+    "source_native_seed_is_not_approval": true,
+    "uses_shared_promotion_seed_helper": true,
+    "uses_final_publication_ledger_sync": true,
+    "runtime_replay": "NOT_RUN"
+  },
+  "summary": {
+    "projection_rows": 375,
+    "verdict_rows": 7,
+    "eligible_restore_rows": 2,
+    "eligible_safe_loss_rows": 0,
+    "eligible_wrong_work_repair_rows": 2,
+    "eligible_restore_action_counts": {
+      "repair_after_wrong_work": 2
+    },
+    "outcome_counts": {
+      "applied_shared_gate_publish": 2
+    },
+    "applied_publish_rows": 2,
+    "post_sync_held_rows": 0,
+    "skipped_rows": 0
+  },
+  "rows": [
+    {
+      "post_id": 11682792,
+      "outcome": "applied_shared_gate_publish",
+      "selected_title": "이 무림의 미친년은 나야",
+      "selected_url": "https://novelpia.com/novel/217943",
+      "before_status": "safe_resolved",
+      "before_title": "[무친년]이 무림의 미친놈",
+      "after_status": "safe_resolved",
+      "after_title": "이 무림의 미친년은 나야",
+      "after_url": "https://novelpia.com/novel/217943",
+      "source_native_verdict": "source_alias_supports_official_title_after_variant_wrong_work",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_after_wrong_work",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "gate_reason_codes": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "projection_followup_shared_gate_seed_applied",
+        "source_native_review_current_work",
+        "official_detail_url",
+        "source_native_review_overrode_wrong_work_competition",
+        "serialized_public_identity_published"
+      ]
+    },
+    {
+      "post_id": 11660273,
+      "outcome": "applied_shared_gate_publish",
+      "selected_title": "마도서를 줍다 마법사가 되다",
+      "selected_url": "https://novelpia.com/novel/414963",
+      "before_status": "safe_resolved",
+      "before_title": "그리즐리 그랑",
+      "after_status": "safe_resolved",
+      "after_title": "마도서를 줍다 마법사가 되다",
+      "after_url": "https://novelpia.com/novel/414963",
+      "source_native_verdict": "source_context_identifies_internal_entity_after_wrong_work",
+      "evidence_grade": "Strong",
+      "actions": [
+        "repair_after_wrong_work",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "gate_reason_codes": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "projection_followup_shared_gate_seed_applied",
+        "source_native_review_current_work",
+        "official_detail_url",
+        "source_native_review_overrode_wrong_work_competition",
+        "serialized_public_identity_published"
+      ]
+    }
+  ]
+}
