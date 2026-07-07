@@ -1,5 +1,21 @@
 # Development Checklist
 
+## 2026-07-07 Loop549 B1 expected restore projection 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 런을 실행하지 않았다.
+- [x] Loop548 C1 expected restore pending `3`건을 projection-only로 적용했다.
+- [x] Applied restore rows는 `3`: `11668325`, `11710049`, `11718099`.
+- [x] Application validation issue는 `0`이다.
+- [x] Post-apply release audit은 violation `0`, pending `0`, no-release `11`, release candidate `3`, runtime allowed `0`이다.
+- [x] Publication contract는 `GO / 49 rows / 0 violations`다.
+- [x] Dashboard health/status를 확인했다: `http://127.0.0.1:8080`, `ok=true`, Loop545 `49/49`, `parallel_count=16`, `batch_running=false`.
+- [x] 다음 runtime/test run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 기본 금지로 유지한다.
+- [ ] Release candidate `3`건을 runtime/full_scan approval로 승격하지 않는다.
+- [ ] C2 variant `5`건은 variant policy 계약 전 publish하지 않는다.
+- [ ] C3 hard-hold `3`건은 stronger evidence/native-web 검증 전 완화하지 않는다.
+- [ ] Full375 collateral `GO` 전 full_scan path를 완료로 선언하지 않는다.
+- Gate: expected restore projection `REVIEW-LOCKED / applied 3`, release audit `REVIEW-LOCKED / violation 0 / pending 0 / release candidate 3`, publication contract `GO`, runtime replay `BLOCKED_UNTIL_C2_VARIANT_POLICY_AND_C3_STRONGER_EVIDENCE_OR_FULL375_RECHECK_PATH`, full375 collateral `NO-GO / residual78 still open`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop548 B1 canonical verdict 적용 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 런을 실행하지 않았다.

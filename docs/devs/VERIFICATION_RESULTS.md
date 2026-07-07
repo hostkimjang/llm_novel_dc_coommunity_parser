@@ -1,5 +1,32 @@
 # Verification Results
 
+## 2026-07-07 Loop549 B1 expected restore projection contract
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_549_REPORT_20260707.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop549_b1_expected_restore_projection_result.json`
+  - `docs/devs/loop549_b1_expected_restore_projection_contract_application.json`
+  - `docs/devs/loop549_b1_expected_restore_projection_contract_application.md`
+  - `docs/devs/loop549_b1_expected_restore_post_apply_release_gate_audit.json`
+  - `docs/devs/loop549_b1_expected_restore_post_apply_release_gate_audit.md`
+  - `docs/devs/loop549_b1_expected_restore_publication_contract_audit.json`
+  - `docs/devs/loop549_b1_expected_restore_publication_contract_audit.md`
+- 검증:
+  - Expected restore projection application: PASS, applied restore `3`, validation issue `0`.
+  - Post-apply release audit: PASS, violation `0`, pending `0`, no-release `11`, release candidate `3`, runtime allowed `0`.
+  - Publication contract convergence: PASS, `GO / 49 rows / 0 violations`.
+  - Dashboard health/status: PASS, `http://127.0.0.1:8080`, Loop545 `49/49`, `parallel_count=16`, `batch_running=false`.
+  - py_compile: PASS, expected-restore projection/audit/publication contract tools.
+  - unittest: PASS, expected-restore projection + release audit tests, `17` tests.
+  - JSON invariant check: PASS, Loop549 application/release/publication audit summaries.
+  - `git diff --check`: PASS. LF/CRLF warning만 있었고 whitespace error는 없었다.
+- 결과:
+  - Loop548 C1 pending `3`건을 projection-only로 닫았다.
+  - Release candidate `3`건은 full_scan approval이 아니다.
+  - C2 variant `5`건과 C3 hard-hold `3`건은 후속 처리로 남는다.
+  - 다음 runtime/test run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 기본 금지로 실행한다.
+- Gate: expected restore projection `REVIEW-LOCKED / applied 3`, release audit `REVIEW-LOCKED / pending 0 / release candidate 3`, publication contract `GO`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop548 B1 canonical verdict application and contract plan
 
 - 산출물:

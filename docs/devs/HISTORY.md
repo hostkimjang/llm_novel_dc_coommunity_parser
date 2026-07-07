@@ -1,5 +1,16 @@
 # Development History
 
+## 2026-07-07 - Loop549 B1 expected restore projection contract 적용
+
+- 새 runtime replay, bounded run, full375 대형 런은 실행하지 않았다.
+- Loop548 C1 expected restore pending `3`건을 current projection에 projection-only로 적용했다.
+- Applied restore rows는 `11668325`, `11710049`, `11718099` 세 건이고 validation issue는 `0`이다.
+- Post-apply release audit은 violation `0`, pending `0`, no-release `11`, release candidate `3`, runtime allowed `0`이다.
+- Publication contract convergence는 `GO / 49 rows / 0 violations`다.
+- Dashboard는 `http://127.0.0.1:8080`에서 `ok=true`, Loop545 `49/49`, `parallel_count=16`, `batch_running=false`로 확인했고 다음 runtime/test run에도 붙인다.
+- Report는 `docs/devs/loop_reports/LOOP_549_REPORT_20260707.md`다.
+- Gate는 expected restore projection `REVIEW-LOCKED / applied 3`, release audit `REVIEW-LOCKED / release candidate 3`, publication contract `GO`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-07 - Loop548 B1 canonical verdict 적용과 shared-gate contract plan
 
 - 새 runtime replay, bounded run, full375 대형 런은 실행하지 않았다.

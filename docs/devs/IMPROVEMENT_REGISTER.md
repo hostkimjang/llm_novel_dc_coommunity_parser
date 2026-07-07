@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260707-549 - B1 expected restore projection contract application
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | BLOCKED | 새 runtime/bounded/full375 실행 없음, runtime allowed `0` | C2/C3 또는 full375 경로 전 replay 금지 |
+| Expected restore application | REVIEW-LOCKED | applied restore `3`, validation issue `0` | release candidate를 approval로 승격 금지 |
+| Release audit | REVIEW-LOCKED | violation `0`, pending `0`, no-release `11`, release candidate `3` | C2/C3 후속 처리 |
+| Publication contract | GO | `49` rows, violation `0` | full375 collateral과 분리 유지 |
+| Dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | `http://127.0.0.1:8080`, Loop545 `49/49`, `parallel_count=16`, `batch_running=false` | 다음 runtime/test run에도 dashboard 기본 ON |
+| Full375 collateral | NO-GO | residual78 계속 open | C2/C3 뒤 full375 재확인 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: expected restore projection `REVIEW-LOCKED / applied 3`, release audit `REVIEW-LOCKED / pending 0 / release candidate 3`, publication contract `GO`, full375 collateral `NO-GO`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260707-548 - B1 canonical verdict 적용과 shared-gate contract plan
 
 | 항목 | 상태 | 근거 | 다음 |

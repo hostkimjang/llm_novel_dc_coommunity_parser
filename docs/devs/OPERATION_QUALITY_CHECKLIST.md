@@ -1,5 +1,24 @@
 # Operation Quality Checklist
 
+## 2026-07-07 Loop549 B1 expected restore projection 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_549_REPORT_20260707.md`.
+  - [x] Projection result 기록 완료: `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop549_b1_expected_restore_projection_result.json`.
+  - [x] Application report 기록 완료: `docs/devs/loop549_b1_expected_restore_projection_contract_application.json`.
+  - [x] Post-apply release audit 기록 완료: `docs/devs/loop549_b1_expected_restore_post_apply_release_gate_audit.json`.
+  - [x] Publication contract audit 기록 완료: `docs/devs/loop549_b1_expected_restore_publication_contract_audit.json`.
+  - [x] Dashboard health/status 확인 완료: `http://127.0.0.1:8080`, Loop545 `49/49`, `parallel_count=16`, `batch_running=false`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 런은 실행하지 않았다.
+  - [x] Applied restore rows는 `3`, validation issue는 `0`이다.
+  - [x] Release audit pending은 `3 -> 0`이지만 runtime allowed rows는 `0`이다.
+  - [x] Publication contract는 `GO / 49 rows / 0 violations`다.
+  - [x] 다음 runtime/test run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 기본 금지로 유지한다.
+  - [ ] Release candidate `3`건을 approval로 쓰지 않는다.
+  - [ ] C2/C3 후속 계약과 full375 collateral 전 runtime release하지 않는다.
+- Gate: expected restore projection `REVIEW-LOCKED / applied 3`, release audit `REVIEW-LOCKED / violation 0 / pending 0 / release candidate 3`, publication contract `GO`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop548 B1 post-verdict contract 품질 게이트
 
 - 근거:

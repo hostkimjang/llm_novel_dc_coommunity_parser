@@ -1,5 +1,22 @@
 # Developer TODO Index
 
+## 2026-07-07 Loop549 TODO
+
+- 상태 업데이트: Loop548 C1 expected restore pending `3`건을 projection-only로 적용했다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 런을 발주하지 않았다.
+- [x] Applied restore rows `3`: `11668325`, `11710049`, `11718099`.
+- [x] Application validation issue는 `0`이다.
+- [x] Post-apply release audit pending은 `0`, release candidate는 `3`, violation은 `0`이다.
+- [x] Publication contract는 `GO / 49 rows / 0 violations`다.
+- [x] Dashboard는 `http://127.0.0.1:8080`에서 `ok=true`로 응답하며, 최신 status는 Loop545 `49/49`, `parallel_count=16`, `batch_running=false`다.
+- [x] 다음 runtime/test run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 기본 금지로 실행한다.
+- [ ] Release candidate `3`건을 runtime/full_scan approval로 승격하지 않는다.
+- [ ] C2 variant policy `5`건을 처리한다.
+- [ ] C3 stronger evidence/native-web hold `3`건을 처리한다.
+- [ ] Full375 collateral `GO` 전 bounded/full375 동결 해제나 full_scan path 정의를 하지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, overall goal `ACTIVE / NOT_COMPLETE`.
+- Gate: expected restore projection `REVIEW-LOCKED / applied 3`, release audit `REVIEW-LOCKED / pending 0 / release candidate 3`, publication contract `GO`, full375 collateral `NO-GO`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop548 TODO
 
 - 상태 업데이트: Loop547 B1 canonical recheck packet `14`건 verdict를 적용하고 shared promotion gate contract queue/plan/release audit으로 전환했다. Goal은 완료가 아니다.

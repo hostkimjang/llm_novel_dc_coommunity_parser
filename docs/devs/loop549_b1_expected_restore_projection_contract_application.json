@@ -1,0 +1,73 @@
+{
+  "report_type": "post_verdict_projection_publish_contract_application",
+  "projection_id": "loop549_b1_expected_restore_projection_contract",
+  "generated_at": "2026-07-07T20:49:46",
+  "source_contract_plan": "loop548_b1_post_verdict_promotion_gate_contract_plan",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "projection_rows": 49,
+    "contract_plan_rows": 14,
+    "publish_contract_plan_rows": 3,
+    "applied_publish_contract_rows": 3,
+    "restore_plan_rows": 3,
+    "applied_restore_rows": 3,
+    "applied_expected_audit_update_rows": 0,
+    "applied_canonical_cleanup_rows": 0,
+    "validation_issue_count": 0,
+    "skipped_contract_action_counts": {
+      "candidate_scrub_no_publish_contract_case": 3,
+      "stronger_evidence_hard_hold_contract_case": 3,
+      "canonical_variant_policy_hold_contract_case": 5
+    },
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "applied_rows": [
+    {
+      "post_id": 11668325,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "Fate/stay night",
+      "target_url": "https://ridibooks.com/books/505001486",
+      "superseded_projection_candidate": {
+        "official_title": "마파두부를 너무나도 좋아하는 신부님의 키보토스 생활",
+        "official_url": "https://novelpia.com/novel/392916",
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11710049,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "target_url": null,
+      "superseded_projection_candidate": {
+        "official_title": "변방계 행성 하렘 생존기",
+        "official_url": "https://novelpia.com/novel/196996",
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11718099,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "빌어먹을 환생",
+      "target_url": "https://novel.munpia.com/222360",
+      "superseded_projection_candidate": {
+        "official_title": "불을 먹을 환생",
+        "official_url": "https://novel.munpia.com/385432",
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    }
+  ],
+  "approval_boundary": {
+    "projection_application_is_not_runtime_replay": true,
+    "release_candidate_is_not_full_scan_approval": true,
+    "runtime_replay_before_full375_collateral_forbidden": true,
+    "full375_collateral_remains_no_go": true
+  }
+}
