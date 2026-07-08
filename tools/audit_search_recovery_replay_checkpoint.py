@@ -165,6 +165,19 @@ def audit_replay(
 def write_markdown(report: dict[str, Any], path: Path) -> None:
     summary = report.get("summary") or {}
     recovery = report.get("recovery_summary") or {}
+    blockers = summary.get("blockers") or []
+    if report.get("gate") == "GO":
+        interpretation = [
+            "- 동일 deferred 109행 replay가 모두 완료됐고 row-level search health가 `ok`다.",
+            "- 이 감사 범위에서는 검색 복구 gate를 통과했으므로 full375 재실행 선행 차단을 해제할 수 있다.",
+            "- 다만 이 산출물은 full375 collateral GO나 full_scan approval이 아니다.",
+        ]
+    else:
+        interpretation = [
+            "- 이 산출물은 검색 복구 증명이 아니다.",
+            "- 완료 범위 또는 row-level search health에 blocker가 남아 있으므로 full375 재실행 차단은 유지한다.",
+            "- 검색 인프라 복구 후 blocker 행 또는 동일 deferred 행을 다시 실행해야 한다.",
+        ]
     lines = [
         f"# {report.get('audit_id')} search recovery replay audit",
         "",
@@ -177,16 +190,14 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
         f"- total_degraded: `{summary.get('total_degraded')}`",
         f"- total_unrecovered_degraded: `{summary.get('total_unrecovered_degraded')}`",
         f"- non_ok_row_count: `{summary.get('non_ok_row_count')}`",
-        f"- blockers: `{summary.get('blockers')}`",
+        f"- blockers: `{blockers}`",
         f"- recovered_subset: run_id `{recovery.get('run_id')}`, integrity `{recovery.get('integrity_classification')}`, large_run_complete `{recovery.get('large_run_complete')}`",
         "- semantic_quality: `REVIEW-LOCKED`",
         "- full_scan_approval: `false`",
         "",
         "## 해석",
         "",
-        "- 이 산출물은 검색 복구 증명이 아니다.",
-        "- 완료된 subset에서도 row-level search health가 `ok`가 아니므로 full375 재실행 차단은 유지한다.",
-        "- 검색 인프라 복구 후 동일 109행을 다시 실행해야 한다.",
+        *interpretation,
         "",
         "## Rows",
         "",

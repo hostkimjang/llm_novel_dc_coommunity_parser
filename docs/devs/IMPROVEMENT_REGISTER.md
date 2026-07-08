@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260708-615 - 109-row replay complete, row-level search recovery still blocked
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | GO | run `20260708_191732_513743`, completed/flushed/pending/failed `109/109/0/0` | search recovery audit 기준으로 후속 분리 |
+| Dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | final `109/109`, `batch_running=false`, `parallel_count=16` | 진행 관측 전용, approval 금지 |
+| Query preflight | GO | pre/post audit 모두 shard `16/16`, query probe `16/16`, degraded `0`, forbidden `0` | dispatch 전후 계속 상시 기록 |
+| Row-level search recovery | NO-GO | `SEARCH_DEGRADED 11 / SEARCH_DEGRADED_RECOVERED 12 / MISSING 5`, unrecovered `17` | unrecovered 11행 원인 수리 |
+| Full375 rerun | BLOCKED | row-level search recovery `NO-GO` | full375 발주 금지 |
+| Interest row `11698880` | REVIEW-LOCKED | search `ok`, degraded `0`, unrecovered `0`, title `null` | title correctness/flip-rate와 분리 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: runtime completion `GO`, query preflight `GO`, row-level search recovery `NO-GO`, full375 rerun `BLOCKED_UNTIL_ROW_SEARCH_RECOVERY`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-614 - query-level search shard recovery
 
 | 항목 | 상태 | 근거 | 다음 |

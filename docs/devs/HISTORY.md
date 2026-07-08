@@ -1,5 +1,17 @@
 # Development History
 
+## 2026-07-08 - Loop615 109-row replay complete but row-level search NO-GO
+
+- Loop614 query-level search 복구 뒤 Loop613 동일 `109`행을 재실행했다.
+- 실행 조건은 `.venv312`, `--parallel 16`, dashboard ON, search 포함 non-light, VLM/OCR ON, `--slang-db off`다.
+- Run `20260708_191732_513743`은 completed/flushed/pending/failed `109/109/0/0`, result/checkpoint rows `109/109`, `large_run_complete=true`, integrity `clean_completed_run`으로 완주했다.
+- Dashboard는 `http://127.0.0.1:8080`에서 최종 `109/109`, `batch_running=false`, `parallel_count=16`으로 확인했다.
+- Pre/post query audit은 둘 다 shard `ok=16/16`, query probe `16/16`, degraded `0`, forbidden engine `0`이다.
+- Row-level search recovery audit은 `NO-GO`다. Status는 `ok 81 / SEARCH_DEGRADED 11 / SEARCH_DEGRADED_RECOVERED 12 / MISSING 5`, degraded query `107`, unrecovered degraded `17`, non-ok row `31`이다.
+- Unrecovered degraded row는 `11657045/11658637/11660241/11660257/11660268/11660273/11661856/11661863/11661881/11663511/11694019`다.
+- Report는 `docs/devs/loop_reports/LOOP_615_REPORT_20260708.md`다.
+- Gate는 runtime completion `GO`, query preflight `GO`, row-level search recovery `NO-GO`, full375 rerun `BLOCKED_UNTIL_ROW_SEARCH_RECOVERY`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop614 query-level search shard recovery
 
 - Full375 replay와 Loop609 degraded/recovered `109`행 runtime replay는 실행하지 않았다.

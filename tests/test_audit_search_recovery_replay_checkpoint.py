@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import tempfile
 import unittest
+from pathlib import Path
 
-from tools.audit_search_recovery_replay_checkpoint import audit_replay
+from tools.audit_search_recovery_replay_checkpoint import audit_replay, write_markdown
 
 
 def _row(post_id: int, status: str, *, degraded: int = 0, unrecovered: int = 0) -> dict:
@@ -53,6 +55,22 @@ class AuditSearchRecoveryReplayCheckpointTest(unittest.TestCase):
         self.assertEqual(report["gate"], "GO")
         self.assertEqual(report["summary"]["non_ok_row_count"], 0)
         self.assertEqual(report["summary"]["blockers"], [])
+
+    def test_markdown_interpretation_matches_go_gate(self) -> None:
+        report = audit_replay(
+            recovered_rows=[_row(1, "ok")],
+            input_manifest={"summary": {"runtime_input_rows": 1}},
+            recovery_summary={"large_run_complete": True, "checkpoint_completed_rows": 1},
+            audit_id="test",
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "audit.md"
+            write_markdown(report, output)
+            text = output.read_text(encoding="utf-8")
+
+        self.assertIn("검색 복구 gate를 통과", text)
+        self.assertIn("full375 collateral GO나 full_scan approval이 아니다", text)
 
 
 if __name__ == "__main__":

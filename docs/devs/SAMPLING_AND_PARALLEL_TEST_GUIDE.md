@@ -1,5 +1,15 @@
 # Sampling And Parallel Test Guide
 
+## 2026-07-08 Loop615 query preflight와 row-level search gate 분리
+
+- Query preflight가 pre/post 모두 `GO / 16 of 16`이어도 runtime row-level search health가 `NO-GO`이면 full375를 열지 않는다.
+- Loop615는 동일 `109`행 replay를 `--parallel 16`, dashboard ON, search 포함 non-light, VLM/OCR ON으로 완주했다.
+- 완주 조건은 satisfied: completed/flushed/pending/failed `109/109/0/0`, dashboard `109/109`, `large_run_complete=true`.
+- Search recovery 조건은 not satisfied: status `SEARCH_DEGRADED 11 / SEARCH_DEGRADED_RECOVERED 12 / MISSING 5`, unrecovered degraded `17`.
+- Query-level forbidden engine gate와 row-level search health gate는 별도다. 전자는 stale shard/presearch 재유입 방지, 후자는 실제 post별 runtime search 품질 판정이다.
+- Search health ok가 아닌 replay 결과의 collateral 변화는 regression evidence로 쓰지 않는다.
+- 다음 full375 runtime replay는 row-level search recovery `GO`가 나온 뒤에만 허용한다.
+
 ## 2026-07-08 Loop614 query-level search preflight 필수화
 
 - Full375, bounded, golden, search-recovery replay를 dispatch하기 전에는 `tools/audit_search_shards.py --probe-query ...`로 실제 `/mcp/search` query probe를 남긴다.

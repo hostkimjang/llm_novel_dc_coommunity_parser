@@ -102,6 +102,13 @@ def recover(
         encoding="utf-8",
     )
 
+    if not missing_from_final and not pending_not_in_final and not checkpoint_missing_not_pending and not extra_in_final:
+        integrity_classification = "clean_completed_run"
+    elif missing_from_final and missing_from_final == pending_not_in_final and not checkpoint_missing_not_pending:
+        integrity_classification = "recoverable_pending_flush_gap"
+    else:
+        integrity_classification = "requires_manual_review"
+
     summary = {
         "run_id": manifest.get("run_id"),
         "source_result_path": str(result_path),
@@ -127,11 +134,7 @@ def recover(
         "checkpoint_missing_not_pending_post_ids": checkpoint_missing_not_pending,
         "pending_not_in_checkpoint_post_ids": pending_not_in_checkpoint,
         "extra_in_final_not_checkpoint_post_ids": extra_in_final,
-        "integrity_classification": (
-            "recoverable_pending_flush_gap"
-            if missing_from_final and missing_from_final == pending_not_in_final and not checkpoint_missing_not_pending
-            else "requires_manual_review"
-        ),
+        "integrity_classification": integrity_classification,
         "recovery_safe_to_use_as_completed_subset": bool(
             recovered_rows
             and not failed_rows

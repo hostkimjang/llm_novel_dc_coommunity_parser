@@ -1,5 +1,19 @@
 # Developer TODO Index
 
+## 2026-07-08 Loop615 이후 109행 완주 / row-level search NO-GO
+
+- 상태 업데이트: 동일 `109`행 replay는 완주했다. Run `20260708_191732_513743`은 completed/flushed/pending/failed `109/109/0/0`, integrity `clean_completed_run`, dashboard final `109/109`, requested/effective parallel `16/16`이다.
+- [x] Loop613 동일 입력 `109`행을 `--parallel 16`, dashboard ON, search 포함 non-light, `slang_db off`, VLM/OCR ON으로 재실행했다.
+- [x] Pre/post query audit을 남겼다. 둘 다 shard `ok=16/16`, query probe `16/16`, degraded `0`, forbidden engine `0`이다.
+- [x] Checkpoint recovery summary를 생성했다. final/checkpoint/recovered rows `109/109/109`, integrity `clean_completed_run`.
+- [x] Row-level search recovery audit을 생성했다. Gate는 `NO-GO`다.
+- [x] Row-level status는 `ok 81 / SEARCH_DEGRADED 11 / SEARCH_DEGRADED_RECOVERED 12 / MISSING 5`, unrecovered degraded `17`, non-ok row `31`이다.
+- [ ] Full375를 열지 않는다. 동일 런의 collateral 변화는 search health ok가 아니므로 regression evidence로 쓰지 않는다.
+- [ ] Unrecovered degraded `11`행(`11657045/11658637/11660241/11660257/11660268/11660273/11661856/11661863/11661881/11663511/11694019`)의 runtime search degraded 원인을 먼저 줄인다.
+- [ ] `SEARCH_DEGRADED_RECOVERED 12`와 `MISSING 5`는 full375 전 row-level gate에서 어떤 상태로 허용/차단할지 계약을 명시한다.
+- [ ] `11698880`은 이번 런에서 `search_status=ok`, degraded `0`, unrecovered `0`, title `null`이지만 safe-loss flip-rate/title correctness 판정과 혼동하지 않는다.
+- Gate: runtime completion `GO`, query preflight `GO`, row-level search recovery `NO-GO`, full375 rerun `BLOCKED_UNTIL_ROW_SEARCH_RECOVERY`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop614 이후 query-level search 복구 후속
 
 - 상태 업데이트: 검색 인프라 query preflight는 post-rebuild audit 기준 `GO / 16 of 16`이다. 다만 이는 row-level `109` replay나 full375 approval이 아니다.

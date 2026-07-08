@@ -1,5 +1,22 @@
 # Development Checklist
 
+## 2026-07-08 Loop615 109행 full replay / row-level search NO-GO 체크
+
+- [x] 동일 `109`행 runtime replay를 실행했다.
+- [x] 실행 조건은 `--parallel 16`, dashboard ON, search 포함 non-light, VLM/OCR ON, `slang_db off`다.
+- [x] Run `20260708_191732_513743`은 completed/flushed/pending/failed `109/109/0/0`, result/checkpoint rows `109/109`, `large_run_complete=true`로 완주했다.
+- [x] Recovery summary는 integrity `clean_completed_run`, recovered rows `109`다.
+- [x] Dashboard final은 `109/109`, `batch_running=false`, parallel `16`이다.
+- [x] Pre/post query audit은 모두 shard `ok=16/16`, query probe `16/16`, degraded `0`, forbidden engine `0`이다.
+- [x] Row-level search audit은 생성했다. Gate는 `NO-GO`.
+- [x] Row status는 `ok 81 / SEARCH_DEGRADED 11 / SEARCH_DEGRADED_RECOVERED 12 / MISSING 5`다.
+- [x] Total queries `1101`, degraded `107`, unrecovered degraded `17`, non-ok row `31`이다.
+- [ ] Search recovery `NO-GO`이므로 full375 재실행을 열지 않는다.
+- [ ] Search health ok가 아닌 Loop615 collateral을 regression evidence로 쓰지 않는다.
+- [ ] Unrecovered degraded `11`행의 runtime search 원인을 먼저 줄인다.
+- Gate: runtime completion `GO`, query preflight `GO`, row-level search recovery `NO-GO`, full375 rerun `BLOCKED_UNTIL_ROW_SEARCH_RECOVERY`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_615_REPORT_20260708.md`, `docs/devs/loop615_pre_replay_query_search_shard_audit.json`, `docs/devs/loop615_post_replay_query_search_shard_audit.json`, `docs/devs/loop615_search_degraded109_after_loop614_recovery_summary.json`, `docs/devs/loop615_search_degraded109_after_loop614_replay_audit.json/.md`, `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop615_search_degraded109_after_loop614_query_recovery_result.json`.
+
 ## 2026-07-08 Loop614 query-level search shard 복구 체크
 
 - [x] full375 replay와 Loop609 degraded/recovered `109`행 runtime replay를 새로 실행하지 않았다.

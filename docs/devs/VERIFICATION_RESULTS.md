@@ -1,5 +1,33 @@
 # Verification Results
 
+## 2026-07-08 Loop615 109행 full replay 검증
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_615_REPORT_20260708.md`
+  - `docs/devs/loop615_pre_replay_query_search_shard_audit.json`
+  - `docs/devs/loop615_post_replay_query_search_shard_audit.json`
+  - `docs/devs/loop615_search_degraded109_after_loop614_recovery_summary.json`
+  - `docs/devs/loop615_search_degraded109_after_loop614_replay_audit.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop615_search_degraded109_after_loop614_query_recovery_result.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop615_search_degraded109_after_loop614_query_recovery_result_manifest.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop615_search_degraded109_after_loop614_query_recovery_result_checkpoint.jsonl`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop615_search_degraded109_after_loop614_query_recovery_result_recovered_completed.json`
+- 검증:
+  - Runtime replay: PASS, run `20260708_191732_513743`, completed/flushed/pending/failed `109/109/0/0`.
+  - Result/checkpoint integrity: PASS, result rows `109`, checkpoint lines `109`, recovered rows `109`, integrity `clean_completed_run`.
+  - Dashboard: PASS, `http://127.0.0.1:8080`, final `109/109`, `batch_running=false`, `parallel_count=16`.
+  - Parallel contract: PASS, requested/effective parallel `16/16`.
+  - VLM/OCR semantic gate: PASS, `READY`.
+  - Pre-replay query audit: PASS, shard `ok=16/16`, query probe `16/16`, degraded `0`, forbidden engine `0`.
+  - Post-replay query audit: PASS, shard `ok=16/16`, query probe `16/16`, degraded `0`, forbidden engine `0`.
+  - Row-level search recovery audit: expected `NO-GO`, status `ok 81 / SEARCH_DEGRADED 11 / SEARCH_DEGRADED_RECOVERED 12 / MISSING 5`, degraded `107`, unrecovered degraded `17`, non-ok row `31`.
+  - Focused unittest: PASS, `tests.test_recover_expert_run_from_checkpoint`, `tests.test_audit_search_recovery_replay_checkpoint`.
+- 결과:
+  - Runtime completion은 `GO`지만 search recovery는 `NO-GO`다.
+  - Full375 replay는 계속 차단한다.
+  - Search health ok가 아닌 Loop615 collateral은 regression evidence로 쓰지 않는다.
+- Gate: runtime completion `GO`, query preflight `GO`, row-level search recovery `NO-GO`, full375 rerun `BLOCKED_UNTIL_ROW_SEARCH_RECOVERY`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop613 search degraded 109 partial replay 검증
 
 - 산출물:

@@ -1,5 +1,18 @@
 # Operation Quality Checklist
 
+## 2026-07-08 Loop615 row-level search recovery 운영 메모
+
+- [x] 동일 `109`행 replay를 `--parallel 16`, dashboard ON, search 포함 non-light로 완주했다.
+- [x] Runtime manifest는 completed/flushed/pending/failed `109/109/0/0`, `large_run_complete=true`, effective parallel `16`이다.
+- [x] Dashboard는 final `109/109`, `batch_running=false`, standalone `pid=9320`이다.
+- [x] Pre/post query audit은 모두 `ok=16/16`, query probe `16/16`, degraded `0`, forbidden engine `0`이다.
+- [x] Row-level audit은 `NO-GO`다. Query preflight GO를 row-level search recovery GO로 승격하지 않는다.
+- [x] Unrecovered degraded `17`이 남았으므로 full375를 열지 않는다.
+- [ ] Search degraded/recovered/MISSING row를 full375 collateral regression evidence로 쓰지 않는다.
+- [ ] Unrecovered degraded `11`행의 runtime query 로그와 search health payload를 먼저 조사한다.
+- [ ] 다음 runtime/test run도 `--parallel 16`, dashboard ON, search 포함 non-light를 유지한다.
+- Gate: runtime completion `GO`, query preflight `GO`, row-level search recovery `NO-GO`, full375 `BLOCKED_UNTIL_ROW_SEARCH_RECOVERY`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop614 query-level search recovery 운영 메모
 
 - [x] full375와 Loop609 `109`행 runtime replay를 새로 열지 않았다.

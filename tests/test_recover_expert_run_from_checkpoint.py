@@ -66,6 +66,53 @@ class RecoverExpertRunFromCheckpointTest(unittest.TestCase):
             self.assertTrue(summary["recovery_safe_to_use_as_completed_subset"])
             self.assertFalse(summary["large_run_complete"])
 
+    def test_classifies_complete_final_and_checkpoint_match_as_clean(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            result_path = root / "result.json"
+            checkpoint_path = root / "checkpoint.jsonl"
+            pending_path = root / "pending.json"
+            manifest_path = root / "manifest.json"
+            recovered_path = root / "recovered.json"
+            summary_path = root / "summary.json"
+
+            row = {"post_id": 1, "title": "first"}
+            result_path.write_text(json.dumps([row], ensure_ascii=False), encoding="utf-8")
+            checkpoint_path.write_text(
+                json.dumps({"global_idx": 1, "post_id": 1, "status": "completed", "result": row}, ensure_ascii=False)
+                + "\n",
+                encoding="utf-8",
+            )
+            pending_path.write_text("[]", encoding="utf-8")
+            manifest_path.write_text(
+                json.dumps(
+                    {
+                        "run_id": "test",
+                        "input_post_count": 1,
+                        "completed_count": 1,
+                        "flushed_count": 1,
+                        "pending_count": 0,
+                        "failed_count": 0,
+                        "next_save_idx": 2,
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            summary = recover(
+                result_path=result_path,
+                checkpoint_path=checkpoint_path,
+                pending_snapshot_path=pending_path,
+                manifest_path=manifest_path,
+                recovered_output_path=recovered_path,
+                summary_output_path=summary_path,
+            )
+
+            self.assertEqual(summary["integrity_classification"], "clean_completed_run")
+            self.assertTrue(summary["recovery_safe_to_use_as_completed_subset"])
+            self.assertTrue(summary["large_run_complete"])
+
 
 if __name__ == "__main__":
     unittest.main()
