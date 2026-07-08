@@ -1,5 +1,17 @@
 # Improvement Register
 
+## IMP-20260708-613 - search recovery replay guard
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Replay input | GO | Loop609 result에서 `109`행 복원, missing `0` | 검색 복구 후 동일 입력 재실행 |
+| Runtime partial | NO-GO | completed `10/109`, `large_run_complete=false` | 장기 런 반복 전 검색 원인 수리 |
+| Search recovery | NOT_RECOVERED | `SEARCH_DEGRADED 8 / SEARCH_DEGRADED_RECOVERED 2`, unrecovered `13` | row-level `ok`와 unrecovered `0` 필요 |
+| Dashboard | PARTIAL_VIEW | partial snapshot `10/109`, `batch_running=false` | 다음 runtime도 dashboard ON |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | full375는 검색 복구 뒤 |
+
+Gate: search recovery `P0_OPEN / NOT_RECOVERED`, full375 rerun `BLOCKED_UNTIL_SEARCH_RECOVERY`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-612 - Loop609 raw139 survey/search-health split
 
 | 항목 | 상태 | 근거 | 다음 |

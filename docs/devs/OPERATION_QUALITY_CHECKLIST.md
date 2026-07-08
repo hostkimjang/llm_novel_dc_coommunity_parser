@@ -1,5 +1,13 @@
 # Operation Quality Checklist
 
+## 2026-07-08 Loop613 search recovery partial replay 운영 메모
+
+- [x] full375를 열지 않고 search degraded/recovered `109`행만 replay input으로 복원했다.
+- [x] 실제 runtime은 `--parallel 16`, dashboard ON, search 포함 non-light 조건으로 시작했다.
+- [x] completed10에서 `ok 0/10`, unrecovered degraded `13`이 확인되어 장기 런을 계속 태우지 않고 checkpoint completed subset을 회수했다.
+- [x] partial replay는 approval이 아니며, 이번 결과는 검색 복구 실패 증거다.
+- [ ] 다음 full375는 검색 복구 후 동일 109행이 row-level search health `ok`로 통과한 뒤에만 허용한다.
+
 ## 2026-07-08 Loop612 raw139 survey/search-health 품질 게이트
 
 - 근거:

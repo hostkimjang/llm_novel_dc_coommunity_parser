@@ -18,6 +18,19 @@
 - Gate: survey/search split `REVIEW-LOCKED`, expected FP removal `42`, blind judge `24`, search recovery `P0_OPEN / 109`, true triage `10`, full375 rerun `BLOCKED_UNTIL_SEARCH_RECOVERY`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 - 산출물: `docs/devs/loop_reports/LOOP_612_REPORT_20260708.md`, `docs/devs/loop612_loop609_raw139_survey_search_health_split.json/.md`, `docs/devs/loop612_loop609_intended_recovery24_blind_judge_batch.jsonl/.md`, `docs/devs/loop612_loop609_search_degraded109_replay_hold.jsonl/.md`, `docs/devs/loop612_loop609_true_triage10_ok_search_nonfp.jsonl/.md`, `docs/devs/loop612_current_search_shard_audit.json`.
 
+## 2026-07-08 Loop613 search degraded 109 partial replay 체크
+
+- [x] full375 replay를 실행하지 않았다.
+- [x] Loop612 search degraded/recovered 보류 `109`행을 Loop609 result에서 runtime input으로 복원했다. 입력 rows `109`, missing `0`, gate `GO`.
+- [x] pre-replay shard audit `ok=16/16`을 남겼다.
+- [x] `.venv312`로 `--parallel 16`, search 포함 non-light, VLM/OCR ON, `slang_db off`, dashboard forwarding ON 실행을 시작했다. default Python은 `pydantic` 미설치로 시작 전 실패했으며 runtime 결과는 만들지 않았다.
+- [x] completed subset `10`행에서 search status `SEARCH_DEGRADED 8 / SEARCH_DEGRADED_RECOVERED 2 / ok 0`, unrecovered degraded `13`을 확인해 검색 복구 미증명 `NO-GO`로 중단/회수했다.
+- [x] dashboard stale running 상태를 partial snapshot `10/109`, `batch_running=false`로 갱신했다.
+- [ ] 검색 인프라 복구 전 full375 재실행을 열지 않는다.
+- [ ] 검색 복구 후 동일 `109`행을 다시 실행해 row-level search health `ok`를 확인한다.
+- Gate: search recovery `P0_OPEN / NOT_RECOVERED`, full375 rerun `BLOCKED_UNTIL_SEARCH_RECOVERY`, partial audit `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_613_REPORT_20260708.md`, `docs/devs/loop613_search_degraded109_replay_input.md`, `docs/devs/loop613_pre_replay_search_shard_audit.json`, `docs/devs/loop613_search_degraded109_replay_completed10_recovery_summary.json`, `docs/devs/loop613_search_degraded109_completed10_partial_audit.json/.md`, `tools/build_search_recovery_replay_input.py`, `tools/audit_search_recovery_replay_checkpoint.py`.
+
 ## 2026-07-08 Loop611 full375 projection 재회계와 테스트런 dashboard 계약 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.

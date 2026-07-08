@@ -1,5 +1,12 @@
 # Developer TODO Index
 
+## 2026-07-08 Loop613 이후 P0 검색 복구
+
+- [ ] 검색 degraded 원인을 먼저 수리한다. Completed10 partial replay에서 `ok 0/10`, degraded `104`, unrecovered degraded `13`이므로 현재 검색은 복구되지 않았다.
+- [ ] 검색 복구 뒤 `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop613_search_degraded109_replay_input.jsonl` 동일 `109`행을 `--parallel 16`, dashboard ON, search 포함 non-light로 다시 실행한다.
+- [ ] 동일 `109`행 재실행의 row-level search health가 `ok`이고 unrecovered degraded가 `0`임을 확인하기 전 full375 replay를 열지 않는다.
+- [ ] 검색 복구 후에만 Loop609 degraded/recovered collateral 재판정과 true triage/blind judge 후속을 진행한다.
+
 ## 2026-07-08 Loop612 이후
 
 - 상태 업데이트: Loop609 raw139는 일괄 P0 triage 대상이 아니다. Detection survey와 search health 교차 기준으로 expected FP removal `42`, blind judge 의도 복구 `24`, search degraded/recovered 보류 `109`, 즉시 true triage `10`으로 분리했다. Full375 재실행 전 검색 복구가 선행이다.

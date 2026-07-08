@@ -1,5 +1,12 @@
 # Sampling And Parallel Test Guide
 
+## 2026-07-08 Loop613 search recovery replay 중단 기준
+
+- Search degraded/recovered 보류행 replay는 full375가 아니며, `--parallel 16`, dashboard ON, search 포함 non-light로 실행한다.
+- 단 completed subset에서 row-level `SEARCH_DEGRADED` 또는 `SEARCH_DEGRADED_RECOVERED`가 계속 나오고 unrecovered degraded가 관측되면, 전체 `109`행 완주를 기다리지 않아도 검색 복구 미증명 `NO-GO`로 회수할 수 있다.
+- Loop613 completed10은 `ok 0/10`, unrecovered degraded `13`이므로 검색 복구 실패 증거다. 같은 상태에서 full375를 발주하지 않는다.
+- 회수한 partial subset은 approval이 아니라 P0 search recovery blocker evidence다.
+
 ## 2026-07-08 Loop612 search recovery 선결과 raw139 회계
 
 - Loop609 raw collateral regression `139`건은 일괄 P0 triage 대상이 아니다. Detection survey와 row search health 기준으로 먼저 분리한다.

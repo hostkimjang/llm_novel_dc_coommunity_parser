@@ -1,5 +1,26 @@
 # Verification Results
 
+## 2026-07-08 Loop613 search degraded 109 partial replay 검증
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_613_REPORT_20260708.md`
+  - `docs/devs/loop613_search_degraded109_replay_input.md`
+  - `docs/devs/loop613_pre_replay_search_shard_audit.json`
+  - `docs/devs/loop613_search_degraded109_replay_completed10_recovery_summary.json`
+  - `docs/devs/loop613_search_degraded109_completed10_partial_audit.json/.md`
+  - `tools/build_search_recovery_replay_input.py`
+  - `tools/audit_search_recovery_replay_checkpoint.py`
+- 검증:
+  - Input generation: PASS, rows `109`, missing `0`, gate `GO`.
+  - Pre-replay shard audit: PASS, `ok=16/16`.
+  - Runtime start: PASS, `.venv312`, `--parallel 16`, search 포함 non-light, VLM/OCR ON, `slang_db off`, dashboard forwarding ON.
+  - Recovery summary: checkpoint completed `10`, failed `0`, recovered `10`, integrity `recoverable_pending_flush_gap`, `large_run_complete=false`.
+  - Partial search audit: `NO-GO`, completed `10/109`, status `SEARCH_DEGRADED 8 / SEARCH_DEGRADED_RECOVERED 2`, degraded `104`, unrecovered degraded `13`.
+  - Unit test: PASS, `tests.test_audit_search_recovery_replay_checkpoint`, `tests.test_build_search_recovery_replay_input`, `tests.test_split_collateral_by_survey_search_health`.
+  - Py compile: PASS, search replay input/audit/split tools.
+- 결과: 검색 복구 증명 실패. full375 재실행 차단 유지.
+- Gate: search recovery `P0_OPEN / NOT_RECOVERED`, full375 rerun `BLOCKED_UNTIL_SEARCH_RECOVERY`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop612 Loop609 raw139 survey/search-health 3분
 
 - 산출물:

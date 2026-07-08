@@ -1,5 +1,13 @@
 # Development History
 
+## 2026-07-08 - Loop613 search degraded 109 partial replay
+
+- Loop612에서 보류한 search degraded/recovered `109`행을 Loop609 result에서 runtime input으로 복원했다.
+- `.venv312`로 `--parallel 16`, search 포함 non-light, VLM/OCR ON, dashboard forwarding ON 실행을 시작했으나, completed subset `10`행에서 이미 `SEARCH_DEGRADED 8`, `SEARCH_DEGRADED_RECOVERED 2`, unrecovered degraded `13`이 확인됐다.
+- 런은 검색 복구 미증명 `NO-GO`로 중단하고 checkpoint completed subset을 회수했다. 회수 integrity는 `recoverable_pending_flush_gap`, `large_run_complete=false`.
+- Full375 재실행 차단은 유지한다. Loop609 degraded/recovered `109`행 collateral은 계속 회귀 판정 근거로 쓰지 않는다.
+- Report는 `docs/devs/loop_reports/LOOP_613_REPORT_20260708.md`다.
+
 ## 2026-07-08 - Loop612 Loop609 raw139 survey/search-health split
 
 - 새 full375 runtime replay는 실행하지 않았다.

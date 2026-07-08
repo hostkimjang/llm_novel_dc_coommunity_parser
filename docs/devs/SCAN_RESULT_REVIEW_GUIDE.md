@@ -2,6 +2,12 @@
 
 스캔 결과 디렉터리를 받았을 때 런타임 안정성, 검색 품질, 최종 판단 품질, `slang_db` 품질을 분리해서 리뷰하기 위한 운영 지침이다. 이 문서는 특정 런 하나를 잘 읽는 것보다, 반복 가능한 리뷰 절차와 이슈 전환 기준을 고정하는 데 목적이 있다.
 
+## 2026-07-08 Loop613 search recovery partial replay 판정 규칙
+
+- Search readiness `ok=16/16`은 query-level recovery가 아니다.
+- Search degraded/recovered 보류행 replay에서 completed subset이 모두 `SEARCH_DEGRADED` 또는 `SEARCH_DEGRADED_RECOVERED`이고 unrecovered degraded가 남으면, 전체 완주 전이라도 `search_recovery=NO-GO`로 기록한다.
+- 이 partial replay는 approval 근거가 아니라 full375 재실행 차단을 유지하는 P0 증거다.
+
 ## 1. 작업 모드
 
 - `GUIDE_MODE`: 재사용 가능한 리뷰 지침, 체크리스트, 이슈 템플릿을 설계한다. 사용자가 scan result directory를 제공하지 않았으면 기본 모드다.
