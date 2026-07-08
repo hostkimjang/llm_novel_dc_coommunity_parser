@@ -1,5 +1,24 @@
 # Development Checklist
 
+## 2026-07-08 Loop608 remaining native hold 수렴과 full_scan 경로 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Loop607 residual13 전부를 `native_web_disambiguation_hold_contract_case` batch로 처리했다.
+- [x] Combined contract plan은 rows `27`, release candidate `3`, no-release/hold `24`, runtime allowed `0`이다.
+- [x] Release audit은 projection rows `375`, violation `0`, pending `0`이다.
+- [x] `11682791` blocked row의 public URL leak을 publication audit으로 잡고 scrub 로직과 계약 테스트를 보강했다.
+- [x] Publication contract audit은 재생성 후 `GO / rows 375 / violation 0`이다.
+- [x] Residual accounting은 source residual `28`, contract processed `27`, source-native processed `1`, processed/excluded `28`, ordinary residual `0`, validation issue `0`이다.
+- [x] Ordinary residual dispatch는 rows `0`이다.
+- [x] Always-on gate는 golden18 `GO`, full375 raw `67`, review+contract adjusted regression `0`, blocker `collateral_runtime_counts_missing`으로 overall `NO-GO`다.
+- [x] Dashboard health/status를 확인했다. `http://127.0.0.1:8080`, health `ok=true / standalone=true / pid=9320`, status Loop564 `30/30`, `parallel_count=16`, `batch_running=false`.
+- [x] `docs/devs/loop608_full_scan_path_plan.md`에 다음 full_scan 경로를 정의했다.
+- [ ] 다음 실제 full375/test runtime run은 `--parallel 16`, search 포함 non-light, web dashboard 기본 ON, manifest attach fallback 활성, `--no-dashboard` 금지로 실행한다.
+- [ ] 실행 뒤 runtime counts complete, publication contract, full375 collateral compare, always-on gate를 다시 확인한다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 검증 전 완료를 선언하지 않는다.
+- Gate: residual accounting `REVIEW-LOCKED / ordinary 0`, publication `GO`, always-on `NO-GO / adjusted 0 / runtime counts missing`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_608_REPORT_20260708.md`, `docs/devs/loop608_full_scan_path_plan.json/.md`, `docs/devs/loop608_residual13_remaining_native_hold_contract_plan.json`, `docs/devs/loop608_residual28_all_contracts_combined_contract_plan.json`, `docs/devs/loop608_residual28_all_contracts_release_gate_audit.json`, `docs/devs/loop608_after_remaining_native_hold_residual28_accounting.json`, `docs/devs/loop608_after_remaining_native_hold_ordinary_residual0_dispatch.json`, `docs/devs/loop608_remaining_native_hold_publication_contract_audit.json`, `docs/devs/loop608_always_on_golden18_full375_remaining_native_hold_gate.json`.
+
 ## 2026-07-08 Loop607 no-publish guard batch와 residual13 dispatch 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.

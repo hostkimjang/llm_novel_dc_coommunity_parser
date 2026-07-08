@@ -1,5 +1,20 @@
 # Development History
 
+## 2026-07-08 - Loop608 remaining native hold convergence and full_scan path
+
+- 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+- Loop607 residual13 전부를 `native_web_disambiguation_hold_contract_case` batch로 처리했다.
+- Combined contract plan은 rows `27`, action `expected_title_restore_contract_case 3 / candidate_scrub_no_publish_contract_case 1 / candidate_set_rebuild_required_before_publish 8 / no_publish_intent_guard_contract_case 2 / native_web_disambiguation_hold_contract_case 13`이다.
+- Release audit은 projection rows `375`, violation `0`, pending `0`, release candidate `3`, no-release/hold `24`, runtime allowed `0`이다.
+- 최초 publication audit에서 `11682791` blocked row의 stale public URL leak을 발견했고, native hold scrub 로직이 identity-level public title/url 필드를 제거하도록 보강했다.
+- Publication contract audit은 재생성 뒤 `GO / rows 375 / violation 0`이다.
+- Residual accounting은 source residual `28`, contract processed `27`, source-native processed `1`, processed/excluded `28`, ordinary residual `0`이다.
+- Always-on gate는 golden18 `GO`, full375 raw `67`, review+contract adjusted regression `0`이지만 runtime counts missing으로 overall `NO-GO`다.
+- 다음 full_scan 경로는 `docs/devs/loop608_full_scan_path_plan.md`에 정의했다. 실제 test/runtime run은 `--parallel 16`, search 포함 non-light, dashboard 기본 ON, manifest attach fallback 활성, `--no-dashboard` 금지다.
+- Dashboard는 `http://127.0.0.1:8080`에서 `ok=true / standalone=true / pid=9320`로 확인했다.
+- Report는 `docs/devs/loop_reports/LOOP_608_REPORT_20260708.md`다.
+- Gate는 residual accounting `REVIEW-LOCKED / ordinary 0`, publication `GO`, always-on `NO-GO / runtime counts missing`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop607 no-publish guard batch and residual13 dispatch
 
 - 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.

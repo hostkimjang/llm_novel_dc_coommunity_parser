@@ -1,5 +1,23 @@
 # Developer TODO Index
 
+## 2026-07-08 Loop608 이후
+
+- 상태 업데이트: Loop607 residual13은 모두 native-web disambiguation hold 계약으로 닫혔고 ordinary residual은 `0`이다. Publication contract는 `GO`지만 always-on은 runtime counts missing 때문에 `NO-GO`다. Goal은 완료가 아니다.
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Residual13을 N건 batch로 처리했다. action은 `native_web_disambiguation_hold_contract_case 13`이다.
+- [x] Combined contract plan/release audit을 생성했다. rows `27`, violation `0`, pending `0`, release candidate `3`, no-release/hold `24`.
+- [x] `11682791` blocked row public URL leak을 잡고 scrub 로직과 테스트를 보강했다.
+- [x] Publication contract audit을 재실행했다. `GO / 375 / violation 0`.
+- [x] Residual accounting을 생성했다. source residual `28`, processed/excluded `28`, ordinary residual `0`.
+- [x] Always-on gate를 재실행했다. golden18 `GO`, full375 raw `67`, review+contract adjusted `0`, blocker `collateral_runtime_counts_missing`.
+- [x] 다음 full_scan 경로 계획을 `docs/devs/loop608_full_scan_path_plan.md`에 정의했다.
+- [x] Dashboard health/status를 확인했다. `http://127.0.0.1:8080`, health `ok=true / standalone=true / pid=9320`, status Loop564 `30/30`, `parallel_count=16`, `batch_running=false`.
+- [ ] 다음 실제 full375/test runtime run은 `--parallel 16`, search 포함 non-light, web dashboard 기본 ON, manifest attach fallback 활성, `--no-dashboard` 금지로 실행한다.
+- [ ] 실행 후 runtime counts complete와 full375 collateral `GO`를 확인한다.
+- [ ] Dashboard 진행률은 approval 근거로 쓰지 않는다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 검증 전 완료를 선언하지 않는다.
+- Gate: ordinary residual `0`, publication `GO`, always-on `NO-GO / runtime counts missing`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop607 이후
 
 - 상태 업데이트: Loop606 residual15 중 no-publish 2건을 shared promotion gate no-publish 계약으로 처리했고, ordinary residual은 `13`건으로 줄었다. Full375 collateral은 여전히 `NO-GO`다. Goal은 완료가 아니다.

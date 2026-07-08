@@ -1,0 +1,158 @@
+{
+  "report_type": "remaining_native_hold_projection_application",
+  "projection_id": "loop608_residual13_remaining_native_hold_projection_application",
+  "generated_at": "2026-07-08T09:56:34",
+  "source_contract_plan": "loop608_residual13_remaining_native_hold_contract_plan",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "projection_rows": 375,
+    "contract_plan_rows": 13,
+    "applied_hold_contract_rows": 13,
+    "applied_scrubbed_public_identity_rows": 13,
+    "validation_issue_count": 0,
+    "skipped_contract_action_counts": {},
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "applied_rows": [
+    {
+      "post_id": 11681178,
+      "status": "scrubbed_public_identity",
+      "contract_action": "native_web_disambiguation_hold_contract_case",
+      "current_projection_candidate_title": "내가 구한 그녀가 S급 헌터로 돌아왔다",
+      "current_projection_candidate_url": "https://novelpia.com/novel/88773",
+      "target_title": null,
+      "target_url": null,
+      "runtime_replay_allowed": false
+    },
+    {
+      "post_id": 11687635,
+      "status": "scrubbed_public_identity",
+      "contract_action": "native_web_disambiguation_hold_contract_case",
+      "current_projection_candidate_title": "아포칼립스의 던전주가 되었다",
+      "current_projection_candidate_url": "https://novelpia.com/novel/367861",
+      "target_title": null,
+      "target_url": null,
+      "runtime_replay_allowed": false
+    },
+    {
+      "post_id": 11714913,
+      "status": "scrubbed_public_identity",
+      "contract_action": "native_web_disambiguation_hold_contract_case",
+      "current_projection_candidate_title": "전 버튜버가 하고 싶은데요",
+      "current_projection_candidate_url": "https://novelpia.com/novel/275975",
+      "target_title": null,
+      "target_url": null,
+      "runtime_replay_allowed": false
+    },
+    {
+      "post_id": 11718057,
+      "status": "scrubbed_public_identity",
+      "contract_action": "native_web_disambiguation_hold_contract_case",
+      "current_projection_candidate_title": "컵라면",
+      "current_projection_candidate_url": "https://novel.munpia.com/530740",
+      "target_title": null,
+      "target_url": null,
+      "runtime_replay_allowed": false
+    },
+    {
+      "post_id": 11685994,
+      "status": "scrubbed_public_identity",
+      "contract_action": "native_web_disambiguation_hold_contract_case",
+      "current_projection_candidate_title": "교황님 아하세요 마왕 들어 가요",
+      "current_projection_candidate_url": null,
+      "target_title": null,
+      "target_url": null,
+      "runtime_replay_allowed": false
+    },
+    {
+      "post_id": 11687661,
+      "status": "scrubbed_public_identity",
+      "contract_action": "native_web_disambiguation_hold_contract_case",
+      "current_projection_candidate_title": "약혼녀가 소천마였다",
+      "current_projection_candidate_url": "https://series.naver.com/novel/detail.series?productNo=13178533",
+      "target_title": null,
+      "target_url": null,
+      "runtime_replay_allowed": false
+    },
+    {
+      "post_id": 11694067,
+      "status": "scrubbed_public_identity",
+      "contract_action": "native_web_disambiguation_hold_contract_case",
+      "current_projection_candidate_title": "괴담에 휘말렸다",
+      "current_projection_candidate_url": "https://novelpia.com/novel/363195",
+      "target_title": null,
+      "target_url": null,
+      "runtime_replay_allowed": false
+    },
+    {
+      "post_id": 11677957,
+      "status": "scrubbed_public_identity",
+      "contract_action": "native_web_disambiguation_hold_contract_case",
+      "current_projection_candidate_title": "음악 천재가 불륜을 못 숨김",
+      "current_projection_candidate_url": null,
+      "target_title": null,
+      "target_url": null,
+      "runtime_replay_allowed": false
+    },
+    {
+      "post_id": 11661856,
+      "status": "scrubbed_public_identity",
+      "contract_action": "native_web_disambiguation_hold_contract_case",
+      "current_projection_candidate_title": "너랑은 절! 대! 안 사갈거니까!",
+      "current_projection_candidate_url": null,
+      "target_title": null,
+      "target_url": null,
+      "runtime_replay_allowed": false
+    },
+    {
+      "post_id": 11661863,
+      "status": "scrubbed_public_identity",
+      "contract_action": "native_web_disambiguation_hold_contract_case",
+      "current_projection_candidate_title": "용의 신부로 바쳐지고 말았다",
+      "current_projection_candidate_url": "https://novelpia.com/novel/403463",
+      "target_title": null,
+      "target_url": null,
+      "runtime_replay_allowed": false
+    },
+    {
+      "post_id": 11671512,
+      "status": "scrubbed_public_identity",
+      "contract_action": "native_web_disambiguation_hold_contract_case",
+      "current_projection_candidate_title": "킹덤, 전국의 패왕 [킹덤 패러디 ]",
+      "current_projection_candidate_url": null,
+      "target_title": null,
+      "target_url": null,
+      "runtime_replay_allowed": false
+    },
+    {
+      "post_id": 11682791,
+      "status": "scrubbed_public_identity",
+      "contract_action": "native_web_disambiguation_hold_contract_case",
+      "current_projection_candidate_title": "시간을 달리는 소설가",
+      "current_projection_candidate_url": "https://novel.munpia.com/357213",
+      "target_title": null,
+      "target_url": null,
+      "runtime_replay_allowed": false
+    },
+    {
+      "post_id": 11716480,
+      "status": "scrubbed_public_identity",
+      "contract_action": "native_web_disambiguation_hold_contract_case",
+      "current_projection_candidate_title": "여대생 가랑이 사이 무릎 꿇은 엄마들",
+      "current_projection_candidate_url": null,
+      "target_title": null,
+      "target_url": null,
+      "runtime_replay_allowed": false
+    }
+  ],
+  "approval_boundary": {
+    "projection_application_is_not_runtime_replay": true,
+    "hold_contract_is_not_approval": true,
+    "full_scan_approval": false
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "plan_id": "loop608_full_scan_path_plan",
+  "created_at": "2026-07-08",
+  "language": "ko",
+  "gate": "READY_PATH_NOT_RUN",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "runtime_executed": false,
+  "summary": {
+    "ordinary_residual_unprocessed_rows": 0,
+    "publication_contract_gate": "GO",
+    "publication_contract_rows": 375,
+    "publication_contract_violations": 0,
+    "golden_gate": "GO",
+    "golden_rows": "18/18",
+    "full375_shared_posts": "375/375",
+    "full375_raw_collateral_regression_count": 67,
+    "full375_review_contract_adjusted_regression_count": 0,
+    "always_on_gate": "NO-GO",
+    "remaining_blocker": "collateral_runtime_counts_missing",
+    "goal_status": "ACTIVE / NOT_COMPLETE"
+  },
+  "dashboard_contract": {
+    "required": true,
+    "dashboard_url": "http://127.0.0.1:8080",
+    "health_endpoint": "http://127.0.0.1:8080/api/health",
+    "observed_health": {
+      "ok": true,
+      "standalone": true,
+      "pid": 9320
+    },
+    "latest_status_observed": {
+      "batch_running": false,
+      "done_count": 30,
+      "total_posts": 30,
+      "parallel_count": 16
+    },
+    "policy": [
+      "test/runtime run은 진행상황 확인을 위해 web dashboard에 붙여 실행한다.",
+      "`--no-dashboard`는 사용하지 않는다.",
+      "planned run은 `tools/run_independent_plan.py` 기본 dashboard forwarding과 manifest attach fallback을 사용한다.",
+      "dashboard는 진행 관측 도구이며 approval 근거가 아니다."
+    ]
+  },
+  "runtime_command": [
+    ".\\.venv312\\Scripts\\python.exe",
+    "expert_main.py",
+    "out\\regression_safe_grounding_20260626_000008_928006_loop01\\panel\\regression_panel_input.jsonl",
+    "--output",
+    "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop609_full375_after_loop608_search_nonlight_result.json",
+    "--server-type",
+    "vllm",
+    "--llm-endpoint",
+    "http://10.20.0.101:8000",
+    "--llm-model",
+    "bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4",
+    "--reuse-shards-only",
+    "--slang-db",
+    "off",
+    "--parallel",
+    "16",
+    "--vlm",
+    "on",
+    "--ocr",
+    "on",
+    "--require-vlm-ocr-for-images"
+  ],
+  "forbidden_runtime_args": [
+    "--no-dashboard"
+  ],
+  "preflight_required": [
+    "dashboard health ok=true",
+    "requested parallel=16",
+    "search included / non-light",
+    "MCP search shard health ok",
+    "VLM/OCR ready",
+    "slang_db off 또는 read-only",
+    "full375 input 375 rows 확인"
+  ],
+  "post_run_required_gates": [
+    "run health GO, completed/flushed/pending/failed = 375/375/0/0",
+    "dashboard manifest progress attached",
+    "publication contract GO / violation 0",
+    "full375 collateral compare 재실행",
+    "always-on golden18 + full375 gate 재실행",
+    "runtime counts complete",
+    "full_scan path gate GO 전까지 full_scan_approval=false 유지"
+  ],
+  "evidence": {
+    "residual_accounting": "docs/devs/loop608_after_remaining_native_hold_residual28_accounting.json",
+    "ordinary_residual_dispatch": "docs/devs/loop608_after_remaining_native_hold_ordinary_residual0_dispatch.json",
+    "publication_contract_audit": "docs/devs/loop608_remaining_native_hold_publication_contract_audit.json",
+    "collateral_compare": "docs/devs/loop608_remaining_native_hold_full375_collateral_compare.json",
+    "always_on_gate": "docs/devs/loop608_always_on_golden18_full375_remaining_native_hold_gate.json"
+  }
+}

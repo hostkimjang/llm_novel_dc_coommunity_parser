@@ -70,6 +70,24 @@ def _exclusion_post_ids(collateral_review: dict[str, Any]) -> set[int] | None:
     return post_ids
 
 
+def _contract_accounted_post_ids(contract_accounting: dict[str, Any]) -> set[int] | None:
+    rows = contract_accounting.get("rows")
+    if not isinstance(rows, list):
+        return None
+    post_ids: set[int] = set()
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        if row.get("ordinary_residual_unprocessed"):
+            continue
+        if not (row.get("contract_processed") or row.get("source_native_processed")):
+            continue
+        post_id = row.get("post_id")
+        if isinstance(post_id, int):
+            post_ids.add(post_id)
+    return post_ids
+
+
 def golden_gate(golden: dict[str, Any], expected_rows: int) -> dict[str, Any]:
     row_count = _safe_int(golden.get("row_count"))
     passed_count = _safe_int(golden.get("passed_count"))
@@ -114,6 +132,7 @@ def golden_gate(golden: dict[str, Any], expected_rows: int) -> dict[str, Any]:
 def _collateral_review_adjustment(
     *,
     collateral_review: dict[str, Any] | None,
+    contract_accounting: dict[str, Any] | None = None,
     raw_regression_count: int | None,
     raw_regression_post_ids: set[int] | None = None,
 ) -> dict[str, Any]:
@@ -196,12 +215,68 @@ def _collateral_review_adjustment(
     if batch_review_rows is not None and exclusion_candidate_rows > batch_review_rows:
         blockers.append("collateral_review_exclusion_exceeds_batch_count")
 
+    contract_accounting_details: dict[str, Any] = {
+        "provided": contract_accounting is not None,
+        "applied": False,
+        "accounting_id": contract_accounting.get("accounting_id") if contract_accounting else None,
+        "contract_accounted_raw_regression_rows": 0,
+        "contract_accounted_additional_rows": 0,
+        "ordinary_residual_unprocessed_rows": None,
+        "validation_issue_count": None,
+        "blockers": [],
+    }
+    contract_accounted_raw_ids: set[int] = set()
+    if contract_accounting is not None:
+        accounting_summary = (
+            contract_accounting.get("summary")
+            if isinstance(contract_accounting.get("summary"), dict)
+            else {}
+        )
+        accounting_gate = str(contract_accounting.get("gate") or "").strip()
+        accounting_validation_issues = _safe_int(accounting_summary.get("validation_issue_count"))
+        ordinary_residual_rows = _safe_int(accounting_summary.get("ordinary_residual_unprocessed_rows"))
+        accounted_post_ids = _contract_accounted_post_ids(contract_accounting)
+        accounting_blockers: list[str] = []
+        if accounting_gate != "REVIEW-LOCKED":
+            accounting_blockers.append("contract_accounting_gate_not_review_locked")
+        if accounting_validation_issues != 0:
+            accounting_blockers.append("contract_accounting_validation_issues_nonzero")
+        if accounted_post_ids is None:
+            accounting_blockers.append("contract_accounting_rows_missing")
+        if raw_regression_post_ids is None:
+            accounting_blockers.append("contract_accounting_requires_row_level_collateral")
+        if not accounting_blockers and accounted_post_ids is not None and raw_regression_post_ids is not None:
+            exclusion_ids = exclusion_post_ids or set()
+            contract_accounted_raw_ids = raw_regression_post_ids & accounted_post_ids
+            contract_accounting_details["applied"] = True
+            contract_accounting_details["contract_accounted_raw_regression_rows"] = len(contract_accounted_raw_ids)
+            contract_accounting_details["contract_accounted_additional_rows"] = len(
+                contract_accounted_raw_ids - (exclusion_ids & raw_regression_post_ids)
+            )
+        contract_accounting_details.update(
+            {
+                "gate": accounting_gate,
+                "ordinary_residual_unprocessed_rows": ordinary_residual_rows,
+                "validation_issue_count": accounting_validation_issues,
+                "contract_processed_rows": accounting_summary.get("contract_processed_rows"),
+                "source_native_processed_rows": accounting_summary.get("source_native_processed_rows"),
+                "processed_or_excluded_rows": accounting_summary.get("processed_or_excluded_rows"),
+                "contract_accounting_state_counts": accounting_summary.get("contract_accounting_state_counts") or {},
+                "blockers": accounting_blockers,
+            }
+        )
+        blockers.extend(accounting_blockers)
+
     applied = not blockers
-    adjusted = (
-        max(raw_regression_count - exclusion_candidate_rows, 0)
-        if applied and raw_regression_count is not None
-        else raw_regression_count
-    )
+    if applied and raw_regression_count is not None:
+        if raw_regression_post_ids is not None:
+            exclusion_ids = (exclusion_post_ids or set()) & raw_regression_post_ids
+            adjusted_post_ids = raw_regression_post_ids - exclusion_ids - contract_accounted_raw_ids
+            adjusted = len(adjusted_post_ids)
+        else:
+            adjusted = max(raw_regression_count - exclusion_candidate_rows, 0)
+    else:
+        adjusted = raw_regression_count
     if raw_regression_count is not None and reviewed_raw_regression_rows is not None:
         unreviewed_regression_rows = max(raw_regression_count - reviewed_raw_regression_rows, 0)
     elif raw_regression_count is not None and batch_review_rows is not None:
@@ -234,6 +309,7 @@ def _collateral_review_adjustment(
         "unreviewed_regression_post_ids": unreviewed_regression_post_ids,
         "validation_issue_count": validation_issue_count,
         "exclusion_candidate_rows": exclusion_candidate_rows,
+        "contract_accounting": contract_accounting_details,
         "label_counts": summary.get("label_counts") or {},
         "action_counts": action_counts,
         "review_adjusted_regression_count": adjusted,
@@ -245,6 +321,7 @@ def collateral_gate(
     collateral: dict[str, Any],
     expected_shared_posts: int,
     collateral_review: dict[str, Any] | None = None,
+    contract_accounting: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     shared = _safe_int(collateral.get("shared_post_count"))
     changed = _safe_int(collateral.get("changed_post_count"))
@@ -259,6 +336,7 @@ def collateral_gate(
     )
     review_adjustment = _collateral_review_adjustment(
         collateral_review=collateral_review,
+        contract_accounting=contract_accounting,
         raw_regression_count=regression_count,
         raw_regression_post_ids=_raw_regression_post_ids(collateral),
     )
@@ -306,6 +384,7 @@ def evaluate_gates(
     golden: dict[str, Any],
     collateral: dict[str, Any],
     collateral_review: dict[str, Any] | None = None,
+    contract_accounting: dict[str, Any] | None = None,
     expected_golden_rows: int = 18,
     expected_collateral_shared_posts: int = 375,
 ) -> dict[str, Any]:
@@ -314,6 +393,7 @@ def evaluate_gates(
         collateral,
         expected_collateral_shared_posts,
         collateral_review=collateral_review,
+        contract_accounting=contract_accounting,
     )
     gate = "GO" if golden_result["gate"] == "GO" and collateral_result["gate"] == "GO" else "NO-GO"
     return {
@@ -328,6 +408,7 @@ def evaluate_gates(
             "golden_pass_alone_is_not_approval": True,
             "collateral_runtime_pass_alone_is_not_approval": True,
             "collateral_source_native_exclusion_requires_clean_review_summary": True,
+            "collateral_contract_accounting_is_not_full_scan_approval": True,
         },
         "golden": golden_result,
         "collateral": collateral_result,
@@ -409,9 +490,31 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
         ),
         f"- runtime_complete: `{report['collateral']['runtime_complete']}`",
         "",
-        "## 차단 항목",
+        "## Contract 회계 조정",
         "",
     ]
+    contract_accounting = report["collateral"]["review_adjustment"].get("contract_accounting") or {}
+    if contract_accounting.get("provided"):
+        lines.extend(
+            [
+                f"- applied: `{contract_accounting.get('applied')}`",
+                f"- accounting_id: `{contract_accounting.get('accounting_id')}`",
+                f"- processed_or_excluded_rows: `{display(contract_accounting.get('processed_or_excluded_rows'))}`",
+                f"- ordinary_residual_unprocessed_rows: `{display(contract_accounting.get('ordinary_residual_unprocessed_rows'))}`",
+                f"- contract_accounted_raw_regression_rows: `{contract_accounting.get('contract_accounted_raw_regression_rows')}`",
+                f"- contract_accounted_additional_rows: `{contract_accounting.get('contract_accounted_additional_rows')}`",
+                f"- validation_issue_count: `{display(contract_accounting.get('validation_issue_count'))}`",
+                "",
+            ]
+        )
+    else:
+        lines.extend(["- provided: `false`", ""])
+    lines.extend(
+        [
+            "## 차단 항목",
+            "",
+        ]
+    )
     if report["blockers"]:
         for blocker in report["blockers"]:
             lines.append(f"- `{blocker}`")
@@ -426,6 +529,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--golden-audit", required=True, type=Path)
     parser.add_argument("--collateral-compare", required=True, type=Path)
     parser.add_argument("--collateral-review-summary", type=Path, default=None)
+    parser.add_argument("--contract-accounting", type=Path, default=None)
     parser.add_argument("--expected-golden-rows", type=int, default=18)
     parser.add_argument("--expected-collateral-shared-posts", type=int, default=375)
     parser.add_argument("--output-json", required=True, type=Path)
@@ -442,6 +546,11 @@ def main() -> int:
         collateral_review=(
             load_json(args.collateral_review_summary)
             if args.collateral_review_summary
+            else None
+        ),
+        contract_accounting=(
+            load_json(args.contract_accounting)
+            if args.contract_accounting
             else None
         ),
         expected_golden_rows=args.expected_golden_rows,

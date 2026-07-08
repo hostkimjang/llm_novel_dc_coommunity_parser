@@ -56,6 +56,39 @@ def _collateral_review(**overrides):
     return payload
 
 
+def _contract_accounting(**overrides):
+    payload = {
+        "accounting_id": "unit_contract_accounting",
+        "gate": "REVIEW-LOCKED",
+        "summary": {
+            "validation_issue_count": 0,
+            "contract_processed_rows": 2,
+            "source_native_processed_rows": 0,
+            "processed_or_excluded_rows": 2,
+            "ordinary_residual_unprocessed_rows": 0,
+            "contract_accounting_state_counts": {
+                "contract_processed_native_web_disambiguation_hold_no_publish": 2
+            },
+        },
+        "rows": [
+            {
+                "post_id": 2,
+                "contract_processed": True,
+                "source_native_processed": False,
+                "ordinary_residual_unprocessed": False,
+            },
+            {
+                "post_id": 3,
+                "contract_processed": True,
+                "source_native_processed": False,
+                "ordinary_residual_unprocessed": False,
+            },
+        ],
+    }
+    payload.update(overrides)
+    return payload
+
+
 class AlwaysOnRegressionGatesTest(unittest.TestCase):
     def test_gate_go_requires_golden_and_full_collateral(self):
         report = evaluate_gates(golden=_golden(), collateral=_collateral())
@@ -348,6 +381,56 @@ class AlwaysOnRegressionGatesTest(unittest.TestCase):
         self.assertEqual(report["gate"], "GO")
         self.assertEqual(report["collateral"]["gate"], "GO")
         self.assertEqual(report["collateral"]["review_adjusted_regression_count"], 0)
+        self.assertFalse(report["full_scan_approval"])
+
+    def test_contract_accounting_can_clear_reviewed_actionable_residuals_without_approval(self):
+        review = _collateral_review(
+            summary={
+                "batch_review_rows": 3,
+                "reviewed_rows": 3,
+                "unreviewed_batch_rows": 0,
+                "validation_issue_count": 0,
+                "action_counts": {
+                    "exclude_from_regression_count_after_gate_wiring": 1,
+                },
+                "queue_transition": {
+                    "original_p0_rows": 3,
+                    "exclusion_candidate_rows": 1,
+                    "residual_action_queue_rows": 2,
+                },
+            },
+            rows=[
+                {
+                    "post_id": 1,
+                    "action": ["exclude_from_regression_count_after_gate_wiring"],
+                },
+                {"post_id": 2, "action": ["native_web_or_image_evidence_required"]},
+                {"post_id": 3, "action": ["candidate_set_rebuild_required"]},
+            ],
+        )
+        collateral = _collateral(
+            changed_post_count=3,
+            collateral_regression_count=3,
+            rows=[
+                {"post_id": 1, "is_regression": True},
+                {"post_id": 2, "is_regression": True},
+                {"post_id": 3, "is_regression": True},
+            ],
+        )
+
+        report = evaluate_gates(
+            golden=_golden(),
+            collateral=collateral,
+            collateral_review=review,
+            contract_accounting=_contract_accounting(),
+        )
+
+        accounting = report["collateral"]["review_adjustment"]["contract_accounting"]
+        self.assertEqual(report["gate"], "GO")
+        self.assertEqual(report["collateral"]["review_adjusted_regression_count"], 0)
+        self.assertTrue(accounting["applied"])
+        self.assertEqual(accounting["contract_accounted_raw_regression_rows"], 2)
+        self.assertEqual(accounting["contract_accounted_additional_rows"], 2)
         self.assertFalse(report["full_scan_approval"])
 
     def test_full_collateral_gate_requires_explicit_runtime_counts(self):

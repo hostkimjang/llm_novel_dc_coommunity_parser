@@ -1,5 +1,15 @@
 # Sampling And Parallel Test Guide
 
+## 2026-07-08 Loop608 full_scan 경로와 dashboard 필수 부착
+
+- Loop608 이후 다음 full375/test runtime run은 반드시 `--parallel 16`, search 포함 non-light, VLM/OCR ready, `slang_db off`, web dashboard 기본 ON으로 실행한다.
+- `--no-dashboard`는 사용하지 않는다. planned run은 `tools/run_independent_plan.py` 기본 dashboard forwarding과 manifest attach fallback을 사용한다.
+- 현재 standalone dashboard health는 `ok=true`, `standalone=true`, `pid=9320`이고 URL은 `http://127.0.0.1:8080`이다.
+- 최신 status는 이전 Loop564 runtime replay `30/30`, `parallel_count=16`, `batch_running=false`다.
+- Loop608은 projection/static/contract 검증이라 새 runtime 진행률은 없다. 다음 runtime run이 시작되면 expert_main live forwarding 또는 manifest attach로 dashboard 진행률을 갱신한다.
+- Dashboard는 진행상황 관측 도구이며 `semantic_quality`, `full_scan_approval`, `full375 collateral GO`의 승인 근거가 아니다.
+- 현재 always-on은 golden18 `GO`, full375 adjusted `0`이지만 runtime counts missing으로 `NO-GO`다. runtime counts complete 전까지 full_scan approval은 열지 않는다.
+
 ## 2026-07-08 Loop601 dashboard health와 corrected gate
 
 - 다음 regression-safe grounding test/runtime run은 반드시 `--parallel 16`, web dashboard 기본 ON, `--no-dashboard` 금지로 실행한다.

@@ -88,6 +88,9 @@ class BuildRemainingNativeHoldContractPlanTest(unittest.TestCase):
                             "heretic_url": "https://example.test/work",
                             "confidence": "High",
                         },
+                        "heretic_url": "https://example.test/work",
+                        "official_url": "https://example.test/work",
+                        "resolved_url": "https://example.test/work",
                         "title_resolution_allowed": True,
                         "safe_resolved": True,
                     }
@@ -103,7 +106,12 @@ class BuildRemainingNativeHoldContractPlanTest(unittest.TestCase):
 
         identity = updated[0]["analysis_result"]["identity"]
         self.assertIsNone(updated[0]["actual_title"])
+        self.assertIsNone(updated[0]["actual_url"])
         self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertIsNone(identity["novel_identity"]["heretic_url"])
+        self.assertIsNone(identity["heretic_url"])
+        self.assertIsNone(identity["official_url"])
+        self.assertIsNone(identity["resolved_url"])
         self.assertEqual(identity["candidate_ledger_status"], "promotion_blocked")
         self.assertEqual(identity["candidate_ledger"]["status"], "candidate_only")
         self.assertEqual(identity["blocked_official_title"], "Unsafe Public")

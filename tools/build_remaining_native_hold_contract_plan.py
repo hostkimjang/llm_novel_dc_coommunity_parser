@@ -373,6 +373,15 @@ def _scrub_row(row: dict[str, Any], plan_row: dict[str, Any]) -> tuple[dict[str,
     ident["blocked_official_title"] = old_novel.get("official_title") or candidate.get("official_title")
     ident["blocked_official_title_url"] = old_novel.get("heretic_url") or candidate.get("official_url")
     ident["novel_identity"] = {"official_title": None, "heretic_url": None, "confidence": "Hold"}
+    for public_key in (
+        "official_title",
+        "official_novel_title",
+        "resolved_title",
+        "heretic_url",
+        "official_url",
+        "resolved_url",
+    ):
+        ident[public_key] = None
     ident["primary_work"] = None
     ident["candidate_ledger"] = candidate_ledger
     ident["candidate_ledger_status"] = "promotion_blocked"

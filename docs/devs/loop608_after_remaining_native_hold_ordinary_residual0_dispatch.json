@@ -1,0 +1,36 @@
+{
+  "report_type": "ordinary_residual_dispatch",
+  "dispatch_id": "loop608_after_remaining_native_hold_ordinary_residual0_dispatch",
+  "generated_at": "2026-07-08T09:56:36",
+  "source_accounting_id": "loop608_after_remaining_native_hold_residual28_accounting",
+  "source_queue_id": "loop602_after_unreviewed13_source_native_residual_action_queue",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "source_accounting_rows": 28,
+    "source_queue_rows": 28,
+    "ordinary_residual_rows": 0,
+    "contract_processed_rows_held": 27,
+    "validation_issue_count": 0,
+    "lane_counts": {},
+    "label_counts": {},
+    "bucket_counts": {},
+    "transition_counts": {},
+    "action_counts": {},
+    "publish_allowed_rows": 0,
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "lane_groups": [],
+  "rows": [],
+  "approval_boundary": {
+    "dispatch_generation_is_not_approval": true,
+    "runtime_replay_allowed": false,
+    "publish_allowed": false,
+    "full375_collateral_go_required_before_completion": true,
+    "full_scan_approval": false
+  }
+}

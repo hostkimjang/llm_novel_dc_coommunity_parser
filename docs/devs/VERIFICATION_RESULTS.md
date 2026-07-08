@@ -1,5 +1,31 @@
 # Verification Results
 
+## 2026-07-08 Loop608 remaining native hold 수렴과 full_scan 경로
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_608_REPORT_20260708.md`
+  - `docs/devs/loop608_full_scan_path_plan.json/.md`
+  - `tools/build_remaining_native_hold_contract_plan.py`
+  - `tools/evaluate_always_on_regression_gates.py`
+  - `tests/test_build_remaining_native_hold_contract_plan.py`
+  - `tests/test_always_on_regression_gates.py`
+  - `docs/devs/loop608_*`
+- 검증:
+  - Native hold contract plan: PASS, rows `13`, validation issue `0`, runtime allowed `0`.
+  - Combined release audit: PASS, contract rows `27`, projection rows `375`, violation `0`, pending `0`, release candidate `3`, no-release/hold `24`.
+  - Residual accounting: PASS, source residual `28`, contract processed `27`, source-native processed `1`, ordinary residual `0`.
+  - Publication contract audit: PASS, rows `375`, violation `0`.
+  - Always-on gate: expected `NO-GO`, golden18 `GO`, review+contract adjusted regression `0`, blocker `collateral_runtime_counts_missing`.
+  - Dashboard health/status: PASS, health `ok=true / standalone=true / pid=9320`, latest status Loop564 `30/30`, `parallel_count=16`, `batch_running=false`.
+  - Focused unittest: PASS, `100` tests. 포함 범위는 native hold builder, publication convergence audit, always-on gate, ordinary residual dispatch, residual accounting, release audit, dashboard runner/attach, goal test-run audit이다.
+  - Py compile: PASS, native hold builder, always-on gate, publication audit, collateral compare, residual dispatch/accounting, dashboard runner/attach, goal run audit tools.
+  - Loop608 JSON parse: PASS, `11` files.
+  - `git diff --check`: PASS.
+- 결과:
+  - Residual ordinary queue는 `0`이지만 full375 runtime counts가 없어 approval은 아니다.
+  - 다음 full_scan 성격 runtime 검증은 `--parallel 16`, search 포함 non-light, web dashboard 기본 ON, manifest attach fallback 활성, `--no-dashboard` 금지로만 진행한다.
+- Gate: residual accounting `REVIEW-LOCKED / ordinary 0`, publication `GO`, always-on `NO-GO / runtime counts missing`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop607 no-publish guard batch와 residual13 dispatch
 
 - 산출물:

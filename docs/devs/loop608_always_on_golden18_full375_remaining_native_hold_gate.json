@@ -1,0 +1,106 @@
+{
+  "report_type": "always_on_regression_gates",
+  "generated_at": "2026-07-08T10:00:41",
+  "gate": "NO-GO",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "policy": {
+    "golden_expected_rows": 18,
+    "full_375_collateral_required": true,
+    "golden_pass_alone_is_not_approval": true,
+    "collateral_runtime_pass_alone_is_not_approval": true,
+    "collateral_source_native_exclusion_requires_clean_review_summary": true,
+    "collateral_contract_accounting_is_not_full_scan_approval": true
+  },
+  "golden": {
+    "gate": "GO",
+    "expected_rows": 18,
+    "row_count": 18,
+    "passed_count": 18,
+    "failed_count": 0,
+    "canary_semantic_gate": "PASS",
+    "runtime_complete": true,
+    "blockers": []
+  },
+  "collateral": {
+    "gate": "NO-GO",
+    "expected_shared_posts": 375,
+    "shared_post_count": 375,
+    "changed_post_count": 146,
+    "collateral_regression_count": 67,
+    "review_adjusted_regression_count": 0,
+    "review_adjustment": {
+      "provided": true,
+      "applied": true,
+      "review_id": "loop602_combined_loop595_loop599_unreviewed13_source_native_review",
+      "review_gate": "REVIEW-LOCKED",
+      "review_scope": "full_regression_post_id_overlap",
+      "batch_review_rows": 78,
+      "reviewed_rows": 78,
+      "source_native_decision_rows": 69,
+      "info_missing_rows": 9,
+      "unreviewed_batch_rows": 0,
+      "unreviewed_or_info_missing_batch_rows": 9,
+      "unreviewed_regression_rows": 0,
+      "reviewed_raw_regression_rows": 67,
+      "reviewed_non_regression_rows": 11,
+      "unreviewed_regression_post_ids": [],
+      "validation_issue_count": 0,
+      "exclusion_candidate_rows": 45,
+      "contract_accounting": {
+        "provided": true,
+        "applied": true,
+        "accounting_id": "loop608_after_remaining_native_hold_residual28_accounting",
+        "contract_accounted_raw_regression_rows": 22,
+        "contract_accounted_additional_rows": 22,
+        "ordinary_residual_unprocessed_rows": 0,
+        "validation_issue_count": 0,
+        "blockers": [],
+        "gate": "REVIEW-LOCKED",
+        "contract_processed_rows": 27,
+        "source_native_processed_rows": 1,
+        "processed_or_excluded_rows": 28,
+        "contract_accounting_state_counts": {
+          "contract_processed_native_web_disambiguation_hold_no_publish": 13,
+          "source_native_reviewed_exclusion_candidate": 1,
+          "contract_processed_candidate_set_rebuild_hold_no_publish": 8,
+          "contract_processed_expected_restore_projection_applied": 3,
+          "contract_processed_no_publish_intent_guard": 2,
+          "contract_processed_candidate_scrub_no_publish": 1
+        }
+      },
+      "label_counts": {
+        "ACCEPT": 45,
+        "REPROCESS": 15,
+        "INFO_MISSING": 9,
+        "REJECT": 1,
+        "HOLD": 8
+      },
+      "action_counts": {
+        "exclude_from_regression_count_after_gate_wiring": 45,
+        "repair_after_wrong_work": 3,
+        "shared_promotion_gate_wiring_required": 7,
+        "candidate_set_rebuild_required": 8,
+        "native_web_or_image_evidence_required": 12,
+        "native_web_judge_reprocess_required": 3,
+        "native_web_reverify_required": 1,
+        "wrong_work_or_cross_media_policy_hold_required": 3,
+        "blind_or_policy_judge_required": 2,
+        "native_web_or_image_human_review_required": 2,
+        "official_detail_url_enrichment_required": 2,
+        "native_web_or_alias_relation_review_required": 1,
+        "image_native_review_required": 2,
+        "character_bridge_native_web_review_required": 1
+      },
+      "review_adjusted_regression_count": 0,
+      "blockers": []
+    },
+    "runtime_complete": false,
+    "blockers": [
+      "collateral_runtime_counts_missing"
+    ]
+  },
+  "blockers": [
+    "collateral:collateral_runtime_counts_missing"
+  ]
+}
