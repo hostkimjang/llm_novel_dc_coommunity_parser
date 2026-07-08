@@ -1,5 +1,16 @@
 # Operation Quality Checklist
 
+## 2026-07-08 Loop614 query-level search recovery 운영 메모
+
+- [x] full375와 Loop609 `109`행 runtime replay를 새로 열지 않았다.
+- [x] stale running shard env/image가 `presearch`를 포함해 query-level degraded를 만들던 원인을 확인했다.
+- [x] 16개 shard stack을 `COMPOSE_PARALLEL_LIMIT=16`으로 재빌드/재생성했다.
+- [x] post-rebuild query audit은 `ok=16/16`, query probe `16/16`, degraded `0`, forbidden engine `0`이다.
+- [x] `tools/audit_search_shards.py`에 `/mcp/search` query probe와 forbidden engine gate를 추가했다.
+- [ ] 다음 runtime dispatch 전에도 readyz-only가 아니라 query-level audit을 남긴다.
+- [ ] Loop609 `109`행 row-level replay가 조용하기 전 full375를 열지 않는다.
+- Gate: search infrastructure `QUERY_PREFLIGHT_GO`, `109` replay `READY_FOR_109_REPLAY_AFTER_QUERY_PREFLIGHT`, full375 `BLOCKED_UNTIL_109_REPLAY_AND_COLLATERAL_GO`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop613 search recovery partial replay 운영 메모
 
 - [x] full375를 열지 않고 search degraded/recovered `109`행만 replay input으로 복원했다.

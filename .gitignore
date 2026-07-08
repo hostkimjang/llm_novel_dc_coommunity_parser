@@ -77,6 +77,7 @@ tests/inputs/test01.jsonl
 !/tests/test_projection_followup_queue.py
 !/tests/test_mcp_bridge_direct_search.py
 !/tests/test_search_recovery_contract.py
+!/tests/test_audit_search_shards.py
 !/tests/test_llm_client_stream_timeout.py
 /tmp*
 *.bak
@@ -120,6 +121,7 @@ tests/inputs/test01.jsonl
 !/tools/summarize_collateral_review_verdicts.py
 !/tools/split_collateral_action_queue.py
 !/tools/build_projection_followup_queue.py
+!/tools/audit_search_shards.py
 /qualitative_review
 /.playwright-mcp
 /server-poc

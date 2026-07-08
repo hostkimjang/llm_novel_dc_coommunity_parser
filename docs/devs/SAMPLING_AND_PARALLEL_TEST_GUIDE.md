@@ -1,5 +1,13 @@
 # Sampling And Parallel Test Guide
 
+## 2026-07-08 Loop614 query-level search preflight 필수화
+
+- Full375, bounded, golden, search-recovery replay를 dispatch하기 전에는 `tools/audit_search_shards.py --probe-query ...`로 실제 `/mcp/search` query probe를 남긴다.
+- 통과 조건은 대상 shard `ok=N/N`, query probe `N/N`, degraded `0`, forbidden engine `0`이다. `/healthz` 또는 `/readyz`만의 `ok=16/16`은 검색 복구 증거가 아니다.
+- 기본 forbidden engine은 `presearch,yahoo,yahoo_news,wikidata,wikipedia`이며, 하나라도 응답 engine에 남으면 full375를 열지 않는다.
+- Loop614 산출물 `docs/devs/loop614_post_rebuild_query_search_shard_audit.json`은 query preflight `GO / 16 of 16`이지만, 동일 `109`행 row-level replay 전에는 full375 approval 근거가 아니다.
+- 다음 runtime replay는 계속 `--parallel 16`, dashboard ON, search 포함 non-light로 실행한다.
+
 ## 2026-07-08 Loop613 search recovery replay 중단 기준
 
 - Search degraded/recovered 보류행 replay는 full375가 아니며, `--parallel 16`, dashboard ON, search 포함 non-light로 실행한다.

@@ -1,5 +1,16 @@
 # Development History
 
+## 2026-07-08 - Loop614 query-level search shard recovery
+
+- Full375 replay와 Loop609 degraded/recovered `109`행 runtime replay는 실행하지 않았다.
+- Loop613의 `ok=16/16` shard readiness가 실제 query degraded 복구를 증명하지 못하는 구멍을 확인했다.
+- 일부 running `mcp-bridge` shard가 stale env/image로 `presearch`를 계속 포함했고, `presearch 액세스 거부`가 `/mcp/search` 응답을 `degraded=true`로 만들던 원인을 확인했다.
+- 16개 shard stack을 `COMPOSE_PARALLEL_LIMIT=16`으로 재빌드/재생성했고, post-rebuild env에서 `MCP_SEARCH_ENGINES=google,bing,webcrawler,naver`와 fallback presearch 제거를 확인했다.
+- `tools/audit_search_shards.py`에 실제 `/mcp/search` query probe와 forbidden engine gate를 추가했고, `tools/audit_search_shards.py` 및 `tests/test_audit_search_shards.py`를 git 추적 대상으로 전환한다.
+- Post-rebuild query audit은 `docs/devs/loop614_post_rebuild_query_search_shard_audit.json` 기준 `ok=16/16`, query probe `16/16`, degraded `0`, forbidden engine `0`이다.
+- Gate는 search infrastructure `QUERY_PREFLIGHT_GO`, Loop609 `109` replay `READY_FOR_109_REPLAY_AFTER_QUERY_PREFLIGHT`, full375 rerun `BLOCKED_UNTIL_109_REPLAY_AND_COLLATERAL_GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+- Report는 `docs/devs/loop_reports/LOOP_614_REPORT_20260708.md`다.
+
 ## 2026-07-08 - Loop613 search degraded 109 partial replay
 
 - Loop612에서 보류한 search degraded/recovered `109`행을 Loop609 result에서 runtime input으로 복원했다.

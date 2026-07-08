@@ -1,5 +1,20 @@
 # Development Checklist
 
+## 2026-07-08 Loop614 query-level search shard 복구 체크
+
+- [x] full375 replay와 Loop609 degraded/recovered `109`행 runtime replay를 새로 실행하지 않았다.
+- [x] Loop613 `ok=16/16` readiness가 query degraded 복구 증거가 아님을 확인했다.
+- [x] 일부 running shard의 stale env/image가 `presearch`를 포함해 `presearch 액세스 거부`로 query-level `degraded=true`를 만들던 원인을 확인했다.
+- [x] 16개 shard stack을 `COMPOSE_PARALLEL_LIMIT=16`으로 재빌드/재생성했다.
+- [x] post-rebuild env에서 `MCP_SEARCH_ENGINES=google,bing,webcrawler,naver`와 fallback presearch 제거를 확인했다.
+- [x] `tools/audit_search_shards.py`에 실제 `/mcp/search` query probe와 forbidden engine gate를 추가했다.
+- [x] `tools/audit_search_shards.py`와 `tests/test_audit_search_shards.py`를 git 추적 대상으로 전환한다.
+- [x] 16-shard query audit `ok=16/16`, query probe `16/16`, degraded `0`, forbidden engine `0`을 기록했다.
+- [ ] 동일 `109`행을 검색 포함 non-light, `--parallel 16`, dashboard ON으로 재실행해 row-level search health를 확인한다.
+- [ ] row-level `109` replay가 조용하기 전 full375 재실행을 열지 않는다.
+- Gate: search infrastructure `QUERY_PREFLIGHT_GO / 16 of 16`, degraded/recovered `109` replay `READY_FOR_109_REPLAY_AFTER_QUERY_PREFLIGHT`, full375 rerun `BLOCKED_UNTIL_109_REPLAY_AND_COLLATERAL_GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_614_REPORT_20260708.md`, `docs/devs/loop614_post_rebuild_query_search_shard_audit.json`, `tools/audit_search_shards.py`, `tests/test_audit_search_shards.py`.
+
 ## 2026-07-08 Loop612 Loop609 raw139 survey/search-health 3분 체크
 
 - [x] 새 full375 runtime replay를 실행하지 않았다.

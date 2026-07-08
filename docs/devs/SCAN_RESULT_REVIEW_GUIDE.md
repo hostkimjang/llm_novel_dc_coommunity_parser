@@ -2,6 +2,13 @@
 
 스캔 결과 디렉터리를 받았을 때 런타임 안정성, 검색 품질, 최종 판단 품질, `slang_db` 품질을 분리해서 리뷰하기 위한 운영 지침이다. 이 문서는 특정 런 하나를 잘 읽는 것보다, 반복 가능한 리뷰 절차와 이슈 전환 기준을 고정하는 데 목적이 있다.
 
+## 2026-07-08 Loop614 query-level search audit 규칙
+
+- Search readiness `ok=16/16`은 기동/ready 증거일 뿐 query-level recovery가 아니다.
+- Full375, bounded, golden, search-recovery replay 전에는 실제 `/mcp/search` probe 산출물을 cite한다. 필요한 필드는 shard `ok=N/N`, query probe `N/N`, degraded `0`, forbidden engine `0`이다.
+- Query probe가 없거나 degraded/forbidden engine이 남아 있으면 search recovery는 `REVIEW/P0`로 둔다.
+- Search health가 `ok`가 아닌 런의 collateral diff는 regression 판정 근거로 쓰지 않는다. 해당 행은 검색 복구 후 같은 입력으로 재실행해 재판정한다.
+
 ## 2026-07-08 Loop613 search recovery partial replay 판정 규칙
 
 - Search readiness `ok=16/16`은 query-level recovery가 아니다.

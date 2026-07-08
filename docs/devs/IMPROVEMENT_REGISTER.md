@@ -1,5 +1,18 @@
 # Improvement Register
 
+## IMP-20260708-614 - query-level search shard recovery
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | full375와 `109`행 runtime replay 실행 없음 | `109`행만 동일 입력으로 재실행 |
+| Root cause | FOUND | stale shard env/image가 `presearch`를 포함해 query degraded 유발 | stale container drift 재발 감시 |
+| Shard rebuild | GO | 16개 shard stack 재빌드/재생성 | 다음 dispatch 전 query audit 반복 |
+| Query preflight | GO | `docs/devs/loop614_post_rebuild_query_search_shard_audit.json`: `ok=16/16`, probe `16/16`, degraded `0`, forbidden `0` | row-level replay로 검증 확장 |
+| Tooling | PASS_UNIT | `/mcp/search` query probe와 forbidden engine gate 추가 | full375/bounded/golden preflight에 상시 사용 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: search infrastructure `QUERY_PREFLIGHT_GO`, row replay `NOT_RUN_AFTER_RECOVERY`, full375 rerun `BLOCKED_UNTIL_109_REPLAY_AND_COLLATERAL_GO`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-613 - search recovery replay guard
 
 | 항목 | 상태 | 근거 | 다음 |

@@ -26777,3 +26777,31 @@ The broader unittest result proves the code checkpoint did not break the current
   - `semantic_quality=REVIEW-LOCKED`
   - `full_scan_approval=false`
   - goal `ACTIVE / NOT_COMPLETE`
+
+## 2026-07-08 Loop614 Verification
+
+- Runtime replay:
+  - full375 `NOT_RUN`
+  - Loop609 degraded/recovered `109` replay `NOT_RUN_AFTER_RECOVERY`
+- Root cause:
+  - stale running shard env/image가 `presearch`를 포함했다.
+  - `presearch 액세스 거부`가 `/mcp/search` 응답을 `degraded=true`로 만들었다.
+- Rebuild:
+  - command: `COMPOSE_PARALLEL_LIMIT=16` + `tools/warp_shards.py up --count 16 --shards 1-16 --project-name warp-shards`
+  - result: 16개 `mcp-bridge` shard healthy
+- Query audit:
+  - artifact: `docs/devs/loop614_post_rebuild_query_search_shard_audit.json`
+  - shard `ok=16/16`
+  - query probe `16/16`
+  - degraded `0`
+  - forbidden engine `0`
+- Tests:
+  - `tests.test_audit_search_shards tests.test_search_recovery_contract tests.test_mcp_bridge_direct_search` -> PASS / `18` tests
+  - `py_compile tools\audit_search_shards.py tests\test_audit_search_shards.py src\llm_batch\mcp_bridge\server.py src\llm_batch\search\client.py` -> PASS
+- Gate:
+  - search infrastructure `QUERY_PREFLIGHT_GO / 16 of 16`
+  - Loop609 `109` replay `READY_FOR_109_REPLAY_AFTER_QUERY_PREFLIGHT`
+  - full375 rerun `BLOCKED_UNTIL_109_REPLAY_AND_COLLATERAL_GO`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+  - goal `ACTIVE / NOT_COMPLETE`

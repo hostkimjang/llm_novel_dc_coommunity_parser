@@ -1,5 +1,17 @@
 # Developer TODO Index
 
+## 2026-07-08 Loop614 이후 query-level search 복구 후속
+
+- 상태 업데이트: 검색 인프라 query preflight는 post-rebuild audit 기준 `GO / 16 of 16`이다. 다만 이는 row-level `109` replay나 full375 approval이 아니다.
+- [x] stale shard env/image의 `presearch` 유입 원인을 확인했다.
+- [x] 16개 shard stack을 재빌드/재생성했다.
+- [x] query-level shard audit을 도구화했다. `tools/audit_search_shards.py --probe-query ...`가 degraded와 forbidden engine을 gate로 본다.
+- [x] query audit 산출물은 `docs/devs/loop614_post_rebuild_query_search_shard_audit.json`, 결과 `ok=16/16`, query probe `16/16`, degraded `0`, forbidden engine `0`이다.
+- [ ] Loop613 `109`행 replay를 같은 입력으로 다시 실행한다. 조건은 `--parallel 16`, dashboard ON, search 포함 non-light, `slang_db off`다.
+- [ ] `109` replay에서 row-level search health `ok`와 unrecovered degraded `0`을 확인한 뒤에만 full375를 연다.
+- [ ] full375/bounded/golden runtime dispatch 전에는 readyz-only가 아니라 query-level audit을 먼저 남긴다.
+- Gate: search infrastructure `QUERY_PREFLIGHT_GO`, row replay `NOT_RUN_AFTER_RECOVERY`, full375 rerun `BLOCKED_UNTIL_109_REPLAY_AND_COLLATERAL_GO`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop613 이후 P0 검색 복구
 
 - [ ] 검색 degraded 원인을 먼저 수리한다. Completed10 partial replay에서 `ok 0/10`, degraded `104`, unrecovered degraded `13`이므로 현재 검색은 복구되지 않았다.
