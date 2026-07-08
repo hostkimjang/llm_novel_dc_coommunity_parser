@@ -1,0 +1,127 @@
+{
+  "review_id": "loop606_residual16_source_native_info_missing7_verdicts",
+  "scope": "Loop606 residual16 source-native INFO_MISSING 7건 blind/source-native 판정",
+  "source_batch": "docs/devs/loop606_residual16_source_native_info_missing7_review_batch.json",
+  "generated_at": "2026-07-08T09:35:00",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "approval_boundary": "이 verdict는 residual16 중 source-native INFO_MISSING 7건의 source-native 판정이다. runtime completion, semantic approval, full_scan approval을 열지 않는다.",
+  "rows": [
+    {
+      "post_id": 11661856,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_only_variant_title_requires_native_review",
+      "evidence_grade": "Missing",
+      "action": [
+        "image_native_review_required"
+      ],
+      "rationale_ko": "텍스트는 `오늘에 맘마는~~~`, `누야호`, `암타/보빔 냄새` 반응뿐이고 C1/C2 제목 차이를 직접 가르는 작품 표면이 없다. 이미지 1장이 실제 근거일 수 있으므로 이미지/native 확인 전에는 어느 variant도 safe publish로 보지 않는다.",
+      "evidence_refs": [
+        "docs/devs/loop606_residual16_source_native_info_missing7_review_batch.json#post_id=11661856"
+      ]
+    },
+    {
+      "post_id": 11665110,
+      "selected_option_id": "C2",
+      "selected_title": "사이키델리아",
+      "selected_url": "https://ridibooks.com/books/297056360",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "current_after_primary_work_correct_exact_title_surface",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "게시글 제목이 `사이키델리아 읽었던 사람 있냐?`로 C2 제목을 직접 말하고, 본문과 댓글도 과거 독서 기억을 이어간다. C1 `낭만적인 초능력을 위하여`를 지지하는 원문 근거는 없다.",
+      "evidence_refs": [
+        "docs/devs/loop606_residual16_source_native_info_missing7_review_batch.json#post_id=11665110",
+        "https://ridibooks.com/books/297056360"
+      ]
+    },
+    {
+      "post_id": 11682791,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_context_required_for_same_work_canonical_variant",
+      "evidence_grade": "Missing",
+      "action": [
+        "image_native_review_required"
+      ],
+      "rationale_ko": "텍스트는 `아령 즉시 구매`, `핑크덤벨` 반응만 있고 `시간을 달리는 소설가` 제목이나 피아조아 표면을 직접 말하지 않는다. C1/C2가 같은 작품 canonical variant일 가능성은 있지만 이미지 2장 확인 전 regression 제외나 publish 후보로 줄이지 않는다.",
+      "evidence_refs": [
+        "docs/devs/loop606_residual16_source_native_info_missing7_review_batch.json#post_id=11682791"
+      ]
+    },
+    {
+      "post_id": 11685994,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_native_web_needed_for_foreign_god_title_flip",
+      "evidence_grade": "Weak",
+      "action": [
+        "native_web_or_image_evidence_required"
+      ],
+      "rationale_ko": "제목의 `외신소환 주문`은 C2 `무한을 이해한 나는 외신의 사제가 되었습니다` 쪽을 떠올리게 하지만, 본문은 `도와줘?`뿐이고 이미지 1장에 실제 주문/제목 근거가 있을 수 있다. C1 `교황님 아하세요 마왕 들어 가요`도 OCR/이미지 후보로 보존하고 native-web/image 확인 전 HOLD한다.",
+      "evidence_refs": [
+        "docs/devs/loop606_residual16_source_native_info_missing7_review_batch.json#post_id=11685994"
+      ]
+    },
+    {
+      "post_id": 11694067,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "alias_or_character_bridge_requires_native_web_review",
+      "evidence_grade": "Weak",
+      "action": [
+        "native_web_or_image_evidence_required"
+      ],
+      "rationale_ko": "`김괴라리`, `그롱`, `대롱`은 C1 `괴담에 휘말렸다`와 연결될 가능성이 있지만, 텍스트만으로 검증된 별칭/캐릭터-work 관계를 확정하기에는 부족하다. 이미지 1장 또는 native-web 별칭 관계 확인 전 unsafe promotion hold를 완화하지 않는다.",
+      "evidence_refs": [
+        "docs/devs/loop606_residual16_source_native_info_missing7_review_batch.json#post_id=11694067",
+        "https://novelpia.com/novel/363195"
+      ]
+    },
+    {
+      "post_id": 11681178,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_only_candidate_requires_native_review",
+      "evidence_grade": "Missing",
+      "action": [
+        "image_native_review_required"
+      ],
+      "rationale_ko": "텍스트는 `한겨울에 보일러 끄고 나가는걸 잊으면 벌어지는 일`, `댕댕이들이 노릇노릇해짐`뿐이고 C1 `재벌가 차녀의 2회차 걸그룹`을 직접 지지하지 않는다. 이미지 1장이 식별 근거일 수 있으므로 image/native 확인 전 hard-hold를 유지한다.",
+      "evidence_refs": [
+        "docs/devs/loop606_residual16_source_native_info_missing7_review_batch.json#post_id=11681178"
+      ]
+    },
+    {
+      "post_id": 11687661,
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_ad_context_requires_native_review",
+      "evidence_grade": "Missing",
+      "action": [
+        "image_native_review_required"
+      ],
+      "rationale_ko": "텍스트는 광고 반응과 댓글 농담 위주이고 C1 `약혼녀가 소천마였다`를 직접 말하지 않는다. 광고 이미지가 작품을 직접 보여줄 수 있으므로 이미지/native 확인 전에는 safe-loss 복원을 열지 않는다.",
+      "evidence_refs": [
+        "docs/devs/loop606_residual16_source_native_info_missing7_review_batch.json#post_id=11687661",
+        "https://series.naver.com/novel/detail.series?productNo=13178533"
+      ]
+    }
+  ]
+}

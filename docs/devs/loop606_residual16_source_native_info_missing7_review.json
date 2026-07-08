@@ -1,0 +1,274 @@
+{
+  "report_type": "collateral_source_native_review",
+  "review_id": "loop606_residual16_source_native_info_missing7_verdicts",
+  "scope": "Loop606 residual16 source-native INFO_MISSING 7건 blind/source-native 판정",
+  "generated_at": "2026-07-08T09:29:43",
+  "source_batch": "docs/devs/loop606_residual16_source_native_info_missing7_review_batch.json",
+  "source_verdicts": [
+    {
+      "review_id": "loop606_residual16_source_native_info_missing7_verdicts",
+      "scope": "Loop606 residual16 source-native INFO_MISSING 7건 blind/source-native 판정",
+      "source_batch": "docs/devs/loop606_residual16_source_native_info_missing7_review_batch.json",
+      "source_path": "docs\\devs\\loop606_residual16_source_native_info_missing7_verdicts.json",
+      "row_count": 7
+    }
+  ],
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "batch_review_rows": 7,
+    "reviewed_rows": 7,
+    "source_native_decision_rows": 7,
+    "info_missing_rows": 0,
+    "unreviewed_batch_rows": 0,
+    "unreviewed_or_info_missing_batch_rows": 0,
+    "validation_issue_count": 0,
+    "counts_by_bucket": {
+      "wrong_work_title_flip": 4,
+      "unsafe_promotion_from_hold": 1,
+      "safe_loss_resolved_to_null": 2
+    },
+    "label_counts": {
+      "HOLD": 6,
+      "ACCEPT": 1
+    },
+    "source_native_verdict_counts": {
+      "image_only_variant_title_requires_native_review": 1,
+      "current_after_primary_work_correct_exact_title_surface": 1,
+      "image_context_required_for_same_work_canonical_variant": 1,
+      "image_or_native_web_needed_for_foreign_god_title_flip": 1,
+      "alias_or_character_bridge_requires_native_web_review": 1,
+      "image_only_candidate_requires_native_review": 1,
+      "image_or_ad_context_requires_native_review": 1
+    },
+    "action_counts": {
+      "image_native_review_required": 4,
+      "exclude_from_regression_count_after_gate_wiring": 1,
+      "native_web_or_image_evidence_required": 2
+    },
+    "queue_transition": {
+      "original_p0_rows": 7,
+      "source_native_reviewed_rows": 7,
+      "source_native_decision_rows": 7,
+      "info_missing_rows": 0,
+      "exclusion_candidate_rows": 1,
+      "repair_required_rows": 0,
+      "policy_or_native_review_required_rows": 6,
+      "residual_action_queue_rows": 6,
+      "validation_issue_count": 0,
+      "full_collateral_approval_open": false,
+      "exclusion_requires_gate_wiring": true
+    },
+    "queue_by_bucket": {
+      "safe_loss_resolved_to_null": {
+        "rows": 2,
+        "source_native_decision_rows": 2,
+        "info_missing_rows": 0,
+        "label_counts": {
+          "HOLD": 2
+        },
+        "action_counts": {
+          "image_native_review_required": 2
+        },
+        "exclusion_candidate_rows": 0,
+        "residual_action_queue_rows": 2
+      },
+      "unsafe_promotion_from_hold": {
+        "rows": 1,
+        "source_native_decision_rows": 1,
+        "info_missing_rows": 0,
+        "label_counts": {
+          "HOLD": 1
+        },
+        "action_counts": {
+          "native_web_or_image_evidence_required": 1
+        },
+        "exclusion_candidate_rows": 0,
+        "residual_action_queue_rows": 1
+      },
+      "wrong_work_title_flip": {
+        "rows": 4,
+        "source_native_decision_rows": 4,
+        "info_missing_rows": 0,
+        "label_counts": {
+          "HOLD": 3,
+          "ACCEPT": 1
+        },
+        "action_counts": {
+          "image_native_review_required": 2,
+          "exclude_from_regression_count_after_gate_wiring": 1,
+          "native_web_or_image_evidence_required": 1
+        },
+        "exclusion_candidate_rows": 1,
+        "residual_action_queue_rows": 3
+      }
+    }
+  },
+  "validation_issues": [],
+  "rows": [
+    {
+      "post_id": 11661856,
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "post_title": "오늘에 맘마는~~~",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_only_variant_title_requires_native_review",
+      "evidence_grade": "Missing",
+      "action": [
+        "image_native_review_required"
+      ],
+      "rationale_ko": "텍스트는 `오늘에 맘마는~~~`, `누야호`, `암타/보빔 냄새` 반응뿐이고 C1/C2 제목 차이를 직접 가르는 작품 표면이 없다. 이미지 1장이 실제 근거일 수 있으므로 이미지/native 확인 전에는 어느 variant도 safe publish로 보지 않는다.",
+      "evidence_refs": [
+        "docs/devs/loop606_residual16_source_native_info_missing7_review_batch.json#post_id=11661856"
+      ],
+      "before_title": "너랑은 절! 대! 안 사Kill거니까!",
+      "after_title": "너랑은 절! 대! 안 사갈거니까!",
+      "source_review_id": "loop606_residual16_source_native_info_missing7_verdicts"
+    },
+    {
+      "post_id": 11665110,
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "post_title": "사이키델리아 읽었던 사람 있냐?",
+      "selected_option_id": "C2",
+      "selected_title": "사이키델리아",
+      "selected_url": "https://ridibooks.com/books/297056360",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "current_after_primary_work_correct_exact_title_surface",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "게시글 제목이 `사이키델리아 읽었던 사람 있냐?`로 C2 제목을 직접 말하고, 본문과 댓글도 과거 독서 기억을 이어간다. C1 `낭만적인 초능력을 위하여`를 지지하는 원문 근거는 없다.",
+      "evidence_refs": [
+        "docs/devs/loop606_residual16_source_native_info_missing7_review_batch.json#post_id=11665110",
+        "https://ridibooks.com/books/297056360"
+      ],
+      "before_title": "낭만적인 초능력을 위하여",
+      "after_title": "사이키델리아",
+      "source_review_id": "loop606_residual16_source_native_info_missing7_verdicts"
+    },
+    {
+      "post_id": 11682791,
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "post_title": "이거 진짜에요?",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_context_required_for_same_work_canonical_variant",
+      "evidence_grade": "Missing",
+      "action": [
+        "image_native_review_required"
+      ],
+      "rationale_ko": "텍스트는 `아령 즉시 구매`, `핑크덤벨` 반응만 있고 `시간을 달리는 소설가` 제목이나 피아조아 표면을 직접 말하지 않는다. C1/C2가 같은 작품 canonical variant일 가능성은 있지만 이미지 2장 확인 전 regression 제외나 publish 후보로 줄이지 않는다.",
+      "evidence_refs": [
+        "docs/devs/loop606_residual16_source_native_info_missing7_review_batch.json#post_id=11682791"
+      ],
+      "before_title": "피아조아 <시간을 달리는 소설가>",
+      "after_title": "시간을 달리는 소설가",
+      "source_review_id": "loop606_residual16_source_native_info_missing7_verdicts"
+    },
+    {
+      "post_id": 11685994,
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "post_title": "념글 시발 외신소환 주문 뭐임...",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_native_web_needed_for_foreign_god_title_flip",
+      "evidence_grade": "Weak",
+      "action": [
+        "native_web_or_image_evidence_required"
+      ],
+      "rationale_ko": "제목의 `외신소환 주문`은 C2 `무한을 이해한 나는 외신의 사제가 되었습니다` 쪽을 떠올리게 하지만, 본문은 `도와줘?`뿐이고 이미지 1장에 실제 주문/제목 근거가 있을 수 있다. C1 `교황님 아하세요 마왕 들어 가요`도 OCR/이미지 후보로 보존하고 native-web/image 확인 전 HOLD한다.",
+      "evidence_refs": [
+        "docs/devs/loop606_residual16_source_native_info_missing7_review_batch.json#post_id=11685994"
+      ],
+      "before_title": "무한을 이해한 나는 외신의 사제가 되었습니다",
+      "after_title": "교황님 아하세요 마왕 들어 가요",
+      "source_review_id": "loop606_residual16_source_native_info_missing7_verdicts"
+    },
+    {
+      "post_id": 11694067,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "collateral_status": "null_to_resolved",
+      "post_title": "김괴라리) 그롱 이 개새끼 그냥 죽어랏",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "alias_or_character_bridge_requires_native_web_review",
+      "evidence_grade": "Weak",
+      "action": [
+        "native_web_or_image_evidence_required"
+      ],
+      "rationale_ko": "`김괴라리`, `그롱`, `대롱`은 C1 `괴담에 휘말렸다`와 연결될 가능성이 있지만, 텍스트만으로 검증된 별칭/캐릭터-work 관계를 확정하기에는 부족하다. 이미지 1장 또는 native-web 별칭 관계 확인 전 unsafe promotion hold를 완화하지 않는다.",
+      "evidence_refs": [
+        "docs/devs/loop606_residual16_source_native_info_missing7_review_batch.json#post_id=11694067",
+        "https://novelpia.com/novel/363195"
+      ],
+      "before_title": null,
+      "after_title": "괴담에 휘말렸다",
+      "source_review_id": "loop606_residual16_source_native_info_missing7_verdicts"
+    },
+    {
+      "post_id": 11681178,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "collateral_status": "resolved_to_null",
+      "post_title": "한겨울에 보일러 끄고 나가는걸 잊으면 벌어지는 일",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_only_candidate_requires_native_review",
+      "evidence_grade": "Missing",
+      "action": [
+        "image_native_review_required"
+      ],
+      "rationale_ko": "텍스트는 `한겨울에 보일러 끄고 나가는걸 잊으면 벌어지는 일`, `댕댕이들이 노릇노릇해짐`뿐이고 C1 `재벌가 차녀의 2회차 걸그룹`을 직접 지지하지 않는다. 이미지 1장이 식별 근거일 수 있으므로 image/native 확인 전 hard-hold를 유지한다.",
+      "evidence_refs": [
+        "docs/devs/loop606_residual16_source_native_info_missing7_review_batch.json#post_id=11681178"
+      ],
+      "before_title": "재벌가 차녀의 2회차 걸그룹",
+      "after_title": null,
+      "source_review_id": "loop606_residual16_source_native_info_missing7_verdicts"
+    },
+    {
+      "post_id": 11687661,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "collateral_status": "resolved_to_null",
+      "post_title": "광고 도움 많이 된다",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_ad_context_requires_native_review",
+      "evidence_grade": "Missing",
+      "action": [
+        "image_native_review_required"
+      ],
+      "rationale_ko": "텍스트는 광고 반응과 댓글 농담 위주이고 C1 `약혼녀가 소천마였다`를 직접 말하지 않는다. 광고 이미지가 작품을 직접 보여줄 수 있으므로 이미지/native 확인 전에는 safe-loss 복원을 열지 않는다.",
+      "evidence_refs": [
+        "docs/devs/loop606_residual16_source_native_info_missing7_review_batch.json#post_id=11687661",
+        "https://series.naver.com/novel/detail.series?productNo=13178533"
+      ],
+      "before_title": "약혼녀가 소천마였다",
+      "after_title": null,
+      "source_review_id": "loop606_residual16_source_native_info_missing7_verdicts"
+    }
+  ],
+  "next_actions": [
+    "REPROCESS rows require targeted guard/runtime follow-up before collateral approval.",
+    "HOLD rows require native-web or policy review before they can reduce the actionable queue.",
+    "ACCEPT rows can be excluded from regression-counting only after the summary is wired into the collateral gate.",
+    "Keep semantic_quality=REVIEW-LOCKED and full_scan_approval=false."
+  ]
+}

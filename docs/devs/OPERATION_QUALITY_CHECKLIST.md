@@ -1,5 +1,28 @@
 # Operation Quality Checklist
 
+## 2026-07-08 Loop606 source-native INFO_MISSING 7 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_606_REPORT_20260708.md`.
+  - [x] Source-native review batch 기록 완료: `docs/devs/loop606_residual16_source_native_info_missing7_review_batch.json/.jsonl/.md`.
+  - [x] Source-native verdict 기록 완료: `docs/devs/loop606_residual16_source_native_info_missing7_verdicts.json`.
+  - [x] Source-native summary 기록 완료: `docs/devs/loop606_residual16_source_native_info_missing7_review.json/.md`.
+  - [x] Residual accounting 기록 완료: `docs/devs/loop606_after_source_native_info_missing7_residual28_accounting.json/.md`.
+  - [x] Residual15 dispatch 기록 완료: `docs/devs/loop606_after_source_native_info_missing7_ordinary_residual15_dispatch.json/.md`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+  - [x] Source-native INFO_MISSING `7`건을 batch로 판정했고 decision `7`, info missing `0`이다.
+  - [x] Validation issue는 `0`이다.
+  - [x] `ACCEPT 1`은 regression-count 제외 후보일 뿐 approval이 아니다.
+  - [x] `HOLD 6`은 이미지/native-web 확인 전 publish 또는 hard-hold 완화로 줄이지 않았다.
+  - [x] Reaccount 도구가 HOLD/REPROCESS source-native decision을 ordinary residual action으로 넘겨 동일 source-native lane 반복을 막는다.
+  - [x] Residual accounting은 ordinary residual `16 -> 15`다.
+  - [x] Residual15 dispatch는 `source_native_or_blind_review 0`이고 manual review `0`이다.
+  - [x] Runtime replay allowed rows는 `0`이다.
+  - [x] Dashboard health는 `http://127.0.0.1:8080`에서 `ok=true / standalone=true / pid=9320`로 확인했다.
+  - [x] 다음 test/runtime run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지다.
+- Gate: source-native verdict `REVIEW-LOCKED`, residual accounting `REVIEW-LOCKED / ordinary 15`, residual15 dispatch `REVIEW-LOCKED`, full375 collateral `NO-GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop605 candidate-set batch 품질 게이트
 
 - 근거:

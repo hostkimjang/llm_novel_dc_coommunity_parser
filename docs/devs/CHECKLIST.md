@@ -1,5 +1,23 @@
 # Development Checklist
 
+## 2026-07-08 Loop606 source-native INFO_MISSING 7 판정과 residual15 dispatch 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Residual16 중 `source_native_or_blind_review` lane `7`건을 N건 blind/source-native batch로 처리했다.
+- [x] Batch는 selected `7`, missing source/baseline/after `0/0/0`, validation issue `0`이다.
+- [x] Source-native verdict는 decision `7/7`, info missing `0`, label `ACCEPT 1 / HOLD 6`이다.
+- [x] `11665110`만 원문 제목 `사이키델리아` 직접 표면으로 regression-count 제외 후보가 됐다.
+- [x] 이미지/native-web 확인이 필요한 `6`건은 hard-hold를 유지했다.
+- [x] `tools/reaccount_residual_after_contract_reviews.py`가 source-native HOLD/REPROCESS decision의 label/action/evidence를 ordinary residual row에 overlay하도록 보강했다.
+- [x] Residual accounting은 source residual `28`, contract processed `12`, source-native processed `1`, ordinary residual `15`다.
+- [x] Residual15 dispatch는 `native_web_image_evidence_review 11 / no_publish_multiwork_guard_review 2 / canonical_policy_cleanup_review 2`이며 `source_native_or_blind_review 0`이다.
+- [x] Dashboard health는 `http://127.0.0.1:8080`에서 `ok=true / standalone=true / pid=9320`로 확인했다.
+- [ ] Residual15 중 no-publish policy `2`건 또는 canonical/alias `2`건을 다음 N건 배치로 처리한다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, manifest attach fallback 활성, `--no-dashboard` 금지로 실행한다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: source-native verdict `REVIEW-LOCKED`, residual accounting `REVIEW-LOCKED / ordinary 15`, residual15 dispatch `REVIEW-LOCKED`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_606_REPORT_20260708.md`, `docs/devs/loop606_residual16_source_native_info_missing7_review_batch.json`, `docs/devs/loop606_residual16_source_native_info_missing7_verdicts.json`, `docs/devs/loop606_residual16_source_native_info_missing7_review.json`, `docs/devs/loop606_after_source_native_info_missing7_residual28_accounting.json`, `docs/devs/loop606_after_source_native_info_missing7_ordinary_residual15_dispatch.json`.
+
 ## 2026-07-08 Loop605 candidate-set batch와 residual16 dispatch 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
@@ -12,7 +30,8 @@
 - [x] Combined residual accounting은 source residual `28`, contract processed `12`, ordinary residual `16`이다.
 - [x] Residual16 dispatch는 `source_native_or_blind_review 7 / native_web_image_evidence_review 5 / no_publish_multiwork_guard_review 2 / canonical_policy_cleanup_review 2`다.
 - [x] Dashboard health는 `http://127.0.0.1:8080`에서 `ok=true / standalone=true / pid=9320`로 확인했다.
-- [ ] Residual16을 lane별 N건 배치로 계속 처리한다.
+- [x] Residual16 중 source-native INFO_MISSING `7`건은 Loop606에서 batch 판정했고 residual15로 재분류했다.
+- [ ] Residual15를 lane별 N건 배치로 계속 처리한다.
 - [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, manifest attach fallback 활성, `--no-dashboard` 금지로 실행한다.
 - [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
 - Gate: candidate-set plan/application `REVIEW-LOCKED`, release audit `REVIEW-LOCKED / violation 0`, residual accounting `REVIEW-LOCKED / ordinary 16`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.

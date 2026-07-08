@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260708-606 - residual16 source-native INFO_MISSING batch closure
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | 실제 test run만 `--parallel 16` + dashboard attached로 실행 |
+| Source-native batch | REVIEW-LOCKED | selected `7`, missing source/baseline/after `0/0/0` | verdict summary만 gate 입력으로 사용 |
+| Source-native verdict | REVIEW-LOCKED | decision `7`, info missing `0`, validation issue `0`, `ACCEPT 1 / HOLD 6` | HOLD 6은 native-web/image review로 이동 |
+| Regression exclusion candidate | REVIEW-LOCKED | `11665110` 1건만 exact title surface로 제외 후보 | gate wiring 뒤 제외 후보이며 approval 아님 |
+| Reaccount overlay | PASS_UNIT | source-native HOLD/REPROCESS decision의 label/action/evidence를 ordinary residual row에 반영 | 같은 INFO_MISSING source-native lane 반복 방지 |
+| Residual accounting | REVIEW-LOCKED | source residual `28`, contract processed `12`, source-native processed `1`, ordinary residual `15` | residual15 lane별 N건 batch 처리 |
+| Residual15 dispatch | REVIEW-LOCKED | `native_web_image_evidence_review 11 / no_publish_multiwork_guard_review 2 / canonical_policy_cleanup_review 2`, source-native lane `0` | no-publish/canonical lane부터 static contract 처리 후보 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: source-native verdict `REVIEW-LOCKED`, residual accounting `REVIEW-LOCKED / ordinary 15`, full375 collateral `NO-GO`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-605 - residual24 candidate-set batch contract processing
 
 | 항목 | 상태 | 근거 | 다음 |

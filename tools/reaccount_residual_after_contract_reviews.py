@@ -62,6 +62,39 @@ def _action_list(row: dict[str, Any]) -> list[str]:
     return []
 
 
+def _source_native_actions_or_residual(
+    *,
+    residual_row: dict[str, Any],
+    source_native_row: dict[str, Any] | None,
+) -> list[str]:
+    if isinstance(source_native_row, dict):
+        source_actions = _action_list(source_native_row)
+        if source_actions:
+            return source_actions
+    return _action_list(residual_row)
+
+
+def _overlay_field(
+    *,
+    residual_row: dict[str, Any],
+    source_native_row: dict[str, Any] | None,
+    key: str,
+) -> Any:
+    if isinstance(source_native_row, dict) and key in source_native_row:
+        return source_native_row.get(key)
+    return residual_row.get(key)
+
+
+def _overlay_evidence_refs(
+    *,
+    residual_row: dict[str, Any],
+    source_native_row: dict[str, Any] | None,
+) -> list[Any]:
+    if isinstance(source_native_row, dict) and isinstance(source_native_row.get("evidence_refs"), list):
+        return source_native_row.get("evidence_refs") or []
+    return residual_row.get("evidence_refs") or []
+
+
 def _applied_by_post_id(application: dict[str, Any] | None) -> dict[str, dict[str, Any]]:
     rows = (application or {}).get("applied_rows") or []
     if not isinstance(rows, list):
@@ -287,7 +320,10 @@ def build_accounting(
         )
         if issues:
             validation_issues.append({"post_id": residual_row.get("post_id"), "issues": issues})
-        actions = _action_list(residual_row)
+        actions = _source_native_actions_or_residual(
+            residual_row=residual_row,
+            source_native_row=source_native_row,
+        )
         if effect == "restore_target_mismatch_source_native_review_required":
             actions = [*actions, "source_native_or_blind_review_required", MISMATCH_REVIEW]
         elif effect == "official_support_missing_restore_followup_required":
@@ -298,7 +334,15 @@ def build_accounting(
             ]
         for action in actions:
             action_counts[str(action)] += 1
-        label_counts[_string(residual_row.get("review_label"))] += 1
+        label_counts[
+            _string(
+                _overlay_field(
+                    residual_row=residual_row,
+                    source_native_row=source_native_row,
+                    key="review_label",
+                )
+            )
+        ] += 1
         bucket_counts[_string(residual_row.get("triage_bucket"))] += 1
         transition_counts[_string(residual_row.get("loop546_transition"))] += 1
         state_counts[state] += 1
@@ -307,10 +351,26 @@ def build_accounting(
             {
                 "post_id": residual_row.get("post_id"),
                 "triage_bucket": residual_row.get("triage_bucket"),
-                "review_label": residual_row.get("review_label"),
-                "source_native_verdict": residual_row.get("source_native_verdict"),
-                "selected_title": residual_row.get("selected_title"),
-                "selected_option_id": residual_row.get("selected_option_id"),
+                "review_label": _overlay_field(
+                    residual_row=residual_row,
+                    source_native_row=source_native_row,
+                    key="review_label",
+                ),
+                "source_native_verdict": _overlay_field(
+                    residual_row=residual_row,
+                    source_native_row=source_native_row,
+                    key="source_native_verdict",
+                ),
+                "selected_title": _overlay_field(
+                    residual_row=residual_row,
+                    source_native_row=source_native_row,
+                    key="selected_title",
+                ),
+                "selected_option_id": _overlay_field(
+                    residual_row=residual_row,
+                    source_native_row=source_native_row,
+                    key="selected_option_id",
+                ),
                 "loop546_transition": residual_row.get("loop546_transition"),
                 "actions": actions,
                 "contract_action": (plan_row or {}).get("contract_action"),
@@ -335,10 +395,17 @@ def build_accounting(
                     c3_review=c3_review,
                 ),
                 "release_gate_state": (release_audit_row or {}).get("release_gate_state"),
-                "rationale_ko": residual_row.get("rationale_ko"),
+                "rationale_ko": _overlay_field(
+                    residual_row=residual_row,
+                    source_native_row=source_native_row,
+                    key="rationale_ko",
+                ),
                 "source_native_review_label": (source_native_row or {}).get("review_label"),
                 "source_native_review_effect": effect if state == "source_native_reviewed_exclusion_candidate" else None,
-                "evidence_refs": residual_row.get("evidence_refs") or [],
+                "evidence_refs": _overlay_evidence_refs(
+                    residual_row=residual_row,
+                    source_native_row=source_native_row,
+                ),
             }
         )
 

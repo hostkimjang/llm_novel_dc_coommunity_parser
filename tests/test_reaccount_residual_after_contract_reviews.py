@@ -4,6 +4,60 @@ from tools.reaccount_residual_after_contract_reviews import build_accounting
 
 
 class ReaccountResidualAfterContractReviewsTest(unittest.TestCase):
+    def test_source_native_hold_overlays_followup_action_without_closing_residual(self):
+        residual_queue = {
+            "queue_id": "unit_residual",
+            "rows": [
+                {
+                    "post_id": 7,
+                    "triage_bucket": "safe_loss_resolved_to_null",
+                    "review_label": "INFO_MISSING",
+                    "source_native_verdict": "prior_native_judge_missing",
+                    "actions": ["native_web_or_image_evidence_required"],
+                    "rationale_ko": "기존 native-web judge 판정이 없다.",
+                }
+            ],
+        }
+        contract_plan = {"plan_id": "unit_plan", "rows": []}
+        source_native_review = {
+            "review_id": "unit_source_native",
+            "rows": [
+                {
+                    "post_id": 7,
+                    "selected_option_id": "HOLD",
+                    "selected_title": None,
+                    "selected_url": None,
+                    "review_label": "HOLD",
+                    "source_native_verdict": "image_only_candidate_requires_native_review",
+                    "action": ["image_native_review_required"],
+                    "rationale_ko": "텍스트만으로는 작품을 확정할 수 없어 이미지 확인이 필요하다.",
+                    "evidence_refs": ["unit_batch.json#post_id=7"],
+                }
+            ],
+        }
+
+        accounting = build_accounting(
+            residual_queue=residual_queue,
+            contract_plan=contract_plan,
+            source_native_review=source_native_review,
+            accounting_id="unit",
+        )
+
+        summary = accounting["summary"]
+        row = accounting["rows"][0]
+        self.assertEqual(summary["contract_processed_rows"], 0)
+        self.assertEqual(summary["source_native_processed_rows"], 0)
+        self.assertEqual(summary["ordinary_residual_unprocessed_rows"], 1)
+        self.assertEqual(summary["label_counts"], {"HOLD": 1})
+        self.assertEqual(summary["source_action_counts"], {"image_native_review_required": 1})
+        self.assertEqual(row["review_label"], "HOLD")
+        self.assertEqual(row["source_native_verdict"], "image_only_candidate_requires_native_review")
+        self.assertEqual(row["actions"], ["image_native_review_required"])
+        self.assertEqual(row["selected_option_id"], "HOLD")
+        self.assertEqual(row["evidence_refs"], ["unit_batch.json#post_id=7"])
+        self.assertTrue(row["ordinary_residual_unprocessed"])
+        self.assertFalse(row["source_native_processed"])
+
     def test_source_native_accept_exclusion_reduces_ordinary_residual_without_approval(self):
         residual_queue = {
             "queue_id": "unit_residual",
