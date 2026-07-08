@@ -1,5 +1,21 @@
 # Development Checklist
 
+## 2026-07-08 Loop610 verified image/OCR publication projection과 dashboard 계약 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Loop609 publication contract violation `11660277`을 재현했고 blocker code `verified_image_ocr_work_title_blocked_by_precision_review`를 확인했다.
+- [x] Preserved official-detail URL 후보와 verified image/OCR 표면 제목을 분리하도록 `expert_main.py` final publication sync를 보강했다.
+- [x] `11660277` targeted projection은 before `NO-GO / violation 1`에서 after `GO / violation 0`이다.
+- [x] Public identity는 `아카메디 아카데미`, URL `null`, candidate ledger status `safe_resolved`로 수렴한다.
+- [x] Loop609 full375 rows에 in-memory sync를 적용하면 publication contract projection은 `GO / violation 0`이다.
+- [x] Full375 collateral은 여전히 raw regression `139`, adjusted `78`, unreviewed `74`라 `NO-GO`다.
+- [x] Dashboard health를 확인했다. `http://127.0.0.1:8080/api/health`, `ok=true`, `standalone=true`, `pid=9320`.
+- [x] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, manifest attach fallback 활성, `--no-dashboard` 금지로 실행한다.
+- [ ] Search degraded `unrecovered 234`와 full375 collateral residual을 닫기 전 promotion/full_scan approval을 선언하지 않는다.
+- [ ] 다음 runtime/full375 실행 뒤 publication contract, full375 collateral compare, always-on gate를 다시 확인한다.
+- Gate: targeted projection `GO`, publication contract projection `GO`, runtime `NOT_RUN`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, full375 collateral `NO-GO / raw 139 / adjusted 78 / unreviewed 74`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_610_REPORT_20260708.md`, `docs/devs/loop610_11660277_verified_image_ocr_publication_projection.json/.md`, `docs/devs/loop610_full375_publication_contract_projected_audit.json/.md`, `expert_main.py`, `tests/test_expert_main_comment_metadata.py`.
+
 ## 2026-07-08 Loop609 full375 runtime replay와 dashboard 부착 체크
 
 - [x] Loop608 이후 첫 full375 runtime replay를 `--parallel 16`, search 포함 non-light, VLM/OCR ON, `--slang-db off`, web dashboard forwarding ON으로 실행했다.

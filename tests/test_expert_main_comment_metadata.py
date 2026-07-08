@@ -1787,6 +1787,148 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
             "밀리언 클래스",
         )
 
+    def test_verified_image_ocr_title_wins_over_preserved_official_detail_candidate(self):
+        result = {
+            "post_id": 11660277,
+            "title": "완결난 아카메디 지금당장봐",
+            "content": ["나름 깔끔하게 끝난거다롱ㄱㄱ"],
+            "comments": ["아라써 - dc App"],
+            "image_count": 1,
+            "identity": {
+                "title_resolution_allowed": False,
+                "title_resolution_state": "unresolved_matchable",
+                "work_resolution": "unresolved",
+                "candidate_ledger_status": "promotion_blocked",
+                "blocked_official_title": "[이곳은 소설 '아카메디 아카데미' 속 세상입니다.] ...그게 뭔데 씹덕아.",
+                "blocked_official_title_url": "https://novelpia.com/novel/22299",
+                "context_sources": ["title", "body", "comments", "search", "image"],
+                "anchor_type": "image",
+                "consistency_flags": [
+                    "direct_image_explicit_title_rescued",
+                    "official_url_recall_candidate_preserved",
+                ],
+                "novel_identity": {
+                    "official_title": None,
+                    "heretic_url": None,
+                    "confidence": "None",
+                },
+                "image_evidence_catalog": [
+                    {
+                        "promotion_eligible": True,
+                        "title_role": "work_title",
+                        "evidence_type": "cover_title",
+                        "explicit_work_title": "아카메디 아카데미",
+                        "ocr_text": "아카메디 아카데미 작가명 입스위치 15 PLUS 독점 완결",
+                    }
+                ],
+                "primary_work": {
+                    "official_title": "아카메디 아카데미",
+                    "heretic_url": None,
+                    "confidence": "High",
+                    "alias_or_mention": "VLM/OCR explicit work title",
+                    "source_tier": "mixed",
+                    "reference_role": "candidate",
+                    "promotion_policy": "hold_without_promotion",
+                    "blocked_by_candidate_audit": True,
+                },
+                "title_candidates": [
+                    {
+                        "official_title": "[이곳은 소설 '아카메디 아카데미' 속 세상입니다.] ...그게 뭔데 씹덕아.",
+                        "heretic_url": "https://novelpia.com/novel/22299",
+                        "source_tier": "official_detail",
+                        "page_type": "novel_page",
+                        "reference_role": "candidate",
+                        "promotion_policy": "hold_without_promotion",
+                    },
+                    {
+                        "official_title": "아카메디 아카데미",
+                        "heretic_url": None,
+                        "source_tier": "community",
+                        "reference_role": "mentioned",
+                    },
+                ],
+                "candidate_ledger": {
+                    "candidate_preservation_sources": [
+                        {
+                            "official_title": "[이곳은 소설 '아카메디 아카데미' 속 세상입니다.] ...그게 뭔데 씹덕아.",
+                            "heretic_url": "https://novelpia.com/novel/22299",
+                            "source_tier": "official_detail",
+                            "page_type": "novel_page",
+                            "reference_role": "candidate",
+                            "promotion_policy": "hold_without_promotion",
+                        },
+                        {
+                            "official_title": "아카메디 아카데미",
+                            "heretic_url": None,
+                            "source_tier": "community",
+                            "reference_role": "mentioned",
+                        },
+                    ],
+                    "promotion_decision": {
+                        "status": "candidate_only",
+                        "publish_allowed": False,
+                        "official_title": None,
+                        "official_url": None,
+                        "candidate_preserved": True,
+                        "reason_codes": [
+                            "official_title_exists",
+                            "row_discusses_work_as_work",
+                            "scope_current_work",
+                            "direct_image_work_surface_bridge",
+                            "ocr_catalog_official_title",
+                            "precision_seed_official_title_requires_review",
+                            "official_url_recall_candidate_preserved",
+                            "serialized_public_identity_scrubbed",
+                        ],
+                        "bypassed_gate": False,
+                        "scope": {
+                            "scope_kind": "current_work",
+                            "confidence": "high",
+                            "direct_bridge_sources": [
+                                "direct_image_work_surface_lock",
+                                "structured_direct_image_work_surface",
+                                "ocr_catalog_official_title",
+                            ],
+                        },
+                    },
+                    "promotion_gate_state": {
+                        "candidate_title": "[이곳은 소설 '아카메디 아카데미' 속 세상입니다.] ...그게 뭔데 씹덕아.",
+                        "candidate_url": "https://novelpia.com/novel/22299",
+                        "official_title_exists": True,
+                        "row_discusses_work_as_work": True,
+                        "scope": {
+                            "scope_kind": "current_work",
+                            "confidence": "high",
+                            "direct_bridge_sources": [
+                                "direct_image_work_surface_lock",
+                                "structured_direct_image_work_surface",
+                                "ocr_catalog_official_title",
+                            ],
+                        },
+                    },
+                },
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(result)
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "safe_resolved")
+        self.assertEqual(identity["novel_identity"]["official_title"], "아카메디 아카데미")
+        self.assertIsNone(identity["novel_identity"]["heretic_url"])
+        decision = identity["publish_contract_trace"]["gate_decision"]
+        self.assertTrue(decision["publish_allowed"])
+        self.assertEqual(decision["official_title"], "아카메디 아카데미")
+        self.assertIsNone(decision["official_url"])
+        self.assertIn("verified_image_ocr_work_title_publication", decision["reason_codes"])
+        self.assertIn("serialized_public_identity_shared_gate_restored", decision["reason_codes"])
+        self.assertNotIn("serialized_public_identity_scrubbed", decision["reason_codes"])
+        self.assertEqual(
+            identity["publish_ledger"]["candidate_preservation"]["official_title"],
+            "아카메디 아카데미",
+        )
+
     def test_unverified_direct_image_ocr_publication_without_official_bridge_is_held(self):
         result = {
             "post_id": 11685994,

@@ -1,5 +1,18 @@
 # Developer TODO Index
 
+## 2026-07-08 Loop610 이후
+
+- 상태 업데이트: `11660277` publication contract blocker는 verified image/OCR title-only projection으로 닫히지만, 새 runtime replay는 아직 없고 full375 collateral은 계속 `NO-GO`다. Dashboard는 현재 살아 있으며 다음 test/runtime run에 계속 붙인다.
+- [x] `11660277` blocker `verified_image_ocr_work_title_blocked_by_precision_review`를 targeted projection으로 확인했다.
+- [x] `expert_main.py`가 preserved official-detail URL 후보와 verified image/OCR 표면 제목을 분리하도록 보강했다.
+- [x] Targeted projection은 publication contract `NO-GO / 1 -> GO / 0`, title `아카메디 아카데미`, URL `null`이다.
+- [x] Full375 in-memory projection은 publication contract `GO / 0`이지만 collateral raw regression `139`는 유지한다.
+- [x] Dashboard health는 `http://127.0.0.1:8080/api/health`, `ok=true / standalone=true / pid=9320`이다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, manifest attach fallback 활성, `--no-dashboard` 금지로 실행한다.
+- [ ] Search degraded `unrecovered 234`와 full375 collateral residual `139/78/74`를 batch로 계속 처리한다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 검증 전 완료를 선언하지 않는다.
+- Gate: targeted projection `GO`, runtime `NOT_RUN`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, full375 collateral `NO-GO`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop609 이후
 
 - 상태 업데이트: Loop608 full_scan 경로의 runtime count blocker는 실제 full375 replay로 해소했다. 하지만 full375 collateral이 raw regression `139`, review+contract adjusted `78`, unreviewed regression `74`라 GO가 아니다. Search degraded와 publication violation도 남아 goal은 완료가 아니다.

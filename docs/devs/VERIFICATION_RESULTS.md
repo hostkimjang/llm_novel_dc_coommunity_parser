@@ -1,5 +1,29 @@
 # Verification Results
 
+## 2026-07-08 Loop610 verified image/OCR publication projection과 dashboard 계약
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_610_REPORT_20260708.md`
+  - `docs/devs/loop610_11660277_verified_image_ocr_publication_projection.json/.md`
+  - `docs/devs/loop610_full375_publication_contract_projected_audit.json/.md`
+  - `expert_main.py`
+  - `tests/test_expert_main_comment_metadata.py`
+- 검증:
+  - Targeted projection: PASS 산출, `11660277` publication contract `NO-GO / 1 -> GO / 0`.
+  - Public identity projection: PASS, title `아카메디 아카데미`, URL `null`, candidate ledger `safe_resolved`.
+  - Full375 publication contract projection: PASS 산출, Loop609 full375 rows 적용 시 violation `0`.
+  - Full375 collateral: expected `NO-GO`, raw regression `139`, adjusted `78`, unreviewed `74`.
+  - Dashboard health: PASS, `http://127.0.0.1:8080/api/health`, `ok=true`, `standalone=true`, `pid=9320`.
+  - Focused publication/always-on unittest: PASS, `130` tests.
+  - Dashboard policy tests: PASS, `28` tests.
+  - Py compile: PASS.
+  - JSON parse: PASS.
+  - `git diff --check`: PASS.
+- 결과:
+  - `11660277` publication blocker는 projection상 닫혔지만 runtime replay와 full375 GO는 아직 아니다.
+  - 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, manifest attach fallback 활성, `--no-dashboard` 금지로 실행한다.
+- Gate: targeted projection `GO`, publication contract projection `GO`, runtime `NOT_RUN`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop609 full375 runtime replay와 dashboard 부착
 
 - 산출물:

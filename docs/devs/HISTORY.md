@@ -1,5 +1,17 @@
 # Development History
 
+## 2026-07-08 - Loop610 verified image/OCR publication projection and dashboard contract
+
+- 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+- Loop609 publication contract violation `11660277`을 실코드 계약으로 보강했다.
+- `expert_main.py`의 final publication sync가 preserved official-detail URL 후보와 verified image/OCR 표면 제목을 분리한다.
+- `11660277` targeted projection은 publication contract `NO-GO / violation 1`에서 `GO / violation 0`으로 바뀌며 public title은 `아카메디 아카데미`, public URL은 `null`이다.
+- Loop609 full375 rows에 in-memory sync를 적용한 publication contract projection도 `GO / violation 0`이지만 full375 collateral은 raw regression `139`로 여전히 `NO-GO`다.
+- Dashboard는 `http://127.0.0.1:8080/api/health`에서 `ok=true`, `standalone=true`, `pid=9320`로 확인했다.
+- 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, manifest attach fallback 활성, `--no-dashboard` 금지로 실행한다.
+- Report는 `docs/devs/loop_reports/LOOP_610_REPORT_20260708.md`다.
+- Gate는 targeted projection `GO`, runtime `NOT_RUN`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, full375 collateral `NO-GO / raw 139 / adjusted 78 / unreviewed 74`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop609 full375 runtime replay and dashboard attach
 
 - Loop608 full_scan 경로의 runtime count blocker를 확인하기 위해 full375 runtime replay를 실행했다.

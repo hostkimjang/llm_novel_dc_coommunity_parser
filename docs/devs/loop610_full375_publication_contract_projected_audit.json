@@ -1,0 +1,48 @@
+{
+  "report_type": "full375_publication_contract_projected_audit",
+  "audit_id": "loop610_full375_publication_contract_projected_audit",
+  "generated_at": "2026-07-08",
+  "source_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop609_full375_after_loop608_search_nonlight_result.json",
+  "projection_scope": "current code _sync_final_publication_ledger_contract applied in-memory to Loop609 full375 rows",
+  "publication_contract": {
+    "before_gate": "NO-GO",
+    "before_violation_count": 1,
+    "after_gate": "GO",
+    "after_violation_count": 0,
+    "fixed_post_ids": [
+      11660277
+    ]
+  },
+  "collateral_after_projection": {
+    "shared_post_count": 375,
+    "changed_post_count": 196,
+    "raw_collateral_regression_count": 139,
+    "status_counts": {
+      "null_to_resolved": 24,
+      "same_title_url_changed": 45,
+      "resolved_to_null": 89,
+      "resolved_to_different_title": 38
+    },
+    "regression_status_counts": {
+      "null_to_resolved": 24,
+      "resolved_to_null": 82,
+      "resolved_to_different_title": 33
+    }
+  },
+  "post_11660277_after_projection": {
+    "status": "same_title_url_changed",
+    "is_regression": false,
+    "before_title": "아카메디 아카데미 본 사람?",
+    "before_url": "https://novelpia.com/novel/22299",
+    "after_title": "아카메디 아카데미",
+    "after_url": null,
+    "after_candidate_ledger_status": "safe_resolved"
+  },
+  "gate_boundary": {
+    "projection_not_runtime_replay": true,
+    "publication_contract_projection_go_not_full375_go": true,
+    "full375_collateral_go": false,
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false
+  }
+}

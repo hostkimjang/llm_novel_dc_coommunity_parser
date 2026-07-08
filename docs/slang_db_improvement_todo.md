@@ -1,5 +1,15 @@
 # Slang DB Improvement TODO
 
+## 2026-07-08 Loop610 아카메디 image/OCR title-only publication 주의사항
+
+- [x] `11660277`은 `아카메디` 표면을 slang DB write-back으로 확장하지 않았다.
+- [x] `아카메디 아카데미`는 verified image/OCR work title evidence로 title-only publication projection에 사용했다.
+- [x] Preserved official detail candidate `https://novelpia.com/novel/22299`는 ledger 근거로 보존하고 public URL로 승격하지 않았다.
+- [x] Dashboard는 현재 `http://127.0.0.1:8080/api/health`에서 `ok=true / standalone=true / pid=9320`이며 다음 test/runtime run에 붙인다.
+- [ ] `아카메디` 또는 유사 약칭을 persistent slang DB alias로 즉시 등록하지 않는다. official/community 근거, image/OCR 표면, competing work evidence를 함께 확인한다.
+- [ ] Full375 collateral `GO`, search degraded 복구 전 alias/slang 품질 승인 또는 hard-hold 완화를 선언하지 않는다.
+- Gate: slang DB write-back 아님, targeted projection `GO`, runtime `NOT_RUN`, full375 collateral `NO-GO / raw 139 / adjusted 78 / unreviewed 74`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop609 full375 runtime slang/alias 주의사항
 
 - [x] Loop609 full375 runtime replay는 `--slang-db off`로 실행했고, persistent slang DB write-back을 하지 않았다.

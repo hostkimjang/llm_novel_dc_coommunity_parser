@@ -1,0 +1,47 @@
+{
+  "report_type": "targeted_publication_contract_projection",
+  "projection_id": "loop610_11660277_verified_image_ocr_publication_projection",
+  "generated_at": "2026-07-08",
+  "source_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop609_full375_after_loop608_search_nonlight_result.json",
+  "post_id": 11660277,
+  "changed_by_sync": true,
+  "before_gate": "NO-GO",
+  "before_violation_count": 1,
+  "before_violation_codes": [
+    "verified_image_ocr_work_title_blocked_by_precision_review"
+  ],
+  "after_gate": "GO",
+  "after_violation_count": 0,
+  "public_identity": {
+    "official_title": "아카메디 아카데미",
+    "heretic_url": null,
+    "candidate_ledger_status": "safe_resolved"
+  },
+  "promotion_decision": {
+    "status": "publish",
+    "publish_allowed": true,
+    "official_title": "아카메디 아카데미",
+    "official_url": null,
+    "reason_codes": [
+      "official_title_exists",
+      "row_discusses_work_as_work",
+      "scope_current_work",
+      "direct_image_work_surface_bridge",
+      "ocr_catalog_official_title",
+      "verified_image_ocr_work_title_publication",
+      "serialized_public_identity_shared_gate_restored",
+      "serialized_public_identity_published"
+    ]
+  },
+  "evidence": {
+    "image_evidence_catalog": "promotion_eligible=true / title_role=work_title / explicit_work_title=아카메디 아카데미",
+    "preserved_official_detail_candidate": "https://novelpia.com/novel/22299",
+    "source_context": "title+body+comments+search+image"
+  },
+  "gate_boundary": {
+    "targeted_projection_not_runtime_replay": true,
+    "full375_collateral_go": false,
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false
+  }
+}

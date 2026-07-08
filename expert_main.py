@@ -2038,6 +2038,71 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
         _sync_allowed_publication_result_contract(result_dict)
         return changed_local or True
 
+    def _title_has_candidate_ledger_support(candidate_title: str) -> bool:
+        candidate_key = _title_key(candidate_title)
+        if not candidate_key:
+            return False
+
+        primary_work = identity.get("primary_work")
+        if isinstance(primary_work, dict):
+            primary_title = str(primary_work.get("official_title") or "").strip()
+            alias_or_mention = str(primary_work.get("alias_or_mention") or "").strip().lower()
+            if _title_key(primary_title) == candidate_key and (
+                "vlm/ocr explicit work title" in alias_or_mention
+                or primary_work.get("blocked_by_candidate_audit") is True
+                or str(primary_work.get("source_tier") or "").strip().lower() in {"image_ocr", "mixed"}
+            ):
+                return True
+
+        for source_items in (
+            identity.get("title_candidates"),
+            identity.get("candidate_preservation_sources"),
+            ledger.get("title_candidates"),
+            ledger.get("candidate_preservation_sources"),
+        ):
+            if not isinstance(source_items, list):
+                continue
+            for item in source_items:
+                if not isinstance(item, dict):
+                    continue
+                item_title, _item_url = _candidate_title_url(item)
+                if _title_key(item_title) == candidate_key:
+                    return True
+        return False
+
+    def _verified_image_ocr_title_only_candidate() -> str:
+        for source in (identity, ledger):
+            if not isinstance(source, dict):
+                continue
+            for key in ("image_evidence_catalog", "image_enrichment"):
+                values = source.get(key)
+                if not isinstance(values, list):
+                    continue
+                for item in values:
+                    if not isinstance(item, dict) or item.get("promotion_eligible") is not True:
+                        continue
+                    role = str(item.get("title_role") or "").strip().lower()
+                    evidence_type = str(item.get("evidence_type") or "").strip().lower()
+                    if role not in {"title", "cover_title", "explicit_title", "work_title"} and evidence_type not in {
+                        "cover_title",
+                        "ocr_title",
+                        "explicit_title",
+                        "work_title",
+                        "explicit_text",
+                    }:
+                        continue
+                    for title_key in ("explicit_work_title", "detected_title", "work_title", "official_title"):
+                        title = str(item.get(title_key) or "").strip()
+                        if title and _title_has_candidate_ledger_support(title):
+                            return title
+        primary_work = identity.get("primary_work")
+        if isinstance(primary_work, dict):
+            alias_or_mention = str(primary_work.get("alias_or_mention") or "").strip().lower()
+            title = str(primary_work.get("official_title") or "").strip()
+            if title and "vlm/ocr explicit work title" in alias_or_mention:
+                return title
+        return ""
+
     def _restore_blocked_candidate_when_shared_gate_allows(candidate_title: str, candidate_url: str) -> bool:
         candidate_title = str(candidate_title or "").strip()
         candidate_url = _official_detail_url(candidate_url)
@@ -2964,6 +3029,14 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
 
     source_native_hold_locked = _has_source_native_hold_lock()
     if not source_native_hold_locked and _restore_blocked_candidate_when_shared_gate_allows(blocked_title, blocked_url):
+        return True
+
+    image_ocr_title_only_candidate = _verified_image_ocr_title_only_candidate()
+    if (
+        not source_native_hold_locked
+        and image_ocr_title_only_candidate
+        and _restore_verified_image_ocr_work_title_only(image_ocr_title_only_candidate, "")
+    ):
         return True
 
     if not source_native_hold_locked and _restore_verified_image_ocr_work_title_only(blocked_title, blocked_url):
