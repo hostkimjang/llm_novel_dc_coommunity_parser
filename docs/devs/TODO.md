@@ -1,5 +1,19 @@
 # Developer TODO Index
 
+## 2026-07-08 Loop612 이후
+
+- 상태 업데이트: Loop609 raw139는 일괄 P0 triage 대상이 아니다. Detection survey와 search health 교차 기준으로 expected FP removal `42`, blind judge 의도 복구 `24`, search degraded/recovered 보류 `109`, 즉시 true triage `10`으로 분리했다. Full375 재실행 전 검색 복구가 선행이다.
+- [x] Loop609 raw collateral regression `139`건을 survey/search-health 기준으로 3분했다.
+- [x] `expected_fp_removal` `42`건을 회계 면제 후보로 분리했다.
+- [x] `recall_miss 15 + wrong_work 9` 의도 복구 `24`건을 blind-title-correctness batch로 분리했다.
+- [x] `SEARCH_DEGRADED/SEARCH_DEGRADED_RECOVERED` `109`건을 검색 복구 후 재실행 대상으로 분리했다.
+- [x] Search shard readiness audit는 현재 `ok=16/16`이다.
+- [ ] Blind judge batch `24`건의 제목 정답성을 확정한다.
+- [ ] Search degraded/recovered `109`행은 검색 복구 증명 뒤 해당 행만 재실행한다.
+- [ ] Search health ok가 아닌 run의 collateral은 regression evidence로 쓰지 않는다.
+- [ ] Full375 재실행 전 query degraded 복구를 증명한다.
+- Gate: search recovery `P0_OPEN`, true triage `10`, full375 rerun `BLOCKED_UNTIL_SEARCH_RECOVERY`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop611 이후
 
 - 상태 업데이트: Loop610 publication sync는 current HEAD projection에서도 publication contract `GO / 0`을 유지하지만, full375 collateral은 raw `139`, adjusted `78`, unreviewed `74`로 계속 `NO-GO`다. Dashboard는 살아 있고 다음 test/runtime run에도 붙인다.

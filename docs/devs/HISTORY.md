@@ -1,5 +1,19 @@
 # Development History
 
+## 2026-07-08 - Loop612 Loop609 raw139 survey/search-health split
+
+- 새 full375 runtime replay는 실행하지 않았다.
+- Loop609 raw collateral regression `139`건을 detection survey와 row search health로 교차했다.
+- `resolved_to_null ∩ detection_survey FP` `42`건은 `expected_fp_removal` 회계 면제 후보로 분리했다.
+- `null_to_resolved ∩ recall_miss` `15`건과 `resolved_to_different_title ∩ wrong_work_among_aliases` `9`건은 제목 정답성 blind judge 대상으로 분리했다.
+- `SEARCH_DEGRADED/SEARCH_DEGRADED_RECOVERED` overlay `109`건은 검색 복구 전 collateral 회귀 판정 보류로 분리했다.
+- ok-search & non-FP 후보는 `15`건이고, blind judge 의도 복구를 제외한 즉시 triage 후보는 `10`건이다.
+- Loop609 search evidence는 degraded query `1801`, unrecovered degraded `234`라 search recovery `P0_OPEN`이다.
+- 현재 search shard readiness audit은 `ok=16/16`, bad `[]`지만 query degraded 복구 완료 증거는 아니다.
+- `tools/split_collateral_by_survey_search_health.py`와 테스트를 추가했다.
+- Report는 `docs/devs/loop_reports/LOOP_612_REPORT_20260708.md`다.
+- Gate는 survey/search split `REVIEW-LOCKED`, expected FP removal `42`, blind judge `24`, search recovery `P0_OPEN / 109`, true triage `10`, full375 rerun `BLOCKED_UNTIL_SEARCH_RECOVERY`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop611 full375 projection refresh and test-run dashboard contract
 
 - 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.

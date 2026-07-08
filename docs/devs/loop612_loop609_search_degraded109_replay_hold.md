@@ -1,0 +1,119 @@
+# loop612_loop609_raw139_survey_search_health_split search degraded/recovered hold
+
+Loop609 row search_health가 SEARCH_DEGRADED 또는 SEARCH_DEGRADED_RECOVERED인 raw regression이다. 검색 복구 후 해당 행만 재실행하기 전까지 collateral regression evidence로 쓰지 않는다.
+
+- rows: `109`
+- gate: `REVIEW-LOCKED`
+- full_scan_approval: `false`
+
+## Rows
+
+- `11657045` `null_to_resolved` search=`SEARCH_DEGRADED_RECOVERED` before=`None` after=`금태양과 음침녀` survey=`None` expected=`None` post=`누렁이들아`
+- `11657047` `null_to_resolved` search=`SEARCH_DEGRADED_RECOVERED` before=`None` after=`베지테리언 블러드` survey=`None` expected=`None` post=`베지테리언이 정육점 사장이 됐다 이런 소설 보고잡네`
+- `11658637` `null_to_resolved` search=`SEARCH_DEGRADED` before=`None` after=`재벌집 막내아들` survey=`recall_miss` expected=`재벌집 막내아들 (산경, 문피아/SERIES)` post=`재막아)영기는 진짜 답이 없구나`
+- `11660241` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`이세계 TRPG 게임마스터` after=`None` survey=`None` expected=`None` post=`난 이티알은 현실파트가 너무 불호라 하차했는데`
+- `11660257` `resolved_to_different_title` search=`SEARCH_DEGRADED` before=`암흑가 보스요? 제가요?` after=`그룹을 위해 당연한 일을 했을 뿐인데. 정체불명의 암흑가 보스 니 검은 자본이니. 다들 호들갑이 심하다니까` survey=`None` expected=`None` post=`암흑가보스<<이거 재밋네`
+- `11660262` `resolved_to_different_title` search=`SEARCH_DEGRADED` before=`그렇게, 그 괴물과 두 번 결혼했다` after=`로판에 도파민을 풀었다` survey=`wrong_work_among_aliases` expected=`로판에 도파민을 풀었다` post=`머여 로파민 완결났네`
+- `11660268` `resolved_to_null` search=`SEARCH_DEGRADED` before=`을 위한 세계는 없다` after=`None` survey=`None` expected=`None` post=`ㅁㅁ세계 초대용사전의 문제점`
+- `11660271` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`월야의 여인들` after=`None` survey=`None` expected=`None` post=`아이돌 히로인 나오는 야설 어디 없나`
+- `11660273` `resolved_to_different_title` search=`SEARCH_DEGRADED` before=`마도서를 줍다 마법사가 되다` after=`그리즐리 그랑` survey=`None` expected=`None` post=`장빙이들 그리즐리 주면 키울거임?`
+- `11660277` `resolved_to_null` search=`SEARCH_DEGRADED` before=`아카메디 아카데미 본 사람?` after=`None` survey=`over_resolved_nonwork` expected=`아카메디 아카데미` post=`완결난 아카메디 지금당장봐`
+- `11661856` `resolved_to_null` search=`SEARCH_DEGRADED` before=`너랑은 절! 대! 안 사Kill거니까!` after=`None` survey=`None` expected=`None` post=`오늘에 맘마는~~~`
+- `11661863` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`저주받은 영애가 되었습니다` after=`None` survey=`None` expected=`None` post=`두개 써서 동시에 올리나보네`
+- `11661881` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`여신이 나만 애호함` after=`None` survey=`None` expected=`None` post=`여신애호) 잉잉이의 정체...`
+- `11663511` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`부캐 키우는 황태자님` after=`None` survey=`None` expected=`None` post=`부캐황태자99화) 몸은 검으로 되어있다`
+- `11663514` `resolved_to_different_title` search=`SEARCH_DEGRADED` before=`마탄 속의 제국` after=`올바른 슬라임 사용법` survey=`image_anchor_spurious` expected=`` post=`슬라임의 올바른 사용법`
+- `11663521` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`초전자포] 시스터즈가 되었다` after=`None` survey=`generic_phrase_substring` expected=`어떤 마술의 금서목록 / 어떤 과학의 초전자포` post=`TS) 시스터즈 퍼스트 정신머리 고치려면`
+- `11663554` `resolved_to_different_title` search=`SEARCH_DEGRADED_RECOVERED` before=`주서연 ( 전 버튜버가 하고 싶은데요 )` after=`전 버튜버가 하고 싶은데요` survey=`over_resolved_nonwork` expected=`전 버튜버가 하고 싶은데요` post=`TS) 주서연 영화개봉 했는데 1엄복동도 못되면`
+- `11663557` `resolved_to_different_title` search=`SEARCH_DEGRADED_RECOVERED` before=`퇴마록` after=`퇴마록 1` survey=`None` expected=`None` post=`퇴마록 생각해보니 올해 예능프로그램으로 나오지 않나`
+- `11665110` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`낭만적인 초능력을 위하여` after=`None` survey=`homonym_cross_domain` expected=`사이케델리아 (이상규/sakali, 1998 퓨전판타지)` post=`사이키델리아 읽었던 사람 있냐?`
+- `11665121` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`후회 안 하는 프로듀서` after=`None` survey=`None` expected=`None` post=`시리즈에 유일하게 댓글썼던게 하나있네`
+- `11665124` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`화산파(화산귀환)` after=`None` survey=`other` expected=`화산귀환` post=`난 시리즈 댓글은 정말 많이 달았었음`
+- `11666699` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`여동생이 맛있다` after=`None` survey=`wrong_work_among_aliases` expected=`남매역전` post=`남매역전 외전쓰다가 노피아에 짤린거지?`
+- `11666700` `resolved_to_different_title` search=`SEARCH_DEGRADED` before=`하남자의 탑 공략법` after=`내 고향엔 무림인이 산다` survey=`wrong_work_among_aliases` expected=`내 고향엔 무림인이 산다` post=`내고향무림 최신화 댓글창에도 벌레새끼가 있네`
+- `11666713` `resolved_to_different_title` search=`SEARCH_DEGRADED` before=`21세기 무림세가` after=`21세기 현대무림 레거시` survey=`None` expected=`None` post=`21세기 무림 이거 재미네 ㅋㅋㅋ`
+- `11666725` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`학대받던 11살 고마가 각성한 이유` after=`None` survey=`None` expected=`None` post=`아 이거 재밌어 보이는데 남주가 매력적임`
+- `11668278` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`짜장면` after=`None` survey=`over_resolved_nonwork` expected=`` post=`요즘 짜장면에 오이 넣는 집을 못본듯`
+- `11668300` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`즉사기 들고 게임 속 으로` after=`None` survey=`wrong_work_among_aliases` expected=`즉사기 들고 무림에 떨어지다` post=`즉사기 말 많아서 보러간다`
+- `11668324` `null_to_resolved` search=`SEARCH_DEGRADED` before=`None` after=`니들 생각 다 들린다` survey=`recall_miss` expected=`니들 생각 다 들린다 (약칭 니생들, 노벨피아, 작가 유4)` post=`니생들이랑 김괴라리 장갤픽 아니였음?`
+- `11668325` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`Fate/stay night` after=`None` survey=`None` expected=`None` post=`마파두부는 걍 이제 이새끼밖에 생각안남`
+- `11669907` `resolved_to_different_title` search=`SEARCH_DEGRADED_RECOVERED` before=`마법 좋아좋아좋아` after=`약스포) 마법 좋아좋아좋아` survey=`None` expected=`None` post=`이거 중간에 뱉길 잘했네`
+- `11669908` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`아카데미에서 살아남기 (완)` after=`None` survey=`image_anchor_spurious` expected=`` post=`이과 마법 제대로 써도 문제임`
+- `11669913` `resolved_to_null` search=`SEARCH_DEGRADED` before=`하룬` after=`None` survey=`homonym_cross_domain` expected=`` post=`팩트는 하룬은 수학 마법을 증명했다는거임`
+- `11669924` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`용인족의 아카데미 생존기` after=`None` survey=`None` expected=`None` post=`사일런트 루리드래곤이네`
+- `11669926` `resolved_to_different_title` search=`SEARCH_DEGRADED_RECOVERED` before=`싸울아비 룬` after=`싸울 할 비 문` survey=`None` expected=`None` post=`미적분 공식 외우면 발동되는 마법`
+- `11669928` `null_to_resolved` search=`SEARCH_DEGRADED` before=`None` after=`탑의 성좌들이 날 애호한다` survey=`recall_miss` expected=`탑의 성좌들이 날 애호한다 (프리데이, 노벨피아 PLUS, novelpia.com/novel/377032)` post=`탑성좌애호 노벨피아 이거 연중했었네`
+- `11669929` `resolved_to_different_title` search=`SEARCH_DEGRADED_RECOVERED` before=`기계공주` after=`헌터갤러리의 국가권력급 기계공주` survey=`recall_miss` expected=`헌터갤러리의 국가권력급 기계공주` post=`기계공주 재밌네`
+- `11669933` `resolved_to_null` search=`SEARCH_DEGRADED` before=`회귀수선전` after=`None` survey=`None` expected=`None` post=`중경계에서 첨 만난게 해방상제임?`
+- `11671500` `resolved_to_different_title` search=`SEARCH_DEGRADED` before=`악당도 살고 싶다` after=`악당은 살고 싶다 - 판타지 웹소설` survey=`other` expected=`악당은 살고 싶다` post=`말투 바뀌는 거 악살싶에서는 호평받았었는데`
+- `11671514` `resolved_to_different_title` search=`SEARCH_DEGRADED` before=`악신에게 총애받는 자` after=`악신이 총애하는 모험가` survey=`wrong_work_among_aliases` expected=`악신이 총애하는 미궁 모험가` post=`악신총애) 마왕이 말하는거 의미심장한데`
+- `11671538` `null_to_resolved` search=`SEARCH_DEGRADED_RECOVERED` before=`None` after=`망한 교단의 성기사` survey=`recall_miss` expected=`망한 교단의 성기사` post=`여우비의 신 마커스 많이 아끼나보네`
+- `11673077` `resolved_to_null` search=`SEARCH_DEGRADED` before=`판초우의의 마법사` after=`None` survey=`None` expected=`None` post=`즉사무림 판초우의 빚세구 다 봄`
+- `11673096` `resolved_to_different_title` search=`SEARCH_DEGRADED` before=`삼국지` after=`이문열 삼국지 1` survey=`image_anchor_spurious` expected=`이문열 평역 삼국지` post=`오누레 맘마임`
+- `11676314` `resolved_to_different_title` search=`SEARCH_DEGRADED` before=`소설 속 엑스트라` after=`마도서를 줍다 마법사가 되다` survey=`image_anchor_spurious` expected=`마도서를 줍다 마법사가 되다` post=`마도줍 완결이 빠를까`
+- `11676317` `null_to_resolved` search=`SEARCH_DEGRADED` before=`None` after=`마도서를 줍다 마법사가 되다` survey=`recall_miss` expected=`마도서를 줍다 마법사가 되다 (방구석와룡, 문피아/네이버시리즈)` post=`마도서줍 그거 같아`
+- `11677919` `null_to_resolved` search=`SEARCH_DEGRADED_RECOVERED` before=`None` after=`내 누나가 아니었음 좋겠어` survey=`None` expected=`None` post=`창작물 성유진은 갑자기 능력 얻었어도 비호감은 아니었음ㅋㅋㅋㅋㅋㅋ`
+- `11677957` `null_to_resolved` search=`SEARCH_DEGRADED_RECOVERED` before=`None` after=`음악 천재가 불륜을 못 숨김` survey=`recall_miss` expected=`음악 천재가 불륜을 못 숨김 (노벨피아 novel/402592, 작가 페도부이) — 다만 작가 앵커라 동일작가 타작품 가능성 잔존` post=`페도부이 진짜 천재같네`
+- `11679547` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`도굴왕` after=`None` survey=`None` expected=`None` post=`나혼렙의 뒤를잇는 ㄷㄷ`
+- `11681177` `null_to_resolved` search=`SEARCH_DEGRADED` before=`None` after=`격투 천재 여고생이 되었다` survey=`recall_miss` expected=`격투 천재 여고생이 되었다 (소설술사, 노벨피아)` post=`격투 천재 재밌다`
+- `11681180` `null_to_resolved` search=`SEARCH_DEGRADED_RECOVERED` before=`None` after=`아카데미 패드립 면역` survey=`None` expected=`None` post=`아카엠창 감정선 맛있네`
+- `11682749` `resolved_to_different_title` search=`SEARCH_DEGRADED_RECOVERED` before=`주인공인데 주인공이 아님` after=`묵향 다크레이디` survey=`wrong_work_among_aliases` expected=`묵향 (묵향 다크레이디)` post=`TS주인공인데 힘 쎄지는 템플릿이 어디서 나왔냐고?`
+- `11682767` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`묵향` after=`None` survey=`None` expected=`None` post=`근데 묵향 이 새끼 ts 초기에는 약했지`
+- `11682768` `null_to_resolved` search=`SEARCH_DEGRADED` before=`None` after=`마법소녀ㄴ은 은퇴하고 싶다` survey=`None` expected=`None` post=`근데 마법소녀ㄴ 일란성 쌍둥이라는거 뭔소리임`
+- `11685994` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`무한을 이해한 나는 외신의 사제가 되었습니다` after=`None` survey=`generic_phrase_substring` expected=`교황님(아파하세요) 계열 표지 작품(미상)` post=`념글 시발 외신소환 주문 뭐임...`
+- `11685995` `null_to_resolved` search=`SEARCH_DEGRADED_RECOVERED` before=`None` after=`가챠 중독자의 퓨전펑크 생활` survey=`None` expected=`None` post=`관우도 울고갈 근들갑 실력 ㄷㄷㄷㄷ`
+- `11687618` `null_to_resolved` search=`SEARCH_DEGRADED` before=`None` after=`아카데미 생존 갤러리` survey=`None` expected=`None` post=`아생갤 떡밥 나오니까 좀 재밌네`
+- `11687661` `resolved_to_null` search=`SEARCH_DEGRADED` before=`약혼녀가 소천마였다` after=`None` survey=`image_anchor_spurious` expected=`` post=`광고 도움 많이 된다`
+- `11692436` `resolved_to_null` search=`SEARCH_DEGRADED` before=`퍼펙트 메이지` after=`None` survey=`wrong_work_among_aliases` expected=`죽었다 깨어도 수선` post=`류서란(perfect)`
+- `11694019` `resolved_to_null` search=`SEARCH_DEGRADED` before=`혼후 순결` after=`None` survey=`generic_phrase_substring` expected=`이세계에서 사이비로 살아남기` post=`미츄리 혼후순결에서 하인들에게도 멸시당한게 고증에 맞는거였구나`
+- `11694035` `resolved_to_null` search=`SEARCH_DEGRADED` before=`시로코의 제멋대로 일상 단편선` after=`None` survey=`batch_context_bleed` expected=`` post=`아생갤) 가장 무서웠던 순간이`
+- `11694041` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`격투 소설 엑스트라가 타격 천재임` after=`None` survey=`wrong_work_among_aliases` expected=`격투 천재 여고생이 되었다` post=`격투천재 살짝 경녀감성임?`
+- `11694044` `resolved_to_different_title` search=`SEARCH_DEGRADED` before=`판초우의의 마법사` after=`즉사기 들고 무림에 떨어지다` survey=`wrong_work_among_aliases` expected=`즉사무림` post=`즉사무림 유료화 카운트 들어갔네`
+- `11694049` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`아카데미 생존 갤러리` after=`None` survey=`recall_miss` expected=`` post=`아생갤) 아레스가 가장 무서워할 일은 바로`
+- `11694063` `resolved_to_null` search=`SEARCH_DEGRADED` before=`빙의한 신의 아이, 엘리시아` after=`None` survey=`wrong_work_among_aliases` expected=`` post=`엘리시아가 아예 얀이 아니라`
+- `11694065` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`아카데미에서 살아남기` after=`None` survey=`None` expected=`None` post=`아니 시발 아카살 아니스 비처녀였네`
+- `11695599` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`창관전생` after=`None` survey=`None` expected=`None` post=`봐라`
+- `11695639` `null_to_resolved` search=`SEARCH_DEGRADED` before=`None` after=`준우승 세 번 했더니 미소녀 됨` survey=`recall_miss` expected=`준우승 세 번 했더니 미소녀 됨 (알레미카, 노벨피아 novel/362860)` post=`TS해서 인방하는데 아빠가 내 방송을 봄`
+- `11697231` `null_to_resolved` search=`SEARCH_DEGRADED_RECOVERED` before=`None` after=`아카데미 생존 갤러리` survey=`None` expected=`None` post=`아생갤 어렵네`
+- `11697239` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`조혈모세포 기증 궁금해요` after=`None` survey=`image_anchor_spurious` expected=`` post=`우우 장붕이 이런거 받았다`
+- `11697242` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`유희왕` after=`None` survey=`over_resolved_nonwork` expected=`` post=`유희왕 패러디 특`
+- `11697249` `resolved_to_null` search=`SEARCH_DEGRADED` before=`버거피아` after=`None` survey=`image_anchor_spurious` expected=`` post=`버거피아 합석 머임????`
+- `11698865` `resolved_to_null` search=`SEARCH_DEGRADED` before=`나츠키 스바루/작중 행적/5~8장` after=`None` survey=`over_resolved_nonwork` expected=`Re:제로부터 시작하는 이세계 생활` post=`스바루는 6장이 ㄹㅇ개씹테토남`
+- `11698870` `resolved_to_different_title` search=`SEARCH_DEGRADED` before=`인간실격` after=`인간실격 히로인들에게 집착당할 예정입니다` survey=`None` expected=`None` post=`인간실격이 살자엔딩이였나?`
+- `11698880` `resolved_to_null` search=`SEARCH_DEGRADED` before=`가챠 중독자의 퓨전펑크 생활` after=`None` survey=`None` expected=`None` post=`아생갤 개 존나게 재밌군 ㅇㅇ`
+- `11698904` `resolved_to_null` search=`SEARCH_DEGRADED` before=`타락` after=`None` survey=`over_resolved_nonwork` expected=`` post=`타락한 ts녀가 참한 파릇파릇한 마법소녀타락시키는소설 추천좀`
+- `11698910` `resolved_to_null` search=`SEARCH_DEGRADED` before=`판초우의의 마법사` after=`None` survey=`None` expected=`None` post=`판초우의에선 정부 일 왤케 잘하노`
+- `11700483` `resolved_to_null` search=`SEARCH_DEGRADED` before=`니들 생각 다 들린다` after=`None` survey=`None` expected=`None` post=`니생들 이모티콘 샀다`
+- `11702050` `resolved_to_null` search=`SEARCH_DEGRADED` before=`폴라리스 랩소디` after=`None` survey=`None` expected=`None` post=`은퇴한 60대 할배가 빵도 소설 보고있더라`
+- `11702081` `null_to_resolved` search=`SEARCH_DEGRADED_RECOVERED` before=`None` after=`게임 속 재해병 이야기` survey=`None` expected=`None` post=`TS) 해병이기) 엘키들 튼튼하긴 하네`
+- `11702094` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`#더블오` after=`None` survey=`over_resolved_nonwork` expected=`` post=`댓글창 이딴게 왜 재밌는거냐..?`
+- `11703631` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`나의 악당들` after=`None` survey=`None` expected=`None` post=`이블파티는 피카레스크임?`
+- `11703645` `null_to_resolved` search=`SEARCH_DEGRADED_RECOVERED` before=`None` after=`남매근친물` survey=`recall_miss` expected=`남매근친물 (노벨피아/밀리언클래스, 작가 binibig=비니빅)` post=`오늘에 ts 맘마는~~~~~`
+- `11703658` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`아프리카 의 독재자가 되었다 .` after=`None` survey=`wrong_work_among_aliases` expected=`아프리카 식량왕이 되었다` post=`문피아 아프리카 식량왕이 되었다 나쁘진 않음`
+- `11703674` `resolved_to_different_title` search=`SEARCH_DEGRADED_RECOVERED` before=`게임 속 도굴꾼이 되었다` after=`아카데미의 마피아가 되었다` survey=`wrong_work_among_aliases` expected=`아카데미의 마피아가 되었다` post=`아니 뭐야 아카데미 마피아 이거 씨즐꺼였네`
+- `11705230` `resolved_to_different_title` search=`SEARCH_DEGRADED_RECOVERED` before=`월야환담` after=`월야환담 시리즈` survey=`None` expected=`None` post=`월야환담은 진짜 시대변화 직통으로 처맞앗네..`
+- `11705231` `resolved_to_different_title` search=`SEARCH_DEGRADED_RECOVERED` before=`한국 레전드 프로게이머인 내가 일본판타지 사정에 휘말린 것에 대하여` after=`설지후` survey=`generic_phrase_substring` expected=`탐식의 재림` post=`장갤 설지후 변화도 레전드임`
+- `11705251` `resolved_to_null` search=`SEARCH_DEGRADED` before=`월야환담 창월야` after=`None` survey=`None` expected=`None` post=`창월야 기준 한세건보다 강한 진마 몇 안되네`
+- `11705252` `resolved_to_null` search=`SEARCH_DEGRADED` before=`탐식의 재림` after=`None` survey=`None` expected=`None` post=`ㄹㅇ존나 순수한 질문`
+- `11706844` `resolved_to_null` search=`SEARCH_DEGRADED` before=`범 먹는 괴이 사냥꾼` after=`None` survey=`None` expected=`None` post=`새벽장붕이들 편곤 괴이물 신작은 다들읽어보고 갤질중이냐`
+- `11706852` `null_to_resolved` search=`SEARCH_DEGRADED_RECOVERED` before=`None` after=`판초우의의 마법사` survey=`recall_miss` expected=`판초우의의 마법사 (문피아, 작가 하드폭발, 2026 연재; '판초법사'는 정착 약칭) — 웹확인됨` post=`개장빙들아 판초법사 잼나냐?`
+- `11706867` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`따옴표` after=`None` survey=`generic_phrase_substring` expected=`` post=`요즘 장갤 따옴표 수준.jpg`
+- `11706871` `resolved_to_null` search=`SEARCH_DEGRADED` before=`파우스트` after=`None` survey=`None` expected=`None` post=`독후감 쓰려고 파우스트 읽었었는데 결말에서 벙쪘음`
+- `11708432` `resolved_to_null` search=`SEARCH_DEGRADED` before=`전지적 독자 시점` after=`None` survey=`None` expected=`None` post=`전독시급 정도는 되야 독창성 운운할수있는거지 뭔ㅋㅋ`
+- `11708443` `resolved_to_null` search=`SEARCH_DEGRADED` before=`괴담에 떨어져도 출근을 해야 하는구나` after=`None` survey=`None` expected=`None` post=`괴담출근정도는 돼야 독창성 운운할수 있는거다`
+- `11710020` `resolved_to_null` search=`SEARCH_DEGRADED` before=`주무시기 전에 무엇을 하셨나요?` after=`None` survey=`over_resolved_nonwork` expected=`` post=`TS) 주전무) 좆같이 굴어서 좆같이 굴기로 한건가`
+- `11710036` `resolved_to_different_title` search=`SEARCH_DEGRADED` before=`쳇바퀴의 생쥐 사도가 되었다` after=`변방계에서 회귀자로 살아남기` survey=`wrong_work_among_aliases` expected=`[림월드]변방계에서 회귀자로 살아남기` post=`5시간 뒤면 랫따싶이 올까요?`
+- `11710037` `null_to_resolved` search=`SEARCH_DEGRADED` before=`None` after=`괴담 호텔 탈출기` survey=`recall_miss` expected=`괴담 호텔 탈출기 (노벨피아 novel/102155, 작가 쿠크루)` post=`상식의 엇갈림 서술트릭 << GOAT임`
+- `11710047` `resolved_to_null` search=`SEARCH_DEGRADED` before=`로판 속 미움받는 악역이 되었다` after=`None` survey=`wrong_work_among_aliases` expected=`아카데미 속 미움받는 악역이 되었다` post=`이거 뭔가뭔가임`
+- `11710049` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`[림월드]변방계에서 회귀자로 살아남기` after=`None` survey=`None` expected=`None` post=`장갤 이 괘씸한 새끼들`
+- `11714887` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`도굴왕 1 |` after=`None` survey=`None` expected=`None` post=`도굴왕 pv 츄라이 츄라이`
+- `11714892` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`헌터갤러리의 국가권력급 기계공주` after=`None` survey=`over_resolved_nonwork` expected=`` post=`뭔가 요새 재밌는 소설 없나 좀 신박한 소재로`
+- `11714903` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`온 세상이 정신이상자다` after=`None` survey=`generic_phrase_substring` expected=`괴담 호텔 탈출기` post=`온세상이 버튜버다`
+- `11716464` `resolved_to_different_title` search=`SEARCH_DEGRADED` before=`슈라라펜란트` after=`슈라라펜란트 - 판타지 웹소설` survey=`None` expected=`None` post=`슈라라펜란트 페이트인줄 씹ㅋㅋ`
+- `11716480` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`여대생 가랑이 사이 무릎 꿇은 엄마들` after=`None` survey=`None` expected=`None` post=`아오 포티햄`
+- `11716505` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`헌터대회) A급 헌터가 살아가는 법` after=`None` survey=`image_anchor_spurious` expected=`` post=`언냐들 단어 하나에 발작하는거보면 신기하네`
+- `11718097` `resolved_to_different_title` search=`SEARCH_DEGRADED` before=`라디오에서 우리의 노래가 나오면` after=`망겜의 힐러` survey=`wrong_work_among_aliases` expected=`망겜의 힐러` post=`망겜힐은 오행복 박태양이 빌런이였어야돼`
+- `11718098` `resolved_to_different_title` search=`SEARCH_DEGRADED` before=`마법 좋아좋아좋아` after=`마법 좋아, 마법과 좋아` survey=`None` expected=`None` post=`마좋좋좋 결말이 왜이러냐..`
+- `11718099` `resolved_to_null` search=`SEARCH_DEGRADED` before=`빌어먹을 환생` after=`None` survey=`None` expected=`None` post=`빌환 표지변경됨`
+- `11718110` `resolved_to_null` search=`SEARCH_DEGRADED` before=`지구온라인에서 쌀먹합니다` after=`None` survey=`generic_phrase_substring` expected=`지구온라인` post=`지구온라인 재밌다며 장붕아`
+- `11718114` `resolved_to_null` search=`SEARCH_DEGRADED_RECOVERED` before=`설정값 딸깍으로 판타지 시스템 정상화` after=`None` survey=`generic_phrase_substring` expected=`` post=`시스템 딸깍하는 설정 ㄹㅇ 별로임`

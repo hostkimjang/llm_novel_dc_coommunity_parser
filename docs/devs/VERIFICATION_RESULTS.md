@@ -1,5 +1,31 @@
 # Verification Results
 
+## 2026-07-08 Loop612 Loop609 raw139 survey/search-health 3분
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_612_REPORT_20260708.md`
+  - `docs/devs/loop612_loop609_raw139_survey_search_health_split.json/.md`
+  - `docs/devs/loop612_loop609_intended_recovery24_blind_judge_batch.jsonl/.md`
+  - `docs/devs/loop612_loop609_search_degraded109_replay_hold.jsonl/.md`
+  - `docs/devs/loop612_loop609_true_triage10_ok_search_nonfp.jsonl/.md`
+  - `docs/devs/loop612_current_search_shard_audit.json`
+  - `tools/split_collateral_by_survey_search_health.py`
+  - `tests/test_split_collateral_by_survey_search_health.py`
+- 검증:
+  - Raw regression split: PASS 산출, raw `139`.
+  - Expected FP removal: PASS 산출, `42`.
+  - Intended recovery blind judge: PASS 산출, total `24`, recall_miss `15`, wrong_work `9`.
+  - Search degraded/recovered overlay: PASS 산출, `109`, status `SEARCH_DEGRADED 53 / SEARCH_DEGRADED_RECOVERED 56`.
+  - True triage: PASS 산출, ok-search non-FP `15`, blind judge 제외 후 `10`.
+  - Search shard readiness audit: PASS, `ok=16/16`, bad `[]`. 단 query degraded 복구 완료 증거는 아니다.
+  - Unit test: PASS, `tests.test_split_collateral_by_survey_search_health` `2` tests.
+  - Py compile: PASS, split tool and search shard audit tool.
+  - Loop612 JSON/JSONL parse: PASS, `5` files, JSONL rows `143`.
+- 결과:
+  - Loop609 raw139는 일괄 P0 triage 대상이 아니며 search recovery가 full375 재실행 선결이다.
+  - Search health ok가 아닌 run의 collateral 변화는 regression evidence로 쓰지 않는다.
+- Gate: survey/search split `REVIEW-LOCKED`, expected FP removal `42`, blind judge `24`, search recovery `P0_OPEN / 109`, true triage `10`, full375 rerun `BLOCKED_UNTIL_SEARCH_RECOVERY`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop611 full375 projection 재회계와 테스트런 dashboard 계약
 
 - 산출물:

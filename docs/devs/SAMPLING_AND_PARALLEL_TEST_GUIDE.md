@@ -1,5 +1,14 @@
 # Sampling And Parallel Test Guide
 
+## 2026-07-08 Loop612 search recovery 선결과 raw139 회계
+
+- Loop609 raw collateral regression `139`건은 일괄 P0 triage 대상이 아니다. Detection survey와 row search health 기준으로 먼저 분리한다.
+- `resolved_to_null ∩ detection_survey FP`는 `expected_fp_removal` 회계 면제 후보로 처리한다.
+- `recall_miss` 복구와 `wrong_work` 수리는 제목 정답성 blind judge를 통과한 뒤 면제 또는 수정한다.
+- `SEARCH_DEGRADED` 또는 `SEARCH_DEGRADED_RECOVERED` row는 검색 복구 후 해당 행만 재실행하기 전까지 collateral regression evidence로 쓰지 않는다.
+- Shard readiness `ok=16/16`은 기동/ready 증거일 뿐 query degraded 복구 완료 증거가 아니다.
+- 다음 full375 runtime replay는 `--parallel 16`, dashboard 기본 ON을 유지하되, 실행 전 query-level search recovery evidence를 확보해야 한다.
+
 ## 2026-07-08 Loop608 full_scan 경로와 dashboard 필수 부착
 
 - Loop608 이후 다음 full375/test runtime run은 반드시 `--parallel 16`, search 포함 non-light, VLM/OCR ready, `slang_db off`, web dashboard 기본 ON으로 실행한다.

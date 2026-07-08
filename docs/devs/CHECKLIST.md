@@ -1,5 +1,23 @@
 # Development Checklist
 
+## 2026-07-08 Loop612 Loop609 raw139 survey/search-health 3분 체크
+
+- [x] 새 full375 runtime replay를 실행하지 않았다.
+- [x] Loop609 raw collateral regression `139`건을 detection survey와 row search health로 교차했다.
+- [x] `resolved_to_null ∩ detection_survey FP` `42`건을 `expected_fp_removal` 회계 면제 후보로 분리했다.
+- [x] `null_to_resolved ∩ recall_miss` `15`건과 `resolved_to_different_title ∩ wrong_work_among_aliases` `9`건을 blind-title-correctness judge 대상으로 분리했다.
+- [x] `SEARCH_DEGRADED/SEARCH_DEGRADED_RECOVERED` overlay `109`건을 검색 복구 전 collateral 회귀 판정 보류로 분리했다.
+- [x] ok-search & non-FP 후보는 `15`건이고, blind judge 의도 복구를 제외한 즉시 triage 후보는 `10`건이다.
+- [x] Loop609 search evidence는 degraded query `1801`, unrecovered degraded `234`라 `P0_OPEN`이다.
+- [x] 현재 search shard readiness audit은 `ok=16/16`, bad `[]`다. 단 query degraded 복구 완료 증거는 아니다.
+- [x] 3분 도구와 테스트를 추가했다. `tools/split_collateral_by_survey_search_health.py`, `tests/test_split_collateral_by_survey_search_health.py`.
+- [ ] Blind-judge batch `24`건의 제목 정답성을 판정한다.
+- [ ] Search degraded/recovered `109`행은 검색 복구 후 해당 행만 재실행해 재판정한다.
+- [ ] Search health ok가 아닌 run의 collateral을 회귀 판정 근거로 쓰지 않는다.
+- [ ] Full375 재실행 전에 검색 인프라 복구를 먼저 증명한다.
+- Gate: survey/search split `REVIEW-LOCKED`, expected FP removal `42`, blind judge `24`, search recovery `P0_OPEN / 109`, true triage `10`, full375 rerun `BLOCKED_UNTIL_SEARCH_RECOVERY`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_612_REPORT_20260708.md`, `docs/devs/loop612_loop609_raw139_survey_search_health_split.json/.md`, `docs/devs/loop612_loop609_intended_recovery24_blind_judge_batch.jsonl/.md`, `docs/devs/loop612_loop609_search_degraded109_replay_hold.jsonl/.md`, `docs/devs/loop612_loop609_true_triage10_ok_search_nonfp.jsonl/.md`, `docs/devs/loop612_current_search_shard_audit.json`.
+
 ## 2026-07-08 Loop611 full375 projection 재회계와 테스트런 dashboard 계약 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.

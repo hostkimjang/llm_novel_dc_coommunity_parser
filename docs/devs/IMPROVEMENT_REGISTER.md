@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260708-612 - Loop609 raw139 survey/search-health split
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 full375 runtime 실행 없음 | 검색 복구 전 full375 재실행 금지 |
+| Expected FP removal | REVIEW-LOCKED | `resolved_to_null ∩ detection_survey FP` `42` | 회계 면제 후보로 반영 |
+| Intended recovery | REVIEW-LOCKED | recall_miss `15`, wrong_work `9`, total `24` | 제목 정답성 blind judge |
+| Search degraded overlay | P0_OPEN | `SEARCH_DEGRADED/RECOVERED` `109`, Loop609 degraded query `1801`, unrecovered `234` | 검색 복구 후 해당 행 재실행 |
+| Search shard readiness | READY_NOT_RECOVERY_PROOF | current audit `ok=16/16`, bad `[]` | query-level recovery probe 필요 |
+| True triage | REVIEW-LOCKED | ok-search non-FP `15`, blind judge 제외 후 `10` | 이 집합만 실제 triage 후보 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: survey/search split `REVIEW-LOCKED`, search recovery `P0_OPEN / 109`, full375 rerun `BLOCKED_UNTIL_SEARCH_RECOVERY`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-611 - full375 publication-sync projection refresh and dashboard contract
 
 | 항목 | 상태 | 근거 | 다음 |

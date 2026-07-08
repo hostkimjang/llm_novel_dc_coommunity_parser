@@ -1,5 +1,23 @@
 # Operation Quality Checklist
 
+## 2026-07-08 Loop612 raw139 survey/search-health 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_612_REPORT_20260708.md`.
+  - [x] Survey/search split 기록 완료: `docs/devs/loop612_loop609_raw139_survey_search_health_split.json/.md`.
+  - [x] Blind judge batch 기록 완료: `docs/devs/loop612_loop609_intended_recovery24_blind_judge_batch.jsonl/.md`.
+  - [x] Search hold 기록 완료: `docs/devs/loop612_loop609_search_degraded109_replay_hold.jsonl/.md`.
+  - [x] True triage 기록 완료: `docs/devs/loop612_loop609_true_triage10_ok_search_nonfp.jsonl/.md`.
+  - [x] Search shard audit 기록 완료: `docs/devs/loop612_current_search_shard_audit.json`.
+- 품질 경계:
+  - [x] 새 full375 runtime replay는 실행하지 않았다.
+  - [x] Expected FP removal `42`건은 정당 제거 회계 면제 후보로 분리했다.
+  - [x] Intended recovery `24`건은 blind judge 전에는 exemption/fix 확정으로 쓰지 않는다.
+  - [x] Search degraded/recovered `109`건은 검색 복구 전 collateral regression evidence로 쓰지 않는다.
+  - [x] 현재 shard readiness `16/16`은 query degraded 복구 완료 증거가 아니다.
+  - [x] Full375 재실행은 검색 복구 전 차단한다.
+- Gate: survey/search split `REVIEW-LOCKED`, search recovery `P0_OPEN`, full375 rerun `BLOCKED_UNTIL_SEARCH_RECOVERY`, true triage `10`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop611 projection 재회계와 dashboard 품질 게이트
 
 - 근거:
