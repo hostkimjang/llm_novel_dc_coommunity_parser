@@ -129,6 +129,45 @@ class OrdinaryResidualDispatchTests(unittest.TestCase):
         self.assertEqual(lanes_by_post[2], "no_publish_multiwork_guard_review")
         self.assertEqual(dispatch["summary"]["runtime_replay_allowed_rows"], 0)
 
+    def test_modern_residual_actions_route_to_specific_batch_lanes(self):
+        accounting = {
+            "accounting_id": "loop605",
+            "summary": {"contract_processed_rows": 12},
+            "rows": [
+                {"post_id": 1, "review_label": "HOLD", "ordinary_residual_unprocessed": True},
+                {"post_id": 2, "review_label": "HOLD", "ordinary_residual_unprocessed": True},
+                {"post_id": 3, "review_label": "REPROCESS", "ordinary_residual_unprocessed": True},
+            ],
+        }
+        source_queue = {
+            "queue_id": "loop602",
+            "rows": [
+                {
+                    "post_id": 1,
+                    "review_label": "HOLD",
+                    "actions": ["native_web_or_image_human_review_required"],
+                },
+                {
+                    "post_id": 2,
+                    "review_label": "HOLD",
+                    "actions": ["wrong_work_or_cross_media_policy_hold_required"],
+                },
+                {
+                    "post_id": 3,
+                    "review_label": "REPROCESS",
+                    "actions": ["character_bridge_native_web_review_required"],
+                },
+            ],
+        }
+
+        dispatch = build_dispatch(accounting=accounting, source_queue=source_queue, dispatch_id="d6")
+        lanes_by_post = {row["post_id"]: row["primary_lane"] for row in dispatch["rows"]}
+
+        self.assertEqual(lanes_by_post[1], "native_web_image_evidence_review")
+        self.assertEqual(lanes_by_post[2], "no_publish_multiwork_guard_review")
+        self.assertEqual(lanes_by_post[3], "canonical_policy_cleanup_review")
+        self.assertNotIn("manual_review", dispatch["summary"]["lane_counts"])
+
     def test_runtime_mismatch_accounting_moves_restore_row_to_source_native_lane(self):
         source_queue = {
             "queue_id": "loop546",

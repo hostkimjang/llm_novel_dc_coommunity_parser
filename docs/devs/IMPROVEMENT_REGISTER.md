@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260708-605 - residual24 candidate-set batch contract processing
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | 실제 test run만 `--parallel 16` + dashboard attached로 실행 |
+| Candidate-set batch | REVIEW-LOCKED | rows `8`, action `candidate_set_rebuild_required_before_publish 8`, decision `reject 8` | 후보셋 재구축 전 publish 금지 유지 |
+| Projection application | REVIEW-LOCKED | full375 projection rows `375`, applied hold `8`, already blocked hold `8`, validation issue `0` | release audit와 residual 회계에만 사용 |
+| Release gate | REVIEW-LOCKED | violation `0`, pending `0`, satisfied no-release `8`, release candidate `0` | no-release는 approval 아님 |
+| Residual accounting | REVIEW-LOCKED | source residual `28`, contract processed `12`, ordinary residual `16` | residual16 lane별 N건 batch 처리 |
+| Dispatch classifier | PASS_UNIT | `primary_lane` candidate-set 입력과 최신 residual action lane 분류 보강 | manual fallback 재발 감시 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: candidate-set batch `REVIEW-LOCKED`, release audit `REVIEW-LOCKED / violation 0`, residual accounting `REVIEW-LOCKED / ordinary 16`, full375 collateral `NO-GO`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-604 - residual28 shared-gate batch contract processing
 
 | 항목 | 상태 | 근거 | 다음 |

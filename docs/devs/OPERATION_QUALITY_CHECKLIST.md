@@ -1,5 +1,29 @@
 # Operation Quality Checklist
 
+## 2026-07-08 Loop605 candidate-set batch 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_605_REPORT_20260708.md`.
+  - [x] Residual24 dispatch 기록 완료: `docs/devs/loop605_after_shared_gate_ordinary_residual24_dispatch.json/.md`.
+  - [x] Candidate-set contract plan 기록 완료: `docs/devs/loop605_residual24_candidate_set_contract_plan.json/.md`.
+  - [x] Candidate-set projection application 기록 완료: `docs/devs/loop605_residual24_candidate_set_projection_application.json/.md`.
+  - [x] Candidate-set release gate 기록 완료: `docs/devs/loop605_residual24_candidate_set_release_gate_audit.json/.md`.
+  - [x] Combined plan/application 기록 완료: `docs/devs/loop605_residual28_shared_gate_candidate_set_combined_contract_plan.json/.md`, `docs/devs/loop605_residual28_shared_gate_candidate_set_combined_projection_application.json/.md`.
+  - [x] Residual accounting 기록 완료: `docs/devs/loop605_after_candidate_set_residual28_accounting.json/.md`.
+  - [x] Residual16 dispatch 기록 완료: `docs/devs/loop605_after_candidate_set_ordinary_residual16_dispatch.json/.md`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+  - [x] Candidate-set lane `8`건을 batch로 처리했다.
+  - [x] Candidate-set action은 `candidate_set_rebuild_required_before_publish 8`이고 promotion decision은 `reject 8`이다.
+  - [x] Projection application은 rows `375`, applied hold `8`, already blocked hold `8`, validation issue `0`이다.
+  - [x] Release audit은 violation `0`, pending `0`, no-release satisfied `8`, release candidate `0`이다.
+  - [x] Residual accounting은 ordinary residual `24 -> 16`이다.
+  - [x] Residual16 dispatch는 `manual_review 0`으로 재분류됐다.
+  - [x] Runtime replay allowed rows는 `0`이다.
+  - [x] Dashboard health는 `http://127.0.0.1:8080`에서 `ok=true / standalone=true / pid=9320`로 확인했다.
+  - [x] 다음 test/runtime run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지다.
+- Gate: candidate-set batch `REVIEW-LOCKED`, release audit `REVIEW-LOCKED / violation 0`, residual accounting `REVIEW-LOCKED / ordinary 16`, full375 collateral `NO-GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop604 residual28 shared-gate batch 품질 게이트
 
 - 근거:

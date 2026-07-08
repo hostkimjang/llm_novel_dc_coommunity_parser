@@ -24,6 +24,8 @@ NO_PUBLISH_GUARD_ACTIONS = {
     "search_title_similarity_hard_hold_required",
     "alias_collision_guard_required",
     "canonical_alias_competition_guard_required",
+    "wrong_work_or_cross_media_policy_hold_required",
+    "blind_or_policy_judge_required",
 }
 NATIVE_WEB_IMAGE_ACTIONS = {
     "native_web_review_required",
@@ -31,6 +33,8 @@ NATIVE_WEB_IMAGE_ACTIONS = {
     "image_listing_multi_work_guard_required",
     "image_multi_panel_review_required",
     "image_platform_url_preference",
+    "native_web_or_image_evidence_required",
+    "native_web_or_image_human_review_required",
 }
 CANONICAL_POLICY_ACTIONS = {
     "policy_or_canonical_title_review_required",
@@ -39,6 +43,9 @@ CANONICAL_POLICY_ACTIONS = {
     "title_surface_specificity_review_required",
     "alias_relation_review_required",
     "character_bridge_review_required",
+    "native_web_or_alias_relation_review_required",
+    "character_bridge_native_web_review_required",
+    "official_detail_url_enrichment_required",
 }
 SHARED_GATE_RESTORE_ACTIONS = {
     "repair_safe_loss_restore_supported_title",

@@ -92,6 +92,32 @@ class BuildCandidateSetContractPlanTest(unittest.TestCase):
         )
         self.assertIn("--no-dashboard", plan["execution_contract"]["dashboard_contract"]["forbidden_flags"])
 
+    def test_accepts_ordinary_residual_dispatch_primary_lane(self):
+        batch = {
+            "dispatch_id": "ordinary_residual_dispatch",
+            "rows": [
+                {
+                    "post_id": 5,
+                    "primary_lane": "candidate_set_rebuild_review",
+                    "triage_bucket": "safe_loss_resolved_to_null",
+                    "source_native_verdict": "candidate_set_incomplete",
+                    "selected_title": None,
+                    "evidence_grade": "Strong",
+                    "actions": ["candidate_set_rebuild_required"],
+                    "rationale_ko": "ordinary residual dispatch가 primary_lane으로 lane을 기록한다.",
+                }
+            ],
+        }
+
+        plan = build_plan(batch, plan_id="unit_primary_lane")
+
+        self.assertEqual(plan["summary"]["candidate_set_contract_plan_rows"], 1)
+        self.assertEqual(plan["rows"][0]["source_dispatch_lane"], "candidate_set_rebuild_review")
+        self.assertEqual(
+            plan["rows"][0]["contract_action"],
+            "candidate_set_rebuild_required_before_publish",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

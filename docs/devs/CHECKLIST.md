@@ -1,5 +1,23 @@
 # Development Checklist
 
+## 2026-07-08 Loop605 candidate-set batch와 residual16 dispatch 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Residual24 중 `candidate_set_rebuild_required` lane `8`건을 N건 배치로 처리했다.
+- [x] `tools/build_candidate_set_contract_plan.py`가 ordinary dispatch `primary_lane` 입력을 인식하도록 보강했다.
+- [x] `tools/build_ordinary_residual_dispatch.py`가 최신 residual action을 specific lane으로 분류하도록 보강했다.
+- [x] Candidate-set contract plan은 rows `8`, action `candidate_set_rebuild_required_before_publish 8`, decision `reject 8`이다.
+- [x] Projection application은 rows `375`, applied hold `8`, already blocked hold `8`, validation issue `0`이다.
+- [x] Release gate audit은 violation `0`, pending `0`, satisfied no-release `8`, release candidate `0`이다.
+- [x] Combined residual accounting은 source residual `28`, contract processed `12`, ordinary residual `16`이다.
+- [x] Residual16 dispatch는 `source_native_or_blind_review 7 / native_web_image_evidence_review 5 / no_publish_multiwork_guard_review 2 / canonical_policy_cleanup_review 2`다.
+- [x] Dashboard health는 `http://127.0.0.1:8080`에서 `ok=true / standalone=true / pid=9320`로 확인했다.
+- [ ] Residual16을 lane별 N건 배치로 계속 처리한다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, manifest attach fallback 활성, `--no-dashboard` 금지로 실행한다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: candidate-set plan/application `REVIEW-LOCKED`, release audit `REVIEW-LOCKED / violation 0`, residual accounting `REVIEW-LOCKED / ordinary 16`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_605_REPORT_20260708.md`, `docs/devs/loop605_residual24_candidate_set_contract_plan.json`, `docs/devs/loop605_residual24_candidate_set_projection_application.json`, `docs/devs/loop605_residual24_candidate_set_release_gate_audit.json`, `docs/devs/loop605_after_candidate_set_residual28_accounting.json`, `docs/devs/loop605_after_candidate_set_ordinary_residual16_dispatch.json`.
+
 ## 2026-07-08 Loop604 residual28 shared-gate batch 처리 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
@@ -11,7 +29,8 @@
 - [x] Release contract audit은 violation `0`, pending `0`, release candidate `3`, satisfied no-release `1`이다.
 - [x] Residual accounting은 source residual `28`, contract processed `4`, ordinary residual `24`이다.
 - [x] Dashboard health는 `http://127.0.0.1:8080`에서 `ok=true / standalone=true / pid=9320`로 확인했다.
-- [ ] Residual24를 lane별 N건 배치로 계속 처리한다.
+- [x] Residual24 중 candidate-set `8`건은 Loop605에서 batch 처리했다.
+- [ ] Residual16을 lane별 N건 배치로 계속 처리한다.
 - [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, manifest attach fallback 활성, `--no-dashboard` 금지로 실행한다.
 - [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
 - Gate: shared-gate projection/application `REVIEW-LOCKED`, release audit `REVIEW-LOCKED / violation 0`, residual accounting `REVIEW-LOCKED / ordinary 24`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.

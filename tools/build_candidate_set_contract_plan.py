@@ -121,6 +121,10 @@ def _actions(row: dict[str, Any]) -> set[str]:
     return {_string(item) for item in _as_list(row.get("actions")) if _string(item)}
 
 
+def _row_lane(row: dict[str, Any]) -> str:
+    return _string(row.get("dispatch_lane") or row.get("primary_lane"))
+
+
 def _is_intent_guard(row: dict[str, Any]) -> bool:
     actions = _actions(row)
     verdict = _string(row.get("source_native_verdict")).lower()
@@ -231,7 +235,7 @@ def _build_plan_row(row: dict[str, Any]) -> dict[str, Any]:
         "post_id": _post_id(row.get("post_id")),
         "contract_origin": "refined_p0_candidate_set_dispatch",
         "contract_batch_lane": "CS_candidate_set_contract",
-        "source_dispatch_lane": row.get("dispatch_lane"),
+        "source_dispatch_lane": _row_lane(row),
         "triage_bucket": row.get("triage_bucket"),
         "review_label": row.get("review_label"),
         "source_native_verdict": row.get("source_native_verdict"),
@@ -265,7 +269,7 @@ def build_plan(
     plan_id: str,
     generated_at: str | None = None,
 ) -> dict[str, Any]:
-    selected = [row for row in _rows(batch) if row.get("dispatch_lane") == CANDIDATE_SET_LANE]
+    selected = [row for row in _rows(batch) if _row_lane(row) == CANDIDATE_SET_LANE]
     rows = [_build_plan_row(row) for row in selected]
     validation_issues: list[dict[str, Any]] = []
     for row in rows:

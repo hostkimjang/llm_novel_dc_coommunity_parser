@@ -1,0 +1,94 @@
+{
+  "report_type": "candidate_set_projection_contract_application",
+  "projection_id": "loop605_residual24_candidate_set_projection_application",
+  "generated_at": "2026-07-08T09:19:52",
+  "source_contract_plan": "loop605_residual24_candidate_set_contract_plan",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "projection_rows": 375,
+    "contract_plan_rows": 8,
+    "candidate_set_contract_rows": 8,
+    "applied_restore_rows": 0,
+    "applied_hold_rows": 8,
+    "applied_candidate_set_rebuild_hold_rows": 8,
+    "applied_no_publish_intent_guard_rows": 0,
+    "scrubbed_public_identity_rows": 0,
+    "already_blocked_hold_rows": 8,
+    "validation_issue_count": 0,
+    "skipped_contract_action_counts": {},
+    "runtime_replay_allowed_rows": 0,
+    "requested_parallel_for_future_runtime": 16,
+    "dashboard_policy": "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+    "dashboard_url": "http://127.0.0.1:8080",
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "applied_rows": [
+    {
+      "post_id": 11671514,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "악신의 총애를 받는 성직자가 되었다",
+      "preserved_candidate_url": "https://ridibooks.com/books/3228117968",
+      "status": "preserved_no_release"
+    },
+    {
+      "post_id": 11682749,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "묵향",
+      "preserved_candidate_url": "https://series.naver.com/novel/detail.series?productNo=1820151",
+      "status": "preserved_no_release"
+    },
+    {
+      "post_id": 11694035,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "아카데미 생존 갤러리",
+      "preserved_candidate_url": null,
+      "status": "preserved_no_release"
+    },
+    {
+      "post_id": 11698865,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "리제로x자살헌터] 헌터 나츠키",
+      "preserved_candidate_url": "https://novelpia.com/novel/134771",
+      "status": "preserved_no_release"
+    },
+    {
+      "post_id": 11703658,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "novel.munpia.com›neSrl",
+      "preserved_candidate_url": "https://novel.munpia.com/528703",
+      "status": "preserved_no_release"
+    },
+    {
+      "post_id": 11705231,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "탐식의 재림",
+      "preserved_candidate_url": "https://ridibooks.com/books/2008016338?srsltid=AfmBOor0D2eQqJHQhQ5MP_YVO9iFbWmBP6Mb_pxl60TSAUvek1EgsqiC",
+      "status": "preserved_no_release"
+    },
+    {
+      "post_id": 11708453,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "이세계 검은 머리 외국인",
+      "preserved_candidate_url": "https://novelpia.com/novel/1082",
+      "status": "preserved_no_release"
+    },
+    {
+      "post_id": 11710036,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "preserved_candidate_url": "https://novelpia.com/novel/382324",
+      "status": "preserved_no_release"
+    }
+  ],
+  "approval_boundary": {
+    "projection_application_is_not_runtime_replay": true,
+    "release_candidate_is_not_full_scan_approval": true,
+    "runtime_replay_before_full375_collateral_forbidden": true,
+    "full375_collateral_remains_no_go": true,
+    "test_runs_require_parallel_16_and_web_dashboard": true
+  }
+}
