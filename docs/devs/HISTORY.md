@@ -1,5 +1,21 @@
 # Development History
 
+## 2026-07-08 - Loop611 full375 projection refresh and test-run dashboard contract
+
+- 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+- Loop609 full375 rows에 Loop610 publication sync를 현재 HEAD 기준으로 다시 투영했다. Projection rows는 `375`, sync changed rows는 `223`이다.
+- Publication contract projection은 `GO / violation 0`이다.
+- Full375 collateral compare는 shared `375/375`, changed `196`, raw regression `139`, runtime counts missing으로 `NO-GO`다.
+- Always-on gate는 golden18 `GO`지만 adjusted regression `78`, unreviewed raw regression `74`로 overall `NO-GO`다.
+- Residual action queue는 rows `102`, reviewed raw residual `28`, unreviewed raw residual `74`다.
+- Unreviewed74 blind/source-native batch는 selected `74`, source/baseline/after missing `0/0/0`이며 verdict 입력일 뿐 approval이 아니다.
+- Dashboard는 `http://127.0.0.1:8080/api/health`에서 `ok=true`, `standalone=true`, `pid=9320`로 확인했다.
+- `tools/run_independent_plan.py`는 dashboard env forwarding과 manifest attach fallback을 제공하고, `expert_main.py`는 standalone dashboard를 `standalone_forward`로 감지해 manifest dashboard 필드를 기록한다.
+- `tools/compare_projection_collateral.py`의 stale `Loop580` Markdown 문구를 generic projection 문구로 수정했다.
+- 검증은 focused unittest `39` tests, `.venv312` dashboard standalone unittest `26` tests, py_compile, Loop611 JSON parse, `git diff --check`가 통과했다. Default `python` dashboard standalone unittest는 `fastapi` 미설치로 import blocked였다.
+- Report는 `docs/devs/loop_reports/LOOP_611_REPORT_20260708.md`다.
+- Gate는 publication contract projection `GO`, full375 collateral `NO-GO / raw 139 / adjusted 78 / unreviewed 74`, residual queue `REVIEW-LOCKED / rows 102`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, runtime `NOT_RUN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop610 verified image/OCR publication projection and dashboard contract
 
 - 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.

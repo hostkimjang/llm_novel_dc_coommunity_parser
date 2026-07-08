@@ -1,5 +1,21 @@
 # Developer TODO Index
 
+## 2026-07-08 Loop611 이후
+
+- 상태 업데이트: Loop610 publication sync는 current HEAD projection에서도 publication contract `GO / 0`을 유지하지만, full375 collateral은 raw `139`, adjusted `78`, unreviewed `74`로 계속 `NO-GO`다. Dashboard는 살아 있고 다음 test/runtime run에도 붙인다.
+- [x] Loop609 full375 rows를 현재 HEAD publication sync로 projection했다. rows `375`, sync changed rows `223`.
+- [x] Publication contract projection audit를 생성했다. `GO / violation 0`.
+- [x] Full375 collateral compare/triage/always-on gate를 재생성했다. raw `139`, adjusted `78`, unreviewed `74`.
+- [x] Residual action queue를 생성했다. rows `102`, reviewed raw residual `28`, unreviewed raw residual `74`.
+- [x] Unreviewed74 blind/source-native batch를 생성했다. selected `74`, missing source/baseline/after `0/0/0`.
+- [x] Dashboard health를 확인했다. `http://127.0.0.1:8080/api/health`, `ok=true / standalone=true / pid=9320`.
+- [x] 다음 test/runtime run dashboard 경로를 확인했다. `run_independent_plan.py` env forwarding, `expert_main.py` standalone forwarding, manifest attach fallback.
+- [ ] Unreviewed74 batch에 blind/source-native verdict를 작성한다.
+- [ ] Residual action queue rows `102`는 lane별 N건 batch로 처리한다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, manifest attach fallback 활성, `--no-dashboard` 금지로 실행한다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 검증 전 완료를 선언하지 않는다.
+- Gate: publication `GO`, full375 collateral `NO-GO / raw 139 / adjusted 78 / unreviewed 74`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop610 이후
 
 - 상태 업데이트: `11660277` publication contract blocker는 verified image/OCR title-only projection으로 닫히지만, 새 runtime replay는 아직 없고 full375 collateral은 계속 `NO-GO`다. Dashboard는 현재 살아 있으며 다음 test/runtime run에 계속 붙인다.

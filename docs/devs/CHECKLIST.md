@@ -1,5 +1,28 @@
 # Development Checklist
 
+## 2026-07-08 Loop611 full375 projection 재회계와 테스트런 dashboard 계약 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Loop609 full375 rows에 Loop610 publication sync를 현재 HEAD 기준으로 다시 투영했다. rows `375`, sync changed rows `223`.
+- [x] Publication contract projection은 `GO / violation 0`이다.
+- [x] Full375 collateral compare는 shared `375/375`, changed `196`, raw regression `139`, runtime counts `missing`으로 `NO-GO`다.
+- [x] Always-on gate는 golden18 `GO`지만 adjusted regression `78`, unreviewed raw regression `74`라 전체 `NO-GO`다.
+- [x] Residual action queue를 생성했다. rows `102`, reviewed raw residual `28`, unreviewed raw residual `74`.
+- [x] Unreviewed74 blind/source-native batch를 생성했다. selected `74`, bucket `safe_loss_resolved_to_null 50 / wrong_work_title_flip 14 / unsafe_promotion_from_hold 10`, missing source/baseline/after `0/0/0`.
+- [x] Dashboard health를 확인했다. `http://127.0.0.1:8080/api/health`, `ok=true`, `standalone=true`, `pid=9320`.
+- [x] `tools/run_independent_plan.py`가 dashboard env forwarding과 manifest attach fallback을 제공함을 확인했다.
+- [x] `expert_main.py`가 standalone dashboard를 `standalone_forward`로 감지하고 manifest dashboard 필드를 기록함을 확인했다.
+- [x] `tools/compare_projection_collateral.py`의 stale `Loop580` Markdown 문구를 generic projection 문구로 수정했다.
+- [x] Focused unittest `39` tests PASS.
+- [x] `.venv312` dashboard standalone unittest `26` tests PASS.
+- [x] Py compile, Loop611 JSON parse, `git diff --check` PASS.
+- [x] Default `python` dashboard standalone unittest는 `fastapi` 미설치로 import blocked이며, `.venv312`에서 재검증했다.
+- [ ] Unreviewed74 batch는 verdict 입력이므로 blind/source-native 판정 전 approval로 쓰지 않는다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, manifest attach fallback 활성, `--no-dashboard` 금지로 실행한다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 검증 전 완료를 선언하지 않는다.
+- Gate: publication contract projection `GO`, full375 collateral `NO-GO / raw 139 / adjusted 78 / unreviewed 74`, residual queue `REVIEW-LOCKED / rows 102`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, runtime `NOT_RUN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_611_REPORT_20260708.md`, `docs/devs/loop611_full375_after_loop610_publication_sync_projection_summary.json`, `docs/devs/loop611_publication_sync_projection_publication_contract_audit.json/.md`, `docs/devs/loop611_full375_after_loop610_publication_sync_projection_collateral_compare.json/.md`, `docs/devs/loop611_full375_after_loop610_publication_sync_projection_collateral_triage.json/.md`, `docs/devs/loop611_always_on_golden18_full375_publication_sync_projection_gate.json/.md`, `docs/devs/loop611_after_publication_sync_projection_residual_action_queue.json/.md`, `docs/devs/loop611_unreviewed74_source_native_review_batch.json/.jsonl/.md`, `tools/compare_projection_collateral.py`, `tests/test_regression_safe_grounding_bootstrap.py`.
+
 ## 2026-07-08 Loop610 verified image/OCR publication projection과 dashboard 계약 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.

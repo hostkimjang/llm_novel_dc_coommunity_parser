@@ -1,0 +1,236 @@
+# Full375 residual gate action queue
+
+- gate: `REVIEW-LOCKED`
+- semantic_quality: `REVIEW-LOCKED`
+- full_scan_approval: `false`
+- raw regression rows: `139`
+- reviewed raw regression rows: `65`
+- reviewed non-regression rows: `13`
+- exclusion candidate rows: `37`
+- residual action queue rows: `102`
+- reviewed raw residual rows: `28`
+- unreviewed raw residual rows: `74`
+
+## Lane Counts
+
+- `alias_relation_native_web_review`: `1`
+- `candidate_set_rebuild_contract`: `7`
+- `image_native_review`: `1`
+- `native_web_or_image_evidence_batch`: `10`
+- `native_web_or_image_human_review`: `1`
+- `policy_or_cross_media_hold_review`: `2`
+- `shared_promotion_gate_contract_repair`: `6`
+- `unreviewed_safe_loss_native_or_contract_review`: `50`
+- `unreviewed_unsafe_promotion_native_review`: `10`
+- `unreviewed_variant_or_canonical_contract_review`: `14`
+
+## Rows
+
+- `11657045` lane=`unreviewed_unsafe_promotion_native_review` status=`null_to_resolved` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`None` after=`금태양과 음침녀`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11657047` lane=`unreviewed_unsafe_promotion_native_review` status=`null_to_resolved` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`None` after=`베지테리언 블러드`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11658626` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`아카데미 선비의 생활일지` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11660241` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`이세계 TRPG 게임마스터` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11660257` lane=`unreviewed_variant_or_canonical_contract_review` status=`resolved_to_different_title` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`암흑가 보스요? 제가요?` after=`그룹을 위해 당연한 일을 했을 뿐인데. 정체불명의 암흑가 보스 니 검은 자본이니. 다들 호들갑이 심하다니까`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11660264` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`빚을 져서라도 세상은 구해야 할 거 아니야` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11660268` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`을 위한 세계는 없다` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11660271` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`월야의 여인들` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11660273` lane=`shared_promotion_gate_contract_repair` status=`resolved_to_different_title` coverage=`reviewed_raw_regression` label=`REPROCESS` before=`마도서를 줍다 마법사가 되다` after=`그리즐리 그랑`
+  - 근거: source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다.
+- `11661856` lane=`native_web_or_image_evidence_batch` status=`resolved_to_null` coverage=`reviewed_raw_regression` label=`INFO_MISSING` before=`너랑은 절! 대! 안 사Kill거니까!` after=`None`
+  - 근거: source-native/native-web 근거가 누락되어 raw regression을 제외할 수 없다.
+- `11661863` lane=`image_native_review` status=`resolved_to_null` coverage=`reviewed_raw_regression` label=`HOLD` before=`저주받은 영애가 되었습니다` after=`None`
+  - 근거: native-web, image, alias, character bridge 검토 전 hard-hold를 유지한다.
+- `11661881` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`여신이 나만 애호함` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11663511` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`부캐 키우는 황태자님` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11663514` lane=`unreviewed_variant_or_canonical_contract_review` status=`resolved_to_different_title` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`마탄 속의 제국` after=`올바른 슬라임 사용법`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11663521` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`초전자포] 시스터즈가 되었다` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11663557` lane=`unreviewed_variant_or_canonical_contract_review` status=`resolved_to_different_title` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`퇴마록` after=`퇴마록 1`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11665110` lane=`native_web_or_image_evidence_batch` status=`resolved_to_null` coverage=`reviewed_raw_regression` label=`INFO_MISSING` before=`낭만적인 초능력을 위하여` after=`None`
+  - 근거: source-native/native-web 근거가 누락되어 raw regression을 제외할 수 없다.
+- `11665121` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`후회 안 하는 프로듀서` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11666699` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`여동생이 맛있다` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11666713` lane=`unreviewed_variant_or_canonical_contract_review` status=`resolved_to_different_title` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`21세기 무림세가` after=`21세기 현대무림 레거시`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11666725` lane=`native_web_or_image_evidence_batch` status=`resolved_to_null` coverage=`reviewed_raw_regression` label=`INFO_MISSING` before=`학대받던 11살 고마가 각성한 이유` after=`None`
+  - 근거: source-native/native-web 근거가 누락되어 raw regression을 제외할 수 없다.
+- `11666741` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`별을 품은 소드마스터` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11668300` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`즉사기 들고 게임 속 으로` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11668324` lane=`unreviewed_unsafe_promotion_native_review` status=`null_to_resolved` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`None` after=`니들 생각 다 들린다`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11668325` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`Fate/stay night` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11669907` lane=`unreviewed_variant_or_canonical_contract_review` status=`resolved_to_different_title` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`마법 좋아좋아좋아` after=`약스포) 마법 좋아좋아좋아`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11669908` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`아카데미에서 살아남기 (완)` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11669913` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`하룬` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11669924` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`용인족의 아카데미 생존기` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11669926` lane=`unreviewed_variant_or_canonical_contract_review` status=`resolved_to_different_title` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`싸울아비 룬` after=`싸울 할 비 문`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11669933` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`회귀수선전` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11671512` lane=`native_web_or_image_evidence_batch` status=`resolved_to_null` coverage=`reviewed_raw_regression` label=`HOLD` before=`삼시세끼, 심아식당` after=`None`
+  - 근거: native-web, image, alias, character bridge 검토 전 hard-hold를 유지한다.
+- `11671514` lane=`candidate_set_rebuild_contract` status=`resolved_to_different_title` coverage=`reviewed_raw_regression` label=`REPROCESS` before=`악신에게 총애받는 자` after=`악신이 총애하는 모험가`
+  - 근거: source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다.
+- `11671538` lane=`native_web_or_image_evidence_batch` status=`null_to_resolved` coverage=`reviewed_raw_regression` label=`INFO_MISSING` before=`None` after=`망한 교단의 성기사`
+  - 근거: source-native/native-web 근거가 누락되어 raw regression을 제외할 수 없다.
+- `11673077` lane=`unreviewed_variant_or_canonical_contract_review` status=`resolved_to_different_title` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`판초우의의 마법사` after=`즉사기 들고 무림에 떨어지다`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11673096` lane=`unreviewed_variant_or_canonical_contract_review` status=`resolved_to_different_title` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`삼국지` after=`이문열 삼국지 1`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11673102` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`갤질하는 천재 의사` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11677919` lane=`unreviewed_unsafe_promotion_native_review` status=`null_to_resolved` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`None` after=`내 누나가 아니었음 좋겠어`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11677926` lane=`unreviewed_variant_or_canonical_contract_review` status=`resolved_to_different_title` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`재앙급 막내 공자의 회귀` after=`무영자`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11677957` lane=`alias_relation_native_web_review` status=`null_to_resolved` coverage=`reviewed_raw_regression` label=`HOLD` before=`None` after=`음악 천재가 불륜을 못 숨김`
+  - 근거: native-web, image, alias, character bridge 검토 전 hard-hold를 유지한다.
+- `11679537` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`죽었다 깨어도 수선` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11679547` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`도굴왕` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11681172` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`헌터갤러리의 국가권력급 기계공주` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11681178` lane=`native_web_or_image_evidence_batch` status=`resolved_to_null` coverage=`reviewed_raw_regression` label=`INFO_MISSING` before=`재벌가 차녀의 2회차 걸그룹` after=`None`
+  - 근거: source-native/native-web 근거가 누락되어 raw regression을 제외할 수 없다.
+- `11681180` lane=`unreviewed_unsafe_promotion_native_review` status=`null_to_resolved` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`None` after=`아카데미 패드립 면역`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11682749` lane=`candidate_set_rebuild_contract` status=`resolved_to_different_title` coverage=`reviewed_raw_regression` label=`REPROCESS` before=`주인공인데 주인공이 아님` after=`묵향 다크레이디`
+  - 근거: source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다.
+- `11682761` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`그레이스 길들이기` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11682767` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`묵향` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11682791` lane=`native_web_or_image_evidence_batch` status=`resolved_to_different_title` coverage=`reviewed_raw_regression` label=`INFO_MISSING` before=`피아조아 <시간을 달리는 소설가>` after=`시간을 달리는 소설가`
+  - 근거: source-native/native-web 근거가 누락되어 raw regression을 제외할 수 없다.
+- `11685987` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`괴담 동아리` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11685994` lane=`native_web_or_image_evidence_batch` status=`resolved_to_null` coverage=`reviewed_raw_regression` label=`INFO_MISSING` before=`무한을 이해한 나는 외신의 사제가 되었습니다` after=`None`
+  - 근거: source-native/native-web 근거가 누락되어 raw regression을 제외할 수 없다.
+- `11685995` lane=`unreviewed_unsafe_promotion_native_review` status=`null_to_resolved` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`None` after=`가챠 중독자의 퓨전펑크 생활`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11687661` lane=`native_web_or_image_evidence_batch` status=`resolved_to_null` coverage=`reviewed_raw_regression` label=`INFO_MISSING` before=`약혼녀가 소천마였다` after=`None`
+  - 근거: source-native/native-web 근거가 누락되어 raw regression을 제외할 수 없다.
+- `11689248` lane=`unreviewed_variant_or_canonical_contract_review` status=`resolved_to_different_title` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`애호받는 뉴비가 되었다` after=`괴탑 속 애호 받는 뉴비 가 되었다`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11690841` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`블루 아카이브` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11692436` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`퍼펙트 메이지` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11694019` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`혼후 순결` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11694035` lane=`candidate_set_rebuild_contract` status=`resolved_to_null` coverage=`reviewed_raw_regression` label=`REPROCESS` before=`시로코의 제멋대로 일상 단편선` after=`None`
+  - 근거: source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다.
+- `11694041` lane=`shared_promotion_gate_contract_repair` status=`resolved_to_null` coverage=`reviewed_raw_regression` label=`REPROCESS` before=`격투 소설 엑스트라가 타격 천재임` after=`None`
+  - 근거: source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다.
+- `11694049` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`아카데미 생존 갤러리` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11694063` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`빙의한 신의 아이, 엘리시아` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11694065` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`아카데미에서 살아남기` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11694067` lane=`native_web_or_image_evidence_batch` status=`null_to_resolved` coverage=`reviewed_raw_regression` label=`INFO_MISSING` before=`None` after=`괴담에 휘말렸다`
+  - 근거: source-native/native-web 근거가 누락되어 raw regression을 제외할 수 없다.
+- `11694068` lane=`unreviewed_variant_or_canonical_contract_review` status=`resolved_to_different_title` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`트와일라잇` after=`트와일라잇 시리즈`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11695599` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`창관전생` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11695639` lane=`unreviewed_unsafe_promotion_native_review` status=`null_to_resolved` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`None` after=`준우승 세 번 했더니 미소녀 됨`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11697234` lane=`unreviewed_unsafe_promotion_native_review` status=`null_to_resolved` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`None` after=`검귀가 환생했더니`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11697242` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`유희왕` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11697256` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`황제의 딸로 환생했다` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11698859` lane=`shared_promotion_gate_contract_repair` status=`resolved_to_null` coverage=`reviewed_raw_regression` label=`REPROCESS` before=`귤부인 대롱대롱` after=`None`
+  - 근거: source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다.
+- `11698865` lane=`candidate_set_rebuild_contract` status=`resolved_to_null` coverage=`reviewed_raw_regression` label=`REPROCESS` before=`나츠키 스바루/작중 행적/5~8장` after=`None`
+  - 근거: source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다.
+- `11698870` lane=`policy_or_cross_media_hold_review` status=`resolved_to_different_title` coverage=`reviewed_raw_regression` label=`HOLD` before=`인간실격` after=`인간실격 히로인들에게 집착당할 예정입니다`
+  - 근거: native-web, image, alias, character bridge 검토 전 hard-hold를 유지한다.
+- `11698871` lane=`shared_promotion_gate_contract_repair` status=`resolved_to_null` coverage=`reviewed_raw_regression` label=`REPROCESS` before=`렘(Re: 제로부터 시작하는 이세계 생활)` after=`None`
+  - 근거: source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다.
+- `11698880` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`가챠 중독자의 퓨전펑크 생활` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11698910` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`판초우의의 마법사` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11700483` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`니들 생각 다 들린다` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11702050` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`폴라리스 랩소디` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11702081` lane=`unreviewed_unsafe_promotion_native_review` status=`null_to_resolved` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`None` after=`게임 속 재해병 이야기`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11702094` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`#더블오` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11703645` lane=`unreviewed_unsafe_promotion_native_review` status=`null_to_resolved` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`None` after=`남매근친물`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11703658` lane=`candidate_set_rebuild_contract` status=`resolved_to_null` coverage=`reviewed_raw_regression` label=`REPROCESS` before=`아프리카 의 독재자가 되었다 .` after=`None`
+  - 근거: source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다.
+- `11705230` lane=`unreviewed_variant_or_canonical_contract_review` status=`resolved_to_different_title` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`월야환담` after=`월야환담 시리즈`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11705231` lane=`candidate_set_rebuild_contract` status=`resolved_to_different_title` coverage=`reviewed_raw_regression` label=`REPROCESS` before=`한국 레전드 프로게이머인 내가 일본판타지 사정에 휘말린 것에 대하여` after=`설지후`
+  - 근거: source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다.
+- `11705251` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`월야환담 창월야` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11705252` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`탐식의 재림` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11706844` lane=`shared_promotion_gate_contract_repair` status=`resolved_to_null` coverage=`reviewed_raw_regression` label=`REPROCESS` before=`범 먹는 괴이 사냥꾼` after=`None`
+  - 근거: source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다.
+- `11706871` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`파우스트` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11708432` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`전지적 독자 시점` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11708443` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`괴담에 떨어져도 출근을 해야 하는구나` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11710020` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`주무시기 전에 무엇을 하셨나요?` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11710021` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`무한의 마법사` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11710036` lane=`candidate_set_rebuild_contract` status=`resolved_to_different_title` coverage=`reviewed_raw_regression` label=`REPROCESS` before=`쳇바퀴의 생쥐 사도가 되었다` after=`변방계에서 회귀자로 살아남기`
+  - 근거: source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다.
+- `11710047` lane=`shared_promotion_gate_contract_repair` status=`resolved_to_null` coverage=`reviewed_raw_regression` label=`REPROCESS` before=`로판 속 미움받는 악역이 되었다` after=`None`
+  - 근거: source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다.
+- `11710049` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`[림월드]변방계에서 회귀자로 살아남기` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11711632` lane=`policy_or_cross_media_hold_review` status=`resolved_to_null` coverage=`reviewed_raw_regression` label=`REJECT` before=`유어 네임(YOUR NAME)` after=`None`
+  - 근거: wrong-work 또는 cross-media policy hold 검토가 필요하다.
+- `11714887` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`도굴왕 1 |` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11716464` lane=`unreviewed_variant_or_canonical_contract_review` status=`resolved_to_different_title` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`슈라라펜란트` after=`페이 포인트`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11716480` lane=`native_web_or_image_human_review` status=`resolved_to_null` coverage=`reviewed_raw_regression` label=`HOLD` before=`여대생 가랑이 사이 무릎 꿇은 엄마들` after=`None`
+  - 근거: native-web, image, alias, character bridge 검토 전 hard-hold를 유지한다.
+- `11718098` lane=`unreviewed_variant_or_canonical_contract_review` status=`resolved_to_different_title` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`마법 좋아좋아좋아` after=`마법 좋아, 마법과 좋아`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11718099` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`빌어먹을 환생` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11718110` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`지구온라인에서 쌀먹합니다` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+- `11718114` lane=`unreviewed_safe_loss_native_or_contract_review` status=`resolved_to_null` coverage=`unreviewed_raw_regression` label=`INFO_MISSING` before=`설정값 딸깍으로 판타지 시스템 정상화` after=`None`
+  - 근거: full375 raw regression이지만 병합 source-native review rows에 post_id가 없다.
+
+## Gate 해석
+
+이 큐는 corrected full375 gate 기준의 남은 raw regression action queue다. 큐가 0이 되고 full375 runtime counts가 확인되기 전까지 full_scan approval은 열리지 않는다.

@@ -1,5 +1,40 @@
 # Verification Results
 
+## 2026-07-08 Loop611 full375 projection 재회계와 테스트런 dashboard 계약
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_611_REPORT_20260708.md`
+  - `docs/devs/loop611_full375_after_loop610_publication_sync_projection_summary.json`
+  - `docs/devs/loop611_publication_sync_projection_publication_contract_audit.json/.md`
+  - `docs/devs/loop611_full375_after_loop610_publication_sync_projection_collateral_compare.json/.md`
+  - `docs/devs/loop611_full375_after_loop610_publication_sync_projection_collateral_triage.json/.md`
+  - `docs/devs/loop611_always_on_golden18_full375_publication_sync_projection_gate.json/.md`
+  - `docs/devs/loop611_after_publication_sync_projection_residual_action_queue.json/.md`
+  - `docs/devs/loop611_unreviewed74_source_native_review_batch.json/.jsonl/.md`
+  - `tools/compare_projection_collateral.py`
+  - `tests/test_regression_safe_grounding_bootstrap.py`
+- 검증:
+  - Projection summary: PASS 산출, row count `375`, changed by sync `223`.
+  - Publication contract audit: PASS 산출, `GO / rows 375 / violation 0`.
+  - Full375 collateral compare: expected `NO-GO`, shared `375/375`, changed `196`, raw regression `139`, runtime counts `missing`.
+  - Collateral triage: PASS 산출, bucket `safe_loss_resolved_to_null 82 / wrong_work_title_flip 33 / unsafe_promotion_from_hold 24`.
+  - Always-on gate: expected `NO-GO`, golden18 `GO`, adjusted regression `78`, unreviewed raw regression `74`.
+  - Residual action queue: PASS 산출, rows `102`, reviewed raw residual `28`, unreviewed raw residual `74`.
+  - Unreviewed74 batch: PASS 산출, selected `74`, missing source/baseline/after `0/0/0`.
+  - Dashboard health: PASS, `http://127.0.0.1:8080/api/health`, `ok=true`, `standalone=true`, `pid=9320`.
+  - Dashboard runner contract: PASS 확인, `run_independent_plan.py` env forwarding과 manifest attach fallback, `expert_main.py` standalone forwarding.
+  - Markdown generation wording: PASS, stale `Loop580` projection 문구 제거.
+  - Focused unittest: PASS, `39` tests.
+  - Dashboard standalone unittest: PASS with `.venv312`, `26` tests.
+  - Dashboard standalone unittest with default `python`: ENV BLOCKED, `fastapi` 미설치.
+  - Py compile: PASS.
+  - Loop611 JSON parse: PASS, `8` files.
+  - `git diff --check`: PASS, CRLF warning only.
+- 결과:
+  - Publication blocker는 projection상 닫힌 상태를 유지하지만 full375 collateral GO는 아니다.
+  - 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, manifest attach fallback 활성, `--no-dashboard` 금지로 실행한다.
+- Gate: publication contract projection `GO`, full375 collateral `NO-GO / raw 139 / adjusted 78 / unreviewed 74`, residual queue `REVIEW-LOCKED`, runtime `NOT_RUN`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop610 verified image/OCR publication projection과 dashboard 계약
 
 - 산출물:

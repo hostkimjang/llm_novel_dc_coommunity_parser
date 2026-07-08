@@ -1,5 +1,24 @@
 # Operation Quality Checklist
 
+## 2026-07-08 Loop611 projection 재회계와 dashboard 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_611_REPORT_20260708.md`.
+  - [x] Publication contract audit 기록 완료: `docs/devs/loop611_publication_sync_projection_publication_contract_audit.json/.md`.
+  - [x] Full375 collateral compare/triage 기록 완료: `docs/devs/loop611_full375_after_loop610_publication_sync_projection_collateral_compare.json/.md`, `docs/devs/loop611_full375_after_loop610_publication_sync_projection_collateral_triage.json/.md`.
+  - [x] Always-on gate 기록 완료: `docs/devs/loop611_always_on_golden18_full375_publication_sync_projection_gate.json/.md`.
+  - [x] Residual action queue 기록 완료: `docs/devs/loop611_after_publication_sync_projection_residual_action_queue.json/.md`.
+  - [x] Unreviewed74 review batch 기록 완료: `docs/devs/loop611_unreviewed74_source_native_review_batch.json/.jsonl/.md`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+  - [x] Publication contract projection은 `GO / violation 0`이다.
+  - [x] Full375 collateral은 raw `139`, adjusted `78`, unreviewed `74`로 `NO-GO`다.
+  - [x] Unreviewed74 batch는 verdict 입력이며 approval 산출물이 아니다.
+  - [x] Dashboard health는 `http://127.0.0.1:8080`에서 `ok=true / standalone=true / pid=9320`로 확인했다.
+  - [x] 다음 test/runtime run은 `--parallel 16`, dashboard 기본 ON, manifest attach fallback 활성, `--no-dashboard` 금지다.
+  - [x] Dashboard는 진행 관측 도구이며 semantic/full_scan approval 근거가 아니다.
+- Gate: publication `GO`, full375 collateral `NO-GO / raw 139 / adjusted 78 / unreviewed 74`, residual queue `REVIEW-LOCKED / rows 102`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop606 source-native INFO_MISSING 7 품질 게이트
 
 - 근거:

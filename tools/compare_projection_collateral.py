@@ -110,7 +110,7 @@ def write_markdown(path: Path, report: dict[str, Any]) -> None:
         "baseline full375와 runtime replay 결과를 비교한 collateral diff다. "
         "runtime 375 완주 여부를 포함하지만 semantic/full_scan approval은 별도 게이트에서 판단한다."
         if runtime_manifest_path
-        else "Loop580 projection 결과를 baseline full375와 비교한 정적 collateral diff다. "
+        else "projection 결과를 baseline full375와 비교한 정적 collateral diff다. "
         "runtime 375 완주가 아니므로 regression 수가 줄어도 full_scan approval은 열리지 않는다."
     )
     runtime_counts = (

@@ -10,7 +10,7 @@ from tools.audit_regression_safe_golden import (
     positive_image_boundary_preserved_unresolved,
 )
 from tools.bootstrap_regression_safe_grounding import bootstrap, compare_collateral
-from tools.compare_projection_collateral import build_compare
+from tools.compare_projection_collateral import build_compare, write_markdown
 
 
 def write_json(path: Path, payload) -> None:
@@ -170,6 +170,30 @@ class RegressionSafeGroundingBootstrapTest(unittest.TestCase):
             self.assertFalse(report["runtime_complete"])
             self.assertIn("collateral_runtime_counts_missing", report["blockers"])
             self.assertIsNone(report["runtime_completed_count"])
+
+    def test_projection_compare_markdown_uses_generic_projection_label(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            baseline = root / "baseline.json"
+            after = root / "after.json"
+            manifest = root / "golden_manifest.json"
+            output_md = root / "compare.md"
+            write_json(baseline, [result_row(1, "same", "A")])
+            write_json(after, [result_row(1, "same", "A")])
+            write_json(manifest, {"rows": []})
+
+            report = build_compare(
+                baseline_path=baseline,
+                after_path=after,
+                golden_manifest=manifest,
+                compare_id="unit_projection",
+                expected_shared_posts=1,
+            )
+            write_markdown(output_md, report)
+
+            text = output_md.read_text(encoding="utf-8")
+            self.assertIn("projection 결과를 baseline full375와 비교한 정적 collateral diff", text)
+            self.assertNotIn("Loop580 projection", text)
 
     def test_projection_compare_runtime_manifest_marks_full_replay_complete(self):
         with tempfile.TemporaryDirectory() as tmp:

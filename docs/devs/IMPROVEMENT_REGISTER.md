@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260708-611 - full375 publication-sync projection refresh and dashboard contract
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | 실제 test run만 `--parallel 16` + dashboard attached로 실행 |
+| Publication contract | GO | projection rows `375`, violation `0` | runtime replay 뒤에도 재감사 |
+| Full375 collateral | NO-GO | shared `375/375`, changed `196`, raw `139`, adjusted `78`, unreviewed `74` | residual rows를 lane별 batch로 처리 |
+| Residual action queue | REVIEW-LOCKED | rows `102`, reviewed raw residual `28`, unreviewed raw residual `74` | 단건 반복 금지, N건 batch 처리 |
+| Unreviewed74 batch | REVIEW-LOCKED | selected `74`, missing source/baseline/after `0/0/0` | blind/source-native verdict 작성 |
+| Dashboard contract | GO_PROGRESS_VIEW_NOT_APPROVAL | health `ok=true`, standalone `true`, runner forwarding과 manifest attach 확인 | 진행 관측용, approval 근거 금지 |
+| Compare Markdown wording | PASS_UNIT | stale `Loop580` 문구 제거 | 이후 projection compare 재사용 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: publication contract projection `GO`, full375 collateral `NO-GO / raw 139 / adjusted 78 / unreviewed 74`, residual queue `REVIEW-LOCKED / rows 102`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-606 - residual16 source-native INFO_MISSING batch closure
 
 | 항목 | 상태 | 근거 | 다음 |
