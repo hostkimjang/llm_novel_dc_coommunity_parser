@@ -1,5 +1,20 @@
 # Development History
 
+## 2026-07-08 - Loop609 full375 runtime replay and dashboard attach
+
+- Loop608 full_scan 경로의 runtime count blocker를 확인하기 위해 full375 runtime replay를 실행했다.
+- 실행은 사용자 지시대로 `--parallel 16`, search 포함 non-light, VLM/OCR ON, `--slang-db off`, web dashboard forwarding ON으로 진행했다.
+- Run `20260708_101603_409997`은 completed/flushed/pending/failed `375/375/0/0`, checkpoint `375`, pending snapshot `0`, requested/effective parallel `16/16`으로 완주했다.
+- Dashboard는 `http://127.0.0.1:8080`에 붙였고 health는 `ok=true / standalone=true / pid=9320`이다.
+- `tools/compare_projection_collateral.py`에 `--runtime-manifest`를 추가해 runtime manifest의 completed/pending/failed count를 collateral compare 산출물에 기록하게 했고, `tests/test_compare_projection_collateral.py`를 추가했다.
+- Full375 collateral compare는 shared `375/375`, changed `195`, raw regression `139`, runtime complete `true`로 `NO-GO`다.
+- Always-on gate는 golden18 `GO`지만 review+contract adjusted regression `78`, unreviewed regression `74`로 overall `NO-GO`다.
+- Runtime health audit은 flush integrity `GO`지만 search evidence `REVIEW / search_degraded_observed`, publication contract `NO-GO / violation 1`을 기록했다. Violation row는 `11660277`이다.
+- Collateral triage는 P0 `139`이며 bucket은 `safe_loss_resolved_to_null 84 / wrong_work_title_flip 31 / unsafe_promotion_from_hold 24`다.
+- `아생갤` 관련 행은 `아카데미 생존 갤러리` 작품 약어/작중 커뮤니티 오마주 가능성을 보존하는 회귀패널로 기록했다. `11694049`는 resolved_to_null regression, `11687618`/`11697231`은 null_to_resolved regression이다.
+- Report는 `docs/devs/loop_reports/LOOP_609_REPORT_20260708.md`다.
+- Gate는 runtime `GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, search `REVIEW`, publication `NO-GO / violation 1`, full375 collateral `NO-GO / raw 139 / adjusted 78 / unreviewed 74`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop608 remaining native hold convergence and full_scan path
 
 - 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.

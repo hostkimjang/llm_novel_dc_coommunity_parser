@@ -1,5 +1,22 @@
 # Development Checklist
 
+## 2026-07-08 Loop609 full375 runtime replay와 dashboard 부착 체크
+
+- [x] Loop608 이후 첫 full375 runtime replay를 `--parallel 16`, search 포함 non-light, VLM/OCR ON, `--slang-db off`, web dashboard forwarding ON으로 실행했다.
+- [x] Dashboard는 `http://127.0.0.1:8080`에 붙였고 health는 `ok=true / standalone=true / pid=9320`이다.
+- [x] Runtime은 run `20260708_101603_409997` 기준 completed/flushed/pending/failed `375/375/0/0`, checkpoint `375`, pending snapshot `0`으로 완주했다.
+- [x] `tools/compare_projection_collateral.py`에 `--runtime-manifest`를 추가해 full375 runtime 완료 수치를 collateral compare에 기록하게 했다.
+- [x] Full375 collateral compare를 재실행했다. shared `375/375`, changed `195`, raw regression `139`, runtime complete `true`.
+- [x] Always-on gate를 재실행했다. golden18 `GO`, collateral runtime complete `true`, review+contract adjusted regression `78`, unreviewed regression `74`, overall `NO-GO`.
+- [x] Runtime health audit에서 search evidence `REVIEW / search_degraded_observed`, publication contract `NO-GO / violation 1`을 확인했다.
+- [x] Collateral triage를 생성했다. P0 `139`, bucket `safe_loss_resolved_to_null 84 / wrong_work_title_flip 31 / unsafe_promotion_from_hold 24`.
+- [x] `아생갤` 관련 row는 작품 약어/작중 커뮤니티 오마주 가능성을 보존하는 회귀패널 확대 대상으로 기록했다.
+- [ ] Full375가 조용하지 않으므로 bounded/full375 동결 해제를 선언하지 않는다.
+- [ ] P0 139는 단건 반복이 아니라 bucket별 blind/source-native review 또는 계약 수렴 batch로 처리한다.
+- [ ] Search degraded `unrecovered 234`와 publication violation `11660277`을 먼저 닫기 전 promotion/full_scan approval을 선언하지 않는다.
+- Gate: runtime `GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, search `REVIEW`, publication `NO-GO / violation 1`, full375 collateral `NO-GO / raw 139 / adjusted 78 / unreviewed 74`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_609_REPORT_20260708.md`, `docs/devs/loop609_runtime_full375_after_loop608_collateral_compare.json/.md`, `docs/devs/loop609_always_on_golden18_full375_runtime_gate.json/.md`, `docs/devs/loop609_full375_runtime_collateral_triage.json/.md`, `docs/devs/loop609_full375_runtime_health_audit.json`.
+
 ## 2026-07-08 Loop608 remaining native hold 수렴과 full_scan 경로 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.

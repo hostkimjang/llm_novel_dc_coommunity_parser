@@ -1,5 +1,20 @@
 # Developer TODO Index
 
+## 2026-07-08 Loop609 이후
+
+- 상태 업데이트: Loop608 full_scan 경로의 runtime count blocker는 실제 full375 replay로 해소했다. 하지만 full375 collateral이 raw regression `139`, review+contract adjusted `78`, unreviewed regression `74`라 GO가 아니다. Search degraded와 publication violation도 남아 goal은 완료가 아니다.
+- [x] Full375 runtime replay를 `--parallel 16`, search 포함 non-light, VLM/OCR ON, `--slang-db off`, web dashboard ON으로 실행했다.
+- [x] Run `20260708_101603_409997`는 completed/flushed/pending/failed `375/375/0/0`으로 완주했다.
+- [x] Dashboard는 `http://127.0.0.1:8080`, health `ok=true / standalone=true / pid=9320`로 확인했다.
+- [x] Runtime manifest를 collateral compare에 반영하도록 `tools/compare_projection_collateral.py`를 보강하고 테스트를 추가했다.
+- [x] Full375 collateral compare/always-on/triage/health audit을 생성했다.
+- [x] `아생갤` 관련 regression은 현실 갤러리 단정이 아니라 작품 약어/작중 커뮤니티 오마주 가능성을 보존하는 패널로 기록했다.
+- [ ] Publication contract violation `11660277`을 먼저 닫는다.
+- [ ] Search degraded `unrecovered 234`를 P0로 유지하고, 복구 전 promotion_blocked는 `search-blind conditional`로 취급한다.
+- [ ] P0 139 regression을 bucket별 batch로 source-native/blind review 또는 계약 수렴한다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 검증 전 완료를 선언하지 않는다.
+- Gate: runtime `GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, search `REVIEW`, publication `NO-GO / violation 1`, full375 collateral `NO-GO / raw 139 / adjusted 78 / unreviewed 74`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop608 이후
 
 - 상태 업데이트: Loop607 residual13은 모두 native-web disambiguation hold 계약으로 닫혔고 ordinary residual은 `0`이다. Publication contract는 `GO`지만 always-on은 runtime counts missing 때문에 `NO-GO`다. Goal은 완료가 아니다.

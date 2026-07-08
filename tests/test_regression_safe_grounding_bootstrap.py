@@ -10,6 +10,7 @@ from tools.audit_regression_safe_golden import (
     positive_image_boundary_preserved_unresolved,
 )
 from tools.bootstrap_regression_safe_grounding import bootstrap, compare_collateral
+from tools.compare_projection_collateral import build_compare
 
 
 def write_json(path: Path, payload) -> None:
@@ -146,6 +147,56 @@ class RegressionSafeGroundingBootstrapTest(unittest.TestCase):
         exempted = [row for row in report["rows"] if row["post_id"] == 2][0]
         self.assertTrue(exempted["exempted_by_expected_answer"])
         self.assertFalse(exempted["is_regression"])
+
+    def test_projection_compare_without_runtime_manifest_keeps_missing_runtime_blocker(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            baseline = root / "baseline.json"
+            after = root / "after.json"
+            manifest = root / "golden_manifest.json"
+            write_json(baseline, [result_row(1, "same", "A"), result_row(2, "hold")])
+            write_json(after, [result_row(1, "same", "A"), result_row(2, "hold")])
+            write_json(manifest, {"rows": []})
+
+            report = build_compare(
+                baseline_path=baseline,
+                after_path=after,
+                golden_manifest=manifest,
+                compare_id="unit_projection",
+                expected_shared_posts=2,
+            )
+
+            self.assertEqual(report["report_type"], "full375_projection_collateral_compare")
+            self.assertFalse(report["runtime_complete"])
+            self.assertIn("collateral_runtime_counts_missing", report["blockers"])
+            self.assertIsNone(report["runtime_completed_count"])
+
+    def test_projection_compare_runtime_manifest_marks_full_replay_complete(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            baseline = root / "baseline.json"
+            after = root / "after.json"
+            manifest = root / "golden_manifest.json"
+            runtime_manifest = root / "after_manifest.json"
+            write_json(baseline, [result_row(1, "same", "A"), result_row(2, "hold")])
+            write_json(after, [result_row(1, "same", "A"), result_row(2, "hold")])
+            write_json(manifest, {"rows": []})
+            write_json(runtime_manifest, {"completed_count": 2, "pending_count": 0, "failed_count": 0})
+
+            report = build_compare(
+                baseline_path=baseline,
+                after_path=after,
+                golden_manifest=manifest,
+                compare_id="unit_runtime",
+                expected_shared_posts=2,
+                runtime_manifest=runtime_manifest,
+            )
+
+            self.assertEqual(report["report_type"], "full375_runtime_collateral_compare")
+            self.assertTrue(report["runtime_complete"])
+            self.assertEqual(report["runtime_collateral_gate"], "GO")
+            self.assertEqual(report["runtime_completed_count"], 2)
+            self.assertEqual(report["blockers"], [])
 
     def test_bootstrap_includes_explicit_extra_golden_rows(self):
         with tempfile.TemporaryDirectory() as tmp:

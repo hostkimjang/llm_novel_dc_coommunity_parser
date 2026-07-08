@@ -1,5 +1,33 @@
 # Verification Results
 
+## 2026-07-08 Loop609 full375 runtime replay와 dashboard 부착
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_609_REPORT_20260708.md`
+  - `docs/devs/loop609_runtime_full375_after_loop608_collateral_compare.json/.md`
+  - `docs/devs/loop609_always_on_golden18_full375_runtime_gate.json/.md`
+  - `docs/devs/loop609_full375_runtime_collateral_triage.json/.md`
+  - `docs/devs/loop609_full375_runtime_health_audit.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop609_full375_after_loop608_search_nonlight_result.json`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop609_full375_after_loop608_search_nonlight_result_manifest.json`
+  - `tools/compare_projection_collateral.py`
+  - `tests/test_compare_projection_collateral.py`
+- 검증:
+  - Runtime replay: PASS, run `20260708_101603_409997`, completed/flushed/pending/failed `375/375/0/0`, requested/effective parallel `16/16`, VLM/OCR ready `true`.
+  - Dashboard: PASS, manifest `dashboard_enabled=true`, URL `http://127.0.0.1:8080`, health `ok=true / standalone=true / pid=9320`.
+  - Run health audit: PASS for flush integrity `GO / clean_completed_source`.
+  - Search audit: REVIEW, `search_degraded_observed`, row status `ok 56 / SEARCH_DEGRADED_RECOVERED 149 / SEARCH_DEGRADED 119`, unrecovered degraded `234`.
+  - Publication contract convergence: NO-GO, violation `1`, row `11660277`, code `verified_image_ocr_work_title_blocked_by_precision_review`.
+  - Full375 collateral compare: NO-GO, shared `375/375`, changed `195`, raw regression `139`, runtime complete `true`.
+  - Always-on gate: expected `NO-GO`, golden18 `GO`, adjusted regression `78`, unreviewed regression `74`.
+  - Collateral triage: NO-GO, P0 `139`, bucket `safe_loss_resolved_to_null 84 / wrong_work_title_flip 31 / unsafe_promotion_from_hold 24`.
+  - Focused unittest: PASS, `37` tests.
+  - Py compile: PASS, compare/triage/always-on/health audit tools.
+- 결과:
+  - Runtime count blocker는 해소됐지만 full375가 시끄러워서 golden18 과적합 위험이 남아 있다.
+  - `아생갤`/`아카데미 생존 갤러리` 관련 regression은 작품 약어/작중 커뮤니티 오마주 가능성을 보존하는 회귀패널로 확대한다.
+- Gate: runtime `GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, search `REVIEW`, publication `NO-GO / violation 1`, full375 collateral `NO-GO / raw 139 / adjusted 78 / unreviewed 74`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop608 remaining native hold 수렴과 full_scan 경로
 
 - 산출물:

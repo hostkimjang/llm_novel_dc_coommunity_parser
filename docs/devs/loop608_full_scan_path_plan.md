@@ -2,6 +2,18 @@
 
 Loop608 기준 residual 회계는 ordinary residual `0`까지 내려왔지만, full375 runtime count가 아직 없어서 goal은 완료가 아니다. 이 문서는 다음 full_scan 성격의 runtime 검증을 어떤 조건에서 실행하고, 어떤 게이트로 판정할지 고정한다.
 
+## Loop609 실행 결과
+
+- Loop609에서 이 경로를 실제 full375 runtime replay로 실행했다.
+- run id: `20260708_101603_409997`
+- dashboard: `http://127.0.0.1:8080`, health `ok=true / standalone=true / pid=9320`
+- runtime counts: completed/flushed/pending/failed `375/375/0/0`, requested/effective parallel `16/16`
+- runtime count blocker는 해소됐지만, post-run gate가 조용하지 않았다.
+- publication contract: `NO-GO / violation 1`, row `11660277`
+- search evidence: `REVIEW / search_degraded_observed`, unrecovered degraded `234`
+- full375 collateral: `NO-GO / raw 139 / adjusted 78 / unreviewed 74`
+- 결론: full_scan approval은 열리지 않는다. 다음 단계는 P0 139 회귀패널 확대와 publication/search blocker 해소다.
+
 ## 현재 상태
 
 - residual accounting: processed/excluded `28`, ordinary residual `0`, validation issue `0`

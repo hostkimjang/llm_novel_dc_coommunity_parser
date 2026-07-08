@@ -2,10 +2,10 @@
   "plan_id": "loop608_full_scan_path_plan",
   "created_at": "2026-07-08",
   "language": "ko",
-  "gate": "READY_PATH_NOT_RUN",
+  "gate": "NO-GO_AFTER_RUNTIME",
   "semantic_quality": "REVIEW-LOCKED",
   "full_scan_approval": false,
-  "runtime_executed": false,
+  "runtime_executed": true,
   "summary": {
     "ordinary_residual_unprocessed_rows": 0,
     "publication_contract_gate": "GO",
@@ -17,8 +17,39 @@
     "full375_raw_collateral_regression_count": 67,
     "full375_review_contract_adjusted_regression_count": 0,
     "always_on_gate": "NO-GO",
-    "remaining_blocker": "collateral_runtime_counts_missing",
+    "remaining_blocker": "full375_collateral_regression_nonzero_after_runtime",
     "goal_status": "ACTIVE / NOT_COMPLETE"
+  },
+  "loop609_execution_result": {
+    "run_id": "20260708_101603_409997",
+    "dashboard_url": "http://127.0.0.1:8080",
+    "dashboard_health": {
+      "ok": true,
+      "standalone": true,
+      "pid": 9320
+    },
+    "runtime_counts": {
+      "completed": 375,
+      "flushed": 375,
+      "pending": 0,
+      "failed": 0,
+      "requested_parallel": 16,
+      "effective_parallel": 16
+    },
+    "run_health_gate": "GO",
+    "search_evidence_gate": "REVIEW",
+    "search_blocker": "search_degraded_observed",
+    "search_unrecovered_degraded_total": 234,
+    "publication_contract_gate": "NO-GO",
+    "publication_contract_violation_count": 1,
+    "publication_contract_violation_post_ids": [
+      11660277
+    ],
+    "full375_collateral_gate": "NO-GO",
+    "full375_raw_collateral_regression_count": 139,
+    "full375_review_contract_adjusted_regression_count": 78,
+    "full375_unreviewed_regression_rows": 74,
+    "full_scan_approval": false
   },
   "dashboard_contract": {
     "required": true,
@@ -86,11 +117,23 @@
     "runtime counts complete",
     "full_scan path gate GO 전까지 full_scan_approval=false 유지"
   ],
+  "post_run_status": [
+    "runtime counts complete 조건은 충족했다.",
+    "publication contract violation 1건과 full375 adjusted regression 78건이 남아 post-run gate는 NO-GO다.",
+    "search degraded unrecovered 234가 남아 promotion_blocked는 search-blind conditional로 취급한다.",
+    "다음 단계는 P0 139 회귀패널 확대와 bucket별 blind/source-native review 또는 계약 수렴이다."
+  ],
   "evidence": {
     "residual_accounting": "docs/devs/loop608_after_remaining_native_hold_residual28_accounting.json",
     "ordinary_residual_dispatch": "docs/devs/loop608_after_remaining_native_hold_ordinary_residual0_dispatch.json",
     "publication_contract_audit": "docs/devs/loop608_remaining_native_hold_publication_contract_audit.json",
     "collateral_compare": "docs/devs/loop608_remaining_native_hold_full375_collateral_compare.json",
-    "always_on_gate": "docs/devs/loop608_always_on_golden18_full375_remaining_native_hold_gate.json"
+    "always_on_gate": "docs/devs/loop608_always_on_golden18_full375_remaining_native_hold_gate.json",
+    "loop609_runtime_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop609_full375_after_loop608_search_nonlight_result.json",
+    "loop609_runtime_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop609_full375_after_loop608_search_nonlight_result_manifest.json",
+    "loop609_runtime_health_audit": "docs/devs/loop609_full375_runtime_health_audit.json",
+    "loop609_collateral_compare": "docs/devs/loop609_runtime_full375_after_loop608_collateral_compare.json",
+    "loop609_always_on_gate": "docs/devs/loop609_always_on_golden18_full375_runtime_gate.json",
+    "loop609_collateral_triage": "docs/devs/loop609_full375_runtime_collateral_triage.json"
   }
 }

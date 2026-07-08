@@ -1,5 +1,15 @@
 # Slang DB Improvement TODO
 
+## 2026-07-08 Loop609 full375 runtime slang/alias 주의사항
+
+- [x] Loop609 full375 runtime replay는 `--slang-db off`로 실행했고, persistent slang DB write-back을 하지 않았다.
+- [x] 테스트런은 `--parallel 16`, search 포함 non-light, web dashboard ON으로 진행했고 run `20260708_101603_409997`은 `375/375` 완주했다.
+- [x] Full375 collateral은 raw regression `139`, adjusted `78`, unreviewed `74`로 `NO-GO`다.
+- [x] `아생갤`/`아카데미 생존 갤러리` 관련 row는 현실 갤러리 단정이 아니라 작품 약어/작중 커뮤니티 오마주 가능성을 보존하는 회귀패널로 기록했다.
+- [ ] `아생갤` 또는 `갤러리` 표면을 slang DB 단일 alias 확장으로 처리하지 않는다. explicit alias relation, official/community evidence, competing body evidence를 함께 확인한다.
+- [ ] Full375 collateral `GO`, search degraded 복구, publication violation 해소 전 alias/slang 품질 승인 또는 hard-hold 완화를 선언하지 않는다.
+- Gate: slang DB write-back 아님, runtime `GO / 375 of 375`, search `REVIEW`, publication `NO-GO / violation 1`, full375 collateral `NO-GO / raw 139 / adjusted 78 / unreviewed 74`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-07 Loop536 residual100 slang/alias 주의사항
 
 - [x] Loop536은 새 slang DB write-back이나 작품 전용 registry를 추가하지 않았다.
