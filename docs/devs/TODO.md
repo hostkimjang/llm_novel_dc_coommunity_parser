@@ -11639,8 +11639,26 @@
 - [x] 미복구 degraded를 닫았다.
   - Loop615 unrecovered degraded `17`
   - Loop616 unrecovered degraded `0`
-- [ ] `search_health MISSING` 3행을 회계 누락으로 수리한다.
+- [x] `search_health MISSING` 3행을 회계 누락으로 수리한다.
   - `11666713`, `11698904`, `11700483`
   - 세 행은 `search_evidence_catalog`가 존재하지만 public `identity.search_health`가 `null`
-- [ ] Full375 재실행은 `search_health MISSING` 3행을 code/contract test로 닫기 전까지 금지한다.
+- [x] Full375 재실행은 `search_health MISSING` 3행을 code/contract test로 닫기 전까지 금지한다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
+## 2026-07-08 Loop617 Follow-up
+
+- [x] 직접 recall 검색의 `search_query_stats/search_health` 회계 누락을 code/contract test로 수리했다.
+  - helper: `_record_context_search_outcome_from_meta()`
+  - test: `test_direct_recall_search_outcome_populates_public_search_health`
+- [x] Loop616 잔여 `search_health MISSING` 3행을 `--parallel 16`, dashboard ON으로 재실행했다.
+  - run `20260708_231154_843681`
+  - completed/flushed/pending/failed `3/3/0/0`
+  - query pre/post `ok=16/16`, degraded `0`, forbidden engine `0`
+- [x] row-level search recovery gate를 닫았다.
+  - gate `GO`
+  - missing search_health `0`
+  - hard blocker `0`
+  - unrecovered degraded `0`
+- [ ] Full375 collateral을 `--parallel 16`, dashboard ON, search 포함 non-light, VLM/OCR ON으로 실행한다.
+- [ ] Full375 결과가 조용하면 수렴 이정표로 기록하고 full_scan 경로를 열며, 시끄러우면 회귀패널을 확대한다.
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.

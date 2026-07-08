@@ -12459,3 +12459,27 @@
   - `MISSING 3`
 - 남은 blocker는 `11666713`, `11698904`, `11700483`이다. 세 행은 `search_evidence_catalog`가 있으나 public `identity.search_health`가 `null`이라 검색 인프라보다 회계 누락 수리 대상이다.
 - Gate는 hard blocker replay runtime `GO`, row-level search recovery `NO-GO / missing health 3`, full375 rerun `BLOCKED_UNTIL_ROW_SEARCH_ACCOUNTING`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`다.
+
+## 2026-07-08 - Loop617 search_health accounting repair
+
+- Goal은 `ACTIVE / NOT_COMPLETE`다. Full375는 아직 실행하지 않았다.
+- `src/llm_batch/agentic_pipeline.py`에 `_record_context_search_outcome_from_meta()`를 추가해 직접 recall 검색 결과가 `ctx.search_results`와 `search_query_stats/search_health`에 함께 남도록 했다.
+- `tests/test_agentic_pipeline_search_evidence.py`에 direct recall 검색 health 계약 테스트를 추가했다.
+- Loop616 잔여 `search_health MISSING` 3행 `11666713/11698904/11700483`을 재실행했다.
+  - run `20260708_231154_843681`
+  - requested/effective parallel `16/3`
+  - completed/flushed/pending/failed `3/3/0/0`
+  - integrity `clean_completed_run`
+  - dashboard final `3/3`
+  - VLM/OCR `READY`
+  - total time `190.6s`
+- Query pre/post audit는 모두 `GO`다.
+  - shard `ok=16/16`
+  - query probe `16/16`
+  - degraded `0`
+  - forbidden engine `0`
+- Row-level search audit는 `GO`다.
+  - hard blocker `0`
+  - missing search_health `0`
+  - unrecovered degraded `0`
+- Gate는 search accounting repair `GO`, Loop617 runtime `GO`, row-level search recovery `GO`, full375 collateral `READY_NOT_RUN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`다.

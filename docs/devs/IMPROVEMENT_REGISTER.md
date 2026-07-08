@@ -18918,3 +18918,15 @@ Gate: runtime production `GO`, original semantic `NO-GO`, contract replay `GO_CO
 | full375 collateral | BLOCKED | row-level search gate가 아직 `NO-GO` | full375 재실행 금지 |
 
 Gate: Loop616 runtime `GO`, search degraded recovery `PARTIAL-GO`, row-level search gate `NO-GO / search_health MISSING 3`, full375 collateral `BLOCKED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## IMP-20260708-617 - direct recall search health accounting
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| 직접 recall 검색 회계 | Patched | `_record_context_search_outcome_from_meta()`가 `mark_executed_query()`와 `record_search_outcome()`을 호출 | 새 직접 검색 경로 추가 시 helper 경유 |
+| 계약 테스트 | PASS | direct recall 검색이 public `search_health`를 생성하는 테스트 추가 | search catalog/health 분리 회귀 방지 |
+| Loop617 runtime | GO | run `20260708_231154_843681`, completed/flushed/pending/failed `3/3/0/0`, dashboard `3/3` | full375 전 롤백 지점 커밋 |
+| row-level search gate | GO | hard blocker `0`, missing search_health `0`, unrecovered degraded `0` | full375 collateral 실행 가능 |
+| full375 collateral | READY_NOT_RUN | 검색 선행 blocker는 닫혔지만 full375는 아직 미실행 | `--parallel 16`, dashboard ON으로 실행 |
+
+Gate: search accounting repair `GO`, Loop617 runtime `GO`, row-level search recovery `GO`, full375 collateral `READY_NOT_RUN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.

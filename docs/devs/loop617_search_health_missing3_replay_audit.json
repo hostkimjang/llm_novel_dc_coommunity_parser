@@ -1,0 +1,78 @@
+{
+  "report_type": "search_recovery_replay_audit",
+  "audit_id": "loop617_search_health_missing3_replay_audit",
+  "generated_at": "2026-07-08T23:16:00",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "gate": "GO",
+  "summary": {
+    "expected_replay_rows": 3,
+    "completed_rows": 3,
+    "status_counts": {
+      "SEARCH_DEGRADED_RECOVERED": 1,
+      "ok": 2
+    },
+    "total_queries": 18,
+    "total_degraded": 3,
+    "total_degraded_zero": 0,
+    "total_degraded_recovered": 2,
+    "total_unrecovered_degraded": 0,
+    "hard_blocker_row_count": 0,
+    "recovered_observation_row_count": 1,
+    "missing_search_health_row_count": 0,
+    "non_ok_row_count": 0,
+    "blockers": []
+  },
+  "recovery_summary": {
+    "run_id": "20260708_231154_843681",
+    "checkpoint_completed_rows": 3,
+    "checkpoint_failed_rows": 0,
+    "recovered_rows": 3,
+    "large_run_complete": true,
+    "integrity_classification": "clean_completed_run"
+  },
+  "rows": [
+    {
+      "post_id": 11666713,
+      "title": "21세기 무림세가 - 웹소설",
+      "search_status": "SEARCH_DEGRADED_RECOVERED",
+      "queries_issued": 9,
+      "degraded": 3,
+      "degraded_zero": 0,
+      "degraded_recovered": 2,
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": "search_degraded_recovered"
+    },
+    {
+      "post_id": 11698904,
+      "title": null,
+      "search_status": "ok",
+      "queries_issued": 3,
+      "degraded": 0,
+      "degraded_zero": 0,
+      "degraded_recovered": 0,
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
+    },
+    {
+      "post_id": 11700483,
+      "title": null,
+      "search_status": "ok",
+      "queries_issued": 6,
+      "degraded": 0,
+      "degraded_zero": 0,
+      "degraded_recovered": 0,
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
+    }
+  ],
+  "approval_boundary": {
+    "partial_replay_is_not_search_recovery": true,
+    "search_health_ok_required_before_full375_rerun": true,
+    "search_degraded_recovered_is_not_hard_blocker_without_unrecovered": true,
+    "dashboard_is_progress_only": true
+  }
+}

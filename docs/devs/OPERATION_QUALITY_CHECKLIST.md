@@ -8116,3 +8116,12 @@
 - [ ] `11666713/11698904/11700483`처럼 `search_evidence_catalog`는 있으나 `search_health`가 없는 행은 검색 인프라 실패보다 회계/직렬화 누락 후보로 먼저 본다.
 - [ ] Loop616은 runtime `GO / 16 of 16`이지만 row-level search gate `NO-GO / search_health MISSING 3`이므로 full375 재실행을 열지 않는다.
 - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `NOT_COMPLETE`를 유지한다.
+
+## 2026-07-08 추가 운영 체크 - Loop617 direct recall search health
+
+- [ ] 직접 recall 검색에서 `ctx.search_results`에 결과를 append하면 반드시 `search_query_stats/search_health`도 함께 기록한다.
+- [ ] 새 직접 검색 경로는 `_record_context_search_outcome_from_meta()` 또는 동등한 계약 helper를 경유한다.
+- [ ] `search_evidence_catalog`가 있는데 public `identity.search_health=null`이면 검색 인프라 실패로 단정하지 말고 회계/직렬화 누락을 먼저 감사한다.
+- [ ] Loop617 row-level search gate `GO`는 full375 실행 선행 blocker 해소만 뜻하며 full375 collateral GO가 아니다.
+- [ ] 다음 full375 collateral은 `--parallel 16`, dashboard ON, search 포함 non-light, VLM/OCR ON으로 실행한다.
+- [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `NOT_COMPLETE`를 유지한다.

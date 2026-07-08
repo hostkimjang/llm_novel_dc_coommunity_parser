@@ -26861,3 +26861,36 @@ The broader unittest result proves the code checkpoint did not break the current
   - `semantic_quality=REVIEW-LOCKED`
   - `full_scan_approval=false`
   - goal `ACTIVE / NOT_COMPLETE`
+
+## 2026-07-08 Loop617 Verification
+
+- Code/contract:
+  - `src\llm_batch\agentic_pipeline.py` direct recall search health accounting -> patched
+  - `tests\test_agentic_pipeline_search_evidence.py` direct recall health contract -> added
+- Runtime replay:
+  - input: `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop617_search_health_missing3_replay_input.jsonl`
+  - result: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop617_search_health_missing3_replay_result.json`
+  - run id: `20260708_231154_843681`
+  - requested/effective parallel: `16/3`
+  - completed/flushed/pending/failed: `3/3/0/0`
+  - dashboard: `http://127.0.0.1:8080`, final `3/3`
+  - integrity: `clean_completed_run`
+- Search health:
+  - pre/post query shard audit: `ok=16/16`, query probe `16/16`, degraded `0`, forbidden engine `0`
+  - Loop617 row audit: `GO`
+  - status counts: `ok 2 / SEARCH_DEGRADED_RECOVERED 1`
+  - remaining blocker: `0`
+  - missing search_health: `0`
+  - unrecovered degraded: `0`
+- Tests:
+  - `tests.test_agentic_pipeline_search_evidence tests.test_search_recovery_contract tests.test_audit_search_recovery_replay_checkpoint` -> PASS / `18` tests
+  - `tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_raw_search_with_meta_call_sites_stay_guarded` -> PASS
+  - `py_compile src\llm_batch\agentic_pipeline.py tests\test_agentic_pipeline_search_evidence.py` -> PASS
+- Gate:
+  - search accounting repair `GO`
+  - Loop617 runtime `GO / 3 of 3`
+  - row-level search recovery `GO / hard blocker 0`
+  - full375 collateral `READY_NOT_RUN`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+  - goal `ACTIVE / NOT_COMPLETE`

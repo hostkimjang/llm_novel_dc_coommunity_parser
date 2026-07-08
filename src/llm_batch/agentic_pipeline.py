@@ -15087,6 +15087,52 @@ class AgenticPipeline:
             health["status"] = "ok"
         return health
 
+    def _record_context_search_outcome_from_meta(
+        self,
+        ctx,
+        query: str,
+        purpose: str,
+        results: Any,
+        meta: Optional[Dict[str, Any]],
+    ) -> None:
+        """Keep ctx search health in sync for direct pipeline recall searches."""
+        if ctx is None:
+            return
+        meta = meta if isinstance(meta, dict) else {}
+        result_list = results if isinstance(results, list) else []
+        try:
+            if hasattr(ctx, "mark_executed_query"):
+                ctx.mark_executed_query(query)
+        except Exception:
+            pass
+        if not hasattr(ctx, "record_search_outcome"):
+            return
+        try:
+            ctx.record_search_outcome(
+                len(result_list),
+                raw_count=self._safe_int(meta.get("raw_total") or len(result_list)),
+                filtered_count=self._safe_int(meta.get("lang_filtered")),
+                degraded=bool(meta.get("degraded")) or bool(meta.get("possible_throttle")),
+                retries=self._safe_int(meta.get("retry_count")),
+                attempts=self._safe_int(meta.get("attempts")) or 1,
+                from_cache=bool(meta.get("from_cache")),
+                purpose=str(purpose or ""),
+                headless_used=bool(meta.get("headless_used")),
+                headless_reason=str(meta.get("headless_reason") or ""),
+                headless_count=self._safe_int(meta.get("headless_count")),
+                headless_blocked=bool(meta.get("headless_blocked")),
+                fallback_recovered=bool(meta.get("fallback_recovered")),
+                degraded_recovered=bool(meta.get("degraded_recovered")),
+                degraded_zero_suppressed=bool(meta.get("suppressed_degraded_zero")),
+                direct_search_used=bool(meta.get("direct_search_used")),
+                direct_search_reason=str(meta.get("direct_search_reason") or ""),
+                direct_search_count=self._safe_int(meta.get("direct_search_count")),
+                direct_search_providers=list(meta.get("direct_search_providers") or []),
+                direct_search_errors=list(meta.get("direct_search_errors") or []),
+            )
+        except Exception:
+            pass
+
     def _build_image_evidence_catalog(self, ctx) -> Optional[List[Dict[str, Any]]]:
         """Persist a compact public preview of VLM/OCR evidence used by the run."""
 
@@ -17634,6 +17680,13 @@ class AgenticPipeline:
                             query,
                             purpose="ocr_phrase_official_url_recall",
                         )
+                        self._record_context_search_outcome_from_meta(
+                            ctx,
+                            query,
+                            "ocr_phrase_official_url_recall",
+                            results,
+                            _meta,
+                        )
                     except Exception as exc:
                         print(
                             f"[{_ts()}] ⚠️ OCR phrase official recall search 실패: "
@@ -17697,6 +17750,13 @@ class AgenticPipeline:
                         results, _meta = self._search_with_meta(
                             query,
                             purpose="title_alias_platform_recall",
+                        )
+                        self._record_context_search_outcome_from_meta(
+                            ctx,
+                            query,
+                            "title_alias_platform_recall",
+                            results,
+                            _meta,
                         )
                     except Exception as exc:
                         print(
@@ -51118,6 +51178,13 @@ OUTPUT JSON:
 
             try:
                 results, _meta = self._search_with_meta(query, purpose=purpose)
+                self._record_context_search_outcome_from_meta(
+                    ctx,
+                    query,
+                    purpose,
+                    results,
+                    _meta,
+                )
             except Exception as exc:
                 print(
                     f"[{_ts()}] ⚠️ corrected title URL recovery search 실패: "

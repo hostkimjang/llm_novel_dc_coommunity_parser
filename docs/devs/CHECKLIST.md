@@ -14082,9 +14082,28 @@
   - post `docs/devs/loop616_post_replay_query_search_shard_audit.json`
   - 둘 다 query probe `16/16`, degraded `0`, forbidden engine `0`
 - [x] row-level unrecovered degraded가 `0`임을 확인했다.
-- [ ] row-level search recovery gate는 아직 닫지 않는다.
+- [x] Loop616 당시 row-level search recovery gate를 닫지 않았다.
   - gate `NO-GO`
   - `search_health MISSING` 3행: `11666713`, `11698904`, `11700483`
-- [ ] `search_evidence_catalog` 존재 + `identity.search_health=null` 회계 누락을 코드/계약 테스트로 닫는다.
-- [ ] Full375 collateral gate는 아직 열지 않는다.
+- [x] `search_evidence_catalog` 존재 + `identity.search_health=null` 회계 누락을 코드/계약 테스트로 닫는다.
+- [x] Full375 collateral gate는 아직 열지 않는다.
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
+## 2026-07-08 Loop617 search_health accounting repair 체크
+
+- [x] 직접 recall 검색이 `ctx.search_results`와 `search_query_stats`를 함께 갱신하도록 helper를 추가했다.
+  - `_record_context_search_outcome_from_meta()`
+- [x] OCR phrase recall, title alias platform recall, corrected title URL recovery 경로에 helper를 배선했다.
+- [x] 계약 테스트를 추가했다.
+  - `tests/test_agentic_pipeline_search_evidence.py::test_direct_recall_search_outcome_populates_public_search_health`
+- [x] Loop617 runtime을 `--parallel 16`, dashboard ON, search 포함 non-light, VLM/OCR ON으로 완주했다.
+  - run `20260708_231154_843681`
+  - requested/effective parallel `16/3`
+  - completed/flushed/pending/failed `3/3/0/0`
+  - dashboard final `3/3`
+- [x] row-level search audit가 `GO`임을 확인했다.
+  - hard blocker `0`
+  - missing search_health `0`
+  - unrecovered degraded `0`
+- [ ] Full375 collateral은 아직 실행하지 않았다. 다음 실행 전 현재 코드/문서를 커밋한다.
+- [ ] Full375 결과가 `GO`가 될 때까지 `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `NOT_COMPLETE`를 유지한다.
