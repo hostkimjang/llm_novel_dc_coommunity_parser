@@ -1,5 +1,22 @@
 # Development Checklist
 
+## 2026-07-08 Loop607 no-publish guard batch와 residual13 dispatch 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Residual15 중 `no_publish_multiwork_guard_review` 2건을 N건 batch로 처리했다.
+- [x] `tools/build_no_publish_guard_contract_plan.py`와 `tests/test_build_no_publish_guard_contract_plan.py`를 추가했다.
+- [x] No-publish contract plan은 rows `2`, action `no_publish_intent_guard_contract_case 2`, validation issue `0`, runtime allowed `0`이다.
+- [x] Final projection application은 full375 rows `375`, applied no-publish hold `2`, validation issue `0`이다.
+- [x] Combined release audit은 rows `14`, violation `0`, pending `0`, release candidate `3`, no-release `11`이다.
+- [x] Residual accounting은 source residual `28`, contract processed `14`, source-native processed `1`, ordinary residual `13`이다.
+- [x] Residual13 dispatch는 `native_web_image_evidence_review 11 / canonical_policy_cleanup_review 2`다.
+- [x] Dashboard health는 `http://127.0.0.1:8080`에서 `ok=true / standalone=true / pid=9320`로 확인했다.
+- [ ] Residual13 중 `native_web_image_evidence_review 11`과 `canonical_policy_cleanup_review 2`를 다음 N건 배치로 처리한다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, manifest attach fallback 활성, `--no-dashboard` 금지로 실행한다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: no-publish plan/application `REVIEW-LOCKED`, release audit `REVIEW-LOCKED / violation 0`, residual accounting `REVIEW-LOCKED / ordinary 13`, full375 collateral `NO-GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_607_REPORT_20260708.md`, `docs/devs/loop607_residual15_no_publish_guard_contract_plan.json`, `docs/devs/loop607_residual15_no_publish_guard_projection_application.json`, `docs/devs/loop607_residual28_shared_gate_candidate_set_no_publish_release_gate_audit.json`, `docs/devs/loop607_after_no_publish_residual28_accounting.json`, `docs/devs/loop607_after_no_publish_ordinary_residual13_dispatch.json`.
+
 ## 2026-07-08 Loop606 source-native INFO_MISSING 7 판정과 residual15 dispatch 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
@@ -12,7 +29,8 @@
 - [x] Residual accounting은 source residual `28`, contract processed `12`, source-native processed `1`, ordinary residual `15`다.
 - [x] Residual15 dispatch는 `native_web_image_evidence_review 11 / no_publish_multiwork_guard_review 2 / canonical_policy_cleanup_review 2`이며 `source_native_or_blind_review 0`이다.
 - [x] Dashboard health는 `http://127.0.0.1:8080`에서 `ok=true / standalone=true / pid=9320`로 확인했다.
-- [ ] Residual15 중 no-publish policy `2`건 또는 canonical/alias `2`건을 다음 N건 배치로 처리한다.
+- [x] Residual15 중 no-publish policy `2`건은 Loop607에서 batch 처리했다.
+- [ ] Residual13 중 canonical/alias `2`건 또는 native-web/image `11`건을 다음 N건 배치로 처리한다.
 - [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, manifest attach fallback 활성, `--no-dashboard` 금지로 실행한다.
 - [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
 - Gate: source-native verdict `REVIEW-LOCKED`, residual accounting `REVIEW-LOCKED / ordinary 15`, residual15 dispatch `REVIEW-LOCKED`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.

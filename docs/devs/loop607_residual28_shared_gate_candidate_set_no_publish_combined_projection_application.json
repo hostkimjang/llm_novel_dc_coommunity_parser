@@ -1,0 +1,146 @@
+{
+  "report_type": "post_verdict_projection_publish_contract_application",
+  "projection_id": "loop607_residual28_shared_gate_candidate_set_no_publish_combined_projection_application",
+  "generated_at": "2026-07-08T09:38:37",
+  "source_contract_plan": "loop607_residual28_shared_gate_candidate_set_no_publish_combined_contract_plan",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "projection_rows": 4,
+    "contract_plan_rows": 14,
+    "publish_contract_plan_rows": 3,
+    "applied_publish_contract_rows": 3,
+    "restore_plan_rows": 3,
+    "applied_restore_rows": 3,
+    "applied_expected_audit_update_rows": 0,
+    "applied_canonical_cleanup_rows": 0,
+    "applied_candidate_set_restore_rows": 0,
+    "validation_issue_count": 0,
+    "skipped_contract_action_counts": {
+      "candidate_scrub_no_publish_contract_case": 1
+    },
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path",
+    "applied_hold_contract_rows": 10,
+    "applied_non_publish_contract_rows": 10,
+    "addition_projection_id": "loop607_residual15_no_publish_guard_projection_application",
+    "addition_applied_rows": 2
+  },
+  "validation_issues": [],
+  "applied_rows": [
+    {
+      "post_id": 11694041,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "격투 소설 엑스트라가 타격 천재임",
+      "target_url": "https://novelpia.com/novel/427330",
+      "superseded_projection_candidate": {
+        "official_title": "격투 소설 엑스트라가 타격 천재임",
+        "official_url": "https://novelpia.com/novel/427330",
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11698859,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "귤부인 대롱대롱",
+      "target_url": null,
+      "superseded_projection_candidate": {
+        "official_title": "귤부인 대롱대롱",
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11706844,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "호랑이 사냥꾼",
+      "target_url": "https://m.munpia.com/novel/detail/522066",
+      "superseded_projection_candidate": {
+        "official_title": "호랑이 사냥꾼",
+        "official_url": "https://m.munpia.com/novel/detail/522066",
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11671514,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "악신의 총애를 받는 성직자가 되었다",
+      "preserved_candidate_url": "https://ridibooks.com/books/3228117968",
+      "status": "preserved_no_release"
+    },
+    {
+      "post_id": 11682749,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "묵향",
+      "preserved_candidate_url": "https://series.naver.com/novel/detail.series?productNo=1820151",
+      "status": "preserved_no_release"
+    },
+    {
+      "post_id": 11694035,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "아카데미 생존 갤러리",
+      "preserved_candidate_url": null,
+      "status": "preserved_no_release"
+    },
+    {
+      "post_id": 11698865,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "리제로x자살헌터] 헌터 나츠키",
+      "preserved_candidate_url": "https://novelpia.com/novel/134771",
+      "status": "preserved_no_release"
+    },
+    {
+      "post_id": 11703658,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "novel.munpia.com›neSrl",
+      "preserved_candidate_url": "https://novel.munpia.com/528703",
+      "status": "preserved_no_release"
+    },
+    {
+      "post_id": 11705231,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "탐식의 재림",
+      "preserved_candidate_url": "https://ridibooks.com/books/2008016338?srsltid=AfmBOor0D2eQqJHQhQ5MP_YVO9iFbWmBP6Mb_pxl60TSAUvek1EgsqiC",
+      "status": "preserved_no_release"
+    },
+    {
+      "post_id": 11708453,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "이세계 검은 머리 외국인",
+      "preserved_candidate_url": "https://novelpia.com/novel/1082",
+      "status": "preserved_no_release"
+    },
+    {
+      "post_id": 11710036,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "preserved_candidate_url": "https://novelpia.com/novel/382324",
+      "status": "preserved_no_release"
+    },
+    {
+      "post_id": 11698870,
+      "contract_action": "no_publish_intent_guard_contract_case",
+      "preserved_candidate_title": "인간실격 히로인들을 수집해버렸다",
+      "preserved_candidate_url": "https://novelpia.com/novel/424663",
+      "status": "preserved_no_release"
+    },
+    {
+      "post_id": 11711632,
+      "contract_action": "no_publish_intent_guard_contract_case",
+      "preserved_candidate_title": "너의 이름은.",
+      "preserved_candidate_url": null,
+      "status": "preserved_no_release"
+    }
+  ],
+  "approval_boundary": {
+    "projection_application_is_not_runtime_replay": true,
+    "release_candidate_is_not_full_scan_approval": true,
+    "runtime_replay_before_full375_collateral_forbidden": true,
+    "full375_collateral_remains_no_go": true
+  }
+}

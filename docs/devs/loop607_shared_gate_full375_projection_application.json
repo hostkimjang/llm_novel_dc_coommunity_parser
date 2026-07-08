@@ -1,0 +1,72 @@
+{
+  "report_type": "post_verdict_projection_publish_contract_application",
+  "projection_id": "loop607_shared_gate_full375_projection_application",
+  "generated_at": "2026-07-08T09:42:46",
+  "source_contract_plan": "loop604_residual28_shared_gate_contract_plan",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "projection_rows": 375,
+    "contract_plan_rows": 4,
+    "publish_contract_plan_rows": 3,
+    "applied_publish_contract_rows": 3,
+    "restore_plan_rows": 3,
+    "applied_restore_rows": 3,
+    "applied_expected_audit_update_rows": 0,
+    "applied_canonical_cleanup_rows": 0,
+    "applied_candidate_set_restore_rows": 0,
+    "validation_issue_count": 0,
+    "skipped_contract_action_counts": {
+      "candidate_scrub_no_publish_contract_case": 1
+    },
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "applied_rows": [
+    {
+      "post_id": 11694041,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "격투 소설 엑스트라가 타격 천재임",
+      "target_url": "https://novelpia.com/novel/427330",
+      "superseded_projection_candidate": {
+        "official_title": "격투 소설 엑스트라가 타격 천재임",
+        "official_url": "https://novelpia.com/novel/427330",
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11698859,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "귤부인 대롱대롱",
+      "target_url": null,
+      "superseded_projection_candidate": {
+        "official_title": "귤부인 대롱대롱",
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11706844,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "호랑이 사냥꾼",
+      "target_url": "https://m.munpia.com/novel/detail/522066",
+      "superseded_projection_candidate": {
+        "official_title": "호랑이 사냥꾼",
+        "official_url": "https://m.munpia.com/novel/detail/522066",
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    }
+  ],
+  "approval_boundary": {
+    "projection_application_is_not_runtime_replay": true,
+    "release_candidate_is_not_full_scan_approval": true,
+    "runtime_replay_before_full375_collateral_forbidden": true,
+    "full375_collateral_remains_no_go": true
+  }
+}

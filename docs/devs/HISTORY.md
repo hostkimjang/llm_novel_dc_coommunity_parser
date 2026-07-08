@@ -1,5 +1,19 @@
 # Development History
 
+## 2026-07-08 - Loop607 no-publish guard batch and residual13 dispatch
+
+- 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+- Loop606 residual15 중 `no_publish_multiwork_guard_review` 2건을 shared promotion gate no-publish 계약으로 처리했다.
+- `tools/build_no_publish_guard_contract_plan.py`와 계약 테스트를 추가했다.
+- No-publish plan은 rows `2`, action `no_publish_intent_guard_contract_case 2`, validation issue `0`, runtime allowed `0`이다.
+- Final full375 projection은 rows `375`, validation issue `0`으로 유지했다.
+- Combined release audit은 rows `14`, violation `0`, pending `0`, release candidate `3`, no-release `11`이다.
+- Residual accounting은 source residual `28`, contract processed `14`, source-native processed `1`, ordinary residual `13`이다.
+- Residual13 dispatch는 `native_web_image_evidence_review 11 / canonical_policy_cleanup_review 2`다.
+- Dashboard는 `http://127.0.0.1:8080`에서 `ok=true / standalone=true / pid=9320`로 확인했고, 다음 test/runtime run은 `--parallel 16`, dashboard 기본 ON, manifest attach fallback 활성, `--no-dashboard` 금지다.
+- Report는 `docs/devs/loop_reports/LOOP_607_REPORT_20260708.md`다.
+- Gate는 no-publish plan/application `REVIEW-LOCKED`, residual13 dispatch `REVIEW-LOCKED`, full375 collateral `NO-GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop602 corrected full375 unreviewed13 review batch
 
 - 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.

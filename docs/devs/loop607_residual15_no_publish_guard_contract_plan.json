@@ -1,0 +1,239 @@
+{
+  "report_type": "no_publish_guard_contract_plan",
+  "plan_id": "loop607_residual15_no_publish_guard_contract_plan",
+  "generated_at": "2026-07-08T09:38:09",
+  "source_batch": "loop606_after_source_native_info_missing7_ordinary_residual15_dispatch",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "source_batch_rows": 15,
+    "no_publish_contract_plan_rows": 2,
+    "validation_issue_count": 0,
+    "contract_action_counts": {
+      "no_publish_intent_guard_contract_case": 2
+    },
+    "promotion_decision_status_counts": {
+      "candidate_only": 2
+    },
+    "label_counts": {
+      "HOLD": 1,
+      "REJECT": 1
+    },
+    "triage_bucket_counts": {
+      "safe_loss_resolved_to_null": 2
+    },
+    "no_publish_contract_rows": 2,
+    "release_candidate_not_approval_rows": 0,
+    "publish_allowed_rows": 0,
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path"
+  },
+  "execution_contract": {
+    "runtime_replay_allowed": false,
+    "requested_parallel": 16,
+    "dashboard_contract": {
+      "dashboard_policy": "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+      "dashboard_url": "http://127.0.0.1:8080",
+      "forbidden_flags": [
+        "--no-dashboard"
+      ]
+    }
+  },
+  "validation_issues": [],
+  "rows": [
+    {
+      "post_id": 11698870,
+      "contract_origin": "ordinary_residual_no_publish_guard_dispatch",
+      "contract_batch_lane": "NP_no_publish_guard_contract",
+      "source_dispatch_lane": "no_publish_multiwork_guard_review",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "non_webnovel_classic_policy_hold",
+      "evidence_grade": "Medium",
+      "target_title": "인간실격",
+      "target_url": null,
+      "official_support_refs": [],
+      "official_support_ref_count": 0,
+      "actions": [
+        "wrong_work_or_cross_media_policy_hold_required",
+        "blind_or_policy_judge_required"
+      ],
+      "contract_action": "no_publish_intent_guard_contract_case",
+      "promotion_decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": true,
+        "reason_codes": [
+          "row_discussion_missing",
+          "nonwork",
+          "scope_platform_meta_nonwork",
+          "scope_not_current_work",
+          "no_publish_policy_guard",
+          "public_identity_scrubbed_before_policy_contract",
+          "wrong_work_or_cross_media_policy_hold_required",
+          "blind_or_policy_judge_required",
+          "non_webnovel_or_classic_policy_hold",
+          "no_publish_guard_source_native_contract_case"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11698870,
+        "candidate_title": "인간실격",
+        "candidate_url": "",
+        "source": "no_publish_guard_contract_plan",
+        "official_title_exists": false,
+        "row_discusses_work_as_work": false,
+        "title_resolution_state": "nonwork",
+        "work_resolution": "nonwork",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "platform_meta_nonwork",
+          "confidence": "medium",
+          "direct_bridge_sources": [
+            "ordinary_residual_dispatch",
+            "no_publish_multiwork_guard_review",
+            "no_publish_intent_guard_contract_case"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "no_publish_policy_guard",
+            "public_identity_scrubbed_before_policy_contract",
+            "wrong_work_or_cross_media_policy_hold_required",
+            "blind_or_policy_judge_required",
+            "non_webnovel_or_classic_policy_hold"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "no_publish_source_native_contract",
+          "strength": "medium",
+          "source_path_or_snippet": "원문은 일본의 유명작 `인간실격`과 작가의 자살 맥락을 말해 C1 표면 자체는 맞다. 그러나 웹소설 작품 publish 범위와 고전/일반문학 정책 경계가 남아 있어 policy hold로 유지한다.",
+          "supports_publish": false,
+          "reason_code": "no_publish_guard_source_native_contract_case"
+        }
+      ],
+      "release_candidate_not_approval": false,
+      "no_publish_contract_required_before_publish": true,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": true,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "원문은 일본의 유명작 `인간실격`과 작가의 자살 맥락을 말해 C1 표면 자체는 맞다. 그러나 웹소설 작품 publish 범위와 고전/일반문학 정책 경계가 남아 있어 policy hold로 유지한다.",
+      "evidence_refs": [
+        "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json#post_id=11698870",
+        "docs/devs/loop590_residual_p0_policy_hold_contract_plan.md#post_id=11698870"
+      ]
+    },
+    {
+      "post_id": 11711632,
+      "contract_origin": "ordinary_residual_no_publish_guard_dispatch",
+      "contract_batch_lane": "NP_no_publish_guard_contract",
+      "source_dispatch_lane": "no_publish_multiwork_guard_review",
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REJECT",
+      "source_native_verdict": "codex_native_web_judge_reject_wrong_work",
+      "evidence_grade": "Strong",
+      "target_title": "너의 이름은.",
+      "target_url": null,
+      "official_support_refs": [],
+      "official_support_ref_count": 0,
+      "actions": [
+        "wrong_work_or_cross_media_policy_hold_required",
+        "blind_or_policy_judge_required"
+      ],
+      "contract_action": "no_publish_intent_guard_contract_case",
+      "promotion_decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": true,
+        "reason_codes": [
+          "row_discussion_missing",
+          "nonwork",
+          "scope_platform_meta_nonwork",
+          "scope_not_current_work",
+          "no_publish_policy_guard",
+          "public_identity_scrubbed_before_policy_contract",
+          "wrong_work_or_cross_media_policy_hold_required",
+          "blind_or_policy_judge_required",
+          "cross_media_wrong_work_policy_hold",
+          "no_publish_guard_source_native_contract_case"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11711632,
+        "candidate_title": "너의 이름은.",
+        "candidate_url": "",
+        "source": "no_publish_guard_contract_plan",
+        "official_title_exists": false,
+        "row_discusses_work_as_work": false,
+        "title_resolution_state": "nonwork",
+        "work_resolution": "nonwork",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "platform_meta_nonwork",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "ordinary_residual_dispatch",
+            "no_publish_multiwork_guard_review",
+            "no_publish_intent_guard_contract_case"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "no_publish_policy_guard",
+            "public_identity_scrubbed_before_policy_contract",
+            "wrong_work_or_cross_media_policy_hold_required",
+            "blind_or_policy_judge_required",
+            "cross_media_wrong_work_policy_hold"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "no_publish_source_native_contract",
+          "strength": "strong",
+          "source_path_or_snippet": "OCR과 시각 단서는 신카이 마코토의 2016년 애니메이션 영화 '너의 이름은.' 포스터와 개봉일 정보를 가리킵니다. 파이프라인 URL은 리디의 십이월사일 로맨스 웹소설 '유어 네임(YOUR NAME)' 계열로, 제목이 유사할 뿐 다른 작품입니다. 유명 애니 OCR 단서를 웹소설 상세로 흡수한 교차매체 오매칭이므로 현재 resolved title은 reject해야 합니다.",
+          "supports_publish": false,
+          "reason_code": "no_publish_guard_source_native_contract_case"
+        }
+      ],
+      "release_candidate_not_approval": false,
+      "no_publish_contract_required_before_publish": true,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": true,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "OCR과 시각 단서는 신카이 마코토의 2016년 애니메이션 영화 '너의 이름은.' 포스터와 개봉일 정보를 가리킵니다. 파이프라인 URL은 리디의 십이월사일 로맨스 웹소설 '유어 네임(YOUR NAME)' 계열로, 제목이 유사할 뿐 다른 작품입니다. 유명 애니 OCR 단서를 웹소설 상세로 흡수한 교차매체 오매칭이므로 현재 resolved title은 reject해야 합니다.",
+      "evidence_refs": [
+        "out/codex_native_web_judge_20260620_165159_711176_completed779/verdicts#post_id=11711632",
+        "https://www.kiminona.com/",
+        "https://ridibooks.com/books/3885045016",
+        "https://ko.wikipedia.org/wiki/%EB%84%88%EC%9D%98_%EC%9D%B4%EB%A6%84%EC%9D%80.",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11711632",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11711632",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11711632"
+      ]
+    }
+  ],
+  "approval_boundary": {
+    "no_publish_contract_plan_is_not_approval": true,
+    "no_publish_rows_hold_public_identity": true,
+    "runtime_replay_allowed": false,
+    "full375_collateral_remains_no_go": true,
+    "full_scan_approval": false
+  }
+}

@@ -1,5 +1,31 @@
 # Verification Results
 
+## 2026-07-08 Loop607 no-publish guard batch와 residual13 dispatch
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_607_REPORT_20260708.md`
+  - `tools/build_no_publish_guard_contract_plan.py`
+  - `tests/test_build_no_publish_guard_contract_plan.py`
+  - `docs/devs/loop607_residual15_no_publish_guard_contract_plan.json/.md`
+  - `docs/devs/loop607_residual15_no_publish_guard_projection_application.json/.md`
+  - `docs/devs/loop607_residual28_shared_gate_candidate_set_no_publish_release_gate_audit.json/.md`
+  - `docs/devs/loop607_after_no_publish_residual28_accounting.json/.md`
+  - `docs/devs/loop607_after_no_publish_ordinary_residual13_dispatch.json/.md`
+- 검증:
+  - Focused unittest: PASS, `33` tests.
+  - Py compile: PASS, no-publish/apply/audit/reaccount tools.
+  - No-publish plan: PASS, rows `2`, validation issue `0`, runtime allowed `0`.
+  - Full375 projection chain: PASS, final projection rows `375`, validation issue `0`.
+  - Combined release audit: PASS, rows `14`, violation `0`, pending `0`, release candidate `3`, no-release `11`.
+  - Residual accounting: PASS, source residual `28`, contract processed `14`, source-native processed `1`, ordinary residual `13`.
+  - Residual dispatch: PASS, `native_web_image_evidence_review 11 / canonical_policy_cleanup_review 2`.
+  - Dashboard health/status: PASS, health `ok=true / standalone=true / pid=9320`, latest status Loop564 `30/30`, `parallel_count=16`, `batch_running=false`.
+- 결과:
+  - No-publish 2건은 public identity 승격 없이 ledger 보존/hold로 닫혔다.
+  - Residual은 15에서 13으로 줄었지만 full375 collateral이 `GO`가 아니므로 approval이 아니다.
+  - 다음 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, manifest attach fallback 활성, `--no-dashboard` 금지로 실행한다.
+- Gate: no-publish plan/application `REVIEW-LOCKED`, release audit `REVIEW-LOCKED / violation 0`, residual13 dispatch `REVIEW-LOCKED`, full375 collateral `NO-GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop602 corrected full375 unreviewed13 batch
 
 - 산출물:
