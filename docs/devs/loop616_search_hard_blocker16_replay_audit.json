@@ -1,0 +1,238 @@
+{
+  "report_type": "search_recovery_replay_audit",
+  "audit_id": "loop616_search_hard_blocker16_replay_audit",
+  "generated_at": "2026-07-08T23:04:11",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "gate": "NO-GO",
+  "summary": {
+    "expected_replay_rows": 16,
+    "completed_rows": 16,
+    "status_counts": {
+      "MISSING": 3,
+      "SEARCH_DEGRADED_RECOVERED": 4,
+      "ok": 9
+    },
+    "total_queries": 141,
+    "total_degraded": 12,
+    "total_degraded_zero": 0,
+    "total_degraded_recovered": 8,
+    "total_unrecovered_degraded": 0,
+    "hard_blocker_row_count": 3,
+    "recovered_observation_row_count": 4,
+    "missing_search_health_row_count": 3,
+    "non_ok_row_count": 3,
+    "blockers": [
+      "row_search_hard_blocker_observed",
+      "search_health_missing_observed"
+    ]
+  },
+  "recovery_summary": {
+    "run_id": "20260708_223012_369319",
+    "checkpoint_completed_rows": 16,
+    "checkpoint_failed_rows": 0,
+    "recovered_rows": 16,
+    "large_run_complete": true,
+    "integrity_classification": "clean_completed_run"
+  },
+  "rows": [
+    {
+      "post_id": 11657045,
+      "title": null,
+      "search_status": "ok",
+      "queries_issued": 18,
+      "degraded": 0,
+      "degraded_zero": 0,
+      "degraded_recovered": 0,
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
+    },
+    {
+      "post_id": 11658637,
+      "title": "재벌집 막내아들",
+      "search_status": "ok",
+      "queries_issued": 19,
+      "degraded": 0,
+      "degraded_zero": 0,
+      "degraded_recovered": 0,
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
+    },
+    {
+      "post_id": 11660241,
+      "title": "이세계 TRPG 게임마스터",
+      "search_status": "ok",
+      "queries_issued": 8,
+      "degraded": 0,
+      "degraded_zero": 0,
+      "degraded_recovered": 0,
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
+    },
+    {
+      "post_id": 11660257,
+      "title": "암흑가 보스요? 제가요?",
+      "search_status": "SEARCH_DEGRADED_RECOVERED",
+      "queries_issued": 9,
+      "degraded": 6,
+      "degraded_zero": 0,
+      "degraded_recovered": 4,
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": "search_degraded_recovered"
+    },
+    {
+      "post_id": 11660268,
+      "title": null,
+      "search_status": "ok",
+      "queries_issued": 12,
+      "degraded": 0,
+      "degraded_zero": 0,
+      "degraded_recovered": 0,
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
+    },
+    {
+      "post_id": 11660273,
+      "title": null,
+      "search_status": "SEARCH_DEGRADED_RECOVERED",
+      "queries_issued": 8,
+      "degraded": 2,
+      "degraded_zero": 0,
+      "degraded_recovered": 1,
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": "search_degraded_recovered"
+    },
+    {
+      "post_id": 11661856,
+      "title": null,
+      "search_status": "ok",
+      "queries_issued": 8,
+      "degraded": 0,
+      "degraded_zero": 0,
+      "degraded_recovered": 0,
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
+    },
+    {
+      "post_id": 11661863,
+      "title": "용의 신부로 바쳐지고 말았다",
+      "search_status": "SEARCH_DEGRADED_RECOVERED",
+      "queries_issued": 10,
+      "degraded": 3,
+      "degraded_zero": 0,
+      "degraded_recovered": 2,
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": "search_degraded_recovered"
+    },
+    {
+      "post_id": 11661881,
+      "title": "여신이 나만 애호함",
+      "search_status": "ok",
+      "queries_issued": 13,
+      "degraded": 0,
+      "degraded_zero": 0,
+      "degraded_recovered": 0,
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
+    },
+    {
+      "post_id": 11663511,
+      "title": null,
+      "search_status": "ok",
+      "queries_issued": 8,
+      "degraded": 0,
+      "degraded_zero": 0,
+      "degraded_recovered": 0,
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
+    },
+    {
+      "post_id": 11666713,
+      "title": null,
+      "search_status": "MISSING",
+      "queries_issued": 0,
+      "degraded": 0,
+      "degraded_zero": 0,
+      "degraded_recovered": 0,
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": "search_health_missing",
+      "recovered_observation": null
+    },
+    {
+      "post_id": 11677957,
+      "title": null,
+      "search_status": "ok",
+      "queries_issued": 5,
+      "degraded": 0,
+      "degraded_zero": 0,
+      "degraded_recovered": 0,
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
+    },
+    {
+      "post_id": 11694019,
+      "title": "이세계에서 사이비로 살아남기",
+      "search_status": "ok",
+      "queries_issued": 14,
+      "degraded": 0,
+      "degraded_zero": 0,
+      "degraded_recovered": 0,
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
+    },
+    {
+      "post_id": 11697231,
+      "title": "아카데미 생존 갤러리",
+      "search_status": "SEARCH_DEGRADED_RECOVERED",
+      "queries_issued": 9,
+      "degraded": 1,
+      "degraded_zero": 0,
+      "degraded_recovered": 1,
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": "search_degraded_recovered"
+    },
+    {
+      "post_id": 11698904,
+      "title": null,
+      "search_status": "MISSING",
+      "queries_issued": 0,
+      "degraded": 0,
+      "degraded_zero": 0,
+      "degraded_recovered": 0,
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": "search_health_missing",
+      "recovered_observation": null
+    },
+    {
+      "post_id": 11700483,
+      "title": null,
+      "search_status": "MISSING",
+      "queries_issued": 0,
+      "degraded": 0,
+      "degraded_zero": 0,
+      "degraded_recovered": 0,
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": "search_health_missing",
+      "recovered_observation": null
+    }
+  ],
+  "approval_boundary": {
+    "partial_replay_is_not_search_recovery": true,
+    "search_health_ok_required_before_full375_rerun": true,
+    "search_degraded_recovered_is_not_hard_blocker_without_unrecovered": true,
+    "dashboard_is_progress_only": true
+  }
+}

@@ -14063,3 +14063,28 @@
 - [ ] 다음 replay 전 `ready_for_runtime_replay_rows`가 code/contract repair 또는 search preflight tagging 이후 0보다 커졌는지 확인한다.
 - [ ] Stop condition은 회차 수가 아니라 `actionable queue 감소 + 동일 packet safe_resolved 단조 비감소`로 감사한다.
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
+## 2026-07-08 Loop616 search hard blocker 재실행 체크
+
+- [x] full375를 실행하지 않았다.
+- [x] Loop615 audit를 재회계해 hard blocker와 recovered-only observation을 분리했다.
+  - hard blocker `16`
+  - recovered observation `15`
+- [x] hard blocker `16`행 전용 입력을 생성했다.
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop616_search_hard_blocker16_replay_input.jsonl`
+  - manifest gate `GO`
+- [x] Loop616 runtime을 `--parallel 16`, dashboard ON, search 포함 non-light, VLM/OCR ON으로 완주했다.
+  - run `20260708_223012_369319`
+  - completed/flushed/pending/failed `16/16/0/0`
+  - dashboard final `16/16`
+- [x] query-level search pre/post audit를 통과했다.
+  - pre `docs/devs/loop616_pre_replay_query_search_shard_audit.json`
+  - post `docs/devs/loop616_post_replay_query_search_shard_audit.json`
+  - 둘 다 query probe `16/16`, degraded `0`, forbidden engine `0`
+- [x] row-level unrecovered degraded가 `0`임을 확인했다.
+- [ ] row-level search recovery gate는 아직 닫지 않는다.
+  - gate `NO-GO`
+  - `search_health MISSING` 3행: `11666713`, `11698904`, `11700483`
+- [ ] `search_evidence_catalog` 존재 + `identity.search_health=null` 회계 누락을 코드/계약 테스트로 닫는다.
+- [ ] Full375 collateral gate는 아직 열지 않는다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.

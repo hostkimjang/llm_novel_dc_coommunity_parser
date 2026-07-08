@@ -12428,3 +12428,34 @@
 - Artifacts: queue `docs/devs/loop493_p0_after_hold9_runtime_replay_readiness_queue.json/.md`, state `docs/devs/loop493_p0_after_hold9_runtime_replay_readiness_state_20260706.json`, report `docs/devs/loop_reports/LOOP_493_REPORT_20260706.md`.
 - 검증: py_compile PASS, unittest `2` PASS, queue generation PASS, JSON parse PASS, `git diff --check` PASS.
 - Gate는 readiness generation `GO`, runtime replay `BLOCKED_BEFORE_REPAIR`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`다.
+
+## 2026-07-08 - Loop616 search hard blocker 16 replay
+
+- Goal은 `ACTIVE / NOT_COMPLETE`다. Full375는 실행하지 않았다.
+- Loop615 109행 audit를 hard blocker와 recovered-only observation으로 재회계했다.
+  - hard blocker `16`
+  - recovered observation `15`
+  - Loop615 recovered-only degraded는 hard blocker에서 제외한다.
+- `tools/build_search_recovery_blocker_replay_input.py`를 추가해 Loop615 hard blocker만 재실행 입력으로 뽑았다.
+  - input rows `16`
+  - missing post_id `0`
+- Loop616 run `20260708_223012_369319`을 실행했다.
+  - completed/flushed/pending/failed `16/16/0/0`
+  - checkpoint/result rows `16/16`
+  - integrity `clean_completed_run`
+  - dashboard final `16/16`
+  - VLM/OCR `READY`
+  - total time `1427.7s`
+- Query pre/post audit는 모두 `GO`다.
+  - shard `ok=16/16`
+  - query probe `16/16`
+  - degraded `0`
+  - forbidden engine `0`
+- Row-level audit는 `NO-GO`다.
+  - `SEARCH_DEGRADED 0`
+  - unrecovered degraded `0`
+  - `SEARCH_DEGRADED_RECOVERED 4`
+  - `ok 9`
+  - `MISSING 3`
+- 남은 blocker는 `11666713`, `11698904`, `11700483`이다. 세 행은 `search_evidence_catalog`가 있으나 public `identity.search_health`가 `null`이라 검색 인프라보다 회계 누락 수리 대상이다.
+- Gate는 hard blocker replay runtime `GO`, row-level search recovery `NO-GO / missing health 3`, full375 rerun `BLOCKED_UNTIL_ROW_SEARCH_ACCOUNTING`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`다.

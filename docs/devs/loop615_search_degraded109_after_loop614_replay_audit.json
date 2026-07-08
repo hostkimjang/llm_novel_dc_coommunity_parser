@@ -1,7 +1,7 @@
 {
   "report_type": "search_recovery_replay_audit",
   "audit_id": "loop615_search_degraded109_after_loop614_replay_audit",
-  "generated_at": "2026-07-08T22:13:52",
+  "generated_at": "2026-07-08T23:04:04",
   "semantic_quality": "REVIEW-LOCKED",
   "full_scan_approval": false,
   "gate": "NO-GO",
@@ -16,11 +16,16 @@
     },
     "total_queries": 1101,
     "total_degraded": 107,
+    "total_degraded_zero": 18,
     "total_degraded_recovered": 49,
     "total_unrecovered_degraded": 17,
-    "non_ok_row_count": 31,
+    "hard_blocker_row_count": 16,
+    "recovered_observation_row_count": 15,
+    "missing_search_health_row_count": 5,
+    "non_ok_row_count": 16,
     "blockers": [
-      "row_search_health_not_ok",
+      "row_search_hard_blocker_observed",
+      "search_health_missing_observed",
       "unrecovered_degraded_queries_observed"
     ]
   },
@@ -39,8 +44,11 @@
       "search_status": "SEARCH_DEGRADED",
       "queries_issued": 18,
       "degraded": 6,
+      "degraded_zero": 1,
       "degraded_recovered": 3,
-      "unrecovered_degraded": 1
+      "unrecovered_degraded": 1,
+      "search_blocker_reason": "search_degraded",
+      "recovered_observation": null
     },
     {
       "post_id": 11657047,
@@ -48,8 +56,11 @@
       "search_status": "SEARCH_DEGRADED_RECOVERED",
       "queries_issued": 10,
       "degraded": 4,
+      "degraded_zero": 0,
       "degraded_recovered": 4,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": "search_degraded_recovered"
     },
     {
       "post_id": 11658637,
@@ -57,8 +68,11 @@
       "search_status": "SEARCH_DEGRADED",
       "queries_issued": 19,
       "degraded": 6,
+      "degraded_zero": 2,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 2
+      "unrecovered_degraded": 2,
+      "search_blocker_reason": "search_degraded",
+      "recovered_observation": null
     },
     {
       "post_id": 11660241,
@@ -66,8 +80,11 @@
       "search_status": "SEARCH_DEGRADED",
       "queries_issued": 21,
       "degraded": 2,
+      "degraded_zero": 1,
       "degraded_recovered": 1,
-      "unrecovered_degraded": 1
+      "unrecovered_degraded": 1,
+      "search_blocker_reason": "search_degraded",
+      "recovered_observation": null
     },
     {
       "post_id": 11660257,
@@ -75,8 +92,11 @@
       "search_status": "SEARCH_DEGRADED",
       "queries_issued": 8,
       "degraded": 5,
+      "degraded_zero": 2,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 2
+      "unrecovered_degraded": 2,
+      "search_blocker_reason": "search_degraded",
+      "recovered_observation": null
     },
     {
       "post_id": 11660262,
@@ -84,8 +104,11 @@
       "search_status": "ok",
       "queries_issued": 15,
       "degraded": 5,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": "ok_with_recovered_degradation_counter"
     },
     {
       "post_id": 11660268,
@@ -93,8 +116,11 @@
       "search_status": "SEARCH_DEGRADED",
       "queries_issued": 10,
       "degraded": 3,
+      "degraded_zero": 3,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 3
+      "unrecovered_degraded": 3,
+      "search_blocker_reason": "search_degraded",
+      "recovered_observation": null
     },
     {
       "post_id": 11660271,
@@ -102,8 +128,11 @@
       "search_status": "SEARCH_DEGRADED_RECOVERED",
       "queries_issued": 11,
       "degraded": 8,
+      "degraded_zero": 0,
       "degraded_recovered": 3,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": "search_degraded_recovered"
     },
     {
       "post_id": 11660273,
@@ -111,8 +140,11 @@
       "search_status": "SEARCH_DEGRADED",
       "queries_issued": 12,
       "degraded": 2,
+      "degraded_zero": 2,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 2
+      "unrecovered_degraded": 2,
+      "search_blocker_reason": "search_degraded",
+      "recovered_observation": null
     },
     {
       "post_id": 11660277,
@@ -120,8 +152,11 @@
       "search_status": "ok",
       "queries_issued": 15,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11661856,
@@ -129,8 +164,11 @@
       "search_status": "SEARCH_DEGRADED",
       "queries_issued": 10,
       "degraded": 3,
+      "degraded_zero": 1,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 1
+      "unrecovered_degraded": 1,
+      "search_blocker_reason": "search_degraded",
+      "recovered_observation": null
     },
     {
       "post_id": 11661863,
@@ -138,8 +176,11 @@
       "search_status": "SEARCH_DEGRADED",
       "queries_issued": 12,
       "degraded": 5,
+      "degraded_zero": 2,
       "degraded_recovered": 1,
-      "unrecovered_degraded": 2
+      "unrecovered_degraded": 2,
+      "search_blocker_reason": "search_degraded",
+      "recovered_observation": null
     },
     {
       "post_id": 11661881,
@@ -147,8 +188,11 @@
       "search_status": "SEARCH_DEGRADED",
       "queries_issued": 13,
       "degraded": 3,
+      "degraded_zero": 1,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 1
+      "unrecovered_degraded": 1,
+      "search_blocker_reason": "search_degraded",
+      "recovered_observation": null
     },
     {
       "post_id": 11663511,
@@ -156,8 +200,11 @@
       "search_status": "SEARCH_DEGRADED",
       "queries_issued": 7,
       "degraded": 1,
+      "degraded_zero": 1,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 1
+      "unrecovered_degraded": 1,
+      "search_blocker_reason": "search_degraded",
+      "recovered_observation": null
     },
     {
       "post_id": 11663514,
@@ -165,8 +212,11 @@
       "search_status": "ok",
       "queries_issued": 8,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11663521,
@@ -174,8 +224,11 @@
       "search_status": "ok",
       "queries_issued": 14,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11663554,
@@ -183,8 +236,11 @@
       "search_status": "ok",
       "queries_issued": 12,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11663557,
@@ -192,8 +248,11 @@
       "search_status": "ok",
       "queries_issued": 8,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11665110,
@@ -201,8 +260,11 @@
       "search_status": "ok",
       "queries_issued": 10,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11665121,
@@ -210,8 +272,11 @@
       "search_status": "ok",
       "queries_issued": 6,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11665124,
@@ -219,8 +284,11 @@
       "search_status": "ok",
       "queries_issued": 8,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11666699,
@@ -228,8 +296,11 @@
       "search_status": "ok",
       "queries_issued": 14,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11666700,
@@ -237,8 +308,11 @@
       "search_status": "ok",
       "queries_issued": 14,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11666713,
@@ -246,8 +320,11 @@
       "search_status": "MISSING",
       "queries_issued": 0,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": "search_health_missing",
+      "recovered_observation": null
     },
     {
       "post_id": 11666725,
@@ -255,8 +332,11 @@
       "search_status": "ok",
       "queries_issued": 9,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11668278,
@@ -264,8 +344,11 @@
       "search_status": "ok",
       "queries_issued": 3,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11668300,
@@ -273,8 +356,11 @@
       "search_status": "ok",
       "queries_issued": 4,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11668324,
@@ -282,8 +368,11 @@
       "search_status": "ok",
       "queries_issued": 7,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11668325,
@@ -291,8 +380,11 @@
       "search_status": "ok",
       "queries_issued": 5,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11669907,
@@ -300,8 +392,11 @@
       "search_status": "ok",
       "queries_issued": 8,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11669908,
@@ -309,8 +404,11 @@
       "search_status": "ok",
       "queries_issued": 19,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11669913,
@@ -318,8 +416,11 @@
       "search_status": "ok",
       "queries_issued": 7,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11669924,
@@ -327,8 +428,11 @@
       "search_status": "SEARCH_DEGRADED_RECOVERED",
       "queries_issued": 12,
       "degraded": 3,
+      "degraded_zero": 0,
       "degraded_recovered": 3,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": "search_degraded_recovered"
     },
     {
       "post_id": 11669926,
@@ -336,8 +440,11 @@
       "search_status": "ok",
       "queries_issued": 4,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11669928,
@@ -345,8 +452,11 @@
       "search_status": "SEARCH_DEGRADED_RECOVERED",
       "queries_issued": 21,
       "degraded": 9,
+      "degraded_zero": 0,
       "degraded_recovered": 3,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": "search_degraded_recovered"
     },
     {
       "post_id": 11669929,
@@ -354,8 +464,11 @@
       "search_status": "ok",
       "queries_issued": 12,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11669933,
@@ -363,8 +476,11 @@
       "search_status": "SEARCH_DEGRADED_RECOVERED",
       "queries_issued": 15,
       "degraded": 1,
+      "degraded_zero": 0,
       "degraded_recovered": 1,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": "search_degraded_recovered"
     },
     {
       "post_id": 11671500,
@@ -372,8 +488,11 @@
       "search_status": "ok",
       "queries_issued": 4,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11671514,
@@ -381,8 +500,11 @@
       "search_status": "ok",
       "queries_issued": 10,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11671538,
@@ -390,8 +512,11 @@
       "search_status": "ok",
       "queries_issued": 10,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11673077,
@@ -399,8 +524,11 @@
       "search_status": "ok",
       "queries_issued": 32,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11673096,
@@ -408,8 +536,11 @@
       "search_status": "ok",
       "queries_issued": 14,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11676314,
@@ -417,8 +548,11 @@
       "search_status": "ok",
       "queries_issued": 12,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11676317,
@@ -426,8 +560,11 @@
       "search_status": "ok",
       "queries_issued": 15,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11677919,
@@ -435,8 +572,11 @@
       "search_status": "ok",
       "queries_issued": 1,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11677957,
@@ -444,8 +584,11 @@
       "search_status": "MISSING",
       "queries_issued": 0,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": "search_health_missing",
+      "recovered_observation": null
     },
     {
       "post_id": 11679547,
@@ -453,8 +596,11 @@
       "search_status": "SEARCH_DEGRADED_RECOVERED",
       "queries_issued": 8,
       "degraded": 1,
+      "degraded_zero": 0,
       "degraded_recovered": 1,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": "search_degraded_recovered"
     },
     {
       "post_id": 11681177,
@@ -462,8 +608,11 @@
       "search_status": "ok",
       "queries_issued": 20,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11681180,
@@ -471,8 +620,11 @@
       "search_status": "ok",
       "queries_issued": 24,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11682749,
@@ -480,8 +632,11 @@
       "search_status": "ok",
       "queries_issued": 7,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11682767,
@@ -489,8 +644,11 @@
       "search_status": "ok",
       "queries_issued": 6,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11682768,
@@ -498,8 +656,11 @@
       "search_status": "ok",
       "queries_issued": 14,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11685994,
@@ -507,8 +668,11 @@
       "search_status": "ok",
       "queries_issued": 16,
       "degraded": 2,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": "ok_with_recovered_degradation_counter"
     },
     {
       "post_id": 11685995,
@@ -516,8 +680,11 @@
       "search_status": "ok",
       "queries_issued": 5,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11687618,
@@ -525,8 +692,11 @@
       "search_status": "ok",
       "queries_issued": 9,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11687661,
@@ -534,8 +704,11 @@
       "search_status": "ok",
       "queries_issued": 15,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11692436,
@@ -543,8 +716,11 @@
       "search_status": "ok",
       "queries_issued": 13,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11694019,
@@ -552,8 +728,11 @@
       "search_status": "SEARCH_DEGRADED",
       "queries_issued": 14,
       "degraded": 10,
+      "degraded_zero": 1,
       "degraded_recovered": 8,
-      "unrecovered_degraded": 1
+      "unrecovered_degraded": 1,
+      "search_blocker_reason": "search_degraded",
+      "recovered_observation": null
     },
     {
       "post_id": 11694035,
@@ -561,8 +740,11 @@
       "search_status": "ok",
       "queries_issued": 5,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11694041,
@@ -570,8 +752,11 @@
       "search_status": "ok",
       "queries_issued": 6,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11694044,
@@ -579,8 +764,11 @@
       "search_status": "SEARCH_DEGRADED_RECOVERED",
       "queries_issued": 17,
       "degraded": 5,
+      "degraded_zero": 0,
       "degraded_recovered": 4,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": "search_degraded_recovered"
     },
     {
       "post_id": 11694049,
@@ -588,8 +776,11 @@
       "search_status": "ok",
       "queries_issued": 4,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11694063,
@@ -597,8 +788,11 @@
       "search_status": "ok",
       "queries_issued": 14,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11694065,
@@ -606,8 +800,11 @@
       "search_status": "ok",
       "queries_issued": 11,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11695599,
@@ -615,8 +812,11 @@
       "search_status": "ok",
       "queries_issued": 9,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11695639,
@@ -624,8 +824,11 @@
       "search_status": "ok",
       "queries_issued": 9,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11697231,
@@ -633,8 +836,11 @@
       "search_status": "MISSING",
       "queries_issued": 0,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": "search_health_missing",
+      "recovered_observation": null
     },
     {
       "post_id": 11697239,
@@ -642,8 +848,11 @@
       "search_status": "ok",
       "queries_issued": 7,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11697242,
@@ -651,8 +860,11 @@
       "search_status": "ok",
       "queries_issued": 4,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11697249,
@@ -660,8 +872,11 @@
       "search_status": "ok",
       "queries_issued": 8,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11698865,
@@ -669,8 +884,11 @@
       "search_status": "ok",
       "queries_issued": 4,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11698870,
@@ -678,8 +896,11 @@
       "search_status": "ok",
       "queries_issued": 14,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11698880,
@@ -687,8 +908,11 @@
       "search_status": "ok",
       "queries_issued": 5,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11698904,
@@ -696,8 +920,11 @@
       "search_status": "MISSING",
       "queries_issued": 0,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": "search_health_missing",
+      "recovered_observation": null
     },
     {
       "post_id": 11698910,
@@ -705,8 +932,11 @@
       "search_status": "SEARCH_DEGRADED_RECOVERED",
       "queries_issued": 10,
       "degraded": 2,
+      "degraded_zero": 0,
       "degraded_recovered": 2,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": "search_degraded_recovered"
     },
     {
       "post_id": 11700483,
@@ -714,8 +944,11 @@
       "search_status": "MISSING",
       "queries_issued": 0,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": "search_health_missing",
+      "recovered_observation": null
     },
     {
       "post_id": 11702050,
@@ -723,8 +956,11 @@
       "search_status": "ok",
       "queries_issued": 2,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11702081,
@@ -732,8 +968,11 @@
       "search_status": "SEARCH_DEGRADED_RECOVERED",
       "queries_issued": 16,
       "degraded": 2,
+      "degraded_zero": 0,
       "degraded_recovered": 1,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": "search_degraded_recovered"
     },
     {
       "post_id": 11702094,
@@ -741,8 +980,11 @@
       "search_status": "ok",
       "queries_issued": 11,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11703631,
@@ -750,8 +992,11 @@
       "search_status": "ok",
       "queries_issued": 8,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11703645,
@@ -759,8 +1004,11 @@
       "search_status": "ok",
       "queries_issued": 3,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11703658,
@@ -768,8 +1016,11 @@
       "search_status": "ok",
       "queries_issued": 19,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11703674,
@@ -777,8 +1028,11 @@
       "search_status": "SEARCH_DEGRADED_RECOVERED",
       "queries_issued": 12,
       "degraded": 2,
+      "degraded_zero": 0,
       "degraded_recovered": 2,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": "search_degraded_recovered"
     },
     {
       "post_id": 11705230,
@@ -786,8 +1040,11 @@
       "search_status": "ok",
       "queries_issued": 18,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11705231,
@@ -795,8 +1052,11 @@
       "search_status": "ok",
       "queries_issued": 4,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11705251,
@@ -804,8 +1064,11 @@
       "search_status": "ok",
       "queries_issued": 6,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11705252,
@@ -813,8 +1076,11 @@
       "search_status": "ok",
       "queries_issued": 4,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11706844,
@@ -822,8 +1088,11 @@
       "search_status": "ok",
       "queries_issued": 22,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11706852,
@@ -831,8 +1100,11 @@
       "search_status": "ok",
       "queries_issued": 13,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11706867,
@@ -840,8 +1112,11 @@
       "search_status": "ok",
       "queries_issued": 3,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11706871,
@@ -849,8 +1124,11 @@
       "search_status": "ok",
       "queries_issued": 6,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11708432,
@@ -858,8 +1136,11 @@
       "search_status": "ok",
       "queries_issued": 5,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11708443,
@@ -867,8 +1148,11 @@
       "search_status": "ok",
       "queries_issued": 12,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11710020,
@@ -876,8 +1160,11 @@
       "search_status": "ok",
       "queries_issued": 8,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11710036,
@@ -885,8 +1172,11 @@
       "search_status": "ok",
       "queries_issued": 13,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11710037,
@@ -894,8 +1184,11 @@
       "search_status": "ok",
       "queries_issued": 8,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11710047,
@@ -903,8 +1196,11 @@
       "search_status": "ok",
       "queries_issued": 8,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11710049,
@@ -912,8 +1208,11 @@
       "search_status": "ok",
       "queries_issued": 13,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11714887,
@@ -921,8 +1220,11 @@
       "search_status": "ok",
       "queries_issued": 6,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11714892,
@@ -930,8 +1232,11 @@
       "search_status": "SEARCH_DEGRADED_RECOVERED",
       "queries_issued": 23,
       "degraded": 11,
+      "degraded_zero": 1,
       "degraded_recovered": 9,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": "search_degraded_recovered"
     },
     {
       "post_id": 11714903,
@@ -939,8 +1244,11 @@
       "search_status": "ok",
       "queries_issued": 11,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11716464,
@@ -948,8 +1256,11 @@
       "search_status": "ok",
       "queries_issued": 5,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11716480,
@@ -957,8 +1268,11 @@
       "search_status": "ok",
       "queries_issued": 7,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11716505,
@@ -966,8 +1280,11 @@
       "search_status": "ok",
       "queries_issued": 16,
       "degraded": 1,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": "ok_with_recovered_degradation_counter"
     },
     {
       "post_id": 11718097,
@@ -975,8 +1292,11 @@
       "search_status": "ok",
       "queries_issued": 7,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11718098,
@@ -984,8 +1304,11 @@
       "search_status": "SEARCH_DEGRADED_RECOVERED",
       "queries_issued": 16,
       "degraded": 5,
+      "degraded_zero": 0,
       "degraded_recovered": 3,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": "search_degraded_recovered"
     },
     {
       "post_id": 11718099,
@@ -993,8 +1316,11 @@
       "search_status": "ok",
       "queries_issued": 5,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11718110,
@@ -1002,8 +1328,11 @@
       "search_status": "ok",
       "queries_issued": 12,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     },
     {
       "post_id": 11718114,
@@ -1011,13 +1340,17 @@
       "search_status": "ok",
       "queries_issued": 2,
       "degraded": 0,
+      "degraded_zero": 0,
       "degraded_recovered": 0,
-      "unrecovered_degraded": 0
+      "unrecovered_degraded": 0,
+      "search_blocker_reason": null,
+      "recovered_observation": null
     }
   ],
   "approval_boundary": {
     "partial_replay_is_not_search_recovery": true,
     "search_health_ok_required_before_full375_rerun": true,
+    "search_degraded_recovered_is_not_hard_blocker_without_unrecovered": true,
     "dashboard_is_progress_only": true
   }
 }

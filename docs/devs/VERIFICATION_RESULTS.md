@@ -26833,3 +26833,31 @@ The broader unittest result proves the code checkpoint did not break the current
   - `semantic_quality=REVIEW-LOCKED`
   - `full_scan_approval=false`
   - goal `ACTIVE / NOT_COMPLETE`
+
+## 2026-07-08 Loop616 Verification
+
+- Runtime replay:
+  - input: `out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop616_search_hard_blocker16_replay_input.jsonl`
+  - result: `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop616_search_hard_blocker16_replay_result.json`
+  - run id: `20260708_223012_369319`
+  - completed/flushed/pending/failed: `16/16/0/0`
+  - parallel: requested `16`, manifest `16`
+  - dashboard: `http://127.0.0.1:8080`, final `16/16`
+  - integrity: `clean_completed_run`
+- Search health:
+  - pre/post query shard audit: `ok=16/16`, query probe `16/16`, degraded `0`, forbidden engine `0`
+  - Loop616 row audit: `SEARCH_DEGRADED 0`, unrecovered degraded `0`
+  - remaining blocker: `search_health MISSING` 3 rows, `11666713/11698904/11700483`
+  - interpretation: 세 행은 `search_evidence_catalog`가 있으나 public `identity.search_health`가 비어 있어 검색 인프라 실패보다 회계/직렬화 누락으로 본다.
+- Artifacts:
+  - audit: `docs/devs/loop616_search_hard_blocker16_replay_audit.json`
+  - report: `docs/devs/loop_reports/LOOP_616_REPORT_20260708.md`
+  - recovery summary: `docs/devs/loop616_search_hard_blocker16_replay_recovery_summary.json`
+- Gate:
+  - Loop616 runtime `GO / 16 of 16`
+  - search degraded recovery `PARTIAL-GO / unrecovered 0`
+  - row-level search gate `NO-GO / search_health MISSING 3`
+  - full375 collateral `BLOCKED`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+  - goal `ACTIVE / NOT_COMPLETE`

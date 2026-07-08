@@ -7,20 +7,27 @@ from pathlib import Path
 from tools.audit_search_recovery_replay_checkpoint import audit_replay, write_markdown
 
 
-def _row(post_id: int, status: str, *, degraded: int = 0, unrecovered: int = 0) -> dict:
+def _row(
+    post_id: int,
+    status: str,
+    *,
+    degraded: int = 0,
+    unrecovered: int = 0,
+    include_health: bool = True,
+) -> dict:
+    identity = {"novel_identity": {"official_title": f"title {post_id}"}}
+    if include_health:
+        identity["search_health"] = {
+            "status": status,
+            "queries_issued": 3,
+            "degraded": degraded,
+            "degraded_recovered": max(degraded - unrecovered, 0),
+            "unrecovered_degraded": unrecovered,
+        }
     return {
         "post_id": post_id,
         "analysis_result": {
-            "identity": {
-                "novel_identity": {"official_title": f"title {post_id}"},
-                "search_health": {
-                    "status": status,
-                    "queries_issued": 3,
-                    "degraded": degraded,
-                    "degraded_recovered": max(degraded - unrecovered, 0),
-                    "unrecovered_degraded": unrecovered,
-                },
-            }
+            "identity": identity,
         },
     }
 
@@ -41,7 +48,7 @@ class AuditSearchRecoveryReplayCheckpointTest(unittest.TestCase):
         self.assertEqual(report["summary"]["completed_rows"], 2)
         self.assertEqual(report["summary"]["status_counts"]["SEARCH_DEGRADED"], 1)
         self.assertIn("partial_replay_not_all_deferred_rows_completed", report["summary"]["blockers"])
-        self.assertIn("row_search_health_not_ok", report["summary"]["blockers"])
+        self.assertIn("row_search_hard_blocker_observed", report["summary"]["blockers"])
         self.assertIn("unrecovered_degraded_queries_observed", report["summary"]["blockers"])
 
     def test_complete_all_ok_subset_is_go(self) -> None:
@@ -55,6 +62,34 @@ class AuditSearchRecoveryReplayCheckpointTest(unittest.TestCase):
         self.assertEqual(report["gate"], "GO")
         self.assertEqual(report["summary"]["non_ok_row_count"], 0)
         self.assertEqual(report["summary"]["blockers"], [])
+
+    def test_recovered_degraded_observations_do_not_hard_block(self) -> None:
+        report = audit_replay(
+            recovered_rows=[
+                _row(1, "SEARCH_DEGRADED_RECOVERED", degraded=2, unrecovered=0),
+                _row(2, "ok", degraded=1, unrecovered=0),
+            ],
+            input_manifest={"summary": {"runtime_input_rows": 2}},
+            recovery_summary={"large_run_complete": True, "checkpoint_completed_rows": 2},
+            audit_id="test",
+        )
+
+        self.assertEqual(report["gate"], "GO")
+        self.assertEqual(report["summary"]["hard_blocker_row_count"], 0)
+        self.assertEqual(report["summary"]["recovered_observation_row_count"], 2)
+        self.assertEqual(report["summary"]["total_unrecovered_degraded"], 0)
+
+    def test_missing_search_health_hard_blocks(self) -> None:
+        report = audit_replay(
+            recovered_rows=[_row(1, "MISSING", include_health=False)],
+            input_manifest={"summary": {"runtime_input_rows": 1}},
+            recovery_summary={"large_run_complete": True, "checkpoint_completed_rows": 1},
+            audit_id="test",
+        )
+
+        self.assertEqual(report["gate"], "NO-GO")
+        self.assertEqual(report["summary"]["missing_search_health_row_count"], 1)
+        self.assertIn("search_health_missing_observed", report["summary"]["blockers"])
 
     def test_markdown_interpretation_matches_go_gate(self) -> None:
         report = audit_replay(

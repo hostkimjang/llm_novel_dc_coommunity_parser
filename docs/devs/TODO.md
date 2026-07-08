@@ -11626,3 +11626,21 @@
   - `11663521`, `11665124`, `11677926`, `11698910`, `11708447`, `11710049`, `11716475`, `11718110`, `11710020`
 - [ ] Loop491 prepared 14건 input은 `ready_for_runtime_replay_rows > 0`을 만든 뒤 dispatch한다.
 - [ ] 다음 replay 감사는 `actionable queue 감소 + 동일 packet safe_resolved 단조 비감소`를 필수 stop condition으로 기록한다.
+
+## 2026-07-08 Loop616 Follow-up
+
+- [x] Loop615 109행 audit를 hard blocker와 recovered-only observation으로 재회계했다.
+  - hard blocker `16`
+  - recovered observation `15`
+- [x] Hard blocker `16`행만 `--parallel 16`, dashboard ON, search 포함 non-light, VLM/OCR ON으로 재실행했다.
+  - run `20260708_223012_369319`
+  - completed/flushed/pending/failed `16/16/0/0`
+  - query pre/post `ok=16/16`, degraded `0`, forbidden engine `0`
+- [x] 미복구 degraded를 닫았다.
+  - Loop615 unrecovered degraded `17`
+  - Loop616 unrecovered degraded `0`
+- [ ] `search_health MISSING` 3행을 회계 누락으로 수리한다.
+  - `11666713`, `11698904`, `11700483`
+  - 세 행은 `search_evidence_catalog`가 존재하지만 public `identity.search_health`가 `null`
+- [ ] Full375 재실행은 `search_health MISSING` 3행을 code/contract test로 닫기 전까지 금지한다.
+- [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.

@@ -68,6 +68,33 @@ def _title(row: dict[str, Any]) -> str | None:
     return title or None
 
 
+def _search_blocker_reason(row: dict[str, Any]) -> str | None:
+    status = str(row.get("search_status") or "").strip().upper()
+    unrecovered = _int(row.get("unrecovered_degraded"))
+    degraded_zero = _int(row.get("degraded_zero"))
+    recovered = _int(row.get("degraded_recovered"))
+    if status == "MISSING":
+        return "search_health_missing"
+    if status == "SEARCH_DEGRADED":
+        return "search_degraded"
+    if unrecovered > 0:
+        return "unrecovered_degraded"
+    if degraded_zero > 0 and recovered <= 0:
+        return "degraded_zero_unrecovered"
+    return None
+
+
+def _recovered_observation(row: dict[str, Any]) -> str | None:
+    status = str(row.get("search_status") or "").strip().upper()
+    degraded = _int(row.get("degraded"))
+    unrecovered = _int(row.get("unrecovered_degraded"))
+    if status == "SEARCH_DEGRADED_RECOVERED" and unrecovered <= 0:
+        return "search_degraded_recovered"
+    if status == "OK" and degraded > 0 and unrecovered <= 0:
+        return "ok_with_recovered_degradation_counter"
+    return None
+
+
 def audit_replay(
     *,
     recovered_rows: list[dict[str, Any]],
@@ -84,6 +111,7 @@ def audit_replay(
     status_counts: Counter[str] = Counter()
     total_queries = 0
     total_degraded = 0
+    total_degraded_zero = 0
     total_degraded_recovered = 0
     total_unrecovered = 0
     rows: list[dict[str, Any]] = []
@@ -92,36 +120,42 @@ def audit_replay(
         health = _health(row)
         status = str(health.get("status") or "MISSING").strip() or "MISSING"
         degraded = _int(health.get("degraded") or health.get("degraded_count"))
+        degraded_zero = _int(health.get("degraded_zero") or health.get("degraded_zero_count"))
         recovered = _int(health.get("degraded_recovered") or health.get("degraded_recovered_count"))
         unrecovered = _int(health.get("unrecovered_degraded") or health.get("unrecovered_degraded_count"))
         queries = _int(health.get("queries_issued") or health.get("query_count"))
         status_counts[status] += 1
         total_queries += queries
         total_degraded += degraded
+        total_degraded_zero += degraded_zero
         total_degraded_recovered += recovered
         total_unrecovered += unrecovered
-        rows.append(
-            {
-                "post_id": _post_id(row.get("post_id")),
-                "title": _title(row),
-                "search_status": status,
-                "queries_issued": queries,
-                "degraded": degraded,
-                "degraded_recovered": recovered,
-                "unrecovered_degraded": unrecovered,
-            }
-        )
+        audit_row = {
+            "post_id": _post_id(row.get("post_id")),
+            "title": _title(row),
+            "search_status": status,
+            "queries_issued": queries,
+            "degraded": degraded,
+            "degraded_zero": degraded_zero,
+            "degraded_recovered": recovered,
+            "unrecovered_degraded": unrecovered,
+        }
+        blocker_reason = _search_blocker_reason(audit_row)
+        recovered_reason = _recovered_observation(audit_row)
+        audit_row["search_blocker_reason"] = blocker_reason
+        audit_row["recovered_observation"] = recovered_reason
+        rows.append(audit_row)
 
-    non_ok_rows = [
-        row
-        for row in rows
-        if row["search_status"].upper() != "OK" or row["degraded"] > 0 or row["unrecovered_degraded"] > 0
-    ]
+    hard_blocker_rows = [row for row in rows if row.get("search_blocker_reason")]
+    recovered_observation_rows = [row for row in rows if row.get("recovered_observation")]
+    missing_health_rows = [row for row in rows if row.get("search_status") == "MISSING"]
     blockers: list[str] = []
     if expected_count and completed_count < expected_count:
         blockers.append("partial_replay_not_all_deferred_rows_completed")
-    if non_ok_rows:
-        blockers.append("row_search_health_not_ok")
+    if hard_blocker_rows:
+        blockers.append("row_search_hard_blocker_observed")
+    if missing_health_rows:
+        blockers.append("search_health_missing_observed")
     if total_unrecovered > 0:
         blockers.append("unrecovered_degraded_queries_observed")
     if recovery_summary.get("large_run_complete") is False:
@@ -140,9 +174,13 @@ def audit_replay(
             "status_counts": dict(sorted(status_counts.items())),
             "total_queries": total_queries,
             "total_degraded": total_degraded,
+            "total_degraded_zero": total_degraded_zero,
             "total_degraded_recovered": total_degraded_recovered,
             "total_unrecovered_degraded": total_unrecovered,
-            "non_ok_row_count": len(non_ok_rows),
+            "hard_blocker_row_count": len(hard_blocker_rows),
+            "recovered_observation_row_count": len(recovered_observation_rows),
+            "missing_search_health_row_count": len(missing_health_rows),
+            "non_ok_row_count": len(hard_blocker_rows),
             "blockers": blockers,
         },
         "recovery_summary": {
@@ -157,6 +195,7 @@ def audit_replay(
         "approval_boundary": {
             "partial_replay_is_not_search_recovery": True,
             "search_health_ok_required_before_full375_rerun": True,
+            "search_degraded_recovered_is_not_hard_blocker_without_unrecovered": True,
             "dashboard_is_progress_only": True,
         },
     }
@@ -168,18 +207,19 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
     blockers = summary.get("blockers") or []
     if report.get("gate") == "GO":
         interpretation = [
-            "- 동일 deferred 109행 replay가 모두 완료됐고 row-level search health가 `ok`다.",
+            "- 동일 deferred replay가 모두 완료됐고 hard search blocker가 남지 않았다.",
+            "- `SEARCH_DEGRADED_RECOVERED` 또는 `status=ok`의 recovered-only degraded 카운터는 별도 관측으로 남기되 hard blocker로 세지 않는다.",
             "- 이 감사 범위에서는 검색 복구 gate를 통과했으므로 full375 재실행 선행 차단을 해제할 수 있다.",
             "- 다만 이 산출물은 full375 collateral GO나 full_scan approval이 아니다.",
         ]
     else:
         interpretation = [
             "- 이 산출물은 검색 복구 증명이 아니다.",
-            "- 완료 범위 또는 row-level search health에 blocker가 남아 있으므로 full375 재실행 차단은 유지한다.",
+            "- 완료 범위, missing search_health, 또는 unrecovered degraded hard blocker가 남아 있으므로 full375 재실행 차단은 유지한다.",
             "- 검색 인프라 복구 후 blocker 행 또는 동일 deferred 행을 다시 실행해야 한다.",
         ]
     lines = [
-        f"# {report.get('audit_id')} search recovery replay audit",
+        f"# {report.get('audit_id')} 검색 복구 재실행 감사",
         "",
         "## 요약",
         "",
@@ -188,8 +228,12 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
         f"- completed_rows: `{summary.get('completed_rows')}`",
         f"- status_counts: `{summary.get('status_counts')}`",
         f"- total_degraded: `{summary.get('total_degraded')}`",
+        f"- total_degraded_zero: `{summary.get('total_degraded_zero')}`",
+        f"- total_degraded_recovered: `{summary.get('total_degraded_recovered')}`",
         f"- total_unrecovered_degraded: `{summary.get('total_unrecovered_degraded')}`",
-        f"- non_ok_row_count: `{summary.get('non_ok_row_count')}`",
+        f"- hard_blocker_row_count: `{summary.get('hard_blocker_row_count')}`",
+        f"- recovered_observation_row_count: `{summary.get('recovered_observation_row_count')}`",
+        f"- missing_search_health_row_count: `{summary.get('missing_search_health_row_count')}`",
         f"- blockers: `{blockers}`",
         f"- recovered_subset: run_id `{recovery.get('run_id')}`, integrity `{recovery.get('integrity_classification')}`, large_run_complete `{recovery.get('large_run_complete')}`",
         "- semantic_quality: `REVIEW-LOCKED`",
@@ -199,16 +243,20 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
         "",
         *interpretation,
         "",
-        "## Rows",
+        "## 행 목록",
         "",
     ]
     for row in report.get("rows") or []:
         lines.append(
-            "- `{post_id}` status=`{search_status}` degraded=`{degraded}` unrecovered=`{unrecovered}` title=`{title}`".format(
+            "- `{post_id}` status=`{search_status}` degraded=`{degraded}` recovered=`{recovered}` "
+            "unrecovered=`{unrecovered}` blocker=`{blocker}` recovered_observation=`{observation}` title=`{title}`".format(
                 post_id=row.get("post_id"),
                 search_status=row.get("search_status"),
                 degraded=row.get("degraded"),
+                recovered=row.get("degraded_recovered"),
                 unrecovered=row.get("unrecovered_degraded"),
+                blocker=row.get("search_blocker_reason"),
+                observation=row.get("recovered_observation"),
                 title=row.get("title"),
             )
         )

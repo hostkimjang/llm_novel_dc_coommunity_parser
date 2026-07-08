@@ -18905,3 +18905,16 @@ Gate: runtime production `GO / 18 of 18`, search `GO_GOLDEN18_ONLY / FULL375_NOT
 | tests | PASS | `275` + `90` tests PASS | 회귀 suite 유지 |
 
 Gate: runtime production `GO`, original semantic `NO-GO`, contract replay `GO_CONTRACT_REPLAY_ONLY`, full375 collateral `NOT_OPEN`, collateral `reclassified 74 / runtime-verified 4 / residual 105`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## IMP-20260708-616 - search hard blocker replay accounting
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| Loop615 재회계 | 적용 | recovered-only degraded를 hard blocker에서 분리해 hard blocker `16`, recovered observation `15`로 정리 | recovered-only는 관측으로만 보존 |
+| hard blocker 입력 생성 | GO | `tools/build_search_recovery_blocker_replay_input.py`, runtime input `16/16` | 입력 생성은 approval로 세지 않음 |
+| Loop616 runtime | GO | run `20260708_223012_369319`, completed/flushed/pending/failed `16/16/0/0`, dashboard `16/16`, parallel `16` | 대형 run 재개 전 gate 확인 |
+| 검색 degraded 복구 | PARTIAL-GO | `SEARCH_DEGRADED 11 -> 0`, unrecovered degraded `17 -> 0` | recovered observation은 hard blocker에서 제외 |
+| 남은 blocker | NO-GO | `search_health MISSING` 3행 `11666713/11698904/11700483` | `search_query_stats/search_health` 회계 누락 수정 또는 재감사 |
+| full375 collateral | BLOCKED | row-level search gate가 아직 `NO-GO` | full375 재실행 금지 |
+
+Gate: Loop616 runtime `GO`, search degraded recovery `PARTIAL-GO`, row-level search gate `NO-GO / search_health MISSING 3`, full375 collateral `BLOCKED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.

@@ -8106,3 +8106,13 @@
 - [ ] 코드 변경 없는 동일 row dispatch 반복은 중단한다. 필요 시 새 코드 actual runtime은 `11698880` 단건만 실행한다.
 - [ ] Full375 collateral gate는 `NOT_OPEN`으로 유지하고, collateral 105는 `reclassified 74 / runtime-verified 4 / residual 105`로 분리 보고한다.
 - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `NOT_COMPLETE`를 유지한다.
+
+## 2026-07-08 추가 운영 체크 - Loop616 search blocker boundary
+
+- [ ] 테스트런은 기본 `--parallel 16`으로 실행하고 dashboard를 켠다.
+- [ ] dashboard `done/total`은 진행상황 표시이며 semantic approval 또는 full_scan approval이 아니다.
+- [ ] `SEARCH_DEGRADED_RECOVERED`와 `status=ok`의 recovered-only degraded 카운터는 hard blocker로 세지 않는다.
+- [ ] `unrecovered_degraded=0`이어도 public `identity.search_health`가 비어 있으면 row-level search gate는 닫지 않는다.
+- [ ] `11666713/11698904/11700483`처럼 `search_evidence_catalog`는 있으나 `search_health`가 없는 행은 검색 인프라 실패보다 회계/직렬화 누락 후보로 먼저 본다.
+- [ ] Loop616은 runtime `GO / 16 of 16`이지만 row-level search gate `NO-GO / search_health MISSING 3`이므로 full375 재실행을 열지 않는다.
+- [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `NOT_COMPLETE`를 유지한다.
