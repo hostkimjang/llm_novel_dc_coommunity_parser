@@ -41,6 +41,11 @@ class BuildFull375ResidualGateActionQueueTest(unittest.TestCase):
                     "triage_bucket": "unsafe_promotion_from_hold",
                     "review_label": "HOLD",
                     "source_native_verdict": "alias_bridge_unverified_hold",
+                    "selected_option_id": "C1",
+                    "selected_title": "B",
+                    "selected_url": "https://novelpia.com/novel/2",
+                    "rationale_ko": "본문과 댓글이 B 별칭을 직접 설명한다.",
+                    "evidence_refs": ["review.json#post_id=2", "https://novelpia.com/novel/2"],
                     "action": ["native_web_or_alias_relation_review_required"],
                 },
                 {
@@ -65,6 +70,14 @@ class BuildFull375ResidualGateActionQueueTest(unittest.TestCase):
         self.assertEqual(summary["unreviewed_raw_residual_rows"], 1)
         self.assertEqual(queue["rows"][0]["post_id"], 2)
         self.assertEqual(queue["rows"][0]["queue_lane"], "alias_relation_native_web_review")
+        self.assertEqual(queue["rows"][0]["selected_option_id"], "C1")
+        self.assertEqual(queue["rows"][0]["selected_title"], "B")
+        self.assertEqual(queue["rows"][0]["selected_url"], "https://novelpia.com/novel/2")
+        self.assertEqual(queue["rows"][0]["rationale_ko"], "본문과 댓글이 B 별칭을 직접 설명한다.")
+        self.assertEqual(
+            queue["rows"][0]["evidence_refs"],
+            ["review.json#post_id=2", "https://novelpia.com/novel/2"],
+        )
         self.assertEqual(queue["rows"][1]["post_id"], 3)
         self.assertEqual(queue["rows"][1]["review_coverage"], "unreviewed_raw_regression")
 

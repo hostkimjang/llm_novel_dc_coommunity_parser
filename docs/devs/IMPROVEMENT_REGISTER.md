@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260708-604 - residual28 shared-gate batch contract processing
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | NOT_RUN | 새 runtime/bounded/full375 대형 runtime 실행 없음 | 실제 test run만 `--parallel 16` + dashboard attached로 실행 |
+| Residual evidence preservation | PASS_UNIT | residual queue가 `selected_url`, `selected_option_id`, `rationale_ko`, `evidence_refs`를 보존 | shared-gate projection evidence loss 재발 방지 |
+| Shared-gate projection | REVIEW-LOCKED | rows `4`, `safe_resolved 3 / promotion_blocked 1`, validation issue `0` | release candidates는 full375 recheck 필요 |
+| Contract plan/application | REVIEW-LOCKED | expected restore `3`, candidate scrub `1`, applied restore `3`, skipped no-publish `1` | no runtime replay allowed |
+| Release contract audit | REVIEW-LOCKED | violation `0`, pending `0`, release candidate `3`, satisfied no-release `1` | release candidate는 approval 금지 |
+| Residual accounting | REVIEW-LOCKED | source residual `28`, contract processed `4`, ordinary residual `24` | residual24 lane별 N건 batch 처리 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 `full375 collateral GO + full_scan path` |
+
+Gate: shared-gate batch `REVIEW-LOCKED`, release audit `REVIEW-LOCKED / violation 0`, residual accounting `REVIEW-LOCKED / ordinary 24`, full375 collateral `NO-GO`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-603 - unreviewed13 source-native verdict and post-id overlap application
 
 | 항목 | 상태 | 근거 | 다음 |

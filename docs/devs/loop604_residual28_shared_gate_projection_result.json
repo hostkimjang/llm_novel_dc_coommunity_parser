@@ -1,0 +1,2107 @@
+{
+  "report_type": "residual_queue_shared_promotion_gate_projection",
+  "projection_id": "loop604_residual28_shared_gate_projection",
+  "generated_at": "2026-07-08T08:59:09",
+  "source_queue_id": "loop602_after_unreviewed13_source_native_residual_action_queue",
+  "source_review_id": [
+    "loop595_residual46_native_web_judge_source_native_review",
+    "loop602_corrected_full375_unreviewed13_source_native_verdicts"
+  ],
+  "source_gate": "REVIEW-LOCKED",
+  "action_filter": "shared_promotion_gate_wiring_required",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "gate": "REVIEW-LOCKED",
+  "input_rows": 4,
+  "summary": {
+    "source_queue_rows": 28,
+    "projected_rows": 4,
+    "projected_status_counts": {
+      "promotion_blocked": 1,
+      "safe_resolved": 3
+    },
+    "source_label_counts": {
+      "REPROCESS": 4
+    },
+    "source_bucket_counts": {
+      "safe_loss_resolved_to_null": 4
+    },
+    "publish_allowed_rows": 3,
+    "matches_source_native_title_rows": 3,
+    "validation_issue_count": 0
+  },
+  "validation_issues": [],
+  "rows": [
+    {
+      "post_id": 11694041,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_title": "격투 소설 엑스트라가 타격 천재임",
+      "selected_url": "https://novelpia.com/novel/427330",
+      "selected_option_id": "C1",
+      "source_native_verdict": "source_alias_supports_safe_loss_restore",
+      "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts",
+      "evidence_grade": "Strong",
+      "source_actions": [
+        "shared_promotion_gate_wiring_required"
+      ],
+      "projected_status": "safe_resolved",
+      "projected_title": "격투 소설 엑스트라가 타격 천재임",
+      "projected_url": "https://novelpia.com/novel/427330",
+      "matches_source_native_title": true,
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "격투 소설 엑스트라가 타격 천재임",
+        "official_url": "https://novelpia.com/novel/427330",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "publish_contract_trace": {
+        "pre_gate_candidate": {
+          "official_title": "격투 소설 엑스트라가 타격 천재임",
+          "official_url": "https://novelpia.com/novel/427330",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "격투 소설 엑스트라가 타격 천재임",
+          "official_url": "https://novelpia.com/novel/427330",
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        },
+        "scope_state": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        },
+        "post_gate_identity": {
+          "official_title": "격투 소설 엑스트라가 타격 천재임",
+          "official_url": "https://novelpia.com/novel/427330",
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false
+      },
+      "publish_ledger": {
+        "candidate_preservation": {
+          "official_title": "격투 소설 엑스트라가 타격 천재임",
+          "official_url": "https://novelpia.com/novel/427330",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "public_publish": {
+          "official_title": "격투 소설 엑스트라가 타격 천재임",
+          "official_url": "https://novelpia.com/novel/427330",
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "격투 소설 엑스트라가 타격 천재임",
+          "official_url": "https://novelpia.com/novel/427330",
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        }
+      },
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work",
+        "official_detail_url"
+      ],
+      "promotion_gate_state": {
+        "post_id": 11694041,
+        "candidate_title": "격투 소설 엑스트라가 타격 천재임",
+        "candidate_url": "https://novelpia.com/novel/427330",
+        "source": "source_native_residual_queue_shared_gate_projection",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "source_native_review",
+          "strength": "strong",
+          "source_path_or_snippet": "제목의 `격투천재`와 본문/댓글의 경녀감성, 보지킥, 덤벨/바키 비교가 C1 작품 감상 맥락을 직접 지지한다. null로 해소된 safe-loss는 shared PromotionDecision gate를 통해 restore해야 한다.",
+          "supports_publish": true,
+          "reason_code": "source_native_review_current_work"
+        },
+        {
+          "kind": "official_detail_url",
+          "strength": "strong",
+          "source_path_or_snippet": "https://novelpia.com/novel/427330",
+          "supports_publish": false,
+          "reason_code": "official_detail_url"
+        }
+      ],
+      "rationale_ko": "제목의 `격투천재`와 본문/댓글의 경녀감성, 보지킥, 덤벨/바키 비교가 C1 작품 감상 맥락을 직접 지지한다. null로 해소된 safe-loss는 shared PromotionDecision gate를 통해 restore해야 한다.",
+      "evidence_refs": [
+        "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json#post_id=11694041",
+        "https://novelpia.com/novel/427330"
+      ],
+      "analysis_result": {
+        "identity": {
+          "candidate_ledger_status": "safe_resolved",
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "is_resolved_work_discussion": true,
+          "promotion_blocked": false,
+          "safe_resolved": true,
+          "discussion_type": "review",
+          "promotion_blocked_reasons": [],
+          "blocked_official_title": null,
+          "blocked_official_title_url": null,
+          "novel_identity": {
+            "official_title": "격투 소설 엑스트라가 타격 천재임",
+            "heretic_url": "https://novelpia.com/novel/427330",
+            "confidence": "High"
+          },
+          "primary_work": {
+            "official_title": "격투 소설 엑스트라가 타격 천재임",
+            "heretic_url": "https://novelpia.com/novel/427330",
+            "confidence": "High",
+            "source_tier": "post_verdict_source_native_contract",
+            "page_type": "source_native_contract",
+            "reference_role": "primary"
+          },
+          "title_candidates": [
+            {
+              "official_title": "격투 소설 엑스트라가 타격 천재임",
+              "heretic_url": "https://novelpia.com/novel/427330",
+              "confidence": "High",
+              "source_tier": "post_verdict_source_native_contract",
+              "page_type": "source_native_contract",
+              "reference_role": "superseded_candidate",
+              "promotion_policy": "preserve_without_publication",
+              "blocked_by_candidate_audit": true,
+              "negative_evidence": [
+                "post_verdict_expected_restore_superseded_candidate"
+              ]
+            }
+          ],
+          "post_verdict_projection_publish_contract": {
+            "contract_action": "expected_title_restore_contract_case",
+            "source_plan": 11694041,
+            "target_title": "격투 소설 엑스트라가 타격 천재임",
+            "target_url": "https://novelpia.com/novel/427330",
+            "superseded_projection_candidate": {
+              "official_title": "격투 소설 엑스트라가 타격 천재임",
+              "official_url": "https://novelpia.com/novel/427330",
+              "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+            },
+            "rationale_ko": "제목의 `격투천재`와 본문/댓글의 경녀감성, 보지킥, 덤벨/바키 비교가 C1 작품 감상 맥락을 직접 지지한다. null로 해소된 safe-loss는 shared PromotionDecision gate를 통해 restore해야 한다.",
+            "evidence_refs": [
+              "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json#post_id=11694041",
+              "https://novelpia.com/novel/427330"
+            ]
+          },
+          "post_verdict_expected_restore_contract": {
+            "contract_action": "expected_title_restore_contract_case",
+            "source_plan": 11694041,
+            "target_title": "격투 소설 엑스트라가 타격 천재임",
+            "target_url": "https://novelpia.com/novel/427330",
+            "superseded_projection_candidate": {
+              "official_title": "격투 소설 엑스트라가 타격 천재임",
+              "official_url": "https://novelpia.com/novel/427330",
+              "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+            },
+            "rationale_ko": "제목의 `격투천재`와 본문/댓글의 경녀감성, 보지킥, 덤벨/바키 비교가 C1 작품 감상 맥락을 직접 지지한다. null로 해소된 safe-loss는 shared PromotionDecision gate를 통해 restore해야 한다.",
+            "evidence_refs": [
+              "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json#post_id=11694041",
+              "https://novelpia.com/novel/427330"
+            ]
+          },
+          "promotion_decision": {
+            "status": "publish",
+            "publish_allowed": true,
+            "official_title": "격투 소설 엑스트라가 타격 천재임",
+            "official_url": "https://novelpia.com/novel/427330",
+            "candidate_preserved": false,
+            "reason_codes": [
+              "official_title_exists",
+              "row_discusses_work_as_work",
+              "scope_current_work",
+              "source_native_review_current_work",
+              "official_detail_url",
+              "post_verdict_expected_restore_contract_applied",
+              "serialized_public_identity_shared_gate_restored"
+            ],
+            "bypassed_gate": false,
+            "scope": {
+              "scope_kind": "current_work",
+              "confidence": "high",
+              "direct_bridge_sources": [
+                "source_native_review",
+                "shared_promotion_gate_wiring_required",
+                "post_verdict_expected_restore_contract"
+              ],
+              "competing_candidates": [],
+              "conflict_reason_codes": []
+            }
+          },
+          "promotion_gate_state": {
+            "post_id": 11694041,
+            "candidate_title": "격투 소설 엑스트라가 타격 천재임",
+            "candidate_url": "https://novelpia.com/novel/427330",
+            "source": "post_verdict_expected_restore_contract",
+            "official_title_exists": true,
+            "row_discusses_work_as_work": true,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "review",
+            "scope": {
+              "scope_kind": "current_work",
+              "confidence": "high",
+              "direct_bridge_sources": [
+                "source_native_review",
+                "shared_promotion_gate_wiring_required",
+                "post_verdict_expected_restore_contract"
+              ],
+              "competing_candidates": [],
+              "conflict_reason_codes": []
+            }
+          },
+          "publish_contract_trace": {
+            "pre_gate_candidate": {
+              "official_title": "격투 소설 엑스트라가 타격 천재임",
+              "official_url": "https://novelpia.com/novel/427330",
+              "source": "post_verdict_expected_restore_contract"
+            },
+            "gate_decision": {
+              "status": "publish",
+              "publish_allowed": true,
+              "official_title": "격투 소설 엑스트라가 타격 천재임",
+              "official_url": "https://novelpia.com/novel/427330",
+              "candidate_preserved": false,
+              "reason_codes": [
+                "official_title_exists",
+                "row_discusses_work_as_work",
+                "scope_current_work",
+                "source_native_review_current_work",
+                "official_detail_url",
+                "post_verdict_expected_restore_contract_applied",
+                "serialized_public_identity_shared_gate_restored"
+              ],
+              "bypassed_gate": false,
+              "scope": {
+                "scope_kind": "current_work",
+                "confidence": "high",
+                "direct_bridge_sources": [
+                  "source_native_review",
+                  "shared_promotion_gate_wiring_required",
+                  "post_verdict_expected_restore_contract"
+                ],
+                "competing_candidates": [],
+                "conflict_reason_codes": []
+              }
+            },
+            "scope_state": {
+              "scope_kind": "current_work",
+              "confidence": "high",
+              "direct_bridge_sources": [
+                "source_native_review",
+                "shared_promotion_gate_wiring_required",
+                "post_verdict_expected_restore_contract"
+              ],
+              "competing_candidates": [],
+              "conflict_reason_codes": []
+            },
+            "post_gate_identity": {
+              "official_title": "격투 소설 엑스트라가 타격 천재임",
+              "official_url": "https://novelpia.com/novel/427330",
+              "title_resolution_allowed": true,
+              "title_resolution_state": "resolved",
+              "work_resolution": "resolved",
+              "candidate_ledger_status": "safe_resolved"
+            },
+            "reason_codes": [
+              "official_title_exists",
+              "row_discusses_work_as_work",
+              "scope_current_work",
+              "source_native_review_current_work",
+              "official_detail_url",
+              "post_verdict_expected_restore_contract_applied",
+              "serialized_public_identity_shared_gate_restored"
+            ],
+            "bypassed_gate": false,
+            "superseded_projection_candidate": {
+              "official_title": "격투 소설 엑스트라가 타격 천재임",
+              "official_url": "https://novelpia.com/novel/427330",
+              "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+            }
+          },
+          "publish_ledger": {
+            "candidate_preservation": {
+              "official_title": "격투 소설 엑스트라가 타격 천재임",
+              "official_url": "https://novelpia.com/novel/427330",
+              "source": "post_verdict_expected_restore_contract"
+            },
+            "public_publish": {
+              "official_title": "격투 소설 엑스트라가 타격 천재임",
+              "official_url": "https://novelpia.com/novel/427330",
+              "title_resolution_allowed": true,
+              "title_resolution_state": "resolved",
+              "work_resolution": "resolved",
+              "candidate_ledger_status": "safe_resolved"
+            },
+            "gate_decision": {
+              "status": "publish",
+              "publish_allowed": true,
+              "official_title": "격투 소설 엑스트라가 타격 천재임",
+              "official_url": "https://novelpia.com/novel/427330",
+              "candidate_preserved": false,
+              "reason_codes": [
+                "official_title_exists",
+                "row_discusses_work_as_work",
+                "scope_current_work",
+                "source_native_review_current_work",
+                "official_detail_url",
+                "post_verdict_expected_restore_contract_applied",
+                "serialized_public_identity_shared_gate_restored"
+              ],
+              "bypassed_gate": false,
+              "scope": {
+                "scope_kind": "current_work",
+                "confidence": "high",
+                "direct_bridge_sources": [
+                  "source_native_review",
+                  "shared_promotion_gate_wiring_required",
+                  "post_verdict_expected_restore_contract"
+                ],
+                "competing_candidates": [],
+                "conflict_reason_codes": []
+              }
+            },
+            "superseded_projection_candidate": {
+              "official_title": "격투 소설 엑스트라가 타격 천재임",
+              "official_url": "https://novelpia.com/novel/427330",
+              "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+            }
+          },
+          "candidate_ledger": {
+            "pipeline_official_title": "격투 소설 엑스트라가 타격 천재임",
+            "candidate_ledger_status": "safe_resolved",
+            "title_resolution_allowed": true,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "is_resolved_work_discussion": true,
+            "blocked_official_title": null,
+            "blocked_official_title_url": null,
+            "promotion_blocked_reasons": [],
+            "promotion_decision": {
+              "status": "publish",
+              "publish_allowed": true,
+              "official_title": "격투 소설 엑스트라가 타격 천재임",
+              "official_url": "https://novelpia.com/novel/427330",
+              "candidate_preserved": false,
+              "reason_codes": [
+                "official_title_exists",
+                "row_discusses_work_as_work",
+                "scope_current_work",
+                "source_native_review_current_work",
+                "official_detail_url",
+                "post_verdict_expected_restore_contract_applied",
+                "serialized_public_identity_shared_gate_restored"
+              ],
+              "bypassed_gate": false,
+              "scope": {
+                "scope_kind": "current_work",
+                "confidence": "high",
+                "direct_bridge_sources": [
+                  "source_native_review",
+                  "shared_promotion_gate_wiring_required",
+                  "post_verdict_expected_restore_contract"
+                ],
+                "competing_candidates": [],
+                "conflict_reason_codes": []
+              }
+            },
+            "promotion_gate_state": {
+              "post_id": 11694041,
+              "candidate_title": "격투 소설 엑스트라가 타격 천재임",
+              "candidate_url": "https://novelpia.com/novel/427330",
+              "source": "post_verdict_expected_restore_contract",
+              "official_title_exists": true,
+              "row_discusses_work_as_work": true,
+              "title_resolution_state": "resolved",
+              "work_resolution": "resolved",
+              "discussion_type": "review",
+              "scope": {
+                "scope_kind": "current_work",
+                "confidence": "high",
+                "direct_bridge_sources": [
+                  "source_native_review",
+                  "shared_promotion_gate_wiring_required",
+                  "post_verdict_expected_restore_contract"
+                ],
+                "competing_candidates": [],
+                "conflict_reason_codes": []
+              }
+            },
+            "publish_contract_trace": {
+              "pre_gate_candidate": {
+                "official_title": "격투 소설 엑스트라가 타격 천재임",
+                "official_url": "https://novelpia.com/novel/427330",
+                "source": "post_verdict_expected_restore_contract"
+              },
+              "gate_decision": {
+                "status": "publish",
+                "publish_allowed": true,
+                "official_title": "격투 소설 엑스트라가 타격 천재임",
+                "official_url": "https://novelpia.com/novel/427330",
+                "candidate_preserved": false,
+                "reason_codes": [
+                  "official_title_exists",
+                  "row_discusses_work_as_work",
+                  "scope_current_work",
+                  "source_native_review_current_work",
+                  "official_detail_url",
+                  "post_verdict_expected_restore_contract_applied",
+                  "serialized_public_identity_shared_gate_restored"
+                ],
+                "bypassed_gate": false,
+                "scope": {
+                  "scope_kind": "current_work",
+                  "confidence": "high",
+                  "direct_bridge_sources": [
+                    "source_native_review",
+                    "shared_promotion_gate_wiring_required",
+                    "post_verdict_expected_restore_contract"
+                  ],
+                  "competing_candidates": [],
+                  "conflict_reason_codes": []
+                }
+              },
+              "scope_state": {
+                "scope_kind": "current_work",
+                "confidence": "high",
+                "direct_bridge_sources": [
+                  "source_native_review",
+                  "shared_promotion_gate_wiring_required",
+                  "post_verdict_expected_restore_contract"
+                ],
+                "competing_candidates": [],
+                "conflict_reason_codes": []
+              },
+              "post_gate_identity": {
+                "official_title": "격투 소설 엑스트라가 타격 천재임",
+                "official_url": "https://novelpia.com/novel/427330",
+                "title_resolution_allowed": true,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "candidate_ledger_status": "safe_resolved"
+              },
+              "reason_codes": [
+                "official_title_exists",
+                "row_discusses_work_as_work",
+                "scope_current_work",
+                "source_native_review_current_work",
+                "official_detail_url",
+                "post_verdict_expected_restore_contract_applied",
+                "serialized_public_identity_shared_gate_restored"
+              ],
+              "bypassed_gate": false,
+              "superseded_projection_candidate": {
+                "official_title": "격투 소설 엑스트라가 타격 천재임",
+                "official_url": "https://novelpia.com/novel/427330",
+                "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+              }
+            },
+            "publish_ledger": {
+              "candidate_preservation": {
+                "official_title": "격투 소설 엑스트라가 타격 천재임",
+                "official_url": "https://novelpia.com/novel/427330",
+                "source": "post_verdict_expected_restore_contract"
+              },
+              "public_publish": {
+                "official_title": "격투 소설 엑스트라가 타격 천재임",
+                "official_url": "https://novelpia.com/novel/427330",
+                "title_resolution_allowed": true,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "candidate_ledger_status": "safe_resolved"
+              },
+              "gate_decision": {
+                "status": "publish",
+                "publish_allowed": true,
+                "official_title": "격투 소설 엑스트라가 타격 천재임",
+                "official_url": "https://novelpia.com/novel/427330",
+                "candidate_preserved": false,
+                "reason_codes": [
+                  "official_title_exists",
+                  "row_discusses_work_as_work",
+                  "scope_current_work",
+                  "source_native_review_current_work",
+                  "official_detail_url",
+                  "post_verdict_expected_restore_contract_applied",
+                  "serialized_public_identity_shared_gate_restored"
+                ],
+                "bypassed_gate": false,
+                "scope": {
+                  "scope_kind": "current_work",
+                  "confidence": "high",
+                  "direct_bridge_sources": [
+                    "source_native_review",
+                    "shared_promotion_gate_wiring_required",
+                    "post_verdict_expected_restore_contract"
+                  ],
+                  "competing_candidates": [],
+                  "conflict_reason_codes": []
+                }
+              },
+              "superseded_projection_candidate": {
+                "official_title": "격투 소설 엑스트라가 타격 천재임",
+                "official_url": "https://novelpia.com/novel/427330",
+                "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+              }
+            },
+            "superseded_projection_candidate": {
+              "official_title": "격투 소설 엑스트라가 타격 천재임",
+              "official_url": "https://novelpia.com/novel/427330",
+              "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+            }
+          }
+        }
+      },
+      "actual_title": "격투 소설 엑스트라가 타격 천재임",
+      "actual_url": "https://novelpia.com/novel/427330"
+    },
+    {
+      "post_id": 11698859,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_title": "귤부인 대롱대롱",
+      "selected_url": null,
+      "selected_option_id": "C1",
+      "source_native_verdict": "source_title_exact_safe_loss_restore_requires_gate",
+      "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts",
+      "evidence_grade": "Strong",
+      "source_actions": [
+        "official_detail_url_enrichment_required",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "projected_status": "safe_resolved",
+      "projected_title": "귤부인 대롱대롱",
+      "projected_url": null,
+      "matches_source_native_title": true,
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "귤부인 대롱대롱",
+        "official_url": null,
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "publish_contract_trace": {
+        "pre_gate_candidate": {
+          "official_title": "귤부인 대롱대롱",
+          "official_url": null,
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "귤부인 대롱대롱",
+          "official_url": null,
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        },
+        "scope_state": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        },
+        "post_gate_identity": {
+          "official_title": "귤부인 대롱대롱",
+          "official_url": null,
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work"
+        ],
+        "bypassed_gate": false
+      },
+      "publish_ledger": {
+        "candidate_preservation": {
+          "official_title": "귤부인 대롱대롱",
+          "official_url": null,
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "public_publish": {
+          "official_title": "귤부인 대롱대롱",
+          "official_url": null,
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "귤부인 대롱대롱",
+          "official_url": null,
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        }
+      },
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "promotion_gate_state": {
+        "post_id": 11698859,
+        "candidate_title": "귤부인 대롱대롱",
+        "candidate_url": "",
+        "source": "source_native_residual_queue_shared_gate_projection",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "source_native_review",
+          "strength": "strong",
+          "source_path_or_snippet": "게시글 제목이 C1 `귤부인 대롱대롱`을 그대로 말하고 본문도 그 뒤 전개 감상을 이어간다. 다만 후보 URL이 없으므로 shared gate restore와 공식 상세 URL 보강을 함께 요구한다.",
+          "supports_publish": true,
+          "reason_code": "source_native_review_current_work"
+        }
+      ],
+      "rationale_ko": "게시글 제목이 C1 `귤부인 대롱대롱`을 그대로 말하고 본문도 그 뒤 전개 감상을 이어간다. 다만 후보 URL이 없으므로 shared gate restore와 공식 상세 URL 보강을 함께 요구한다.",
+      "evidence_refs": [
+        "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json#post_id=11698859"
+      ],
+      "analysis_result": {
+        "identity": {
+          "candidate_ledger_status": "safe_resolved",
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "is_resolved_work_discussion": true,
+          "promotion_blocked": false,
+          "safe_resolved": true,
+          "discussion_type": "review",
+          "promotion_blocked_reasons": [],
+          "blocked_official_title": null,
+          "blocked_official_title_url": null,
+          "novel_identity": {
+            "official_title": "귤부인 대롱대롱",
+            "heretic_url": null,
+            "confidence": "High"
+          },
+          "primary_work": {
+            "official_title": "귤부인 대롱대롱",
+            "heretic_url": null,
+            "confidence": "High",
+            "source_tier": "post_verdict_source_native_contract",
+            "page_type": "source_native_contract",
+            "reference_role": "primary"
+          },
+          "title_candidates": [
+            {
+              "official_title": "귤부인 대롱대롱",
+              "heretic_url": null,
+              "confidence": "High",
+              "source_tier": "post_verdict_source_native_contract",
+              "page_type": "source_native_contract",
+              "reference_role": "superseded_candidate",
+              "promotion_policy": "preserve_without_publication",
+              "blocked_by_candidate_audit": true,
+              "negative_evidence": [
+                "post_verdict_expected_restore_superseded_candidate"
+              ]
+            }
+          ],
+          "post_verdict_projection_publish_contract": {
+            "contract_action": "expected_title_restore_contract_case",
+            "source_plan": 11698859,
+            "target_title": "귤부인 대롱대롱",
+            "target_url": null,
+            "superseded_projection_candidate": {
+              "official_title": "귤부인 대롱대롱",
+              "official_url": null,
+              "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+            },
+            "rationale_ko": "게시글 제목이 C1 `귤부인 대롱대롱`을 그대로 말하고 본문도 그 뒤 전개 감상을 이어간다. 다만 후보 URL이 없으므로 shared gate restore와 공식 상세 URL 보강을 함께 요구한다.",
+            "evidence_refs": [
+              "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json#post_id=11698859"
+            ]
+          },
+          "post_verdict_expected_restore_contract": {
+            "contract_action": "expected_title_restore_contract_case",
+            "source_plan": 11698859,
+            "target_title": "귤부인 대롱대롱",
+            "target_url": null,
+            "superseded_projection_candidate": {
+              "official_title": "귤부인 대롱대롱",
+              "official_url": null,
+              "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+            },
+            "rationale_ko": "게시글 제목이 C1 `귤부인 대롱대롱`을 그대로 말하고 본문도 그 뒤 전개 감상을 이어간다. 다만 후보 URL이 없으므로 shared gate restore와 공식 상세 URL 보강을 함께 요구한다.",
+            "evidence_refs": [
+              "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json#post_id=11698859"
+            ]
+          },
+          "promotion_decision": {
+            "status": "publish",
+            "publish_allowed": true,
+            "official_title": "귤부인 대롱대롱",
+            "official_url": null,
+            "candidate_preserved": false,
+            "reason_codes": [
+              "official_title_exists",
+              "row_discusses_work_as_work",
+              "scope_current_work",
+              "source_native_review_current_work",
+              "post_verdict_expected_restore_contract_applied",
+              "serialized_public_identity_shared_gate_restored"
+            ],
+            "bypassed_gate": false,
+            "scope": {
+              "scope_kind": "current_work",
+              "confidence": "high",
+              "direct_bridge_sources": [
+                "source_native_review",
+                "shared_promotion_gate_wiring_required",
+                "post_verdict_expected_restore_contract"
+              ],
+              "competing_candidates": [],
+              "conflict_reason_codes": []
+            }
+          },
+          "promotion_gate_state": {
+            "post_id": 11698859,
+            "candidate_title": "귤부인 대롱대롱",
+            "candidate_url": "",
+            "source": "post_verdict_expected_restore_contract",
+            "official_title_exists": true,
+            "row_discusses_work_as_work": true,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "review",
+            "scope": {
+              "scope_kind": "current_work",
+              "confidence": "high",
+              "direct_bridge_sources": [
+                "source_native_review",
+                "shared_promotion_gate_wiring_required",
+                "post_verdict_expected_restore_contract"
+              ],
+              "competing_candidates": [],
+              "conflict_reason_codes": []
+            }
+          },
+          "publish_contract_trace": {
+            "pre_gate_candidate": {
+              "official_title": "귤부인 대롱대롱",
+              "official_url": null,
+              "source": "post_verdict_expected_restore_contract"
+            },
+            "gate_decision": {
+              "status": "publish",
+              "publish_allowed": true,
+              "official_title": "귤부인 대롱대롱",
+              "official_url": null,
+              "candidate_preserved": false,
+              "reason_codes": [
+                "official_title_exists",
+                "row_discusses_work_as_work",
+                "scope_current_work",
+                "source_native_review_current_work",
+                "post_verdict_expected_restore_contract_applied",
+                "serialized_public_identity_shared_gate_restored"
+              ],
+              "bypassed_gate": false,
+              "scope": {
+                "scope_kind": "current_work",
+                "confidence": "high",
+                "direct_bridge_sources": [
+                  "source_native_review",
+                  "shared_promotion_gate_wiring_required",
+                  "post_verdict_expected_restore_contract"
+                ],
+                "competing_candidates": [],
+                "conflict_reason_codes": []
+              }
+            },
+            "scope_state": {
+              "scope_kind": "current_work",
+              "confidence": "high",
+              "direct_bridge_sources": [
+                "source_native_review",
+                "shared_promotion_gate_wiring_required",
+                "post_verdict_expected_restore_contract"
+              ],
+              "competing_candidates": [],
+              "conflict_reason_codes": []
+            },
+            "post_gate_identity": {
+              "official_title": "귤부인 대롱대롱",
+              "official_url": null,
+              "title_resolution_allowed": true,
+              "title_resolution_state": "resolved",
+              "work_resolution": "resolved",
+              "candidate_ledger_status": "safe_resolved"
+            },
+            "reason_codes": [
+              "official_title_exists",
+              "row_discusses_work_as_work",
+              "scope_current_work",
+              "source_native_review_current_work",
+              "post_verdict_expected_restore_contract_applied",
+              "serialized_public_identity_shared_gate_restored"
+            ],
+            "bypassed_gate": false,
+            "superseded_projection_candidate": {
+              "official_title": "귤부인 대롱대롱",
+              "official_url": null,
+              "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+            }
+          },
+          "publish_ledger": {
+            "candidate_preservation": {
+              "official_title": "귤부인 대롱대롱",
+              "official_url": null,
+              "source": "post_verdict_expected_restore_contract"
+            },
+            "public_publish": {
+              "official_title": "귤부인 대롱대롱",
+              "official_url": null,
+              "title_resolution_allowed": true,
+              "title_resolution_state": "resolved",
+              "work_resolution": "resolved",
+              "candidate_ledger_status": "safe_resolved"
+            },
+            "gate_decision": {
+              "status": "publish",
+              "publish_allowed": true,
+              "official_title": "귤부인 대롱대롱",
+              "official_url": null,
+              "candidate_preserved": false,
+              "reason_codes": [
+                "official_title_exists",
+                "row_discusses_work_as_work",
+                "scope_current_work",
+                "source_native_review_current_work",
+                "post_verdict_expected_restore_contract_applied",
+                "serialized_public_identity_shared_gate_restored"
+              ],
+              "bypassed_gate": false,
+              "scope": {
+                "scope_kind": "current_work",
+                "confidence": "high",
+                "direct_bridge_sources": [
+                  "source_native_review",
+                  "shared_promotion_gate_wiring_required",
+                  "post_verdict_expected_restore_contract"
+                ],
+                "competing_candidates": [],
+                "conflict_reason_codes": []
+              }
+            },
+            "superseded_projection_candidate": {
+              "official_title": "귤부인 대롱대롱",
+              "official_url": null,
+              "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+            }
+          },
+          "candidate_ledger": {
+            "pipeline_official_title": "귤부인 대롱대롱",
+            "candidate_ledger_status": "safe_resolved",
+            "title_resolution_allowed": true,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "is_resolved_work_discussion": true,
+            "blocked_official_title": null,
+            "blocked_official_title_url": null,
+            "promotion_blocked_reasons": [],
+            "promotion_decision": {
+              "status": "publish",
+              "publish_allowed": true,
+              "official_title": "귤부인 대롱대롱",
+              "official_url": null,
+              "candidate_preserved": false,
+              "reason_codes": [
+                "official_title_exists",
+                "row_discusses_work_as_work",
+                "scope_current_work",
+                "source_native_review_current_work",
+                "post_verdict_expected_restore_contract_applied",
+                "serialized_public_identity_shared_gate_restored"
+              ],
+              "bypassed_gate": false,
+              "scope": {
+                "scope_kind": "current_work",
+                "confidence": "high",
+                "direct_bridge_sources": [
+                  "source_native_review",
+                  "shared_promotion_gate_wiring_required",
+                  "post_verdict_expected_restore_contract"
+                ],
+                "competing_candidates": [],
+                "conflict_reason_codes": []
+              }
+            },
+            "promotion_gate_state": {
+              "post_id": 11698859,
+              "candidate_title": "귤부인 대롱대롱",
+              "candidate_url": "",
+              "source": "post_verdict_expected_restore_contract",
+              "official_title_exists": true,
+              "row_discusses_work_as_work": true,
+              "title_resolution_state": "resolved",
+              "work_resolution": "resolved",
+              "discussion_type": "review",
+              "scope": {
+                "scope_kind": "current_work",
+                "confidence": "high",
+                "direct_bridge_sources": [
+                  "source_native_review",
+                  "shared_promotion_gate_wiring_required",
+                  "post_verdict_expected_restore_contract"
+                ],
+                "competing_candidates": [],
+                "conflict_reason_codes": []
+              }
+            },
+            "publish_contract_trace": {
+              "pre_gate_candidate": {
+                "official_title": "귤부인 대롱대롱",
+                "official_url": null,
+                "source": "post_verdict_expected_restore_contract"
+              },
+              "gate_decision": {
+                "status": "publish",
+                "publish_allowed": true,
+                "official_title": "귤부인 대롱대롱",
+                "official_url": null,
+                "candidate_preserved": false,
+                "reason_codes": [
+                  "official_title_exists",
+                  "row_discusses_work_as_work",
+                  "scope_current_work",
+                  "source_native_review_current_work",
+                  "post_verdict_expected_restore_contract_applied",
+                  "serialized_public_identity_shared_gate_restored"
+                ],
+                "bypassed_gate": false,
+                "scope": {
+                  "scope_kind": "current_work",
+                  "confidence": "high",
+                  "direct_bridge_sources": [
+                    "source_native_review",
+                    "shared_promotion_gate_wiring_required",
+                    "post_verdict_expected_restore_contract"
+                  ],
+                  "competing_candidates": [],
+                  "conflict_reason_codes": []
+                }
+              },
+              "scope_state": {
+                "scope_kind": "current_work",
+                "confidence": "high",
+                "direct_bridge_sources": [
+                  "source_native_review",
+                  "shared_promotion_gate_wiring_required",
+                  "post_verdict_expected_restore_contract"
+                ],
+                "competing_candidates": [],
+                "conflict_reason_codes": []
+              },
+              "post_gate_identity": {
+                "official_title": "귤부인 대롱대롱",
+                "official_url": null,
+                "title_resolution_allowed": true,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "candidate_ledger_status": "safe_resolved"
+              },
+              "reason_codes": [
+                "official_title_exists",
+                "row_discusses_work_as_work",
+                "scope_current_work",
+                "source_native_review_current_work",
+                "post_verdict_expected_restore_contract_applied",
+                "serialized_public_identity_shared_gate_restored"
+              ],
+              "bypassed_gate": false,
+              "superseded_projection_candidate": {
+                "official_title": "귤부인 대롱대롱",
+                "official_url": null,
+                "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+              }
+            },
+            "publish_ledger": {
+              "candidate_preservation": {
+                "official_title": "귤부인 대롱대롱",
+                "official_url": null,
+                "source": "post_verdict_expected_restore_contract"
+              },
+              "public_publish": {
+                "official_title": "귤부인 대롱대롱",
+                "official_url": null,
+                "title_resolution_allowed": true,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "candidate_ledger_status": "safe_resolved"
+              },
+              "gate_decision": {
+                "status": "publish",
+                "publish_allowed": true,
+                "official_title": "귤부인 대롱대롱",
+                "official_url": null,
+                "candidate_preserved": false,
+                "reason_codes": [
+                  "official_title_exists",
+                  "row_discusses_work_as_work",
+                  "scope_current_work",
+                  "source_native_review_current_work",
+                  "post_verdict_expected_restore_contract_applied",
+                  "serialized_public_identity_shared_gate_restored"
+                ],
+                "bypassed_gate": false,
+                "scope": {
+                  "scope_kind": "current_work",
+                  "confidence": "high",
+                  "direct_bridge_sources": [
+                    "source_native_review",
+                    "shared_promotion_gate_wiring_required",
+                    "post_verdict_expected_restore_contract"
+                  ],
+                  "competing_candidates": [],
+                  "conflict_reason_codes": []
+                }
+              },
+              "superseded_projection_candidate": {
+                "official_title": "귤부인 대롱대롱",
+                "official_url": null,
+                "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+              }
+            },
+            "superseded_projection_candidate": {
+              "official_title": "귤부인 대롱대롱",
+              "official_url": null,
+              "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+            }
+          }
+        }
+      },
+      "actual_title": "귤부인 대롱대롱",
+      "actual_url": null
+    },
+    {
+      "post_id": 11706844,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_title": "호랑이 사냥꾼",
+      "selected_url": "https://m.munpia.com/novel/detail/522066",
+      "selected_option_id": "CODEX_NATIVE_WEB_JUDGE",
+      "source_native_verdict": "codex_native_web_judge_reprocess_under_resolved",
+      "source_review_id": "loop595_residual46_native_web_judge_source_native_review",
+      "evidence_grade": "Medium",
+      "source_actions": [
+        "native_web_judge_reprocess_required",
+        "native_web_reverify_required",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "projected_status": "safe_resolved",
+      "projected_title": "호랑이 사냥꾼",
+      "projected_url": "https://m.munpia.com/novel/detail/522066",
+      "matches_source_native_title": true,
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "호랑이 사냥꾼",
+        "official_url": "https://m.munpia.com/novel/detail/522066",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "medium",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "publish_contract_trace": {
+        "pre_gate_candidate": {
+          "official_title": "호랑이 사냥꾼",
+          "official_url": "https://m.munpia.com/novel/detail/522066",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "호랑이 사냥꾼",
+          "official_url": "https://m.munpia.com/novel/detail/522066",
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "medium",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        },
+        "scope_state": {
+          "scope_kind": "current_work",
+          "confidence": "medium",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        },
+        "post_gate_identity": {
+          "official_title": "호랑이 사냥꾼",
+          "official_url": "https://m.munpia.com/novel/detail/522066",
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false
+      },
+      "publish_ledger": {
+        "candidate_preservation": {
+          "official_title": "호랑이 사냥꾼",
+          "official_url": "https://m.munpia.com/novel/detail/522066",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "public_publish": {
+          "official_title": "호랑이 사냥꾼",
+          "official_url": "https://m.munpia.com/novel/detail/522066",
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "호랑이 사냥꾼",
+          "official_url": "https://m.munpia.com/novel/detail/522066",
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "medium",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        }
+      },
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work",
+        "official_detail_url"
+      ],
+      "promotion_gate_state": {
+        "post_id": 11706844,
+        "candidate_title": "호랑이 사냥꾼",
+        "candidate_url": "https://m.munpia.com/novel/detail/522066",
+        "source": "source_native_residual_queue_shared_gate_projection",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "medium",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "source_native_review",
+          "strength": "medium",
+          "source_path_or_snippet": "OCR에는 '범 먹는 괴이 사냥꾼'과 작가 편곤이 명시되어 있고, 현재 문피아 공식 상세는 같은 작가·같은 조선 이매망량 설명의 '호랑이 사냥꾼'으로 확인된다. OCR 제목과 현재 공식 제목이 달라 재검증은 필요하지만, null로 둔 파이프라인은 과소해결이다.",
+          "supports_publish": true,
+          "reason_code": "source_native_review_current_work"
+        },
+        {
+          "kind": "official_detail_url",
+          "strength": "strong",
+          "source_path_or_snippet": "https://m.munpia.com/novel/detail/522066",
+          "supports_publish": false,
+          "reason_code": "official_detail_url"
+        }
+      ],
+      "rationale_ko": "OCR에는 '범 먹는 괴이 사냥꾼'과 작가 편곤이 명시되어 있고, 현재 문피아 공식 상세는 같은 작가·같은 조선 이매망량 설명의 '호랑이 사냥꾼'으로 확인된다. OCR 제목과 현재 공식 제목이 달라 재검증은 필요하지만, null로 둔 파이프라인은 과소해결이다.",
+      "evidence_refs": [
+        "out/codex_native_web_judge_20260620_165159_711176_completed779/verdicts#post_id=11706844",
+        "https://m.munpia.com/novel/detail/522066",
+        "https://www.webtoonguide.com/ko/db/producer-name/%ED%8E%B8%EA%B3%A4",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11706844",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11706844",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11706844"
+      ],
+      "analysis_result": {
+        "identity": {
+          "candidate_ledger_status": "safe_resolved",
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "is_resolved_work_discussion": true,
+          "promotion_blocked": false,
+          "safe_resolved": true,
+          "discussion_type": "review",
+          "promotion_blocked_reasons": [],
+          "blocked_official_title": null,
+          "blocked_official_title_url": null,
+          "novel_identity": {
+            "official_title": "호랑이 사냥꾼",
+            "heretic_url": "https://m.munpia.com/novel/detail/522066",
+            "confidence": "High"
+          },
+          "primary_work": {
+            "official_title": "호랑이 사냥꾼",
+            "heretic_url": "https://m.munpia.com/novel/detail/522066",
+            "confidence": "High",
+            "source_tier": "post_verdict_source_native_contract",
+            "page_type": "source_native_contract",
+            "reference_role": "primary"
+          },
+          "title_candidates": [
+            {
+              "official_title": "호랑이 사냥꾼",
+              "heretic_url": "https://m.munpia.com/novel/detail/522066",
+              "confidence": "High",
+              "source_tier": "post_verdict_source_native_contract",
+              "page_type": "source_native_contract",
+              "reference_role": "superseded_candidate",
+              "promotion_policy": "preserve_without_publication",
+              "blocked_by_candidate_audit": true,
+              "negative_evidence": [
+                "post_verdict_expected_restore_superseded_candidate"
+              ]
+            }
+          ],
+          "post_verdict_projection_publish_contract": {
+            "contract_action": "expected_title_restore_contract_case",
+            "source_plan": 11706844,
+            "target_title": "호랑이 사냥꾼",
+            "target_url": "https://m.munpia.com/novel/detail/522066",
+            "superseded_projection_candidate": {
+              "official_title": "호랑이 사냥꾼",
+              "official_url": "https://m.munpia.com/novel/detail/522066",
+              "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+            },
+            "rationale_ko": "OCR에는 '범 먹는 괴이 사냥꾼'과 작가 편곤이 명시되어 있고, 현재 문피아 공식 상세는 같은 작가·같은 조선 이매망량 설명의 '호랑이 사냥꾼'으로 확인된다. OCR 제목과 현재 공식 제목이 달라 재검증은 필요하지만, null로 둔 파이프라인은 과소해결이다.",
+            "evidence_refs": [
+              "out/codex_native_web_judge_20260620_165159_711176_completed779/verdicts#post_id=11706844",
+              "https://m.munpia.com/novel/detail/522066",
+              "https://www.webtoonguide.com/ko/db/producer-name/%ED%8E%B8%EA%B3%A4",
+              "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11706844",
+              "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11706844",
+              "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11706844"
+            ]
+          },
+          "post_verdict_expected_restore_contract": {
+            "contract_action": "expected_title_restore_contract_case",
+            "source_plan": 11706844,
+            "target_title": "호랑이 사냥꾼",
+            "target_url": "https://m.munpia.com/novel/detail/522066",
+            "superseded_projection_candidate": {
+              "official_title": "호랑이 사냥꾼",
+              "official_url": "https://m.munpia.com/novel/detail/522066",
+              "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+            },
+            "rationale_ko": "OCR에는 '범 먹는 괴이 사냥꾼'과 작가 편곤이 명시되어 있고, 현재 문피아 공식 상세는 같은 작가·같은 조선 이매망량 설명의 '호랑이 사냥꾼'으로 확인된다. OCR 제목과 현재 공식 제목이 달라 재검증은 필요하지만, null로 둔 파이프라인은 과소해결이다.",
+            "evidence_refs": [
+              "out/codex_native_web_judge_20260620_165159_711176_completed779/verdicts#post_id=11706844",
+              "https://m.munpia.com/novel/detail/522066",
+              "https://www.webtoonguide.com/ko/db/producer-name/%ED%8E%B8%EA%B3%A4",
+              "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11706844",
+              "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11706844",
+              "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11706844"
+            ]
+          },
+          "promotion_decision": {
+            "status": "publish",
+            "publish_allowed": true,
+            "official_title": "호랑이 사냥꾼",
+            "official_url": "https://m.munpia.com/novel/detail/522066",
+            "candidate_preserved": false,
+            "reason_codes": [
+              "official_title_exists",
+              "row_discusses_work_as_work",
+              "scope_current_work",
+              "source_native_review_current_work",
+              "official_detail_url",
+              "post_verdict_expected_restore_contract_applied",
+              "serialized_public_identity_shared_gate_restored"
+            ],
+            "bypassed_gate": false,
+            "scope": {
+              "scope_kind": "current_work",
+              "confidence": "medium",
+              "direct_bridge_sources": [
+                "source_native_review",
+                "shared_promotion_gate_wiring_required",
+                "post_verdict_expected_restore_contract"
+              ],
+              "competing_candidates": [],
+              "conflict_reason_codes": []
+            }
+          },
+          "promotion_gate_state": {
+            "post_id": 11706844,
+            "candidate_title": "호랑이 사냥꾼",
+            "candidate_url": "https://m.munpia.com/novel/detail/522066",
+            "source": "post_verdict_expected_restore_contract",
+            "official_title_exists": true,
+            "row_discusses_work_as_work": true,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "review",
+            "scope": {
+              "scope_kind": "current_work",
+              "confidence": "medium",
+              "direct_bridge_sources": [
+                "source_native_review",
+                "shared_promotion_gate_wiring_required",
+                "post_verdict_expected_restore_contract"
+              ],
+              "competing_candidates": [],
+              "conflict_reason_codes": []
+            }
+          },
+          "publish_contract_trace": {
+            "pre_gate_candidate": {
+              "official_title": "호랑이 사냥꾼",
+              "official_url": "https://m.munpia.com/novel/detail/522066",
+              "source": "post_verdict_expected_restore_contract"
+            },
+            "gate_decision": {
+              "status": "publish",
+              "publish_allowed": true,
+              "official_title": "호랑이 사냥꾼",
+              "official_url": "https://m.munpia.com/novel/detail/522066",
+              "candidate_preserved": false,
+              "reason_codes": [
+                "official_title_exists",
+                "row_discusses_work_as_work",
+                "scope_current_work",
+                "source_native_review_current_work",
+                "official_detail_url",
+                "post_verdict_expected_restore_contract_applied",
+                "serialized_public_identity_shared_gate_restored"
+              ],
+              "bypassed_gate": false,
+              "scope": {
+                "scope_kind": "current_work",
+                "confidence": "medium",
+                "direct_bridge_sources": [
+                  "source_native_review",
+                  "shared_promotion_gate_wiring_required",
+                  "post_verdict_expected_restore_contract"
+                ],
+                "competing_candidates": [],
+                "conflict_reason_codes": []
+              }
+            },
+            "scope_state": {
+              "scope_kind": "current_work",
+              "confidence": "medium",
+              "direct_bridge_sources": [
+                "source_native_review",
+                "shared_promotion_gate_wiring_required",
+                "post_verdict_expected_restore_contract"
+              ],
+              "competing_candidates": [],
+              "conflict_reason_codes": []
+            },
+            "post_gate_identity": {
+              "official_title": "호랑이 사냥꾼",
+              "official_url": "https://m.munpia.com/novel/detail/522066",
+              "title_resolution_allowed": true,
+              "title_resolution_state": "resolved",
+              "work_resolution": "resolved",
+              "candidate_ledger_status": "safe_resolved"
+            },
+            "reason_codes": [
+              "official_title_exists",
+              "row_discusses_work_as_work",
+              "scope_current_work",
+              "source_native_review_current_work",
+              "official_detail_url",
+              "post_verdict_expected_restore_contract_applied",
+              "serialized_public_identity_shared_gate_restored"
+            ],
+            "bypassed_gate": false,
+            "superseded_projection_candidate": {
+              "official_title": "호랑이 사냥꾼",
+              "official_url": "https://m.munpia.com/novel/detail/522066",
+              "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+            }
+          },
+          "publish_ledger": {
+            "candidate_preservation": {
+              "official_title": "호랑이 사냥꾼",
+              "official_url": "https://m.munpia.com/novel/detail/522066",
+              "source": "post_verdict_expected_restore_contract"
+            },
+            "public_publish": {
+              "official_title": "호랑이 사냥꾼",
+              "official_url": "https://m.munpia.com/novel/detail/522066",
+              "title_resolution_allowed": true,
+              "title_resolution_state": "resolved",
+              "work_resolution": "resolved",
+              "candidate_ledger_status": "safe_resolved"
+            },
+            "gate_decision": {
+              "status": "publish",
+              "publish_allowed": true,
+              "official_title": "호랑이 사냥꾼",
+              "official_url": "https://m.munpia.com/novel/detail/522066",
+              "candidate_preserved": false,
+              "reason_codes": [
+                "official_title_exists",
+                "row_discusses_work_as_work",
+                "scope_current_work",
+                "source_native_review_current_work",
+                "official_detail_url",
+                "post_verdict_expected_restore_contract_applied",
+                "serialized_public_identity_shared_gate_restored"
+              ],
+              "bypassed_gate": false,
+              "scope": {
+                "scope_kind": "current_work",
+                "confidence": "medium",
+                "direct_bridge_sources": [
+                  "source_native_review",
+                  "shared_promotion_gate_wiring_required",
+                  "post_verdict_expected_restore_contract"
+                ],
+                "competing_candidates": [],
+                "conflict_reason_codes": []
+              }
+            },
+            "superseded_projection_candidate": {
+              "official_title": "호랑이 사냥꾼",
+              "official_url": "https://m.munpia.com/novel/detail/522066",
+              "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+            }
+          },
+          "candidate_ledger": {
+            "pipeline_official_title": "호랑이 사냥꾼",
+            "candidate_ledger_status": "safe_resolved",
+            "title_resolution_allowed": true,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "is_resolved_work_discussion": true,
+            "blocked_official_title": null,
+            "blocked_official_title_url": null,
+            "promotion_blocked_reasons": [],
+            "promotion_decision": {
+              "status": "publish",
+              "publish_allowed": true,
+              "official_title": "호랑이 사냥꾼",
+              "official_url": "https://m.munpia.com/novel/detail/522066",
+              "candidate_preserved": false,
+              "reason_codes": [
+                "official_title_exists",
+                "row_discusses_work_as_work",
+                "scope_current_work",
+                "source_native_review_current_work",
+                "official_detail_url",
+                "post_verdict_expected_restore_contract_applied",
+                "serialized_public_identity_shared_gate_restored"
+              ],
+              "bypassed_gate": false,
+              "scope": {
+                "scope_kind": "current_work",
+                "confidence": "medium",
+                "direct_bridge_sources": [
+                  "source_native_review",
+                  "shared_promotion_gate_wiring_required",
+                  "post_verdict_expected_restore_contract"
+                ],
+                "competing_candidates": [],
+                "conflict_reason_codes": []
+              }
+            },
+            "promotion_gate_state": {
+              "post_id": 11706844,
+              "candidate_title": "호랑이 사냥꾼",
+              "candidate_url": "https://m.munpia.com/novel/detail/522066",
+              "source": "post_verdict_expected_restore_contract",
+              "official_title_exists": true,
+              "row_discusses_work_as_work": true,
+              "title_resolution_state": "resolved",
+              "work_resolution": "resolved",
+              "discussion_type": "review",
+              "scope": {
+                "scope_kind": "current_work",
+                "confidence": "medium",
+                "direct_bridge_sources": [
+                  "source_native_review",
+                  "shared_promotion_gate_wiring_required",
+                  "post_verdict_expected_restore_contract"
+                ],
+                "competing_candidates": [],
+                "conflict_reason_codes": []
+              }
+            },
+            "publish_contract_trace": {
+              "pre_gate_candidate": {
+                "official_title": "호랑이 사냥꾼",
+                "official_url": "https://m.munpia.com/novel/detail/522066",
+                "source": "post_verdict_expected_restore_contract"
+              },
+              "gate_decision": {
+                "status": "publish",
+                "publish_allowed": true,
+                "official_title": "호랑이 사냥꾼",
+                "official_url": "https://m.munpia.com/novel/detail/522066",
+                "candidate_preserved": false,
+                "reason_codes": [
+                  "official_title_exists",
+                  "row_discusses_work_as_work",
+                  "scope_current_work",
+                  "source_native_review_current_work",
+                  "official_detail_url",
+                  "post_verdict_expected_restore_contract_applied",
+                  "serialized_public_identity_shared_gate_restored"
+                ],
+                "bypassed_gate": false,
+                "scope": {
+                  "scope_kind": "current_work",
+                  "confidence": "medium",
+                  "direct_bridge_sources": [
+                    "source_native_review",
+                    "shared_promotion_gate_wiring_required",
+                    "post_verdict_expected_restore_contract"
+                  ],
+                  "competing_candidates": [],
+                  "conflict_reason_codes": []
+                }
+              },
+              "scope_state": {
+                "scope_kind": "current_work",
+                "confidence": "medium",
+                "direct_bridge_sources": [
+                  "source_native_review",
+                  "shared_promotion_gate_wiring_required",
+                  "post_verdict_expected_restore_contract"
+                ],
+                "competing_candidates": [],
+                "conflict_reason_codes": []
+              },
+              "post_gate_identity": {
+                "official_title": "호랑이 사냥꾼",
+                "official_url": "https://m.munpia.com/novel/detail/522066",
+                "title_resolution_allowed": true,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "candidate_ledger_status": "safe_resolved"
+              },
+              "reason_codes": [
+                "official_title_exists",
+                "row_discusses_work_as_work",
+                "scope_current_work",
+                "source_native_review_current_work",
+                "official_detail_url",
+                "post_verdict_expected_restore_contract_applied",
+                "serialized_public_identity_shared_gate_restored"
+              ],
+              "bypassed_gate": false,
+              "superseded_projection_candidate": {
+                "official_title": "호랑이 사냥꾼",
+                "official_url": "https://m.munpia.com/novel/detail/522066",
+                "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+              }
+            },
+            "publish_ledger": {
+              "candidate_preservation": {
+                "official_title": "호랑이 사냥꾼",
+                "official_url": "https://m.munpia.com/novel/detail/522066",
+                "source": "post_verdict_expected_restore_contract"
+              },
+              "public_publish": {
+                "official_title": "호랑이 사냥꾼",
+                "official_url": "https://m.munpia.com/novel/detail/522066",
+                "title_resolution_allowed": true,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "candidate_ledger_status": "safe_resolved"
+              },
+              "gate_decision": {
+                "status": "publish",
+                "publish_allowed": true,
+                "official_title": "호랑이 사냥꾼",
+                "official_url": "https://m.munpia.com/novel/detail/522066",
+                "candidate_preserved": false,
+                "reason_codes": [
+                  "official_title_exists",
+                  "row_discusses_work_as_work",
+                  "scope_current_work",
+                  "source_native_review_current_work",
+                  "official_detail_url",
+                  "post_verdict_expected_restore_contract_applied",
+                  "serialized_public_identity_shared_gate_restored"
+                ],
+                "bypassed_gate": false,
+                "scope": {
+                  "scope_kind": "current_work",
+                  "confidence": "medium",
+                  "direct_bridge_sources": [
+                    "source_native_review",
+                    "shared_promotion_gate_wiring_required",
+                    "post_verdict_expected_restore_contract"
+                  ],
+                  "competing_candidates": [],
+                  "conflict_reason_codes": []
+                }
+              },
+              "superseded_projection_candidate": {
+                "official_title": "호랑이 사냥꾼",
+                "official_url": "https://m.munpia.com/novel/detail/522066",
+                "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+              }
+            },
+            "superseded_projection_candidate": {
+              "official_title": "호랑이 사냥꾼",
+              "official_url": "https://m.munpia.com/novel/detail/522066",
+              "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+            }
+          }
+        }
+      },
+      "actual_title": "호랑이 사냥꾼",
+      "actual_url": "https://m.munpia.com/novel/detail/522066"
+    },
+    {
+      "post_id": 11710047,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_title": "아카데미 속 미움받는 악역이 되었다",
+      "selected_url": "https://novelpia.com/novel/387035",
+      "selected_option_id": "CODEX_NATIVE_WEB_JUDGE",
+      "source_native_verdict": "codex_native_web_judge_reprocess_wrong_work",
+      "source_review_id": "loop595_residual46_native_web_judge_source_native_review",
+      "evidence_grade": "Strong",
+      "source_actions": [
+        "native_web_judge_reprocess_required",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "projected_status": "promotion_blocked",
+      "projected_title": null,
+      "projected_url": null,
+      "matches_source_native_title": false,
+      "promotion_decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": true,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discussion_missing",
+          "context_only",
+          "scope_context_only",
+          "scope_not_current_work",
+          "source_native_support_not_sufficient",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "context_only",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "source_native_support_not_sufficient"
+          ]
+        }
+      },
+      "publish_contract_trace": {
+        "pre_gate_candidate": {
+          "official_title": "아카데미 속 미움받는 악역이 되었다",
+          "official_url": "https://novelpia.com/novel/387035",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "gate_decision": {
+          "status": "candidate_only",
+          "publish_allowed": false,
+          "official_title": null,
+          "official_url": null,
+          "candidate_preserved": true,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discussion_missing",
+            "context_only",
+            "scope_context_only",
+            "scope_not_current_work",
+            "source_native_support_not_sufficient",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "context_only",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": [
+              "source_native_support_not_sufficient"
+            ]
+          }
+        },
+        "scope_state": {
+          "scope_kind": "context_only",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "source_native_support_not_sufficient"
+          ]
+        },
+        "post_gate_identity": {
+          "official_title": null,
+          "official_url": null,
+          "title_resolution_allowed": false,
+          "title_resolution_state": "context_only",
+          "work_resolution": "unresolved",
+          "candidate_ledger_status": "promotion_blocked"
+        },
+        "reason_codes": [
+          "official_title_exists",
+          "row_discussion_missing",
+          "context_only",
+          "scope_context_only",
+          "scope_not_current_work",
+          "source_native_support_not_sufficient",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false
+      },
+      "publish_ledger": {
+        "candidate_preservation": {
+          "official_title": "아카데미 속 미움받는 악역이 되었다",
+          "official_url": "https://novelpia.com/novel/387035",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "public_publish": {
+          "official_title": null,
+          "official_url": null,
+          "title_resolution_allowed": false,
+          "title_resolution_state": "context_only",
+          "work_resolution": "unresolved",
+          "candidate_ledger_status": "promotion_blocked"
+        },
+        "gate_decision": {
+          "status": "candidate_only",
+          "publish_allowed": false,
+          "official_title": null,
+          "official_url": null,
+          "candidate_preserved": true,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discussion_missing",
+            "context_only",
+            "scope_context_only",
+            "scope_not_current_work",
+            "source_native_support_not_sufficient",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "context_only",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": [
+              "source_native_support_not_sufficient"
+            ]
+          }
+        }
+      },
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discussion_missing",
+        "context_only",
+        "scope_context_only",
+        "scope_not_current_work",
+        "source_native_support_not_sufficient",
+        "official_detail_url"
+      ],
+      "promotion_gate_state": {
+        "post_id": 11710047,
+        "candidate_title": "아카데미 속 미움받는 악역이 되었다",
+        "candidate_url": "https://novelpia.com/novel/387035",
+        "source": "source_native_residual_queue_shared_gate_projection",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": false,
+        "title_resolution_state": "context_only",
+        "work_resolution": "unresolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "context_only",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "source_native_support_not_sufficient"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "source_native_review",
+          "strength": "strong",
+          "source_path_or_snippet": "이미지 OCR에는 제목이 '아카데미 속 미움받는 악역이 되었다'이고 작가도 파워후단벌신사 계열로 읽히며, 노벨피아 공식 상세 페이지에서도 같은 작품과 URL이 확인되므로 파이프라인이 선택한 '로판 속 미움받는 악역이 되었다'는 유사 제목의 다른 작품으로 판단됩니다.",
+          "supports_publish": false,
+          "reason_code": "source_native_support_not_sufficient"
+        },
+        {
+          "kind": "official_detail_url",
+          "strength": "strong",
+          "source_path_or_snippet": "https://novelpia.com/novel/387035",
+          "supports_publish": false,
+          "reason_code": "official_detail_url"
+        }
+      ],
+      "rationale_ko": "이미지 OCR에는 제목이 '아카데미 속 미움받는 악역이 되었다'이고 작가도 파워후단벌신사 계열로 읽히며, 노벨피아 공식 상세 페이지에서도 같은 작품과 URL이 확인되므로 파이프라인이 선택한 '로판 속 미움받는 악역이 되었다'는 유사 제목의 다른 작품으로 판단됩니다.",
+      "evidence_refs": [
+        "out/codex_native_web_judge_20260620_165159_711176_completed779/verdicts#post_id=11710047",
+        "https://novelpia.com/novel/387035",
+        "https://novelpia.com/novel/146549",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11710047",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11710047",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11710047"
+      ]
+    }
+  ],
+  "approval_boundary": {
+    "projection_is_not_runtime_replay": true,
+    "projection_is_not_full375_approval": true,
+    "requires_runtime_replay_and_full375_collateral_go": true
+  }
+}

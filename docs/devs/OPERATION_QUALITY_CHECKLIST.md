@@ -1,5 +1,26 @@
 # Operation Quality Checklist
 
+## 2026-07-08 Loop604 residual28 shared-gate batch 품질 게이트
+
+- 근거:
+  - [x] Loop report 기록 완료: `docs/devs/loop_reports/LOOP_604_REPORT_20260708.md`.
+  - [x] Shared-gate projection 기록 완료: `docs/devs/loop604_residual28_shared_gate_projection.json/.md`.
+  - [x] Contract plan 기록 완료: `docs/devs/loop604_residual28_shared_gate_contract_plan.json/.md`.
+  - [x] Projection application 기록 완료: `docs/devs/loop604_residual28_shared_gate_projection_application.json/.md`.
+  - [x] Release contract audit 기록 완료: `docs/devs/loop604_residual28_shared_gate_release_contract_audit.json/.md`.
+  - [x] Residual accounting 기록 완료: `docs/devs/loop604_after_shared_gate_residual28_accounting.json/.md`.
+- 품질 경계:
+  - [x] 새 runtime replay, bounded run, full375 대형 runtime run은 실행하지 않았다.
+  - [x] Residual28 shared-gate lane `4`건을 batch로 처리했다.
+  - [x] Projection status는 `safe_resolved 3 / promotion_blocked 1`이다.
+  - [x] Release audit은 violation `0`, pending `0`, release candidate `3`, no-release satisfied `1`이다.
+  - [x] Release candidate `3`건은 approval이 아니며 full375 recheck가 필요하다.
+  - [x] Residual accounting은 ordinary residual `28 -> 24`다.
+  - [x] Runtime replay allowed rows는 `0`이다.
+  - [x] Dashboard health는 `http://127.0.0.1:8080`에서 `ok=true / standalone=true / pid=9320`로 확인했다.
+  - [x] 다음 test/runtime run은 `--parallel 16`, dashboard 기본 ON, `--no-dashboard` 금지다.
+- Gate: shared-gate batch `REVIEW-LOCKED`, release audit `REVIEW-LOCKED / violation 0`, residual accounting `REVIEW-LOCKED / ordinary 24`, full375 collateral `NO-GO`, dashboard `GO_PROGRESS_VIEW_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop603 source-native verdict와 full375 gate 품질 게이트
 
 - 근거:

@@ -138,9 +138,13 @@ def build_queue(*, collateral_compare: dict[str, Any], review_summary: dict[str,
             "review_label": review.get("review_label") if review else "INFO_MISSING",
             "source_native_verdict": review.get("source_native_verdict") if review else "raw_regression_not_in_review_summary",
             "evidence_grade": review.get("evidence_grade") if review else "Missing",
+            "selected_option_id": review.get("selected_option_id") if review else None,
             "selected_title": review.get("selected_title") if review else None,
+            "selected_url": review.get("selected_url") if review else None,
             "action": actions if review else ["source_native_or_blind_review_required"],
             "source_review_id": review.get("source_review_id") if review else None,
+            "rationale_ko": review.get("rationale_ko") if review else None,
+            "evidence_refs": review.get("evidence_refs") if review else [],
         }
         out_row["reason_ko"] = _reason_for_row(out_row)
         residual_rows.append(out_row)

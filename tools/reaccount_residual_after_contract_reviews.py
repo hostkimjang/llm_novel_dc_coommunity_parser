@@ -50,6 +50,18 @@ def _by_post_id(rows: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
     return {_string(row.get("post_id")): row for row in rows if _string(row.get("post_id"))}
 
 
+def _action_list(row: dict[str, Any]) -> list[str]:
+    raw = row.get("actions")
+    if raw is None:
+        raw = row.get("action")
+    if isinstance(raw, str):
+        text = _string(raw)
+        return [text] if text else []
+    if isinstance(raw, list):
+        return [_string(value) for value in raw if _string(value)]
+    return []
+
+
 def _applied_by_post_id(application: dict[str, Any] | None) -> dict[str, dict[str, Any]]:
     rows = (application or {}).get("applied_rows") or []
     if not isinstance(rows, list):
@@ -275,7 +287,7 @@ def build_accounting(
         )
         if issues:
             validation_issues.append({"post_id": residual_row.get("post_id"), "issues": issues})
-        actions = residual_row.get("actions") if isinstance(residual_row.get("actions"), list) else []
+        actions = _action_list(residual_row)
         if effect == "restore_target_mismatch_source_native_review_required":
             actions = [*actions, "source_native_or_blind_review_required", MISMATCH_REVIEW]
         elif effect == "official_support_missing_restore_followup_required":

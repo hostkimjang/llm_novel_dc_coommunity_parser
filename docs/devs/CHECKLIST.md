@@ -1,5 +1,22 @@
 # Development Checklist
 
+## 2026-07-08 Loop604 residual28 shared-gate batch 처리 체크
+
+- [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
+- [x] Residual28 중 `shared_promotion_gate_contract_repair` lane `4`건을 N건 배치로 처리했다.
+- [x] Residual queue builder가 `selected_url`, `selected_option_id`, `rationale_ko`, `evidence_refs`를 보존하도록 보강했다.
+- [x] Shared-gate projection은 rows `4`, status `safe_resolved 3 / promotion_blocked 1`, validation issue `0`이다.
+- [x] Contract plan은 `expected_title_restore_contract_case 3 / candidate_scrub_no_publish_contract_case 1`, runtime allowed `0`이다.
+- [x] Projection application은 applied restore `3`, skipped no-publish `1`, validation issue `0`이다.
+- [x] Release contract audit은 violation `0`, pending `0`, release candidate `3`, satisfied no-release `1`이다.
+- [x] Residual accounting은 source residual `28`, contract processed `4`, ordinary residual `24`이다.
+- [x] Dashboard health는 `http://127.0.0.1:8080`에서 `ok=true / standalone=true / pid=9320`로 확인했다.
+- [ ] Residual24를 lane별 N건 배치로 계속 처리한다.
+- [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, manifest attach fallback 활성, `--no-dashboard` 금지로 실행한다.
+- [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
+- Gate: shared-gate projection/application `REVIEW-LOCKED`, release audit `REVIEW-LOCKED / violation 0`, residual accounting `REVIEW-LOCKED / ordinary 24`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_604_REPORT_20260708.md`, `docs/devs/loop604_residual28_shared_gate_projection.json`, `docs/devs/loop604_residual28_shared_gate_contract_plan.json`, `docs/devs/loop604_residual28_shared_gate_projection_application.json`, `docs/devs/loop604_residual28_shared_gate_release_contract_audit.json`, `docs/devs/loop604_after_shared_gate_residual28_accounting.json`.
+
 ## 2026-07-08 Loop603 unreviewed13 판정과 post_id-overlap gate 적용 체크
 
 - [x] 새 runtime replay, bounded run, full375 대형 runtime run을 발주하지 않았다.
@@ -11,7 +28,8 @@
 - [x] Contract test `test_collateral_review_allows_extra_non_regression_rows_when_raw_ids_fully_covered`를 추가했다.
 - [x] Corrected always-on은 `NO-GO / raw 73 / adjusted 28 / unreviewed 0 / runtime counts missing`이다.
 - [x] Corrected residual queue는 rows `28`, reviewed raw residual `28`, unreviewed raw residual `0`이다.
-- [ ] Residual28을 lane별 N건 배치로 계속 처리한다.
+- [x] Residual28 중 shared-gate `4`건은 Loop604에서 batch 처리했다.
+- [ ] Residual24를 lane별 N건 배치로 계속 처리한다.
 - [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, manifest attach fallback 활성, `--no-dashboard` 금지로 실행한다.
 - [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.
 - Gate: source-native verdict `REVIEW-LOCKED`, merged review `REVIEW-LOCKED`, always-on `NO-GO / adjusted 28 / runtime missing`, residual28 queue `REVIEW-LOCKED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
@@ -24,7 +42,7 @@
 - [x] `tools/build_collateral_triage_review_batch.py`에 `--include-post-ids`를 추가했다.
 - [x] Loop602 review batch는 selected `13`, bucket `safe_loss_resolved_to_null 12 / wrong_work_title_flip 1`, missing source/baseline/after `0/0/0`이다.
 - [x] Batch gate는 `REVIEW-LOCKED`이고 verdict는 아직 `NOT_RUN`이다.
-- [ ] Loop602 batch 13건을 source-native/blind verdict로 판정한다.
+- [x] Loop602 batch 13건은 Loop603에서 source-native/blind verdict로 판정했다.
 - [ ] Corrected residual29 중 reviewed raw residual `16`건은 lane별 계약/native review로 별도 처리한다.
 - [ ] 다음 실제 test/runtime run은 `--parallel 16`, web dashboard 기본 ON, manifest attach fallback 활성, `--no-dashboard` 금지로 실행한다.
 - [ ] Full375 collateral `GO`와 full_scan 경로 정의 전 완료를 선언하지 않는다.

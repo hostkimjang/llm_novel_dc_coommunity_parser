@@ -1,7 +1,7 @@
 {
   "report_type": "full375_residual_gate_action_queue",
   "queue_id": "loop602_after_unreviewed13_source_native_residual_action_queue",
-  "generated_at": "2026-07-08T08:53:40",
+  "generated_at": "2026-07-08T08:59:02",
   "source_collateral_compare": "loop598_remaining4_native_hold_full375_collateral_compare",
   "source_review_summary": "loop602_combined_loop595_loop599_unreviewed13_source_native_review",
   "gate": "REVIEW-LOCKED",
@@ -60,11 +60,20 @@
       "review_label": "INFO_MISSING",
       "source_native_verdict": "codex_native_web_judge_missing_for_current_dispatch",
       "evidence_grade": "Missing",
+      "selected_option_id": "HOLD",
       "selected_title": null,
+      "selected_url": null,
       "action": [
         "native_web_or_image_evidence_required"
       ],
       "source_review_id": "loop595_residual46_native_web_judge_source_native_review",
+      "rationale_ko": "현재 residual dispatch에는 native-web/image evidence가 필요하지만, 기존 Codex-native web judge 산출물에서 이 post_id 판정을 찾지 못했다. 따라서 regression count 제외나 shared-gate publish 후보로 세지 않는다.",
+      "evidence_refs": [
+        "out/codex_native_web_judge_20260620_165159_711176_completed779/verdicts#missing_post_id=11661856",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11661856",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11661856",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11661856"
+      ],
       "reason_ko": "source-native/native-web 근거가 누락되어 raw regression을 제외할 수 없다."
     },
     {
@@ -80,11 +89,17 @@
       "review_label": "HOLD",
       "source_native_verdict": "image_only_candidate_requires_native_review",
       "evidence_grade": "Missing",
+      "selected_option_id": "HOLD",
       "selected_title": null,
+      "selected_url": null,
       "action": [
         "image_native_review_required"
       ],
       "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts",
+      "rationale_ko": "텍스트는 `두개 써서 동시에 올리나보네`, `음음 그래 개같이 먹어주마`뿐이고 C1 `저주받은 영애가 되었습니다`를 직접 지지하지 않는다. 이미지 2장이 식별 근거일 수 있으므로 image/native 확인 전 hard-hold를 유지한다.",
+      "evidence_refs": [
+        "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json#post_id=11661863"
+      ],
       "reason_ko": "native-web, image, alias, character bridge 검토 전 hard-hold를 유지한다."
     },
     {
@@ -100,11 +115,20 @@
       "review_label": "INFO_MISSING",
       "source_native_verdict": "codex_native_web_judge_missing_for_current_dispatch",
       "evidence_grade": "Missing",
+      "selected_option_id": "HOLD",
       "selected_title": null,
+      "selected_url": null,
       "action": [
         "native_web_or_image_evidence_required"
       ],
       "source_review_id": "loop595_residual46_native_web_judge_source_native_review",
+      "rationale_ko": "현재 residual dispatch에는 native-web/image evidence가 필요하지만, 기존 Codex-native web judge 산출물에서 이 post_id 판정을 찾지 못했다. 따라서 regression count 제외나 shared-gate publish 후보로 세지 않는다.",
+      "evidence_refs": [
+        "out/codex_native_web_judge_20260620_165159_711176_completed779/verdicts#missing_post_id=11665110",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11665110",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11665110",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11665110"
+      ],
       "reason_ko": "source-native/native-web 근거가 누락되어 raw regression을 제외할 수 없다."
     },
     {
@@ -120,11 +144,17 @@
       "review_label": "HOLD",
       "source_native_verdict": "alias_or_image_context_requires_native_evidence",
       "evidence_grade": "Weak",
+      "selected_option_id": "HOLD",
       "selected_title": null,
+      "selected_url": null,
       "action": [
         "native_web_or_image_evidence_required"
       ],
       "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts",
+      "rationale_ko": "본문은 패러디 떡밥, 유카리 히로인, 20화 감상을 말하지만 텍스트만으로 C1 `삼시세끼, 심아식당`과의 관계가 확정되지 않는다. 이미지 또는 native-web alias 근거가 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json#post_id=11671512"
+      ],
       "reason_ko": "native-web, image, alias, character bridge 검토 전 hard-hold를 유지한다."
     },
     {
@@ -140,12 +170,20 @@
       "review_label": "REPROCESS",
       "source_native_verdict": "candidate_set_incomplete_correct_title_known_from_prior_closure",
       "evidence_grade": "Strong",
+      "selected_option_id": "HOLD",
       "selected_title": null,
+      "selected_url": null,
       "action": [
         "repair_after_wrong_work",
         "candidate_set_rebuild_required"
       ],
       "source_review_id": "loop589_p0_info_missing_source_native_verdicts",
+      "rationale_ko": "`악신총애`와 하진우/세라/미궁의 주인 문맥은 작품 토론이지만, 현재 blind 후보 C1은 prior closure의 교정 제목을 포함하지 않는다. 정확한 후보셋 재구성 전에는 public publish 금지 hold로 유지한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop581_candidate_set_residual86_full_p0_review_batch.json#post_id=11671514",
+        "docs/devs/loop474_11671514_aksin_chongaes_safe_loss_runtime_20260705.json",
+        "docs/devs/loop578_candidate_set_contract_plan.json#post_id=11671514"
+      ],
       "reason_ko": "source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다."
     },
     {
@@ -161,11 +199,17 @@
       "review_label": "HOLD",
       "source_native_verdict": "alias_bridge_unverified_hold",
       "evidence_grade": "Weak",
+      "selected_option_id": "HOLD",
       "selected_title": null,
+      "selected_url": null,
       "action": [
         "native_web_or_alias_relation_review_required"
       ],
       "source_review_id": "loop599_full375_unreviewed40_source_native_verdicts",
+      "rationale_ko": "`페도부이`와 `눈깔사탕`만으로 C1 `음악 천재가 불륜을 못 숨김`을 확정하기에는 alias relation 근거가 부족하다. hardcoded cue 확장 없이 native-web 또는 별칭 관계 검증이 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop599_full375_unreviewed40_review_batch.json#post_id=11677957"
+      ],
       "reason_ko": "native-web, image, alias, character bridge 검토 전 hard-hold를 유지한다."
     },
     {
@@ -181,11 +225,20 @@
       "review_label": "INFO_MISSING",
       "source_native_verdict": "codex_native_web_judge_missing_for_current_dispatch",
       "evidence_grade": "Missing",
+      "selected_option_id": "HOLD",
       "selected_title": null,
+      "selected_url": null,
       "action": [
         "native_web_or_image_evidence_required"
       ],
       "source_review_id": "loop595_residual46_native_web_judge_source_native_review",
+      "rationale_ko": "현재 residual dispatch에는 native-web/image evidence가 필요하지만, 기존 Codex-native web judge 산출물에서 이 post_id 판정을 찾지 못했다. 따라서 regression count 제외나 shared-gate publish 후보로 세지 않는다.",
+      "evidence_refs": [
+        "out/codex_native_web_judge_20260620_165159_711176_completed779/verdicts#missing_post_id=11681178",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11681178",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11681178",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11681178"
+      ],
       "reason_ko": "source-native/native-web 근거가 누락되어 raw regression을 제외할 수 없다."
     },
     {
@@ -201,11 +254,17 @@
       "review_label": "REPROCESS",
       "source_native_verdict": "candidate_set_incomplete_correct_work_not_in_options_mukhyang",
       "evidence_grade": "Strong",
+      "selected_option_id": "HOLD",
       "selected_title": null,
+      "selected_url": null,
       "action": [
         "candidate_set_rebuild_required"
       ],
       "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts",
+      "rationale_ko": "본문이 `묵향이라니까?`라고 직접 정리하고 댓글도 묵향의 약화/재강화, 타이탄, 천마구령심법, 드래곤 하트 맥락을 이어간다. C1 `주인공인데 주인공이 아님`은 지지되지 않지만 null로 닫기보다 `묵향` 후보 재구축이 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json#post_id=11682749"
+      ],
       "reason_ko": "source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다."
     },
     {
@@ -221,11 +280,20 @@
       "review_label": "INFO_MISSING",
       "source_native_verdict": "codex_native_web_judge_missing_for_current_dispatch",
       "evidence_grade": "Missing",
+      "selected_option_id": "HOLD",
       "selected_title": null,
+      "selected_url": null,
       "action": [
         "native_web_or_image_evidence_required"
       ],
       "source_review_id": "loop595_residual46_native_web_judge_source_native_review",
+      "rationale_ko": "현재 residual dispatch에는 native-web/image evidence가 필요하지만, 기존 Codex-native web judge 산출물에서 이 post_id 판정을 찾지 못했다. 따라서 regression count 제외나 shared-gate publish 후보로 세지 않는다.",
+      "evidence_refs": [
+        "out/codex_native_web_judge_20260620_165159_711176_completed779/verdicts#missing_post_id=11682791",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json#post_id=11682791",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11682791",
+        "docs/devs/loop479_wrong_work_title_flip_source_native_verdicts.json#post_id=11682791"
+      ],
       "reason_ko": "source-native/native-web 근거가 누락되어 raw regression을 제외할 수 없다."
     },
     {
@@ -241,11 +309,20 @@
       "review_label": "INFO_MISSING",
       "source_native_verdict": "codex_native_web_judge_missing_for_current_dispatch",
       "evidence_grade": "Missing",
+      "selected_option_id": "HOLD",
       "selected_title": null,
+      "selected_url": null,
       "action": [
         "native_web_or_image_evidence_required"
       ],
       "source_review_id": "loop595_residual46_native_web_judge_source_native_review",
+      "rationale_ko": "현재 residual dispatch에는 native-web/image evidence가 필요하지만, 기존 Codex-native web judge 산출물에서 이 post_id 판정을 찾지 못했다. 따라서 regression count 제외나 shared-gate publish 후보로 세지 않는다.",
+      "evidence_refs": [
+        "out/codex_native_web_judge_20260620_165159_711176_completed779/verdicts#missing_post_id=11685994",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11685994",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11685994",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11685994"
+      ],
       "reason_ko": "source-native/native-web 근거가 누락되어 raw regression을 제외할 수 없다."
     },
     {
@@ -261,11 +338,17 @@
       "review_label": "HOLD",
       "source_native_verdict": "image_only_candidate_requires_native_review",
       "evidence_grade": "Missing",
+      "selected_option_id": "HOLD",
       "selected_title": null,
+      "selected_url": null,
       "action": [
         "image_native_review_required"
       ],
       "source_review_id": "loop599_full375_unreviewed40_source_native_verdicts",
+      "rationale_ko": "텍스트는 `이런 히로인 나오는 소설 추천`과 `꼴림`뿐이고, C1을 직접 지지하는 제목/별칭은 이미지에 의존한다. OCR 또는 native image 확인 전에는 promotion hold를 완화하지 않는다.",
+      "evidence_refs": [
+        "docs/devs/loop599_full375_unreviewed40_review_batch.json#post_id=11687635"
+      ],
       "reason_ko": "native-web, image, alias, character bridge 검토 전 hard-hold를 유지한다."
     },
     {
@@ -281,11 +364,20 @@
       "review_label": "INFO_MISSING",
       "source_native_verdict": "codex_native_web_judge_missing_for_current_dispatch",
       "evidence_grade": "Missing",
+      "selected_option_id": "HOLD",
       "selected_title": null,
+      "selected_url": null,
       "action": [
         "native_web_or_image_evidence_required"
       ],
       "source_review_id": "loop595_residual46_native_web_judge_source_native_review",
+      "rationale_ko": "현재 residual dispatch에는 native-web/image evidence가 필요하지만, 기존 Codex-native web judge 산출물에서 이 post_id 판정을 찾지 못했다. 따라서 regression count 제외나 shared-gate publish 후보로 세지 않는다.",
+      "evidence_refs": [
+        "out/codex_native_web_judge_20260620_165159_711176_completed779/verdicts#missing_post_id=11687661",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11687661",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11687661",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11687661"
+      ],
       "reason_ko": "source-native/native-web 근거가 누락되어 raw regression을 제외할 수 없다."
     },
     {
@@ -301,12 +393,19 @@
       "review_label": "REPROCESS",
       "source_native_verdict": "asaenggal_candidate_set_rebuild_required",
       "evidence_grade": "Medium",
+      "selected_option_id": "HOLD",
       "selected_title": null,
+      "selected_url": null,
       "action": [
         "candidate_set_rebuild_required",
         "native_web_or_image_evidence_required"
       ],
       "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts",
+      "rationale_ko": "`아생갤`은 현실 DC 갤러리 표면으로만 단정할 수 없고 `아카데미 생존 갤러리` 같은 작품 약어일 수 있다. 원문 텍스트와 이미지 2장은 C1 `시로코의 제멋대로 일상 단편선`을 지지하지 않으므로, candidate-set을 `아생갤` 계열로 다시 만들어 확인해야 한다.",
+      "evidence_refs": [
+        "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json#post_id=11694035",
+        "AGENTS.md#도메인-규칙-아생갤"
+      ],
       "reason_ko": "source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다."
     },
     {
@@ -322,11 +421,18 @@
       "review_label": "REPROCESS",
       "source_native_verdict": "source_alias_supports_safe_loss_restore",
       "evidence_grade": "Strong",
+      "selected_option_id": "C1",
       "selected_title": "격투 소설 엑스트라가 타격 천재임",
+      "selected_url": "https://novelpia.com/novel/427330",
       "action": [
         "shared_promotion_gate_wiring_required"
       ],
       "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts",
+      "rationale_ko": "제목의 `격투천재`와 본문/댓글의 경녀감성, 보지킥, 덤벨/바키 비교가 C1 작품 감상 맥락을 직접 지지한다. null로 해소된 safe-loss는 shared PromotionDecision gate를 통해 restore해야 한다.",
+      "evidence_refs": [
+        "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json#post_id=11694041",
+        "https://novelpia.com/novel/427330"
+      ],
       "reason_ko": "source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다."
     },
     {
@@ -342,11 +448,20 @@
       "review_label": "INFO_MISSING",
       "source_native_verdict": "codex_native_web_judge_missing_for_current_dispatch",
       "evidence_grade": "Missing",
+      "selected_option_id": "HOLD",
       "selected_title": null,
+      "selected_url": null,
       "action": [
         "native_web_or_image_evidence_required"
       ],
       "source_review_id": "loop595_residual46_native_web_judge_source_native_review",
+      "rationale_ko": "현재 residual dispatch에는 native-web/image evidence가 필요하지만, 기존 Codex-native web judge 산출물에서 이 post_id 판정을 찾지 못했다. 따라서 regression count 제외나 shared-gate publish 후보로 세지 않는다.",
+      "evidence_refs": [
+        "out/codex_native_web_judge_20260620_165159_711176_completed779/verdicts#missing_post_id=11694067",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop480_unsafe_promotion_from_hold_review_batch.json#post_id=11694067",
+        "https://novelpia.com/novel/363195",
+        "docs/devs/loop480_unsafe_promotion_from_hold_source_native_verdicts.json#post_id=11694067"
+      ],
       "reason_ko": "source-native/native-web 근거가 누락되어 raw regression을 제외할 수 없다."
     },
     {
@@ -362,12 +477,18 @@
       "review_label": "REPROCESS",
       "source_native_verdict": "source_title_exact_safe_loss_restore_requires_gate",
       "evidence_grade": "Strong",
+      "selected_option_id": "C1",
       "selected_title": "귤부인 대롱대롱",
+      "selected_url": null,
       "action": [
         "shared_promotion_gate_wiring_required",
         "official_detail_url_enrichment_required"
       ],
       "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts",
+      "rationale_ko": "게시글 제목이 C1 `귤부인 대롱대롱`을 그대로 말하고 본문도 그 뒤 전개 감상을 이어간다. 다만 후보 URL이 없으므로 shared gate restore와 공식 상세 URL 보강을 함께 요구한다.",
+      "evidence_refs": [
+        "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json#post_id=11698859"
+      ],
       "reason_ko": "source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다."
     },
     {
@@ -383,12 +504,18 @@
       "review_label": "REPROCESS",
       "source_native_verdict": "candidate_set_incomplete_rezero_work_not_character_article",
       "evidence_grade": "Strong",
+      "selected_option_id": "HOLD",
       "selected_title": null,
+      "selected_url": null,
       "action": [
         "candidate_set_rebuild_required",
         "wrong_work_or_cross_media_policy_hold_required"
       ],
       "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts",
+      "rationale_ko": "댓글이 `리제로?`라고 묻고 글쓴이가 긍정하며 6장/7장, 감시탑, 폭식, 나츠키 스바루를 말한다. C1은 작품 제목이 아니라 캐릭터/위키성 항목이므로 publish 후보가 아니고, `Re:제로` 작품 후보로 재구축해야 한다.",
+      "evidence_refs": [
+        "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json#post_id=11698865"
+      ],
       "reason_ko": "source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다."
     },
     {
@@ -404,12 +531,19 @@
       "review_label": "HOLD",
       "source_native_verdict": "non_webnovel_classic_policy_hold",
       "evidence_grade": "Medium",
+      "selected_option_id": "C1",
       "selected_title": "인간실격",
+      "selected_url": null,
       "action": [
         "wrong_work_or_cross_media_policy_hold_required",
         "blind_or_policy_judge_required"
       ],
       "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts",
+      "rationale_ko": "원문은 일본의 유명작 `인간실격`과 작가의 자살 맥락을 말해 C1 표면 자체는 맞다. 그러나 웹소설 작품 publish 범위와 고전/일반문학 정책 경계가 남아 있어 policy hold로 유지한다.",
+      "evidence_refs": [
+        "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json#post_id=11698870",
+        "docs/devs/loop590_residual_p0_policy_hold_contract_plan.md#post_id=11698870"
+      ],
       "reason_ko": "native-web, image, alias, character bridge 검토 전 hard-hold를 유지한다."
     },
     {
@@ -425,12 +559,19 @@
       "review_label": "REPROCESS",
       "source_native_verdict": "official_title_mismatch_candidate_set_rebuild_required",
       "evidence_grade": "Medium",
+      "selected_option_id": "HOLD",
       "selected_title": null,
+      "selected_url": null,
       "action": [
         "candidate_set_rebuild_required",
         "native_web_or_image_evidence_required"
       ],
       "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts",
+      "rationale_ko": "게시글 제목은 `문피아 아프리카 식량왕이 되었다`이고 본문/댓글도 카사바, 옥수수, 무료/유료화 감상으로 같은 문피아 작품을 논한다. C1 `아프리카 의 독재자가 되었다 .`는 제목이 맞지 않으므로 공식 상세 확인과 후보 재구축이 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json#post_id=11703658",
+        "https://novel.munpia.com/246271"
+      ],
       "reason_ko": "source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다."
     },
     {
@@ -446,11 +587,17 @@
       "review_label": "REPROCESS",
       "source_native_verdict": "candidate_set_incomplete_correct_work_from_source_context",
       "evidence_grade": "Strong",
+      "selected_option_id": "HOLD",
       "selected_title": null,
+      "selected_url": null,
       "action": [
         "candidate_set_rebuild_required"
       ],
       "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts",
+      "rationale_ko": "원문과 댓글은 설지후, 유선화, 백혜주, 로유진, 탐식 6년 전 완독 기억을 말해 `탐식의 재림` 맥락을 강하게 지지한다. C1 `한국 레전드 프로게이머...`는 지지되지 않으므로 후보셋 재구축이 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json#post_id=11705231"
+      ],
       "reason_ko": "source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다."
     },
     {
@@ -466,13 +613,24 @@
       "review_label": "REPROCESS",
       "source_native_verdict": "codex_native_web_judge_reprocess_under_resolved",
       "evidence_grade": "Medium",
+      "selected_option_id": "CODEX_NATIVE_WEB_JUDGE",
       "selected_title": "호랑이 사냥꾼",
+      "selected_url": "https://m.munpia.com/novel/detail/522066",
       "action": [
         "native_web_judge_reprocess_required",
         "shared_promotion_gate_wiring_required",
         "native_web_reverify_required"
       ],
       "source_review_id": "loop595_residual46_native_web_judge_source_native_review",
+      "rationale_ko": "OCR에는 '범 먹는 괴이 사냥꾼'과 작가 편곤이 명시되어 있고, 현재 문피아 공식 상세는 같은 작가·같은 조선 이매망량 설명의 '호랑이 사냥꾼'으로 확인된다. OCR 제목과 현재 공식 제목이 달라 재검증은 필요하지만, null로 둔 파이프라인은 과소해결이다.",
+      "evidence_refs": [
+        "out/codex_native_web_judge_20260620_165159_711176_completed779/verdicts#post_id=11706844",
+        "https://m.munpia.com/novel/detail/522066",
+        "https://www.webtoonguide.com/ko/db/producer-name/%ED%8E%B8%EA%B3%A4",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11706844",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11706844",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11706844"
+      ],
       "reason_ko": "source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다."
     },
     {
@@ -488,11 +646,17 @@
       "review_label": "REPROCESS",
       "source_native_verdict": "primary_alias_not_candidate_secondary_comment_wrong_work",
       "evidence_grade": "Medium",
+      "selected_option_id": "HOLD",
       "selected_title": null,
+      "selected_url": null,
       "action": [
         "candidate_set_rebuild_required"
       ],
       "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts",
+      "rationale_ko": "게시글 제목과 본문은 `이불사`, 검머외와 다른 길, 모방 떡밥을 주된 대상으로 삼는다. C1 `감옥학원에서 나만 힐링할거다`는 댓글에서 표절 논란 예시로 나온 보조 맥락이라 public identity로 승격하면 wrong-work 위험이 있다.",
+      "evidence_refs": [
+        "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json#post_id=11708453"
+      ],
       "reason_ko": "source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다."
     },
     {
@@ -508,11 +672,17 @@
       "review_label": "REPROCESS",
       "source_native_verdict": "candidate_set_incomplete_ratdasip_expanded_by_comments",
       "evidence_grade": "Strong",
+      "selected_option_id": "HOLD",
       "selected_title": null,
+      "selected_url": null,
       "action": [
         "candidate_set_rebuild_required"
       ],
       "source_review_id": "loop602_corrected_full375_unreviewed13_source_native_verdicts",
+      "rationale_ko": "댓글이 `노피아에 랫따싶 검색`, `변방계에서 회귀자로 살아남기임?`, `랫따싶에 나오는 종족`으로 약어와 풀네임 관계를 설명한다. C1 `쳇바퀴의 생쥐 사도가 되었다`는 지지되지 않으므로 랫따싶 계열 후보를 다시 만들어야 한다.",
+      "evidence_refs": [
+        "docs/devs/loop602_corrected_full375_unreviewed13_review_batch.json#post_id=11710036"
+      ],
       "reason_ko": "source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다."
     },
     {
@@ -528,12 +698,23 @@
       "review_label": "REPROCESS",
       "source_native_verdict": "codex_native_web_judge_reprocess_wrong_work",
       "evidence_grade": "Strong",
+      "selected_option_id": "CODEX_NATIVE_WEB_JUDGE",
       "selected_title": "아카데미 속 미움받는 악역이 되었다",
+      "selected_url": "https://novelpia.com/novel/387035",
       "action": [
         "native_web_judge_reprocess_required",
         "shared_promotion_gate_wiring_required"
       ],
       "source_review_id": "loop595_residual46_native_web_judge_source_native_review",
+      "rationale_ko": "이미지 OCR에는 제목이 '아카데미 속 미움받는 악역이 되었다'이고 작가도 파워후단벌신사 계열로 읽히며, 노벨피아 공식 상세 페이지에서도 같은 작품과 URL이 확인되므로 파이프라인이 선택한 '로판 속 미움받는 악역이 되었다'는 유사 제목의 다른 작품으로 판단됩니다.",
+      "evidence_refs": [
+        "out/codex_native_web_judge_20260620_165159_711176_completed779/verdicts#post_id=11710047",
+        "https://novelpia.com/novel/387035",
+        "https://novelpia.com/novel/146549",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11710047",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11710047",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11710047"
+      ],
       "reason_ko": "source-native 판정이 수리 또는 shared gate 계약 처리를 요구한다."
     },
     {
@@ -549,12 +730,24 @@
       "review_label": "REJECT",
       "source_native_verdict": "codex_native_web_judge_reject_wrong_work",
       "evidence_grade": "Strong",
+      "selected_option_id": "CODEX_NATIVE_WEB_JUDGE",
       "selected_title": "너의 이름은.",
+      "selected_url": "https://www.kiminona.com/",
       "action": [
         "wrong_work_or_cross_media_policy_hold_required",
         "blind_or_policy_judge_required"
       ],
       "source_review_id": "loop595_residual46_native_web_judge_source_native_review",
+      "rationale_ko": "OCR과 시각 단서는 신카이 마코토의 2016년 애니메이션 영화 '너의 이름은.' 포스터와 개봉일 정보를 가리킵니다. 파이프라인 URL은 리디의 십이월사일 로맨스 웹소설 '유어 네임(YOUR NAME)' 계열로, 제목이 유사할 뿐 다른 작품입니다. 유명 애니 OCR 단서를 웹소설 상세로 흡수한 교차매체 오매칭이므로 현재 resolved title은 reject해야 합니다.",
+      "evidence_refs": [
+        "out/codex_native_web_judge_20260620_165159_711176_completed779/verdicts#post_id=11711632",
+        "https://www.kiminona.com/",
+        "https://ridibooks.com/books/3885045016",
+        "https://ko.wikipedia.org/wiki/%EB%84%88%EC%9D%98_%EC%9D%B4%EB%A6%84%EC%9D%80.",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11711632",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11711632",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11711632"
+      ],
       "reason_ko": "wrong-work 또는 cross-media policy hold 검토가 필요하다."
     },
     {
@@ -570,11 +763,18 @@
       "review_label": "HOLD",
       "source_native_verdict": "character_bridge_unverified_hold",
       "evidence_grade": "Weak",
+      "selected_option_id": "HOLD",
       "selected_title": null,
+      "selected_url": null,
       "action": [
         "character_bridge_native_web_review_required"
       ],
       "source_review_id": "loop599_full375_unreviewed40_source_native_verdicts",
+      "rationale_ko": "원문은 주서연/삣삐미쿠 캐릭터 대결을 말하지만, 텍스트 패킷 안에 C1 공식 제목이나 검증된 character-work link가 없다. character bridge 검증 전 safe publish로 줄이지 않는다.",
+      "evidence_refs": [
+        "docs/devs/loop599_full375_unreviewed40_review_batch.json#post_id=11714913",
+        "https://novelpia.com/novel/275975"
+      ],
       "reason_ko": "native-web, image, alias, character bridge 검토 전 hard-hold를 유지한다."
     },
     {
@@ -590,12 +790,22 @@
       "review_label": "HOLD",
       "source_native_verdict": "codex_native_web_judge_hold_heretic_url_null",
       "evidence_grade": "Weak",
+      "selected_option_id": "CODEX_NATIVE_WEB_JUDGE",
       "selected_title": "여대학생 가랑이 사이 무릎 꿇은 엄마들",
+      "selected_url": null,
       "action": [
         "native_web_or_image_human_review_required",
         "official_detail_url_enrichment_required"
       ],
       "source_review_id": "loop595_residual46_native_web_judge_source_native_review",
+      "rationale_ko": "이미지 OCR에 작품 제목 '여대학생 가랑이 사이 무릎 꿇은 엄마들'과 작가명 '후타보로'가 직접 찍혀 있어 작품명 판정 자체는 pipeline이 맞습니다. 다만 웹 검색으로 동일 제목의 공식 상세 URL은 확인하지 못했고, 후보 목록에 있던 https://novel.munpia.com/208082 는 열어보면 '내 매니저는 스타 작가님'이라 OCR 제목과 전혀 맞지 않는 URL/title mismatch입니다. 그래서 제목은 유지하되 heretic_url은 null 상태로 HOLD하고 재검색이 필요합니다.",
+      "evidence_refs": [
+        "out/codex_native_web_judge_20260620_165159_711176_completed779/verdicts#post_id=11716480",
+        "https://novel.munpia.com/208082",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11716480",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11716480",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11716480"
+      ],
       "reason_ko": "native-web, image, alias, character bridge 검토 전 hard-hold를 유지한다."
     },
     {
@@ -611,11 +821,23 @@
       "review_label": "HOLD",
       "source_native_verdict": "codex_native_web_judge_hold_under_resolved_false_negative",
       "evidence_grade": "Medium",
+      "selected_option_id": "CODEX_NATIVE_WEB_JUDGE",
       "selected_title": "B급 헌터로 살아남기",
+      "selected_url": "https://novel.munpia.com/530740",
       "action": [
         "native_web_or_image_human_review_required"
       ],
       "source_review_id": "loop595_residual46_native_web_judge_source_native_review",
+      "rationale_ko": "웹 검색상 같은 글과 주변 리뷰에서 컵라면 작가의 신작이 B급 헌터로 살아남기이며 발키리 히로인 언급도 이 작품 맥락으로 이어진다. 문피아 공식 상세 페이지도 제목과 작가 컵라면을 확인해 준다. 다만 배치 입력의 글 자체에는 컵라면이라는 작가명과 발키리·딸내미 트로프만 있고 직접 제목 앵커가 없으므로 자동 확정은 위험하다. 파이프라인의 완전 비관련 처리는 약하지만, 후보 보존 후 사람이 확인하는 HOLD가 적절하다.",
+      "evidence_refs": [
+        "out/codex_native_web_judge_20260620_165159_711176_completed779/verdicts#post_id=11718057",
+        "https://m.dcinside.com/board/genrenovel/11718057",
+        "https://novel.munpia.com/530740",
+        "https://m.dcinside.com/board/genrenovel/11629724",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json#post_id=11718057",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11718057",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11718057"
+      ],
       "reason_ko": "native-web, image, alias, character bridge 검토 전 hard-hold를 유지한다."
     }
   ],

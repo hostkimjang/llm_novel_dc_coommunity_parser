@@ -129,6 +129,61 @@ class ReaccountResidualAfterContractReviewsTest(unittest.TestCase):
             "contract_processed_non_webnovel_ebook_policy_hold_no_publish",
         )
 
+    def test_action_field_is_counted_when_actions_field_is_absent(self):
+        residual_queue = {
+            "queue_id": "unit_residual",
+            "rows": [
+                {
+                    "post_id": 11694041,
+                    "triage_bucket": "safe_loss_resolved_to_null",
+                    "review_label": "REPROCESS",
+                    "action": [
+                        "shared_promotion_gate_wiring_required",
+                        "official_detail_url_enrichment_required",
+                    ],
+                }
+            ],
+        }
+        contract_plan = {
+            "plan_id": "unit_plan",
+            "rows": [
+                {
+                    "post_id": 11694041,
+                    "contract_action": "expected_title_restore_contract_case",
+                    "target_title": "격투 소설 엑스트라가 타격 천재임",
+                    "target_url": "https://novelpia.com/novel/380507",
+                }
+            ],
+        }
+        application = {
+            "projection_id": "unit_application",
+            "applied_rows": [
+                {
+                    "post_id": 11694041,
+                    "status": "applied",
+                    "contract_action": "expected_title_restore_contract_case",
+                }
+            ],
+        }
+
+        accounting = build_accounting(
+            residual_queue=residual_queue,
+            contract_plan=contract_plan,
+            expected_restore_application=application,
+            accounting_id="unit",
+        )
+
+        action_counts = accounting["summary"]["source_action_counts"]
+        self.assertEqual(action_counts["shared_promotion_gate_wiring_required"], 1)
+        self.assertEqual(action_counts["official_detail_url_enrichment_required"], 1)
+        self.assertEqual(
+            accounting["rows"][0]["actions"],
+            [
+                "shared_promotion_gate_wiring_required",
+                "official_detail_url_enrichment_required",
+            ],
+        )
+
     def test_release_audit_can_satisfy_candidate_set_hold_accounting(self):
         residual_queue = {
             "queue_id": "unit_residual",
