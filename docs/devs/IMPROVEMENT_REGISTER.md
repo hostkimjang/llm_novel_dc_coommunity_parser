@@ -5,10 +5,10 @@
 | 항목 | 상태 | 근거 | 다음 |
 | --- | --- | --- | --- |
 | Runtime | RUNNING_BACKGROUND | run `20260710_005902_590310`, dashboard `http://127.0.0.1:8080` | full375 완료까지 background 감시 |
-| Live health | IN_PROGRESS | `loop640_full375_live_run_health_latest.json`, generated_at `2026-07-10T02:23:27`, completed/flushed/pending/failed `56/51/5/0` | 완료 시 final audit 재실행 |
-| Flush integrity | ORDERED_GAP | prior `11698904` 해소, ordered prefix `50 -> 51`, current `next_save_idx=52`, `11700470`, W13 `in_progress_in_worker_log`, observed elapsed `758.581s` | frontier 해소 전 approval 금지 |
-| Worker phase | LONG_TAIL_POSTPROCESS | W13 log reaches final title correction at `02:23:05`; dashboard `56/375`, progress `14.9%` | dispatch 반복 금지, background 감시 |
-| Search evidence | GO_SUBSET | row search ok `54`, `SEARCH_DEGRADED_RECOVERED 1`, unrecovered degraded `0` | final 375 row 기준 재확인 |
+| Live health | IN_PROGRESS | `loop640_full375_live_run_health_latest.json`, generated_at `2026-07-10T02:32:04`, completed/flushed/pending/failed `58/51/7/0` | 완료 시 final audit 재실행 |
+| Flush integrity | ORDERED_GAP | prior `11698904` 해소, ordered prefix `50 -> 51`, current `next_save_idx=52`, `11700470`, W13 `in_progress_in_worker_log`, observed elapsed `2334.073s` | frontier 해소 전 approval 금지 |
+| Worker phase | LONG_TAIL_POSTPROCESS | W13 log reaches override audit/reason_review progress at `02:29`; dashboard `58/375`, progress `15.5%` | dispatch 반복 금지, background 감시 |
+| Search evidence | GO_SUBSET | row search ok `56`, `SEARCH_DEGRADED_RECOVERED 1`, unrecovered degraded `0` | final 375 row 기준 재확인 |
 | Publication contract | GO_SUBSET | flushed result `51`행, violation `0` | final 375 row 기준 재확인 |
 | Completion gate | NOT_OPEN | adjusted gate는 runtime counts `375/375/0/0` 이후 평가 | adjusted drift compare와 full_scan path 확인 |
 | Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | 완료 전 update_goal 금지 |

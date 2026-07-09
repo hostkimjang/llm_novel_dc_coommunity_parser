@@ -19,12 +19,12 @@
 - [x] Running health snapshot을 생성했다: completed/flushed/pending/failed `3/1/2/0`, search evidence `GO`, partial publication contract `GO`.
 - [x] Snapshot frontier는 `11676314 / 마도줍 완결이 빠를까`, W1 `in_progress_in_worker_log`다.
 - [x] Loop638 re-baseline 적용 이후 completion metric은 `adjusted_drift_count`이며, 2026-06-26 raw `105`는 historical diagnostic으로만 유지한다고 재확인했다.
-- [x] Latest live audit generated_at `2026-07-10T02:23:27` 기준 completed/flushed/pending/failed `56/51/5/0`, result rows `51`, checkpoint rows `56`이다.
+- [x] Latest live audit generated_at `2026-07-10T02:32:04` 기준 completed/flushed/pending/failed `58/51/7/0`, result rows `51`, checkpoint rows `58`이다.
 - [x] Previous frontier `11698904`가 해소되어 ordered flushed prefix가 `50 -> 51`로 전진했다.
-- [x] Current frontier는 `11700470 / 어케 주인공 죄목이`, W13 `in_progress_in_worker_log`, observed elapsed `758.581s`다.
-- [x] W13 worker log는 `02:23:05`까지 final title correction 후처리를 남겼다.
-- [x] Dashboard는 `batch_running=true`, done `56/375`, progress `14.9%`, parallel `16`, `llm_suspended=false`다.
-- [ ] Loop640 full375 runtime은 아직 완료하지 않았다. latest counts는 `56/51/5/0`이다.
+- [x] Current frontier는 `11700470 / 어케 주인공 죄목이`, W13 `in_progress_in_worker_log`, event_count `16`, observed elapsed `2334.073s`다.
+- [x] W13 worker log는 `02:29`까지 override audit과 reason_review 진행을 남겼다.
+- [x] Dashboard는 `batch_running=true`, done `58/375`, progress `15.5%`, parallel `16`, `llm_suspended=false`다.
+- [ ] Loop640 full375 runtime은 아직 완료하지 않았다. latest counts는 `58/51/7/0`이다.
 - [ ] Raw `105`를 매 run 재소송하지 않는다. Loop640 완료 뒤에는 판결 baseline 대비 adjusted drift, search/publication/full_scan gate만 본다.
 - [ ] Next full375 runtime counts `375/375/0/0` 전까지 always-on `NO-GO`를 유지한다.
 - [ ] Full_scan path 검증 전까지 `full_scan_approval=false`를 유지한다.

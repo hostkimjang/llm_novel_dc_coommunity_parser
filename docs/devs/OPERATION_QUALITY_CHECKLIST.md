@@ -3,7 +3,7 @@
 ## 2026-07-10 Loop640 live run health 운영 메모
 
 - [x] Loop640 background full375 run `20260710_005902_590310`의 live health audit을 갱신했다.
-- [x] Latest audit generated_at `2026-07-10T02:23:27`, completed/flushed/pending/failed `56/51/5/0`이다.
+- [x] Latest audit generated_at `2026-07-10T02:32:04`, completed/flushed/pending/failed `58/51/7/0`이다.
 - [x] Run integrity는 `IN_PROGRESS / ordered_flush_gap_in_progress`이며 completed source가 아니다.
 - [x] Prior frontier `4`가 해소되어 ordered flushed prefix가 `3 -> 19`로 이동했다.
 - [x] Prior frontier `11714892`가 해소되어 ordered flushed prefix가 `19 -> 24`로 이동했다.
@@ -11,10 +11,10 @@
 - [x] Prior frontier `11671501`이 해소되어 ordered flushed prefix가 `30 -> 32`로 이동했다.
 - [x] Prior frontier `11673086`이 해소되어 ordered flushed prefix가 `32 -> 36`으로 이동했다.
 - [x] Prior frontier `11698904`가 해소되어 ordered flushed prefix가 `50 -> 51`로 이동했다.
-- [x] Current frontier는 `next_save_idx=52`, post_id `11700470`, W13 `in_progress_in_worker_log`, observed elapsed `758.581s`다.
-- [x] W13 worker log는 `02:23:05`까지 final title correction 후처리를 남겼다.
-- [x] Dashboard는 `batch_running=true`, done `56/375`, progress `14.9%`, parallel `16`, `llm_suspended=false`로 살아 있다.
-- [x] Search evidence는 subset 기준 `GO`, row search ok `54`, `SEARCH_DEGRADED_RECOVERED 1`, unrecovered degraded `0`이다.
+- [x] Current frontier는 `next_save_idx=52`, post_id `11700470`, W13 `in_progress_in_worker_log`, event_count `16`, observed elapsed `2334.073s`다.
+- [x] W13 worker log는 `02:29`까지 override audit과 reason_review 진행을 남겼다.
+- [x] Dashboard는 `batch_running=true`, done `58/375`, progress `15.5%`, parallel `16`, `llm_suspended=false`로 살아 있다.
+- [x] Search evidence는 subset 기준 `GO`, row search ok `56`, `SEARCH_DEGRADED_RECOVERED 1`, unrecovered degraded `0`이다.
 - [x] Publication contract는 flushed result `51`행 기준 `GO / violation 0`이다.
 - [x] Loop638 re-baseline은 `APPLIED`이며, 현재 이후 collateral gate metric은 `adjusted_drift_count`다.
 - [x] 2026-06-26 raw `105`는 historical diagnostic이다. Raw가 0이 되지 않아도 완료 blocker가 아니며, 매 run raw row를 재소송하지 않는다.

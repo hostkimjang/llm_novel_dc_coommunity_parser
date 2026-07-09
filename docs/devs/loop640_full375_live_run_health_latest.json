@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T02:23:27",
+  "generated_at": "2026-07-10T02:32:04",
   "run_id": "20260710_005902_590310",
   "artifact_resolution": {
     "resolution": "explicit_paths",
@@ -119,9 +119,9 @@
     "mcp_endpoint_count_after_health_filter": 16,
     "mcp_parallel_before_health_filter": 16,
     "mcp_parallel_after_health_filter": 16,
-    "completed_count": 56,
+    "completed_count": 58,
     "flushed_count": 51,
-    "pending_count": 5,
+    "pending_count": 7,
     "failed_count": 0,
     "next_save_idx": 52,
     "partial_flush_gap": true,
@@ -145,8 +145,8 @@
     "load_error": null
   },
   "result_rows": 51,
-  "checkpoint_rows": 56,
-  "pending_count_actual": 5,
+  "checkpoint_rows": 58,
+  "pending_count_actual": 7,
   "flush_integrity": {
     "run_integrity_gate": "IN_PROGRESS",
     "classification": "ordered_flush_gap_in_progress",
@@ -163,15 +163,15 @@
     ],
     "counts": {
       "manifest_input_post_count": 375,
-      "manifest_completed_count": 56,
+      "manifest_completed_count": 58,
       "manifest_flushed_count": 51,
-      "manifest_pending_count": 5,
+      "manifest_pending_count": 7,
       "manifest_failed_count": 0,
-      "checkpoint_completed_count": 56,
+      "checkpoint_completed_count": 58,
       "checkpoint_failed_count": 0,
       "result_rows": 51,
-      "pending_snapshot_rows": 5,
-      "completed_minus_flushed": 5
+      "pending_snapshot_rows": 7,
+      "completed_minus_flushed": 7
     },
     "consistency": {
       "result_rows_eq_flushed_count": true,
@@ -219,6 +219,16 @@
         "title": "폴랩이 난해한 건 맞는데 올드해서 보기 힘든가?"
       },
       {
+        "global_idx": 56,
+        "post_id": 11702084,
+        "title": "담호텔기라리는 언제 완결날 각 보임?"
+      },
+      {
+        "global_idx": 59,
+        "post_id": 11703645,
+        "title": "오늘에 ts 맘마는~~~~~"
+      },
+      {
         "global_idx": 62,
         "post_id": 11705261,
         "title": "이티알은 루루가 가장 승리자같기도"
@@ -238,10 +248,10 @@
       "source_line": 52
     },
     "status": "in_progress_in_worker_log",
-    "event_count": 15,
+    "event_count": 16,
     "omitted_event_count": 0,
     "event_counts": {
-      "mention": 2,
+      "mention": 3,
       "expert_start": 2,
       "global_start": 1,
       "post_header": 1,
@@ -256,7 +266,7 @@
       "arbiter_start": 1
     },
     "workers": {
-      "W13": 15
+      "W13": 16
     },
     "first_event": {
       "file": "expert_run_20260710_005902_590310_W13.log",
@@ -267,12 +277,12 @@
     },
     "last_event": {
       "file": "expert_run_20260710_005902_590310_W13.log",
-      "line": 6866,
+      "line": 7426,
       "worker": "W13",
-      "event": "arbiter_start",
-      "text": "[02:00:38.364|W13][⚖️] Arbiter 최종 판정 시작: post_id=11700470",
-      "time": "02:00:38.364|W13",
-      "time_seconds": 7238.364
+      "event": "mention",
+      "text": "[02:26:53.856|W13] 📋 [OVERRIDE AUDIT] post_id=11700470: LLM=True → final=False (overrides: 0건)",
+      "time": "02:26:53.856|W13",
+      "time_seconds": 8813.856
     },
     "first_timed_event": {
       "file": "expert_run_20260710_005902_590310_W13.log",
@@ -285,14 +295,14 @@
     },
     "last_timed_event": {
       "file": "expert_run_20260710_005902_590310_W13.log",
-      "line": 6866,
+      "line": 7426,
       "worker": "W13",
-      "event": "arbiter_start",
-      "text": "[02:00:38.364|W13][⚖️] Arbiter 최종 판정 시작: post_id=11700470",
-      "time": "02:00:38.364|W13",
-      "time_seconds": 7238.364
+      "event": "mention",
+      "text": "[02:26:53.856|W13] 📋 [OVERRIDE AUDIT] post_id=11700470: LLM=True → final=False (overrides: 0건)",
+      "time": "02:26:53.856|W13",
+      "time_seconds": 8813.856
     },
-    "observed_elapsed_seconds": 758.581,
+    "observed_elapsed_seconds": 2334.073,
     "events": [
       {
         "file": "expert_run_20260710_005902_590310_W13.log",
@@ -422,6 +432,15 @@
         "text": "[02:00:38.364|W13][⚖️] Arbiter 최종 판정 시작: post_id=11700470",
         "time": "02:00:38.364|W13",
         "time_seconds": 7238.364
+      },
+      {
+        "file": "expert_run_20260710_005902_590310_W13.log",
+        "line": 7426,
+        "worker": "W13",
+        "event": "mention",
+        "text": "[02:26:53.856|W13] 📋 [OVERRIDE AUDIT] post_id=11700470: LLM=True → final=False (overrides: 0건)",
+        "time": "02:26:53.856|W13",
+        "time_seconds": 8813.856
       }
     ]
   },
@@ -436,15 +455,15 @@
       "mcp_health_failure_count": 0
     },
     "row_search_health": {
-      "rows_with_search_health": 55,
+      "rows_with_search_health": 57,
       "status_counts": {
-        "ok": 54,
+        "ok": 56,
         "SEARCH_DEGRADED_RECOVERED": 1
       },
       "flag_counts": {},
-      "rows_with_upstream_zero": 33,
+      "rows_with_upstream_zero": 34,
       "rows_with_degraded": 0,
-      "query_total": 512,
+      "query_total": 540,
       "degraded_total": 2,
       "degraded_recovered_total": 1,
       "unrecovered_degraded_total": 0
@@ -452,7 +471,7 @@
     "worker_log_search": {
       "search_timeout": 0,
       "search_degraded_detected": 0,
-      "search_upstream_zero": 69,
+      "search_upstream_zero": 71,
       "search_bridge_after_filter_zero": 16
     },
     "blockers": []
@@ -470,16 +489,16 @@
     "blockers": []
   },
   "status_counts": {
-    "completed": 56
+    "completed": 58
   },
   "identity_state_counts": {
-    "resolved_title": 25,
+    "resolved_title": 26,
     "adjacent_relevant": 14,
     "non_relevant": 11,
-    "unresolved_title": 6
+    "unresolved_title": 7
   },
   "discussion_type_counts_top": {
-    "general": 18,
+    "general": 20,
     "noise": 8,
     "review": 7,
     "recommendation": 6,
@@ -493,29 +512,29 @@
     "meme": 1
   },
   "topicality_counts": {
-    "core_relevant": 31,
+    "core_relevant": 33,
     "adjacent_relevant": 14,
     "unrelated": 11
   },
   "work_resolution_counts": {
     "none": 25,
-    "resolved": 19,
-    "unresolved": 12
+    "resolved": 20,
+    "unresolved": 13
   },
   "novel_confidence_counts": {
-    "": 29,
-    "High": 15,
+    "": 30,
+    "High": 16,
     "None": 8,
     "Medium": 4
   },
   "consistency_flag_counts_top": {
-    "notes_demoted_for_unresolved": 22,
+    "notes_demoted_for_unresolved": 24,
     "local_candidate_hold_preserved": 20,
     "batch_memory_alias_rescue_blocked_nonwork_context": 16,
     "llm_only_sentence_candidate_pruned": 10,
     "same_url_official_detail_canonicalized": 10,
     "ocr_explicit_title_unresolved": 9,
-    "official_url_recall_gate_recovered": 8,
+    "official_url_recall_gate_recovered": 9,
     "serialized_public_identity_shared_gate_restored": 8,
     "verified_alias_official_detail_anchor": 7,
     "final_semantic_reread_reviewed": 7,
@@ -531,6 +550,7 @@
     "official_url_recall_blocked_relation_non_work_context": 5,
     "primary_work_cleared_non_core": 5,
     "multi_work_title_cleared": 5,
+    "official_detail_url_repaired_from_search": 5,
     "official_url_recall_blocked_hard_non_novel_context": 4,
     "weak_public_title_bridge_verified_alias_detail_exempt": 4,
     "vlm_ocr_title_conflict_with_final_title": 4,
@@ -542,13 +562,13 @@
     "batch_memory_alias_rescue_blocked_semantic_seed": 4,
     "final_semantic_reread_accepted_resolution": 4,
     "official_detail_url_missing_direct_source_support": 4,
-    "official_detail_url_repaired_from_search": 4,
     "direct_image_explicit_title_rescued": 3,
     "internal_work_signal_unresolved_recovered": 3,
     "weak_alias_surface_public_title_bridge": 3,
     "precision_seed_independent_official_detail_supported": 3,
     "serialized_public_identity_gate_candidate_reconciled": 3,
     "secondary_reference_official_alias_blocked_after_multi_work_title_cleared": 3,
+    "canonical_title_blocked": 3,
     "unresolved_worklike_hold:short_style_review": 2,
     "direct_image_work_surface_lock": 2,
     "unresolved_worklike_hold:title_led_consumption": 2,
@@ -557,14 +577,13 @@
     "post_alias_official_detail_bridge_anchor": 2,
     "final_semantic_reread_rejected_resolution": 2,
     "batch_memory_exact_alias_rescued": 2,
-    "batch_memory_alias_rescue_cleared_stale_demotions": 2,
-    "weak_public_title_bridge_batch_alias_exact_exempt": 2
+    "batch_memory_alias_rescue_cleared_stale_demotions": 2
   },
   "reason_error_count": 0,
   "reason_error_samples": [],
   "query_stats": {
-    "parsed_count": 43,
-    "avg_executed_queries": 7.3,
+    "parsed_count": 45,
+    "avg_executed_queries": 7.38,
     "p95_executed_queries": 14,
     "max_executed_queries": 16,
     "avg_degraded_queries": 2,
@@ -761,36 +780,43 @@
   },
   "logs": {
     "worker_log_count": 16,
-    "post_start_count_in_worker_logs": 72,
-    "post_complete_count_in_worker_logs": 56,
+    "post_start_count_in_worker_logs": 74,
+    "post_complete_count_in_worker_logs": 58,
     "counts": {
-      "title_anchor_exact_probe_lines": 60,
+      "title_anchor_exact_probe_lines": 62,
       "search_bridge_after_filter_zero": 16,
-      "headless_meta_lines": 98,
-      "search_upstream_zero": 69,
+      "headless_meta_lines": 100,
+      "search_upstream_zero": 71,
       "snippet_none_fallback": 1
     },
     "worker_counts_top": {
       "W5": {
         "search_upstream_zero": 12,
         "headless_meta_lines": 9,
+        "post_start": 6,
         "title_anchor_exact_probe_lines": 6,
-        "post_start": 5,
-        "post_complete": 4
+        "post_complete": 5
       },
       "W9": {
         "search_upstream_zero": 9,
         "headless_meta_lines": 8,
-        "post_start": 4,
+        "post_start": 5,
+        "post_complete": 4,
         "search_bridge_after_filter_zero": 3,
-        "post_complete": 3,
         "title_anchor_exact_probe_lines": 3
+      },
+      "W10": {
+        "search_upstream_zero": 7,
+        "post_start": 5,
+        "post_complete": 4,
+        "title_anchor_exact_probe_lines": 4,
+        "headless_meta_lines": 2
       },
       "W12": {
         "search_upstream_zero": 7,
         "post_start": 6,
         "post_complete": 5,
-        "headless_meta_lines": 3,
+        "headless_meta_lines": 5,
         "snippet_none_fallback": 1
       },
       "W2": {
@@ -800,13 +826,6 @@
         "post_complete": 4,
         "search_bridge_after_filter_zero": 1,
         "title_anchor_exact_probe_lines": 1
-      },
-      "W10": {
-        "search_upstream_zero": 6,
-        "post_start": 5,
-        "post_complete": 4,
-        "title_anchor_exact_probe_lines": 4,
-        "headless_meta_lines": 2
       },
       "W8": {
         "headless_meta_lines": 11,
@@ -853,6 +872,14 @@
         "search_upstream_zero": 4,
         "headless_meta_lines": 2
       },
+      "W0": {
+        "title_anchor_exact_probe_lines": 11,
+        "post_start": 5,
+        "search_bridge_after_filter_zero": 5,
+        "post_complete": 4,
+        "headless_meta_lines": 2,
+        "search_upstream_zero": 1
+      },
       "W13": {
         "post_start": 3,
         "title_anchor_exact_probe_lines": 3,
@@ -873,13 +900,6 @@
         "search_upstream_zero": 1,
         "search_bridge_after_filter_zero": 1
       },
-      "W0": {
-        "title_anchor_exact_probe_lines": 9,
-        "post_start": 5,
-        "search_bridge_after_filter_zero": 5,
-        "post_complete": 4,
-        "headless_meta_lines": 2
-      },
       "W14": {
         "post_start": 6,
         "post_complete": 5,
@@ -893,8 +913,8 @@
   },
   "rates": {
     "reason_error_rate_pct": 0.0,
-    "resolved_title_rate_pct": 44.64,
-    "unresolved_title_rate_pct": 10.71,
+    "resolved_title_rate_pct": 44.83,
+    "unresolved_title_rate_pct": 12.07,
     "headless_line_per_completed_pct": 0.0
   }
 }
