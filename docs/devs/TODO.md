@@ -12,7 +12,7 @@
 - [x] Loop640 manifest에서 `mcp_health_include_search=true`, `mcp_health_light_mode=false`, `mcp_health_ok_count=16`을 확인한다.
 - [x] Running health snapshot을 생성해 `IN_PROGRESS / ordered_flush_gap_in_progress`와 frontier `11676314`를 기록한다.
 - [x] Loop638 adjudicated re-baseline 이후 raw `105`는 historical diagnostic이며, completion metric은 `adjusted_drift_count`임을 현재 Loop640 TODO에도 반영한다.
-- [x] Latest live audit을 갱신했다: generated_at `2026-07-10T01:41:36`, completed/flushed/pending/failed `33/24/9/0`, frontier `11663514`.
+- [x] Latest live audit을 갱신했다: generated_at `2026-07-10T01:49:45`, completed/flushed/pending/failed `37/32/5/0`, frontier `11673086`.
 - [ ] Run health를 생성하고 completed/flushed/pending/failed `375/375/0/0`을 확인한다.
 - [ ] Publication contract convergence를 `GO / violation 0`으로 확인한다.
 - [ ] `compare_projection_collateral.py --baseline-mode adjudicated_rebaseline`로 adjusted drift를 확인한다.

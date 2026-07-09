@@ -3,13 +3,15 @@
 ## 2026-07-10 Loop640 live run health 운영 메모
 
 - [x] Loop640 background full375 run `20260710_005902_590310`의 live health audit을 갱신했다.
-- [x] Latest audit generated_at `2026-07-10T01:41:36`, completed/flushed/pending/failed `33/24/9/0`이다.
+- [x] Latest audit generated_at `2026-07-10T01:49:45`, completed/flushed/pending/failed `37/32/5/0`이다.
 - [x] Run integrity는 `IN_PROGRESS / ordered_flush_gap_in_progress`이며 completed source가 아니다.
 - [x] Prior frontier `4`가 해소되어 ordered flushed prefix가 `3 -> 19`로 이동했다.
 - [x] Prior frontier `11714892`가 해소되어 ordered flushed prefix가 `19 -> 24`로 이동했다.
-- [x] Current frontier는 `next_save_idx=25`, post_id `11663514`, W8 `in_progress_in_worker_log`, observed elapsed `680.689s`다.
-- [x] Search evidence는 subset 기준 `GO`, row search ok `32`, degraded `0`, unrecovered degraded `0`이다.
-- [x] Publication contract는 flushed result `24`행 기준 `GO / violation 0`이다.
+- [x] Prior frontier `11663514`가 해소되어 ordered flushed prefix가 `24 -> 30`으로 이동했다.
+- [x] Prior frontier `11671501`이 해소되어 ordered flushed prefix가 `30 -> 32`로 이동했다.
+- [x] Current frontier는 `next_save_idx=33`, post_id `11673086`, W3 `in_progress_in_worker_log`, observed elapsed `1555.749s`다.
+- [x] Search evidence는 subset 기준 `GO`, row search ok `36`, degraded `0`, unrecovered degraded `0`이다.
+- [x] Publication contract는 flushed result `32`행 기준 `GO / violation 0`이다.
 - [x] Loop638 re-baseline은 `APPLIED`이며, 현재 이후 collateral gate metric은 `adjusted_drift_count`다.
 - [x] 2026-06-26 raw `105`는 historical diagnostic이다. Raw가 0이 되지 않아도 완료 blocker가 아니며, 매 run raw row를 재소송하지 않는다.
 - [ ] Runtime counts `375/375/0/0` 전에는 full375 collateral approval이나 always-on `GO`로 승격하지 않는다.

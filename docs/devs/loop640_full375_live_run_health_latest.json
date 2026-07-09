@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T01:41:36",
+  "generated_at": "2026-07-10T01:49:45",
   "run_id": "20260710_005902_590310",
   "artifact_resolution": {
     "resolution": "explicit_paths",
@@ -119,11 +119,11 @@
     "mcp_endpoint_count_after_health_filter": 16,
     "mcp_parallel_before_health_filter": 16,
     "mcp_parallel_after_health_filter": 16,
-    "completed_count": 33,
-    "flushed_count": 24,
-    "pending_count": 9,
+    "completed_count": 37,
+    "flushed_count": 32,
+    "pending_count": 5,
     "failed_count": 0,
-    "next_save_idx": 25,
+    "next_save_idx": 33,
     "partial_flush_gap": true,
     "ordered_flush_blocked": true,
     "large_run_complete": false
@@ -141,12 +141,12 @@
     "path": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop640_full375_after_loop639_runtime_contract_fix_result.json",
     "exists": true,
     "shape": "list",
-    "row_count": 24,
+    "row_count": 32,
     "load_error": null
   },
-  "result_rows": 24,
-  "checkpoint_rows": 33,
-  "pending_count_actual": 9,
+  "result_rows": 32,
+  "checkpoint_rows": 37,
+  "pending_count_actual": 5,
   "flush_integrity": {
     "run_integrity_gate": "IN_PROGRESS",
     "classification": "ordered_flush_gap_in_progress",
@@ -163,15 +163,15 @@
     ],
     "counts": {
       "manifest_input_post_count": 375,
-      "manifest_completed_count": 33,
-      "manifest_flushed_count": 24,
-      "manifest_pending_count": 9,
+      "manifest_completed_count": 37,
+      "manifest_flushed_count": 32,
+      "manifest_pending_count": 5,
       "manifest_failed_count": 0,
-      "checkpoint_completed_count": 33,
+      "checkpoint_completed_count": 37,
       "checkpoint_failed_count": 0,
-      "result_rows": 24,
-      "pending_snapshot_rows": 9,
-      "completed_minus_flushed": 9
+      "result_rows": 32,
+      "pending_snapshot_rows": 5,
+      "completed_minus_flushed": 5
     },
     "consistency": {
       "result_rows_eq_flushed_count": true,
@@ -181,53 +181,28 @@
       "pending_snapshot_rows_eq_completed_minus_flushed": true
     },
     "frontier": {
-      "next_save_idx": 25,
+      "next_save_idx": 33,
       "status": "in_flight_or_missing",
       "reason": "frontier_missing_from_checkpoint_and_pending",
       "source_post": {
-        "global_idx": 25,
-        "post_id": 11663514,
-        "title": "슬라임의 올바른 사용법",
-        "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11663514",
+        "global_idx": 33,
+        "post_id": 11673086,
+        "title": "랫따싶 칸시가 정실이엿으면",
+        "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11673086",
         "gallery_id": "genrenovel",
-        "source_line": 25
+        "source_line": 33
       },
       "frontier_in_checkpoint_completed": false,
       "frontier_in_pending_snapshot": false,
       "completed_index_min": 1,
       "completed_index_max": 41,
-      "pending_index_min": 26,
+      "pending_index_min": 34,
       "pending_index_max": 41,
-      "first_pending_at_or_after_frontier": 26,
-      "first_completed_at_or_after_frontier": 26,
-      "frontier_gap_global_idx": 25
+      "first_pending_at_or_after_frontier": 34,
+      "first_completed_at_or_after_frontier": 34,
+      "frontier_gap_global_idx": 33
     },
     "pending_blocker_samples": [
-      {
-        "global_idx": 26,
-        "post_id": 11666705,
-        "title": "이런 아줌마는 가능?"
-      },
-      {
-        "global_idx": 27,
-        "post_id": 11668307,
-        "title": "빛세구 궁금한 점 있음"
-      },
-      {
-        "global_idx": 28,
-        "post_id": 11668324,
-        "title": "니생들이랑 김괴라리 장갤픽 아니였음?"
-      },
-      {
-        "global_idx": 29,
-        "post_id": 11669911,
-        "title": "S급 헌터 결혼 보는 사람?"
-      },
-      {
-        "global_idx": 30,
-        "post_id": 11669928,
-        "title": "탑성좌애호 노벨피아 이거 연중했었네"
-      },
       {
         "global_idx": 34,
         "post_id": 11674712,
@@ -237,6 +212,11 @@
         "global_idx": 35,
         "post_id": 11676317,
         "title": "마도서줍 그거 같아"
+      },
+      {
+        "global_idx": 36,
+        "post_id": 11677913,
+        "title": "남캐일러 뽑아도 된다고"
       },
       {
         "global_idx": 38,
@@ -252,10 +232,10 @@
   },
   "frontier_worker_trace": {
     "target": {
-      "global_idx": 25,
-      "post_id": 11663514,
-      "title": "슬라임의 올바른 사용법",
-      "source_line": 25
+      "global_idx": 33,
+      "post_id": 11673086,
+      "title": "랫따싶 칸시가 정실이엿으면",
+      "source_line": 33
     },
     "status": "in_progress_in_worker_log",
     "event_count": 15,
@@ -276,172 +256,172 @@
       "arbiter_start": 1
     },
     "workers": {
-      "W8": 15
+      "W3": 15
     },
     "first_event": {
-      "file": "expert_run_20260710_005902_590310_W8.log",
-      "line": 2152,
-      "worker": "W8",
+      "file": "expert_run_20260710_005902_590310_W3.log",
+      "line": 2107,
+      "worker": "W3",
       "event": "global_start",
-      "text": "🤖 [W8][25/375] Agentic Pipeline 시작"
+      "text": "🤖 [W3][33/375] Agentic Pipeline 시작"
     },
     "last_event": {
-      "file": "expert_run_20260710_005902_590310_W8.log",
-      "line": 4588,
-      "worker": "W8",
+      "file": "expert_run_20260710_005902_590310_W3.log",
+      "line": 4698,
+      "worker": "W3",
       "event": "arbiter_start",
-      "text": "[01:22:45.305|W8][⚖️] Arbiter 최종 판정 시작: post_id=11663514",
-      "time": "01:22:45.305|W8",
-      "time_seconds": 4965.305
+      "text": "[01:46:30.576|W3][⚖️] Arbiter 최종 판정 시작: post_id=11673086",
+      "time": "01:46:30.576|W3",
+      "time_seconds": 6390.576
     },
     "first_timed_event": {
-      "file": "expert_run_20260710_005902_590310_W8.log",
-      "line": 2180,
-      "worker": "W8",
+      "file": "expert_run_20260710_005902_590310_W3.log",
+      "line": 2125,
+      "worker": "W3",
       "event": "pipeline_start",
-      "text": "[01:11:24.616|W8] 🚀 Agentic Pipeline start: Post 11663514 - 슬라임의 올바른 사용법...",
-      "time": "01:11:24.616|W8",
-      "time_seconds": 4284.616
+      "text": "[01:20:34.827|W3] 🚀 Agentic Pipeline start: Post 11673086 - 랫따싶 칸시가 정실이엿으면...",
+      "time": "01:20:34.827|W3",
+      "time_seconds": 4834.827
     },
     "last_timed_event": {
-      "file": "expert_run_20260710_005902_590310_W8.log",
-      "line": 4588,
-      "worker": "W8",
+      "file": "expert_run_20260710_005902_590310_W3.log",
+      "line": 4698,
+      "worker": "W3",
       "event": "arbiter_start",
-      "text": "[01:22:45.305|W8][⚖️] Arbiter 최종 판정 시작: post_id=11663514",
-      "time": "01:22:45.305|W8",
-      "time_seconds": 4965.305
+      "text": "[01:46:30.576|W3][⚖️] Arbiter 최종 판정 시작: post_id=11673086",
+      "time": "01:46:30.576|W3",
+      "time_seconds": 6390.576
     },
-    "observed_elapsed_seconds": 680.689,
+    "observed_elapsed_seconds": 1555.749,
     "events": [
       {
-        "file": "expert_run_20260710_005902_590310_W8.log",
-        "line": 2152,
-        "worker": "W8",
+        "file": "expert_run_20260710_005902_590310_W3.log",
+        "line": 2107,
+        "worker": "W3",
         "event": "global_start",
-        "text": "🤖 [W8][25/375] Agentic Pipeline 시작"
+        "text": "🤖 [W3][33/375] Agentic Pipeline 시작"
       },
       {
-        "file": "expert_run_20260710_005902_590310_W8.log",
-        "line": 2154,
-        "worker": "W8",
+        "file": "expert_run_20260710_005902_590310_W3.log",
+        "line": 2109,
+        "worker": "W3",
         "event": "post_header",
-        "text": "📌 Post ID: 11663514"
+        "text": "📌 Post ID: 11673086"
       },
       {
-        "file": "expert_run_20260710_005902_590310_W8.log",
-        "line": 2157,
-        "worker": "W8",
+        "file": "expert_run_20260710_005902_590310_W3.log",
+        "line": 2112,
+        "worker": "W3",
         "event": "mention",
-        "text": "🔗 URL: https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11663514"
+        "text": "🔗 URL: https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11673086"
       },
       {
-        "file": "expert_run_20260710_005902_590310_W8.log",
-        "line": 2180,
-        "worker": "W8",
+        "file": "expert_run_20260710_005902_590310_W3.log",
+        "line": 2125,
+        "worker": "W3",
         "event": "pipeline_start",
-        "text": "[01:11:24.616|W8] 🚀 Agentic Pipeline start: Post 11663514 - 슬라임의 올바른 사용법...",
-        "time": "01:11:24.616|W8",
-        "time_seconds": 4284.616
+        "text": "[01:20:34.827|W3] 🚀 Agentic Pipeline start: Post 11673086 - 랫따싶 칸시가 정실이엿으면...",
+        "time": "01:20:34.827|W3",
+        "time_seconds": 4834.827
       },
       {
-        "file": "expert_run_20260710_005902_590310_W8.log",
-        "line": 2182,
-        "worker": "W8",
+        "file": "expert_run_20260710_005902_590310_W3.log",
+        "line": 2127,
+        "worker": "W3",
         "event": "vlm_chunk_request",
-        "text": "[01:11:28.047|W8] 🖼️ VLM chunk request: post_id=11663514 chunk=1/1, images=1, bytes=255532",
-        "time": "01:11:28.047|W8",
-        "time_seconds": 4288.047
+        "text": "[01:20:36.046|W3] 🖼️ VLM chunk request: post_id=11673086 chunk=1/1, images=1, bytes=76862",
+        "time": "01:20:36.046|W3",
+        "time_seconds": 4836.046
       },
       {
-        "file": "expert_run_20260710_005902_590310_W8.log",
-        "line": 2183,
-        "worker": "W8",
+        "file": "expert_run_20260710_005902_590310_W3.log",
+        "line": 2128,
+        "worker": "W3",
         "event": "vlm_chunk_result",
-        "text": "[01:11:41.188|W8] 🖼️ VLM chunk result: post_id=11663514 chunk=1/1, images=1, summary=이미지는 '에르노니 치안서'라는 제목이 명시된 도시의 입체적 구조도(단면도)입니다. 건물의 층별 구조(지하, 1~3층 등)와 각 구역에 대한 설명이 포함된 설정 자료형 이미지입니다.",
-        "time": "01:11:41.188|W8",
-        "time_seconds": 4301.188
+        "text": "[01:22:18.339|W3] 🖼️ VLM chunk result: post_id=11673086 chunk=1/1, images=1, summary=이미지 좌측 상단에 'RimWorld -modded-'라는 텍스트가 명시되어 있으며, 게임 내 시스템 UI(사료 섭취 관련 메시지)가 포함된 팬아트 또는 모드 관련 일러스트입니다.",
+        "time": "01:22:18.339|W3",
+        "time_seconds": 4938.339
       },
       {
-        "file": "expert_run_20260710_005902_590310_W8.log",
-        "line": 2190,
-        "worker": "W8",
+        "file": "expert_run_20260710_005902_590310_W3.log",
+        "line": 2134,
+        "worker": "W3",
         "event": "vlm_merged_evidence",
-        "text": "[01:11:43.352|W8] 🖼️ VLM merged evidence: post_id=11663514 images=1, summary=이미지에서 작품 단서 추출: 에르노니 치안서, 도시 구조 단면도, 판타지 설정 자료",
-        "time": "01:11:43.352|W8",
-        "time_seconds": 4303.352
+        "text": "[01:22:22.755|W3] 🖼️ VLM merged evidence: post_id=11673086 images=1, summary=이미지에서 작품 단서 추출: RimWorld, modded, 사료 섭취 시스템 메시지",
+        "time": "01:22:22.755|W3",
+        "time_seconds": 4942.755
       },
       {
-        "file": "expert_run_20260710_005902_590310_W8.log",
-        "line": 2192,
-        "worker": "W8",
+        "file": "expert_run_20260710_005902_590310_W3.log",
+        "line": 2136,
+        "worker": "W3",
         "event": "vlm_image_enrichment",
-        "text": "[01:11:44.012|W8] 🖼️ VLM image enrichment: post_id=11663514 fetch=1/1, chunks=1, total_bytes=255532",
-        "time": "01:11:44.012|W8",
-        "time_seconds": 4304.012
+        "text": "[01:22:23.371|W3] 🖼️ VLM image enrichment: post_id=11673086 fetch=1/1, chunks=1, total_bytes=76862",
+        "time": "01:22:23.371|W3",
+        "time_seconds": 4943.371
       },
       {
-        "file": "expert_run_20260710_005902_590310_W8.log",
-        "line": 2194,
-        "worker": "W8",
+        "file": "expert_run_20260710_005902_590310_W3.log",
+        "line": 2138,
+        "worker": "W3",
         "event": "orchestrator_start",
-        "text": "[01:11:44.244|W8] 🎯 Orchestrator 시작: post_id=11663514",
-        "time": "01:11:44.244|W8",
-        "time_seconds": 4304.244
+        "text": "[01:22:23.755|W3] 🎯 Orchestrator 시작: post_id=11673086",
+        "time": "01:22:23.755|W3",
+        "time_seconds": 4943.755
       },
       {
-        "file": "expert_run_20260710_005902_590310_W8.log",
-        "line": 2195,
-        "worker": "W8",
+        "file": "expert_run_20260710_005902_590310_W3.log",
+        "line": 2139,
+        "worker": "W3",
         "event": "expert_start",
-        "text": "[01:11:45.319|W8][🎭] Gatekeeper 분석 시작: post_id=11663514",
-        "time": "01:11:45.319|W8",
-        "time_seconds": 4305.319
+        "text": "[01:22:24.557|W3][🎭] Gatekeeper 분석 시작: post_id=11673086",
+        "time": "01:22:24.557|W3",
+        "time_seconds": 4944.557
       },
       {
-        "file": "expert_run_20260710_005902_590310_W8.log",
-        "line": 2384,
-        "worker": "W8",
+        "file": "expert_run_20260710_005902_590310_W3.log",
+        "line": 2323,
+        "worker": "W3",
         "event": "expert_start",
-        "text": "[01:12:13.079|W8][📖] DiscourseAnalyzer 분석 시작: post_id=11663514",
-        "time": "01:12:13.079|W8",
-        "time_seconds": 4333.079
+        "text": "[01:22:44.813|W3][📖] DiscourseAnalyzer 분석 시작: post_id=11673086",
+        "time": "01:22:44.813|W3",
+        "time_seconds": 4964.813
       },
       {
-        "file": "expert_run_20260710_005902_590310_W8.log",
-        "line": 2630,
-        "worker": "W8",
+        "file": "expert_run_20260710_005902_590310_W3.log",
+        "line": 2618,
+        "worker": "W3",
         "event": "mention",
-        "text": "[01:12:44.066][🎯] 📋 자기참조 필터: post_id='11663514'",
-        "time": "01:12:44.066",
-        "time_seconds": 4364.066
+        "text": "[01:23:47.823][🎯] 📋 자기참조 필터: post_id='11673086'",
+        "time": "01:23:47.823",
+        "time_seconds": 5027.823
       },
       {
-        "file": "expert_run_20260710_005902_590310_W8.log",
-        "line": 4253,
-        "worker": "W8",
+        "file": "expert_run_20260710_005902_590310_W3.log",
+        "line": 4185,
+        "worker": "W3",
         "event": "verifier_start",
-        "text": "[01:20:47.487|W8][🔍] Verifier 검증 시작: post_id=11663514",
-        "time": "01:20:47.487|W8",
-        "time_seconds": 4847.487
+        "text": "[01:29:52.959|W3][🔍] Verifier 검증 시작: post_id=11673086",
+        "time": "01:29:52.959|W3",
+        "time_seconds": 5392.959
       },
       {
-        "file": "expert_run_20260710_005902_590310_W8.log",
-        "line": 4425,
-        "worker": "W8",
+        "file": "expert_run_20260710_005902_590310_W3.log",
+        "line": 4511,
+        "worker": "W3",
         "event": "synthesizer_start",
-        "text": "[01:21:51.676|W8][🔬] Synthesizer 증거 기반 재해석 시작: post_id=11663514",
-        "time": "01:21:51.676|W8",
-        "time_seconds": 4911.676
+        "text": "[01:40:44.377|W3][🔬] Synthesizer 증거 기반 재해석 시작: post_id=11673086",
+        "time": "01:40:44.377|W3",
+        "time_seconds": 6044.377
       },
       {
-        "file": "expert_run_20260710_005902_590310_W8.log",
-        "line": 4588,
-        "worker": "W8",
+        "file": "expert_run_20260710_005902_590310_W3.log",
+        "line": 4698,
+        "worker": "W3",
         "event": "arbiter_start",
-        "text": "[01:22:45.305|W8][⚖️] Arbiter 최종 판정 시작: post_id=11663514",
-        "time": "01:22:45.305|W8",
-        "time_seconds": 4965.305
+        "text": "[01:46:30.576|W3][⚖️] Arbiter 최종 판정 시작: post_id=11673086",
+        "time": "01:46:30.576|W3",
+        "time_seconds": 6390.576
       }
     ]
   },
@@ -456,14 +436,14 @@
       "mcp_health_failure_count": 0
     },
     "row_search_health": {
-      "rows_with_search_health": 32,
+      "rows_with_search_health": 36,
       "status_counts": {
-        "ok": 32
+        "ok": 36
       },
       "flag_counts": {},
-      "rows_with_upstream_zero": 19,
+      "rows_with_upstream_zero": 22,
       "rows_with_degraded": 0,
-      "query_total": 299,
+      "query_total": 341,
       "degraded_total": 0,
       "degraded_recovered_total": 0,
       "unrecovered_degraded_total": 0
@@ -471,8 +451,8 @@
     "worker_log_search": {
       "search_timeout": 0,
       "search_degraded_detected": 0,
-      "search_upstream_zero": 48,
-      "search_bridge_after_filter_zero": 10
+      "search_upstream_zero": 53,
+      "search_bridge_after_filter_zero": 11
     },
     "blockers": []
   },
@@ -481,7 +461,7 @@
     "approval_ready": true,
     "result_json": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop640_full375_after_loop639_runtime_contract_fix_result.json",
     "summary": {
-      "row_count": 24,
+      "row_count": 32,
       "violation_row_count": 0,
       "violation_counts": {}
     },
@@ -489,18 +469,18 @@
     "blockers": []
   },
   "status_counts": {
-    "completed": 33
+    "completed": 37
   },
   "identity_state_counts": {
-    "resolved_title": 14,
-    "non_relevant": 9,
+    "resolved_title": 17,
+    "non_relevant": 10,
     "adjacent_relevant": 7,
     "unresolved_title": 3
   },
   "discussion_type_counts_top": {
-    "general": 9,
-    "noise": 6,
-    "review": 5,
+    "general": 11,
+    "noise": 7,
+    "review": 6,
     "character_talk": 3,
     "recommendation": 3,
     "trope_discussion": 2,
@@ -511,85 +491,85 @@
     "off_topic": 1
   },
   "topicality_counts": {
-    "core_relevant": 17,
-    "unrelated": 9,
+    "core_relevant": 20,
+    "unrelated": 10,
     "adjacent_relevant": 7
   },
   "work_resolution_counts": {
-    "none": 16,
-    "resolved": 11,
-    "unresolved": 6
+    "none": 17,
+    "resolved": 13,
+    "unresolved": 7
   },
   "novel_confidence_counts": {
-    "": 19,
-    "High": 9,
-    "None": 3,
-    "Medium": 2
+    "": 20,
+    "High": 10,
+    "None": 4,
+    "Medium": 3
   },
   "consistency_flag_counts_top": {
+    "notes_demoted_for_unresolved": 13,
     "local_candidate_hold_preserved": 12,
-    "notes_demoted_for_unresolved": 12,
     "batch_memory_alias_rescue_blocked_nonwork_context": 9,
-    "llm_only_sentence_candidate_pruned": 8,
+    "llm_only_sentence_candidate_pruned": 9,
+    "same_url_official_detail_canonicalized": 7,
     "final_semantic_reread_reviewed": 6,
-    "same_url_official_detail_canonicalized": 6,
-    "official_url_recall_gate_recovered": 4,
+    "official_url_recall_gate_recovered": 5,
+    "batch_memory_alias_rescue_blocked_deliberate_null": 5,
+    "serialized_public_identity_shared_gate_restored": 5,
+    "ocr_explicit_title_unresolved": 4,
+    "official_url_recall_candidate_preserved": 4,
+    "official_url_recall_candidate_source_preserved": 4,
     "verified_alias_official_detail_anchor": 4,
     "multi_work_guard_canonical_rescue_skipped": 4,
     "official_url_recall_blocked_relation_non_work_context": 4,
-    "batch_memory_alias_rescue_blocked_deliberate_null": 4,
-    "serialized_public_identity_shared_gate_restored": 4,
     "recommendation_context_only_no_work_anchor": 4,
     "batch_memory_alias_rescue_blocked_genre_context": 4,
+    "external_ip_unresolved_final_blocked": 3,
+    "official_url_recall_blocked_hard_non_novel_context": 3,
     "batch_memory_alias_rescue_blocked_by_author_meta": 3,
-    "ocr_explicit_title_unresolved": 3,
-    "official_url_recall_candidate_preserved": 3,
-    "official_url_recall_candidate_source_preserved": 3,
     "precision_seed_independent_official_detail_supported": 3,
     "explicit_alias_official_work_lock": 3,
+    "vlm_ocr_title_conflict_with_final_title": 3,
+    "ocr_title_conflict_with_stable_alias": 3,
+    "platform_seo_title_suffix_canonicalized": 3,
+    "primary_work_cleared_non_core": 3,
     "genre_trope_context_only_no_work_anchor": 3,
     "context_only_no_work_anchor": 3,
     "final_semantic_reread_accepted_resolution": 3,
-    "external_ip_unresolved_final_blocked": 2,
+    "multi_work_title_cleared": 3,
+    "secondary_reference_official_alias_blocked_after_multi_work_title_cleared": 3,
     "direct_image_explicit_title_rescued": 2,
-    "official_url_recall_blocked_hard_non_novel_context": 2,
     "unresolved_worklike_hold:title_led_consumption": 2,
     "relation_hold_unresolved_recovered": 2,
     "internal_work_signal_unresolved_recovered": 2,
     "weak_alias_surface_public_title_bridge": 2,
     "weak_public_title_bridge_verified_alias_detail_exempt": 2,
-    "vlm_ocr_title_conflict_with_final_title": 2,
-    "ocr_title_conflict_with_stable_alias": 2,
     "verified_alias_title_only_publication": 2,
-    "platform_seo_title_suffix_canonicalized": 2,
     "serialized_public_identity_gate_candidate_reconciled": 2,
     "final_semantic_reread_rejected_resolution": 2,
-    "primary_work_cleared_non_core": 2,
     "batch_memory_exact_alias_rescued": 2,
     "batch_memory_alias_rescue_cleared_stale_demotions": 2,
     "weak_public_title_bridge_batch_alias_exact_exempt": 2,
-    "multi_work_title_cleared": 2,
-    "secondary_reference_official_alias_blocked_after_multi_work_title_cleared": 2,
-    "unresolved_worklike_hold:short_style_review": 1,
-    "direct_image_suspect_preserved": 1,
-    "direct_image_work_surface_lock": 1,
-    "confirmed_alias:섹스다섹스": 1,
-    "confirmed_alias:루나": 1,
-    "final_semantic_reread_official_recall_guarded_resolution": 1,
-    "full_title_surface": 1
+    "secondary_reference_official_alias_blocked_after_title_deliberately_null": 2,
+    "batch_memory_alias_rescue_blocked_after_title_deliberately_null": 2,
+    "official_detail_url_missing_direct_source_support": 2,
+    "locked_official_candidate_rescued": 2,
+    "locked_official_rescue_cleared_stale_demotions": 2,
+    "weak_public_title_bridge_locked_official_exempt": 2,
+    "unresolved_worklike_hold:short_style_review": 1
   },
   "reason_error_count": 0,
   "reason_error_samples": [],
   "query_stats": {
-    "parsed_count": 25,
-    "avg_executed_queries": 6.76,
-    "p95_executed_queries": 14,
+    "parsed_count": 28,
+    "avg_executed_queries": 7,
+    "p95_executed_queries": 16,
     "max_executed_queries": 16,
     "avg_degraded_queries": null,
     "max_degraded_queries": null
   },
   "slang": {
-    "slang_insight_count": 10,
+    "slang_insight_count": 13,
     "old_store_true_count": 6,
     "new_store_true_after_patch_count": 6,
     "old_store_true_blocked_by_patch_count": 0,
@@ -708,13 +688,13 @@
   },
   "logs": {
     "worker_log_count": 16,
-    "post_start_count_in_worker_logs": 49,
-    "post_complete_count_in_worker_logs": 33,
+    "post_start_count_in_worker_logs": 53,
+    "post_complete_count_in_worker_logs": 37,
     "counts": {
-      "title_anchor_exact_probe_lines": 41,
-      "search_bridge_after_filter_zero": 10,
-      "headless_meta_lines": 65,
-      "search_upstream_zero": 48
+      "title_anchor_exact_probe_lines": 46,
+      "search_bridge_after_filter_zero": 11,
+      "headless_meta_lines": 78,
+      "search_upstream_zero": 53
     },
     "worker_counts_top": {
       "W5": {
@@ -739,14 +719,20 @@
       "W8": {
         "headless_meta_lines": 10,
         "search_upstream_zero": 5,
+        "post_start": 3,
         "title_anchor_exact_probe_lines": 3,
-        "post_start": 2,
-        "post_complete": 1,
+        "post_complete": 2,
         "search_bridge_after_filter_zero": 1
       },
       "W1": {
-        "headless_meta_lines": 13,
+        "headless_meta_lines": 15,
         "title_anchor_exact_probe_lines": 6,
+        "search_upstream_zero": 4,
+        "post_start": 3,
+        "post_complete": 2
+      },
+      "W11": {
+        "headless_meta_lines": 9,
         "search_upstream_zero": 4,
         "post_start": 3,
         "post_complete": 2
@@ -759,10 +745,17 @@
         "title_anchor_exact_probe_lines": 2,
         "search_bridge_after_filter_zero": 1
       },
+      "W9": {
+        "headless_meta_lines": 4,
+        "search_upstream_zero": 4,
+        "post_start": 3,
+        "search_bridge_after_filter_zero": 2,
+        "post_complete": 2
+      },
       "W2": {
         "headless_meta_lines": 10,
-        "post_start": 3,
-        "post_complete": 2,
+        "post_start": 4,
+        "post_complete": 3,
         "search_upstream_zero": 2,
         "search_bridge_after_filter_zero": 1
       },
@@ -774,30 +767,17 @@
         "search_upstream_zero": 2,
         "post_complete": 2
       },
-      "W9": {
-        "headless_meta_lines": 4,
-        "post_start": 3,
-        "search_bridge_after_filter_zero": 2,
-        "post_complete": 2,
-        "search_upstream_zero": 2
-      },
-      "W11": {
-        "post_start": 3,
-        "post_complete": 2,
-        "headless_meta_lines": 1,
-        "search_upstream_zero": 1
-      },
       "W13": {
+        "post_start": 3,
         "title_anchor_exact_probe_lines": 3,
-        "post_start": 2,
+        "post_complete": 2,
         "headless_meta_lines": 1,
-        "post_complete": 1,
         "search_upstream_zero": 1
       },
       "W15": {
-        "post_start": 2,
+        "post_start": 3,
         "headless_meta_lines": 2,
-        "post_complete": 1,
+        "post_complete": 2,
         "search_upstream_zero": 1
       },
       "W3": {
@@ -815,14 +795,16 @@
       },
       "W14": {
         "post_start": 5,
+        "title_anchor_exact_probe_lines": 5,
+        "headless_meta_lines": 4,
         "post_complete": 4,
-        "headless_meta_lines": 2
+        "search_bridge_after_filter_zero": 1
       },
       "W7": {
         "post_start": 4,
         "title_anchor_exact_probe_lines": 4,
         "post_complete": 3,
-        "headless_meta_lines": 1
+        "headless_meta_lines": 2
       }
     },
     "headless_engine_counts": {},
@@ -830,8 +812,8 @@
   },
   "rates": {
     "reason_error_rate_pct": 0.0,
-    "resolved_title_rate_pct": 42.42,
-    "unresolved_title_rate_pct": 9.09,
+    "resolved_title_rate_pct": 45.95,
+    "unresolved_title_rate_pct": 8.11,
     "headless_line_per_completed_pct": 0.0
   }
 }
