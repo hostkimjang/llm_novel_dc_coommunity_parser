@@ -19,7 +19,10 @@
 - [x] Running health snapshot을 생성했다: completed/flushed/pending/failed `3/1/2/0`, search evidence `GO`, partial publication contract `GO`.
 - [x] Snapshot frontier는 `11676314 / 마도줍 완결이 빠를까`, W1 `in_progress_in_worker_log`다.
 - [x] Loop638 re-baseline 적용 이후 completion metric은 `adjusted_drift_count`이며, 2026-06-26 raw `105`는 historical diagnostic으로만 유지한다고 재확인했다.
-- [ ] Loop640 full375 runtime은 아직 완료하지 않았다. 초기 counts는 `2/1/1/0`이다.
+- [x] Latest live audit generated_at `2026-07-10T01:41:36` 기준 completed/flushed/pending/failed `33/24/9/0`, result rows `24`, checkpoint rows `33`이다.
+- [x] Previous frontier `11714892`가 해소되어 ordered flushed prefix가 `19 -> 24`로 전진했다.
+- [x] Current frontier는 `11663514 / 슬라임의 올바른 사용법`, W8 `in_progress_in_worker_log`, observed elapsed `680.689s`다.
+- [ ] Loop640 full375 runtime은 아직 완료하지 않았다. latest counts는 `33/24/9/0`이다.
 - [ ] Raw `105`를 매 run 재소송하지 않는다. Loop640 완료 뒤에는 판결 baseline 대비 adjusted drift, search/publication/full_scan gate만 본다.
 - [ ] Next full375 runtime counts `375/375/0/0` 전까지 always-on `NO-GO`를 유지한다.
 - [ ] Full_scan path 검증 전까지 `full_scan_approval=false`를 유지한다.
