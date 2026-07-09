@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260709-633 - source-native residual35 adjudicated and adjusted gate fixed
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Source-native adjudication | GO | `loop633_source_native_or_blind35_verdicts.json`, reviewed `35/35`, `INFO_MISSING 0` | follow-up lane 처리 |
+| Adjusted exclusion | REVIEW-LOCKED | `ACCEPT 11`, approval이 아니라 adjusted exclusion candidate | full375 adjusted GO 전 자동 승인 금지 |
+| Residual accounting | REVIEW-LOCKED | `loop633_after_source_native35_residual41_accounting.json`, ordinary residual `41 -> 30` | residual30 배치 처리 |
+| Dispatch | GO_QUEUE_REDUCED_NOT_APPROVAL | source-native lane `0`, candidate-set `6`, canonical `2`, native `12`, no-publish `4`, shared-gate `6` | 동일 source-native 재소송 금지 |
+| Tool contract | PASS_UNIT | `build_ordinary_residual_dispatch.py`가 source-native verdict action을 우선, tests `13` PASS | stale action merge 재발 방지 |
+| Re-baseline | NOT_APPLIED | `loop633_adjudicated_rebaseline_readiness.json`, blocker residual follow-up `30` | adjusted full375 GO + full_scan path 이후 적용 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 adjusted full375 collateral GO + full_scan path |
+
+Gate: source-native adjudication `REVIEW-LOCKED`, full375 collateral `NO-GO`, re-baseline `NOT_APPLIED`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260709-628 - Loop626 remaining current search hard blockers closed
 
 | 항목 | 상태 | 근거 | 다음 |

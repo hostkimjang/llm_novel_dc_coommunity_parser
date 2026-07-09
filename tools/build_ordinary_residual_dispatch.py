@@ -126,6 +126,10 @@ def _merge_actions(*values: list[str]) -> list[str]:
     return out
 
 
+def _has_source_native_verdict(row: dict[str, Any]) -> bool:
+    return bool(str(row.get("source_native_review_label") or "").strip())
+
+
 def _primary_lane(row: dict[str, Any]) -> str:
     actions = set(_actions(row))
     label = str(row.get("review_label") or "")
@@ -184,7 +188,12 @@ def build_dispatch(
         if not source:
             validation_issues.append({"code": "ordinary_row_missing_source_queue_row", "post_id": post_id})
             source = {}
-        actions = _merge_actions(_actions(source), _actions(row))
+        row_actions = _actions(row)
+        actions = (
+            row_actions
+            if _has_source_native_verdict(row) and row_actions
+            else _merge_actions(_actions(source), row_actions)
+        )
         lane_input = dict(source or row)
         lane_input["actions"] = actions
         lane_input["review_label"] = row.get("review_label") or source.get("review_label")
@@ -270,7 +279,7 @@ def build_dispatch(
             "publish_allowed_rows": 0,
             "runtime_replay_allowed_rows": 0,
             "full375_collateral_gate": "NO-GO",
-            "completion_gate": "full375 collateral GO + full_scan path",
+            "completion_gate": "adjusted full375 collateral GO + full_scan path",
         },
         "validation_issues": validation_issues,
         "lane_groups": groups,

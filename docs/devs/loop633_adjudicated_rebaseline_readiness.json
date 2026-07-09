@@ -1,0 +1,42 @@
+{
+  "report_type": "adjudicated_rebaseline_readiness",
+  "readiness_id": "loop633_adjudicated_rebaseline_readiness",
+  "generated_at": "2026-07-09T22:11:58",
+  "gate": "NO-GO",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "rebaseline_status": "NOT_APPLIED",
+  "rebaseline_blockers": [
+    "ordinary_residual_followup_rows_nonzero",
+    "full375_adjusted_collateral_go_not_observed",
+    "full_scan_path_not_completed"
+  ],
+  "summary": {
+    "source_native_reviewed_rows": 35,
+    "source_native_info_missing_rows": 0,
+    "adjusted_exclusion_candidate_rows": 11,
+    "ordinary_residual_followup_rows": 30,
+    "dispatch_lane_counts": {
+      "candidate_set_rebuild_review": 6,
+      "canonical_policy_cleanup_review": 2,
+      "native_web_image_evidence_review": 12,
+      "no_publish_multiwork_guard_review": 4,
+      "shared_gate_restore_contract_review": 6
+    },
+    "completion_gate": "adjusted full375 collateral GO + full_scan path",
+    "raw_20260626_baseline_is_completion_gate": false,
+    "raw_20260626_baseline_role": "diagnostic historical compare only"
+  },
+  "inputs": {
+    "verdicts": "docs/devs/loop633_source_native_or_blind35_verdicts.json",
+    "accounting": "docs/devs/loop633_after_source_native35_residual41_accounting.json",
+    "dispatch": "docs/devs/loop633_after_source_native35_ordinary_residual30_dispatch.json"
+  },
+  "approval_boundary": {
+    "rebaseline_requires_all_adjudicated_and_adjusted_full375_go": true,
+    "accepted_rows_are_exclusion_candidates_not_approval": true,
+    "raw_regression_can_remain_nonzero_after_rebaseline": true,
+    "runtime_replay_allowed_rows": 0,
+    "publish_allowed_rows": 0
+  }
+}

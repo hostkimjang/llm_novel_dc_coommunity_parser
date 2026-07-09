@@ -50,6 +50,10 @@ class ReaccountResidualAfterContractReviewsTest(unittest.TestCase):
         self.assertEqual(summary["ordinary_residual_unprocessed_rows"], 1)
         self.assertEqual(summary["label_counts"], {"HOLD": 1})
         self.assertEqual(summary["source_action_counts"], {"image_native_review_required": 1})
+        self.assertEqual(
+            summary["completion_gate"],
+            "adjusted full375 collateral GO + full_scan path",
+        )
         self.assertEqual(row["review_label"], "HOLD")
         self.assertEqual(row["source_native_verdict"], "image_only_candidate_requires_native_review")
         self.assertEqual(row["actions"], ["image_native_review_required"])

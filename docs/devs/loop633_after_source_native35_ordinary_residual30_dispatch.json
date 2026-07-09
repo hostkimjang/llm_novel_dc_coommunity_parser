@@ -1,0 +1,1703 @@
+{
+  "report_type": "ordinary_residual_dispatch",
+  "dispatch_id": "loop633_after_source_native35_ordinary_residual30_dispatch",
+  "generated_at": "2026-07-09T22:10:59",
+  "source_accounting_id": "loop633_after_source_native35_residual41_accounting",
+  "source_queue_id": "loop632_after_residual41_dispatch",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "source_accounting_rows": 41,
+    "source_queue_rows": 41,
+    "ordinary_residual_rows": 30,
+    "contract_processed_rows_held": 0,
+    "validation_issue_count": 0,
+    "lane_counts": {
+      "candidate_set_rebuild_review": 6,
+      "canonical_policy_cleanup_review": 2,
+      "native_web_image_evidence_review": 12,
+      "no_publish_multiwork_guard_review": 4,
+      "shared_gate_restore_contract_review": 6
+    },
+    "label_counts": {
+      "HOLD": 16,
+      "REPROCESS": 14
+    },
+    "bucket_counts": {
+      "safe_loss_resolved_to_null": 15,
+      "unsafe_promotion_from_hold": 5,
+      "wrong_work_title_flip": 10
+    },
+    "transition_counts": {
+      "None": 30
+    },
+    "action_counts": {
+      "candidate_set_rebuild_required": 6,
+      "canonical_title_cleanup_required": 2,
+      "image_native_review_required": 8,
+      "intent_guard_review": 4,
+      "native_web_or_alias_relation_review_required": 3,
+      "native_web_or_image_evidence_required": 9,
+      "native_web_review_required": 6,
+      "repair_after_wrong_work": 6,
+      "repair_safe_loss_restore_supported_title": 6,
+      "repair_unsafe_promotion": 4,
+      "shared_promotion_gate_wiring_required": 6
+    },
+    "publish_allowed_rows": 0,
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "adjusted full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "lane_groups": [
+    {
+      "lane": "candidate_set_rebuild_review",
+      "description_ko": "현재 후보셋이 정답 후보를 빠뜨렸거나 wrong-work 후보를 보존했으므로 candidate ledger를 재구성한다.",
+      "lane_gate": "BLOCKED_UNTIL_CANDIDATE_SET_REBUILT_AND_CONTRACT_TESTED",
+      "row_count": 6,
+      "label_counts": {
+        "REPROCESS": 6
+      },
+      "bucket_counts": {
+        "wrong_work_title_flip": 6
+      },
+      "post_ids": [
+        11660257,
+        11673102,
+        11676309,
+        11694065,
+        11698877,
+        11703631
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11660257,
+          "triage_bucket": "wrong_work_title_flip",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "after_search_result_wrong_work_restore_prior",
+          "selected_title": "암흑가 보스요? 제가요?",
+          "selected_option_id": "BEFORE",
+          "evidence_grade": "Missing",
+          "loop546_transition": null,
+          "actions": [
+            "repair_after_wrong_work",
+            "candidate_set_rebuild_required"
+          ],
+          "primary_lane": "candidate_set_rebuild_review",
+          "lane_gate": "BLOCKED_UNTIL_CANDIDATE_SET_REBUILT_AND_CONTRACT_TESTED",
+          "publish_allowed": false,
+          "runtime_replay_allowed": false,
+          "full_scan_approval": false,
+          "contract_accounting_state": "ordinary_residual_unprocessed",
+          "contract_accounting_effect": "residual_queue_followup_required",
+          "rationale_ko": "게시글 제목 `암흑가보스`는 prior `암흑가 보스요? 제가요?`를 직접 가리킨다. after는 검색결과식 다른 작품 제목으로 오염되어 prior title 복구가 필요하다.",
+          "evidence_refs": [
+            "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11660257",
+            "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+          ]
+        },
+        {
+          "post_id": 11673102,
+          "triage_bucket": "wrong_work_title_flip",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "post_title_exact_prior_work_after_wrong_title",
+          "selected_title": "갤질하는 천재 의사",
+          "selected_option_id": "BEFORE",
+          "evidence_grade": "Missing",
+          "loop546_transition": null,
+          "actions": [
+            "repair_after_wrong_work",
+            "candidate_set_rebuild_required"
+          ],
+          "primary_lane": "candidate_set_rebuild_review",
+          "lane_gate": "BLOCKED_UNTIL_CANDIDATE_SET_REBUILT_AND_CONTRACT_TESTED",
+          "publish_allowed": false,
+          "runtime_replay_allowed": false,
+          "full_scan_approval": false,
+          "contract_accounting_state": "ordinary_residual_unprocessed",
+          "contract_accounting_effect": "residual_queue_followup_required",
+          "rationale_ko": "본문이 `갤질의사`를 랭킹 추천작으로 직접 열거한다. after `방송했더니 천재 의사로 착각당했다`는 후보 표면이 비슷한 다른 작품으로 보여 prior title 복구가 필요하다.",
+          "evidence_refs": [
+            "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11673102",
+            "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+          ]
+        },
+        {
+          "post_id": 11676309,
+          "triage_bucket": "wrong_work_title_flip",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "post_title_exact_prior_work_after_wrong_title",
+          "selected_title": "갤질하는 천재 의사",
+          "selected_option_id": "BEFORE",
+          "evidence_grade": "Missing",
+          "loop546_transition": null,
+          "actions": [
+            "repair_after_wrong_work",
+            "candidate_set_rebuild_required"
+          ],
+          "primary_lane": "candidate_set_rebuild_review",
+          "lane_gate": "BLOCKED_UNTIL_CANDIDATE_SET_REBUILT_AND_CONTRACT_TESTED",
+          "publish_allowed": false,
+          "runtime_replay_allowed": false,
+          "full_scan_approval": false,
+          "contract_accounting_state": "ordinary_residual_unprocessed",
+          "contract_accounting_effect": "residual_queue_followup_required",
+          "rationale_ko": "제목 `갤질의사 정실일러`가 prior `갤질하는 천재 의사`를 직접 지지한다. after `댓글 보는 천재 의사`는 비슷한 의사/댓글 표면 오염이므로 복구 대상이다.",
+          "evidence_refs": [
+            "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11676309",
+            "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+          ]
+        },
+        {
+          "post_id": 11694065,
+          "triage_bucket": "wrong_work_title_flip",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "alias_collision_after_fanwork_wrong_work",
+          "selected_title": "아카데미에서 살아남기",
+          "selected_option_id": "BEFORE",
+          "evidence_grade": "Missing",
+          "loop546_transition": null,
+          "actions": [
+            "repair_after_wrong_work",
+            "candidate_set_rebuild_required"
+          ],
+          "primary_lane": "candidate_set_rebuild_review",
+          "lane_gate": "BLOCKED_UNTIL_CANDIDATE_SET_REBUILT_AND_CONTRACT_TESTED",
+          "publish_allowed": false,
+          "runtime_replay_allowed": false,
+          "full_scan_approval": false,
+          "contract_accounting_state": "ordinary_residual_unprocessed",
+          "contract_accounting_effect": "residual_queue_followup_required",
+          "rationale_ko": "제목 `아카살 아니스`는 `아카데미에서 살아남기`와 인물 맥락을 직접 가리킨다. after `[아카살] 아무 관계도 아니라고!`는 제목 검색/2차 창작 표면으로 보이며 원 작품 복구가 필요하다.",
+          "evidence_refs": [
+            "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11694065",
+            "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+          ]
+        },
+        {
+          "post_id": 11698877,
+          "triage_bucket": "wrong_work_title_flip",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "alias_collision_after_wrong_work",
+          "selected_title": "괴담 호텔 탈출기",
+          "selected_option_id": "BEFORE",
+          "evidence_grade": "Missing",
+          "loop546_transition": null,
+          "actions": [
+            "repair_after_wrong_work",
+            "candidate_set_rebuild_required"
+          ],
+          "primary_lane": "candidate_set_rebuild_review",
+          "lane_gate": "BLOCKED_UNTIL_CANDIDATE_SET_REBUILT_AND_CONTRACT_TESTED",
+          "publish_allowed": false,
+          "runtime_replay_allowed": false,
+          "full_scan_approval": false,
+          "contract_accounting_state": "ordinary_residual_unprocessed",
+          "contract_accounting_effect": "residual_queue_followup_required",
+          "rationale_ko": "`괴담텔 1층/2층` 감상은 prior `괴담 호텔 탈출기`의 층 구조를 말한다. after `괴담텔 속 마술사`는 alias collision이므로 복구 대상이다.",
+          "evidence_refs": [
+            "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11698877",
+            "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+          ]
+        },
+        {
+          "post_id": 11703631,
+          "triage_bucket": "wrong_work_title_flip",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "generic_genre_after_wrong_work_restore_prior",
+          "selected_title": "나의 악당들",
+          "selected_option_id": "BEFORE",
+          "evidence_grade": "Missing",
+          "loop546_transition": null,
+          "actions": [
+            "repair_after_wrong_work",
+            "candidate_set_rebuild_required"
+          ],
+          "primary_lane": "candidate_set_rebuild_review",
+          "lane_gate": "BLOCKED_UNTIL_CANDIDATE_SET_REBUILT_AND_CONTRACT_TESTED",
+          "publish_allowed": false,
+          "runtime_replay_allowed": false,
+          "full_scan_approval": false,
+          "contract_accounting_state": "ordinary_residual_unprocessed",
+          "contract_accounting_effect": "residual_queue_followup_required",
+          "rationale_ko": "after `피카레스크`는 장르어이고 작품 제목으로 publish하기 부적절하다. 댓글의 승수/인성 논의가 prior `나의 악당들` 맥락을 지지하므로 복구 또는 후보 재구축이 필요하다.",
+          "evidence_refs": [
+            "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11703631",
+            "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+          ]
+        }
+      ]
+    },
+    {
+      "lane": "canonical_policy_cleanup_review",
+      "description_ko": "canonical title, URL, variant, alias relation 정책을 정리한다.",
+      "lane_gate": "BLOCKED_UNTIL_CANONICAL_POLICY_CLEANUP",
+      "row_count": 2,
+      "label_counts": {
+        "REPROCESS": 2
+      },
+      "bucket_counts": {
+        "unsafe_promotion_from_hold": 1,
+        "wrong_work_title_flip": 1
+      },
+      "post_ids": [
+        11682768,
+        11674731
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11682768,
+          "triage_bucket": "unsafe_promotion_from_hold",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "correct_work_but_noisy_title_requires_canonical_cleanup",
+          "selected_title": "마법소녀는 은퇴하고 싶다",
+          "selected_option_id": "SOURCE_NATIVE",
+          "evidence_grade": "Missing",
+          "loop546_transition": null,
+          "actions": [
+            "canonical_title_cleanup_required",
+            "native_web_or_alias_relation_review_required"
+          ],
+          "primary_lane": "canonical_policy_cleanup_review",
+          "lane_gate": "BLOCKED_UNTIL_CANONICAL_POLICY_CLEANUP",
+          "publish_allowed": false,
+          "runtime_replay_allowed": false,
+          "full_scan_approval": false,
+          "contract_accounting_state": "ordinary_residual_unprocessed",
+          "contract_accounting_effect": "residual_queue_followup_required",
+          "rationale_ko": "제목의 `마법소녀ㄴ`과 세진/세린 대화는 해당 작품 맥락을 지지하지만 after public title은 띄어쓰기/OCR 노이즈가 남아 있다. publish 전 canonical title cleanup이 필요하다.",
+          "evidence_refs": [
+            "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11682768",
+            "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+          ]
+        },
+        {
+          "post_id": 11674731,
+          "triage_bucket": "wrong_work_title_flip",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "same_url_noisy_title_requires_canonical_cleanup",
+          "selected_title": "여자아이 만들기",
+          "selected_option_id": "SOURCE_NATIVE",
+          "evidence_grade": "Missing",
+          "loop546_transition": null,
+          "actions": [
+            "canonical_title_cleanup_required"
+          ],
+          "primary_lane": "canonical_policy_cleanup_review",
+          "lane_gate": "BLOCKED_UNTIL_CANONICAL_POLICY_CLEANUP",
+          "publish_allowed": false,
+          "runtime_replay_allowed": false,
+          "full_scan_approval": false,
+          "contract_accounting_state": "ordinary_residual_unprocessed",
+          "contract_accounting_effect": "residual_queue_followup_required",
+          "rationale_ko": "before/after가 같은 URL을 가리키지만 after에는 `새 창 열림`과 띄어쓰기 노이즈가 남아 있다. wrong-work raw는 canonical cleanup으로 처리한다.",
+          "evidence_refs": [
+            "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11674731",
+            "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+          ]
+        }
+      ]
+    },
+    {
+      "lane": "native_web_image_evidence_review",
+      "description_ko": "native web, 이미지, OCR, 플랫폼 evidence를 직접 확인해야 한다.",
+      "lane_gate": "BLOCKED_UNTIL_NATIVE_WEB_OR_IMAGE_EVIDENCE_REVIEW",
+      "row_count": 12,
+      "label_counts": {
+        "HOLD": 12
+      },
+      "bucket_counts": {
+        "safe_loss_resolved_to_null": 9,
+        "wrong_work_title_flip": 3
+      },
+      "post_ids": [
+        11666725,
+        11669924,
+        11669926,
+        11681152,
+        11682761,
+        11682775,
+        11695599,
+        11706844,
+        11716480,
+        11666713,
+        11682791,
+        11705269
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11666725,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "HOLD",
+          "source_native_verdict": "image_or_context_required_for_safe_title",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Weak",
+          "loop546_transition": null,
+          "actions": [
+            "image_native_review_required",
+            "native_web_review_required"
+          ],
+          "primary_lane": "native_web_image_evidence_review",
+          "lane_gate": "BLOCKED_UNTIL_NATIVE_WEB_OR_IMAGE_EVIDENCE_REVIEW",
+          "publish_allowed": false,
+          "runtime_replay_allowed": false,
+          "full_scan_approval": false,
+          "contract_accounting_state": "ordinary_residual_unprocessed",
+          "contract_accounting_effect": "residual_queue_followup_required",
+          "rationale_ko": "post는 이미지 기반 감상으로 보이고 source text만으로 후보 title을 직접 확인할 수 없다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11666725",
+            "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11666725",
+            "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11666725",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11666725",
+            "docs/devs/loop488_p0_prior_compatible_source_native_verdicts.json#post_id=11666725",
+            "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11666725"
+          ]
+        },
+        {
+          "post_id": 11669924,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "HOLD",
+          "source_native_verdict": "comparative_surface_requires_native_alias_or_image_evidence",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Missing",
+          "loop546_transition": null,
+          "actions": [
+            "native_web_or_image_evidence_required"
+          ],
+          "primary_lane": "native_web_image_evidence_review",
+          "lane_gate": "BLOCKED_UNTIL_NATIVE_WEB_OR_IMAGE_EVIDENCE_REVIEW",
+          "publish_allowed": false,
+          "runtime_replay_allowed": false,
+          "full_scan_approval": false,
+          "contract_accounting_state": "ordinary_residual_unprocessed",
+          "contract_accounting_effect": "residual_queue_followup_required",
+          "rationale_ko": "`사일런트 루리드래곤`은 비교/감상 표면이고 원문만으로 `용인족의 아카데미 생존기` 공식 제목을 확정하기 부족하다. blocked title은 보존하되 native/이미지 근거 전 publish하지 않는다.",
+          "evidence_refs": [
+            "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11669924",
+            "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+          ]
+        },
+        {
+          "post_id": 11669926,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "HOLD",
+          "source_native_verdict": "ocr_explicit_title_requires_image_native_review",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Missing",
+          "loop546_transition": null,
+          "actions": [
+            "image_native_review_required",
+            "native_web_or_image_evidence_required"
+          ],
+          "primary_lane": "native_web_image_evidence_review",
+          "lane_gate": "BLOCKED_UNTIL_NATIVE_WEB_OR_IMAGE_EVIDENCE_REVIEW",
+          "publish_allowed": false,
+          "runtime_replay_allowed": false,
+          "full_scan_approval": false,
+          "contract_accounting_state": "ordinary_residual_unprocessed",
+          "contract_accounting_effect": "residual_queue_followup_required",
+          "rationale_ko": "텍스트는 마녀/보추/미적분 맥락뿐이고 `싸울아비 룬`은 OCR/후보에 의존한다. 이미지 또는 native evidence 없이 safe-loss restore로 밀지 않는다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11669926",
+            "loop497_current_full375_p0_prior_compatible_source_native#unreviewed_current_batch_row",
+            "docs/devs/loop497_current_full375_p0_unreviewed_placeholder_verdicts.json#post_id=11669926",
+            "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11669926"
+          ]
+        },
+        {
+          "post_id": 11681152,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "HOLD",
+          "source_native_verdict": "image_or_context_required_for_safe_title",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Weak",
+          "loop546_transition": null,
+          "actions": [
+            "image_native_review_required",
+            "native_web_review_required"
+          ],
+          "primary_lane": "native_web_image_evidence_review",
+          "lane_gate": "BLOCKED_UNTIL_NATIVE_WEB_OR_IMAGE_EVIDENCE_REVIEW",
+          "publish_allowed": false,
+          "runtime_replay_allowed": false,
+          "full_scan_approval": false,
+          "contract_accounting_state": "ordinary_residual_unprocessed",
+          "contract_accounting_effect": "residual_queue_followup_required",
+          "rationale_ko": "본문은 공지 생존 여부만 말하며 후보 title은 source text에 직접 없다. 이미지 공지 확인이 필요하다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11681152",
+            "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11681152",
+            "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11681152",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11681152",
+            "docs/devs/loop488_p0_prior_compatible_source_native_verdicts.json#post_id=11681152",
+            "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11681152"
+          ]
+        },
+        {
+          "post_id": 11682761,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "HOLD",
+          "source_native_verdict": "author_talk_requires_native_or_image_evidence",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Missing",
+          "loop546_transition": null,
+          "actions": [
+            "native_web_or_image_evidence_required"
+          ],
+          "primary_lane": "native_web_image_evidence_review",
+          "lane_gate": "BLOCKED_UNTIL_NATIVE_WEB_OR_IMAGE_EVIDENCE_REVIEW",
+          "publish_allowed": false,
+          "runtime_replay_allowed": false,
+          "full_scan_approval": false,
+          "contract_accounting_state": "ordinary_residual_unprocessed",
+          "contract_accounting_effect": "residual_queue_followup_required",
+          "rationale_ko": "`목마` 작가 토크와 이미지/후보 맥락만으로 `그레이스 길들이기`를 확정하기 어렵다. 작가-작품 연결 또는 이미지 근거 확인 전 hard-hold를 유지한다.",
+          "evidence_refs": [
+            "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11682761",
+            "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+          ]
+        },
+        {
+          "post_id": 11682775,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "HOLD",
+          "source_native_verdict": "image_or_context_required_for_safe_title",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Weak",
+          "loop546_transition": null,
+          "actions": [
+            "image_native_review_required",
+            "native_web_review_required"
+          ],
+          "primary_lane": "native_web_image_evidence_review",
+          "lane_gate": "BLOCKED_UNTIL_NATIVE_WEB_OR_IMAGE_EVIDENCE_REVIEW",
+          "publish_allowed": false,
+          "runtime_replay_allowed": false,
+          "full_scan_approval": false,
+          "contract_accounting_state": "ordinary_residual_unprocessed",
+          "contract_accounting_effect": "residual_queue_followup_required",
+          "rationale_ko": "source text는 TS무협 추천 질문뿐이고 후보 title은 직접 보이지 않는다. 이미지/게시물 맥락 확인이 필요하다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11682775",
+            "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11682775",
+            "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11682775",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11682775",
+            "docs/devs/loop488_p0_prior_compatible_source_native_verdicts.json#post_id=11682775",
+            "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11682775"
+          ]
+        },
+        {
+          "post_id": 11695599,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "HOLD",
+          "source_native_verdict": "image_or_ocr_title_requires_native_review",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Missing",
+          "loop546_transition": null,
+          "actions": [
+            "image_native_review_required",
+            "native_web_or_image_evidence_required"
+          ],
+          "primary_lane": "native_web_image_evidence_review",
+          "lane_gate": "BLOCKED_UNTIL_NATIVE_WEB_OR_IMAGE_EVIDENCE_REVIEW",
+          "publish_allowed": false,
+          "runtime_replay_allowed": false,
+          "full_scan_approval": false,
+          "contract_accounting_state": "ordinary_residual_unprocessed",
+          "contract_accounting_effect": "residual_queue_followup_required",
+          "rationale_ko": "본문 텍스트는 `봐라/재밌다`뿐이라 `창관전생`을 텍스트로 확정할 수 없다. OCR 후보는 보존하되 이미지/native 확인이 먼저다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11695599",
+            "loop497_current_full375_p0_prior_compatible_source_native#unreviewed_current_batch_row",
+            "docs/devs/loop497_current_full375_p0_unreviewed_placeholder_verdicts.json#post_id=11695599",
+            "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11695599"
+          ]
+        },
+        {
+          "post_id": 11706844,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "HOLD",
+          "source_native_verdict": "image_or_native_confirmation_required_for_safe_title",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Weak",
+          "loop546_transition": null,
+          "actions": [
+            "image_native_review_required",
+            "native_web_review_required"
+          ],
+          "primary_lane": "native_web_image_evidence_review",
+          "lane_gate": "BLOCKED_UNTIL_NATIVE_WEB_OR_IMAGE_EVIDENCE_REVIEW",
+          "publish_allowed": false,
+          "runtime_replay_allowed": false,
+          "full_scan_approval": false,
+          "contract_accounting_state": "ordinary_residual_unprocessed",
+          "contract_accounting_effect": "residual_queue_followup_required",
+          "rationale_ko": "source text는 `편곤 괴이물 신작`만 말하고 후보 title은 직접 보이지 않는다. 이미지/작가 공지 확인이 필요하다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11706844",
+            "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11706844",
+            "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11706844",
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11706844",
+            "docs/devs/loop488_p0_prior_compatible_source_native_verdicts.json#post_id=11706844",
+            "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11706844"
+          ]
+        }
+      ]
+    },
+    {
+      "lane": "no_publish_multiwork_guard_review",
+      "description_ko": "unsafe promotion, intent guard, multi-work guard를 먼저 닫고 publish hard-hold를 유지한다.",
+      "lane_gate": "HARD_HOLD_UNTIL_NO_PUBLISH_GUARD_REVIEW",
+      "row_count": 4,
+      "label_counts": {
+        "HOLD": 4
+      },
+      "bucket_counts": {
+        "unsafe_promotion_from_hold": 4
+      },
+      "post_ids": [
+        11657038,
+        11657044,
+        11681180,
+        11710045
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11657038,
+          "triage_bucket": "unsafe_promotion_from_hold",
+          "review_label": "HOLD",
+          "source_native_verdict": "unsafe_promotion_ambiguous_url_and_game_surface_hard_hold",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Missing",
+          "loop546_transition": null,
+          "actions": [
+            "repair_unsafe_promotion",
+            "intent_guard_review",
+            "native_web_or_image_evidence_required"
+          ],
+          "primary_lane": "no_publish_multiwork_guard_review",
+          "lane_gate": "HARD_HOLD_UNTIL_NO_PUBLISH_GUARD_REVIEW",
+          "publish_allowed": false,
+          "runtime_replay_allowed": false,
+          "full_scan_approval": false,
+          "contract_accounting_state": "ordinary_residual_unprocessed",
+          "contract_accounting_effect": "residual_queue_followup_required",
+          "rationale_ko": "댓글에는 별도 novelpia URL과 게임 `데스티니` 표면이 섞여 있고 after `레드 데스티니 [D]`는 직접 제목 근거가 부족하다. unsafe promotion은 no-publish hard-hold로 남긴다.",
+          "evidence_refs": [
+            "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11657038",
+            "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+          ]
+        },
+        {
+          "post_id": 11657044,
+          "triage_bucket": "unsafe_promotion_from_hold",
+          "review_label": "HOLD",
+          "source_native_verdict": "unsafe_promotion_character_or_image_context_requires_native_evidence",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Missing",
+          "loop546_transition": null,
+          "actions": [
+            "repair_unsafe_promotion",
+            "intent_guard_review",
+            "native_web_or_image_evidence_required"
+          ],
+          "primary_lane": "no_publish_multiwork_guard_review",
+          "lane_gate": "HARD_HOLD_UNTIL_NO_PUBLISH_GUARD_REVIEW",
+          "publish_allowed": false,
+          "runtime_replay_allowed": false,
+          "full_scan_approval": false,
+          "contract_accounting_state": "ordinary_residual_unprocessed",
+          "contract_accounting_effect": "residual_queue_followup_required",
+          "rationale_ko": "화은쌤/이준 캐릭터 표면만으로 after `웨딩드레스` 공식 제목을 확정하기 어렵다. 이미지 또는 native character bridge 확인 전 publish를 막는다.",
+          "evidence_refs": [
+            "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11657044",
+            "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+          ]
+        },
+        {
+          "post_id": 11681180,
+          "triage_bucket": "unsafe_promotion_from_hold",
+          "review_label": "HOLD",
+          "source_native_verdict": "unsafe_abbrev_requires_alias_relation_or_native_evidence",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Missing",
+          "loop546_transition": null,
+          "actions": [
+            "repair_unsafe_promotion",
+            "intent_guard_review",
+            "native_web_or_image_evidence_required"
+          ],
+          "primary_lane": "no_publish_multiwork_guard_review",
+          "lane_gate": "HARD_HOLD_UNTIL_NO_PUBLISH_GUARD_REVIEW",
+          "publish_allowed": false,
+          "runtime_replay_allowed": false,
+          "full_scan_approval": false,
+          "contract_accounting_state": "ordinary_residual_unprocessed",
+          "contract_accounting_effect": "residual_queue_followup_required",
+          "rationale_ko": "`아카엠창` 표면은 after `아카데미 패드립 면역` 후보와 연결될 수 있지만 별칭 관계가 소스만으로 확정되지 않는다. alias relation/native evidence 전 hard-hold한다.",
+          "evidence_refs": [
+            "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11681180",
+            "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+          ]
+        },
+        {
+          "post_id": 11710045,
+          "triage_bucket": "unsafe_promotion_from_hold",
+          "review_label": "HOLD",
+          "source_native_verdict": "unsafe_promotion_contextless_post_no_publish_hold",
+          "selected_title": null,
+          "selected_option_id": "HOLD",
+          "evidence_grade": "Missing",
+          "loop546_transition": null,
+          "actions": [
+            "repair_unsafe_promotion",
+            "intent_guard_review"
+          ],
+          "primary_lane": "no_publish_multiwork_guard_review",
+          "lane_gate": "HARD_HOLD_UNTIL_NO_PUBLISH_GUARD_REVIEW",
+          "publish_allowed": false,
+          "runtime_replay_allowed": false,
+          "full_scan_approval": false,
+          "contract_accounting_state": "ordinary_residual_unprocessed",
+          "contract_accounting_effect": "residual_queue_followup_required",
+          "rationale_ko": "본문 근거가 사실상 없고 baseline도 context-only였다. after `공주는 언니를 황제로 만든다` 승격은 current source만으로 정답성을 확인할 수 없어 no-publish hard-hold한다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11710045",
+            "loop497_current_full375_p0_prior_compatible_source_native#unreviewed_current_batch_row",
+            "docs/devs/loop497_current_full375_p0_unreviewed_placeholder_verdicts.json#post_id=11710045",
+            "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11710045"
+          ]
+        }
+      ]
+    },
+    {
+      "lane": "shared_gate_restore_contract_review",
+      "description_ko": "source-native supported title을 shared promotion gate contract로 복원 후보화한다.",
+      "lane_gate": "BLOCKED_UNTIL_SHARED_GATE_CONTRACT_APPLICATION_AND_FULL375_RECHECK",
+      "row_count": 6,
+      "label_counts": {
+        "REPROCESS": 6
+      },
+      "bucket_counts": {
+        "safe_loss_resolved_to_null": 6
+      },
+      "post_ids": [
+        11660241,
+        11660268,
+        11663511,
+        11676321,
+        11682767,
+        11708443
+      ],
+      "sample_rows": [
+        {
+          "post_id": 11660241,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "source_alias_supports_safe_loss_restore",
+          "selected_title": "이세계 TRPG 게임마스터",
+          "selected_option_id": "BEFORE",
+          "evidence_grade": "Missing",
+          "loop546_transition": null,
+          "actions": [
+            "repair_safe_loss_restore_supported_title",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "primary_lane": "shared_gate_restore_contract_review",
+          "lane_gate": "BLOCKED_UNTIL_SHARED_GATE_CONTRACT_APPLICATION_AND_FULL375_RECHECK",
+          "publish_allowed": false,
+          "runtime_replay_allowed": false,
+          "full_scan_approval": false,
+          "contract_accounting_state": "ordinary_residual_unprocessed",
+          "contract_accounting_effect": "residual_queue_followup_required",
+          "rationale_ko": "제목의 `이티알`과 본문 TRPG/현실 파트 감상, after blocked title `이세계 TRPG 게임마스터`가 같은 작품을 가리킨다. null 해소는 정당 제거가 아니라 shared gate를 통한 restore 대상이다.",
+          "evidence_refs": [
+            "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11660241",
+            "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+          ]
+        },
+        {
+          "post_id": 11660268,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "source_context_supports_safe_loss_restore",
+          "selected_title": "■■을 위한 세계는 없다",
+          "selected_option_id": "SOURCE_NATIVE",
+          "evidence_grade": "Missing",
+          "loop546_transition": null,
+          "actions": [
+            "repair_safe_loss_restore_supported_title",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "primary_lane": "shared_gate_restore_contract_review",
+          "lane_gate": "BLOCKED_UNTIL_SHARED_GATE_CONTRACT_APPLICATION_AND_FULL375_RECHECK",
+          "publish_allowed": false,
+          "runtime_replay_allowed": false,
+          "full_scan_approval": false,
+          "contract_accounting_state": "ordinary_residual_unprocessed",
+          "contract_accounting_effect": "residual_queue_followup_required",
+          "rationale_ko": "제목의 `ㅁㅁ세계`와 초대용사/운명/스탈린전 대화가 blocked title `■■을 위한 세계는 없다` 후보와 이어진다. after null은 raw safe-loss이며 restore gate로 넘긴다.",
+          "evidence_refs": [
+            "docs/devs/loop623_true_triage57_source_native_review_batch.json#post_id=11660268",
+            "loop623_true_triage57_prior_compatible_source_native#unreviewed_current_batch_row",
+            "docs/devs/loop623_true_triage57_unreviewed_placeholder_verdicts.json#post_id=11660268",
+            "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11660268"
+          ]
+        },
+        {
+          "post_id": 11663511,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "post_title_abbrev_supports_safe_loss_restore",
+          "selected_title": "부캐 키우는 황태자님",
+          "selected_option_id": "BEFORE",
+          "evidence_grade": "Missing",
+          "loop546_transition": null,
+          "actions": [
+            "repair_safe_loss_restore_supported_title",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "primary_lane": "shared_gate_restore_contract_review",
+          "lane_gate": "BLOCKED_UNTIL_SHARED_GATE_CONTRACT_APPLICATION_AND_FULL375_RECHECK",
+          "publish_allowed": false,
+          "runtime_replay_allowed": false,
+          "full_scan_approval": false,
+          "contract_accounting_state": "ordinary_residual_unprocessed",
+          "contract_accounting_effect": "residual_queue_followup_required",
+          "rationale_ko": "게시글 제목 `부캐황태자99화`가 prior 공식 제목 `부캐 키우는 황태자님`을 직접 약칭한다. after의 `문피아 새 창 열림` 차단은 후보 오염이므로 null 상태를 복구 대상으로 본다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11663511",
+            "loop512_projected_loop511_prior_compatible_after_wrong_work10#unreviewed_current_batch_row",
+            "docs/devs/loop512_projected_loop511_p0_unreviewed_placeholder_verdicts.json#post_id=11663511",
+            "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11663511"
+          ]
+        },
+        {
+          "post_id": 11676321,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "post_title_abbrev_supports_safe_loss_restore",
+          "selected_title": "마도서를 줍다 마법사가 되다",
+          "selected_option_id": "BEFORE",
+          "evidence_grade": "Missing",
+          "loop546_transition": null,
+          "actions": [
+            "repair_safe_loss_restore_supported_title",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "primary_lane": "shared_gate_restore_contract_review",
+          "lane_gate": "BLOCKED_UNTIL_SHARED_GATE_CONTRACT_APPLICATION_AND_FULL375_RECHECK",
+          "publish_allowed": false,
+          "runtime_replay_allowed": false,
+          "full_scan_approval": false,
+          "contract_accounting_state": "ordinary_residual_unprocessed",
+          "contract_accounting_effect": "residual_queue_followup_required",
+          "rationale_ko": "제목 `마도서줍 시리즈`가 blocked title `마도서를 줍다 마법사가 되다`와 직접 맞고 댓글도 연재 재개 맥락이다. null은 restore 대상이다.",
+          "evidence_refs": [
+            "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11676321",
+            "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+          ]
+        },
+        {
+          "post_id": 11682767,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "post_title_exact_work_supports_safe_loss_restore",
+          "selected_title": "묵향",
+          "selected_option_id": "BEFORE",
+          "evidence_grade": "Missing",
+          "loop546_transition": null,
+          "actions": [
+            "repair_safe_loss_restore_supported_title",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "primary_lane": "shared_gate_restore_contract_review",
+          "lane_gate": "BLOCKED_UNTIL_SHARED_GATE_CONTRACT_APPLICATION_AND_FULL375_RECHECK",
+          "publish_allowed": false,
+          "runtime_replay_allowed": false,
+          "full_scan_approval": false,
+          "contract_accounting_state": "ordinary_residual_unprocessed",
+          "contract_accounting_effect": "residual_queue_followup_required",
+          "rationale_ko": "게시글 제목이 `묵향`을 직접 말하고 댓글도 태허무령심법/아르티어스/드래곤 하트 맥락을 이어간다. after의 `묵향 1권` 차단은 canonical variant 문제일 뿐 null 해소 근거가 아니다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11682767",
+            "loop497_current_full375_p0_prior_compatible_source_native#unreviewed_current_batch_row",
+            "docs/devs/loop497_current_full375_p0_unreviewed_placeholder_verdicts.json#post_id=11682767",
+            "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11682767"
+          ]
+        },
+        {
+          "post_id": 11708443,
+          "triage_bucket": "safe_loss_resolved_to_null",
+          "review_label": "REPROCESS",
+          "source_native_verdict": "post_title_alias_supports_safe_loss_restore",
+          "selected_title": "괴담에 떨어져도 출근을 해야 하는구나",
+          "selected_option_id": "BEFORE",
+          "evidence_grade": "Missing",
+          "loop546_transition": null,
+          "actions": [
+            "repair_safe_loss_restore_supported_title",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "primary_lane": "shared_gate_restore_contract_review",
+          "lane_gate": "BLOCKED_UNTIL_SHARED_GATE_CONTRACT_APPLICATION_AND_FULL375_RECHECK",
+          "publish_allowed": false,
+          "runtime_replay_allowed": false,
+          "full_scan_approval": false,
+          "contract_accounting_state": "ordinary_residual_unprocessed",
+          "contract_accounting_effect": "residual_queue_followup_required",
+          "rationale_ko": "게시글 제목 `괴담출근`은 blocked official URL의 작품 약어로 직접 쓰였고 본문도 괴담물 독창성 평가다. null은 restore 대상이다.",
+          "evidence_refs": [
+            "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11708443",
+            "loop497_current_full375_p0_prior_compatible_source_native#unreviewed_current_batch_row",
+            "docs/devs/loop497_current_full375_p0_unreviewed_placeholder_verdicts.json#post_id=11708443",
+            "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11708443"
+          ]
+        }
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "post_id": 11660257,
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "after_search_result_wrong_work_restore_prior",
+      "selected_title": "암흑가 보스요? 제가요?",
+      "selected_option_id": "BEFORE",
+      "evidence_grade": "Missing",
+      "loop546_transition": null,
+      "actions": [
+        "repair_after_wrong_work",
+        "candidate_set_rebuild_required"
+      ],
+      "primary_lane": "candidate_set_rebuild_review",
+      "lane_gate": "BLOCKED_UNTIL_CANDIDATE_SET_REBUILT_AND_CONTRACT_TESTED",
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "contract_accounting_state": "ordinary_residual_unprocessed",
+      "contract_accounting_effect": "residual_queue_followup_required",
+      "rationale_ko": "게시글 제목 `암흑가보스`는 prior `암흑가 보스요? 제가요?`를 직접 가리킨다. after는 검색결과식 다른 작품 제목으로 오염되어 prior title 복구가 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11660257",
+        "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11673102,
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "post_title_exact_prior_work_after_wrong_title",
+      "selected_title": "갤질하는 천재 의사",
+      "selected_option_id": "BEFORE",
+      "evidence_grade": "Missing",
+      "loop546_transition": null,
+      "actions": [
+        "repair_after_wrong_work",
+        "candidate_set_rebuild_required"
+      ],
+      "primary_lane": "candidate_set_rebuild_review",
+      "lane_gate": "BLOCKED_UNTIL_CANDIDATE_SET_REBUILT_AND_CONTRACT_TESTED",
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "contract_accounting_state": "ordinary_residual_unprocessed",
+      "contract_accounting_effect": "residual_queue_followup_required",
+      "rationale_ko": "본문이 `갤질의사`를 랭킹 추천작으로 직접 열거한다. after `방송했더니 천재 의사로 착각당했다`는 후보 표면이 비슷한 다른 작품으로 보여 prior title 복구가 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11673102",
+        "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11676309,
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "post_title_exact_prior_work_after_wrong_title",
+      "selected_title": "갤질하는 천재 의사",
+      "selected_option_id": "BEFORE",
+      "evidence_grade": "Missing",
+      "loop546_transition": null,
+      "actions": [
+        "repair_after_wrong_work",
+        "candidate_set_rebuild_required"
+      ],
+      "primary_lane": "candidate_set_rebuild_review",
+      "lane_gate": "BLOCKED_UNTIL_CANDIDATE_SET_REBUILT_AND_CONTRACT_TESTED",
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "contract_accounting_state": "ordinary_residual_unprocessed",
+      "contract_accounting_effect": "residual_queue_followup_required",
+      "rationale_ko": "제목 `갤질의사 정실일러`가 prior `갤질하는 천재 의사`를 직접 지지한다. after `댓글 보는 천재 의사`는 비슷한 의사/댓글 표면 오염이므로 복구 대상이다.",
+      "evidence_refs": [
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11676309",
+        "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11694065,
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "alias_collision_after_fanwork_wrong_work",
+      "selected_title": "아카데미에서 살아남기",
+      "selected_option_id": "BEFORE",
+      "evidence_grade": "Missing",
+      "loop546_transition": null,
+      "actions": [
+        "repair_after_wrong_work",
+        "candidate_set_rebuild_required"
+      ],
+      "primary_lane": "candidate_set_rebuild_review",
+      "lane_gate": "BLOCKED_UNTIL_CANDIDATE_SET_REBUILT_AND_CONTRACT_TESTED",
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "contract_accounting_state": "ordinary_residual_unprocessed",
+      "contract_accounting_effect": "residual_queue_followup_required",
+      "rationale_ko": "제목 `아카살 아니스`는 `아카데미에서 살아남기`와 인물 맥락을 직접 가리킨다. after `[아카살] 아무 관계도 아니라고!`는 제목 검색/2차 창작 표면으로 보이며 원 작품 복구가 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11694065",
+        "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11698877,
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "alias_collision_after_wrong_work",
+      "selected_title": "괴담 호텔 탈출기",
+      "selected_option_id": "BEFORE",
+      "evidence_grade": "Missing",
+      "loop546_transition": null,
+      "actions": [
+        "repair_after_wrong_work",
+        "candidate_set_rebuild_required"
+      ],
+      "primary_lane": "candidate_set_rebuild_review",
+      "lane_gate": "BLOCKED_UNTIL_CANDIDATE_SET_REBUILT_AND_CONTRACT_TESTED",
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "contract_accounting_state": "ordinary_residual_unprocessed",
+      "contract_accounting_effect": "residual_queue_followup_required",
+      "rationale_ko": "`괴담텔 1층/2층` 감상은 prior `괴담 호텔 탈출기`의 층 구조를 말한다. after `괴담텔 속 마술사`는 alias collision이므로 복구 대상이다.",
+      "evidence_refs": [
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11698877",
+        "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11703631,
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "generic_genre_after_wrong_work_restore_prior",
+      "selected_title": "나의 악당들",
+      "selected_option_id": "BEFORE",
+      "evidence_grade": "Missing",
+      "loop546_transition": null,
+      "actions": [
+        "repair_after_wrong_work",
+        "candidate_set_rebuild_required"
+      ],
+      "primary_lane": "candidate_set_rebuild_review",
+      "lane_gate": "BLOCKED_UNTIL_CANDIDATE_SET_REBUILT_AND_CONTRACT_TESTED",
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "contract_accounting_state": "ordinary_residual_unprocessed",
+      "contract_accounting_effect": "residual_queue_followup_required",
+      "rationale_ko": "after `피카레스크`는 장르어이고 작품 제목으로 publish하기 부적절하다. 댓글의 승수/인성 논의가 prior `나의 악당들` 맥락을 지지하므로 복구 또는 후보 재구축이 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11703631",
+        "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11682768,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "correct_work_but_noisy_title_requires_canonical_cleanup",
+      "selected_title": "마법소녀는 은퇴하고 싶다",
+      "selected_option_id": "SOURCE_NATIVE",
+      "evidence_grade": "Missing",
+      "loop546_transition": null,
+      "actions": [
+        "canonical_title_cleanup_required",
+        "native_web_or_alias_relation_review_required"
+      ],
+      "primary_lane": "canonical_policy_cleanup_review",
+      "lane_gate": "BLOCKED_UNTIL_CANONICAL_POLICY_CLEANUP",
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "contract_accounting_state": "ordinary_residual_unprocessed",
+      "contract_accounting_effect": "residual_queue_followup_required",
+      "rationale_ko": "제목의 `마법소녀ㄴ`과 세진/세린 대화는 해당 작품 맥락을 지지하지만 after public title은 띄어쓰기/OCR 노이즈가 남아 있다. publish 전 canonical title cleanup이 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11682768",
+        "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11674731,
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "same_url_noisy_title_requires_canonical_cleanup",
+      "selected_title": "여자아이 만들기",
+      "selected_option_id": "SOURCE_NATIVE",
+      "evidence_grade": "Missing",
+      "loop546_transition": null,
+      "actions": [
+        "canonical_title_cleanup_required"
+      ],
+      "primary_lane": "canonical_policy_cleanup_review",
+      "lane_gate": "BLOCKED_UNTIL_CANONICAL_POLICY_CLEANUP",
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "contract_accounting_state": "ordinary_residual_unprocessed",
+      "contract_accounting_effect": "residual_queue_followup_required",
+      "rationale_ko": "before/after가 같은 URL을 가리키지만 after에는 `새 창 열림`과 띄어쓰기 노이즈가 남아 있다. wrong-work raw는 canonical cleanup으로 처리한다.",
+      "evidence_refs": [
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11674731",
+        "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11666725,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Weak",
+      "loop546_transition": null,
+      "actions": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "primary_lane": "native_web_image_evidence_review",
+      "lane_gate": "BLOCKED_UNTIL_NATIVE_WEB_OR_IMAGE_EVIDENCE_REVIEW",
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "contract_accounting_state": "ordinary_residual_unprocessed",
+      "contract_accounting_effect": "residual_queue_followup_required",
+      "rationale_ko": "post는 이미지 기반 감상으로 보이고 source text만으로 후보 title을 직접 확인할 수 없다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11666725",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11666725",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11666725",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11666725",
+        "docs/devs/loop488_p0_prior_compatible_source_native_verdicts.json#post_id=11666725",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11666725"
+      ]
+    },
+    {
+      "post_id": 11669924,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "comparative_surface_requires_native_alias_or_image_evidence",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Missing",
+      "loop546_transition": null,
+      "actions": [
+        "native_web_or_image_evidence_required"
+      ],
+      "primary_lane": "native_web_image_evidence_review",
+      "lane_gate": "BLOCKED_UNTIL_NATIVE_WEB_OR_IMAGE_EVIDENCE_REVIEW",
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "contract_accounting_state": "ordinary_residual_unprocessed",
+      "contract_accounting_effect": "residual_queue_followup_required",
+      "rationale_ko": "`사일런트 루리드래곤`은 비교/감상 표면이고 원문만으로 `용인족의 아카데미 생존기` 공식 제목을 확정하기 부족하다. blocked title은 보존하되 native/이미지 근거 전 publish하지 않는다.",
+      "evidence_refs": [
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11669924",
+        "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11669926,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "ocr_explicit_title_requires_image_native_review",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Missing",
+      "loop546_transition": null,
+      "actions": [
+        "image_native_review_required",
+        "native_web_or_image_evidence_required"
+      ],
+      "primary_lane": "native_web_image_evidence_review",
+      "lane_gate": "BLOCKED_UNTIL_NATIVE_WEB_OR_IMAGE_EVIDENCE_REVIEW",
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "contract_accounting_state": "ordinary_residual_unprocessed",
+      "contract_accounting_effect": "residual_queue_followup_required",
+      "rationale_ko": "텍스트는 마녀/보추/미적분 맥락뿐이고 `싸울아비 룬`은 OCR/후보에 의존한다. 이미지 또는 native evidence 없이 safe-loss restore로 밀지 않는다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11669926",
+        "loop497_current_full375_p0_prior_compatible_source_native#unreviewed_current_batch_row",
+        "docs/devs/loop497_current_full375_p0_unreviewed_placeholder_verdicts.json#post_id=11669926",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11669926"
+      ]
+    },
+    {
+      "post_id": 11681152,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Weak",
+      "loop546_transition": null,
+      "actions": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "primary_lane": "native_web_image_evidence_review",
+      "lane_gate": "BLOCKED_UNTIL_NATIVE_WEB_OR_IMAGE_EVIDENCE_REVIEW",
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "contract_accounting_state": "ordinary_residual_unprocessed",
+      "contract_accounting_effect": "residual_queue_followup_required",
+      "rationale_ko": "본문은 공지 생존 여부만 말하며 후보 title은 source text에 직접 없다. 이미지 공지 확인이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11681152",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11681152",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11681152",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11681152",
+        "docs/devs/loop488_p0_prior_compatible_source_native_verdicts.json#post_id=11681152",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11681152"
+      ]
+    },
+    {
+      "post_id": 11682761,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "author_talk_requires_native_or_image_evidence",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Missing",
+      "loop546_transition": null,
+      "actions": [
+        "native_web_or_image_evidence_required"
+      ],
+      "primary_lane": "native_web_image_evidence_review",
+      "lane_gate": "BLOCKED_UNTIL_NATIVE_WEB_OR_IMAGE_EVIDENCE_REVIEW",
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "contract_accounting_state": "ordinary_residual_unprocessed",
+      "contract_accounting_effect": "residual_queue_followup_required",
+      "rationale_ko": "`목마` 작가 토크와 이미지/후보 맥락만으로 `그레이스 길들이기`를 확정하기 어렵다. 작가-작품 연결 또는 이미지 근거 확인 전 hard-hold를 유지한다.",
+      "evidence_refs": [
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11682761",
+        "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11682775,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Weak",
+      "loop546_transition": null,
+      "actions": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "primary_lane": "native_web_image_evidence_review",
+      "lane_gate": "BLOCKED_UNTIL_NATIVE_WEB_OR_IMAGE_EVIDENCE_REVIEW",
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "contract_accounting_state": "ordinary_residual_unprocessed",
+      "contract_accounting_effect": "residual_queue_followup_required",
+      "rationale_ko": "source text는 TS무협 추천 질문뿐이고 후보 title은 직접 보이지 않는다. 이미지/게시물 맥락 확인이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11682775",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11682775",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11682775",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11682775",
+        "docs/devs/loop488_p0_prior_compatible_source_native_verdicts.json#post_id=11682775",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11682775"
+      ]
+    },
+    {
+      "post_id": 11695599,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_ocr_title_requires_native_review",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Missing",
+      "loop546_transition": null,
+      "actions": [
+        "image_native_review_required",
+        "native_web_or_image_evidence_required"
+      ],
+      "primary_lane": "native_web_image_evidence_review",
+      "lane_gate": "BLOCKED_UNTIL_NATIVE_WEB_OR_IMAGE_EVIDENCE_REVIEW",
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "contract_accounting_state": "ordinary_residual_unprocessed",
+      "contract_accounting_effect": "residual_queue_followup_required",
+      "rationale_ko": "본문 텍스트는 `봐라/재밌다`뿐이라 `창관전생`을 텍스트로 확정할 수 없다. OCR 후보는 보존하되 이미지/native 확인이 먼저다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11695599",
+        "loop497_current_full375_p0_prior_compatible_source_native#unreviewed_current_batch_row",
+        "docs/devs/loop497_current_full375_p0_unreviewed_placeholder_verdicts.json#post_id=11695599",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11695599"
+      ]
+    },
+    {
+      "post_id": 11706844,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_native_confirmation_required_for_safe_title",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Weak",
+      "loop546_transition": null,
+      "actions": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "primary_lane": "native_web_image_evidence_review",
+      "lane_gate": "BLOCKED_UNTIL_NATIVE_WEB_OR_IMAGE_EVIDENCE_REVIEW",
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "contract_accounting_state": "ordinary_residual_unprocessed",
+      "contract_accounting_effect": "residual_queue_followup_required",
+      "rationale_ko": "source text는 `편곤 괴이물 신작`만 말하고 후보 title은 직접 보이지 않는다. 이미지/작가 공지 확인이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11706844",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11706844",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11706844",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11706844",
+        "docs/devs/loop488_p0_prior_compatible_source_native_verdicts.json#post_id=11706844",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11706844"
+      ]
+    },
+    {
+      "post_id": 11716480,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_context_required_for_safe_title",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Weak",
+      "loop546_transition": null,
+      "actions": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "primary_lane": "native_web_image_evidence_review",
+      "lane_gate": "BLOCKED_UNTIL_NATIVE_WEB_OR_IMAGE_EVIDENCE_REVIEW",
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "contract_accounting_state": "ordinary_residual_unprocessed",
+      "contract_accounting_effect": "residual_queue_followup_required",
+      "rationale_ko": "source text는 `포티햄` 반응과 이미지 의존 내용뿐이라 후보 title 확인이 필요하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11716480",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11716480",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11716480",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11716480",
+        "docs/devs/loop488_p0_prior_compatible_source_native_verdicts.json#post_id=11716480",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11716480"
+      ]
+    },
+    {
+      "post_id": 11666713,
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "HOLD",
+      "source_native_verdict": "ambiguous_21c_murim_title_requires_native_disambiguation",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Missing",
+      "loop546_transition": null,
+      "actions": [
+        "native_web_or_image_evidence_required",
+        "native_web_or_alias_relation_review_required"
+      ],
+      "primary_lane": "native_web_image_evidence_review",
+      "lane_gate": "BLOCKED_UNTIL_NATIVE_WEB_OR_IMAGE_EVIDENCE_REVIEW",
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "contract_accounting_state": "ordinary_residual_unprocessed",
+      "contract_accounting_effect": "residual_queue_followup_required",
+      "rationale_ko": "`21세기 무림` 표면만으로 `21세기 무림세가`와 `21세기 현대무림 레거시`를 확정 분리하기 부족하다. native title evidence 확인 전 wrong-work 판정을 보류한다.",
+      "evidence_refs": [
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11666713",
+        "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11682791,
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "HOLD",
+      "source_native_verdict": "image_context_required_no_textual_work_anchor",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Weak",
+      "loop546_transition": null,
+      "actions": [
+        "image_native_review_required",
+        "native_web_review_required"
+      ],
+      "primary_lane": "native_web_image_evidence_review",
+      "lane_gate": "BLOCKED_UNTIL_NATIVE_WEB_OR_IMAGE_EVIDENCE_REVIEW",
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "contract_accounting_state": "ordinary_residual_unprocessed",
+      "contract_accounting_effect": "residual_queue_followup_required",
+      "rationale_ko": "텍스트에는 `아령`, `핑크덤벨`만 있고 후보 C1/C2를 직접 지지하는 작품 표면이 없다. 이미지 앞부분이 판단 근거일 수 있으므로 시각 근거 확인 전까지 HOLD가 맞다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json#post_id=11682791",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11682791",
+        "docs/devs/loop479_wrong_work_title_flip_source_native_verdicts.json#post_id=11682791",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11682791",
+        "docs/devs/loop488_p0_prior_compatible_source_native_verdicts.json#post_id=11682791",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11682791"
+      ]
+    },
+    {
+      "post_id": 11705269,
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "HOLD",
+      "source_native_verdict": "subseries_or_generic_title_requires_native_disambiguation",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Missing",
+      "loop546_transition": null,
+      "actions": [
+        "native_web_or_image_evidence_required",
+        "native_web_or_alias_relation_review_required"
+      ],
+      "primary_lane": "native_web_image_evidence_review",
+      "lane_gate": "BLOCKED_UNTIL_NATIVE_WEB_OR_IMAGE_EVIDENCE_REVIEW",
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "contract_accounting_state": "ordinary_residual_unprocessed",
+      "contract_accounting_effect": "residual_queue_followup_required",
+      "rationale_ko": "월야환담/베놈/실베스테르 맥락은 작품군을 지지하지만 generic `월야환담`과 subseries `월야환담 : 신월야` 중 어느 공표 title이 맞는지는 native evidence가 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop623_true_triage57_source_native_review_batch.json#post_id=11705269",
+        "loop623_true_triage57_prior_compatible_source_native#unreviewed_current_batch_row",
+        "docs/devs/loop623_true_triage57_unreviewed_placeholder_verdicts.json#post_id=11705269",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11705269"
+      ]
+    },
+    {
+      "post_id": 11657038,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "HOLD",
+      "source_native_verdict": "unsafe_promotion_ambiguous_url_and_game_surface_hard_hold",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Missing",
+      "loop546_transition": null,
+      "actions": [
+        "repair_unsafe_promotion",
+        "intent_guard_review",
+        "native_web_or_image_evidence_required"
+      ],
+      "primary_lane": "no_publish_multiwork_guard_review",
+      "lane_gate": "HARD_HOLD_UNTIL_NO_PUBLISH_GUARD_REVIEW",
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "contract_accounting_state": "ordinary_residual_unprocessed",
+      "contract_accounting_effect": "residual_queue_followup_required",
+      "rationale_ko": "댓글에는 별도 novelpia URL과 게임 `데스티니` 표면이 섞여 있고 after `레드 데스티니 [D]`는 직접 제목 근거가 부족하다. unsafe promotion은 no-publish hard-hold로 남긴다.",
+      "evidence_refs": [
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11657038",
+        "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11657044,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "HOLD",
+      "source_native_verdict": "unsafe_promotion_character_or_image_context_requires_native_evidence",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Missing",
+      "loop546_transition": null,
+      "actions": [
+        "repair_unsafe_promotion",
+        "intent_guard_review",
+        "native_web_or_image_evidence_required"
+      ],
+      "primary_lane": "no_publish_multiwork_guard_review",
+      "lane_gate": "HARD_HOLD_UNTIL_NO_PUBLISH_GUARD_REVIEW",
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "contract_accounting_state": "ordinary_residual_unprocessed",
+      "contract_accounting_effect": "residual_queue_followup_required",
+      "rationale_ko": "화은쌤/이준 캐릭터 표면만으로 after `웨딩드레스` 공식 제목을 확정하기 어렵다. 이미지 또는 native character bridge 확인 전 publish를 막는다.",
+      "evidence_refs": [
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11657044",
+        "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11681180,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "HOLD",
+      "source_native_verdict": "unsafe_abbrev_requires_alias_relation_or_native_evidence",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Missing",
+      "loop546_transition": null,
+      "actions": [
+        "repair_unsafe_promotion",
+        "intent_guard_review",
+        "native_web_or_image_evidence_required"
+      ],
+      "primary_lane": "no_publish_multiwork_guard_review",
+      "lane_gate": "HARD_HOLD_UNTIL_NO_PUBLISH_GUARD_REVIEW",
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "contract_accounting_state": "ordinary_residual_unprocessed",
+      "contract_accounting_effect": "residual_queue_followup_required",
+      "rationale_ko": "`아카엠창` 표면은 after `아카데미 패드립 면역` 후보와 연결될 수 있지만 별칭 관계가 소스만으로 확정되지 않는다. alias relation/native evidence 전 hard-hold한다.",
+      "evidence_refs": [
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11681180",
+        "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11710045,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "HOLD",
+      "source_native_verdict": "unsafe_promotion_contextless_post_no_publish_hold",
+      "selected_title": null,
+      "selected_option_id": "HOLD",
+      "evidence_grade": "Missing",
+      "loop546_transition": null,
+      "actions": [
+        "repair_unsafe_promotion",
+        "intent_guard_review"
+      ],
+      "primary_lane": "no_publish_multiwork_guard_review",
+      "lane_gate": "HARD_HOLD_UNTIL_NO_PUBLISH_GUARD_REVIEW",
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "contract_accounting_state": "ordinary_residual_unprocessed",
+      "contract_accounting_effect": "residual_queue_followup_required",
+      "rationale_ko": "본문 근거가 사실상 없고 baseline도 context-only였다. after `공주는 언니를 황제로 만든다` 승격은 current source만으로 정답성을 확인할 수 없어 no-publish hard-hold한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11710045",
+        "loop497_current_full375_p0_prior_compatible_source_native#unreviewed_current_batch_row",
+        "docs/devs/loop497_current_full375_p0_unreviewed_placeholder_verdicts.json#post_id=11710045",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11710045"
+      ]
+    },
+    {
+      "post_id": 11660241,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "source_alias_supports_safe_loss_restore",
+      "selected_title": "이세계 TRPG 게임마스터",
+      "selected_option_id": "BEFORE",
+      "evidence_grade": "Missing",
+      "loop546_transition": null,
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "primary_lane": "shared_gate_restore_contract_review",
+      "lane_gate": "BLOCKED_UNTIL_SHARED_GATE_CONTRACT_APPLICATION_AND_FULL375_RECHECK",
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "contract_accounting_state": "ordinary_residual_unprocessed",
+      "contract_accounting_effect": "residual_queue_followup_required",
+      "rationale_ko": "제목의 `이티알`과 본문 TRPG/현실 파트 감상, after blocked title `이세계 TRPG 게임마스터`가 같은 작품을 가리킨다. null 해소는 정당 제거가 아니라 shared gate를 통한 restore 대상이다.",
+      "evidence_refs": [
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11660241",
+        "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11660268,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "source_context_supports_safe_loss_restore",
+      "selected_title": "■■을 위한 세계는 없다",
+      "selected_option_id": "SOURCE_NATIVE",
+      "evidence_grade": "Missing",
+      "loop546_transition": null,
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "primary_lane": "shared_gate_restore_contract_review",
+      "lane_gate": "BLOCKED_UNTIL_SHARED_GATE_CONTRACT_APPLICATION_AND_FULL375_RECHECK",
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "contract_accounting_state": "ordinary_residual_unprocessed",
+      "contract_accounting_effect": "residual_queue_followup_required",
+      "rationale_ko": "제목의 `ㅁㅁ세계`와 초대용사/운명/스탈린전 대화가 blocked title `■■을 위한 세계는 없다` 후보와 이어진다. after null은 raw safe-loss이며 restore gate로 넘긴다.",
+      "evidence_refs": [
+        "docs/devs/loop623_true_triage57_source_native_review_batch.json#post_id=11660268",
+        "loop623_true_triage57_prior_compatible_source_native#unreviewed_current_batch_row",
+        "docs/devs/loop623_true_triage57_unreviewed_placeholder_verdicts.json#post_id=11660268",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11660268"
+      ]
+    },
+    {
+      "post_id": 11663511,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "post_title_abbrev_supports_safe_loss_restore",
+      "selected_title": "부캐 키우는 황태자님",
+      "selected_option_id": "BEFORE",
+      "evidence_grade": "Missing",
+      "loop546_transition": null,
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "primary_lane": "shared_gate_restore_contract_review",
+      "lane_gate": "BLOCKED_UNTIL_SHARED_GATE_CONTRACT_APPLICATION_AND_FULL375_RECHECK",
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "contract_accounting_state": "ordinary_residual_unprocessed",
+      "contract_accounting_effect": "residual_queue_followup_required",
+      "rationale_ko": "게시글 제목 `부캐황태자99화`가 prior 공식 제목 `부캐 키우는 황태자님`을 직접 약칭한다. after의 `문피아 새 창 열림` 차단은 후보 오염이므로 null 상태를 복구 대상으로 본다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_review_batch.json#post_id=11663511",
+        "loop512_projected_loop511_prior_compatible_after_wrong_work10#unreviewed_current_batch_row",
+        "docs/devs/loop512_projected_loop511_p0_unreviewed_placeholder_verdicts.json#post_id=11663511",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11663511"
+      ]
+    },
+    {
+      "post_id": 11676321,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "post_title_abbrev_supports_safe_loss_restore",
+      "selected_title": "마도서를 줍다 마법사가 되다",
+      "selected_option_id": "BEFORE",
+      "evidence_grade": "Missing",
+      "loop546_transition": null,
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "primary_lane": "shared_gate_restore_contract_review",
+      "lane_gate": "BLOCKED_UNTIL_SHARED_GATE_CONTRACT_APPLICATION_AND_FULL375_RECHECK",
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "contract_accounting_state": "ordinary_residual_unprocessed",
+      "contract_accounting_effect": "residual_queue_followup_required",
+      "rationale_ko": "제목 `마도서줍 시리즈`가 blocked title `마도서를 줍다 마법사가 되다`와 직접 맞고 댓글도 연재 재개 맥락이다. null은 restore 대상이다.",
+      "evidence_refs": [
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11676321",
+        "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11682767,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "post_title_exact_work_supports_safe_loss_restore",
+      "selected_title": "묵향",
+      "selected_option_id": "BEFORE",
+      "evidence_grade": "Missing",
+      "loop546_transition": null,
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "primary_lane": "shared_gate_restore_contract_review",
+      "lane_gate": "BLOCKED_UNTIL_SHARED_GATE_CONTRACT_APPLICATION_AND_FULL375_RECHECK",
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "contract_accounting_state": "ordinary_residual_unprocessed",
+      "contract_accounting_effect": "residual_queue_followup_required",
+      "rationale_ko": "게시글 제목이 `묵향`을 직접 말하고 댓글도 태허무령심법/아르티어스/드래곤 하트 맥락을 이어간다. after의 `묵향 1권` 차단은 canonical variant 문제일 뿐 null 해소 근거가 아니다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11682767",
+        "loop497_current_full375_p0_prior_compatible_source_native#unreviewed_current_batch_row",
+        "docs/devs/loop497_current_full375_p0_unreviewed_placeholder_verdicts.json#post_id=11682767",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11682767"
+      ]
+    },
+    {
+      "post_id": 11708443,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "post_title_alias_supports_safe_loss_restore",
+      "selected_title": "괴담에 떨어져도 출근을 해야 하는구나",
+      "selected_option_id": "BEFORE",
+      "evidence_grade": "Missing",
+      "loop546_transition": null,
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "primary_lane": "shared_gate_restore_contract_review",
+      "lane_gate": "BLOCKED_UNTIL_SHARED_GATE_CONTRACT_APPLICATION_AND_FULL375_RECHECK",
+      "publish_allowed": false,
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false,
+      "contract_accounting_state": "ordinary_residual_unprocessed",
+      "contract_accounting_effect": "residual_queue_followup_required",
+      "rationale_ko": "게시글 제목 `괴담출근`은 blocked official URL의 작품 약어로 직접 쓰였고 본문도 괴담물 독창성 평가다. null은 restore 대상이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11708443",
+        "loop497_current_full375_p0_prior_compatible_source_native#unreviewed_current_batch_row",
+        "docs/devs/loop497_current_full375_p0_unreviewed_placeholder_verdicts.json#post_id=11708443",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11708443"
+      ]
+    }
+  ],
+  "approval_boundary": {
+    "dispatch_generation_is_not_approval": true,
+    "runtime_replay_allowed": false,
+    "publish_allowed": false,
+    "full375_collateral_go_required_before_completion": true,
+    "full_scan_approval": false
+  }
+}

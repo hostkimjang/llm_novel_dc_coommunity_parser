@@ -8212,3 +8212,14 @@
 - [ ] Loop617 row-level search gate `GO`는 full375 실행 선행 blocker 해소만 뜻하며 full375 collateral GO가 아니다.
 - [ ] 다음 full375 collateral은 `--parallel 16`, dashboard ON, search 포함 non-light, VLM/OCR ON으로 실행한다.
 - [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `NOT_COMPLETE`를 유지한다.
+
+## 2026-07-09 추가 운영 체크 - Loop633 adjudicated adjusted gate
+
+- [ ] Source-native 판결 row는 이전 queue의 `source_native_or_blind_review_required` action을 다시 합치지 않는다.
+- [ ] `INFO_MISSING` source-native lane은 전수 배치 판결 뒤 `INFO_MISSING 0`으로 닫고, `HOLD/REPROCESS`는 실제 후속 lane으로 재배치한다.
+- [ ] `ACCEPT`는 adjusted exclusion candidate일 뿐 full375 GO나 full_scan approval이 아니다.
+- [ ] Re-baseline은 remaining residual follow-up이 닫히고 adjusted full375 collateral GO와 full_scan path가 확인된 뒤에만 적용한다.
+- [ ] 2026-06-26 raw baseline diff는 diagnostic historical compare로만 보고 완료 기준으로 쓰지 않는다.
+- [ ] 완료 게이트 문구는 `adjusted full375 collateral GO + full_scan path`로 유지한다.
+- [ ] runtime/test run을 새로 실행할 때는 `--parallel 16`, dashboard ON을 유지한다.
+- [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `NOT_COMPLETE`를 유지한다.

@@ -1,0 +1,13 @@
+{
+  "plan_id": "loop633_empty_contract_plan",
+  "report_type": "empty_contract_plan",
+  "generated_at": "2026-07-09T22:07:59",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "rows": 0,
+    "purpose": "source-native verdict reaccount only"
+  },
+  "rows": []
+}

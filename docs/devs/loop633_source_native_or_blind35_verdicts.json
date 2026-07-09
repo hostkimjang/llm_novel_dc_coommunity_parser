@@ -1,0 +1,1070 @@
+{
+  "report_type": "collateral_source_native_review",
+  "review_id": "loop633_source_native_or_blind35_verdicts",
+  "scope": "Loop633 source-native_or_blind residual35 전수 판정",
+  "generated_at": "2026-07-09T22:07:31",
+  "source_batch": "docs/devs/loop633_source_native_or_blind35_review_batch.json",
+  "source_verdicts": [
+    {
+      "review_id": "loop633_source_native_or_blind35_verdicts",
+      "scope": "Loop633 source-native_or_blind residual35 전수 판정",
+      "source_batch": "docs/devs/loop633_source_native_or_blind35_review_batch.json",
+      "source_path": "docs/devs/loop633_source_native_or_blind35_verdicts.json",
+      "row_count": 35
+    }
+  ],
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "baseline_policy": {
+    "raw_baseline": "2026-06-26 full375 baseline diff remains diagnostic and is not the completion gate",
+    "adjusted_gate": "completion uses adjusted collateral after adjudicated exemptions and residual follow-up",
+    "rebaseline_trigger": "true triage + intended recovery rows are fully adjudicated and adjusted full375 GO is achieved",
+    "rebaseline_effect": "future collateral measures drift from the adjudicated correct-behavior baseline, not old-bug raw changes"
+  },
+  "summary": {
+    "batch_review_rows": 35,
+    "reviewed_rows": 35,
+    "source_native_decision_rows": 35,
+    "info_missing_rows": 0,
+    "unreviewed_batch_rows": 0,
+    "unreviewed_or_info_missing_batch_rows": 0,
+    "validation_issue_count": 0,
+    "counts_by_bucket": {
+      "safe_loss_resolved_to_null": 11,
+      "unsafe_promotion_from_hold": 9,
+      "wrong_work_title_flip": 15
+    },
+    "label_counts": {
+      "REPROCESS": 14,
+      "HOLD": 10,
+      "ACCEPT": 11
+    },
+    "source_native_verdict_counts": {
+      "source_alias_supports_safe_loss_restore": 1,
+      "source_context_supports_safe_loss_restore": 1,
+      "post_title_abbrev_supports_safe_loss_restore": 2,
+      "comparative_surface_requires_native_alias_or_image_evidence": 1,
+      "ocr_explicit_title_requires_image_native_review": 1,
+      "author_talk_requires_native_or_image_evidence": 1,
+      "post_title_exact_work_supports_safe_loss_restore": 1,
+      "image_or_ocr_title_requires_native_review": 1,
+      "expected_fp_removal_secondary_comparison_only": 1,
+      "post_title_alias_supports_safe_loss_restore": 1,
+      "unsafe_promotion_ambiguous_url_and_game_surface_hard_hold": 1,
+      "unsafe_promotion_character_or_image_context_requires_native_evidence": 1,
+      "source_alias_and_character_context_support_after_promotion": 1,
+      "unsafe_abbrev_requires_alias_relation_or_native_evidence": 1,
+      "correct_work_but_noisy_title_requires_canonical_cleanup": 1,
+      "comment_alias_supports_after_promotion": 1,
+      "character_terms_support_after_promotion": 1,
+      "abbrev_and_route_context_support_after_promotion": 1,
+      "unsafe_promotion_contextless_post_no_publish_hold": 1,
+      "after_search_result_wrong_work_restore_prior": 1,
+      "after_canonical_title_correct_prior_character_wrapper": 1,
+      "post_title_exact_after_correct_prior_wrong_work": 1,
+      "ambiguous_21c_murim_title_requires_native_disambiguation": 1,
+      "canonical_variant_same_work_after_not_regression": 1,
+      "post_title_exact_prior_work_after_wrong_title": 2,
+      "same_url_noisy_title_requires_canonical_cleanup": 1,
+      "same_work_platform_variant_not_regression": 1,
+      "alias_collision_after_fanwork_wrong_work": 1,
+      "alias_collision_after_wrong_work": 1,
+      "post_title_supports_after_work_prior_character_or_inworld_term": 1,
+      "generic_genre_after_wrong_work_restore_prior": 1,
+      "subseries_or_generic_title_requires_native_disambiguation": 1,
+      "post_body_and_character_terms_support_after_work": 1
+    },
+    "action_counts": {
+      "repair_safe_loss_restore_supported_title": 6,
+      "shared_promotion_gate_wiring_required": 6,
+      "native_web_or_image_evidence_required": 9,
+      "image_native_review_required": 2,
+      "exclude_from_regression_count_after_gate_wiring": 11,
+      "repair_unsafe_promotion": 4,
+      "intent_guard_review": 4,
+      "canonical_title_cleanup_required": 2,
+      "native_web_or_alias_relation_review_required": 3,
+      "repair_after_wrong_work": 6,
+      "candidate_set_rebuild_required": 6
+    },
+    "queue_transition": {
+      "original_rows": 35,
+      "source_native_reviewed_rows": 35,
+      "source_native_decision_rows": 35,
+      "info_missing_rows": 0,
+      "exclusion_candidate_rows": 11,
+      "repair_required_rows": 14,
+      "policy_or_native_review_required_rows": 10,
+      "residual_action_queue_rows": 24,
+      "full_collateral_approval_open": false,
+      "exclusion_requires_gate_wiring": true,
+      "adjusted_not_raw_gate": true
+    },
+    "queue_by_bucket": {
+      "safe_loss_resolved_to_null": {
+        "rows": 11,
+        "label_counts": {
+          "REPROCESS": 6,
+          "HOLD": 4,
+          "ACCEPT": 1
+        },
+        "action_counts": {
+          "repair_safe_loss_restore_supported_title": 6,
+          "shared_promotion_gate_wiring_required": 6,
+          "native_web_or_image_evidence_required": 4,
+          "image_native_review_required": 2,
+          "exclude_from_regression_count_after_gate_wiring": 1
+        },
+        "exclusion_candidate_rows": 1,
+        "residual_followup_rows": 10
+      },
+      "unsafe_promotion_from_hold": {
+        "rows": 9,
+        "label_counts": {
+          "HOLD": 4,
+          "ACCEPT": 4,
+          "REPROCESS": 1
+        },
+        "action_counts": {
+          "repair_unsafe_promotion": 4,
+          "intent_guard_review": 4,
+          "native_web_or_image_evidence_required": 3,
+          "exclude_from_regression_count_after_gate_wiring": 4,
+          "canonical_title_cleanup_required": 1,
+          "native_web_or_alias_relation_review_required": 1
+        },
+        "exclusion_candidate_rows": 4,
+        "residual_followup_rows": 5
+      },
+      "wrong_work_title_flip": {
+        "rows": 15,
+        "label_counts": {
+          "REPROCESS": 7,
+          "ACCEPT": 6,
+          "HOLD": 2
+        },
+        "action_counts": {
+          "repair_after_wrong_work": 6,
+          "candidate_set_rebuild_required": 6,
+          "exclude_from_regression_count_after_gate_wiring": 6,
+          "native_web_or_image_evidence_required": 2,
+          "native_web_or_alias_relation_review_required": 2,
+          "canonical_title_cleanup_required": 1
+        },
+        "exclusion_candidate_rows": 6,
+        "residual_followup_rows": 9
+      }
+    }
+  },
+  "validation_issues": [],
+  "rows": [
+    {
+      "post_id": 11660241,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "collateral_status": "resolved_to_null",
+      "post_title": "난 이티알은 현실파트가 너무 불호라 하차했는데",
+      "selected_option_id": "BEFORE",
+      "selected_title": "이세계 TRPG 게임마스터",
+      "selected_url": "https://novelpia.com/novel/242412",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "source_alias_supports_safe_loss_restore",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "제목의 `이티알`과 본문 TRPG/현실 파트 감상, after blocked title `이세계 TRPG 게임마스터`가 같은 작품을 가리킨다. null 해소는 정당 제거가 아니라 shared gate를 통한 restore 대상이다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11660241"
+      ],
+      "before_title": "이세계 TRPG 게임마스터",
+      "before_url": "https://novelpia.com/novel/242412",
+      "after_title": null,
+      "after_url": null,
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "residual_followup_required"
+    },
+    {
+      "post_id": 11660268,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "collateral_status": "resolved_to_null",
+      "post_title": "ㅁㅁ세계 초대용사전의 문제점",
+      "selected_option_id": "SOURCE_NATIVE",
+      "selected_title": "■■을 위한 세계는 없다",
+      "selected_url": "https://novel.munpia.com/479313",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "source_context_supports_safe_loss_restore",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "제목의 `ㅁㅁ세계`와 초대용사/운명/스탈린전 대화가 blocked title `■■을 위한 세계는 없다` 후보와 이어진다. after null은 raw safe-loss이며 restore gate로 넘긴다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11660268"
+      ],
+      "before_title": "을 위한 세계는 없다",
+      "before_url": null,
+      "after_title": null,
+      "after_url": null,
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "residual_followup_required"
+    },
+    {
+      "post_id": 11663511,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "collateral_status": "resolved_to_null",
+      "post_title": "부캐황태자99화) 몸은 검으로 되어있다",
+      "selected_option_id": "BEFORE",
+      "selected_title": "부캐 키우는 황태자님",
+      "selected_url": "https://novelpia.com/novel/330363",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "post_title_abbrev_supports_safe_loss_restore",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "게시글 제목 `부캐황태자99화`가 prior 공식 제목 `부캐 키우는 황태자님`을 직접 약칭한다. after의 `문피아 새 창 열림` 차단은 후보 오염이므로 null 상태를 복구 대상으로 본다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11663511"
+      ],
+      "before_title": "부캐 키우는 황태자님",
+      "before_url": "https://novelpia.com/novel/330363",
+      "after_title": null,
+      "after_url": null,
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "residual_followup_required"
+    },
+    {
+      "post_id": 11669924,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "collateral_status": "resolved_to_null",
+      "post_title": "사일런트 루리드래곤이네",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "comparative_surface_requires_native_alias_or_image_evidence",
+      "evidence_grade": "Weak",
+      "action": [
+        "native_web_or_image_evidence_required"
+      ],
+      "rationale_ko": "`사일런트 루리드래곤`은 비교/감상 표면이고 원문만으로 `용인족의 아카데미 생존기` 공식 제목을 확정하기 부족하다. blocked title은 보존하되 native/이미지 근거 전 publish하지 않는다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11669924"
+      ],
+      "before_title": "용인족의 아카데미 생존기",
+      "before_url": null,
+      "after_title": null,
+      "after_url": null,
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "residual_followup_required"
+    },
+    {
+      "post_id": 11669926,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "collateral_status": "resolved_to_null",
+      "post_title": "미적분 공식 외우면 발동되는 마법",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "ocr_explicit_title_requires_image_native_review",
+      "evidence_grade": "Weak",
+      "action": [
+        "image_native_review_required",
+        "native_web_or_image_evidence_required"
+      ],
+      "rationale_ko": "텍스트는 마녀/보추/미적분 맥락뿐이고 `싸울아비 룬`은 OCR/후보에 의존한다. 이미지 또는 native evidence 없이 safe-loss restore로 밀지 않는다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11669926"
+      ],
+      "before_title": "싸울아비 룬",
+      "before_url": "https://page.kakao.com/content/50625910",
+      "after_title": null,
+      "after_url": null,
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "residual_followup_required"
+    },
+    {
+      "post_id": 11676321,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "collateral_status": "resolved_to_null",
+      "post_title": "마도서줍 시리즈왔네?",
+      "selected_option_id": "BEFORE",
+      "selected_title": "마도서를 줍다 마법사가 되다",
+      "selected_url": "https://novel.munpia.com/477135",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "post_title_abbrev_supports_safe_loss_restore",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "제목 `마도서줍 시리즈`가 blocked title `마도서를 줍다 마법사가 되다`와 직접 맞고 댓글도 연재 재개 맥락이다. null은 restore 대상이다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11676321"
+      ],
+      "before_title": "마도서를 줍다 마법사가 되다",
+      "before_url": "https://novel.munpia.com/477135",
+      "after_title": null,
+      "after_url": null,
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "residual_followup_required"
+    },
+    {
+      "post_id": 11682761,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "collateral_status": "resolved_to_null",
+      "post_title": "목마 도대체 뭘쓴거야",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "author_talk_requires_native_or_image_evidence",
+      "evidence_grade": "Weak",
+      "action": [
+        "native_web_or_image_evidence_required"
+      ],
+      "rationale_ko": "`목마` 작가 토크와 이미지/후보 맥락만으로 `그레이스 길들이기`를 확정하기 어렵다. 작가-작품 연결 또는 이미지 근거 확인 전 hard-hold를 유지한다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11682761"
+      ],
+      "before_title": "그레이스 길들이기",
+      "before_url": null,
+      "after_title": null,
+      "after_url": null,
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "residual_followup_required"
+    },
+    {
+      "post_id": 11682767,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "collateral_status": "resolved_to_null",
+      "post_title": "근데 묵향 이 새끼 ts 초기에는 약했지",
+      "selected_option_id": "BEFORE",
+      "selected_title": "묵향",
+      "selected_url": "https://mm.munpia.com/?menu=novel&action=view&id=51088&entry_id=776982",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "post_title_exact_work_supports_safe_loss_restore",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "게시글 제목이 `묵향`을 직접 말하고 댓글도 태허무령심법/아르티어스/드래곤 하트 맥락을 이어간다. after의 `묵향 1권` 차단은 canonical variant 문제일 뿐 null 해소 근거가 아니다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11682767"
+      ],
+      "before_title": "묵향",
+      "before_url": "https://mm.munpia.com/?menu=novel&action=view&id=51088&entry_id=776982",
+      "after_title": null,
+      "after_url": null,
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "residual_followup_required"
+    },
+    {
+      "post_id": 11695599,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "collateral_status": "resolved_to_null",
+      "post_title": "봐라",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "image_or_ocr_title_requires_native_review",
+      "evidence_grade": "Weak",
+      "action": [
+        "image_native_review_required",
+        "native_web_or_image_evidence_required"
+      ],
+      "rationale_ko": "본문 텍스트는 `봐라/재밌다`뿐이라 `창관전생`을 텍스트로 확정할 수 없다. OCR 후보는 보존하되 이미지/native 확인이 먼저다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11695599"
+      ],
+      "before_title": "창관전생",
+      "before_url": "https://novelpia.com/novel/400294",
+      "after_title": null,
+      "after_url": null,
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "residual_followup_required"
+    },
+    {
+      "post_id": 11708432,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "collateral_status": "resolved_to_null",
+      "post_title": "전독시급 정도는 되야 독창성 운운할수있는거지 뭔ㅋㅋ",
+      "selected_option_id": "EXCLUDE",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "expected_fp_removal_secondary_comparison_only",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "본문의 `전독시급`은 독창성 비교 기준이고 댓글 흐름도 다른 논쟁/잡담으로 흘러간다. prior의 `전지적 독자 시점` 확정은 비교 참조를 주 작품으로 올린 FP에 가까우므로 adjusted 회계에서 면제한다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11708432"
+      ],
+      "before_title": "전지적 독자 시점",
+      "before_url": "https://novel.munpia.com/104753",
+      "after_title": null,
+      "after_url": null,
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "exclusion_candidate_not_approval"
+    },
+    {
+      "post_id": 11708443,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "collateral_status": "resolved_to_null",
+      "post_title": "괴담출근정도는 돼야 독창성 운운할수 있는거다",
+      "selected_option_id": "BEFORE",
+      "selected_title": "괴담에 떨어져도 출근을 해야 하는구나",
+      "selected_url": "https://page.kakao.com/content/65171279",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "post_title_alias_supports_safe_loss_restore",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "게시글 제목 `괴담출근`은 blocked official URL의 작품 약어로 직접 쓰였고 본문도 괴담물 독창성 평가다. null은 restore 대상이다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11708443"
+      ],
+      "before_title": "괴담에 떨어져도 출근을 해야 하는구나",
+      "before_url": "https://page.kakao.com/content/65171279",
+      "after_title": null,
+      "after_url": null,
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "residual_followup_required"
+    },
+    {
+      "post_id": 11657038,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "collateral_status": "null_to_resolved",
+      "post_title": "이거 왠지 공감됨",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "unsafe_promotion_ambiguous_url_and_game_surface_hard_hold",
+      "evidence_grade": "Weak",
+      "action": [
+        "repair_unsafe_promotion",
+        "intent_guard_review",
+        "native_web_or_image_evidence_required"
+      ],
+      "rationale_ko": "댓글에는 별도 novelpia URL과 게임 `데스티니` 표면이 섞여 있고 after `레드 데스티니 [D]`는 직접 제목 근거가 부족하다. unsafe promotion은 no-publish hard-hold로 남긴다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11657038"
+      ],
+      "before_title": null,
+      "before_url": null,
+      "after_title": "레드 데스티니 [D]",
+      "after_url": "https://novel.munpia.com/377504",
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "residual_followup_required"
+    },
+    {
+      "post_id": 11657044,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "collateral_status": "null_to_resolved",
+      "post_title": "이거 화은쌤이 이렇게 입었다고 생각하니까 확실히",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "unsafe_promotion_character_or_image_context_requires_native_evidence",
+      "evidence_grade": "Weak",
+      "action": [
+        "repair_unsafe_promotion",
+        "intent_guard_review",
+        "native_web_or_image_evidence_required"
+      ],
+      "rationale_ko": "화은쌤/이준 캐릭터 표면만으로 after `웨딩드레스` 공식 제목을 확정하기 어렵다. 이미지 또는 native character bridge 확인 전 publish를 막는다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11657044"
+      ],
+      "before_title": null,
+      "before_url": null,
+      "after_title": "웨딩드레스",
+      "after_url": "https://novelpia.com/novel/60892",
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "residual_followup_required"
+    },
+    {
+      "post_id": 11660238,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "collateral_status": "null_to_resolved",
+      "post_title": "오늘 림조 한서진 청월한테 말하는 게 개웃기네",
+      "selected_option_id": "AFTER",
+      "selected_title": "무림마조",
+      "selected_url": "https://novelpia.com/novel/347096",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "source_alias_and_character_context_support_after_promotion",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "제목의 `림조`, 본문 한서진/청월 맥락, 기존 blocked snippet의 공식 제목이 모두 `무림마조`를 지지한다. snippet 오염을 제거한 after 승격은 정당 복구로 보고 adjusted 면제한다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11660238"
+      ],
+      "before_title": null,
+      "before_url": null,
+      "after_title": "무림마조",
+      "after_url": "https://novelpia.com/novel/347096",
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "exclusion_candidate_not_approval"
+    },
+    {
+      "post_id": 11681180,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "collateral_status": "null_to_resolved",
+      "post_title": "아카엠창 감정선 맛있네",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "unsafe_abbrev_requires_alias_relation_or_native_evidence",
+      "evidence_grade": "Medium",
+      "action": [
+        "repair_unsafe_promotion",
+        "intent_guard_review",
+        "native_web_or_image_evidence_required"
+      ],
+      "rationale_ko": "`아카엠창` 표면은 after `아카데미 패드립 면역` 후보와 연결될 수 있지만 별칭 관계가 소스만으로 확정되지 않는다. alias relation/native evidence 전 hard-hold한다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11681180"
+      ],
+      "before_title": null,
+      "before_url": null,
+      "after_title": "아카데미 패드립 면역",
+      "after_url": "https://novelpia.com/novel/383527",
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "residual_followup_required"
+    },
+    {
+      "post_id": 11682768,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "collateral_status": "null_to_resolved",
+      "post_title": "근데 마법소녀ㄴ 일란성 쌍둥이라는거 뭔소리임",
+      "selected_option_id": "SOURCE_NATIVE",
+      "selected_title": "마법소녀는 은퇴하고 싶다",
+      "selected_url": null,
+      "review_label": "REPROCESS",
+      "source_native_verdict": "correct_work_but_noisy_title_requires_canonical_cleanup",
+      "evidence_grade": "Medium",
+      "action": [
+        "canonical_title_cleanup_required",
+        "native_web_or_alias_relation_review_required"
+      ],
+      "rationale_ko": "제목의 `마법소녀ㄴ`과 세진/세린 대화는 해당 작품 맥락을 지지하지만 after public title은 띄어쓰기/OCR 노이즈가 남아 있다. publish 전 canonical title cleanup이 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11682768"
+      ],
+      "before_title": null,
+      "before_url": null,
+      "after_title": "마법소녀ㄴ 은 은퇴하고 싶다",
+      "after_url": null,
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "residual_followup_required"
+    },
+    {
+      "post_id": 11685995,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "collateral_status": "null_to_resolved",
+      "post_title": "관우도 울고갈 근들갑 실력 ㄷㄷㄷㄷ",
+      "selected_option_id": "AFTER",
+      "selected_title": "가챠 중독자의 퓨전펑크 생활",
+      "selected_url": "https://novelpia.com/novel/387014",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "comment_alias_supports_after_promotion",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "댓글 `이거 가챠펑크맛임`과 after 후보가 같은 작품을 지지한다. baseline hold 대비 after 승격은 정당 복구로 보고 adjusted 면제한다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11685995"
+      ],
+      "before_title": null,
+      "before_url": null,
+      "after_title": "가챠 중독자의 퓨전펑크 생활",
+      "after_url": "https://novelpia.com/novel/387014",
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "exclusion_candidate_not_approval"
+    },
+    {
+      "post_id": 11702060,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "collateral_status": "null_to_resolved",
+      "post_title": "한가인 4문장 어느정도일지 잘 모르겠음",
+      "selected_option_id": "AFTER",
+      "selected_title": "괴담 호텔 탈출기",
+      "selected_url": "https://novelpia.com/novel/102155",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "character_terms_support_after_promotion",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "한가인/305호/죄수/위대한 자/명패 없는 방은 `괴담 호텔 탈출기` 내부 맥락으로 직접 이어진다. after 승격은 unsafe promotion이 아니라 정당 복구다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11702060"
+      ],
+      "before_title": null,
+      "before_url": null,
+      "after_title": "괴담 호텔 탈출기",
+      "after_url": "https://novelpia.com/novel/102155",
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "exclusion_candidate_not_approval"
+    },
+    {
+      "post_id": 11705257,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "collateral_status": "null_to_resolved",
+      "post_title": "히로히로 팬아트중에 이거 개야하네",
+      "selected_option_id": "AFTER",
+      "selected_title": "히어로 IN 히로인",
+      "selected_url": "https://novelpia.com/novel/1055",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "abbrev_and_route_context_support_after_promotion",
+      "evidence_grade": "Medium",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "제목 `히로히로`와 댓글 `시아루트`/연재 맥락이 after `히어로 IN 히로인`을 지지한다. 이미지 팬아트 행이지만 텍스트 약어가 있어 adjusted 면제 후보로 둔다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11705257"
+      ],
+      "before_title": null,
+      "before_url": null,
+      "after_title": "히어로 IN 히로인",
+      "after_url": "https://novelpia.com/novel/1055",
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "exclusion_candidate_not_approval"
+    },
+    {
+      "post_id": 11710045,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "collateral_status": "null_to_resolved",
+      "post_title": "섹스다섹스",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "unsafe_promotion_contextless_post_no_publish_hold",
+      "evidence_grade": "Missing",
+      "action": [
+        "repair_unsafe_promotion",
+        "intent_guard_review"
+      ],
+      "rationale_ko": "본문 근거가 사실상 없고 baseline도 context-only였다. after `공주는 언니를 황제로 만든다` 승격은 current source만으로 정답성을 확인할 수 없어 no-publish hard-hold한다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11710045"
+      ],
+      "before_title": null,
+      "before_url": null,
+      "after_title": "공주는 언니를 황제로 만든다",
+      "after_url": "https://novel.munpia.com/331535",
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "residual_followup_required"
+    },
+    {
+      "post_id": 11660257,
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "post_title": "암흑가보스<<이거 재밋네",
+      "selected_option_id": "BEFORE",
+      "selected_title": "암흑가 보스요? 제가요?",
+      "selected_url": "https://novelpia.com/novel/384111",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "after_search_result_wrong_work_restore_prior",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_after_wrong_work",
+        "candidate_set_rebuild_required"
+      ],
+      "rationale_ko": "게시글 제목 `암흑가보스`는 prior `암흑가 보스요? 제가요?`를 직접 가리킨다. after는 검색결과식 다른 작품 제목으로 오염되어 prior title 복구가 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11660257"
+      ],
+      "before_title": "암흑가 보스요? 제가요?",
+      "before_url": "https://novelpia.com/novel/384111",
+      "after_title": "고수위.국제마약카르텔. 암흑가 의 보스 들 새 창 열림",
+      "after_url": null,
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "residual_followup_required"
+    },
+    {
+      "post_id": 11663554,
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "post_title": "TS) 주서연 영화개봉 했는데 1엄복동도 못되면",
+      "selected_option_id": "AFTER",
+      "selected_title": "전 버튜버가 하고 싶은데요",
+      "selected_url": "https://novelpia.com/novel/275975",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "after_canonical_title_correct_prior_character_wrapper",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "`주서연`은 작품 내 인물이고 after는 같은 URL의 공식 제목이다. prior의 캐릭터+작품 혼합 표면보다 after canonical title이 맞아 adjusted 면제한다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11663554"
+      ],
+      "before_title": "주서연 ( 전 버튜버가 하고 싶은데요 )",
+      "before_url": "https://novelpia.com/novel/275975",
+      "after_title": "전 버튜버가 하고 싶은데요",
+      "after_url": "https://novelpia.com/novel/275975",
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "exclusion_candidate_not_approval"
+    },
+    {
+      "post_id": 11665110,
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "post_title": "사이키델리아 읽었던 사람 있냐?",
+      "selected_option_id": "AFTER",
+      "selected_title": "사이키델리아",
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "post_title_exact_after_correct_prior_wrong_work",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "게시글 제목이 `사이키델리아`를 직접 묻고 댓글도 표지/엔트로피 기억을 말한다. prior `낭만적인 초능력을 위하여`보다 after가 맞다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11665110"
+      ],
+      "before_title": "낭만적인 초능력을 위하여",
+      "before_url": "https://page.kakao.com/content/54662428?tab_type=about",
+      "after_title": "사이키델리아",
+      "after_url": null,
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "exclusion_candidate_not_approval"
+    },
+    {
+      "post_id": 11666713,
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "post_title": "21세기 무림 이거 재미네 ㅋㅋㅋ",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "ambiguous_21c_murim_title_requires_native_disambiguation",
+      "evidence_grade": "Medium",
+      "action": [
+        "native_web_or_image_evidence_required",
+        "native_web_or_alias_relation_review_required"
+      ],
+      "rationale_ko": "`21세기 무림` 표면만으로 `21세기 무림세가`와 `21세기 현대무림 레거시`를 확정 분리하기 부족하다. native title evidence 확인 전 wrong-work 판정을 보류한다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11666713"
+      ],
+      "before_title": "21세기 무림세가",
+      "before_url": null,
+      "after_title": "21세기 현대무림 레거시",
+      "after_url": null,
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "residual_followup_required"
+    },
+    {
+      "post_id": 11669933,
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "post_title": "중경계에서 첨 만난게 해방상제임?",
+      "selected_option_id": "AFTER",
+      "selected_title": "회귀수선전(回歸修仙傳)",
+      "selected_url": "https://novel.munpia.com/346981",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "canonical_variant_same_work_after_not_regression",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "중경계/해방상제/서휼 맥락은 회귀수선전이며 after는 같은 작품의 한자 병기/플랫폼 variant다. raw flip은 wrong-work가 아니라 canonical variant 변화로 면제한다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11669933"
+      ],
+      "before_title": "회귀수선전",
+      "before_url": "https://series.naver.com/novel/detail.series?productNo=9807283",
+      "after_title": "회귀수선전(回歸修仙傳)",
+      "after_url": "https://novel.munpia.com/346981",
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "exclusion_candidate_not_approval"
+    },
+    {
+      "post_id": 11673102,
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "post_title": "걍 주간랭킹 / 실시간 랭킹 << 믿고 보면 되겠노",
+      "selected_option_id": "BEFORE",
+      "selected_title": "갤질하는 천재 의사",
+      "selected_url": "https://mm.munpia.com/?menu=novel&action=view&id=556720&entry_id=next&entry_seq=-10860205",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "post_title_exact_prior_work_after_wrong_title",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_after_wrong_work",
+        "candidate_set_rebuild_required"
+      ],
+      "rationale_ko": "본문이 `갤질의사`를 랭킹 추천작으로 직접 열거한다. after `방송했더니 천재 의사로 착각당했다`는 후보 표면이 비슷한 다른 작품으로 보여 prior title 복구가 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11673102"
+      ],
+      "before_title": "갤질하는 천재 의사",
+      "before_url": "https://mm.munpia.com/?menu=novel&action=view&id=556720&entry_id=next&entry_seq=-10860205",
+      "after_title": "방송했더니 천재 의사로 착각당했다",
+      "after_url": "https://novel.munpia.com/533608",
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "residual_followup_required"
+    },
+    {
+      "post_id": 11674731,
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "post_title": "ts여자아이 만들기 .. 이 작가는 어디간거야?",
+      "selected_option_id": "SOURCE_NATIVE",
+      "selected_title": "여자아이 만들기",
+      "selected_url": "https://novelpia.com/novel/10594",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "same_url_noisy_title_requires_canonical_cleanup",
+      "evidence_grade": "Strong",
+      "action": [
+        "canonical_title_cleanup_required"
+      ],
+      "rationale_ko": "before/after가 같은 URL을 가리키지만 after에는 `새 창 열림`과 띄어쓰기 노이즈가 남아 있다. wrong-work raw는 canonical cleanup으로 처리한다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11674731"
+      ],
+      "before_title": "여자아 이 만들기",
+      "before_url": "https://novelpia.com/novel/10594",
+      "after_title": "여자아 이 만들기 새 창 열림",
+      "after_url": "https://novelpia.com/novel/10594",
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "residual_followup_required"
+    },
+    {
+      "post_id": 11676309,
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "post_title": "갤질의사 정실일러 예고",
+      "selected_option_id": "BEFORE",
+      "selected_title": "갤질하는 천재 의사",
+      "selected_url": "https://novelpia.com/novel/372180",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "post_title_exact_prior_work_after_wrong_title",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_after_wrong_work",
+        "candidate_set_rebuild_required"
+      ],
+      "rationale_ko": "제목 `갤질의사 정실일러`가 prior `갤질하는 천재 의사`를 직접 지지한다. after `댓글 보는 천재 의사`는 비슷한 의사/댓글 표면 오염이므로 복구 대상이다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11676309"
+      ],
+      "before_title": "갤질하는 천재 의사",
+      "before_url": "https://novelpia.com/novel/372180",
+      "after_title": "댓글 보는 천재 의사",
+      "after_url": null,
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "residual_followup_required"
+    },
+    {
+      "post_id": 11692426,
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "post_title": "절대타경 볼 때 한자병기가 간체자로 되어있어서",
+      "selected_option_id": "AFTER",
+      "selected_title": "절대타경 [독점]",
+      "selected_url": "https://series.naver.com/novel/detail.series?productNo=8834603",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "same_work_platform_variant_not_regression",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "게시글은 `절대타경` 자체를 말하며 before/after는 같은 작품의 플랫폼/독점 표기 차이에 가깝다. raw flip은 regression이 아니라 canonical/platform variant로 adjusted 면제한다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11692426"
+      ],
+      "before_title": "절대타경",
+      "before_url": "https://ridibooks.com/books/2391055753",
+      "after_title": "절대타경 [독점]",
+      "after_url": "https://series.naver.com/novel/detail.series?productNo=8834603",
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "exclusion_candidate_not_approval"
+    },
+    {
+      "post_id": 11694065,
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "post_title": "아니 시발 아카살 아니스 비처녀였네",
+      "selected_option_id": "BEFORE",
+      "selected_title": "아카데미에서 살아남기",
+      "selected_url": "https://mm.munpia.com/?menu=novel&action=view&id=240910&entry_id=4262178",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "alias_collision_after_fanwork_wrong_work",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_after_wrong_work",
+        "candidate_set_rebuild_required"
+      ],
+      "rationale_ko": "제목 `아카살 아니스`는 `아카데미에서 살아남기`와 인물 맥락을 직접 가리킨다. after `[아카살] 아무 관계도 아니라고!`는 제목 검색/2차 창작 표면으로 보이며 원 작품 복구가 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11694065"
+      ],
+      "before_title": "아카데미에서 살아남기",
+      "before_url": "https://mm.munpia.com/?menu=novel&action=view&id=240910&entry_id=4262178",
+      "after_title": "[아카살] 아무 관계도 아니라고!",
+      "after_url": null,
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "residual_followup_required"
+    },
+    {
+      "post_id": 11698877,
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "post_title": "괴담텔 1층 다봤는데 봤는데 재미없으면 하차하는게 맞음?",
+      "selected_option_id": "BEFORE",
+      "selected_title": "괴담 호텔 탈출기",
+      "selected_url": "https://novelpia.com/novel/102155",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "alias_collision_after_wrong_work",
+      "evidence_grade": "Strong",
+      "action": [
+        "repair_after_wrong_work",
+        "candidate_set_rebuild_required"
+      ],
+      "rationale_ko": "`괴담텔 1층/2층` 감상은 prior `괴담 호텔 탈출기`의 층 구조를 말한다. after `괴담텔 속 마술사`는 alias collision이므로 복구 대상이다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11698877"
+      ],
+      "before_title": "괴담 호텔 탈출기",
+      "before_url": "https://novelpia.com/novel/102155",
+      "after_title": "괴담텔 속 마술사 새 창 열림",
+      "after_url": "https://novelpia.com/novel/428146",
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "residual_followup_required"
+    },
+    {
+      "post_id": 11702094,
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "post_title": "댓글창 이딴게 왜 재밌는거냐..?",
+      "selected_option_id": "AFTER",
+      "selected_title": "댓글창의 천재 마법사",
+      "selected_url": "https://novelpia.com/novel/370230",
+      "review_label": "ACCEPT",
+      "source_native_verdict": "post_title_supports_after_work_prior_character_or_inworld_term",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "게시글 제목이 `댓글창`을 직접 말하고 본문 `더블오 정체`는 작품 내 요소로 보인다. prior `#더블오`보다 after 공식 제목이 정답에 가까워 adjusted 면제한다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11702094"
+      ],
+      "before_title": "#더블오",
+      "before_url": "https://novelpia.com/novel/417074",
+      "after_title": "댓글창의 천재 마법사",
+      "after_url": "https://novelpia.com/novel/370230",
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "exclusion_candidate_not_approval"
+    },
+    {
+      "post_id": 11703631,
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "post_title": "이블파티는 피카레스크임?",
+      "selected_option_id": "BEFORE",
+      "selected_title": "나의 악당들",
+      "selected_url": "https://page.kakao.com/content/55826557",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "generic_genre_after_wrong_work_restore_prior",
+      "evidence_grade": "Medium",
+      "action": [
+        "repair_after_wrong_work",
+        "candidate_set_rebuild_required"
+      ],
+      "rationale_ko": "after `피카레스크`는 장르어이고 작품 제목으로 publish하기 부적절하다. 댓글의 승수/인성 논의가 prior `나의 악당들` 맥락을 지지하므로 복구 또는 후보 재구축이 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11703631"
+      ],
+      "before_title": "나의 악당들",
+      "before_url": "https://page.kakao.com/content/55826557",
+      "after_title": "피카레스크",
+      "after_url": null,
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "residual_followup_required"
+    },
+    {
+      "post_id": 11705269,
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "post_title": "월야환담 베놈이 진짜 십사기 능력이었는데",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "HOLD",
+      "source_native_verdict": "subseries_or_generic_title_requires_native_disambiguation",
+      "evidence_grade": "Medium",
+      "action": [
+        "native_web_or_image_evidence_required",
+        "native_web_or_alias_relation_review_required"
+      ],
+      "rationale_ko": "월야환담/베놈/실베스테르 맥락은 작품군을 지지하지만 generic `월야환담`과 subseries `월야환담 : 신월야` 중 어느 공표 title이 맞는지는 native evidence가 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11705269"
+      ],
+      "before_title": "월야환담",
+      "before_url": "https://ridibooks.com/books/3685014315",
+      "after_title": "월야환담 : 신월야",
+      "after_url": null,
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "residual_followup_required"
+    },
+    {
+      "post_id": 11714903,
+      "triage_bucket": "wrong_work_title_flip",
+      "collateral_status": "resolved_to_different_title",
+      "post_title": "온세상이 버튜버다",
+      "selected_option_id": "AFTER",
+      "selected_title": "괴담 호텔 탈출기",
+      "selected_url": null,
+      "review_label": "ACCEPT",
+      "source_native_verdict": "post_body_and_character_terms_support_after_work",
+      "evidence_grade": "Strong",
+      "action": [
+        "exclude_from_regression_count_after_gate_wiring"
+      ],
+      "rationale_ko": "본문에 `괴담텔`, 아리/가인/심판자, 댓글 한가인 맥락이 직접 있어 after `괴담 호텔 탈출기`가 맞다. prior `온 세상이 정신이상자다`는 제목 표면 오인으로 보고 adjusted 면제한다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11714903"
+      ],
+      "before_title": "온 세상이 정신이상자다",
+      "before_url": "https://novelpia.com/novel/380804",
+      "after_title": "괴담 호텔 탈출기",
+      "after_url": null,
+      "source_review_id": "loop633_source_native_or_blind35_verdicts",
+      "adjusted_gate_effect": "exclusion_candidate_not_approval"
+    }
+  ],
+  "approval_boundary": {
+    "source_native_review_is_not_full375_go": true,
+    "accepted_rows_are_adjusted_exclusion_candidates_not_approval": true,
+    "raw_regression_count_against_20260626_baseline_is_not_completion_gate": true,
+    "adjusted_full375_go_plus_full_scan_path_required": true,
+    "semantic_quality_remains_review_locked": true,
+    "full_scan_approval_remains_false": true
+  }
+}

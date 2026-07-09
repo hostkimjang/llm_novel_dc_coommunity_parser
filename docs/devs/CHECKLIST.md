@@ -14320,3 +14320,33 @@
   - unrecovered degraded `0`
 - [ ] Full375 collateral은 아직 실행하지 않았다. 다음 실행 전 현재 코드/문서를 커밋한다.
 - [ ] Full375 결과가 `GO`가 될 때까지 `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `NOT_COMPLETE`를 유지한다.
+
+## 2026-07-09 Loop633 source-native residual35 adjudication 체크
+
+- [x] 신규 runtime replay/full375 대형 런을 발주하지 않았다.
+- [x] Loop632 residual41 중 `source_native_or_blind_review` 35건을 단건이 아니라 배치로 판결했다.
+  - batch: `docs/devs/loop633_source_native_or_blind35_review_batch.json/.jsonl/.md`
+  - verdict: `docs/devs/loop633_source_native_or_blind35_verdicts.json/.md`
+  - verdict count: `ACCEPT 11 / REPROCESS 14 / HOLD 10`, `INFO_MISSING 0`
+- [x] Source-native stale action 재혼입을 막았다.
+  - `tools/build_ordinary_residual_dispatch.py`
+  - source-native 판결 row는 accounting action을 우선해 `source_native_or_blind_review_required`로 되돌아가지 않는다.
+- [x] Loop633 accounting을 재생성했다.
+  - `docs/devs/loop633_after_source_native35_residual41_accounting.json/.md`
+  - processed/excluded `11`, ordinary residual `30`, validation issue `0`
+- [x] Loop633 dispatch를 재생성했다.
+  - `docs/devs/loop633_after_source_native35_ordinary_residual30_dispatch.json/.md`
+  - lanes: candidate-set `6`, canonical `2`, native-web/image `12`, no-publish `4`, shared-gate `6`, source-native `0`
+- [x] Re-baseline readiness를 기록했다.
+  - `docs/devs/loop633_adjudicated_rebaseline_readiness.json/.md`
+  - rebaseline_status `NOT_APPLIED`
+  - blocker: ordinary residual follow-up `30`, adjusted full375 GO 미확인, full_scan 경로 미완료
+- [x] 완료 게이트가 raw가 아니라 adjusted 기준임을 도구/산출물에 반영했다.
+  - `adjusted full375 collateral GO + full_scan path`
+  - 2026-06-26 raw baseline diff는 diagnostic historical compare로만 사용한다.
+- [x] 검증을 통과했다.
+  - JSON parse PASS
+  - `tests.test_build_ordinary_residual_dispatch`, `tests.test_reaccount_residual_after_contract_reviews`: PASS / `13` tests
+  - py_compile PASS
+- [ ] Full375 collateral gate는 아직 `NO-GO`다.
+- [ ] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.

@@ -70,6 +70,10 @@ class OrdinaryResidualDispatchTests(unittest.TestCase):
         self.assertEqual(dispatch["source_queue_id"], "loop546")
         self.assertEqual(dispatch["summary"]["contract_processed_rows_held"], 1)
         self.assertEqual(dispatch["summary"]["runtime_replay_allowed_rows"], 0)
+        self.assertEqual(
+            dispatch["summary"]["completion_gate"],
+            "adjusted full375 collateral GO + full_scan path",
+        )
 
     def test_source_dispatch_id_is_preserved_when_queue_id_is_missing(self):
         source_queue = {
@@ -196,6 +200,41 @@ class OrdinaryResidualDispatchTests(unittest.TestCase):
 
         self.assertEqual(dispatch["rows"][0]["primary_lane"], "source_native_or_blind_review")
         self.assertEqual(dispatch["summary"]["lane_counts"], {"source_native_or_blind_review": 1})
+
+    def test_source_native_verdict_actions_replace_stale_review_actions(self):
+        source_queue = {
+            "queue_id": "loop632",
+            "rows": [
+                {
+                    "post_id": 1,
+                    "review_label": "INFO_MISSING",
+                    "actions": [
+                        "source_native_or_blind_review_required",
+                        "p0_wrong_work_title_flip_review_required",
+                    ],
+                }
+            ],
+        }
+        accounting = {
+            "accounting_id": "loop633",
+            "summary": {"contract_processed_rows": 0},
+            "rows": [
+                {
+                    "post_id": 1,
+                    "review_label": "REPROCESS",
+                    "ordinary_residual_unprocessed": True,
+                    "source_native_review_label": "REPROCESS",
+                    "source_native_verdict": "after_search_result_wrong_work_restore_prior",
+                    "actions": ["repair_after_wrong_work", "candidate_set_rebuild_required"],
+                }
+            ],
+        }
+
+        dispatch = build_dispatch(accounting=accounting, source_queue=source_queue, dispatch_id="d7")
+
+        self.assertEqual(dispatch["rows"][0]["primary_lane"], "candidate_set_rebuild_review")
+        self.assertEqual(dispatch["summary"]["lane_counts"], {"candidate_set_rebuild_review": 1})
+        self.assertNotIn("source_native_or_blind_review_required", dispatch["rows"][0]["actions"])
 
     def test_missing_source_queue_row_is_validation_issue(self):
         source_queue = {"queue_id": "loop546", "rows": []}
