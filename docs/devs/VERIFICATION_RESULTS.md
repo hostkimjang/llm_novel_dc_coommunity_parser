@@ -28,9 +28,10 @@
   - Loop640 frontier trace: PASS/RUNNING, `11676314 / 마도줍 완결이 빠를까`, W1 `in_progress_in_worker_log`, observed elapsed `462.254s`.
   - Loop640 partial gates: PASS/RUNNING, search evidence `GO`, partial publication contract `GO / row 1`, approval `false`.
   - Re-baseline boundary: PASS/RUNNING, Loop638 `APPLIED` 이후 completion metric은 `adjusted_drift_count`이고 2026-06-26 raw `105`는 historical diagnostic으로만 유지한다. Raw row는 매 run 재소송 대상이 아니다.
-  - Latest live audit refresh: PASS/RUNNING, `docs/devs/loop640_full375_live_run_health_latest.json`, generated_at `2026-07-10T02:13:59`, completed/flushed/pending/failed `55/51/4/0`, result rows `51`, checkpoint rows `55`, frontier `11700470`, W13 `in_progress_in_worker_log`, observed elapsed `758.581s`.
+  - Latest live audit refresh: PASS/RUNNING, `docs/devs/loop640_full375_live_run_health_latest.json`, generated_at `2026-07-10T02:23:27`, completed/flushed/pending/failed `56/51/5/0`, result rows `51`, checkpoint rows `56`, frontier `11700470`, W13 `in_progress_in_worker_log`, observed elapsed `758.581s`.
   - Frontier movement: PASS/RUNNING, prior frontier `11698904` cleared and ordered flushed prefix advanced `50 -> 51`; current classification remains live long-tail postprocess, not completed source.
-  - Dashboard liveness: PASS/RUNNING, `batch_running=true`, done `55/375`, progress `14.7%`, parallel `16`, `llm_suspended=false`.
+  - W13 worker liveness: PASS/RUNNING, `11700470` log updated through `2026-07-10 02:23:05` with final title correction postprocess.
+  - Dashboard liveness: PASS/RUNNING, `batch_running=true`, done `56/375`, progress `14.9%`, parallel `16`, `llm_suspended=false`.
 - 결과:
   - Loop639 partial은 collateral approval 증거가 아니다.
   - 다음 full375는 Loop640 plan으로만 실행하며 child manifest에 search 포함 non-light health가 남아야 한다.

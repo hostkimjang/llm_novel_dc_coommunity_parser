@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T02:13:59",
+  "generated_at": "2026-07-10T02:23:27",
   "run_id": "20260710_005902_590310",
   "artifact_resolution": {
     "resolution": "explicit_paths",
@@ -119,9 +119,9 @@
     "mcp_endpoint_count_after_health_filter": 16,
     "mcp_parallel_before_health_filter": 16,
     "mcp_parallel_after_health_filter": 16,
-    "completed_count": 55,
+    "completed_count": 56,
     "flushed_count": 51,
-    "pending_count": 4,
+    "pending_count": 5,
     "failed_count": 0,
     "next_save_idx": 52,
     "partial_flush_gap": true,
@@ -145,8 +145,8 @@
     "load_error": null
   },
   "result_rows": 51,
-  "checkpoint_rows": 55,
-  "pending_count_actual": 4,
+  "checkpoint_rows": 56,
+  "pending_count_actual": 5,
   "flush_integrity": {
     "run_integrity_gate": "IN_PROGRESS",
     "classification": "ordered_flush_gap_in_progress",
@@ -163,15 +163,15 @@
     ],
     "counts": {
       "manifest_input_post_count": 375,
-      "manifest_completed_count": 55,
+      "manifest_completed_count": 56,
       "manifest_flushed_count": 51,
-      "manifest_pending_count": 4,
+      "manifest_pending_count": 5,
       "manifest_failed_count": 0,
-      "checkpoint_completed_count": 55,
+      "checkpoint_completed_count": 56,
       "checkpoint_failed_count": 0,
       "result_rows": 51,
-      "pending_snapshot_rows": 4,
-      "completed_minus_flushed": 4
+      "pending_snapshot_rows": 5,
+      "completed_minus_flushed": 5
     },
     "consistency": {
       "result_rows_eq_flushed_count": true,
@@ -196,13 +196,18 @@
       "frontier_in_pending_snapshot": false,
       "completed_index_min": 1,
       "completed_index_max": 65,
-      "pending_index_min": 54,
+      "pending_index_min": 53,
       "pending_index_max": 65,
-      "first_pending_at_or_after_frontier": 54,
-      "first_completed_at_or_after_frontier": 54,
+      "first_pending_at_or_after_frontier": 53,
+      "first_completed_at_or_after_frontier": 53,
       "frontier_gap_global_idx": 52
     },
     "pending_blocker_samples": [
+      {
+        "global_idx": 53,
+        "post_id": 11700475,
+        "title": "NTR"
+      },
       {
         "global_idx": 54,
         "post_id": 11700495,
@@ -431,15 +436,15 @@
       "mcp_health_failure_count": 0
     },
     "row_search_health": {
-      "rows_with_search_health": 54,
+      "rows_with_search_health": 55,
       "status_counts": {
-        "ok": 53,
+        "ok": 54,
         "SEARCH_DEGRADED_RECOVERED": 1
       },
       "flag_counts": {},
       "rows_with_upstream_zero": 33,
       "rows_with_degraded": 0,
-      "query_total": 508,
+      "query_total": 512,
       "degraded_total": 2,
       "degraded_recovered_total": 1,
       "unrecovered_degraded_total": 0
@@ -447,8 +452,8 @@
     "worker_log_search": {
       "search_timeout": 0,
       "search_degraded_detected": 0,
-      "search_upstream_zero": 67,
-      "search_bridge_after_filter_zero": 15
+      "search_upstream_zero": 69,
+      "search_bridge_after_filter_zero": 16
     },
     "blockers": []
   },
@@ -465,16 +470,16 @@
     "blockers": []
   },
   "status_counts": {
-    "completed": 55
+    "completed": 56
   },
   "identity_state_counts": {
-    "resolved_title": 24,
+    "resolved_title": 25,
     "adjacent_relevant": 14,
     "non_relevant": 11,
     "unresolved_title": 6
   },
   "discussion_type_counts_top": {
-    "general": 17,
+    "general": 18,
     "noise": 8,
     "review": 7,
     "recommendation": 6,
@@ -488,19 +493,19 @@
     "meme": 1
   },
   "topicality_counts": {
-    "core_relevant": 30,
+    "core_relevant": 31,
     "adjacent_relevant": 14,
     "unrelated": 11
   },
   "work_resolution_counts": {
     "none": 25,
     "resolved": 19,
-    "unresolved": 11
+    "unresolved": 12
   },
   "novel_confidence_counts": {
     "": 29,
     "High": 15,
-    "None": 7,
+    "None": 8,
     "Medium": 4
   },
   "consistency_flag_counts_top": {
@@ -536,18 +541,18 @@
     "context_only_no_work_anchor": 4,
     "batch_memory_alias_rescue_blocked_semantic_seed": 4,
     "final_semantic_reread_accepted_resolution": 4,
+    "official_detail_url_missing_direct_source_support": 4,
+    "official_detail_url_repaired_from_search": 4,
     "direct_image_explicit_title_rescued": 3,
+    "internal_work_signal_unresolved_recovered": 3,
     "weak_alias_surface_public_title_bridge": 3,
     "precision_seed_independent_official_detail_supported": 3,
     "serialized_public_identity_gate_candidate_reconciled": 3,
-    "official_detail_url_missing_direct_source_support": 3,
     "secondary_reference_official_alias_blocked_after_multi_work_title_cleared": 3,
-    "official_detail_url_repaired_from_search": 3,
     "unresolved_worklike_hold:short_style_review": 2,
     "direct_image_work_surface_lock": 2,
     "unresolved_worklike_hold:title_led_consumption": 2,
     "relation_hold_unresolved_recovered": 2,
-    "internal_work_signal_unresolved_recovered": 2,
     "full_title_surface": 2,
     "post_alias_official_detail_bridge_anchor": 2,
     "final_semantic_reread_rejected_resolution": 2,
@@ -558,15 +563,15 @@
   "reason_error_count": 0,
   "reason_error_samples": [],
   "query_stats": {
-    "parsed_count": 42,
-    "avg_executed_queries": 7.38,
+    "parsed_count": 43,
+    "avg_executed_queries": 7.3,
     "p95_executed_queries": 14,
     "max_executed_queries": 16,
     "avg_degraded_queries": 2,
     "max_degraded_queries": 2
   },
   "slang": {
-    "slang_insight_count": 19,
+    "slang_insight_count": 20,
     "old_store_true_count": 9,
     "new_store_true_after_patch_count": 8,
     "old_store_true_blocked_by_patch_count": 2,
@@ -756,13 +761,13 @@
   },
   "logs": {
     "worker_log_count": 16,
-    "post_start_count_in_worker_logs": 71,
-    "post_complete_count_in_worker_logs": 55,
+    "post_start_count_in_worker_logs": 72,
+    "post_complete_count_in_worker_logs": 56,
     "counts": {
-      "title_anchor_exact_probe_lines": 58,
-      "search_bridge_after_filter_zero": 15,
-      "headless_meta_lines": 95,
-      "search_upstream_zero": 67,
+      "title_anchor_exact_probe_lines": 60,
+      "search_bridge_after_filter_zero": 16,
+      "headless_meta_lines": 98,
+      "search_upstream_zero": 69,
       "snippet_none_fallback": 1
     },
     "worker_counts_top": {
@@ -788,20 +793,20 @@
         "headless_meta_lines": 3,
         "snippet_none_fallback": 1
       },
+      "W2": {
+        "headless_meta_lines": 11,
+        "search_upstream_zero": 7,
+        "post_start": 5,
+        "post_complete": 4,
+        "search_bridge_after_filter_zero": 1,
+        "title_anchor_exact_probe_lines": 1
+      },
       "W10": {
         "search_upstream_zero": 6,
         "post_start": 5,
         "post_complete": 4,
-        "title_anchor_exact_probe_lines": 2,
-        "headless_meta_lines": 1
-      },
-      "W2": {
-        "headless_meta_lines": 10,
-        "post_start": 5,
-        "search_upstream_zero": 5,
-        "post_complete": 4,
-        "search_bridge_after_filter_zero": 1,
-        "title_anchor_exact_probe_lines": 1
+        "title_anchor_exact_probe_lines": 4,
+        "headless_meta_lines": 2
       },
       "W8": {
         "headless_meta_lines": 11,
@@ -819,10 +824,11 @@
         "post_complete": 3
       },
       "W11": {
-        "headless_meta_lines": 9,
+        "headless_meta_lines": 10,
         "post_start": 4,
         "search_upstream_zero": 4,
-        "post_complete": 3
+        "post_complete": 3,
+        "search_bridge_after_filter_zero": 1
       },
       "W4": {
         "post_start": 4,
@@ -855,9 +861,9 @@
         "search_upstream_zero": 1
       },
       "W15": {
-        "post_start": 3,
+        "post_start": 4,
+        "post_complete": 3,
         "headless_meta_lines": 2,
-        "post_complete": 2,
         "search_upstream_zero": 1
       },
       "W3": {
@@ -887,8 +893,8 @@
   },
   "rates": {
     "reason_error_rate_pct": 0.0,
-    "resolved_title_rate_pct": 43.64,
-    "unresolved_title_rate_pct": 10.91,
+    "resolved_title_rate_pct": 44.64,
+    "unresolved_title_rate_pct": 10.71,
     "headless_line_per_completed_pct": 0.0
   }
 }
