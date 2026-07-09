@@ -24,10 +24,13 @@
   - Loop640 launch: PASS/RUNNING, run `20260710_005902_590310`, dashboard `http://127.0.0.1:8080`, requested/effective parallel `16/16`.
   - Loop640 manifest search contract: PASS/RUNNING, `mcp_health_include_search=true`, `mcp_health_light_mode=false`, `mcp_health_ok_count=16`.
   - Loop640 initial progress: RUNNING, completed/flushed/pending/failed `2/1/1/0`, checkpoint rows `2`.
+  - Loop640 running health snapshot: PASS/RUNNING, `docs/devs/loop640_full375_running_health_snapshot.json`, completed/flushed/pending/failed `3/1/2/0`, flush integrity `IN_PROGRESS / ordered_flush_gap_in_progress`.
+  - Loop640 frontier trace: PASS/RUNNING, `11676314 / 마도줍 완결이 빠를까`, W1 `in_progress_in_worker_log`, observed elapsed `462.254s`.
+  - Loop640 partial gates: PASS/RUNNING, search evidence `GO`, partial publication contract `GO / row 1`, approval `false`.
 - 결과:
   - Loop639 partial은 collateral approval 증거가 아니다.
   - 다음 full375는 Loop640 plan으로만 실행하며 child manifest에 search 포함 non-light health가 남아야 한다.
-- Gate: Loop639 partial `NO-GO / PARTIAL_NOT_APPROVAL_EVIDENCE`, Loop640 run `RUNNING_BACKGROUND / NOT_APPROVAL_RUNNING`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- Gate: Loop639 partial `NO-GO / PARTIAL_NOT_APPROVAL_EVIDENCE`, Loop640 run `RUNNING_BACKGROUND / NOT_APPROVAL_RUNNING`, latest snapshot `IN_PROGRESS`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-09 Loop639 adjudicated baseline full375 runtime 계획 검증
 

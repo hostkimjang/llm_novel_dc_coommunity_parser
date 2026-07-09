@@ -10,6 +10,7 @@
 - [x] Loop640 재시도 plan을 기존 partial output과 다른 output path로 생성한다.
 - [x] Loop640 full375 runtime을 background로 실행한다. Run `20260710_005902_590310`.
 - [x] Loop640 manifest에서 `mcp_health_include_search=true`, `mcp_health_light_mode=false`, `mcp_health_ok_count=16`을 확인한다.
+- [x] Running health snapshot을 생성해 `IN_PROGRESS / ordered_flush_gap_in_progress`와 frontier `11676314`를 기록한다.
 - [ ] Run health를 생성하고 completed/flushed/pending/failed `375/375/0/0`을 확인한다.
 - [ ] Publication contract convergence를 `GO / violation 0`으로 확인한다.
 - [ ] `compare_projection_collateral.py --baseline-mode adjudicated_rebaseline`로 adjusted drift를 확인한다.
