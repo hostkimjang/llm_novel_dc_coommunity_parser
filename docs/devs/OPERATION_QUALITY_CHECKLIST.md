@@ -3,10 +3,11 @@
 ## 2026-07-10 Loop640 live run health 운영 메모
 
 - [x] Loop640 background full375 run `20260710_005902_590310`의 live health audit을 갱신했다.
-- [x] Latest audit generated_at `2026-07-10T01:16:54`, completed/flushed/pending/failed `14/3/11/0`이다.
+- [x] Latest audit generated_at `2026-07-10T01:21:19`, completed/flushed/pending/failed `19/17/2/0`이다.
 - [x] Run integrity는 `IN_PROGRESS / ordered_flush_gap_in_progress`이며 completed source가 아니다.
-- [x] Search evidence는 subset 기준 `GO`, row search ok `14`, degraded `0`, unrecovered degraded `0`이다.
-- [x] Publication contract는 flushed result `3`행 기준 `GO / violation 0`이다.
+- [x] Prior frontier `4`가 해소되어 ordered flushed prefix가 `3 -> 17`로 이동했다.
+- [x] Search evidence는 subset 기준 `GO`, row search ok `19`, degraded `0`, unrecovered degraded `0`이다.
+- [x] Publication contract는 flushed result `17`행 기준 `GO / violation 0`이다.
 - [ ] Runtime counts `375/375/0/0` 전에는 full375 collateral approval이나 always-on `GO`로 승격하지 않는다.
 - [ ] Latest live audit 완료 전까지 `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 유지한다.
 - Gate: live runtime `IN_PROGRESS`, search evidence `GO_SUBSET`, publication `GO_SUBSET`, full375 collateral `NOT_OPEN`, adjusted gate `WAIT_RUNTIME_375`, goal `ACTIVE / NOT_COMPLETE`.
