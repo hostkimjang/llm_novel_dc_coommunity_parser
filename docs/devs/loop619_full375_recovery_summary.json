@@ -1,0 +1,41 @@
+{
+  "run_id": "20260708_232934_730891",
+  "source_result_path": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop619_full375_after_loop618_shard3_restart_result.json",
+  "source_checkpoint_path": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop619_full375_after_loop618_shard3_restart_result_checkpoint.jsonl",
+  "source_pending_snapshot_path": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop619_full375_after_loop618_shard3_restart_result_pending_snapshot.json",
+  "recovered_output_path": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop619_full375_after_loop618_shard3_restart_result_recovered_completed.json",
+  "final_result_rows": 151,
+  "checkpoint_rows": 156,
+  "checkpoint_completed_rows": 156,
+  "checkpoint_failed_rows": 0,
+  "pending_snapshot_rows": 5,
+  "recovered_rows": 156,
+  "manifest": {
+    "input_post_count": 375,
+    "completed_count": 156,
+    "flushed_count": 151,
+    "pending_count": 5,
+    "failed_count": 0,
+    "next_save_idx": 152
+  },
+  "missing_from_final_post_ids": [
+    11705251,
+    11705269,
+    11706832,
+    11708447,
+    11708470
+  ],
+  "pending_not_in_final_post_ids": [
+    11705251,
+    11705269,
+    11706832,
+    11708447,
+    11708470
+  ],
+  "checkpoint_missing_not_pending_post_ids": [],
+  "pending_not_in_checkpoint_post_ids": [],
+  "extra_in_final_not_checkpoint_post_ids": [],
+  "integrity_classification": "recoverable_pending_flush_gap",
+  "recovery_safe_to_use_as_completed_subset": true,
+  "large_run_complete": false
+}

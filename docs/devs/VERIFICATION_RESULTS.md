@@ -1,5 +1,33 @@
 # Verification Results
 
+## 2026-07-09 Loop620 full375 stream-guard runtime 검증
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_620_REPORT_20260709.md`
+  - `docs/devs/loop620_pre_full375_stream_guard_query_search_shard_audit.json`
+  - `docs/devs/loop620_post_full375_stream_guard_query_search_shard_audit.json`
+  - `docs/devs/loop620_full375_stream_guard_runtime_health_audit.json`
+  - `docs/devs/loop620_full375_stream_guard_collateral_compare.json/.md`
+  - `docs/devs/loop620_full375_stream_guard_survey_search_health_split.json/.md`
+  - `docs/devs/loop620_intended_recovery28_prior_blind_judge_reconcile.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop620_full375_stream_guard_after_loop619_abort_result.json`
+- 검증:
+  - Runtime replay: PASS, run `20260709_025952_924613`, completed/flushed/pending/failed `375/375/0/0`.
+  - Parallel/dashboard: PASS, requested/effective `16/16`, dashboard `http://127.0.0.1:8080`.
+  - Pre/post query audit: PASS, shard `ok=16/16`, query probe `16/16`, degraded `0`, forbidden engine `0`.
+  - Flush integrity: PASS, `GO / clean_completed_source`.
+  - Row search evidence: REVIEW, status `ok 332 / SEARCH_DEGRADED_RECOVERED 20 / SEARCH_DEGRADED 1`, unrecovered degraded `1`.
+  - Publication contract: expected `NO-GO`, violation `11677957`.
+  - Full375 collateral: expected `NO-GO`, changed `211`, raw regression `143`.
+  - Survey/search split: PASS 산출, expected FP `46`, intended recovery `28`, search hold `10`, missing `4`, true triage `58`.
+  - Intended recovery prior blind judge reconcile: PASS 산출, after title ACCEPT `14/28`.
+  - Py compile: PASS, `tools/reconcile_intended_recovery_blind_judge.py`.
+- 결과:
+  - Loop620은 full375 runtime completion 증거다.
+  - Collateral GO 또는 full_scan approval이 아니다.
+  - Search health ok가 아닌 행은 regression evidence로 쓰지 않는다.
+- Gate: runtime completion `GO`, query search `GO`, row search evidence `REVIEW`, publication contract `NO-GO`, full375 collateral `NO-GO / raw 143`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop615 109행 full replay 검증
 
 - 산출물:

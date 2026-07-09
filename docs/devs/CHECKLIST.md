@@ -1,5 +1,24 @@
 # Development Checklist
 
+## 2026-07-09 Loop620 full375 stream-guard runtime / collateral split 체크
+
+- [x] Loop620 full375를 `--parallel 16`, dashboard ON, search 포함 non-light, VLM/OCR ON으로 완주했다.
+- [x] Run `20260709_025952_924613`은 completed/flushed/pending/failed `375/375/0/0`, result/checkpoint rows `375/375`, `large_run_complete=true`다.
+- [x] Dashboard는 `http://127.0.0.1:8080`, requested/effective parallel `16/16`이다.
+- [x] Pre/post query audit은 모두 shard `ok=16/16`, query probe `16/16`, degraded `0`, forbidden engine `0`이다.
+- [x] Runtime health는 flush integrity `GO / clean_completed_source`다.
+- [x] Row search evidence는 `REVIEW`: `ok 332 / SEARCH_DEGRADED_RECOVERED 20 / SEARCH_DEGRADED 1`, unrecovered degraded `1`.
+- [x] Publication contract convergence는 `NO-GO`, violation `1`(`11677957`)이다.
+- [x] Full375 collateral compare는 changed `211`, raw regression `143`, gate `NO-GO`다.
+- [x] Raw `143`을 3분했다: expected FP removal `46`, intended recovery blind judge `28`, search overlay hold `10`, search health missing `4`, true triage `58`.
+- [x] Intended recovery `28`을 prior source-native/blind verdict와 대조했다: after title ACCEPT `14`, expected 맞지만 after title 다름 `1`, REPROCESS/HOLD 등 `11`, 새 judge 필요 `1`, search hold `1`.
+- [ ] `11677957` publication candidate preservation violation을 수리한다.
+- [ ] True triage `58`건을 단건이 아니라 배치 lane으로 처리한다.
+- [ ] Intended recovery 잔여 `14`건은 후보셋 수정/새 blind judge/search 복구로 닫는다.
+- [ ] Search health ok가 아닌 행은 검색 복구 후 재실행 전까지 regression evidence로 쓰지 않는다.
+- Gate: runtime completion `GO`, query search `GO`, row search evidence `REVIEW`, publication contract `NO-GO`, full375 collateral `NO-GO / raw 143`, split `REVIEW-LOCKED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_620_REPORT_20260709.md`, `docs/devs/loop620_*`, `tools/reconcile_intended_recovery_blind_judge.py`, `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop620_full375_stream_guard_after_loop619_abort_result.json`.
+
 ## 2026-07-08 Loop615 109행 full replay / row-level search NO-GO 체크
 
 - [x] 동일 `109`행 runtime replay를 실행했다.
