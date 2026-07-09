@@ -21,6 +21,13 @@ Loop620/Loop621 계열 full375 결과의 raw diff는 2026-06-26 bootstrap baseli
 - `adjusted_baseline_manifest`: source run id, projection id, commit, row count, search/publication gate, ledger hash.
 - `historical_raw_compare`: 2026-06-26 baseline 대비 raw diff. 참고용이며 완료 blocker가 아니다.
 
+## 현재 적용 상태
+
+- Loop638에서 true triage/intended recovery 계열 판결을 59행 `adjudication_ledger`로 닫고 `loop638_adjudicated_rebaseline_result.json`을 새 baseline으로 재동결했다.
+- 이후 Loop639/640 collateral은 2026-06-26 bootstrap raw 변화가 아니라 판결 baseline 대비 `adjusted_drift_count`로 평가한다.
+- Raw `105`는 정당 FP 제거와 의도된 복구가 반영된 historical diagnostic이다. Raw가 0이 되지 않아도 완료 blocker가 아니며, 매 run raw row를 다시 triage하거나 재소송하지 않는다.
+- 완료 gate는 raw count가 아니라 adjusted full375 collateral `GO`, search non-light `GO`, publication contract `GO`, full_scan path 검증을 함께 요구한다.
+
 ## 도구 필드 계약
 
 - 판결 baseline을 비교 기준으로 쓸 때 `tools/compare_projection_collateral.py`는 `--baseline-mode adjudicated_rebaseline`로 실행한다.

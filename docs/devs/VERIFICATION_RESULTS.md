@@ -28,8 +28,8 @@
   - Loop640 frontier trace: PASS/RUNNING, `11676314 / 마도줍 완결이 빠를까`, W1 `in_progress_in_worker_log`, observed elapsed `462.254s`.
   - Loop640 partial gates: PASS/RUNNING, search evidence `GO`, partial publication contract `GO / row 1`, approval `false`.
   - Re-baseline boundary: PASS/RUNNING, Loop638 `APPLIED` 이후 completion metric은 `adjusted_drift_count`이고 2026-06-26 raw `105`는 historical diagnostic으로만 유지한다. Raw row는 매 run 재소송 대상이 아니다.
-  - Latest live audit refresh: PASS/RUNNING, `docs/devs/loop640_full375_live_run_health_latest.json`, generated_at `2026-07-10T01:56:30`, completed/flushed/pending/failed `44/36/8/0`, result rows `36`, checkpoint rows `44`, frontier `11677920`, W0 `in_progress_in_worker_log`, observed elapsed `1556.916s`.
-  - Frontier movement: PASS/RUNNING, prior frontier `11673086` cleared and ordered flushed prefix advanced `32 -> 36`; current classification remains long-tail postprocess, not completed source.
+  - Latest live audit refresh: PASS/RUNNING, `docs/devs/loop640_full375_live_run_health_latest.json`, generated_at `2026-07-10T02:06:18`, completed/flushed/pending/failed `52/50/2/0`, result rows `50`, checkpoint rows `52`, frontier `11698904`, W2 `in_progress_in_worker_log`, observed elapsed `756.204s`.
+  - Frontier movement: PASS/RUNNING, prior observed frontiers `11677920/11697234` cleared and ordered flushed prefix advanced `36 -> 50`; current classification remains long-tail postprocess, not completed source.
 - 결과:
   - Loop639 partial은 collateral approval 증거가 아니다.
   - 다음 full375는 Loop640 plan으로만 실행하며 child manifest에 search 포함 non-light health가 남아야 한다.

@@ -5,11 +5,11 @@
 | 항목 | 상태 | 근거 | 다음 |
 | --- | --- | --- | --- |
 | Runtime | RUNNING_BACKGROUND | run `20260710_005902_590310`, dashboard `http://127.0.0.1:8080` | full375 완료까지 background 감시 |
-| Live health | IN_PROGRESS | `loop640_full375_live_run_health_latest.json`, generated_at `2026-07-10T01:56:30`, completed/flushed/pending/failed `44/36/8/0` | 완료 시 final audit 재실행 |
-| Flush integrity | ORDERED_GAP | prior frontier `11673086` 해소, ordered prefix `32 -> 36`, current `next_save_idx=37`, `11677920`, W0 `in_progress_in_worker_log`, observed elapsed `1556.916s` | frontier 해소 전 approval 금지 |
-| Worker phase | LONG_TAIL_POSTPROCESS | W0 audit trace reaches arbiter start for `11677920` | dispatch 반복 금지, background 감시 |
-| Search evidence | GO_SUBSET | row search ok `43`, degraded `0`, unrecovered degraded `0` | final 375 row 기준 재확인 |
-| Publication contract | GO_SUBSET | flushed result `36`행, violation `0` | final 375 row 기준 재확인 |
+| Live health | IN_PROGRESS | `loop640_full375_live_run_health_latest.json`, generated_at `2026-07-10T02:06:18`, completed/flushed/pending/failed `52/50/2/0` | 완료 시 final audit 재실행 |
+| Flush integrity | ORDERED_GAP | prior observed `11677920/11697234` 해소, ordered prefix `36 -> 50`, current `next_save_idx=51`, `11698904`, W2 `in_progress_in_worker_log`, observed elapsed `756.204s` | frontier 해소 전 approval 금지 |
+| Worker phase | LONG_TAIL_POSTPROCESS | W2 audit trace reaches arbiter start for `11698904` | dispatch 반복 금지, background 감시 |
+| Search evidence | GO_SUBSET | row search ok `51`, degraded `0`, unrecovered degraded `0` | final 375 row 기준 재확인 |
+| Publication contract | GO_SUBSET | flushed result `50`행, violation `0` | final 375 row 기준 재확인 |
 | Completion gate | NOT_OPEN | adjusted gate는 runtime counts `375/375/0/0` 이후 평가 | adjusted drift compare와 full_scan path 확인 |
 | Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | 완료 전 update_goal 금지 |
 

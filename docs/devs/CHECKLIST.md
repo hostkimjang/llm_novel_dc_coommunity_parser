@@ -19,10 +19,10 @@
 - [x] Running health snapshot을 생성했다: completed/flushed/pending/failed `3/1/2/0`, search evidence `GO`, partial publication contract `GO`.
 - [x] Snapshot frontier는 `11676314 / 마도줍 완결이 빠를까`, W1 `in_progress_in_worker_log`다.
 - [x] Loop638 re-baseline 적용 이후 completion metric은 `adjusted_drift_count`이며, 2026-06-26 raw `105`는 historical diagnostic으로만 유지한다고 재확인했다.
-- [x] Latest live audit generated_at `2026-07-10T01:56:30` 기준 completed/flushed/pending/failed `44/36/8/0`, result rows `36`, checkpoint rows `44`이다.
-- [x] Previous frontier `11673086`이 해소되어 ordered flushed prefix가 `32 -> 36`으로 전진했다.
-- [x] Current frontier는 `11677920 / 장생인방이라 하니까 수선물 같네.`, W0 `in_progress_in_worker_log`, observed elapsed `1556.916s`다.
-- [ ] Loop640 full375 runtime은 아직 완료하지 않았다. latest counts는 `44/36/8/0`이다.
+- [x] Latest live audit generated_at `2026-07-10T02:06:18` 기준 completed/flushed/pending/failed `52/50/2/0`, result rows `50`, checkpoint rows `52`이다.
+- [x] Previous observed frontiers `11677920/11697234`가 해소되어 ordered flushed prefix가 `36 -> 50`으로 전진했다.
+- [x] Current frontier는 `11698904 / 타락한 ts녀가 참한 파릇파릇한 마법소녀타락시키는소설 추천좀`, W2 `in_progress_in_worker_log`, observed elapsed `756.204s`다.
+- [ ] Loop640 full375 runtime은 아직 완료하지 않았다. latest counts는 `52/50/2/0`이다.
 - [ ] Raw `105`를 매 run 재소송하지 않는다. Loop640 완료 뒤에는 판결 baseline 대비 adjusted drift, search/publication/full_scan gate만 본다.
 - [ ] Next full375 runtime counts `375/375/0/0` 전까지 always-on `NO-GO`를 유지한다.
 - [ ] Full_scan path 검증 전까지 `full_scan_approval=false`를 유지한다.
