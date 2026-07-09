@@ -2,6 +2,21 @@
 
 스캔 결과 디렉터리를 받았을 때 런타임 안정성, 검색 품질, 최종 판단 품질, `slang_db` 품질을 분리해서 리뷰하기 위한 운영 지침이다. 이 문서는 특정 런 하나를 잘 읽는 것보다, 반복 가능한 리뷰 절차와 이슈 전환 기준을 고정하는 데 목적이 있다.
 
+## 2026-07-09 adjudicated re-baseline 규칙
+
+- `true triage 57`과 intended recovery 전 행이 판결되기 전에는 re-baseline을 적용하지 않는다.
+- 전 행 판결 뒤에는 판결된 Loop620/Loop621 결과를 새 baseline으로 재동결하고, 이후 collateral은 "옛 버그 대비 변화"가 아니라 "올바른 행동 대비 drift"로 본다.
+- 완료 gate의 collateral 수치는 raw가 아니라 adjusted 기준이다. 2026-06-26 bootstrap baseline 대비 raw는 정당 제거와 의도된 복구 때문에 영구히 0이 아닐 수 있다.
+- raw count는 역사적 이동량과 회계 설명용으로만 남기고, full_scan approval blocker로 쓰지 않는다.
+- 상세 계약은 `docs/devs/ADJUDICATED_REBASELINE_CONTRACT.md`를 따른다.
+
+## 2026-07-09 Loop626 current search hard replay 규칙
+
+- Current search non-ok 행은 hard replay와 recovered-only observation으로 먼저 분리한다.
+- `SEARCH_DEGRADED_RECOVERED`이고 unrecovered degraded가 `0`이면 hard blocker로 세지 않고 관찰로 남긴다.
+- `MISSING`, `SEARCH_DEGRADED`, unrecovered degraded가 남은 행은 runtime replay 대상이다.
+- Replay가 runtime `GO`여도 row-level search audit이 `NO-GO`이면 full375는 열지 않는다.
+
 ## 2026-07-09 Loop625 staged search replay overlay 규칙
 
 - Search-degraded/recovered 보류행을 여러 단계로 좁혀 재실행한 경우, 원래 held post_id 전체를 기준으로 최신 audit row를 overlay해 coverage를 확인한다.

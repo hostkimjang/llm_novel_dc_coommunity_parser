@@ -91,6 +91,35 @@ class AuditSearchRecoveryReplayCheckpointTest(unittest.TestCase):
         self.assertEqual(report["summary"]["missing_search_health_row_count"], 1)
         self.assertIn("search_health_missing_observed", report["summary"]["blockers"])
 
+    def test_accepts_expert_run_health_summary_shape(self) -> None:
+        report = audit_replay(
+            recovered_rows=[_row(1, "ok")],
+            input_manifest={"summary": {"runtime_input_rows": 1}},
+            recovery_summary={
+                "run_id": "run-1",
+                "result_rows": 1,
+                "checkpoint_rows": 1,
+                "manifest": {"large_run_complete": True},
+                "flush_integrity": {
+                    "classification": "clean_completed_source",
+                    "completion_ready": True,
+                    "blockers": [],
+                    "counts": {
+                        "checkpoint_completed_count": 1,
+                        "checkpoint_failed_count": 0,
+                        "result_rows": 1,
+                    },
+                },
+            },
+            audit_id="test",
+        )
+
+        self.assertEqual(report["gate"], "GO")
+        self.assertEqual(report["recovery_summary"]["run_id"], "run-1")
+        self.assertEqual(report["recovery_summary"]["integrity_classification"], "clean_completed_source")
+        self.assertTrue(report["recovery_summary"]["large_run_complete"])
+        self.assertEqual(report["recovery_summary"]["checkpoint_completed_rows"], 1)
+
     def test_markdown_interpretation_matches_go_gate(self) -> None:
         report = audit_replay(
             recovered_rows=[_row(1, "ok")],

@@ -1,5 +1,20 @@
 # Development Checklist
 
+## 2026-07-09 Loop626 current search hard5 replay 및 re-baseline gate 체크
+
+- [x] Loop623 current search non-ok `15`행을 hard replay `5`와 recovered-only observation `10`으로 분리했다.
+- [x] Hard `5`행 입력을 생성했고 실행 계약은 `--parallel 16`, dashboard ON, search 포함 non-light, `--no-dashboard` 금지다.
+- [x] Run `20260709_111842_982379`은 completed/flushed/pending/failed `5/5/0/0`, integrity `GO / clean_completed_source`, dashboard final `5/5`다.
+- [x] Pre/post query audit은 모두 shard `ok=16/16`, query probe `16/16`, degraded `0`, forbidden engine `0`이다.
+- [x] Row-level search audit은 `NO-GO`이며 hard blocker는 `3`건 `11660258/11694026/11710021`이다.
+- [x] `audit_search_recovery_replay_checkpoint.py`가 `audit_expert_run_health.py` summary shape를 읽도록 보강했다.
+- [x] Re-baseline 계약을 `docs/devs/ADJUDICATED_REBASELINE_CONTRACT.md`로 문서화했다.
+- [ ] Remaining hard blocker `11660258/11694026/11710021`을 검색 복구 후 닫는다.
+- [ ] `true triage 57`과 intended recovery 전 행 판결 전에는 re-baseline을 적용하지 않는다.
+- [ ] Re-baseline 이후 완료 gate는 raw가 아니라 adjusted drift 기준으로 판단한다.
+- Gate: runtime replay `GO`, row-level current search recovery `NO-GO / hard blocker 3`, re-baseline `NOT_APPLIED`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_626_REPORT_20260709.md`, `docs/devs/loop626_*`, `docs/devs/ADJUDICATED_REBASELINE_CONTRACT.md`, `tools/audit_search_non_ok_split.py`, `tests/test_audit_search_non_ok_split.py`.
+
 ## 2026-07-09 Loop625 Loop609 held109 검색 복구 overlay 감사 체크
 
 - [x] 새 runtime replay/full375를 실행하지 않았다.

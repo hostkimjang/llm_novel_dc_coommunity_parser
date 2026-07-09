@@ -1,5 +1,12 @@
 # Sampling And Parallel Test Guide
 
+## 2026-07-09 Loop626 current search replay와 adjusted re-baseline
+
+- Current search non-ok 행은 runtime dispatch 전에 hard replay와 recovered-only observation으로 분리한다.
+- Hard replay는 사용자 지시대로 `--parallel 16`, web dashboard ON, search 포함 non-light로 실행한다. 입력 행 수가 16보다 작으면 effective parallel은 입력 수로 줄어들 수 있다.
+- Runtime completion `GO`와 row-level search recovery `GO`를 분리한다. Loop626은 runtime `5/5`였지만 row-level search audit이 `NO-GO`라 full375를 열지 않는다.
+- `true triage 57`과 intended recovery 전 행 판결이 끝난 뒤에는 판결된 결과를 새 baseline으로 재동결한다. 이후 완료 gate는 raw가 아니라 adjusted drift 기준이다.
+
 ## 2026-07-09 Loop625 staged search replay overlay
 
 - Search recovery replay가 `109 -> 16 -> 3`처럼 단계적으로 좁혀졌다면, 마지막 작은 replay만 보고 전체 보류행을 닫지 않는다.

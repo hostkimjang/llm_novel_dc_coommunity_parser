@@ -1,0 +1,63 @@
+{
+  "report_type": "search_recovery_replay_input_manifest",
+  "batch_id": "loop626_loop623_current_search_hard5_replay",
+  "generated_at": "2026-07-09T11:42:35",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "gate": "GO",
+  "summary": {
+    "deferred_source_rows": 5,
+    "runtime_input_rows": 5,
+    "missing_post_ids": [],
+    "skipped_rows": 0,
+    "deferred_search_status_counts": {
+      "MISSING": 4,
+      "SEARCH_DEGRADED": 1
+    },
+    "deferred_primary_action_counts": {
+      "expected_fp_removal_exempt": 2,
+      "hold_for_search_health_missing": 2,
+      "hold_for_search_recovery_rerun": 1
+    },
+    "loop609_search_status_counts": {
+      "MISSING": 4,
+      "SEARCH_DEGRADED": 1
+    },
+    "loop609_primary_action_counts": {
+      "expected_fp_removal_exempt": 2,
+      "hold_for_search_health_missing": 2,
+      "hold_for_search_recovery_rerun": 1
+    },
+    "survey_failure_class_counts": {
+      "None": 3,
+      "wrong_work_among_aliases": 2
+    },
+    "post_ids": [
+      11660258,
+      11690841,
+      11694026,
+      11708453,
+      11710021
+    ]
+  },
+  "execution_contract": {
+    "requested_parallel": 16,
+    "dashboard_required": true,
+    "forbidden_flags": [
+      "--no-dashboard"
+    ],
+    "required_env": {
+      "MCP_HEALTH_INCLUDE_SEARCH": "1",
+      "MCP_HEALTH_LIGHT_MODE": "0",
+      "DASHBOARD_URL": "http://127.0.0.1:8080",
+      "DASHBOARD_PORT": "8080",
+      "EXPERT_DASHBOARD_FORWARD": "1"
+    },
+    "approval_boundary": "input generation is not runtime/search approval"
+  },
+  "missing_post_ids": [],
+  "skipped": [],
+  "source_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop621_loop620_current_head_publication_sync_projection_result.json",
+  "deferred_jsonl": "docs/devs/loop626_loop623_current_search_hard5_replay_rows.jsonl",
+  "output_jsonl": "out/regression_safe_grounding_20260626_000008_928006_loop01/inputs/loop626_loop623_current_search_hard5_replay_input.jsonl"
+}

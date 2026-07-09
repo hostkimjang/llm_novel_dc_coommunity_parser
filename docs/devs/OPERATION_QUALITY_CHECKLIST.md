@@ -1,5 +1,16 @@
 # Operation Quality Checklist
 
+## 2026-07-09 Loop626 current search hard replay와 re-baseline 운영 메모
+
+- [x] Current search non-ok `15`행을 hard replay `5`와 recovered-only observation `10`으로 분리했다.
+- [x] Hard `5`행은 `--parallel 16`, dashboard ON, search 포함 non-light로 실행했다.
+- [x] Runtime은 `5/5` clean completed source로 끝났다.
+- [x] Row-level search audit은 `NO-GO`이고 remaining hard blocker는 `11660258/11694026/11710021`이다.
+- [ ] Runtime completion `GO`를 search recovery `GO`나 full375 collateral `GO`로 승격하지 않는다.
+- [ ] true triage/intended recovery 전 행 판결 전 re-baseline을 적용하지 않는다.
+- [ ] Re-baseline 이후 완료 gate는 adjusted drift 기준이며, 6/26 raw diff는 참고 수치로만 둔다.
+- Gate: runtime replay `GO`, current search recovery `NO-GO / hard blocker 3`, re-baseline `NOT_APPLIED`, full375 `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-09 Loop625 staged search replay overlay 운영 메모
 
 - [x] Loop609 held `109`행을 Loop615/616/617 audit overlay로 재회계했다.

@@ -1,0 +1,382 @@
+{
+  "generated_at": "2026-07-09T11:38:54",
+  "run_id": "20260709_111842_982379",
+  "artifact_resolution": {
+    "resolution": "explicit_paths",
+    "artifact_prefix": "20260709_111842_982379",
+    "explicit_overrides": [
+      "manifest",
+      "checkpoint",
+      "result_json",
+      "pending_snapshot",
+      "input_jsonl"
+    ],
+    "manifest_run_id": "20260709_111842_982379",
+    "manifest": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop626_loop623_current_search_hard5_replay_result_manifest.json",
+    "checkpoint": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop626_loop623_current_search_hard5_replay_result_checkpoint.jsonl",
+    "result_json": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop626_loop623_current_search_hard5_replay_result.json",
+    "pending_snapshot": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop626_loop623_current_search_hard5_replay_result_pending_snapshot.json",
+    "input_jsonl": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\inputs\\loop626_loop623_current_search_hard5_replay_input.jsonl",
+    "worker_log_count": 5
+  },
+  "manifest": {
+    "run_id": "20260709_111842_982379",
+    "output_file": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop626_loop623_current_search_hard5_replay_result.json",
+    "checkpoint_jsonl": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop626_loop623_current_search_hard5_replay_result_checkpoint.jsonl",
+    "pending_snapshot": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop626_loop623_current_search_hard5_replay_result_pending_snapshot.json",
+    "completed_subset_json": "",
+    "completed_subset_manifest": "",
+    "completed_subset_written": false,
+    "completed_subset_count": 0,
+    "completed_subset_reason": "",
+    "requested_parallel_raw": 16,
+    "requested_parallel": 16,
+    "effective_parallel": 5,
+    "parallel_count": 5,
+    "parallel_policy": "effective_parallel=min(requested_parallel,input_post_count)",
+    "model_parallel_max": null,
+    "model_parallel_cap_applied": false,
+    "model_parallel_cap_model": "bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4",
+    "llm_model": "bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4",
+    "llm_endpoint": "http://10.20.0.101:8000",
+    "llm_stream_first_token_timeout_seconds": "",
+    "llm_stream_idle_timeout_seconds": "",
+    "llm_stream_signal_idle_timeout_seconds": "",
+    "dashboard_enabled": true,
+    "dashboard_mode": "standalone_forward",
+    "dashboard_url": "http://127.0.0.1:8080",
+    "dashboard_standalone_forwarding": true,
+    "dashboard_start_error": "",
+    "input_post_count": 5,
+    "vlm_enabled": true,
+    "ocr_enabled": true,
+    "image_post_count": 0,
+    "image_post_sample_post_ids": [],
+    "image_posts_present": false,
+    "vlm_ocr_semantic_review_ready": true,
+    "vlm_ocr_semantic_review_skip_reasons": [
+      "no_image_blocks"
+    ],
+    "vlm_ocr_semantic_review_skip_reason": "no_image_blocks",
+    "vlm_ocr_semantic_review_required_for_images": true,
+    "vlm_ocr_semantic_review_blocker": false,
+    "vlm_ocr_semantic_review_blocker_code": "",
+    "vlm_ocr_semantic_review_blocker_action": "",
+    "vlm_ocr_semantic_review_warning": "",
+    "mcp_auto_up_shards": false,
+    "mcp_auto_recreate_shards": false,
+    "mcp_auto_scale_up_missing_shards": false,
+    "mcp_local_shard_management_enabled": false,
+    "mcp_local_shard_status_audit": false,
+    "mcp_local_shard_status_audit_requested": false,
+    "mcp_local_shard_status_audit_allowed": false,
+    "mcp_shard_lifecycle_policy": "docker_up_recreate_opt_in+missing_shard_scale_up_default_on",
+    "mcp_allow_goal_shard_lifecycle": false,
+    "mcp_command_shard_lifecycle_allowed": false,
+    "mcp_interactive_codex_run": true,
+    "mcp_env_shard_lifecycle_requested": false,
+    "mcp_env_shard_lifecycle_global_opt_in": false,
+    "mcp_env_shard_lifecycle_allowed": false,
+    "mcp_env_shard_lifecycle_blocked_by_context": false,
+    "mcp_shard_lifecycle_block_threshold": 36,
+    "mcp_run_post_count_for_lifecycle": 5,
+    "mcp_small_targeted_run": true,
+    "mcp_small_run_shard_lifecycle_blocked": true,
+    "mcp_endpoints": "http://127.0.0.1:3333,http://127.0.0.1:3334",
+    "mcp_health_include_search": true,
+    "mcp_health_light_mode": false,
+    "mcp_health_required_ok_count": 2,
+    "mcp_health_checked_endpoint_count": 2,
+    "mcp_health_probe_batch_size": 2,
+    "mcp_health_probe_stopped_after_required_ok": false,
+    "mcp_health_workers": 2,
+    "mcp_health_attempts": 1,
+    "mcp_health_timeout_sec": 8.0,
+    "mcp_health_search_max_latency_ms": 8000.0,
+    "mcp_health_search_min_results": 1,
+    "mcp_health_ok_count": 2,
+    "mcp_health_failure_count": 0,
+    "mcp_missing_shard_scale_up_allowed": false,
+    "mcp_missing_shard_scale_up_triggered": false,
+    "mcp_missing_shard_scale_up_shards": "",
+    "mcp_missing_shard_scale_up_recovered_endpoints": 0,
+    "mcp_missing_shard_scale_up_error": "",
+    "mcp_healthy_endpoint_filter": false,
+    "mcp_healthy_endpoint_filter_reason": "reuse_shards_only",
+    "mcp_healthy_endpoint_filter_autogen": true,
+    "mcp_healthy_autogen_endpoint_filter": false,
+    "mcp_healthy_autogen_endpoint_filter_reason": "reuse_shards_only",
+    "mcp_reuse_shards_only_health_filtered": false,
+    "mcp_goal_run_health_filtered": false,
+    "mcp_requested_endpoint_count_before_health_filter": 2,
+    "mcp_healthy_endpoint_count": 2,
+    "mcp_endpoint_count_after_health_filter": 2,
+    "mcp_parallel_before_health_filter": 5,
+    "mcp_parallel_after_health_filter": 5,
+    "completed_count": 5,
+    "flushed_count": 5,
+    "pending_count": 0,
+    "failed_count": 0,
+    "next_save_idx": 6,
+    "partial_flush_gap": false,
+    "ordered_flush_blocked": false,
+    "large_run_complete": true
+  },
+  "input_source": {
+    "path": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\inputs\\loop626_loop623_current_search_hard5_replay_input.jsonl",
+    "exists": true,
+    "lookup_method": "expert_main_post_map_order_without_model_import",
+    "post_count": 5,
+    "line_count": 5,
+    "comment_row_count": 0,
+    "load_error": null
+  },
+  "result_json": {
+    "path": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop626_loop623_current_search_hard5_replay_result.json",
+    "exists": true,
+    "shape": "list",
+    "row_count": 5,
+    "load_error": null
+  },
+  "result_rows": 5,
+  "checkpoint_rows": 5,
+  "pending_count_actual": 0,
+  "flush_integrity": {
+    "run_integrity_gate": "GO",
+    "classification": "clean_completed_source",
+    "completion_ready": true,
+    "approval_ready": true,
+    "blockers": [],
+    "counts": {
+      "manifest_input_post_count": 5,
+      "manifest_completed_count": 5,
+      "manifest_flushed_count": 5,
+      "manifest_pending_count": 0,
+      "manifest_failed_count": 0,
+      "checkpoint_completed_count": 5,
+      "checkpoint_failed_count": 0,
+      "result_rows": 5,
+      "pending_snapshot_rows": 0,
+      "completed_minus_flushed": 0
+    },
+    "consistency": {
+      "result_rows_eq_flushed_count": true,
+      "checkpoint_completed_eq_manifest_completed": true,
+      "checkpoint_failed_eq_manifest_failed": true,
+      "pending_snapshot_rows_eq_manifest_pending": true,
+      "pending_snapshot_rows_eq_completed_minus_flushed": true
+    },
+    "frontier": {
+      "next_save_idx": 6,
+      "status": "complete_after_last_index",
+      "reason": "next_save_idx_after_completed_input",
+      "source_post": null,
+      "frontier_in_checkpoint_completed": false,
+      "frontier_in_pending_snapshot": false,
+      "completed_index_min": 1,
+      "completed_index_max": 5,
+      "pending_index_min": null,
+      "pending_index_max": null,
+      "first_pending_at_or_after_frontier": null,
+      "first_completed_at_or_after_frontier": null,
+      "frontier_gap_global_idx": null
+    },
+    "pending_blocker_samples": []
+  },
+  "frontier_worker_trace": {
+    "target": null,
+    "status": "no_source_post",
+    "event_count": 0,
+    "events": []
+  },
+  "search_evidence": {
+    "gate": "REVIEW",
+    "approval_ready": false,
+    "direct_probe_in_manifest": true,
+    "manifest": {
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": false,
+      "mcp_health_ok_count": 2,
+      "mcp_health_failure_count": 0
+    },
+    "row_search_health": {
+      "rows_with_search_health": 4,
+      "status_counts": {
+        "SEARCH_DEGRADED": 2,
+        "ok": 1,
+        "SEARCH_DEGRADED_RECOVERED": 1
+      },
+      "flag_counts": {},
+      "rows_with_upstream_zero": 4,
+      "rows_with_degraded": 2,
+      "query_total": 36,
+      "degraded_total": 26,
+      "degraded_recovered_total": 22,
+      "unrecovered_degraded_total": 2
+    },
+    "worker_log_search": {
+      "search_timeout": 0,
+      "search_degraded_detected": 0,
+      "search_upstream_zero": 5,
+      "search_bridge_after_filter_zero": 0
+    },
+    "blockers": [
+      "search_degraded_observed"
+    ]
+  },
+  "publication_contract_convergence": {
+    "gate": "GO",
+    "approval_ready": true,
+    "result_json": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop626_loop623_current_search_hard5_replay_result.json",
+    "summary": {
+      "row_count": 5,
+      "violation_row_count": 0,
+      "violation_counts": {}
+    },
+    "violations": [],
+    "blockers": []
+  },
+  "status_counts": {
+    "completed": 5
+  },
+  "identity_state_counts": {
+    "resolved_title": 2,
+    "adjacent_relevant": 1,
+    "non_relevant": 1,
+    "unresolved_title": 1
+  },
+  "discussion_type_counts_top": {
+    "character_talk": 2,
+    "community_banter": 1,
+    "noise": 1,
+    "general": 1
+  },
+  "topicality_counts": {
+    "core_relevant": 3,
+    "adjacent_relevant": 1,
+    "unrelated": 1
+  },
+  "work_resolution_counts": {
+    "none": 2,
+    "resolved": 2,
+    "unresolved": 1
+  },
+  "novel_confidence_counts": {
+    "": 3,
+    "High": 2
+  },
+  "consistency_flag_counts_top": {
+    "batch_memory_alias_rescue_blocked_nonwork_context": 2,
+    "local_candidate_hold_preserved": 2,
+    "llm_only_sentence_candidate_pruned": 2,
+    "batch_memory_alias_rescue_blocked_semantic_seed": 1,
+    "judge_hygiene_seed_wrong_relevance": 1,
+    "verified_alias_official_detail_anchor": 1,
+    "confirmed_alias:괴담텔": 1,
+    "explicit_alias_official_work_lock": 1,
+    "weak_public_title_bridge_verified_alias_detail_exempt": 1,
+    "batch_memory_alias_rescue_blocked_deliberate_null": 1,
+    "generic_character_parenthetical_bridge_blocked": 1,
+    "secondary_reference_official_alias_rescued": 1,
+    "secondary_reference_official_alias_author_meta_override": 1,
+    "official_url_recall_gate_recovered": 1,
+    "confirmed_alias:미츄리": 1,
+    "precision_seed_independent_official_detail_supported": 1,
+    "relation_hold_unresolved_recovered": 1,
+    "character_parenthetical_title_resolved": 1,
+    "official_detail_url_repaired_from_search": 1,
+    "weak_alias_surface_public_title_bridge": 1
+  },
+  "reason_error_count": 0,
+  "reason_error_samples": [],
+  "query_stats": {
+    "parsed_count": 3,
+    "avg_executed_queries": 10.33,
+    "p95_executed_queries": 20,
+    "max_executed_queries": 20,
+    "avg_degraded_queries": 7.33,
+    "max_degraded_queries": 18
+  },
+  "slang": {
+    "slang_insight_count": 2,
+    "old_store_true_count": 1,
+    "new_store_true_after_patch_count": 1,
+    "old_store_true_blocked_by_patch_count": 0,
+    "blocked_reason_counts": {},
+    "blocked_samples": [],
+    "kept_samples": [
+      {
+        "post_id": 11660258,
+        "post_title": "괴담텔 아리야...",
+        "detected_term": "괴담텔",
+        "decoded_term": "괴담 호텔 탈출기",
+        "old_store_in_slang_db": true,
+        "old_store_reason": "pure_work_alias",
+        "old_alias_scope": "pure_work_alias",
+        "new_store_in_slang_db": true,
+        "new_store_reason": "pure_work_alias",
+        "new_alias_scope": "pure_work_alias",
+        "new_canonical_work_alias": "괴담텔",
+        "official_title": "괴담 호텔 탈출기",
+        "discussion_type": "character_talk",
+        "topicality": "core_relevant",
+        "work_resolution": "resolved"
+      }
+    ],
+    "slang_db": {
+      "title_count": 544,
+      "slang_term_count": 351,
+      "sentence_or_exact_bad_remaining": 0,
+      "bad_remaining_samples": []
+    }
+  },
+  "logs": {
+    "worker_log_count": 5,
+    "post_start_count_in_worker_logs": 5,
+    "post_complete_count_in_worker_logs": 5,
+    "counts": {
+      "title_anchor_exact_probe_lines": 7,
+      "headless_meta_lines": 2,
+      "search_upstream_zero": 5
+    },
+    "worker_counts_top": {
+      "W1": {
+        "search_upstream_zero": 2,
+        "post_start": 1,
+        "headless_meta_lines": 1,
+        "post_complete": 1
+      },
+      "W0": {
+        "title_anchor_exact_probe_lines": 2,
+        "post_start": 1,
+        "headless_meta_lines": 1,
+        "search_upstream_zero": 1,
+        "post_complete": 1
+      },
+      "W2": {
+        "title_anchor_exact_probe_lines": 3,
+        "post_start": 1,
+        "search_upstream_zero": 1,
+        "post_complete": 1
+      },
+      "W3": {
+        "title_anchor_exact_probe_lines": 2,
+        "post_start": 1,
+        "search_upstream_zero": 1,
+        "post_complete": 1
+      },
+      "W4": {
+        "post_start": 1,
+        "post_complete": 1
+      }
+    },
+    "headless_engine_counts": {},
+    "processing_error_samples": []
+  },
+  "rates": {
+    "reason_error_rate_pct": 0.0,
+    "resolved_title_rate_pct": 40.0,
+    "unresolved_title_rate_pct": 20.0,
+    "headless_line_per_completed_pct": 0.0
+  }
+}

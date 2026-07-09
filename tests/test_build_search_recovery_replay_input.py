@@ -43,6 +43,11 @@ class BuildSearchRecoveryReplayInputTest(unittest.TestCase):
         self.assertEqual(meta["approval_state"], "search_recovery_replay_required_not_approval")
         self.assertEqual(manifest["gate"], "GO")
         self.assertEqual(manifest["summary"]["runtime_input_rows"], 1)
+        self.assertEqual(manifest["summary"]["deferred_search_status_counts"], {"SEARCH_DEGRADED": 1})
+        self.assertEqual(
+            manifest["summary"]["deferred_primary_action_counts"],
+            {"hold_for_search_recovery_rerun": 1},
+        )
         self.assertEqual(manifest["summary"]["loop609_search_status_counts"], {"SEARCH_DEGRADED": 1})
         self.assertTrue(manifest["execution_contract"]["dashboard_required"])
 

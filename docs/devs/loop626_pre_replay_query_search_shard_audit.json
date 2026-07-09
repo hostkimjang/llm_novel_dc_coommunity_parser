@@ -1,0 +1,2194 @@
+{
+  "generated_at": "2026-07-09T11:18:28",
+  "count": 16,
+  "ok_count": 16,
+  "bad_count": 0,
+  "bad_shards": [],
+  "search_probe_summary": {
+    "enabled": true,
+    "query": "아카데미 생존 갤러리 웹소설",
+    "ok_count": 16,
+    "bad_count": 0,
+    "bad_shards": [],
+    "degraded_count": 0,
+    "forbidden_engine_count": 0
+  },
+  "shards": [
+    {
+      "shard": 1,
+      "mcp_port": 3333,
+      "search_ui_port": 19001,
+      "ok": true,
+      "healthz": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 44.9,
+        "payload": {
+          "status": "ok",
+          "bridge": true,
+          "searchxng_url": "http://warp-1:8080",
+          "headless_search_enabled": true
+        },
+        "preview": "{\"status\":\"ok\",\"bridge\":true,\"searchxng_url\":\"http://warp-1:8080\",\"headless_search_enabled\":true}"
+      },
+      "readyz": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 47.9,
+        "payload": {
+          "status": "ok",
+          "searxng": true,
+          "headless_search": true,
+          "direct_search_fallback": false,
+          "direct_search_degraded_provider": false,
+          "checks": [
+            {
+              "url": "http://warp-1:8080",
+              "ok": true,
+              "status_code": 200,
+              "backoff_until": 0.0
+            }
+          ]
+        },
+        "preview": "{\"status\":\"ok\",\"searxng\":true,\"headless_search\":true,\"direct_search_fallback\":false,\"direct_search_degraded_provider\":false,\"checks\":[{\"url\":\"http://warp-1:8080\",\"ok\":true,\"status_code\":200,\"backoff_u"
+      },
+      "search_probe": {
+        "query": "아카데미 생존 갤러리 웹소설",
+        "purpose": "loop626_pre_replay_current_search_hard5",
+        "num_results": 5,
+        "ok": true,
+        "reasons": [],
+        "result_count": 5,
+        "raw_total": 17,
+        "degraded": false,
+        "engines": [
+          "google",
+          "bing",
+          "webcrawler",
+          "naver"
+        ],
+        "forbidden_engines_present": [],
+        "unresponsive_engines": [],
+        "engine_errors": [],
+        "http": {
+          "ok": true,
+          "status_code": 200,
+          "latency_ms": 1218.1
+        }
+      },
+      "search_ui": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 24.4,
+        "payload": null,
+        "preview": "<!DOCTYPE html>\n<html class=\"no-js theme-auto center-alignment-no\" lang=\"en-EN\" >\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"endpoint\" content=\"index\">\n  <meta name=\"description\" content=\"SearXNG "
+      },
+      "docker": {
+        "warp": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1164459,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:48.521334241Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "searchxng": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1168430,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:52.414669131Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "mcp_bridge": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1186931,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:58.930988828Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "browser_search": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1168187,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:52.40115192Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    {
+      "shard": 2,
+      "mcp_port": 3334,
+      "search_ui_port": 19002,
+      "ok": true,
+      "healthz": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 5.2,
+        "payload": {
+          "status": "ok",
+          "bridge": true,
+          "searchxng_url": "http://warp-2:8080",
+          "headless_search_enabled": true
+        },
+        "preview": "{\"status\":\"ok\",\"bridge\":true,\"searchxng_url\":\"http://warp-2:8080\",\"headless_search_enabled\":true}"
+      },
+      "readyz": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 51.9,
+        "payload": {
+          "status": "ok",
+          "searxng": true,
+          "headless_search": true,
+          "direct_search_fallback": false,
+          "direct_search_degraded_provider": false,
+          "checks": [
+            {
+              "url": "http://warp-2:8080",
+              "ok": true,
+              "status_code": 200,
+              "backoff_until": 0.0
+            }
+          ]
+        },
+        "preview": "{\"status\":\"ok\",\"searxng\":true,\"headless_search\":true,\"direct_search_fallback\":false,\"direct_search_degraded_provider\":false,\"checks\":[{\"url\":\"http://warp-2:8080\",\"ok\":true,\"status_code\":200,\"backoff_u"
+      },
+      "search_probe": {
+        "query": "아카데미 생존 갤러리 웹소설",
+        "purpose": "loop626_pre_replay_current_search_hard5",
+        "num_results": 5,
+        "ok": true,
+        "reasons": [],
+        "result_count": 5,
+        "raw_total": 17,
+        "degraded": false,
+        "engines": [
+          "google",
+          "bing",
+          "webcrawler",
+          "naver"
+        ],
+        "forbidden_engines_present": [],
+        "unresponsive_engines": [],
+        "engine_errors": [],
+        "http": {
+          "ok": true,
+          "status_code": 200,
+          "latency_ms": 1357.1
+        }
+      },
+      "search_ui": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 6.5,
+        "payload": null,
+        "preview": "<!DOCTYPE html>\n<html class=\"no-js theme-auto center-alignment-no\" lang=\"en-EN\" >\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"endpoint\" content=\"index\">\n  <meta name=\"description\" content=\"SearXNG "
+      },
+      "docker": {
+        "warp": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1164711,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:48.997446051Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "searchxng": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1169659,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:53.18917105Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "mcp_bridge": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1186406,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:57.497423955Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "browser_search": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1169728,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:53.217468067Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    {
+      "shard": 3,
+      "mcp_port": 3335,
+      "search_ui_port": 19003,
+      "ok": true,
+      "healthz": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 4.9,
+        "payload": {
+          "status": "ok",
+          "bridge": true,
+          "searchxng_url": "http://warp-3:8080",
+          "headless_search_enabled": true
+        },
+        "preview": "{\"status\":\"ok\",\"bridge\":true,\"searchxng_url\":\"http://warp-3:8080\",\"headless_search_enabled\":true}"
+      },
+      "readyz": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 38.7,
+        "payload": {
+          "status": "ok",
+          "searxng": true,
+          "headless_search": true,
+          "direct_search_fallback": false,
+          "direct_search_degraded_provider": false,
+          "checks": [
+            {
+              "url": "http://warp-3:8080",
+              "ok": true,
+              "status_code": 200,
+              "backoff_until": 0.0
+            }
+          ]
+        },
+        "preview": "{\"status\":\"ok\",\"searxng\":true,\"headless_search\":true,\"direct_search_fallback\":false,\"direct_search_degraded_provider\":false,\"checks\":[{\"url\":\"http://warp-3:8080\",\"ok\":true,\"status_code\":200,\"backoff_u"
+      },
+      "search_probe": {
+        "query": "아카데미 생존 갤러리 웹소설",
+        "purpose": "loop626_pre_replay_current_search_hard5",
+        "num_results": 5,
+        "ok": true,
+        "reasons": [],
+        "result_count": 5,
+        "raw_total": 17,
+        "degraded": false,
+        "engines": [
+          "google",
+          "bing",
+          "webcrawler",
+          "naver"
+        ],
+        "forbidden_engines_present": [],
+        "unresponsive_engines": [],
+        "engine_errors": [],
+        "http": {
+          "ok": true,
+          "status_code": 200,
+          "latency_ms": 1238.7
+        }
+      },
+      "search_ui": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 5.4,
+        "payload": null,
+        "preview": "<!DOCTYPE html>\n<html class=\"no-js theme-auto center-alignment-no\" lang=\"en-EN\" >\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"endpoint\" content=\"index\">\n  <meta name=\"description\" content=\"SearXNG "
+      },
+      "docker": {
+        "warp": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1437658,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T14:28:15.253841368Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "searchxng": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1437807,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T14:28:15.720556973Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "mcp_bridge": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1438056,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T14:28:15.910275615Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "browser_search": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1437778,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T14:28:15.704067229Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    {
+      "shard": 4,
+      "mcp_port": 3336,
+      "search_ui_port": 19004,
+      "ok": true,
+      "healthz": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 5.6,
+        "payload": {
+          "status": "ok",
+          "bridge": true,
+          "searchxng_url": "http://warp-4:8080",
+          "headless_search_enabled": true
+        },
+        "preview": "{\"status\":\"ok\",\"bridge\":true,\"searchxng_url\":\"http://warp-4:8080\",\"headless_search_enabled\":true}"
+      },
+      "readyz": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 35.6,
+        "payload": {
+          "status": "ok",
+          "searxng": true,
+          "headless_search": true,
+          "direct_search_fallback": false,
+          "direct_search_degraded_provider": false,
+          "checks": [
+            {
+              "url": "http://warp-4:8080",
+              "ok": true,
+              "status_code": 200,
+              "backoff_until": 0.0
+            }
+          ]
+        },
+        "preview": "{\"status\":\"ok\",\"searxng\":true,\"headless_search\":true,\"direct_search_fallback\":false,\"direct_search_degraded_provider\":false,\"checks\":[{\"url\":\"http://warp-4:8080\",\"ok\":true,\"status_code\":200,\"backoff_u"
+      },
+      "search_probe": {
+        "query": "아카데미 생존 갤러리 웹소설",
+        "purpose": "loop626_pre_replay_current_search_hard5",
+        "num_results": 5,
+        "ok": true,
+        "reasons": [],
+        "result_count": 5,
+        "raw_total": 17,
+        "degraded": false,
+        "engines": [
+          "google",
+          "bing",
+          "webcrawler",
+          "naver"
+        ],
+        "forbidden_engines_present": [],
+        "unresponsive_engines": [],
+        "engine_errors": [],
+        "http": {
+          "ok": true,
+          "status_code": 200,
+          "latency_ms": 994.3
+        }
+      },
+      "search_ui": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 7.5,
+        "payload": null,
+        "preview": "<!DOCTYPE html>\n<html class=\"no-js theme-auto center-alignment-no\" lang=\"en-EN\" >\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"endpoint\" content=\"index\">\n  <meta name=\"description\" content=\"SearXNG "
+      },
+      "docker": {
+        "warp": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1164457,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:48.470106878Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "searchxng": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1168458,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:52.438828434Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "mcp_bridge": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1186166,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:56.890689393Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "browser_search": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1168462,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:52.453580738Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    {
+      "shard": 5,
+      "mcp_port": 3337,
+      "search_ui_port": 19005,
+      "ok": true,
+      "healthz": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 4.5,
+        "payload": {
+          "status": "ok",
+          "bridge": true,
+          "searchxng_url": "http://warp-5:8080",
+          "headless_search_enabled": true
+        },
+        "preview": "{\"status\":\"ok\",\"bridge\":true,\"searchxng_url\":\"http://warp-5:8080\",\"headless_search_enabled\":true}"
+      },
+      "readyz": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 39.2,
+        "payload": {
+          "status": "ok",
+          "searxng": true,
+          "headless_search": true,
+          "direct_search_fallback": false,
+          "direct_search_degraded_provider": false,
+          "checks": [
+            {
+              "url": "http://warp-5:8080",
+              "ok": true,
+              "status_code": 200,
+              "backoff_until": 0.0
+            }
+          ]
+        },
+        "preview": "{\"status\":\"ok\",\"searxng\":true,\"headless_search\":true,\"direct_search_fallback\":false,\"direct_search_degraded_provider\":false,\"checks\":[{\"url\":\"http://warp-5:8080\",\"ok\":true,\"status_code\":200,\"backoff_u"
+      },
+      "search_probe": {
+        "query": "아카데미 생존 갤러리 웹소설",
+        "purpose": "loop626_pre_replay_current_search_hard5",
+        "num_results": 5,
+        "ok": true,
+        "reasons": [],
+        "result_count": 5,
+        "raw_total": 17,
+        "degraded": false,
+        "engines": [
+          "google",
+          "bing",
+          "webcrawler",
+          "naver"
+        ],
+        "forbidden_engines_present": [],
+        "unresponsive_engines": [],
+        "engine_errors": [],
+        "http": {
+          "ok": true,
+          "status_code": 200,
+          "latency_ms": 1072.2
+        }
+      },
+      "search_ui": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 6.4,
+        "payload": null,
+        "preview": "<!DOCTYPE html>\n<html class=\"no-js theme-auto center-alignment-no\" lang=\"en-EN\" >\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"endpoint\" content=\"index\">\n  <meta name=\"description\" content=\"SearXNG "
+      },
+      "docker": {
+        "warp": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1164168,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:48.427760696Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "searchxng": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1165230,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:49.791494221Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "mcp_bridge": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1169143,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:53.011725205Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "browser_search": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1165028,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:49.772431073Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    {
+      "shard": 6,
+      "mcp_port": 3338,
+      "search_ui_port": 19006,
+      "ok": true,
+      "healthz": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 5.0,
+        "payload": {
+          "status": "ok",
+          "bridge": true,
+          "searchxng_url": "http://warp-6:8080",
+          "headless_search_enabled": true
+        },
+        "preview": "{\"status\":\"ok\",\"bridge\":true,\"searchxng_url\":\"http://warp-6:8080\",\"headless_search_enabled\":true}"
+      },
+      "readyz": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 38.2,
+        "payload": {
+          "status": "ok",
+          "searxng": true,
+          "headless_search": true,
+          "direct_search_fallback": false,
+          "direct_search_degraded_provider": false,
+          "checks": [
+            {
+              "url": "http://warp-6:8080",
+              "ok": true,
+              "status_code": 200,
+              "backoff_until": 0.0
+            }
+          ]
+        },
+        "preview": "{\"status\":\"ok\",\"searxng\":true,\"headless_search\":true,\"direct_search_fallback\":false,\"direct_search_degraded_provider\":false,\"checks\":[{\"url\":\"http://warp-6:8080\",\"ok\":true,\"status_code\":200,\"backoff_u"
+      },
+      "search_probe": {
+        "query": "아카데미 생존 갤러리 웹소설",
+        "purpose": "loop626_pre_replay_current_search_hard5",
+        "num_results": 5,
+        "ok": true,
+        "reasons": [],
+        "result_count": 5,
+        "raw_total": 17,
+        "degraded": false,
+        "engines": [
+          "google",
+          "bing",
+          "webcrawler",
+          "naver"
+        ],
+        "forbidden_engines_present": [],
+        "unresponsive_engines": [],
+        "engine_errors": [],
+        "http": {
+          "ok": true,
+          "status_code": 200,
+          "latency_ms": 671.1
+        }
+      },
+      "search_ui": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 6.3,
+        "payload": null,
+        "preview": "<!DOCTYPE html>\n<html class=\"no-js theme-auto center-alignment-no\" lang=\"en-EN\" >\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"endpoint\" content=\"index\">\n  <meta name=\"description\" content=\"SearXNG "
+      },
+      "docker": {
+        "warp": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1164732,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:49.013480901Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "searchxng": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1169327,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:53.09799177Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "mcp_bridge": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1186671,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:58.422225468Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "browser_search": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1169211,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:53.034717761Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    {
+      "shard": 7,
+      "mcp_port": 3339,
+      "search_ui_port": 19007,
+      "ok": true,
+      "healthz": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 5.6,
+        "payload": {
+          "status": "ok",
+          "bridge": true,
+          "searchxng_url": "http://warp-7:8080",
+          "headless_search_enabled": true
+        },
+        "preview": "{\"status\":\"ok\",\"bridge\":true,\"searchxng_url\":\"http://warp-7:8080\",\"headless_search_enabled\":true}"
+      },
+      "readyz": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 50.0,
+        "payload": {
+          "status": "ok",
+          "searxng": true,
+          "headless_search": true,
+          "direct_search_fallback": false,
+          "direct_search_degraded_provider": false,
+          "checks": [
+            {
+              "url": "http://warp-7:8080",
+              "ok": true,
+              "status_code": 200,
+              "backoff_until": 0.0
+            }
+          ]
+        },
+        "preview": "{\"status\":\"ok\",\"searxng\":true,\"headless_search\":true,\"direct_search_fallback\":false,\"direct_search_degraded_provider\":false,\"checks\":[{\"url\":\"http://warp-7:8080\",\"ok\":true,\"status_code\":200,\"backoff_u"
+      },
+      "search_probe": {
+        "query": "아카데미 생존 갤러리 웹소설",
+        "purpose": "loop626_pre_replay_current_search_hard5",
+        "num_results": 5,
+        "ok": true,
+        "reasons": [],
+        "result_count": 5,
+        "raw_total": 17,
+        "degraded": false,
+        "engines": [
+          "google",
+          "bing",
+          "webcrawler",
+          "naver"
+        ],
+        "forbidden_engines_present": [],
+        "unresponsive_engines": [],
+        "engine_errors": [],
+        "http": {
+          "ok": true,
+          "status_code": 200,
+          "latency_ms": 1249.5
+        }
+      },
+      "search_ui": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 23.5,
+        "payload": null,
+        "preview": "<!DOCTYPE html>\n<html class=\"no-js theme-auto center-alignment-no\" lang=\"en-EN\" >\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"endpoint\" content=\"index\">\n  <meta name=\"description\" content=\"SearXNG "
+      },
+      "docker": {
+        "warp": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1164440,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:48.439570624Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "searchxng": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1167115,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:50.817741023Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "mcp_bridge": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1172718,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:53.525806115Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "browser_search": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1167095,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:50.793384703Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    {
+      "shard": 8,
+      "mcp_port": 3340,
+      "search_ui_port": 19008,
+      "ok": true,
+      "healthz": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 5.0,
+        "payload": {
+          "status": "ok",
+          "bridge": true,
+          "searchxng_url": "http://warp-8:8080",
+          "headless_search_enabled": true
+        },
+        "preview": "{\"status\":\"ok\",\"bridge\":true,\"searchxng_url\":\"http://warp-8:8080\",\"headless_search_enabled\":true}"
+      },
+      "readyz": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 27.0,
+        "payload": {
+          "status": "ok",
+          "searxng": true,
+          "headless_search": true,
+          "direct_search_fallback": false,
+          "direct_search_degraded_provider": false,
+          "checks": [
+            {
+              "url": "http://warp-8:8080",
+              "ok": true,
+              "status_code": 200,
+              "backoff_until": 0.0
+            }
+          ]
+        },
+        "preview": "{\"status\":\"ok\",\"searxng\":true,\"headless_search\":true,\"direct_search_fallback\":false,\"direct_search_degraded_provider\":false,\"checks\":[{\"url\":\"http://warp-8:8080\",\"ok\":true,\"status_code\":200,\"backoff_u"
+      },
+      "search_probe": {
+        "query": "아카데미 생존 갤러리 웹소설",
+        "purpose": "loop626_pre_replay_current_search_hard5",
+        "num_results": 5,
+        "ok": true,
+        "reasons": [],
+        "result_count": 5,
+        "raw_total": 17,
+        "degraded": false,
+        "engines": [
+          "google",
+          "bing",
+          "webcrawler",
+          "naver"
+        ],
+        "forbidden_engines_present": [],
+        "unresponsive_engines": [],
+        "engine_errors": [],
+        "http": {
+          "ok": true,
+          "status_code": 200,
+          "latency_ms": 799.3
+        }
+      },
+      "search_ui": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 6.4,
+        "payload": null,
+        "preview": "<!DOCTYPE html>\n<html class=\"no-js theme-auto center-alignment-no\" lang=\"en-EN\" >\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"endpoint\" content=\"index\">\n  <meta name=\"description\" content=\"SearXNG "
+      },
+      "docker": {
+        "warp": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1164728,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:49.019912434Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "searchxng": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1169087,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:53.013730351Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "mcp_bridge": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1181618,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:55.065784423Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "browser_search": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1169218,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:53.055578513Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    {
+      "shard": 9,
+      "mcp_port": 3341,
+      "search_ui_port": 19009,
+      "ok": true,
+      "healthz": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 5.6,
+        "payload": {
+          "status": "ok",
+          "bridge": true,
+          "searchxng_url": "http://warp-9:8080",
+          "headless_search_enabled": true
+        },
+        "preview": "{\"status\":\"ok\",\"bridge\":true,\"searchxng_url\":\"http://warp-9:8080\",\"headless_search_enabled\":true}"
+      },
+      "readyz": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 52.1,
+        "payload": {
+          "status": "ok",
+          "searxng": true,
+          "headless_search": true,
+          "direct_search_fallback": false,
+          "direct_search_degraded_provider": false,
+          "checks": [
+            {
+              "url": "http://warp-9:8080",
+              "ok": true,
+              "status_code": 200,
+              "backoff_until": 0.0
+            }
+          ]
+        },
+        "preview": "{\"status\":\"ok\",\"searxng\":true,\"headless_search\":true,\"direct_search_fallback\":false,\"direct_search_degraded_provider\":false,\"checks\":[{\"url\":\"http://warp-9:8080\",\"ok\":true,\"status_code\":200,\"backoff_u"
+      },
+      "search_probe": {
+        "query": "아카데미 생존 갤러리 웹소설",
+        "purpose": "loop626_pre_replay_current_search_hard5",
+        "num_results": 5,
+        "ok": true,
+        "reasons": [],
+        "result_count": 5,
+        "raw_total": 17,
+        "degraded": false,
+        "engines": [
+          "google",
+          "bing",
+          "webcrawler",
+          "naver"
+        ],
+        "forbidden_engines_present": [],
+        "unresponsive_engines": [],
+        "engine_errors": [],
+        "http": {
+          "ok": true,
+          "status_code": 200,
+          "latency_ms": 1126.1
+        }
+      },
+      "search_ui": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 6.6,
+        "payload": null,
+        "preview": "<!DOCTYPE html>\n<html class=\"no-js theme-auto center-alignment-no\" lang=\"en-EN\" >\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"endpoint\" content=\"index\">\n  <meta name=\"description\" content=\"SearXNG "
+      },
+      "docker": {
+        "warp": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1164485,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:48.531777981Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "searchxng": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1168113,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:51.650541284Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "mcp_bridge": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1178820,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:54.808539723Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "browser_search": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1168139,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:51.66105846Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    {
+      "shard": 10,
+      "mcp_port": 3342,
+      "search_ui_port": 19010,
+      "ok": true,
+      "healthz": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 4.9,
+        "payload": {
+          "status": "ok",
+          "bridge": true,
+          "searchxng_url": "http://warp-10:8080",
+          "headless_search_enabled": true
+        },
+        "preview": "{\"status\":\"ok\",\"bridge\":true,\"searchxng_url\":\"http://warp-10:8080\",\"headless_search_enabled\":true}"
+      },
+      "readyz": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 27.3,
+        "payload": {
+          "status": "ok",
+          "searxng": true,
+          "headless_search": true,
+          "direct_search_fallback": false,
+          "direct_search_degraded_provider": false,
+          "checks": [
+            {
+              "url": "http://warp-10:8080",
+              "ok": true,
+              "status_code": 200,
+              "backoff_until": 0.0
+            }
+          ]
+        },
+        "preview": "{\"status\":\"ok\",\"searxng\":true,\"headless_search\":true,\"direct_search_fallback\":false,\"direct_search_degraded_provider\":false,\"checks\":[{\"url\":\"http://warp-10:8080\",\"ok\":true,\"status_code\":200,\"backoff_"
+      },
+      "search_probe": {
+        "query": "아카데미 생존 갤러리 웹소설",
+        "purpose": "loop626_pre_replay_current_search_hard5",
+        "num_results": 5,
+        "ok": true,
+        "reasons": [],
+        "result_count": 5,
+        "raw_total": 17,
+        "degraded": false,
+        "engines": [
+          "google",
+          "bing",
+          "webcrawler",
+          "naver"
+        ],
+        "forbidden_engines_present": [],
+        "unresponsive_engines": [],
+        "engine_errors": [],
+        "http": {
+          "ok": true,
+          "status_code": 200,
+          "latency_ms": 463.2
+        }
+      },
+      "search_ui": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 26.6,
+        "payload": null,
+        "preview": "<!DOCTYPE html>\n<html class=\"no-js theme-auto center-alignment-no\" lang=\"en-EN\" >\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"endpoint\" content=\"index\">\n  <meta name=\"description\" content=\"SearXNG "
+      },
+      "docker": {
+        "warp": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1164441,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:48.45880905Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "searchxng": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1168295,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:51.713080487Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "mcp_bridge": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1175446,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:54.597189592Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "browser_search": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1168135,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:51.717909485Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    {
+      "shard": 11,
+      "mcp_port": 3343,
+      "search_ui_port": 19011,
+      "ok": true,
+      "healthz": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 5.0,
+        "payload": {
+          "status": "ok",
+          "bridge": true,
+          "searchxng_url": "http://warp-11:8080",
+          "headless_search_enabled": true
+        },
+        "preview": "{\"status\":\"ok\",\"bridge\":true,\"searchxng_url\":\"http://warp-11:8080\",\"headless_search_enabled\":true}"
+      },
+      "readyz": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 37.3,
+        "payload": {
+          "status": "ok",
+          "searxng": true,
+          "headless_search": true,
+          "direct_search_fallback": false,
+          "direct_search_degraded_provider": false,
+          "checks": [
+            {
+              "url": "http://warp-11:8080",
+              "ok": true,
+              "status_code": 200,
+              "backoff_until": 0.0
+            }
+          ]
+        },
+        "preview": "{\"status\":\"ok\",\"searxng\":true,\"headless_search\":true,\"direct_search_fallback\":false,\"direct_search_degraded_provider\":false,\"checks\":[{\"url\":\"http://warp-11:8080\",\"ok\":true,\"status_code\":200,\"backoff_"
+      },
+      "search_probe": {
+        "query": "아카데미 생존 갤러리 웹소설",
+        "purpose": "loop626_pre_replay_current_search_hard5",
+        "num_results": 5,
+        "ok": true,
+        "reasons": [],
+        "result_count": 5,
+        "raw_total": 17,
+        "degraded": false,
+        "engines": [
+          "google",
+          "bing",
+          "webcrawler",
+          "naver"
+        ],
+        "forbidden_engines_present": [],
+        "unresponsive_engines": [],
+        "engine_errors": [],
+        "http": {
+          "ok": true,
+          "status_code": 200,
+          "latency_ms": 453.9
+        }
+      },
+      "search_ui": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 25.4,
+        "payload": null,
+        "preview": "<!DOCTYPE html>\n<html class=\"no-js theme-auto center-alignment-no\" lang=\"en-EN\" >\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"endpoint\" content=\"index\">\n  <meta name=\"description\" content=\"SearXNG "
+      },
+      "docker": {
+        "warp": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1164458,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:48.562476904Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "searchxng": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1168460,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:52.425500867Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "mcp_bridge": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1185987,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:55.86704305Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "browser_search": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1168418,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:52.398370551Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    {
+      "shard": 12,
+      "mcp_port": 3344,
+      "search_ui_port": 19012,
+      "ok": true,
+      "healthz": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 4.6,
+        "payload": {
+          "status": "ok",
+          "bridge": true,
+          "searchxng_url": "http://warp-12:8080",
+          "headless_search_enabled": true
+        },
+        "preview": "{\"status\":\"ok\",\"bridge\":true,\"searchxng_url\":\"http://warp-12:8080\",\"headless_search_enabled\":true}"
+      },
+      "readyz": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 46.8,
+        "payload": {
+          "status": "ok",
+          "searxng": true,
+          "headless_search": true,
+          "direct_search_fallback": false,
+          "direct_search_degraded_provider": false,
+          "checks": [
+            {
+              "url": "http://warp-12:8080",
+              "ok": true,
+              "status_code": 200,
+              "backoff_until": 0.0
+            }
+          ]
+        },
+        "preview": "{\"status\":\"ok\",\"searxng\":true,\"headless_search\":true,\"direct_search_fallback\":false,\"direct_search_degraded_provider\":false,\"checks\":[{\"url\":\"http://warp-12:8080\",\"ok\":true,\"status_code\":200,\"backoff_"
+      },
+      "search_probe": {
+        "query": "아카데미 생존 갤러리 웹소설",
+        "purpose": "loop626_pre_replay_current_search_hard5",
+        "num_results": 5,
+        "ok": true,
+        "reasons": [],
+        "result_count": 5,
+        "raw_total": 17,
+        "degraded": false,
+        "engines": [
+          "google",
+          "bing",
+          "webcrawler",
+          "naver"
+        ],
+        "forbidden_engines_present": [],
+        "unresponsive_engines": [],
+        "engine_errors": [],
+        "http": {
+          "ok": true,
+          "status_code": 200,
+          "latency_ms": 1235.9
+        }
+      },
+      "search_ui": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 28.1,
+        "payload": null,
+        "preview": "<!DOCTYPE html>\n<html class=\"no-js theme-auto center-alignment-no\" lang=\"en-EN\" >\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"endpoint\" content=\"index\">\n  <meta name=\"description\" content=\"SearXNG "
+      },
+      "docker": {
+        "warp": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1164484,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:48.498073561Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "searchxng": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1169418,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:53.086619226Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "mcp_bridge": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1185279,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:55.850424335Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "browser_search": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1169414,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:53.088454142Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    {
+      "shard": 13,
+      "mcp_port": 3345,
+      "search_ui_port": 19013,
+      "ok": true,
+      "healthz": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 5.8,
+        "payload": {
+          "status": "ok",
+          "bridge": true,
+          "searchxng_url": "http://warp-13:8080",
+          "headless_search_enabled": true
+        },
+        "preview": "{\"status\":\"ok\",\"bridge\":true,\"searchxng_url\":\"http://warp-13:8080\",\"headless_search_enabled\":true}"
+      },
+      "readyz": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 26.7,
+        "payload": {
+          "status": "ok",
+          "searxng": true,
+          "headless_search": true,
+          "direct_search_fallback": false,
+          "direct_search_degraded_provider": false,
+          "checks": [
+            {
+              "url": "http://warp-13:8080",
+              "ok": true,
+              "status_code": 200,
+              "backoff_until": 0.0
+            }
+          ]
+        },
+        "preview": "{\"status\":\"ok\",\"searxng\":true,\"headless_search\":true,\"direct_search_fallback\":false,\"direct_search_degraded_provider\":false,\"checks\":[{\"url\":\"http://warp-13:8080\",\"ok\":true,\"status_code\":200,\"backoff_"
+      },
+      "search_probe": {
+        "query": "아카데미 생존 갤러리 웹소설",
+        "purpose": "loop626_pre_replay_current_search_hard5",
+        "num_results": 5,
+        "ok": true,
+        "reasons": [],
+        "result_count": 5,
+        "raw_total": 17,
+        "degraded": false,
+        "engines": [
+          "google",
+          "bing",
+          "webcrawler",
+          "naver"
+        ],
+        "forbidden_engines_present": [],
+        "unresponsive_engines": [],
+        "engine_errors": [],
+        "http": {
+          "ok": true,
+          "status_code": 200,
+          "latency_ms": 1128.9
+        }
+      },
+      "search_ui": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 6.0,
+        "payload": null,
+        "preview": "<!DOCTYPE html>\n<html class=\"no-js theme-auto center-alignment-no\" lang=\"en-EN\" >\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"endpoint\" content=\"index\">\n  <meta name=\"description\" content=\"SearXNG "
+      },
+      "docker": {
+        "warp": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1164486,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:48.577885133Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "searchxng": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1168304,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:52.411403837Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "mcp_bridge": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1186013,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:55.884434787Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "browser_search": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1168423,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:52.434253567Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    {
+      "shard": 14,
+      "mcp_port": 3346,
+      "search_ui_port": 19014,
+      "ok": true,
+      "healthz": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 15.6,
+        "payload": {
+          "status": "ok",
+          "bridge": true,
+          "searchxng_url": "http://warp-14:8080",
+          "headless_search_enabled": true
+        },
+        "preview": "{\"status\":\"ok\",\"bridge\":true,\"searchxng_url\":\"http://warp-14:8080\",\"headless_search_enabled\":true}"
+      },
+      "readyz": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 36.5,
+        "payload": {
+          "status": "ok",
+          "searxng": true,
+          "headless_search": true,
+          "direct_search_fallback": false,
+          "direct_search_degraded_provider": false,
+          "checks": [
+            {
+              "url": "http://warp-14:8080",
+              "ok": true,
+              "status_code": 200,
+              "backoff_until": 0.0
+            }
+          ]
+        },
+        "preview": "{\"status\":\"ok\",\"searxng\":true,\"headless_search\":true,\"direct_search_fallback\":false,\"direct_search_degraded_provider\":false,\"checks\":[{\"url\":\"http://warp-14:8080\",\"ok\":true,\"status_code\":200,\"backoff_"
+      },
+      "search_probe": {
+        "query": "아카데미 생존 갤러리 웹소설",
+        "purpose": "loop626_pre_replay_current_search_hard5",
+        "num_results": 5,
+        "ok": true,
+        "reasons": [],
+        "result_count": 5,
+        "raw_total": 17,
+        "degraded": false,
+        "engines": [
+          "google",
+          "bing",
+          "webcrawler",
+          "naver"
+        ],
+        "forbidden_engines_present": [],
+        "unresponsive_engines": [],
+        "engine_errors": [],
+        "http": {
+          "ok": true,
+          "status_code": 200,
+          "latency_ms": 805.8
+        }
+      },
+      "search_ui": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 6.1,
+        "payload": null,
+        "preview": "<!DOCTYPE html>\n<html class=\"no-js theme-auto center-alignment-no\" lang=\"en-EN\" >\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"endpoint\" content=\"index\">\n  <meta name=\"description\" content=\"SearXNG "
+      },
+      "docker": {
+        "warp": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1165017,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:49.491819063Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "searchxng": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1169616,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:53.102176088Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "mcp_bridge": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1178405,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:54.791656292Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "browser_search": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1169465,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:53.082216823Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    {
+      "shard": 15,
+      "mcp_port": 3347,
+      "search_ui_port": 19015,
+      "ok": true,
+      "healthz": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 5.6,
+        "payload": {
+          "status": "ok",
+          "bridge": true,
+          "searchxng_url": "http://warp-15:8080",
+          "headless_search_enabled": true
+        },
+        "preview": "{\"status\":\"ok\",\"bridge\":true,\"searchxng_url\":\"http://warp-15:8080\",\"headless_search_enabled\":true}"
+      },
+      "readyz": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 30.9,
+        "payload": {
+          "status": "ok",
+          "searxng": true,
+          "headless_search": true,
+          "direct_search_fallback": false,
+          "direct_search_degraded_provider": false,
+          "checks": [
+            {
+              "url": "http://warp-15:8080",
+              "ok": true,
+              "status_code": 200,
+              "backoff_until": 0.0
+            }
+          ]
+        },
+        "preview": "{\"status\":\"ok\",\"searxng\":true,\"headless_search\":true,\"direct_search_fallback\":false,\"direct_search_degraded_provider\":false,\"checks\":[{\"url\":\"http://warp-15:8080\",\"ok\":true,\"status_code\":200,\"backoff_"
+      },
+      "search_probe": {
+        "query": "아카데미 생존 갤러리 웹소설",
+        "purpose": "loop626_pre_replay_current_search_hard5",
+        "num_results": 5,
+        "ok": true,
+        "reasons": [],
+        "result_count": 5,
+        "raw_total": 17,
+        "degraded": false,
+        "engines": [
+          "google",
+          "bing",
+          "webcrawler",
+          "naver"
+        ],
+        "forbidden_engines_present": [],
+        "unresponsive_engines": [],
+        "engine_errors": [],
+        "http": {
+          "ok": true,
+          "status_code": 200,
+          "latency_ms": 1150.4
+        }
+      },
+      "search_ui": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 6.2,
+        "payload": null,
+        "preview": "<!DOCTYPE html>\n<html class=\"no-js theme-auto center-alignment-no\" lang=\"en-EN\" >\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"endpoint\" content=\"index\">\n  <meta name=\"description\" content=\"SearXNG "
+      },
+      "docker": {
+        "warp": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1164127,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:48.412248675Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "searchxng": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1165724,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:50.50234933Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "mcp_bridge": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1169598,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:53.118196565Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "browser_search": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1165744,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:50.503298701Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        }
+      }
+    },
+    {
+      "shard": 16,
+      "mcp_port": 3348,
+      "search_ui_port": 19016,
+      "ok": true,
+      "healthz": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 4.4,
+        "payload": {
+          "status": "ok",
+          "bridge": true,
+          "searchxng_url": "http://warp-16:8080",
+          "headless_search_enabled": true
+        },
+        "preview": "{\"status\":\"ok\",\"bridge\":true,\"searchxng_url\":\"http://warp-16:8080\",\"headless_search_enabled\":true}"
+      },
+      "readyz": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 38.0,
+        "payload": {
+          "status": "ok",
+          "searxng": true,
+          "headless_search": true,
+          "direct_search_fallback": false,
+          "direct_search_degraded_provider": false,
+          "checks": [
+            {
+              "url": "http://warp-16:8080",
+              "ok": true,
+              "status_code": 200,
+              "backoff_until": 0.0
+            }
+          ]
+        },
+        "preview": "{\"status\":\"ok\",\"searxng\":true,\"headless_search\":true,\"direct_search_fallback\":false,\"direct_search_degraded_provider\":false,\"checks\":[{\"url\":\"http://warp-16:8080\",\"ok\":true,\"status_code\":200,\"backoff_"
+      },
+      "search_probe": {
+        "query": "아카데미 생존 갤러리 웹소설",
+        "purpose": "loop626_pre_replay_current_search_hard5",
+        "num_results": 5,
+        "ok": true,
+        "reasons": [],
+        "result_count": 5,
+        "raw_total": 17,
+        "degraded": false,
+        "engines": [
+          "google",
+          "bing",
+          "webcrawler",
+          "naver"
+        ],
+        "forbidden_engines_present": [],
+        "unresponsive_engines": [],
+        "engine_errors": [],
+        "http": {
+          "ok": true,
+          "status_code": 200,
+          "latency_ms": 786.4
+        }
+      },
+      "search_ui": {
+        "ok": true,
+        "status_code": 200,
+        "latency_ms": 6.7,
+        "payload": null,
+        "preview": "<!DOCTYPE html>\n<html class=\"no-js theme-auto center-alignment-no\" lang=\"en-EN\" >\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"endpoint\" content=\"index\">\n  <meta name=\"description\" content=\"SearXNG "
+      },
+      "docker": {
+        "warp": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1164488,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:48.457996973Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "searchxng": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1168449,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:52.436023303Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "mcp_bridge": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1181699,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:55.101978407Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        "browser_search": {
+          "ok": true,
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 1168454,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-08T10:01:52.445757114Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,5 +1,28 @@
 # Verification Results
 
+## 2026-07-09 Loop626 current search hard5 replay 및 re-baseline 계약 검증
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_626_REPORT_20260709.md`
+  - `docs/devs/loop626_loop623_current_search_non_ok_gate.json/.md`
+  - `docs/devs/loop626_loop623_current_search_hard5_replay_input_manifest.json`
+  - `docs/devs/loop626_loop623_current_search_hard5_replay_run_health.json`
+  - `docs/devs/loop626_loop623_current_search_hard5_replay_audit.json/.md`
+  - `docs/devs/ADJUDICATED_REBASELINE_CONTRACT.md`
+- 검증:
+  - Current search split: PASS 산출, non-ok `15`, hard replay `5`, recovered-only `10`.
+  - Runtime replay: PASS, run `20260709_111842_982379`, completed/flushed/pending/failed `5/5/0/0`.
+  - Parallel/dashboard: PASS, requested/effective `16/5`, dashboard final `5/5`, `batch_running=false`.
+  - Flush integrity: PASS, `GO / clean_completed_source`.
+  - Pre/post query audit: PASS, shard `ok=16/16`, query probe `16/16`, degraded `0`, forbidden engine `0`.
+  - Row-level search audit: expected `NO-GO`, hard blocker `3`, remaining `11660258/11694026/11710021`.
+  - Re-baseline contract: PASS 문서화, 완료 gate는 adjusted drift 기준으로 명시.
+- 결과:
+  - Loop626 runtime은 완료됐지만 current search recovery는 아직 `NO-GO`다.
+  - 이 결과는 full375 collateral GO나 full_scan approval이 아니다.
+  - 6/26 raw baseline diff는 참고 수치이며, 전 행 판결 후 re-baseline된 adjusted drift가 완료 gate 기준이다.
+- Gate: runtime replay `GO`, current search recovery `NO-GO / hard blocker 3`, re-baseline `NOT_APPLIED`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-09 Loop625 Loop609 held109 검색 복구 overlay 감사 검증
 
 - 산출물:

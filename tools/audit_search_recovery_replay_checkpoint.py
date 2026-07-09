@@ -84,6 +84,38 @@ def _search_blocker_reason(row: dict[str, Any]) -> str | None:
     return None
 
 
+def _normalized_recovery_summary(summary: dict[str, Any]) -> dict[str, Any]:
+    manifest = summary.get("manifest") if isinstance(summary.get("manifest"), dict) else {}
+    flush = summary.get("flush_integrity") if isinstance(summary.get("flush_integrity"), dict) else {}
+    counts = flush.get("counts") if isinstance(flush.get("counts"), dict) else {}
+
+    large_run_complete = summary.get("large_run_complete")
+    if large_run_complete is None:
+        large_run_complete = manifest.get("large_run_complete")
+    if large_run_complete is None and flush:
+        large_run_complete = bool(flush.get("completion_ready")) and not flush.get("blockers")
+
+    return {
+        "run_id": summary.get("run_id") or manifest.get("run_id"),
+        "checkpoint_completed_rows": summary.get("checkpoint_completed_rows")
+        if summary.get("checkpoint_completed_rows") is not None
+        else counts.get("checkpoint_completed_count")
+        if counts.get("checkpoint_completed_count") is not None
+        else summary.get("checkpoint_rows"),
+        "checkpoint_failed_rows": summary.get("checkpoint_failed_rows")
+        if summary.get("checkpoint_failed_rows") is not None
+        else counts.get("checkpoint_failed_count"),
+        "recovered_rows": summary.get("recovered_rows")
+        if summary.get("recovered_rows") is not None
+        else summary.get("result_rows")
+        if summary.get("result_rows") is not None
+        else counts.get("result_rows"),
+        "large_run_complete": large_run_complete,
+        "integrity_classification": summary.get("integrity_classification")
+        or flush.get("classification"),
+    }
+
+
 def _recovered_observation(row: dict[str, Any]) -> str | None:
     status = str(row.get("search_status") or "").strip().upper()
     degraded = _int(row.get("degraded"))
@@ -103,7 +135,7 @@ def audit_replay(
     audit_id: str = "search_recovery_replay_audit",
 ) -> dict[str, Any]:
     input_manifest = input_manifest or {}
-    recovery_summary = recovery_summary or {}
+    recovery_summary = _normalized_recovery_summary(recovery_summary or {})
     expected_count = _int((input_manifest.get("summary") or {}).get("runtime_input_rows")) or _int(
         input_manifest.get("input_post_count")
     )
