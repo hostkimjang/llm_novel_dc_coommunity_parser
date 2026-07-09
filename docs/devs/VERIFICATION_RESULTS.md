@@ -20,10 +20,14 @@
   - Unit tests: PASS, `tests.test_run_independent_plan`, `6` tests.
   - Py compile: PASS, `.venv312\Scripts\python.exe -m py_compile tools\run_independent_plan.py`.
   - Loop640 plan JSON parse: PASS, `.venv312\Scripts\python.exe -m json.tool docs\devs\loop640_full375_after_loop639_runtime_contract_fix_runtime_plan.json`.
+  - Loop640 preflight: PASS, `docs/devs/loop640_pre_full375_query_search_shard_audit.json`, shard `16/16`, query probe `16/16`, degraded `0`.
+  - Loop640 launch: PASS/RUNNING, run `20260710_005902_590310`, dashboard `http://127.0.0.1:8080`, requested/effective parallel `16/16`.
+  - Loop640 manifest search contract: PASS/RUNNING, `mcp_health_include_search=true`, `mcp_health_light_mode=false`, `mcp_health_ok_count=16`.
+  - Loop640 initial progress: RUNNING, completed/flushed/pending/failed `2/1/1/0`, checkpoint rows `2`.
 - 결과:
   - Loop639 partial은 collateral approval 증거가 아니다.
   - 다음 full375는 Loop640 plan으로만 실행하며 child manifest에 search 포함 non-light health가 남아야 한다.
-- Gate: Loop639 partial `NO-GO / PARTIAL_NOT_APPROVAL_EVIDENCE`, Loop640 plan `READY_RETRY_AFTER_CONTRACT_FIX`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- Gate: Loop639 partial `NO-GO / PARTIAL_NOT_APPROVAL_EVIDENCE`, Loop640 run `RUNNING_BACKGROUND / NOT_APPROVAL_RUNNING`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-09 Loop639 adjudicated baseline full375 runtime 계획 검증
 

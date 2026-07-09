@@ -10,8 +10,10 @@
 - Runner가 plan/run `required_env`와 `env_overrides`를 child process에 전달하도록 보강했다.
 - Loop640 재시도 plan을 만들었다. 필수 env는 `MCP_HEALTH_INCLUDE_SEARCH=1`, `MCP_HEALTH_LIGHT_MODE=0`, `MCP_HEALTH_REQUIRED_OK=16`, `MCP_HEALTH_PROBE_BATCH_SIZE=16`이다.
 - 새 output은 기존 partial을 덮지 않는 `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop640_full375_after_loop639_runtime_contract_fix_result.json`이다.
+- Loop640 full375 run `20260710_005902_590310`을 background로 시작했다. Dashboard는 `http://127.0.0.1:8080`, requested/effective parallel은 `16/16`이다.
+- 초기 manifest는 `mcp_health_include_search=true`, `mcp_health_light_mode=false`, `mcp_health_ok_count=16`을 남겼고 counts는 `2/1/1/0`까지 진행됐다.
 - Report는 `docs/devs/loop_reports/LOOP_640_REPORT_20260710.md`다.
-- Gate는 Loop639 partial `NO-GO / PARTIAL_NOT_APPROVAL_EVIDENCE`, Loop640 plan `READY_RETRY_AFTER_CONTRACT_FIX`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+- Gate는 Loop639 partial `NO-GO / PARTIAL_NOT_APPROVAL_EVIDENCE`, Loop640 run `RUNNING_BACKGROUND / NOT_APPROVAL_RUNNING`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
 
 ## 2026-07-09 - Loop639 adjudicated baseline full375 runtime plan fixed
 

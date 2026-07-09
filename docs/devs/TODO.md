@@ -8,14 +8,14 @@
 - [x] `tools/run_independent_plan.py` direct script import를 고친다.
 - [x] Runner plan/run env forwarding을 추가한다.
 - [x] Loop640 재시도 plan을 기존 partial output과 다른 output path로 생성한다.
-- [ ] Loop640 full375 runtime을 실행한다. 예상 소요는 Loop629 기준 약 `8.6h`다.
-- [ ] Loop640 manifest에서 `mcp_health_include_search=true`, `mcp_health_light_mode=false`를 확인한다.
+- [x] Loop640 full375 runtime을 background로 실행한다. Run `20260710_005902_590310`.
+- [x] Loop640 manifest에서 `mcp_health_include_search=true`, `mcp_health_light_mode=false`, `mcp_health_ok_count=16`을 확인한다.
 - [ ] Run health를 생성하고 completed/flushed/pending/failed `375/375/0/0`을 확인한다.
 - [ ] Publication contract convergence를 `GO / violation 0`으로 확인한다.
 - [ ] `compare_projection_collateral.py --baseline-mode adjudicated_rebaseline`로 adjusted drift를 확인한다.
 - [ ] Always-on을 golden18 + adjusted full375 runtime 기준으로 재평가한다.
 - [ ] Full_scan path 검증 전까지 `full_scan_approval=false`를 유지한다.
-- Gate: Loop639 partial `NO-GO`, Loop640 plan `READY_RETRY_AFTER_CONTRACT_FIX`, completion gate `adjusted full375 collateral GO + full_scan path`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- Gate: Loop639 partial `NO-GO`, Loop640 run `RUNNING_BACKGROUND / NOT_APPROVAL_RUNNING`, completion gate `adjusted full375 collateral GO + full_scan path`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-09 Loop639 이후 full375 runtime TODO
 

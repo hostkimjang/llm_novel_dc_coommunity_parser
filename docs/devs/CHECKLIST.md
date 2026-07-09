@@ -13,10 +13,13 @@
 - [x] Plan/run `required_env`와 `env_overrides`를 child process로 전달하도록 보강했다.
 - [x] Loop640 full375 재시도 계획 JSON/Markdown을 생성했다.
 - [x] Loop640 필수 env를 `MCP_HEALTH_INCLUDE_SEARCH=1`, `MCP_HEALTH_LIGHT_MODE=0`, `MCP_HEALTH_REQUIRED_OK=16`, `MCP_HEALTH_PROBE_BATCH_SIZE=16`로 고정했다.
-- [ ] Loop640 full375 runtime은 아직 완료하지 않았다.
+- [x] Loop640 full375 runtime을 background로 시작했다: run `20260710_005902_590310`.
+- [x] Loop640 initial manifest는 search non-light 계약을 만족한다: `mcp_health_include_search=true`, `mcp_health_light_mode=false`, `mcp_health_ok_count=16`.
+- [x] Dashboard는 `http://127.0.0.1:8080`에 붙었다.
+- [ ] Loop640 full375 runtime은 아직 완료하지 않았다. 초기 counts는 `2/1/1/0`이다.
 - [ ] Next full375 runtime counts `375/375/0/0` 전까지 always-on `NO-GO`를 유지한다.
 - [ ] Full_scan path 검증 전까지 `full_scan_approval=false`를 유지한다.
-- Gate: Loop639 partial `NO-GO / PARTIAL_NOT_APPROVAL_EVIDENCE`, Loop640 plan `READY_RETRY_AFTER_CONTRACT_FIX`, adjusted gate 기준 유지, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- Gate: Loop639 partial `NO-GO / PARTIAL_NOT_APPROVAL_EVIDENCE`, Loop640 run `RUNNING_BACKGROUND / NOT_APPROVAL_RUNNING`, adjusted gate 기준 유지, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 - 산출물: `docs/devs/loop639_full375_after_adjudicated_rebaseline_partial_run_health.json`, `docs/devs/loop640_full375_after_loop639_runtime_contract_fix_runtime_plan.json/.md`, `docs/devs/loop_reports/LOOP_640_REPORT_20260710.md`.
 
 ## 2026-07-09 Loop639 adjudicated baseline full375 runtime 계획 체크

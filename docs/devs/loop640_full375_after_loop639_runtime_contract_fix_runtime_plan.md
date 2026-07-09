@@ -49,4 +49,4 @@ Plan 자체에 필수 env가 있으므로 별도 `--set-env` 없이도 child man
 
 ## Gate
 
-현재 gate는 `READY_RETRY_AFTER_CONTRACT_FIX`다. Loop639 partial은 `PARTIAL_NOT_APPROVAL_EVIDENCE`이고, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
+현재 gate는 `RUNNING_BACKGROUND / NOT_APPROVAL_RUNNING`이다. Run `20260710_005902_590310`은 `http://127.0.0.1:8080` dashboard에 붙었고, 초기 확인 기준 completed/flushed/pending/failed `2/1/1/0`, checkpoint `2`건이다. Manifest는 `mcp_health_include_search=true`, `mcp_health_light_mode=false`, `mcp_health_ok_count=16`을 남겼다. Loop639 partial은 `PARTIAL_NOT_APPROVAL_EVIDENCE`이고, Loop640도 `375/375/0/0` 완료 전까지 `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
