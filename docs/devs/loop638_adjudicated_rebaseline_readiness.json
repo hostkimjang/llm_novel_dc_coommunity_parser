@@ -1,0 +1,43 @@
+{
+  "report_type": "adjudicated_rebaseline_readiness",
+  "readiness_id": "loop638_adjudicated_rebaseline_readiness",
+  "generated_at": "2026-07-09T23:32:22+09:00",
+  "gate": "READY_FOR_RUNTIME_FULL375_REPLAY",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "rebaseline_status": "APPLIED",
+  "completion_gate": "adjusted full375 collateral GO + full_scan path",
+  "completion_gate_metric": "adjusted_drift_count",
+  "raw_20260626_baseline_is_completion_gate": false,
+  "summary": {
+    "baseline_result_rows": 375,
+    "adjudication_ledger_rows": 59,
+    "ordinary_residual_rows_after_loop": 0,
+    "publication_contract_convergence_gate": "GO",
+    "golden18_gate": "GO",
+    "adjusted_drift_count": 0,
+    "historical_raw_collateral_regression_count": 105,
+    "runtime_collateral_gate": "NO-GO",
+    "runtime_complete": false,
+    "always_on_gate": "NO-GO",
+    "always_on_blockers": [
+      "collateral:collateral_runtime_counts_missing"
+    ],
+    "current_search_hard_blocker_gate": "GO / 0 (carried from loop628 current-search closure; not rerun in loop638)"
+  },
+  "blockers": [
+    "collateral_runtime_counts_missing",
+    "full_scan_path_not_completed"
+  ],
+  "inputs": {
+    "adjudicated_baseline_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/baseline/loop638_adjudicated_rebaseline_result.json",
+    "projection_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop638_candidate_set6_official_support_projection_result.json",
+    "adjudication_ledger": "docs/devs/loop638_adjudicated_rebaseline_adjudication_ledger.json",
+    "adjusted_drift_compare": "docs/devs/loop638_adjudicated_rebaseline_adjusted_drift_compare.json",
+    "historical_raw_compare": "docs/devs/loop638_candidate_set6_official_support_collateral_compare.json",
+    "always_on_gate": "docs/devs/loop638_always_on_after_adjudicated_rebaseline.json",
+    "publication_contract_convergence": "docs/devs/loop638_candidate_set6_official_support_publication_contract_convergence.json",
+    "residual0_dispatch": "docs/devs/loop638_after_candidate_set6_official_support_ordinary_residual0_dispatch.json"
+  },
+  "next_required_action": "새 adjudicated baseline 기준으로 full375/runtime replay 또는 full_scan 경로를 열 때 --parallel 16과 웹 대시보드를 사용한다."
+}

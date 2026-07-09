@@ -22,6 +22,8 @@ except ModuleNotFoundError:  # direct script execution
 EXACT_STATE = "official_detail_exact_title_found"
 TITLE_MISMATCH_STATE = "official_detail_found_target_title_mismatch"
 EBOOK_OR_CLASSIC_STATE = "ebook_or_classic_policy_review_required"
+CANDIDATE_OFFICIAL_MISSING_ACTION = "official_support_missing_candidate_hold_contract_case"
+CANDIDATE_SET_LANE = "candidate_set_rebuild_review"
 ENRICH_ACTION = "append_official_ref_to_restore_dispatch"
 CANONICAL_REWRITE_ACTION = "canonical_title_rewrite_review_required"
 CANONICAL_REWRITE_DISPATCH_ACTION = "rewrite_target_to_official_restore_dispatch"
@@ -167,6 +169,12 @@ def _can_canonical_rewrite(review_row: dict[str, Any] | None, plan_row: dict[str
     return bool(_string(review_row.get("rewrite_reason_ko") or review_row.get("source_evidence_ko")))
 
 
+def _enriched_dispatch_lane(plan_row: dict[str, Any]) -> str:
+    if plan_row.get("contract_action") == CANDIDATE_OFFICIAL_MISSING_ACTION:
+        return CANDIDATE_SET_LANE
+    return RESTORE_LANE
+
+
 def _make_enriched_dispatch_row(plan_row: dict[str, Any], review_row: dict[str, Any], review_id: str) -> dict[str, Any]:
     official_url = _string(review_row.get("official_url"))
     official_title = _string(review_row.get("official_title"))
@@ -178,7 +186,7 @@ def _make_enriched_dispatch_row(plan_row: dict[str, Any], review_row: dict[str, 
     )
     return {
         "post_id": plan_row.get("post_id"),
-        "dispatch_lane": RESTORE_LANE,
+        "dispatch_lane": _enriched_dispatch_lane(plan_row),
         "triage_bucket": plan_row.get("triage_bucket"),
         "review_label": plan_row.get("review_label"),
         "selected_title": official_title or plan_row.get("target_title"),
@@ -219,7 +227,7 @@ def _make_canonical_rewrite_dispatch_row(
     rewrite_reason = _string(review_row.get("rewrite_reason_ko") or review_row.get("source_evidence_ko"))
     return {
         "post_id": plan_row.get("post_id"),
-        "dispatch_lane": RESTORE_LANE,
+        "dispatch_lane": _enriched_dispatch_lane(plan_row),
         "triage_bucket": plan_row.get("triage_bucket"),
         "review_label": plan_row.get("review_label"),
         "selected_title": rewrite_title or official_title,
@@ -254,7 +262,8 @@ def build_review(
     review_id: str,
     generated_at: str | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
-    plan_rows = [row for row in _rows(contract_plan) if row.get("contract_action") == OFFICIAL_MISSING_ACTION]
+    missing_actions = {OFFICIAL_MISSING_ACTION, CANDIDATE_OFFICIAL_MISSING_ACTION}
+    plan_rows = [row for row in _rows(contract_plan) if row.get("contract_action") in missing_actions]
     review_by_id = _by_post_id(_rows(reviewed_refs))
     validation_issues: list[dict[str, Any]] = []
     rows: list[dict[str, Any]] = []
@@ -377,7 +386,7 @@ def build_review(
         "enriched_dispatch_id": dispatch["dispatch_id"],
         "approval_boundary": {
             "official_support_review_is_not_runtime_replay": True,
-            "enriched_dispatch_must_pass_shared_restore_plan": True,
+            "enriched_dispatch_must_pass_lane_contract_plan": True,
             "canonical_rewrite_must_be_explicitly_allowed": True,
             "held_rows_remain_ordinary_residual_followup": True,
             "full_scan_approval": False,
@@ -388,11 +397,12 @@ def build_review(
 
 def write_markdown(report: dict[str, Any], path: Path) -> None:
     summary = report["summary"]
+    source_plan = report.get("source_contract_plan") or "unknown"
     lines = [
         f"# {report.get('review_id')}",
         "",
-        "Loop582/583의 `official_support_missing_restore_hold_contract_case` 보류 행을 공식 detail URL 근거로 재분류한 리뷰다. "
-        "이 산출물은 새 runtime replay가 아니며, enriched dispatch도 기존 shared restore plan을 다시 통과해야 한다.",
+        f"`{source_plan}`의 official-support missing hold 행을 공식 detail URL 근거로 재분류한 리뷰다. "
+        "이 산출물은 새 runtime replay가 아니며, enriched dispatch도 해당 lane의 contract plan을 다시 통과해야 한다.",
         "",
         "## 요약",
         "",
@@ -426,7 +436,7 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
         f"정확 공식 detail URL 또는 명시적 canonical rewrite 계약이 확인된 "
         f"`{summary['enriched_restore_dispatch_rows']}`건만 enriched dispatch로 넘긴다. "
         f"나머지 `{summary['hold_rows']}`건은 canonical rewrite 또는 eBook/classic 정책 검토가 필요하므로 publish 후보로 세지 않는다. "
-        "다음 단계는 enriched dispatch를 shared restore contract plan에 다시 통과시키고 projection-only full375 collateral을 재확인하는 것이다."
+        "다음 단계는 enriched dispatch를 해당 lane의 contract plan에 다시 통과시키고 projection-only full375 collateral을 재확인하는 것이다."
     )
     lines.append("")
     path.parent.mkdir(parents=True, exist_ok=True)

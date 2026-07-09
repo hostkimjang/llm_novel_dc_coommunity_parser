@@ -148,6 +148,24 @@ class BuildOfficialSupportEnrichmentReviewTest(unittest.TestCase):
         )
         self.assertFalse(dispatch_by_id[2]["runtime_replay_allowed"])
 
+    def test_candidate_missing_plan_dispatches_back_to_candidate_set_lane(self):
+        plan = self._contract_plan()
+        plan["rows"][0]["contract_action"] = "official_support_missing_candidate_hold_contract_case"
+        plan["rows"] = plan["rows"][:1]
+        refs = self._reviewed_refs()
+        refs["rows"] = refs["rows"][:1]
+
+        report, dispatch = build_review(
+            contract_plan=plan,
+            reviewed_refs=refs,
+            review_id="unit_candidate_review",
+        )
+
+        self.assertEqual(report["summary"]["source_official_missing_hold_rows"], 1)
+        self.assertEqual(report["summary"]["enriched_restore_dispatch_rows"], 1)
+        self.assertEqual(dispatch["rows"][0]["dispatch_lane"], "candidate_set_rebuild_review")
+        self.assertEqual(dispatch["rows"][0]["selected_title"], "Expected Work")
+
     def test_missing_review_row_is_validation_issue(self):
         refs = self._reviewed_refs()
         refs["rows"] = refs["rows"][:1]

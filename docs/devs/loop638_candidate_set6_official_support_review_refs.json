@@ -1,0 +1,109 @@
+{
+  "report_type": "manual_official_support_review_refs",
+  "review_id": "loop638_candidate_set6_official_support_review_refs",
+  "generated_at": "2026-07-09T23:32:00+09:00",
+  "source_contract_plan": "loop636_candidate_set6_contract_plan",
+  "scope": "Loop637 residual6 candidate_set_rebuild_review rows",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "rows": [
+    {
+      "post_id": 11660257,
+      "target_title": "암흑가 보스요? 제가요?",
+      "official_support_state": "official_detail_exact_title_found",
+      "official_title": "암흑가 보스요? 제가요?",
+      "official_url": "https://novelpia.com/novel/384111",
+      "accepted_by_shared_official_detail_contract": true,
+      "source_urls": [
+        "https://novelpia.com/novel/384111",
+        "https://novelpia.com/novel/312273"
+      ],
+      "source_evidence_ko": "노벨피아 공식 detail 384111은 title `암흑가 보스요? 제가요?`를 직접 제공한다. 현재 projection의 competing title `고수위.국제마약카르텔. 암흑가의 보스들`는 별도 NovelPia 312273 작품이므로 wrong-work 후보로 분리한다.",
+      "review_action": "append_official_ref_to_restore_dispatch"
+    },
+    {
+      "post_id": 11673102,
+      "target_title": "갤질하는 천재 의사",
+      "official_support_state": "official_detail_found_target_title_mismatch",
+      "official_title": "댓글 보는 천재 의사",
+      "official_url": "https://novelpia.com/novel/372180",
+      "accepted_by_shared_official_detail_contract": false,
+      "canonical_rewrite_allowed": true,
+      "canonical_rewrite_title": "댓글 보는 천재 의사",
+      "source_native_rewrite_support": true,
+      "alias_relation_supported": true,
+      "specific_work_target_supported": true,
+      "source_urls": [
+        "https://novelpia.com/novel/372180"
+      ],
+      "source_evidence_ko": "노벨피아 공식 detail 372180의 현재 title은 `댓글 보는 천재 의사`이고 태그에 `갤질의사`가 남아 있다. 게시글의 `갤질의사` 표면은 같은 작품을 가리키지만, 공개 title은 현 공식 title로 rewrite해야 한다.",
+      "rewrite_reason_ko": "prior title `갤질하는 천재 의사`는 현재 공식 title과 다르다. 같은 작품/별칭 관계는 유지하되 public identity는 `댓글 보는 천재 의사` / NovelPia 372180으로 정규화한다.",
+      "review_action": "canonical_title_rewrite_review_required"
+    },
+    {
+      "post_id": 11676309,
+      "target_title": "갤질하는 천재 의사",
+      "official_support_state": "official_detail_found_target_title_mismatch",
+      "official_title": "댓글 보는 천재 의사",
+      "official_url": "https://novelpia.com/novel/372180",
+      "accepted_by_shared_official_detail_contract": false,
+      "canonical_rewrite_allowed": true,
+      "canonical_rewrite_title": "댓글 보는 천재 의사",
+      "source_native_rewrite_support": true,
+      "alias_relation_supported": true,
+      "specific_work_target_supported": true,
+      "source_urls": [
+        "https://novelpia.com/novel/372180"
+      ],
+      "source_evidence_ko": "노벨피아 공식 detail 372180의 현재 title은 `댓글 보는 천재 의사`이고 태그 `갤질의사`가 게시글 표면 `갤질의사 정실일러`와 같은 작품 관계를 지지한다.",
+      "rewrite_reason_ko": "after title `댓글 보는 천재 의사`는 wrong-work가 아니라 현 공식 title이다. 다만 URL/ledger가 공식 detail과 수렴하도록 shared restore contract에 다시 태운다.",
+      "review_action": "canonical_title_rewrite_review_required"
+    },
+    {
+      "post_id": 11694065,
+      "target_title": "아카데미에서 살아남기",
+      "official_support_state": "official_detail_exact_title_found",
+      "official_title": "아카데미에서 살아남기",
+      "official_url": "https://series.naver.com/novel/detail.series?productNo=6484753",
+      "accepted_by_shared_official_detail_contract": true,
+      "source_urls": [
+        "https://series.naver.com/novel/detail.series?productNo=6484753"
+      ],
+      "source_evidence_ko": "네이버 시리즈 웹소설 detail은 title `아카데미에서 살아남기`, 작가 코리타, 판타지 웹소설 정보를 제공한다. after `[아카살] 아무 관계도 아니라고!`는 원작 공식 title이 아닌 파생/팬픽 표면으로 분리한다.",
+      "review_action": "append_official_ref_to_restore_dispatch"
+    },
+    {
+      "post_id": 11698877,
+      "target_title": "괴담 호텔 탈출기",
+      "official_support_state": "official_detail_exact_title_found",
+      "official_title": "괴담 호텔 탈출기",
+      "official_url": "https://novelpia.com/novel/102155",
+      "accepted_by_shared_official_detail_contract": true,
+      "source_urls": [
+        "https://novelpia.com/novel/102155",
+        "https://novelpia.com/novel/428146"
+      ],
+      "source_evidence_ko": "노벨피아 공식 detail 102155는 title `괴담 호텔 탈출기`를 직접 제공한다. 현재 projection의 `괴담텔 속 마술사` / 428146은 `괴담텔` alias collision으로 보존하되 public title로 publish하지 않는다.",
+      "review_action": "append_official_ref_to_restore_dispatch"
+    },
+    {
+      "post_id": 11703631,
+      "target_title": "나의 악당들",
+      "official_support_state": "official_detail_exact_title_found",
+      "official_title": "나의 악당들",
+      "official_url": "https://page.kakao.com/content/55826557?tab_type=comment",
+      "accepted_by_shared_official_detail_contract": true,
+      "source_urls": [
+        "https://page.kakao.com/content/55826557?tab_type=comment"
+      ],
+      "source_evidence_ko": "카카오페이지 검색/공식 content URL은 `나의 악당들` 웹소설 페이지를 지지한다. 현재 projection의 `피카레스크`는 장르어/맥락어이므로 public title로 publish하지 않는다.",
+      "review_action": "append_official_ref_to_restore_dispatch"
+    }
+  ],
+  "approval_boundary": {
+    "manual_web_review_is_not_runtime_replay": true,
+    "exact_official_url_rows_must_rerun_shared_restore_plan": true,
+    "canonical_rewrite_rows_must_rerun_shared_restore_plan": true,
+    "full_scan_approval": false
+  }
+}

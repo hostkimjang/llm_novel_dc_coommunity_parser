@@ -1,5 +1,44 @@
 # Verification Results
 
+## 2026-07-09 Loop638 candidate-set 6건 및 adjudicated re-baseline 검증
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_638_REPORT_20260709.md`
+  - `docs/devs/loop638_candidate_set6_official_support_review_refs.json`
+  - `docs/devs/loop638_candidate_set6_official_support_enrichment_review.json/.md`
+  - `docs/devs/loop638_candidate_set6_official_support_candidate_set_contract_plan.json/.md`
+  - `docs/devs/loop638_candidate_set6_official_support_projection_application.json/.md`
+  - `docs/devs/loop638_candidate_set6_official_support_release_gate_audit.json/.md`
+  - `docs/devs/loop638_candidate_set6_official_support_publication_contract_convergence.json/.md`
+  - `docs/devs/loop638_after_candidate_set6_official_support_residual6_accounting.json/.md`
+  - `docs/devs/loop638_after_candidate_set6_official_support_ordinary_residual0_dispatch.json/.md`
+  - `docs/devs/loop638_candidate_set6_official_support_collateral_compare.json/.md`
+  - `docs/devs/loop638_adjudicated_rebaseline_adjudication_ledger.json/.md`
+  - `docs/devs/loop638_adjudicated_rebaseline_manifest.json/.md`
+  - `docs/devs/loop638_adjudicated_rebaseline_adjusted_drift_compare.json/.md`
+  - `docs/devs/loop638_always_on_after_adjudicated_rebaseline.json/.md`
+  - `docs/devs/loop638_adjudicated_rebaseline_readiness.json/.md`
+- 검증:
+  - Official support enrichment: PASS, source rows `6`, exact official `4`, canonical rewrite `2`, hold `0`, validation issue `0`.
+  - Candidate-set contract plan: PASS, rows `6`, action `candidate_set_expected_restore_contract_case 6`, release candidate `6`, validation issue `0`.
+  - Projection application: PASS, projection rows `375`, applied restore `6`, validation issue `0`, runtime replay allowed `0`.
+  - Release gate audit: PASS, pending `0`, violation `0`, release candidate `6`.
+  - Publication contract convergence: PASS, `GO`, row count `375`, violation `0`.
+  - Residual accounting/dispatch: PASS, source `6`, processed `6`, ordinary residual `0`, dispatch rows `0`.
+  - Bootstrap collateral compare: expected diagnostic `NO-GO`, shared `375/375`, historical raw regression `105`, runtime counts missing.
+  - Adjudicated re-baseline compare: PASS, `baseline_mode=adjudicated_rebaseline`, `adjusted_drift_count=0`, static collateral `GO`, runtime counts missing.
+  - Always-on after re-baseline: expected `NO-GO`, golden18 `GO`, completion metric `adjusted_drift_count`, blocker `collateral_runtime_counts_missing`.
+  - Adjudication ledger: PASS, rows `59`, validation issue `0`.
+  - JSON parse: PASS, Loop638 docs/out JSON `18`개.
+  - Unit tests: PASS, `.venv312\Scripts\python.exe -m unittest tests.test_build_official_support_enrichment_review tests.test_build_candidate_set_contract_plan tests.test_apply_candidate_set_projection_contract tests.test_audit_post_verdict_promotion_gate_release_contract tests.test_reaccount_residual_after_contract_reviews tests.test_build_ordinary_residual_dispatch tests.test_always_on_regression_gates tests.test_regression_safe_grounding_bootstrap -v`, `77` tests.
+  - Py compile: PASS, official support/candidate-set/projection/release/publication/collateral/always-on/rebaseline/accounting/dispatch 도구.
+  - `git diff --check`: PASS, CRLF 경고만 있음.
+- 결과:
+  - Loop638은 residual6를 닫고 판결 baseline을 재동결한 회차다.
+  - Runtime/full_scan approval은 아니며, full_scan approval은 계속 `false`다.
+  - 완료 gate는 raw가 아니라 adjusted drift 기준이다. Bootstrap raw `105`는 historical diagnostic이다.
+- Gate: publication `GO`, release `REVIEW-LOCKED / candidate 6`, residual `REVIEW-LOCKED / 0`, adjusted drift `GO / 0`, always-on `NO-GO / runtime counts missing`, re-baseline `APPLIED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-09 Loop637 native hold 12건 및 11682768 canonical cleanup 검증
 
 - 산출물:

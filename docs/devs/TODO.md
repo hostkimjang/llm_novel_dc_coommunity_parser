@@ -1,5 +1,19 @@
 # Developer TODO Index
 
+## 2026-07-09 Loop638 이후 re-baseline 적용 / runtime 선결 TODO
+
+- 상태 업데이트: Loop637 residual6는 공식 근거 batch 판결로 모두 닫혔고 ordinary residual은 `0`이다. Adjudicated re-baseline은 적용됐으며 adjusted drift는 `0`이다.
+- [x] Candidate-set 6건 official support ref를 확인한다.
+- [x] `갤질하는 천재 의사` 2행을 공식 현재 title `댓글 보는 천재 의사`로 canonical rewrite한다.
+- [x] Candidate-set contract plan/application/release audit/publication convergence를 생성한다.
+- [x] Residual6 accounting을 `ordinary residual 0`으로 갱신한다.
+- [x] 59행 adjudication ledger와 adjusted baseline manifest를 생성한다.
+- [x] `compare_projection_collateral.py --baseline-mode adjudicated_rebaseline`로 adjusted drift `0`을 확인한다.
+- [x] Always-on을 adjusted baseline 기준으로 재평가한다. 결과는 `NO-GO / collateral_runtime_counts_missing`.
+- [ ] Runtime full375 또는 full_scan 경로 완료 전 goal 완료를 선언하지 않는다.
+- [ ] 다음 runtime/test run은 `--parallel 16`, 웹 대시보드 ON으로 실행한다.
+- Gate: residual `REVIEW-LOCKED / 0`, adjusted drift `GO / 0`, always-on `NO-GO / runtime counts missing`, raw `105 diagnostic`, re-baseline `APPLIED`, completion gate `adjusted full375 collateral GO + full_scan path`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-09 Loop637 이후 residual6 / re-baseline 선결 TODO
 
 - 상태 업데이트: Loop636 residual19 중 native/web/image evidence 12건을 no-release hold로 처리했고, `11682768`은 공식 페이지 확인 뒤 canonical cleanup으로 처리했다. Ordinary residual은 `6`으로 줄었다.

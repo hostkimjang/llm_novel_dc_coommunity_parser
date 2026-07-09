@@ -1,0 +1,110 @@
+{
+  "report_type": "candidate_set_projection_contract_application",
+  "projection_id": "loop638_candidate_set6_official_support_projection_application",
+  "generated_at": "2026-07-09T23:24:30",
+  "source_contract_plan": "loop638_candidate_set6_official_support_candidate_set_contract_plan",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "projection_rows": 375,
+    "contract_plan_rows": 6,
+    "candidate_set_contract_rows": 6,
+    "applied_restore_rows": 6,
+    "applied_hold_rows": 0,
+    "applied_candidate_set_rebuild_hold_rows": 0,
+    "applied_no_publish_intent_guard_rows": 0,
+    "scrubbed_public_identity_rows": 0,
+    "already_blocked_hold_rows": 0,
+    "validation_issue_count": 0,
+    "skipped_contract_action_counts": {},
+    "runtime_replay_allowed_rows": 0,
+    "requested_parallel_for_future_runtime": 16,
+    "dashboard_policy": "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+    "dashboard_url": "http://127.0.0.1:8080",
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "adjusted full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "applied_rows": [
+    {
+      "post_id": 11660257,
+      "contract_action": "candidate_set_expected_restore_contract_case",
+      "target_title": "암흑가 보스요? 제가요?",
+      "target_url": "https://novelpia.com/novel/384111",
+      "superseded_projection_candidate": {
+        "official_title": "고수위.국제마약카르텔. 암흑가 의 보스 들 새 창 열림",
+        "official_url": null,
+        "source": "candidate_set_expected_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11694065,
+      "contract_action": "candidate_set_expected_restore_contract_case",
+      "target_title": "아카데미에서 살아남기",
+      "target_url": "https://series.naver.com/novel/detail.series?productNo=6484753",
+      "superseded_projection_candidate": {
+        "official_title": "[아카살] 아무 관계도 아니라고!",
+        "official_url": null,
+        "source": "candidate_set_expected_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11698877,
+      "contract_action": "candidate_set_expected_restore_contract_case",
+      "target_title": "괴담 호텔 탈출기",
+      "target_url": "https://novelpia.com/novel/102155",
+      "superseded_projection_candidate": {
+        "official_title": "괴담텔 속 마술사 새 창 열림",
+        "official_url": "https://novelpia.com/novel/428146",
+        "source": "candidate_set_expected_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11703631,
+      "contract_action": "candidate_set_expected_restore_contract_case",
+      "target_title": "나의 악당들",
+      "target_url": "https://page.kakao.com/content/55826557?tab_type=comment",
+      "superseded_projection_candidate": {
+        "official_title": "피카레스크",
+        "official_url": null,
+        "source": "candidate_set_expected_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11673102,
+      "contract_action": "candidate_set_expected_restore_contract_case",
+      "target_title": "댓글 보는 천재 의사",
+      "target_url": "https://novelpia.com/novel/372180",
+      "superseded_projection_candidate": {
+        "official_title": "방송했더니 천재 의사로 착각당했다",
+        "official_url": "https://novel.munpia.com/533608",
+        "source": "candidate_set_expected_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11676309,
+      "contract_action": "candidate_set_expected_restore_contract_case",
+      "target_title": "댓글 보는 천재 의사",
+      "target_url": "https://novelpia.com/novel/372180",
+      "superseded_projection_candidate": {
+        "official_title": "댓글 보는 천재 의사",
+        "official_url": null,
+        "source": "candidate_set_expected_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    }
+  ],
+  "approval_boundary": {
+    "projection_application_is_not_runtime_replay": true,
+    "release_candidate_is_not_full_scan_approval": true,
+    "runtime_replay_before_full375_collateral_forbidden": true,
+    "full375_collateral_remains_no_go": true,
+    "test_runs_require_parallel_16_and_web_dashboard": true
+  }
+}

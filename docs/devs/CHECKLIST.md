@@ -1,5 +1,26 @@
 # Development Checklist
 
+## 2026-07-09 Loop638 candidate-set 6건 및 adjudicated re-baseline 체크
+
+- [x] 새 runtime replay/full375 대형 런을 실행하지 않았다.
+- [x] Loop637 residual6 전부를 공식 detail 근거로 batch 판결했다.
+- [x] Official support review는 exact official `4`, canonical rewrite `2`, validation issue `0`이다.
+- [x] `11673102/11676309`는 `갤질하는 천재 의사`를 공식 현재 title `댓글 보는 천재 의사`로 rewrite했다.
+- [x] Candidate-set contract plan은 rows `6`, action `candidate_set_expected_restore_contract_case 6`, release candidate `6`, validation issue `0`이다.
+- [x] Projection application은 projection rows `375`, applied restore `6`, validation issue `0`이다.
+- [x] Release audit은 pending `0`, violation `0`, release candidate `6`이다. 이는 approval이 아니다.
+- [x] Publication contract convergence는 `GO / row 375 / violation 0`이다.
+- [x] Bootstrap collateral은 historical raw `105`로 기록했다. 완료 gate가 아니다.
+- [x] Residual accounting은 `6 -> 0`으로 닫았다.
+- [x] 59행 adjudication ledger와 adjusted baseline manifest를 생성했다.
+- [x] Re-baseline은 `APPLIED`이고 adjusted drift compare는 `adjusted_drift_count=0`이다.
+- [x] Always-on은 `NO-GO`다. blocker는 `collateral_runtime_counts_missing`이다.
+- [x] 검증을 실행했다: unit tests `77`, py_compile PASS.
+- [ ] Runtime full375/full_scan 실행 전까지 `full_scan_approval=false`를 유지한다.
+- [ ] 다음 runtime/test run은 `--parallel 16`과 웹 대시보드를 붙인다.
+- Gate: official support `REVIEW-LOCKED / 6`, publication `GO`, release `REVIEW-LOCKED / candidate 6`, residual `REVIEW-LOCKED / ordinary 0`, adjusted drift `GO / 0`, always-on `NO-GO / runtime counts missing`, raw `105 diagnostic`, re-baseline `APPLIED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_638_REPORT_20260709.md`, `docs/devs/loop638_candidate_set6_official_support_*`, `docs/devs/loop638_adjudicated_rebaseline_*`, `out/regression_safe_grounding_20260626_000008_928006_loop01/baseline/loop638_adjudicated_rebaseline_result.json`.
+
 ## 2026-07-09 Loop637 native hold 12건 및 11682768 canonical cleanup 체크
 
 - [x] 새 runtime replay/full375를 실행하지 않았다.

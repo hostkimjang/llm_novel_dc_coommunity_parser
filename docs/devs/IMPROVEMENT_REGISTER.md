@@ -1,5 +1,21 @@
 # Improvement Register
 
+## IMP-20260709-638 - candidate-set 6 official support and adjudicated re-baseline applied
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Official support review | REVIEW-LOCKED | `loop638_candidate_set6_official_support_enrichment_review.json`, exact `4`, rewrite `2`, hold `0` | runtime 승인으로 승격 금지 |
+| Candidate-set contract | REVIEW-LOCKED | `loop638_candidate_set6_official_support_candidate_set_contract_plan.json`, rows `6`, release candidate `6` | release candidate는 approval 아님 |
+| Projection application | PASS_STATIC | `loop638_candidate_set6_official_support_projection_application.json`, applied restore `6` | full375 runtime 재확인 필요 |
+| Publication contract | GO | `loop638_candidate_set6_official_support_publication_contract_convergence.json`, rows `375`, violation `0` | collateral gate와 분리 유지 |
+| Residual accounting | REVIEW-LOCKED | `loop638_after_candidate_set6_official_support_residual6_accounting.json`, ordinary residual `0` | residual 단건 반복 중단 |
+| Re-baseline | APPLIED | `loop638_adjudicated_rebaseline_manifest.json`, ledger rows `59` | 이후 collateral은 adjusted drift 기준 |
+| Adjusted drift | GO_STATIC | `loop638_adjudicated_rebaseline_adjusted_drift_compare.json`, adjusted drift `0` | runtime counts 필요 |
+| Always-on | NO-GO | `loop638_always_on_after_adjudicated_rebaseline.json`, blocker `collateral_runtime_counts_missing` | full_scan path 완료 필요 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | 다음 runtime/test run은 `--parallel 16` + dashboard |
+
+Gate: publication `GO`, release `REVIEW-LOCKED / candidate 6`, residual `REVIEW-LOCKED / 0`, adjusted drift `GO / 0`, always-on `NO-GO / runtime counts missing`, re-baseline `APPLIED`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260709-637 - native hold 12 plus canonical cleanup 1 contract applied
 
 | 항목 | 상태 | 근거 | 다음 |

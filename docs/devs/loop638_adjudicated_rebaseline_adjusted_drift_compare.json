@@ -1,0 +1,40 @@
+{
+  "report_type": "full375_projection_collateral_compare",
+  "compare_id": "loop638_adjudicated_rebaseline_adjusted_drift_compare",
+  "generated_at": "2026-07-09T23:27:32",
+  "gate": "REVIEW-LOCKED",
+  "projection_static_collateral_gate": "GO",
+  "runtime_collateral_gate": "NO-GO",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "baseline_path": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\baseline\\loop638_adjudicated_rebaseline_result.json",
+  "after_path": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop638_candidate_set6_official_support_projection_result.json",
+  "golden_manifest_path": "out\\regression_safe_grounding_20260626_000008_928006_loop01\\golden\\golden_manifest.json",
+  "runtime_manifest_path": null,
+  "baseline_mode": "adjudicated_rebaseline",
+  "collateral_measure": "adjusted_drift",
+  "adjusted_drift_count": 0,
+  "historical_raw_collateral_regression_count": null,
+  "expected_shared_posts": 375,
+  "shared_post_count": 375,
+  "changed_post_count": 0,
+  "collateral_regression_count": 0,
+  "status_counts": {},
+  "regression_status_counts": {},
+  "rows": [],
+  "runtime_completed_count": null,
+  "runtime_pending_count": null,
+  "runtime_failed_count": null,
+  "runtime_complete": false,
+  "blockers": [
+    "collateral_runtime_counts_missing"
+  ],
+  "approval_boundary": {
+    "projection_compare_is_not_runtime_replay": true,
+    "runtime_compare_is_not_semantic_approval": false,
+    "projection_static_gate_is_not_full_scan_approval": true,
+    "full_scan_approval_requires_full_scan_path": true,
+    "adjudicated_rebaseline_adjusted_drift_is_completion_metric": true,
+    "historical_raw_vs_20260626_is_reference_only": true
+  }
+}

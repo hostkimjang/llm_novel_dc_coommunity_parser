@@ -1,0 +1,626 @@
+{
+  "report_type": "candidate_set_contract_plan",
+  "plan_id": "loop638_candidate_set6_official_support_candidate_set_contract_plan",
+  "generated_at": "2026-07-09T23:24:10",
+  "source_batch": "loop638_candidate_set6_official_support_enrichment_review_enriched_restore_dispatch",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "source_batch_rows": 6,
+    "candidate_set_contract_plan_rows": 6,
+    "validation_issue_count": 0,
+    "contract_action_counts": {
+      "candidate_set_expected_restore_contract_case": 6
+    },
+    "promotion_decision_status_counts": {
+      "publish": 6
+    },
+    "evidence_grade_counts": {
+      "Missing": 6
+    },
+    "triage_bucket_counts": {
+      "wrong_work_title_flip": 6
+    },
+    "official_support_ref_missing_rows": 0,
+    "release_candidate_not_approval_rows": 6,
+    "candidate_set_rebuild_hold_rows": 0,
+    "intent_guard_hold_rows": 0,
+    "publish_allowed_rows": 0,
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "adjusted full375 collateral GO + full_scan path"
+  },
+  "execution_contract": {
+    "runtime_replay_allowed": false,
+    "requested_parallel": 16,
+    "dashboard_contract": {
+      "dashboard_policy": "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+      "dashboard_url": "http://127.0.0.1:8080",
+      "forbidden_flags": [
+        "--no-dashboard"
+      ],
+      "runner_cli_guard": "tools/run_independent_plan.py ignores --no-dashboard unless ALLOW_TEST_RUN_NO_DASHBOARD=1 is explicitly set as a breakglass override.",
+      "attach_manifest_command": "python tools/attach_manifest_dashboard.py --manifest <result_manifest.json> --dashboard-url http://127.0.0.1:8080"
+    }
+  },
+  "validation_issues": [],
+  "rows": [
+    {
+      "post_id": 11660257,
+      "contract_origin": "refined_p0_candidate_set_dispatch",
+      "contract_batch_lane": "CS_candidate_set_contract",
+      "source_dispatch_lane": "candidate_set_rebuild_review",
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "after_search_result_wrong_work_restore_prior",
+      "evidence_grade": "Missing",
+      "target_title": "암흑가 보스요? 제가요?",
+      "target_url": "https://novelpia.com/novel/384111",
+      "official_support_refs": [
+        "https://novelpia.com/novel/384111",
+        "https://novelpia.com/novel/312273"
+      ],
+      "official_support_ref_count": 2,
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required",
+        "official_detail_url_enriched_from_web_review"
+      ],
+      "contract_action": "candidate_set_expected_restore_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "암흑가 보스요? 제가요?",
+        "official_url": "https://novelpia.com/novel/384111",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "candidate_set_source_native_contract_case",
+          "official_support_ref_present"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11660257,
+        "candidate_title": "암흑가 보스요? 제가요?",
+        "candidate_url": "https://novelpia.com/novel/384111",
+        "source": "candidate_set_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "medium",
+          "direct_bridge_sources": [
+            "refined_p0_candidate_set_dispatch",
+            "candidate_set_rebuild_review",
+            "candidate_set_expected_restore_contract_case"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "candidate_set_source_native_contract",
+          "strength": "missing",
+          "source_path_or_snippet": "게시글 제목 `암흑가보스`는 prior `암흑가 보스요? 제가요?`를 직접 가리킨다. after는 검색결과식 다른 작품 제목으로 오염되어 prior title 복구가 필요하다. 공식 detail URL 보강: 암흑가 보스요? 제가요? / https://novelpia.com/novel/384111",
+          "supports_publish": false,
+          "reason_code": "candidate_set_source_native_contract_case"
+        },
+        {
+          "kind": "official_support_ref",
+          "strength": "strong",
+          "source_path_or_snippet": "https://novelpia.com/novel/384111",
+          "supports_publish": true,
+          "reason_code": "official_support_ref_present"
+        }
+      ],
+      "release_candidate_not_approval": true,
+      "candidate_set_rebuild_required_before_publish": false,
+      "intent_guard_hold_before_publish": false,
+      "official_support_missing_before_publish": false,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": true,
+      "candidate_set_rebuild_required_before_runtime": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "게시글 제목 `암흑가보스`는 prior `암흑가 보스요? 제가요?`를 직접 가리킨다. after는 검색결과식 다른 작품 제목으로 오염되어 prior title 복구가 필요하다. 공식 detail URL 보강: 암흑가 보스요? 제가요? / https://novelpia.com/novel/384111",
+      "evidence_refs": [
+        "https://novelpia.com/novel/384111",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11660257",
+        "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row",
+        "https://novelpia.com/novel/312273",
+        "docs/devs/loop638_candidate_set6_official_support_enrichment_review.json#post_id=11660257"
+      ]
+    },
+    {
+      "post_id": 11694065,
+      "contract_origin": "refined_p0_candidate_set_dispatch",
+      "contract_batch_lane": "CS_candidate_set_contract",
+      "source_dispatch_lane": "candidate_set_rebuild_review",
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "alias_collision_after_fanwork_wrong_work",
+      "evidence_grade": "Missing",
+      "target_title": "아카데미에서 살아남기",
+      "target_url": "https://series.naver.com/novel/detail.series?productNo=6484753",
+      "official_support_refs": [
+        "https://series.naver.com/novel/detail.series?productNo=6484753"
+      ],
+      "official_support_ref_count": 1,
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required",
+        "official_detail_url_enriched_from_web_review"
+      ],
+      "contract_action": "candidate_set_expected_restore_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "아카데미에서 살아남기",
+        "official_url": "https://series.naver.com/novel/detail.series?productNo=6484753",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "candidate_set_source_native_contract_case",
+          "official_support_ref_present"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11694065,
+        "candidate_title": "아카데미에서 살아남기",
+        "candidate_url": "https://series.naver.com/novel/detail.series?productNo=6484753",
+        "source": "candidate_set_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "medium",
+          "direct_bridge_sources": [
+            "refined_p0_candidate_set_dispatch",
+            "candidate_set_rebuild_review",
+            "candidate_set_expected_restore_contract_case"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "candidate_set_source_native_contract",
+          "strength": "missing",
+          "source_path_or_snippet": "제목 `아카살 아니스`는 `아카데미에서 살아남기`와 인물 맥락을 직접 가리킨다. after `[아카살] 아무 관계도 아니라고!`는 제목 검색/2차 창작 표면으로 보이며 원 작품 복구가 필요하다. 공식 detail URL 보강: 아카데미에서 살아남기 / https://series.naver.com/novel/detail.series?productNo=6484753",
+          "supports_publish": false,
+          "reason_code": "candidate_set_source_native_contract_case"
+        },
+        {
+          "kind": "official_support_ref",
+          "strength": "strong",
+          "source_path_or_snippet": "https://series.naver.com/novel/detail.series?productNo=6484753",
+          "supports_publish": true,
+          "reason_code": "official_support_ref_present"
+        }
+      ],
+      "release_candidate_not_approval": true,
+      "candidate_set_rebuild_required_before_publish": false,
+      "intent_guard_hold_before_publish": false,
+      "official_support_missing_before_publish": false,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": true,
+      "candidate_set_rebuild_required_before_runtime": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "제목 `아카살 아니스`는 `아카데미에서 살아남기`와 인물 맥락을 직접 가리킨다. after `[아카살] 아무 관계도 아니라고!`는 제목 검색/2차 창작 표면으로 보이며 원 작품 복구가 필요하다. 공식 detail URL 보강: 아카데미에서 살아남기 / https://series.naver.com/novel/detail.series?productNo=6484753",
+      "evidence_refs": [
+        "https://series.naver.com/novel/detail.series?productNo=6484753",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11694065",
+        "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row",
+        "docs/devs/loop638_candidate_set6_official_support_enrichment_review.json#post_id=11694065"
+      ]
+    },
+    {
+      "post_id": 11698877,
+      "contract_origin": "refined_p0_candidate_set_dispatch",
+      "contract_batch_lane": "CS_candidate_set_contract",
+      "source_dispatch_lane": "candidate_set_rebuild_review",
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "alias_collision_after_wrong_work",
+      "evidence_grade": "Missing",
+      "target_title": "괴담 호텔 탈출기",
+      "target_url": "https://novelpia.com/novel/102155",
+      "official_support_refs": [
+        "https://novelpia.com/novel/102155",
+        "https://novelpia.com/novel/428146"
+      ],
+      "official_support_ref_count": 2,
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required",
+        "official_detail_url_enriched_from_web_review"
+      ],
+      "contract_action": "candidate_set_expected_restore_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "괴담 호텔 탈출기",
+        "official_url": "https://novelpia.com/novel/102155",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "candidate_set_source_native_contract_case",
+          "official_support_ref_present"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11698877,
+        "candidate_title": "괴담 호텔 탈출기",
+        "candidate_url": "https://novelpia.com/novel/102155",
+        "source": "candidate_set_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "medium",
+          "direct_bridge_sources": [
+            "refined_p0_candidate_set_dispatch",
+            "candidate_set_rebuild_review",
+            "candidate_set_expected_restore_contract_case"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "candidate_set_source_native_contract",
+          "strength": "missing",
+          "source_path_or_snippet": "`괴담텔 1층/2층` 감상은 prior `괴담 호텔 탈출기`의 층 구조를 말한다. after `괴담텔 속 마술사`는 alias collision이므로 복구 대상이다. 공식 detail URL 보강: 괴담 호텔 탈출기 / https://novelpia.com/novel/102155",
+          "supports_publish": false,
+          "reason_code": "candidate_set_source_native_contract_case"
+        },
+        {
+          "kind": "official_support_ref",
+          "strength": "strong",
+          "source_path_or_snippet": "https://novelpia.com/novel/102155",
+          "supports_publish": true,
+          "reason_code": "official_support_ref_present"
+        }
+      ],
+      "release_candidate_not_approval": true,
+      "candidate_set_rebuild_required_before_publish": false,
+      "intent_guard_hold_before_publish": false,
+      "official_support_missing_before_publish": false,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": true,
+      "candidate_set_rebuild_required_before_runtime": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "`괴담텔 1층/2층` 감상은 prior `괴담 호텔 탈출기`의 층 구조를 말한다. after `괴담텔 속 마술사`는 alias collision이므로 복구 대상이다. 공식 detail URL 보강: 괴담 호텔 탈출기 / https://novelpia.com/novel/102155",
+      "evidence_refs": [
+        "https://novelpia.com/novel/102155",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11698877",
+        "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row",
+        "https://novelpia.com/novel/428146",
+        "docs/devs/loop638_candidate_set6_official_support_enrichment_review.json#post_id=11698877"
+      ]
+    },
+    {
+      "post_id": 11703631,
+      "contract_origin": "refined_p0_candidate_set_dispatch",
+      "contract_batch_lane": "CS_candidate_set_contract",
+      "source_dispatch_lane": "candidate_set_rebuild_review",
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "generic_genre_after_wrong_work_restore_prior",
+      "evidence_grade": "Missing",
+      "target_title": "나의 악당들",
+      "target_url": "https://page.kakao.com/content/55826557?tab_type=comment",
+      "official_support_refs": [
+        "https://page.kakao.com/content/55826557?tab_type=comment"
+      ],
+      "official_support_ref_count": 1,
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required",
+        "official_detail_url_enriched_from_web_review"
+      ],
+      "contract_action": "candidate_set_expected_restore_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "나의 악당들",
+        "official_url": "https://page.kakao.com/content/55826557?tab_type=comment",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "candidate_set_source_native_contract_case",
+          "official_support_ref_present"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11703631,
+        "candidate_title": "나의 악당들",
+        "candidate_url": "https://page.kakao.com/content/55826557?tab_type=comment",
+        "source": "candidate_set_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "medium",
+          "direct_bridge_sources": [
+            "refined_p0_candidate_set_dispatch",
+            "candidate_set_rebuild_review",
+            "candidate_set_expected_restore_contract_case"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "candidate_set_source_native_contract",
+          "strength": "missing",
+          "source_path_or_snippet": "after `피카레스크`는 장르어이고 작품 제목으로 publish하기 부적절하다. 댓글의 승수/인성 논의가 prior `나의 악당들` 맥락을 지지하므로 복구 또는 후보 재구축이 필요하다. 공식 detail URL 보강: 나의 악당들 / https://page.kakao.com/content/55826557?tab_type=comment",
+          "supports_publish": false,
+          "reason_code": "candidate_set_source_native_contract_case"
+        },
+        {
+          "kind": "official_support_ref",
+          "strength": "strong",
+          "source_path_or_snippet": "https://page.kakao.com/content/55826557?tab_type=comment",
+          "supports_publish": true,
+          "reason_code": "official_support_ref_present"
+        }
+      ],
+      "release_candidate_not_approval": true,
+      "candidate_set_rebuild_required_before_publish": false,
+      "intent_guard_hold_before_publish": false,
+      "official_support_missing_before_publish": false,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": true,
+      "candidate_set_rebuild_required_before_runtime": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "after `피카레스크`는 장르어이고 작품 제목으로 publish하기 부적절하다. 댓글의 승수/인성 논의가 prior `나의 악당들` 맥락을 지지하므로 복구 또는 후보 재구축이 필요하다. 공식 detail URL 보강: 나의 악당들 / https://page.kakao.com/content/55826557?tab_type=comment",
+      "evidence_refs": [
+        "https://page.kakao.com/content/55826557?tab_type=comment",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11703631",
+        "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row",
+        "docs/devs/loop638_candidate_set6_official_support_enrichment_review.json#post_id=11703631"
+      ]
+    },
+    {
+      "post_id": 11673102,
+      "contract_origin": "refined_p0_candidate_set_dispatch",
+      "contract_batch_lane": "CS_candidate_set_contract",
+      "source_dispatch_lane": "candidate_set_rebuild_review",
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "post_title_exact_prior_work_after_wrong_title",
+      "evidence_grade": "Missing",
+      "target_title": "댓글 보는 천재 의사",
+      "target_url": "https://novelpia.com/novel/372180",
+      "official_support_refs": [
+        "https://novelpia.com/novel/372180"
+      ],
+      "official_support_ref_count": 1,
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required",
+        "official_detail_url_canonical_title_rewrite"
+      ],
+      "contract_action": "candidate_set_expected_restore_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "댓글 보는 천재 의사",
+        "official_url": "https://novelpia.com/novel/372180",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "candidate_set_source_native_contract_case",
+          "official_support_ref_present"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11673102,
+        "candidate_title": "댓글 보는 천재 의사",
+        "candidate_url": "https://novelpia.com/novel/372180",
+        "source": "candidate_set_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "medium",
+          "direct_bridge_sources": [
+            "refined_p0_candidate_set_dispatch",
+            "candidate_set_rebuild_review",
+            "candidate_set_expected_restore_contract_case"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "candidate_set_source_native_contract",
+          "strength": "missing",
+          "source_path_or_snippet": "본문이 `갤질의사`를 랭킹 추천작으로 직접 열거한다. after `방송했더니 천재 의사로 착각당했다`는 후보 표면이 비슷한 다른 작품으로 보여 prior title 복구가 필요하다. 공식 title rewrite: `갤질하는 천재 의사` -> `댓글 보는 천재 의사`. prior title `갤질하는 천재 의사`는 현재 공식 title과 다르다. 같은 작품/별칭 관계는 유지하되 public identity는 `댓글 보는 천재 의사` / NovelPia 372180으로 정규화한다.",
+          "supports_publish": false,
+          "reason_code": "candidate_set_source_native_contract_case"
+        },
+        {
+          "kind": "official_support_ref",
+          "strength": "strong",
+          "source_path_or_snippet": "https://novelpia.com/novel/372180",
+          "supports_publish": true,
+          "reason_code": "official_support_ref_present"
+        }
+      ],
+      "release_candidate_not_approval": true,
+      "candidate_set_rebuild_required_before_publish": false,
+      "intent_guard_hold_before_publish": false,
+      "official_support_missing_before_publish": false,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": true,
+      "candidate_set_rebuild_required_before_runtime": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "본문이 `갤질의사`를 랭킹 추천작으로 직접 열거한다. after `방송했더니 천재 의사로 착각당했다`는 후보 표면이 비슷한 다른 작품으로 보여 prior title 복구가 필요하다. 공식 title rewrite: `갤질하는 천재 의사` -> `댓글 보는 천재 의사`. prior title `갤질하는 천재 의사`는 현재 공식 title과 다르다. 같은 작품/별칭 관계는 유지하되 public identity는 `댓글 보는 천재 의사` / NovelPia 372180으로 정규화한다.",
+      "evidence_refs": [
+        "https://novelpia.com/novel/372180",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11673102",
+        "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row",
+        "docs/devs/loop638_candidate_set6_official_support_enrichment_review.json#post_id=11673102"
+      ]
+    },
+    {
+      "post_id": 11676309,
+      "contract_origin": "refined_p0_candidate_set_dispatch",
+      "contract_batch_lane": "CS_candidate_set_contract",
+      "source_dispatch_lane": "candidate_set_rebuild_review",
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "post_title_exact_prior_work_after_wrong_title",
+      "evidence_grade": "Missing",
+      "target_title": "댓글 보는 천재 의사",
+      "target_url": "https://novelpia.com/novel/372180",
+      "official_support_refs": [
+        "https://novelpia.com/novel/372180"
+      ],
+      "official_support_ref_count": 1,
+      "actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required",
+        "official_detail_url_canonical_title_rewrite"
+      ],
+      "contract_action": "candidate_set_expected_restore_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "댓글 보는 천재 의사",
+        "official_url": "https://novelpia.com/novel/372180",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "candidate_set_source_native_contract_case",
+          "official_support_ref_present"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11676309,
+        "candidate_title": "댓글 보는 천재 의사",
+        "candidate_url": "https://novelpia.com/novel/372180",
+        "source": "candidate_set_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "medium",
+          "direct_bridge_sources": [
+            "refined_p0_candidate_set_dispatch",
+            "candidate_set_rebuild_review",
+            "candidate_set_expected_restore_contract_case"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "candidate_set_source_native_contract",
+          "strength": "missing",
+          "source_path_or_snippet": "제목 `갤질의사 정실일러`가 prior `갤질하는 천재 의사`를 직접 지지한다. after `댓글 보는 천재 의사`는 비슷한 의사/댓글 표면 오염이므로 복구 대상이다. 공식 title rewrite: `갤질하는 천재 의사` -> `댓글 보는 천재 의사`. after title `댓글 보는 천재 의사`는 wrong-work가 아니라 현 공식 title이다. 다만 URL/ledger가 공식 detail과 수렴하도록 shared restore contract에 다시 태운다.",
+          "supports_publish": false,
+          "reason_code": "candidate_set_source_native_contract_case"
+        },
+        {
+          "kind": "official_support_ref",
+          "strength": "strong",
+          "source_path_or_snippet": "https://novelpia.com/novel/372180",
+          "supports_publish": true,
+          "reason_code": "official_support_ref_present"
+        }
+      ],
+      "release_candidate_not_approval": true,
+      "candidate_set_rebuild_required_before_publish": false,
+      "intent_guard_hold_before_publish": false,
+      "official_support_missing_before_publish": false,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": true,
+      "candidate_set_rebuild_required_before_runtime": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "제목 `갤질의사 정실일러`가 prior `갤질하는 천재 의사`를 직접 지지한다. after `댓글 보는 천재 의사`는 비슷한 의사/댓글 표면 오염이므로 복구 대상이다. 공식 title rewrite: `갤질하는 천재 의사` -> `댓글 보는 천재 의사`. after title `댓글 보는 천재 의사`는 wrong-work가 아니라 현 공식 title이다. 다만 URL/ledger가 공식 detail과 수렴하도록 shared restore contract에 다시 태운다.",
+      "evidence_refs": [
+        "https://novelpia.com/novel/372180",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11676309",
+        "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row",
+        "docs/devs/loop638_candidate_set6_official_support_enrichment_review.json#post_id=11676309"
+      ]
+    }
+  ],
+  "approval_boundary": {
+    "candidate_set_contract_plan_is_not_approval": true,
+    "promotion_decision_publish_is_contract_case_only": true,
+    "candidate_set_rebuild_holds_publish": true,
+    "runtime_replay_allowed": false,
+    "full375_collateral_remains_no_go": true,
+    "full_scan_approval": false
+  }
+}

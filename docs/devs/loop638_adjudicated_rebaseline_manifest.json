@@ -1,0 +1,56 @@
+{
+  "report_type": "adjusted_baseline_manifest",
+  "manifest_id": "loop638_adjudicated_rebaseline_manifest",
+  "generated_at": "2026-07-09T23:32:22+09:00",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "rebaseline_status": "APPLIED",
+  "source_head_before_commit": "f8473e36328045a9ed37f12515e6f11f892018a8",
+  "source_run_id": "regression_safe_grounding_20260626_000008_928006_loop01",
+  "projection_id": "loop638_candidate_set6_official_support_projection_application",
+  "baseline_mode": "adjudicated_rebaseline",
+  "collateral_measure": "adjusted_drift",
+  "completion_gate": "adjusted full375 collateral GO + full_scan path",
+  "completion_gate_metric": "adjusted_drift_count",
+  "raw_20260626_baseline_is_completion_gate": false,
+  "raw_20260626_baseline_role": "diagnostic historical compare only",
+  "summary": {
+    "baseline_result_rows": 375,
+    "adjudication_ledger_rows": 59,
+    "ordinary_residual_rows_after_loop": 0,
+    "publication_contract_convergence_gate": "GO",
+    "golden18_gate": "GO",
+    "adjusted_drift_count": 0,
+    "historical_raw_collateral_regression_count": 105,
+    "runtime_collateral_gate": "NO-GO",
+    "runtime_complete": false,
+    "always_on_gate": "NO-GO",
+    "always_on_blockers": [
+      "collateral:collateral_runtime_counts_missing"
+    ],
+    "current_search_hard_blocker_gate": "GO / 0 (carried from loop628 current-search closure; not rerun in loop638)"
+  },
+  "hashes": {
+    "adjudicated_baseline_result_sha256": "958b5c547e03df3931d25606b4e8204fcb85a58a6642d70443478adad91c74cb",
+    "projection_result_sha256": "958b5c547e03df3931d25606b4e8204fcb85a58a6642d70443478adad91c74cb",
+    "adjudication_ledger_sha256": "5b2b73219d1c72a6575386389631c68e9a556eb9182697cfea1754e86fb6a8e3"
+  },
+  "artifacts": {
+    "adjudicated_baseline_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/baseline/loop638_adjudicated_rebaseline_result.json",
+    "projection_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop638_candidate_set6_official_support_projection_result.json",
+    "adjudication_ledger": "docs/devs/loop638_adjudicated_rebaseline_adjudication_ledger.json",
+    "adjusted_drift_compare": "docs/devs/loop638_adjudicated_rebaseline_adjusted_drift_compare.json",
+    "historical_raw_compare": "docs/devs/loop638_candidate_set6_official_support_collateral_compare.json",
+    "always_on_gate": "docs/devs/loop638_always_on_after_adjudicated_rebaseline.json",
+    "publication_contract_convergence": "docs/devs/loop638_candidate_set6_official_support_publication_contract_convergence.json",
+    "residual0_dispatch": "docs/devs/loop638_after_candidate_set6_official_support_ordinary_residual0_dispatch.json"
+  },
+  "approval_boundary": {
+    "rebaseline_applied": true,
+    "adjusted_drift_zero_is_static_collateral_go": true,
+    "runtime_counts_missing_keeps_always_on_no_go": true,
+    "full_scan_approval_requires_full_scan_path": true,
+    "historical_raw_vs_20260626_is_reference_only": true
+  }
+}

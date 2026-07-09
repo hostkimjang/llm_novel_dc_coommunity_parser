@@ -1,5 +1,20 @@
 # Operation Quality Checklist
 
+## 2026-07-09 Loop638 re-baseline 운영 메모
+
+- [x] Loop637 residual6를 official support batch로 닫았다.
+- [x] Exact official `4`, canonical rewrite `2`, hold `0`, validation issue `0`이다.
+- [x] Candidate-set contract plan/application은 restore `6`을 적용했고 release candidate `6`이다.
+- [x] Publication contract는 `GO / violation 0`이다.
+- [x] Residual action queue는 `6 -> 0`으로 닫혔다.
+- [x] 59행 adjudication ledger와 adjusted baseline manifest를 생성했다.
+- [x] Re-baseline은 `APPLIED`, adjusted drift는 `0`이다.
+- [x] Historical raw `105`는 6/26 baseline 대비 diagnostic으로만 남겼다.
+- [ ] Runtime counts missing을 full375 runtime completion으로 보정하지 않는다.
+- [ ] full_scan path 전까지 `full_scan_approval=false`를 유지한다.
+- [ ] 다음 runtime/test run은 `--parallel 16`, 웹 대시보드 ON으로 실행한다.
+- Gate: application `REVIEW-LOCKED`, publication `GO`, release `REVIEW-LOCKED / candidate 6`, residual `REVIEW-LOCKED / ordinary 0`, adjusted drift `GO / 0`, always-on `NO-GO / runtime counts missing`, re-baseline `APPLIED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-09 Loop637 native hold/canonical cleanup 운영 메모
 
 - [x] Loop636 residual19 중 native/web/image evidence 12건을 no-release hold batch로 처리했다.

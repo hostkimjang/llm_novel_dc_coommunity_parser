@@ -1,5 +1,22 @@
 # Development History
 
+## 2026-07-09 - Loop638 candidate-set 6 official support and adjudicated re-baseline
+
+- 새 runtime replay/full375 대형 런은 실행하지 않았다.
+- Loop637 residual6 전부를 공식 detail 근거로 판결했다. Exact official `4`, canonical rewrite `2`, validation issue `0`이다.
+- `11673102/11676309`는 prior target `갤질하는 천재 의사`를 NovelPia 공식 현재 title `댓글 보는 천재 의사`와 URL `https://novelpia.com/novel/372180`로 rewrite했다.
+- Candidate-set contract plan은 rows `6`, action `candidate_set_expected_restore_contract_case 6`, release candidate `6`, validation issue `0`이다.
+- Projection application은 applied restore `6`이고 release audit은 pending `0`, violation `0`, release candidate `6`이다.
+- Publication contract convergence는 `GO / 375 rows / violation 0`이다.
+- Bootstrap collateral은 historical raw `105`로 남았지만 2026-06-26 baseline 대비 diagnostic compare다.
+- Residual accounting은 source `6`, processed `6`, ordinary residual `0`이다.
+- 59행 adjudication ledger와 adjusted baseline manifest를 생성했고 re-baseline은 `APPLIED`다.
+- Adjudicated compare는 `adjusted_drift_count=0`, static collateral `GO`다.
+- Always-on은 runtime counts missing 때문에 `NO-GO`이며 full_scan approval은 열지 않았다.
+- 검증은 unit tests `77`, py_compile PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_638_REPORT_20260709.md`다.
+- Gate는 publication `GO`, release `REVIEW-LOCKED / candidate 6`, residual `REVIEW-LOCKED / 0`, adjusted drift `GO / 0`, always-on `NO-GO / runtime counts missing`, re-baseline `APPLIED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-09 - Loop637 native hold 12 and canonical cleanup 1 contract application
 
 - 새 runtime replay/full375는 실행하지 않았다.
