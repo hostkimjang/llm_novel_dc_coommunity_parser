@@ -1,0 +1,18 @@
+﻿.\.venv312\Scripts\py-spy.exe : [2026-07-09T12:03:14.023027200Z WARN  py_spy::python_process_info] Interpreter address
+from symbol is invalid 00007ffb11f82768
+At line:2 char:1
++ .\.venv312\Scripts\py-spy.exe dump --pid 48480 2>&1 | Out-File -FileP ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([2026-07-09T12:...0007ffb11f82768:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+Process 48480: "C:\Python312\python.exe" expert_main.py --input out\regression_safe_grounding_20260626_000008_928006_loop01\panel\regression_panel_input.jsonl --output out\regression_safe_grounding_20260626_000008_928006_loop01\canary\loop629_full375_after_loop628_search_blocker_closure_result.json --parallel 16 --server-type vllm --llm-endpoint http://10.20.0.101:8000 --llm-model bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4 --reuse-shards-only --slang-db off --vlm on --ocr on --require-vlm-ocr-for-images
+Python v3.12.6 (C:\Python312\python.exe)
+
+Error: Failed to get stack traces
+
+Caused by:
+    0: Failed to call get_stack_trace for thread 60532
+    1: Failed to copy PyFrameObject
+    2: ReadProcessMemory 또는 WriteProcessMemory의 일부 작업만을 마쳤습니다. (os error 299)
+    3: ReadProcessMemory 또는 WriteProcessMemory의 일부 작업만을 마쳤습니다. (os error 299)

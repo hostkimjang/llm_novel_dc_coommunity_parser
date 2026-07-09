@@ -1,0 +1,88 @@
+{
+  "report_type": "always_on_regression_gates",
+  "generated_at": "2026-07-09T21:14:19",
+  "gate": "NO-GO",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "policy": {
+    "golden_expected_rows": 18,
+    "full_375_collateral_required": true,
+    "golden_pass_alone_is_not_approval": true,
+    "collateral_runtime_pass_alone_is_not_approval": true,
+    "collateral_source_native_exclusion_requires_clean_review_summary": true,
+    "collateral_contract_accounting_is_not_full_scan_approval": true,
+    "completion_gate_uses_adjusted_metric_after_adjudication": true,
+    "historical_raw_vs_20260626_is_not_completion_gate_after_rebaseline": true
+  },
+  "golden": {
+    "gate": "GO",
+    "expected_rows": 18,
+    "row_count": 18,
+    "passed_count": 18,
+    "failed_count": 0,
+    "canary_semantic_gate": "PASS",
+    "runtime_complete": true,
+    "blockers": []
+  },
+  "collateral": {
+    "gate": "NO-GO",
+    "expected_shared_posts": 375,
+    "shared_post_count": 375,
+    "changed_post_count": 206,
+    "baseline_mode": "bootstrap_20260626",
+    "collateral_measure": "historical_raw_vs_20260626",
+    "collateral_regression_count": 137,
+    "historical_raw_collateral_regression_count": 137,
+    "adjusted_drift_count": null,
+    "review_adjusted_regression_count": 137,
+    "gate_metric": "collateral_regression_count",
+    "gate_regression_count": 137,
+    "review_adjustment": {
+      "provided": true,
+      "applied": false,
+      "review_id": null,
+      "review_gate": "REVIEW-LOCKED",
+      "review_scope": "full_regression_post_id_overlap",
+      "batch_review_rows": null,
+      "reviewed_rows": null,
+      "source_native_decision_rows": null,
+      "info_missing_rows": null,
+      "unreviewed_batch_rows": null,
+      "unreviewed_or_info_missing_batch_rows": null,
+      "unreviewed_regression_rows": 0,
+      "reviewed_raw_regression_rows": 137,
+      "reviewed_non_regression_rows": 0,
+      "unreviewed_regression_post_ids": [],
+      "validation_issue_count": null,
+      "exclusion_candidate_rows": 0,
+      "contract_accounting": {
+        "provided": false,
+        "applied": false,
+        "accounting_id": null,
+        "contract_accounted_raw_regression_rows": 0,
+        "contract_accounted_additional_rows": 0,
+        "ordinary_residual_unprocessed_rows": null,
+        "validation_issue_count": null,
+        "blockers": []
+      },
+      "label_counts": {},
+      "action_counts": {},
+      "review_adjusted_regression_count": 137,
+      "blockers": [
+        "collateral_review_validation_issues_nonzero",
+        "collateral_review_counts_missing"
+      ]
+    },
+    "runtime_complete": true,
+    "blockers": [
+      "collateral_review_validation_issues_nonzero",
+      "collateral_review_counts_missing",
+      "collateral_regression_count_nonzero"
+    ]
+  },
+  "blockers": [
+    "collateral:collateral_review_validation_issues_nonzero",
+    "collateral:collateral_review_counts_missing",
+    "collateral:collateral_regression_count_nonzero"
+  ]
+}

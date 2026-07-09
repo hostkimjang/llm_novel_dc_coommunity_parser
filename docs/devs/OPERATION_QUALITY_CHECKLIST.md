@@ -1,5 +1,21 @@
 # Operation Quality Checklist
 
+## 2026-07-09 Loop629 full375 collateral 운영 메모
+
+- [x] Full375를 `--parallel 16`, dashboard ON, search 포함 non-light 조건으로 완주했다.
+- [x] Runtime manifest는 completed/flushed/pending/failed `375/375/0/0`, `large_run_complete=true`, effective parallel `16`이다.
+- [x] Dashboard는 `http://127.0.0.1:8080`이고 진행 관측용으로 사용했다.
+- [x] Pre/post query shard audit은 모두 `ok=16/16`이다.
+- [x] Publication contract convergence는 `GO / violation 0`이다.
+- [x] Row-level search evidence는 `REVIEW`이고, unrecovered degraded query `2`가 남았다.
+- [x] Historical raw collateral은 `NO-GO / raw 137`이다.
+- [x] Raw `137`을 `expected_fp_removal 42`, `intended_recovery_blind_judge 21`, `search_hold 13`, `missing 4`, `true_triage 64`로 분리했다.
+- [ ] Runtime completion `GO`를 full375 collateral GO나 full_scan approval로 승격하지 않는다.
+- [ ] Search health가 정상 아닌 행은 복구 재실행 전 collateral regression evidence로 쓰지 않는다.
+- [ ] Raw historical diff가 아니라 adjudicated adjusted drift를 완료 gate로 쓴다.
+- [ ] Re-baseline은 `true triage 64`와 intended recovery `21` 전 행 판결 후에만 적용한다.
+- Gate: runtime full375 `GO`, query shard `GO`, publication contract `GO`, row search evidence `REVIEW`, collateral `NO-GO / raw 137`, split `REVIEW-LOCKED`, re-baseline `NOT_APPLIED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-09 Loop628 current search hard blocker closure 운영 메모
 
 - [x] Loop626 remaining required-search hard blocker `11660258/11694026`만 분리해 재실행했다.

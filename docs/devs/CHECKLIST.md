@@ -1,5 +1,24 @@
 # Development Checklist
 
+## 2026-07-09 Loop629 full375 collateral 재확인 체크
+
+- [x] Loop628 current search hard blocker closure 뒤 full375를 다시 실행했다.
+- [x] Runtime은 `--parallel 16`, dashboard ON, search 포함 non-light, VLM/OCR ON, `slang_db off`, `--reuse-shards-only`로 실행했다.
+- [x] Run `20260709_123424_537949`은 completed/flushed/pending/failed `375/375/0/0`, integrity `GO / clean_completed_source`다.
+- [x] Dashboard는 `http://127.0.0.1:8080`, requested/effective parallel은 `16/16`이다.
+- [x] Pre/post query audit은 모두 shard `ok=16/16`이다.
+- [x] Run health는 publication contract convergence `GO / violation 0`이다.
+- [x] Row-level search evidence는 `REVIEW`다: `ok 313 / SEARCH_DEGRADED_RECOVERED 35 / SEARCH_DEGRADED 2`, degraded query `115`, unrecovered `2`.
+- [x] Full375 historical raw compare는 shared `375/375`, changed `206`, raw regression `137`, gate `NO-GO`다.
+- [x] Survey/search split을 생성했다: expected FP removal `42`, intended recovery blind judge `21`, search hold `13`, search health missing `4`, true triage `64`.
+- [x] Always-on gate는 golden18 `GO / 18 of 18`과 full375 collateral `NO-GO`를 함께 기록했다.
+- [ ] Raw `137`을 완료 blocker나 일괄 회귀로 쓰지 않는다.
+- [ ] `true triage 64`와 intended recovery `21` 전 행 판결 전에는 re-baseline을 적용하지 않는다.
+- [ ] Search-health 보류 행은 검색 복구 후 재실행 전까지 regression evidence로 쓰지 않는다.
+- [ ] Re-baseline 후 완료 gate는 adjusted drift 기준으로만 판단한다.
+- Gate: runtime full375 `GO`, query shard `GO`, publication contract `GO`, row search evidence `REVIEW`, full375 collateral `NO-GO / raw 137`, split `REVIEW-LOCKED`, re-baseline `NOT_APPLIED`, adjusted gate `NOT_OPEN_UNTIL_ADJUDICATED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_629_REPORT_20260709.md`, `docs/devs/loop629_full375_after_loop628_run_health.json`, `docs/devs/loop629_full375_after_loop628_collateral_compare.json/.md`, `docs/devs/loop629_full375_after_loop628_survey_search_health_split.json/.md`, `docs/devs/loop629_always_on_golden18_full375_adjusted_gate.json/.md`, `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop629_full375_after_loop628_search_blocker_closure_result.json`.
+
 ## 2026-07-09 Loop628 remaining search blocker2 replay 체크
 
 - [x] Loop626 remaining required-search hard blocker `11660258/11694026` 2행 입력을 생성했다.
