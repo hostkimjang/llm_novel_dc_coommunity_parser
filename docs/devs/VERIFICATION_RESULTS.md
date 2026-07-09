@@ -1,5 +1,31 @@
 # Verification Results
 
+## 2026-07-09 Loop623 current-head true triage batch 검증
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_623_REPORT_20260709.md`
+  - `docs/devs/loop623_loop620_current_head_projection_collateral_compare.json/.md`
+  - `docs/devs/loop623_loop620_current_head_projection_survey_search_health_split.json/.md`
+  - `docs/devs/loop623_true_triage57_source_native_review_batch.json/.jsonl/.md`
+  - `docs/devs/loop623_true_triage57_prior_compatible_source_native_verdicts.json`
+  - `docs/devs/loop623_true_triage57_source_native_combined_review.json/.md`
+  - `docs/devs/loop623_true_triage57_residual_action_queue.json/.md`
+- 검증:
+  - Runtime replay/full375: NOT_RUN.
+  - Current projection collateral compare: PASS 산출, shared `375`, raw regression `141`, gate `NO-GO`.
+  - Survey/search split: PASS 산출, expected FP `47`, intended recovery `25`, search hold `11`, missing `4`, true triage `57`.
+  - True triage review batch: PASS 산출, selected `57`, missing source/baseline/after `0/0/0`, priority `P0 56 / P1 1`.
+  - Prior-compatible verdict 대조: PASS 산출, compatible `38`, unreviewed current batch rows `19`.
+  - Combined review: PASS 산출, decision rows `26`, label `ACCEPT 6 / REPROCESS 14 / HOLD 6 / INFO_MISSING 31`, validation issue `0`.
+  - Residual action queue: PASS 산출, residual `51`, validation issue `0`.
+  - Focused unittest: PASS, `33` tests.
+  - Py compile: PASS, 관련 tools `6`개.
+- 결과:
+  - Current projection은 publication blocker를 줄였지만 full375 collateral은 여전히 `NO-GO`.
+  - true triage는 단건이 아니라 `57`건 batch로 고정했고, 기존 판정 재사용으로 신규 blind/source-native 필요 행을 `19`건으로 분리했다.
+  - Combined residual action queue는 `51`건이며 approval이 아니다.
+- Gate: current projection collateral `NO-GO / raw 141`, true triage batch `REVIEW-LOCKED`, residual action queue `REVIEW-LOCKED / 51`, runtime replay `NOT_RUN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-09 Loop622 Loop609 raw139 search-admissibility lock 검증
 
 - 산출물:

@@ -1,5 +1,21 @@
 # Development History
 
+## 2026-07-09 - Loop623 current-head true triage batch
+
+- 새 runtime replay/full375는 실행하지 않았다.
+- Loop621 publication sync projection result를 current HEAD after로 삼아 full375 collateral compare를 다시 생성했다.
+- Current projection compare는 shared `375/375`, changed `212`, raw regression `141`, projection collateral `NO-GO`, runtime counts `missing`이다.
+- Survey/search split은 expected FP removal `47`, intended recovery blind judge `25`, search degraded/recovered hold `11`, search health missing `4`, true triage `57`이다.
+- `true triage 57`을 source/context 포함 review batch로 고정했고 missing source/baseline/after는 `0/0/0`, priority는 `P0 56 / P1 1`이다.
+- 과거 source-native verdict 전체 후보를 현재 후보 title/url과 대조해 prior-compatible `38`건을 회수했다.
+- Combined review는 decision rows `26`, label `ACCEPT 6 / REPROCESS 14 / HOLD 6 / INFO_MISSING 31`, validation issue `0`이다.
+- Residual action queue는 `51`건이며 exclusion candidate `6`, repair `14`, policy/native review `6`, source-native/blind review `31`이다.
+- `tools/split_collateral_by_survey_search_health.py`의 Loop609 하드코딩 문구를 source compare/health 기반으로 일반화했다.
+- `tools/build_collateral_triage_review_batch.py`에 `--include-all-priorities`, `tools/build_prior_compatible_collateral_verdicts.py`에 `--source-verdicts-glob`를 추가했다.
+- 검증은 focused unittest `33`개, py_compile PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_623_REPORT_20260709.md`다.
+- Gate는 current projection collateral `NO-GO / raw 141`, residual action queue `REVIEW-LOCKED / 51`, runtime replay `NOT_RUN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-09 - Loop622 Loop609 raw139 search-admissibility lock
 
 - 새 runtime replay/full375는 실행하지 않았다.

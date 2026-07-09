@@ -161,6 +161,27 @@ class BuildCollateralTriageReviewBatchTest(unittest.TestCase):
         self.assertEqual(report["summary"]["include_post_ids"], [18, 20])
         self.assertEqual(report["summary"]["selected_review_rows"], 2)
 
+    def test_include_all_priorities_keeps_explicit_non_p0_regression_rows(self):
+        p1_row = {**_triage_row(21, "new_resolution_promotion", "null_to_resolved", None, "F"), "priority": "P1"}
+        report = build_review_batch(
+            triage_report={
+                "rows": [
+                    _triage_row(20, "safe_loss_resolved_to_null", "resolved_to_null", "A", None),
+                    p1_row,
+                ]
+            },
+            panel_rows={post_id: {"post_id": post_id, "title": f"post {post_id}"} for post_id in (20, 21)},
+            baseline_rows={},
+            after_rows={},
+            include_post_ids={20, 21},
+            include_all_priorities=True,
+            generated_at="2026-07-09T00:00:00",
+        )
+
+        self.assertEqual([row["post_id"] for row in report["review_rows"]], [20, 21])
+        self.assertEqual(report["summary"]["counts_by_priority"], {"P0": 1, "P1": 1})
+        self.assertTrue(report["summary"]["include_all_priorities"])
+
     def test_scope_label_is_configurable(self):
         report = build_review_batch(
             triage_report={

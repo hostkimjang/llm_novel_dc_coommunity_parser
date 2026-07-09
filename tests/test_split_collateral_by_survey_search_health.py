@@ -70,6 +70,7 @@ class SplitCollateralBySurveySearchHealthTest(unittest.TestCase):
     def test_markdown_records_search_gate_boundary(self):
         report = {
             "split_id": "unit",
+            "source_compare_id": "unit_compare",
             "raw_regression_rows": 1,
             "summary": {
                 "expected_fp_removal_rows": 0,
@@ -86,12 +87,23 @@ class SplitCollateralBySurveySearchHealthTest(unittest.TestCase):
                 "intended_recovery_blind_judge_post_ids": [],
                 "true_triage_ok_search_nonfp_post_ids": [],
             },
+            "health_evidence": {
+                "run_search_evidence": {
+                    "row_search_health": {
+                        "degraded_total": 7,
+                        "unrecovered_degraded_total": 2,
+                    }
+                }
+            },
         }
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "report.md"
             write_markdown(path, report)
             text = path.read_text(encoding="utf-8")
         self.assertIn("검색 선결", text)
+        self.assertIn("unit_compare", text)
+        self.assertIn("degraded query `7`", text)
+        self.assertNotIn("Loop609 health audit", text)
         self.assertIn("회귀 판정 근거로 쓰지 않는다", text)
 
 

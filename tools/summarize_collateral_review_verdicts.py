@@ -99,6 +99,7 @@ def _queue_transition(
     repair_required = label_counts.get("REPROCESS", 0)
     policy_or_review_required = label_counts.get("HOLD", 0)
     return {
+        "original_batch_rows": batch_row_count,
         "original_p0_rows": batch_row_count,
         "source_native_reviewed_rows": len(rows),
         "source_native_decision_rows": decision_rows,
@@ -288,7 +289,7 @@ def write_markdown(path: Path, summary: dict[str, Any]) -> None:
     lines.extend(["", "## Action queue 전환", ""])
     lines.extend(
         [
-            f"- 원 P0 행: `{transition.get('original_p0_rows', 0)}`",
+            f"- 원 batch 행: `{transition.get('original_batch_rows', transition.get('original_p0_rows', 0))}`",
             f"- source-native 검토 완료: `{transition.get('source_native_reviewed_rows', 0)}`",
             f"- source-native decision rows: `{transition.get('source_native_decision_rows', transition.get('source_native_reviewed_rows', 0))}`",
             f"- info missing rows: `{transition.get('info_missing_rows', 0)}`",

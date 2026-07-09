@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import glob
 import json
 from collections import Counter
 from datetime import datetime
@@ -69,6 +70,16 @@ def _source_spec(value: str) -> tuple[Path, str]:
     if not bucket:
         raise ValueError("--source-verdicts bucket cannot be empty")
     return path, bucket
+
+
+def _source_glob_specs(value: str) -> list[tuple[Path, str]]:
+    if "::" not in value:
+        raise ValueError("--source-verdicts-glob entries must use GLOB::triage_bucket")
+    pattern, bucket = value.rsplit("::", 1)
+    bucket = _string(bucket)
+    if not bucket:
+        raise ValueError("--source-verdicts-glob bucket cannot be empty")
+    return [(Path(path), bucket) for path in sorted(glob.glob(pattern))]
 
 
 def _expected_bucket_for_row(old_row: dict[str, Any], source_bucket: str) -> tuple[str, str | None]:
@@ -504,8 +515,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--source-verdicts",
         action="append",
-        required=True,
+        default=[],
         help="Prior verdict JSON and its expected current triage bucket, formatted as PATH::bucket.",
+    )
+    parser.add_argument(
+        "--source-verdicts-glob",
+        action="append",
+        default=[],
+        help="Prior verdict JSON glob and expected current triage bucket, formatted as GLOB::bucket.",
     )
     parser.add_argument("--review-id", required=True)
     parser.add_argument("--scope", required=True)
@@ -524,6 +541,10 @@ def main() -> int:
     args = parse_args()
     batch = load_json(args.batch)
     source_specs = [_source_spec(value) for value in args.source_verdicts]
+    for value in args.source_verdicts_glob:
+        source_specs.extend(_source_glob_specs(value))
+    if not source_specs:
+        raise ValueError("At least one --source-verdicts or --source-verdicts-glob entry is required")
     verdicts, state = build_prior_compatible_verdicts(
         batch=batch,
         batch_path=args.batch,

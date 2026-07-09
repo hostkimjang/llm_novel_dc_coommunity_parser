@@ -226,12 +226,15 @@ def _p0_rows(
     buckets: set[str] | None = None,
     include_post_ids: set[int] | None = None,
     exclude_post_ids: set[int] | None = None,
+    include_all_priorities: bool = False,
 ) -> list[dict[str, Any]]:
     exclude_post_ids = exclude_post_ids or set()
     rows = [
         row
         for row in triage_report.get("rows", [])
-        if isinstance(row, dict) and row.get("is_regression") is True and row.get("priority") == "P0"
+        if isinstance(row, dict)
+        and row.get("is_regression") is True
+        and (include_all_priorities or row.get("priority") == "P0")
     ]
     if buckets:
         rows = [row for row in rows if str(row.get("triage_bucket") or "") in buckets]
@@ -270,6 +273,7 @@ def build_review_batch(
     buckets: set[str] | None = None,
     include_post_ids: set[int] | None = None,
     exclude_post_ids: set[int] | None = None,
+    include_all_priorities: bool = False,
     scope_label: str = "collateral P0",
     generated_at: str | None = None,
 ) -> dict[str, Any]:
@@ -280,6 +284,7 @@ def build_review_batch(
         buckets=buckets,
         include_post_ids=include_post_ids,
         exclude_post_ids=set(),
+        include_all_priorities=include_all_priorities,
     )
     excluded_p0_candidate_rows = sum(
         1
@@ -292,6 +297,7 @@ def build_review_batch(
         buckets=buckets,
         include_post_ids=include_post_ids,
         exclude_post_ids=exclude_post_ids,
+        include_all_priorities=include_all_priorities,
     )
     review_rows: list[dict[str, Any]] = []
     missing = Counter()
@@ -339,6 +345,7 @@ def build_review_batch(
             }
         )
     counts_by_bucket = Counter(str(row.get("triage_bucket") or "") for row in review_rows)
+    counts_by_priority = Counter(str(row.get("priority") or "") for row in review_rows)
     return {
         "report_type": "collateral_p0_blind_source_review_batch",
         "scope_label": scope_label,
@@ -352,6 +359,7 @@ def build_review_batch(
             "input_triage_rows": len(triage_report.get("rows", [])),
             "selected_review_rows": len(review_rows),
             "counts_by_bucket": dict(counts_by_bucket),
+            "counts_by_priority": dict(counts_by_priority),
             "missing_source_rows": missing.get("source", 0),
             "missing_baseline_result_rows": missing.get("baseline", 0),
             "missing_after_result_rows": missing.get("after", 0),
@@ -360,6 +368,7 @@ def build_review_batch(
             "include_post_ids": sorted(include_post_ids or []),
             "excluded_post_id_rows": len(exclude_post_ids),
             "excluded_p0_candidate_rows": excluded_p0_candidate_rows,
+            "include_all_priorities": include_all_priorities,
         },
         "instructions_ko": [
             "blind judge 입력에는 source_native_packet과 blind_judge_options만 제공한다.",
@@ -385,6 +394,7 @@ def write_markdown(path: Path, report: dict[str, Any], *, inputs: dict[str, Path
         f"- selected review rows: `{summary['selected_review_rows']}`",
         f"- excluded post_id rows: `{summary.get('excluded_post_id_rows', 0)}`",
         f"- excluded P0 candidate rows: `{summary.get('excluded_p0_candidate_rows', 0)}`",
+        f"- include all priorities: `{str(summary.get('include_all_priorities', False)).lower()}`",
         "",
         "## 입력",
         "",
@@ -395,6 +405,11 @@ def write_markdown(path: Path, report: dict[str, Any], *, inputs: dict[str, Path
     for bucket, count in sorted(summary["counts_by_bucket"].items()):
         lines.append(f"- `{bucket}`: `{count}`")
     if not summary["counts_by_bucket"]:
+        lines.append("- 없음")
+    lines.extend(["", "## Priority", ""])
+    for priority, count in sorted((summary.get("counts_by_priority") or {}).items()):
+        lines.append(f"- `{priority}`: `{count}`")
+    if not summary.get("counts_by_priority"):
         lines.append("- 없음")
     lines.extend(
         [
@@ -439,7 +454,7 @@ def write_markdown(path: Path, report: dict[str, Any], *, inputs: dict[str, Path
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Build blind/source-native review batch for P0 collateral triage rows.")
+    parser = argparse.ArgumentParser(description="Build blind/source-native review batch for collateral triage rows.")
     parser.add_argument("--triage", required=True, type=Path)
     parser.add_argument("--panel-input", required=True, type=Path)
     parser.add_argument("--baseline-result", required=True, type=Path)
@@ -474,6 +489,11 @@ def parse_args() -> argparse.Namespace:
         default="",
         help="쉼표로 구분한 post_id 목록. 지정하면 해당 P0 collateral row만 review batch에 포함한다.",
     )
+    parser.add_argument(
+        "--include-all-priorities",
+        action="store_true",
+        help="P0뿐 아니라 include/bucket 조건에 맞는 모든 regression priority를 batch에 포함한다.",
+    )
     return parser.parse_args()
 
 
@@ -496,6 +516,7 @@ def main() -> None:
             for item in str(args.exclude_post_ids or "").split(",")
             if item.strip()
         },
+        include_all_priorities=args.include_all_priorities,
         scope_label=args.scope_label,
     )
     inputs = {

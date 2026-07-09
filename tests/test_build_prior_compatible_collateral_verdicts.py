@@ -6,10 +6,22 @@ from tools.build_prior_compatible_collateral_verdicts import (
     build_prior_compatible_verdicts,
     build_unreviewed_batch,
     build_unreviewed_placeholder_verdicts,
+    _source_glob_specs,
 )
 
 
 class BuildPriorCompatibleCollateralVerdictsTest(unittest.TestCase):
+    def test_source_verdicts_glob_expands_with_bucket(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "b_source_native_verdicts.json").write_text("{}", encoding="utf-8")
+            (root / "a_source_native_verdicts.json").write_text("{}", encoding="utf-8")
+
+            specs = _source_glob_specs(str(root / "*_source_native_verdicts.json") + "::*")
+
+        self.assertEqual([bucket for _, bucket in specs], ["*", "*"])
+        self.assertEqual([path.name for path, _ in specs], ["a_source_native_verdicts.json", "b_source_native_verdicts.json"])
+
     def test_remaps_option_id_by_current_title_match(self):
         batch = {
             "review_rows": [

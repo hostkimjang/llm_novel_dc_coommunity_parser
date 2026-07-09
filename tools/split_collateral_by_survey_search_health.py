@@ -281,8 +281,26 @@ def classify_rows(
 def write_markdown(path: Path, report: dict[str, Any]) -> None:
     summary = report["summary"]
     derived = report["derived_sets"]
+    source_compare_id = str(report.get("source_compare_id") or report["split_id"])
+    row_search_health = (
+        ((report.get("health_evidence") or {}).get("run_search_evidence") or {}).get("row_search_health")
+        if isinstance((report.get("health_evidence") or {}).get("run_search_evidence"), dict)
+        else None
+    )
+    degraded_total = (row_search_health or {}).get("degraded_total") if isinstance(row_search_health, dict) else None
+    unrecovered_total = (
+        (row_search_health or {}).get("unrecovered_degraded_total")
+        if isinstance(row_search_health, dict)
+        else None
+    )
+    search_boundary_line = (
+        f"- `{source_compare_id}` health audit는 degraded query `{degraded_total}`, "
+        f"unrecovered degraded `{unrecovered_total}`를 기록했다."
+        if degraded_total is not None or unrecovered_total is not None
+        else f"- `{source_compare_id}` 행 search health가 ok가 아닌 경우 collateral 변화는 회귀 판정 근거로 쓰지 않는다."
+    )
     lines = [
-        f"# {report['split_id']} raw139 survey/search-health 3분",
+        f"# {report['split_id']} raw regression survey/search-health 3분",
         "",
         "- gate: `REVIEW-LOCKED`",
         "- semantic_quality: `REVIEW-LOCKED`",
@@ -311,7 +329,7 @@ def write_markdown(path: Path, report: dict[str, Any]) -> None:
         "",
         "## 검색 선결",
         "",
-        "- Loop609 health audit는 degraded query `1801`, unrecovered degraded `234`를 기록했다.",
+        search_boundary_line,
         "- `SEARCH_DEGRADED` 또는 `SEARCH_DEGRADED_RECOVERED` 행의 collateral 변화는 회귀 판정 근거로 쓰지 않는다.",
         "- full375 재실행 전 검색 인프라 복구와 degraded/recovered 행 재실행이 선행이다.",
         "",
@@ -326,7 +344,7 @@ def write_markdown(path: Path, report: dict[str, Any]) -> None:
         "## Gate 해석",
         "",
         (
-            "Loop609 raw139는 일괄 P0 triage 대상이 아니다. 먼저 survey FP 제거는 정당 제거로 "
+            f"`{source_compare_id}` raw regression은 일괄 P0 triage 대상이 아니다. 먼저 survey FP 제거는 정당 제거로 "
             "회계 면제하고, 의도 복구 row는 제목 정답성 blind judge만 통과시키며, "
             "search health가 정상인 non-FP 잔여만 실제 triage 대상으로 다룬다."
         ),
@@ -444,7 +462,7 @@ def main() -> int:
             title=f"{args.split_id} search degraded/recovered hold",
             rows=search_rows,
             description=(
-                "Loop609 row search_health가 SEARCH_DEGRADED 또는 SEARCH_DEGRADED_RECOVERED인 raw regression이다. "
+                "Row search_health가 SEARCH_DEGRADED 또는 SEARCH_DEGRADED_RECOVERED인 raw regression이다. "
                 "검색 복구 후 해당 행만 재실행하기 전까지 collateral regression evidence로 쓰지 않는다."
             ),
         )

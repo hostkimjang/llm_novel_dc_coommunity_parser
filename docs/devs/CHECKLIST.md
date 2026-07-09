@@ -1,5 +1,24 @@
 # Development Checklist
 
+## 2026-07-09 Loop623 current-head true triage batch 체크
+
+- [x] 새 runtime replay/full375를 실행하지 않았다.
+- [x] Loop621 projection result를 현재 HEAD after로 삼아 full375 collateral compare를 다시 생성했다.
+- [x] Current projection compare는 shared `375/375`, changed `212`, raw regression `141`, projection collateral `NO-GO`, runtime counts `missing`이다.
+- [x] Survey/search split은 expected FP removal `47`, intended recovery blind judge `25`, search degraded/recovered hold `11`, search health missing `4`, true triage `57`이다.
+- [x] Split Markdown의 Loop609 하드코딩 문구를 제거해 source compare id와 health audit 수치를 쓰도록 고쳤다.
+- [x] `true triage 57` source-native review batch를 생성했다. missing source/baseline/after `0/0/0`, priority `P0 56 / P1 1`.
+- [x] `build_collateral_triage_review_batch.py`에 `--include-all-priorities`를 추가해 explicit include post_id의 P1 true-triage가 빠지지 않게 했다.
+- [x] `build_prior_compatible_collateral_verdicts.py`에 `--source-verdicts-glob`를 추가해 prior verdict 전체 후보를 glob으로 대조했다.
+- [x] Prior-compatible source-native verdict는 `38`건, combined decision rows는 `26`건이다.
+- [x] Combined review label은 `ACCEPT 6 / REPROCESS 14 / HOLD 6 / INFO_MISSING 31`, validation issue `0`이다.
+- [x] Residual action queue는 `51`건이다: exclusion candidate `6`, repair `14`, policy/native review `6`, source-native/blind review `31`.
+- [ ] Safe-loss restore `11`건은 shared promotion gate wiring batch로 처리한다.
+- [ ] Wrong-work repair `2`건은 title/URL trace repair batch로 처리한다.
+- [ ] Search non-ok 행은 검색 복구 후 재실행 전까지 regression evidence로 쓰지 않는다.
+- Gate: current projection collateral `NO-GO / raw 141`, true triage batch `REVIEW-LOCKED / 57`, residual action queue `REVIEW-LOCKED / 51`, runtime replay `NOT_RUN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_623_REPORT_20260709.md`, `docs/devs/loop623_*`, `tools/build_collateral_triage_review_batch.py`, `tools/build_prior_compatible_collateral_verdicts.py`, `tools/split_collateral_by_survey_search_health.py`, `tools/summarize_collateral_review_verdicts.py`.
+
 ## 2026-07-09 Loop622 Loop609 raw139 search-admissibility lock 체크
 
 - [x] 새 runtime replay/full375를 실행하지 않았다.

@@ -1,0 +1,385 @@
+{
+  "review_id": "loop623_true_triage57_prior_compatible_source_native_unreviewed_placeholders",
+  "scope": "Loop623 current-head true triage 57 prior-compatible source-native verdicts unreviewed placeholders",
+  "source_batch": "docs\\devs\\loop623_true_triage57_source_native_review_batch.json",
+  "generated_at": "2026-07-09T10:46:35",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "source_review_rows": 57,
+    "prior_compatible_rows": 38,
+    "additional_covered_rows": 0,
+    "covered_post_ids": 38,
+    "placeholder_rows": 19,
+    "counts_by_bucket": {
+      "wrong_work_title_flip": 9,
+      "unsafe_promotion_from_hold": 2,
+      "safe_loss_resolved_to_null": 7,
+      "new_resolution_promotion": 1
+    }
+  },
+  "rows": [
+    {
+      "post_id": 11661857,
+      "triage_bucket": "wrong_work_title_flip",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "current_regression_row_without_compatible_prior_verdict",
+      "evidence_grade": "Missing",
+      "action": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "rationale_ko": "현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop623_true_triage57_source_native_review_batch.json#post_id=11661857",
+        "loop623_true_triage57_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11663557,
+      "triage_bucket": "wrong_work_title_flip",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "current_regression_row_without_compatible_prior_verdict",
+      "evidence_grade": "Missing",
+      "action": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "rationale_ko": "현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop623_true_triage57_source_native_review_batch.json#post_id=11663557",
+        "loop623_true_triage57_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11665110,
+      "triage_bucket": "wrong_work_title_flip",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "current_regression_row_without_compatible_prior_verdict",
+      "evidence_grade": "Missing",
+      "action": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "rationale_ko": "현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop623_true_triage57_source_native_review_batch.json#post_id=11665110",
+        "loop623_true_triage57_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11673080,
+      "triage_bucket": "wrong_work_title_flip",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "current_regression_row_without_compatible_prior_verdict",
+      "evidence_grade": "Missing",
+      "action": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "rationale_ko": "현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop623_true_triage57_source_native_review_batch.json#post_id=11673080",
+        "loop623_true_triage57_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11689248,
+      "triage_bucket": "wrong_work_title_flip",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "current_regression_row_without_compatible_prior_verdict",
+      "evidence_grade": "Missing",
+      "action": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "rationale_ko": "현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop623_true_triage57_source_native_review_batch.json#post_id=11689248",
+        "loop623_true_triage57_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11694049,
+      "triage_bucket": "wrong_work_title_flip",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "current_regression_row_without_compatible_prior_verdict",
+      "evidence_grade": "Missing",
+      "action": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "rationale_ko": "현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop623_true_triage57_source_native_review_batch.json#post_id=11694049",
+        "loop623_true_triage57_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11698880,
+      "triage_bucket": "wrong_work_title_flip",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "current_regression_row_without_compatible_prior_verdict",
+      "evidence_grade": "Missing",
+      "action": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "rationale_ko": "현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop623_true_triage57_source_native_review_batch.json#post_id=11698880",
+        "loop623_true_triage57_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11702094,
+      "triage_bucket": "wrong_work_title_flip",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "current_regression_row_without_compatible_prior_verdict",
+      "evidence_grade": "Missing",
+      "action": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "rationale_ko": "현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop623_true_triage57_source_native_review_batch.json#post_id=11702094",
+        "loop623_true_triage57_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11705269,
+      "triage_bucket": "wrong_work_title_flip",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "current_regression_row_without_compatible_prior_verdict",
+      "evidence_grade": "Missing",
+      "action": [
+        "source_native_or_blind_review_required",
+        "p0_wrong_work_title_flip_review_required"
+      ],
+      "rationale_ko": "현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop623_true_triage57_source_native_review_batch.json#post_id=11705269",
+        "loop623_true_triage57_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11687627,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "current_regression_row_without_compatible_prior_verdict",
+      "evidence_grade": "Missing",
+      "action": [
+        "source_native_or_blind_review_required",
+        "p0_unsafe_promotion_from_hold_review_required"
+      ],
+      "rationale_ko": "현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop623_true_triage57_source_native_review_batch.json#post_id=11687627",
+        "loop623_true_triage57_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11702060,
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "current_regression_row_without_compatible_prior_verdict",
+      "evidence_grade": "Missing",
+      "action": [
+        "source_native_or_blind_review_required",
+        "p0_unsafe_promotion_from_hold_review_required"
+      ],
+      "rationale_ko": "현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop623_true_triage57_source_native_review_batch.json#post_id=11702060",
+        "loop623_true_triage57_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11660229,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "current_regression_row_without_compatible_prior_verdict",
+      "evidence_grade": "Missing",
+      "action": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop623_true_triage57_source_native_review_batch.json#post_id=11660229",
+        "loop623_true_triage57_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11660264,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "current_regression_row_without_compatible_prior_verdict",
+      "evidence_grade": "Missing",
+      "action": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop623_true_triage57_source_native_review_batch.json#post_id=11660264",
+        "loop623_true_triage57_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11660268,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "current_regression_row_without_compatible_prior_verdict",
+      "evidence_grade": "Missing",
+      "action": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop623_true_triage57_source_native_review_batch.json#post_id=11660268",
+        "loop623_true_triage57_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11682780,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "current_regression_row_without_compatible_prior_verdict",
+      "evidence_grade": "Missing",
+      "action": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop623_true_triage57_source_native_review_batch.json#post_id=11682780",
+        "loop623_true_triage57_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11694047,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "current_regression_row_without_compatible_prior_verdict",
+      "evidence_grade": "Missing",
+      "action": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop623_true_triage57_source_native_review_batch.json#post_id=11694047",
+        "loop623_true_triage57_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11702090,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "current_regression_row_without_compatible_prior_verdict",
+      "evidence_grade": "Missing",
+      "action": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop623_true_triage57_source_native_review_batch.json#post_id=11702090",
+        "loop623_true_triage57_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11703622,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "current_regression_row_without_compatible_prior_verdict",
+      "evidence_grade": "Missing",
+      "action": [
+        "source_native_or_blind_review_required",
+        "p0_safe_loss_resolved_to_null_review_required"
+      ],
+      "rationale_ko": "현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop623_true_triage57_source_native_review_batch.json#post_id=11703622",
+        "loop623_true_triage57_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11682800,
+      "triage_bucket": "new_resolution_promotion",
+      "selected_option_id": "HOLD",
+      "selected_title": null,
+      "selected_url": null,
+      "review_label": "INFO_MISSING",
+      "source_native_verdict": "current_regression_row_without_compatible_prior_verdict",
+      "evidence_grade": "Missing",
+      "action": [
+        "source_native_or_blind_review_required",
+        "p0_new_resolution_promotion_review_required"
+      ],
+      "rationale_ko": "현재 full375 collateral P0 회귀 행이지만 prior source-native verdict가 동일 post_id, 동일 triage_bucket, 현재 후보 title/url 조건을 통과하지 못했다. 정답성 확정 전까지 별도 blind/source-native 검토가 필요하다.",
+      "evidence_refs": [
+        "docs/devs/loop623_true_triage57_source_native_review_batch.json#post_id=11682800",
+        "loop623_true_triage57_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    }
+  ]
+}
