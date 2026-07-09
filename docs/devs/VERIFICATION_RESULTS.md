@@ -1,5 +1,33 @@
 # Verification Results
 
+## 2026-07-09 Loop632 ordinary residual5 계약 적용 검증
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_632_REPORT_20260709.md`
+  - `docs/devs/loop632_ordinary_residual_candidate_set_contract_plan.json/.md`
+  - `docs/devs/loop632_11669907_canonical_cleanup_contract_plan.json/.md`
+  - `docs/devs/loop632_shared_gate13_plus_ordinary_residual5_combined_contract_plan.json/.md`
+  - `docs/devs/loop632_shared_gate13_plus_ordinary_residual5_combined_projection_application.json/.md`
+  - `docs/devs/loop632_shared_gate13_plus_ordinary_residual5_publication_contract_audit.json/.md`
+  - `docs/devs/loop632_shared_gate13_plus_ordinary_residual5_release_gate_audit.json/.md`
+  - `docs/devs/loop632_ordinary_residual5_collateral_compare.json/.md`
+  - `docs/devs/loop632_after_shared_gate13_plus_ordinary_residual5_accounting.json/.md`
+  - `docs/devs/loop632_after_residual41_dispatch.json/.md`
+- 검증:
+  - Candidate-set plan/application: PASS, rows `4`, restore `3`, rebuild hold `1`, validation issue `0`.
+  - Canonical cleanup plan/application: PASS, rows `1`, applied canonical cleanup `1`, validation issue `0`.
+  - Combined plan/application: PASS, rows `18`, applied publish-class `17`, hold `1`, validation issue `0`.
+  - Publication contract convergence: PASS, `GO`, row count `375`, violation `0`.
+  - Release gate audit: PASS, pending `0`, violation `0`, release candidate `17`, no-release hold `1`.
+  - Collateral compare: expected `NO-GO`, shared `375/375`, changed `192`, historical raw regression `120`, runtime counts missing.
+  - Residual accounting: PASS, source `59`, contract processed `18`, ordinary residual `41`.
+  - Residual dispatch: PASS, lane `source_native_or_blind_review 35 / native_web_image_evidence_review 6`.
+- 결과:
+  - Loop632는 residual을 줄인 projection-only 계약 회차다.
+  - Runtime/full375 approval은 아니며 re-baseline도 적용하지 않았다.
+  - 완료 gate는 전 행 adjudicated 후 adjusted drift 기준이다.
+- Gate: publication `GO`, release `REVIEW-LOCKED`, residual `REVIEW-LOCKED / 41`, full375 collateral `NO-GO / historical raw 120`, re-baseline `NOT_APPLIED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-09 Loop628 remaining search blocker2 replay 검증
 
 - 산출물:

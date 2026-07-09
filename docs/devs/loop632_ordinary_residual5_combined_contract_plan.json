@@ -1,0 +1,533 @@
+{
+  "report_type": "candidate_set_contract_plan",
+  "plan_id": "loop632_ordinary_residual5_combined_contract_plan",
+  "generated_at": "2026-07-09T21:45:27",
+  "source_batch": "loop631_after_shared_gate_ordinary_residual46_dispatch",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "source_batch_rows": 46,
+    "candidate_set_contract_plan_rows": 4,
+    "validation_issue_count": 0,
+    "contract_action_counts": {
+      "candidate_set_expected_restore_contract_case": 3,
+      "candidate_set_rebuild_required_before_publish": 1,
+      "canonical_cleanup_or_url_correction_contract_case": 1
+    },
+    "promotion_decision_status_counts": {
+      "candidate_only": 1,
+      "publish": 3,
+      "reject": 1
+    },
+    "evidence_grade_counts": {
+      "Strong": 4
+    },
+    "triage_bucket_counts": {
+      "wrong_work_title_flip": 4
+    },
+    "official_support_ref_missing_rows": 1,
+    "release_candidate_not_approval_rows": 3,
+    "candidate_set_rebuild_hold_rows": 1,
+    "intent_guard_hold_rows": 0,
+    "publish_allowed_rows": 0,
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path",
+    "contract_plan_rows": 5,
+    "contract_batch_lane_counts": {
+      "CS_candidate_set_contract": 4,
+      "T3_canonical_cleanup_or_url_correction_contract": 1
+    },
+    "native_web_disambiguation_hold_rows": 0,
+    "non_webnovel_ebook_policy_hold_rows": 0,
+    "no_release_hold_rows": 1,
+    "addition_plan_id": "loop632_11669907_canonical_cleanup_contract_plan",
+    "addition_plan_rows": 1,
+    "addition_publish_release_candidate_rows": null,
+    "addition_candidate_only_no_publish_rows": null,
+    "addition_native_web_hold_rows": 0
+  },
+  "execution_contract": {
+    "runtime_replay_allowed": false,
+    "requested_parallel": 16,
+    "dashboard_contract": {
+      "dashboard_policy": "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+      "dashboard_url": "http://127.0.0.1:8080",
+      "forbidden_flags": [
+        "--no-dashboard"
+      ],
+      "runner_cli_guard": "tools/run_independent_plan.py ignores --no-dashboard unless ALLOW_TEST_RUN_NO_DASHBOARD=1 is explicitly set as a breakglass override.",
+      "attach_manifest_command": "python tools/attach_manifest_dashboard.py --manifest <result_manifest.json> --dashboard-url http://127.0.0.1:8080"
+    }
+  },
+  "validation_issues": [],
+  "rows": [
+    {
+      "post_id": 11663514,
+      "contract_origin": "refined_p0_candidate_set_dispatch",
+      "contract_batch_lane": "CS_candidate_set_contract",
+      "source_dispatch_lane": "candidate_set_rebuild_review",
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "source_link_and_plot_context_support_before_title_after_title_surface_collision",
+      "evidence_grade": "Strong",
+      "target_title": "마탄 속의 제국",
+      "target_url": "https://novel.munpia.com/486006",
+      "official_support_refs": [
+        "https://novel.munpia.com/486006"
+      ],
+      "official_support_ref_count": 1,
+      "actions": [
+        "repair_after_wrong_work",
+        "native_web_review_required"
+      ],
+      "contract_action": "candidate_set_expected_restore_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "마탄 속의 제국",
+        "official_url": "https://novel.munpia.com/486006",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "candidate_set_source_native_contract_case",
+          "official_support_ref_present"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11663514,
+        "candidate_title": "마탄 속의 제국",
+        "candidate_url": "https://novel.munpia.com/486006",
+        "source": "candidate_set_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "refined_p0_candidate_set_dispatch",
+            "candidate_set_rebuild_review",
+            "candidate_set_expected_restore_contract_case"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "candidate_set_source_native_contract",
+          "strength": "strong",
+          "source_path_or_snippet": "본문의 Munpia URL, 리겔/느와르/범죄수사/게파르토 제국 소개문은 C1 쪽 작품 설명으로 읽힌다. 제목의 슬라임 표면만으로 C2를 final로 올린 것은 후보 충돌이다.",
+          "supports_publish": true,
+          "reason_code": "candidate_set_source_native_contract_case"
+        },
+        {
+          "kind": "official_support_ref",
+          "strength": "strong",
+          "source_path_or_snippet": "https://novel.munpia.com/486006",
+          "supports_publish": true,
+          "reason_code": "official_support_ref_present"
+        }
+      ],
+      "release_candidate_not_approval": true,
+      "candidate_set_rebuild_required_before_publish": false,
+      "intent_guard_hold_before_publish": false,
+      "official_support_missing_before_publish": false,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": true,
+      "candidate_set_rebuild_required_before_runtime": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "본문의 Munpia URL, 리겔/느와르/범죄수사/게파르토 제국 소개문은 C1 쪽 작품 설명으로 읽힌다. 제목의 슬라임 표면만으로 C2를 final로 올린 것은 후보 충돌이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json#post_id=11663514",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11663514",
+        "https://novel.munpia.com/486006",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11663514",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11663514",
+        "docs/devs/loop497_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11663514",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11663514"
+      ]
+    },
+    {
+      "post_id": 11679547,
+      "contract_origin": "refined_p0_candidate_set_dispatch",
+      "contract_batch_lane": "CS_candidate_set_contract",
+      "source_dispatch_lane": "candidate_set_rebuild_review",
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_title_supported_after_title_is_comparator",
+      "evidence_grade": "Strong",
+      "target_title": "도굴왕",
+      "target_url": "https://page.kakao.com/content/65130395",
+      "official_support_refs": [
+        "https://page.kakao.com/content/65130395"
+      ],
+      "official_support_ref_count": 1,
+      "actions": [
+        "repair_after_wrong_work"
+      ],
+      "contract_action": "candidate_set_expected_restore_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "도굴왕",
+        "official_url": "https://page.kakao.com/content/65130395",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "candidate_set_source_native_contract_case",
+          "official_support_ref_present"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11679547,
+        "candidate_title": "도굴왕",
+        "candidate_url": "https://page.kakao.com/content/65130395",
+        "source": "candidate_set_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "refined_p0_candidate_set_dispatch",
+            "candidate_set_rebuild_review",
+            "candidate_set_expected_restore_contract_case"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "candidate_set_source_native_contract",
+          "strength": "strong",
+          "source_path_or_snippet": "원문은 `나혼렙의 뒤를 잇는`을 비교 기준으로 쓰고 실제 초점은 `도굴왕 애니화`다. after C1 `나 혼자만 레벨업`은 comparator를 final title로 승격한 잘못된 판정이다.",
+          "supports_publish": true,
+          "reason_code": "candidate_set_source_native_contract_case"
+        },
+        {
+          "kind": "official_support_ref",
+          "strength": "strong",
+          "source_path_or_snippet": "https://page.kakao.com/content/65130395",
+          "supports_publish": true,
+          "reason_code": "official_support_ref_present"
+        }
+      ],
+      "release_candidate_not_approval": true,
+      "candidate_set_rebuild_required_before_publish": false,
+      "intent_guard_hold_before_publish": false,
+      "official_support_missing_before_publish": false,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": true,
+      "candidate_set_rebuild_required_before_runtime": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "원문은 `나혼렙의 뒤를 잇는`을 비교 기준으로 쓰고 실제 초점은 `도굴왕 애니화`다. after C1 `나 혼자만 레벨업`은 comparator를 final title로 승격한 잘못된 판정이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json#post_id=11679547",
+        "https://page.kakao.com/content/65130395",
+        "docs/devs/loop479_wrong_work_title_flip_source_native_verdicts.json#post_id=11679547",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11679547",
+        "docs/devs/loop488_p0_prior_compatible_source_native_verdicts.json#post_id=11679547",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11679547"
+      ]
+    },
+    {
+      "post_id": 11698865,
+      "contract_origin": "refined_p0_candidate_set_dispatch",
+      "contract_batch_lane": "CS_candidate_set_contract",
+      "source_dispatch_lane": "candidate_set_rebuild_review",
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "after_fanfic_candidate_wrong_source_discusses_rezero_canon_character_arc",
+      "evidence_grade": "Strong",
+      "target_title": null,
+      "target_url": null,
+      "official_support_refs": [],
+      "official_support_ref_count": 0,
+      "actions": [
+        "repair_after_wrong_work",
+        "source_main_work_title_needed"
+      ],
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "promotion_decision": {
+        "status": "reject",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": false,
+        "reason_codes": [
+          "no_candidate_title",
+          "row_discussion_missing",
+          "scope_unknown",
+          "scope_not_current_work",
+          "candidate_set_rebuild_required",
+          "candidate_set_source_native_contract_case"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11698865,
+        "candidate_title": "",
+        "candidate_url": "",
+        "source": "candidate_set_contract_plan",
+        "official_title_exists": false,
+        "row_discusses_work_as_work": false,
+        "title_resolution_state": "unresolved",
+        "work_resolution": "unresolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "unknown",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "refined_p0_candidate_set_dispatch",
+            "candidate_set_rebuild_review",
+            "candidate_set_rebuild_required_before_publish"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "candidate_set_rebuild_required"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "candidate_set_source_native_contract",
+          "strength": "strong",
+          "source_path_or_snippet": "원문은 스바루 6장/7장, 감시탑, 폭식 등 `리제로` 본편 캐릭터 서사 맥락을 말한다. after C1 `[리제로] 스바루가 여자가 되었다.`는 팬픽 후보로 보이며, C2도 작품 title이 아니라 캐릭터 행적 페이지라 후보셋을 재구성해야 한다.",
+          "supports_publish": false,
+          "reason_code": "candidate_set_source_native_contract_case"
+        }
+      ],
+      "release_candidate_not_approval": false,
+      "candidate_set_rebuild_required_before_publish": true,
+      "intent_guard_hold_before_publish": false,
+      "official_support_missing_before_publish": false,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": false,
+      "candidate_set_rebuild_required_before_runtime": true,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "원문은 스바루 6장/7장, 감시탑, 폭식 등 `리제로` 본편 캐릭터 서사 맥락을 말한다. after C1 `[리제로] 스바루가 여자가 되었다.`는 팬픽 후보로 보이며, C2도 작품 title이 아니라 캐릭터 행적 페이지라 후보셋을 재구성해야 한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop479_wrong_work_title_flip_review_batch.json#post_id=11698865",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11698865",
+        "docs/devs/loop479_wrong_work_title_flip_source_native_verdicts.json#post_id=11698865",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11698865",
+        "docs/devs/loop488_p0_prior_compatible_source_native_verdicts.json#post_id=11698865",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11698865"
+      ]
+    },
+    {
+      "post_id": 11716464,
+      "contract_origin": "refined_p0_candidate_set_dispatch",
+      "contract_batch_lane": "CS_candidate_set_contract",
+      "source_dispatch_lane": "candidate_set_rebuild_review",
+      "triage_bucket": "wrong_work_title_flip",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "before_canonical_title_supported_after_page_title_suffix_contaminated",
+      "evidence_grade": "Strong",
+      "target_title": "슈라라펜란트",
+      "target_url": "https://ridibooks.com/books/875100425",
+      "official_support_refs": [
+        "https://ridibooks.com/books/875100425"
+      ],
+      "official_support_ref_count": 1,
+      "actions": [
+        "repair_after_wrong_work",
+        "canonical_title_cleanup_required"
+      ],
+      "contract_action": "candidate_set_expected_restore_contract_case",
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "슈라라펜란트",
+        "official_url": "https://ridibooks.com/books/875100425",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "candidate_set_source_native_contract_case",
+          "official_support_ref_present"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11716464,
+        "candidate_title": "슈라라펜란트",
+        "candidate_url": "https://ridibooks.com/books/875100425",
+        "source": "candidate_set_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "refined_p0_candidate_set_dispatch",
+            "candidate_set_rebuild_review",
+            "candidate_set_expected_restore_contract_case"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "candidate_set_source_native_contract",
+          "strength": "strong",
+          "source_path_or_snippet": "원문은 `슈라라펜란트`를 말한다. C2는 같은 리디 상세의 페이지/카테고리성 제목 `- 판타지 웹소설`이 붙은 형태라 canonical public title로 쓰기 부적절하다.",
+          "supports_publish": true,
+          "reason_code": "candidate_set_source_native_contract_case"
+        },
+        {
+          "kind": "official_support_ref",
+          "strength": "strong",
+          "source_path_or_snippet": "https://ridibooks.com/books/875100425",
+          "supports_publish": true,
+          "reason_code": "official_support_ref_present"
+        }
+      ],
+      "release_candidate_not_approval": true,
+      "candidate_set_rebuild_required_before_publish": false,
+      "intent_guard_hold_before_publish": false,
+      "official_support_missing_before_publish": false,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": true,
+      "candidate_set_rebuild_required_before_runtime": false,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "원문은 `슈라라펜란트`를 말한다. C2는 같은 리디 상세의 페이지/카테고리성 제목 `- 판타지 웹소설`이 붙은 형태라 canonical public title로 쓰기 부적절하다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json#post_id=11716464",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11716464",
+        "https://ridibooks.com/books/875100425",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11716464",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11716464",
+        "docs/devs/loop497_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11716464",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11716464"
+      ]
+    },
+    {
+      "post_id": 11669907,
+      "contract_batch_lane": "T3_canonical_cleanup_or_url_correction_contract",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "vlm_ocr_supports_clean_title_after_title_polluted_by_spoiler_prefix",
+      "evidence_grade": "Medium",
+      "expected_title": "마법 좋아좋아좋아",
+      "actual_title": "약스포) 마법 좋아좋아좋아",
+      "target_title": "마법 좋아좋아좋아",
+      "target_url": "https://novelpia.com/novel/326040",
+      "contract_blocking_reason": "canonical_cleanup_required",
+      "contract_action": "canonical_cleanup_or_url_correction_contract_case",
+      "promotion_decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": true,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discussion_missing",
+          "context_only",
+          "scope_context_only",
+          "scope_not_current_work",
+          "canonical_cleanup_required"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11669907,
+        "candidate_title": "마법 좋아좋아좋아",
+        "candidate_url": "https://novelpia.com/novel/326040",
+        "source": "title_mismatch_verdict_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": false,
+        "title_resolution_state": "context_only",
+        "work_resolution": "unresolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "context_only",
+          "confidence": "medium",
+          "direct_bridge_sources": [
+            "title_mismatch_source_native_verdict",
+            "T3_canonical_cleanup_or_url_correction_contract"
+          ],
+          "competing_candidates": [
+            "약스포) 마법 좋아좋아좋아",
+            "마법 좋아좋아좋아"
+          ],
+          "conflict_reason_codes": [
+            "canonical_cleanup_required"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "title_mismatch_source_native_verdict",
+          "strength": "medium",
+          "source_path_or_snippet": "Loop631 projection의 public title은 `약스포) 마법 좋아좋아좋아`로 spoiler prefix가 섞여 있으나, dispatch와 candidate ledger의 clean work title은 `마법 좋아좋아좋아`이고 official detail URL은 `https://novelpia.com/novel/326040`이다. Canonical cleanup은 clean title과 URL을 함께 보존해야 하며 새 runtime approval이 아니다.",
+          "supports_publish": false,
+          "reason_code": "canonical_cleanup_required"
+        }
+      ],
+      "runtime_replay_allowed": false,
+      "contract_test_required_before_runtime": true,
+      "stronger_evidence_required_before_runtime": false,
+      "rationale_ko": "Loop631 projection의 public title은 `약스포) 마법 좋아좋아좋아`로 spoiler prefix가 섞여 있으나, dispatch와 candidate ledger의 clean work title은 `마법 좋아좋아좋아`이고 official detail URL은 `https://novelpia.com/novel/326040`이다. Canonical cleanup은 clean title과 URL을 함께 보존해야 하며 새 runtime approval이 아니다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop512_projected_loop511_p0_unreviewed_batch.json#post_id=11669907",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop511_projected_loop510_after_final_sync_result.json#post_id=11669907",
+        "https://novelpia.com/novel/326040",
+        "docs/devs/loop512_wrong_work_info_missing10_source_native_verdicts.json#post_id=11669907",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11669907",
+        "out\\regression_safe_grounding_20260626_000008_928006_loop01\\review\\loop631_loop630_shared_gate_expected_restore_projection_result.json#post_id=11669907"
+      ]
+    }
+  ],
+  "approval_boundary": {
+    "candidate_set_contract_plan_is_not_approval": true,
+    "promotion_decision_publish_is_contract_case_only": true,
+    "candidate_set_rebuild_holds_publish": true,
+    "runtime_replay_allowed": false,
+    "full375_collateral_remains_no_go": true,
+    "full_scan_approval": false
+  },
+  "source_contract_plans": [
+    "loop632_ordinary_residual_candidate_set_contract_plan",
+    "loop632_11669907_canonical_cleanup_contract_plan"
+  ]
+}

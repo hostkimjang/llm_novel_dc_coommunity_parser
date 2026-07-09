@@ -1,5 +1,18 @@
 # Operation Quality Checklist
 
+## 2026-07-09 Loop632 residual41 재정렬 운영 메모
+
+- [x] Loop631 ordinary residual `46` 중 계약 처리 가능한 `5`건을 먼저 처리했다.
+- [x] Candidate-set `4`건은 restore `3`, rebuild hold `1`로 분리했고 canonical cleanup `1`건은 clean title로 정리했다.
+- [x] Loop631 shared `13`건과 합친 combined contract plan/application은 rows `18`, validation issue `0`이다.
+- [x] Publication contract는 `GO / violation 0`이고 release gate는 `REVIEW-LOCKED / release candidate 17 / no-release 1`이다.
+- [x] Historical raw collateral은 `124 -> 120`으로 줄었지만 여전히 `NO-GO`다.
+- [x] Residual action queue는 `59 -> 41`로 줄었고, 남은 lane은 `source_native_or_blind_review 35`, `native_web_image_evidence_review 6`이다.
+- [ ] Projection-only compare의 runtime counts missing을 runtime completion으로 보정하지 않는다.
+- [ ] Release candidate는 approval이 아니며 full375 collateral GO 전 publish/full_scan 근거로 쓰지 않는다.
+- [ ] Re-baseline 전에는 raw를 historical diff로만 두고 adjusted gate는 열지 않는다.
+- Gate: application `REVIEW-LOCKED`, publication `GO`, release `REVIEW-LOCKED / candidate 17 / no-release 1`, residual `REVIEW-LOCKED / ordinary 41`, always-on `NO-GO`, collateral `NO-GO / historical raw 120`, re-baseline `NOT_APPLIED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-09 Loop631 shared-gate projection 적용 운영 메모
 
 - [x] Loop630 SG contract `13`건을 projection-only로 적용했다.

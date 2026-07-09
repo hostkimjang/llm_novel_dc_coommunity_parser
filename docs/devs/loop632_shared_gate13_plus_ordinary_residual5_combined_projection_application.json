@@ -1,0 +1,249 @@
+{
+  "report_type": "post_verdict_projection_publish_contract_application",
+  "projection_id": "loop632_shared_gate13_plus_ordinary_residual5_combined_projection_application",
+  "generated_at": "2026-07-09T21:47:57",
+  "source_contract_plan": "loop632_shared_gate13_plus_ordinary_residual5_combined_contract_plan",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "projection_rows": 375,
+    "contract_plan_rows": 18,
+    "publish_contract_plan_rows": 17,
+    "applied_publish_contract_rows": 17,
+    "restore_plan_rows": 13,
+    "applied_restore_rows": 13,
+    "applied_expected_audit_update_rows": 0,
+    "applied_canonical_cleanup_rows": 1,
+    "applied_candidate_set_restore_rows": 3,
+    "validation_issue_count": 0,
+    "skipped_contract_action_counts": {},
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "full375 collateral GO + full_scan path",
+    "applied_hold_contract_rows": 1,
+    "applied_non_publish_contract_rows": 1,
+    "addition_projection_id": "loop632_ordinary_residual5_combined_projection_application",
+    "addition_applied_rows": 5
+  },
+  "validation_issues": [],
+  "applied_rows": [
+    {
+      "post_id": 11660271,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "월야의 여인들",
+      "target_url": null,
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11660273,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "마도서를 줍다 마법사가 되다",
+      "target_url": "https://novelpia.com/novel/414963",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11663557,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "퇴마록",
+      "target_url": null,
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11668325,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "Fate/stay night",
+      "target_url": "https://ridibooks.com/books/505001486",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11677926,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "재앙급 막내 공자의 회귀",
+      "target_url": "https://page.kakao.com/content/66110131",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11698910,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "판초우의의 마법사",
+      "target_url": "https://novel.munpia.com/530500",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11706871,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "파우스트",
+      "target_url": "https://ridibooks.com/books/1242000797",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11710049,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "target_url": null,
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11714887,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "도굴왕 1 |",
+      "target_url": "https://page.kakao.com/content/53190884",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11666741,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "별을 품은 소드마스터",
+      "target_url": "https://novel.munpia.com/254718",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11679537,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "죽었다 깨어도 수선",
+      "target_url": "https://novelpia.com/novel/233173",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11665121,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "후회 안 하는 프로듀서",
+      "target_url": null,
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11673077,
+      "contract_action": "expected_title_restore_contract_case",
+      "target_title": "판초우의의 마법사",
+      "target_url": "https://novel.munpia.com/530500",
+      "superseded_projection_candidate": {
+        "official_title": null,
+        "official_url": null,
+        "source": "expected_title_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11663514,
+      "contract_action": "candidate_set_expected_restore_contract_case",
+      "target_title": "마탄 속의 제국",
+      "target_url": "https://novel.munpia.com/486006",
+      "superseded_projection_candidate": {
+        "official_title": "올바른 슬라임 사용법",
+        "official_url": "https://novelpia.com/novel/268424",
+        "source": "candidate_set_expected_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11679547,
+      "contract_action": "candidate_set_expected_restore_contract_case",
+      "target_title": "도굴왕",
+      "target_url": "https://page.kakao.com/content/65130395",
+      "superseded_projection_candidate": {
+        "official_title": "나 혼자만 레벨업",
+        "official_url": null,
+        "source": "candidate_set_expected_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11698865,
+      "contract_action": "candidate_set_rebuild_required_before_publish",
+      "preserved_candidate_title": "나츠키 스바루의 실종.",
+      "preserved_candidate_url": null,
+      "status": "scrubbed_public_identity"
+    },
+    {
+      "post_id": 11716464,
+      "contract_action": "candidate_set_expected_restore_contract_case",
+      "target_title": "슈라라펜란트",
+      "target_url": "https://ridibooks.com/books/875100425",
+      "superseded_projection_candidate": {
+        "official_title": "슈라라펜란트 - 판타지 웹소설",
+        "official_url": null,
+        "source": "candidate_set_expected_restore_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    },
+    {
+      "post_id": 11669907,
+      "contract_action": "canonical_cleanup_or_url_correction_contract_case",
+      "target_title": "마법 좋아좋아좋아",
+      "target_url": "https://novelpia.com/novel/326040",
+      "superseded_projection_candidate": {
+        "official_title": "약스포) 마법 좋아좋아좋아",
+        "official_url": null,
+        "source": "canonical_cleanup_or_url_correction_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    }
+  ],
+  "approval_boundary": {
+    "projection_application_is_not_runtime_replay": true,
+    "release_candidate_is_not_full_scan_approval": true,
+    "runtime_replay_before_full375_collateral_forbidden": true,
+    "full375_collateral_remains_no_go": true
+  }
+}

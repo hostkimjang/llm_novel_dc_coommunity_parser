@@ -1,5 +1,24 @@
 # Development Checklist
 
+## 2026-07-09 Loop632 ordinary residual5 계약 적용 체크
+
+- [x] 새 runtime replay/full375를 실행하지 않았다.
+- [x] Loop631 ordinary residual `46` 중 candidate-set `4`건과 canonical cleanup `1`건을 projection-only 계약으로 처리했다.
+- [x] Candidate-set application은 restore `3`, rebuild hold `1`, validation issue `0`, runtime replay allowed `0`이다.
+- [x] `11669907` canonical cleanup은 clean title `마법 좋아좋아좋아`와 `https://novelpia.com/novel/326040`로 applied `1`, validation issue `0`이다.
+- [x] Loop631 shared `13`건과 이번 `5`건을 합친 combined plan/application은 rows `18`, applied publish-class `17`, hold `1`, validation issue `0`이다.
+- [x] Publication contract audit은 `GO / row 375 / violation 0`이다.
+- [x] Release gate audit은 pending `0`, violation `0`, release candidate `17`, no-release hold `1`이다.
+- [x] Historical raw collateral은 `124 -> 120`으로 줄었지만 gate는 `NO-GO`다.
+- [x] Residual action queue는 source `59`, contract processed `18`, ordinary residual `41`로 갱신했다.
+- [x] Residual41 dispatch lane은 `source_native_or_blind_review 35`, `native_web_image_evidence_review 6`이다.
+- [ ] Release candidate `17`건을 full375 collateral GO 전 approval로 승격하지 않는다.
+- [ ] `source_native_or_blind_review 35`와 `native_web_image_evidence_review 6`은 N건 배치로 판결한다.
+- [ ] 전 행 adjudicated 전에는 re-baseline을 적용하지 않는다.
+- [ ] 완료 gate는 historical raw가 아니라 adjusted drift 기준으로 평가한다.
+- Gate: contract application `REVIEW-LOCKED / applied 5`, publication `GO`, release `REVIEW-LOCKED / candidate 17 / no-release 1`, residual `REVIEW-LOCKED / ordinary 41`, always-on `NO-GO`, full375 collateral `NO-GO / historical raw 120`, re-baseline `NOT_APPLIED`, adjusted gate `NOT_OPEN_UNTIL_ADJUDICATED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_632_REPORT_20260709.md`, `docs/devs/loop632_*`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop632_candidate_set_and_canonical_cleanup_projection_result.json`.
+
 ## 2026-07-09 Loop631 shared-gate 13건 projection 적용 체크
 
 - [x] 새 runtime replay/full375를 실행하지 않았다.

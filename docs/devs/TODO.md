@@ -1,5 +1,19 @@
 # Developer TODO Index
 
+## 2026-07-09 Loop632 이후 residual41 / re-baseline 선결 TODO
+
+- 상태 업데이트: Loop631 ordinary residual `46` 중 candidate-set `4`건과 canonical cleanup `1`건을 projection-only 계약으로 처리했고, Loop631 shared `13`건과 합쳐 contract processed `18`, ordinary residual `41`로 줄였다.
+- [x] Candidate-set `4`건을 contract plan/application으로 처리한다.
+- [x] `11669907` canonical cleanup을 clean title `마법 좋아좋아좋아`와 NovelPia URL로 처리한다.
+- [x] Combined plan/application을 생성한다: `docs/devs/loop632_shared_gate13_plus_ordinary_residual5_combined_contract_plan.json/.md`, `docs/devs/loop632_shared_gate13_plus_ordinary_residual5_combined_projection_application.json/.md`.
+- [x] Publication/release audit을 생성한다. Publication은 `GO`, release는 candidate `17`, no-release `1`, violation `0`.
+- [x] Residual41 dispatch를 생성한다: `source_native_or_blind_review 35`, `native_web_image_evidence_review 6`.
+- [ ] `source_native_or_blind_review 35`를 N건 배치로 판결한다.
+- [ ] `native_web_image_evidence_review 6`을 이미지/native evidence batch로 판결한다.
+- [ ] Full375 collateral GO 전 release candidate를 approval로 승격하지 않는다.
+- [ ] 전 행 adjudicated 전에는 re-baseline을 적용하지 않는다.
+- Gate: residual `REVIEW-LOCKED / 41`, publication `GO`, release `REVIEW-LOCKED`, full375 collateral `NO-GO / historical raw 120`, re-baseline `NOT_APPLIED`, adjusted gate `NOT_OPEN_UNTIL_ADJUDICATED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-09 Loop628 이후 current search hard blocker closure TODO
 
 - 상태 업데이트: Loop626 remaining required-search hard blocker `11660258/11694026`은 Loop628 replay 기준 hard blocker `0`으로 닫혔다.
