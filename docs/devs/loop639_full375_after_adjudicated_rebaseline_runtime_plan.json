@@ -1,0 +1,106 @@
+{
+  "report_type": "runtime_plan",
+  "plan_id": "loop639_full375_after_adjudicated_rebaseline_runtime_plan",
+  "generated_at": "2026-07-09T23:42:18+09:00",
+  "gate": "READY_NOT_RUN",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "launch_status": "NOT_DISPATCHED_IN_THIS_TURN",
+  "reason_not_dispatched": "Loop629 full375 took about 31080.8 seconds, so this artifact fixes the next executable contract before starting a long runtime.",
+  "rebaseline": {
+    "status": "APPLIED",
+    "source_manifest": "docs/devs/loop638_adjudicated_rebaseline_manifest.json",
+    "baseline_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/baseline/loop638_adjudicated_rebaseline_result.json",
+    "baseline_rows": 375,
+    "adjudication_ledger_rows": 59,
+    "completion_gate": "adjusted full375 collateral GO + full_scan path",
+    "completion_gate_metric": "adjusted_drift_count",
+    "raw_20260626_baseline_is_completion_gate": false,
+    "raw_20260626_baseline_role": "diagnostic historical compare only"
+  },
+  "preflight_observed": {
+    "panel_input": "out/regression_safe_grounding_20260626_000008_928006_loop01/panel/regression_panel_input.jsonl",
+    "panel_input_rows": 375,
+    "golden_set": "out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_set.jsonl",
+    "golden_rows": 18,
+    "dashboard_url": "http://127.0.0.1:8080",
+    "dashboard_health": {
+      "ok": true,
+      "service": "expert-pipeline-monitor",
+      "standalone": true,
+      "pid": 9320
+    },
+    "llm_endpoint": "http://10.20.0.101:8000",
+    "llm_model": "bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4",
+    "llm_max_model_len": 128000
+  },
+  "runtime_contract": {
+    "run_scope": "full375",
+    "search_mode": "included_non_light",
+    "requested_parallel": 16,
+    "dashboard_required": true,
+    "no_dashboard_forbidden": true,
+    "reuse_shards_only": true,
+    "slang_db": "off",
+    "vlm": "on",
+    "ocr": "on",
+    "require_vlm_ocr_for_images": true,
+    "estimated_duration_from_loop629_seconds": 31080.8,
+    "estimated_duration_from_loop629_hours": 8.63,
+    "estimated_average_seconds_per_post": 82.9
+  },
+  "planned_runs": [
+    {
+      "run_label": "loop639_full375_after_adjudicated_rebaseline",
+      "post_id": "full375",
+      "repeat_index": 1,
+      "output_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop639_full375_after_adjudicated_rebaseline_result.json",
+      "expected_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop639_full375_after_adjudicated_rebaseline_result_manifest.json",
+      "command_argv": [
+        ".venv312\\Scripts\\python.exe",
+        "expert_main.py",
+        "out\\regression_safe_grounding_20260626_000008_928006_loop01\\panel\\regression_panel_input.jsonl",
+        "--output",
+        "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop639_full375_after_adjudicated_rebaseline_result.json",
+        "--server-type",
+        "vllm",
+        "--llm-endpoint",
+        "http://10.20.0.101:8000",
+        "--llm-model",
+        "bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4",
+        "--reuse-shards-only",
+        "--slang-db",
+        "off",
+        "--parallel",
+        "16",
+        "--vlm",
+        "on",
+        "--ocr",
+        "on",
+        "--require-vlm-ocr-for-images"
+      ]
+    }
+  ],
+  "post_run_required_artifacts": {
+    "query_search_shard_preflight": "docs/devs/loop639_pre_full375_query_search_shard_audit.json",
+    "query_search_shard_postflight": "docs/devs/loop639_post_full375_query_search_shard_audit.json",
+    "run_health": "docs/devs/loop639_full375_after_adjudicated_rebaseline_run_health.json",
+    "publication_contract_convergence": "docs/devs/loop639_full375_after_adjudicated_rebaseline_publication_contract_convergence.json",
+    "adjusted_drift_compare": "docs/devs/loop639_full375_after_adjudicated_rebaseline_adjusted_drift_compare.json",
+    "always_on_gate": "docs/devs/loop639_always_on_after_full375_runtime.json"
+  },
+  "post_run_gate": {
+    "runtime_counts": "completed/flushed/pending/failed must be 375/375/0/0",
+    "dashboard": "manifest progress must be attached; dashboard is progress evidence, not approval evidence",
+    "row_search_health": "no hard blocker; any degraded or recovered rows must be split and replayed before using collateral as regression evidence",
+    "publication_contract_convergence": "GO / violation 0",
+    "adjusted_drift_count": 0,
+    "always_on_gate": "GO",
+    "full_scan_path": "defined and verified before full_scan_approval can become true",
+    "raw_20260626_count": "diagnostic only; never the completion blocker after re-baseline"
+  },
+  "blockers_until_run_completes": [
+    "collateral_runtime_counts_missing",
+    "full_scan_path_not_completed"
+  ]
+}

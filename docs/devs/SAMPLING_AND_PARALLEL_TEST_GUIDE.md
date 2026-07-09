@@ -1,5 +1,13 @@
 # Sampling And Parallel Test Guide
 
+## 2026-07-09 Loop639 adjudicated baseline full375 replay 계약
+
+- Re-baseline 적용 뒤 collateral 완료 gate는 `adjusted_drift_count` 기준이다. 2026-06-26 bootstrap 대비 raw `105`는 historical diagnostic이며 완료 blocker가 아니다.
+- 다음 full375 runtime replay는 `--parallel 16`, web dashboard ON, search 포함 non-light, VLM/OCR ON, `slang_db off`, `--reuse-shards-only`로 실행한다.
+- `--no-dashboard`는 금지한다. Planned runner를 쓰면 `tools/run_independent_plan.py --dashboard-url http://127.0.0.1:8080`로 dashboard attach를 유지한다.
+- Runtime counts `375/375/0/0`, row-level search hard blocker `0`, publication `GO / violation 0`, adjusted drift `0`, always-on `GO`, full_scan path 검증이 모두 닫히기 전에는 `full_scan_approval=false`다.
+- Search health가 ok가 아닌 run의 collateral은 회귀 판정 근거로 쓰지 않는다. degraded/recovered 행은 보류 후 해당 행만 재실행한다.
+
 ## 2026-07-09 Loop626 current search replay와 adjusted re-baseline
 
 - Current search non-ok 행은 runtime dispatch 전에 hard replay와 recovered-only observation으로 분리한다.

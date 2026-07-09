@@ -1,5 +1,18 @@
 # Improvement Register
 
+## IMP-20260709-639 - adjudicated baseline full375 runtime plan fixed
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Re-baseline | APPLIED | `loop638_adjudicated_rebaseline_manifest.json`, baseline rows `375`, ledger rows `59` | 새 baseline을 drift 기준으로 유지 |
+| Runtime plan | READY_NOT_RUN | `loop639_full375_after_adjudicated_rebaseline_runtime_plan.json` | full375 runtime 실행 |
+| Parallel/dashboard | FIXED | `--parallel 16`, dashboard `http://127.0.0.1:8080`, `--no-dashboard` 금지 | 실행 때 planned runner 사용 |
+| Adjusted gate | FIXED | completion metric `adjusted_drift_count` | raw `105` 재소송 금지 |
+| Always-on | NO-GO | blocker `collateral_runtime_counts_missing` | runtime counts `375/375/0/0` 필요 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | full_scan path 검증 필요 |
+
+Gate: runtime plan `READY_NOT_RUN`, re-baseline `APPLIED`, adjusted drift static `GO / 0`, always-on `NO-GO / runtime counts missing`, raw `105 diagnostic`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260709-638 - candidate-set 6 official support and adjudicated re-baseline applied
 
 | 항목 | 상태 | 근거 | 다음 |

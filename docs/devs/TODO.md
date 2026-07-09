@@ -1,5 +1,20 @@
 # Developer TODO Index
 
+## 2026-07-09 Loop639 이후 full375 runtime TODO
+
+- 상태 업데이트: Loop638 re-baseline은 `APPLIED`이고, 다음 collateral은 판결 baseline 대비 `adjusted_drift_count`로 판정한다. Raw `105`는 2026-06-26 baseline 대비 historical diagnostic이다.
+- [x] Loop639 full375 runtime plan JSON/Markdown을 생성한다.
+- [x] Full375 input `375`, golden `18`, adjudicated baseline `375`를 확인한다.
+- [x] Dashboard health와 vLLM model endpoint를 확인한다.
+- [x] 다음 runtime/test run 계약을 `--parallel 16`, web dashboard ON, search 포함 non-light, `slang_db off`, VLM/OCR ON으로 고정한다.
+- [ ] Full375 runtime을 실행한다. 예상 소요는 Loop629 기준 약 `8.6h`다.
+- [ ] Run health를 생성하고 completed/flushed/pending/failed `375/375/0/0`을 확인한다.
+- [ ] Publication contract convergence를 `GO / violation 0`으로 확인한다.
+- [ ] `compare_projection_collateral.py --baseline-mode adjudicated_rebaseline`로 adjusted drift를 확인한다.
+- [ ] Always-on을 golden18 + adjusted full375 runtime 기준으로 재평가한다.
+- [ ] Full_scan path 검증 전까지 `full_scan_approval=false`를 유지한다.
+- Gate: runtime plan `READY_NOT_RUN`, re-baseline `APPLIED`, adjusted drift static `GO / 0`, always-on `NO-GO / runtime counts missing`, completion gate `adjusted full375 collateral GO + full_scan path`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-09 Loop638 이후 re-baseline 적용 / runtime 선결 TODO
 
 - 상태 업데이트: Loop637 residual6는 공식 근거 batch 판결로 모두 닫혔고 ordinary residual은 `0`이다. Adjudicated re-baseline은 적용됐으며 adjusted drift는 `0`이다.

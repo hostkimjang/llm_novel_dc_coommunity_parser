@@ -1,5 +1,17 @@
 # Operation Quality Checklist
 
+## 2026-07-09 Loop639 runtime 계획 운영 메모
+
+- [x] Loop638 adjudicated re-baseline `APPLIED` 상태를 확인했다.
+- [x] Baseline rows `375`, adjudication ledger rows `59`, static adjusted drift `0`이다.
+- [x] Raw `105`는 2026-06-26 대비 diagnostic compare로만 남긴다.
+- [x] 다음 full375 runtime은 `--parallel 16`, web dashboard ON, search 포함 non-light, `slang_db off`, VLM/OCR ON으로 실행한다.
+- [x] Planned runner는 `tools/run_independent_plan.py`를 쓰고 `--no-dashboard`를 넣지 않는다.
+- [ ] Runtime counts `375/375/0/0` 전에는 always-on을 `GO`로 바꾸지 않는다.
+- [ ] Search health가 ok가 아닌 run의 collateral은 회귀 판정 근거로 쓰지 않는다.
+- [ ] Full_scan path 검증 전에는 `full_scan_approval=false`를 유지한다.
+- Gate: runtime plan `READY_NOT_RUN`, re-baseline `APPLIED`, adjusted drift static `GO / 0`, always-on `NO-GO / runtime counts missing`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-09 Loop638 re-baseline 운영 메모
 
 - [x] Loop637 residual6를 official support batch로 닫았다.

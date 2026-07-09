@@ -1,5 +1,28 @@
 # Verification Results
 
+## 2026-07-09 Loop639 adjudicated baseline full375 runtime 계획 검증
+
+- 산출물:
+  - `docs/devs/loop639_full375_after_adjudicated_rebaseline_runtime_plan.json`
+  - `docs/devs/loop639_full375_after_adjudicated_rebaseline_runtime_plan.md`
+  - `docs/devs/loop_reports/LOOP_639_REPORT_20260709.md`
+- 검증:
+  - Loop638 readiness/manifest 확인: PASS, re-baseline `APPLIED`, baseline rows `375`, adjudication ledger rows `59`.
+  - Full375 input count: PASS, `375`.
+  - Golden set count: PASS, `18`.
+  - Adjudicated baseline result count: PASS, `375`.
+  - Dashboard health: PASS, `ok=true`, `standalone=true`, pid `9320`.
+  - vLLM endpoint: PASS, model `bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4`, max model len `128000`.
+  - Runtime contract: PASS, `--parallel 16`, dashboard ON, search 포함 non-light, `slang_db off`, VLM/OCR ON, `--no-dashboard` 금지.
+  - Plan JSON parse: PASS, `.venv312\Scripts\python.exe -m json.tool docs\devs\loop639_full375_after_adjudicated_rebaseline_runtime_plan.json`.
+  - Planned run schema: PASS, `planned_runs[0]`, output path, `--parallel 16`, no `--no-dashboard`, completion metric `adjusted_drift_count`.
+  - `git diff --check`: PASS, CRLF 경고만 있음.
+  - Launch status: `NOT_DISPATCHED_IN_THIS_TURN`. Loop629 full375 실측이 약 `8.6h`라 장시간 실행 전 계획 산출물을 먼저 고정했다.
+- 결과:
+  - Loop639는 runtime approval 회차가 아니라 다음 full375 replay 계약 고정 회차다.
+  - 완료 gate는 raw가 아니라 adjusted 기준이다. Raw `105`는 historical diagnostic이다.
+- Gate: runtime plan `READY_NOT_RUN`, re-baseline `APPLIED`, adjusted drift static `GO / 0`, always-on `NO-GO / runtime counts missing`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-09 Loop638 candidate-set 6건 및 adjudicated re-baseline 검증
 
 - 산출물:

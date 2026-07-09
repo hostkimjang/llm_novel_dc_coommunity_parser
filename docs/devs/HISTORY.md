@@ -1,5 +1,19 @@
 # Development History
 
+## 2026-07-09 - Loop639 adjudicated baseline full375 runtime plan fixed
+
+- 새 full375 runtime은 이 회차에서 foreground로 발주하지 않았다.
+- Loop638 re-baseline `APPLIED` 상태를 확인했다. Baseline rows는 `375`, adjudication ledger rows는 `59`다.
+- Completion gate는 `adjusted full375 collateral GO + full_scan path`, metric은 `adjusted_drift_count`로 유지했다.
+- Raw `105`는 2026-06-26 bootstrap 대비 historical diagnostic이며 완료 blocker가 아니다.
+- Full375 input `375`, golden `18`, adjudicated baseline result `375`를 확인했다.
+- Dashboard는 `http://127.0.0.1:8080`에서 `ok=true / standalone=true / pid 9320`이다.
+- vLLM endpoint는 `http://10.20.0.101:8000`, model은 `bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4`다.
+- 다음 runtime/test run 계약을 `--parallel 16`, web dashboard ON, search 포함 non-light, `slang_db off`, VLM/OCR ON으로 고정했다.
+- Loop629 full375 실측은 `31080.8s`, 약 `8.6h`, 평균 `82.9s/post`였으므로 실행 전 planned run 산출물을 남겼다.
+- Report는 `docs/devs/loop_reports/LOOP_639_REPORT_20260709.md`다.
+- Gate는 runtime plan `READY_NOT_RUN`, re-baseline `APPLIED`, adjusted drift static `GO / 0`, always-on `NO-GO / runtime counts missing`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-09 - Loop638 candidate-set 6 official support and adjudicated re-baseline
 
 - 새 runtime replay/full375 대형 런은 실행하지 않았다.

@@ -1,5 +1,22 @@
 # Development Checklist
 
+## 2026-07-09 Loop639 adjudicated baseline full375 runtime 계획 체크
+
+- [x] Loop638 re-baseline `APPLIED` 상태를 확인했다.
+- [x] Adjudicated baseline result rows `375`, adjudication ledger rows `59`를 확인했다.
+- [x] Completion gate를 `adjusted full375 collateral GO + full_scan path`로 유지했다.
+- [x] Completion metric은 `adjusted_drift_count`이며 raw `105`는 historical diagnostic으로만 기록했다.
+- [x] Full375 input rows `375`, golden rows `18`을 확인했다.
+- [x] Dashboard health는 `ok=true / standalone=true / pid 9320`이다.
+- [x] vLLM endpoint/model은 `http://10.20.0.101:8000`, `bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4`다.
+- [x] 다음 runtime/test run 계약을 `--parallel 16`, dashboard ON, search 포함 non-light, `slang_db off`, VLM/OCR ON으로 고정했다.
+- [x] `tools/run_independent_plan.py`용 planned run JSON을 만들었다.
+- [ ] Loop639 full375 runtime은 아직 실행하지 않았다.
+- [ ] Runtime counts `375/375/0/0` 전까지 always-on `NO-GO`를 유지한다.
+- [ ] Full_scan path 검증 전까지 `full_scan_approval=false`를 유지한다.
+- Gate: runtime plan `READY_NOT_RUN`, re-baseline `APPLIED`, adjusted drift static `GO / 0`, always-on `NO-GO / runtime counts missing`, raw `105 diagnostic`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop639_full375_after_adjudicated_rebaseline_runtime_plan.json/.md`, `docs/devs/loop_reports/LOOP_639_REPORT_20260709.md`.
+
 ## 2026-07-09 Loop638 candidate-set 6건 및 adjudicated re-baseline 체크
 
 - [x] 새 runtime replay/full375 대형 런을 실행하지 않았다.
