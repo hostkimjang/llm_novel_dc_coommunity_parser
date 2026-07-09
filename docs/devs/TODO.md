@@ -1,5 +1,22 @@
 # Developer TODO Index
 
+## 2026-07-10 Loop640 full375 재시도 TODO
+
+- 상태 업데이트: Loop639 full375 dispatch는 partial이며 approval 근거가 아니다. Run `20260709_235040_236898`은 `40/24/16/0`, frontier `11663514`, manifest search contract `NO-GO`다.
+- [x] Loop639 partial run health를 생성한다.
+- [x] Loop639 pre/post query search audit을 생성한다.
+- [x] `tools/run_independent_plan.py` direct script import를 고친다.
+- [x] Runner plan/run env forwarding을 추가한다.
+- [x] Loop640 재시도 plan을 기존 partial output과 다른 output path로 생성한다.
+- [ ] Loop640 full375 runtime을 실행한다. 예상 소요는 Loop629 기준 약 `8.6h`다.
+- [ ] Loop640 manifest에서 `mcp_health_include_search=true`, `mcp_health_light_mode=false`를 확인한다.
+- [ ] Run health를 생성하고 completed/flushed/pending/failed `375/375/0/0`을 확인한다.
+- [ ] Publication contract convergence를 `GO / violation 0`으로 확인한다.
+- [ ] `compare_projection_collateral.py --baseline-mode adjudicated_rebaseline`로 adjusted drift를 확인한다.
+- [ ] Always-on을 golden18 + adjusted full375 runtime 기준으로 재평가한다.
+- [ ] Full_scan path 검증 전까지 `full_scan_approval=false`를 유지한다.
+- Gate: Loop639 partial `NO-GO`, Loop640 plan `READY_RETRY_AFTER_CONTRACT_FIX`, completion gate `adjusted full375 collateral GO + full_scan path`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-09 Loop639 이후 full375 runtime TODO
 
 - 상태 업데이트: Loop638 re-baseline은 `APPLIED`이고, 다음 collateral은 판결 baseline 대비 `adjusted_drift_count`로 판정한다. Raw `105`는 2026-06-26 baseline 대비 historical diagnostic이다.
@@ -7,13 +24,13 @@
 - [x] Full375 input `375`, golden `18`, adjudicated baseline `375`를 확인한다.
 - [x] Dashboard health와 vLLM model endpoint를 확인한다.
 - [x] 다음 runtime/test run 계약을 `--parallel 16`, web dashboard ON, search 포함 non-light, `slang_db off`, VLM/OCR ON으로 고정한다.
-- [ ] Full375 runtime을 실행한다. 예상 소요는 Loop629 기준 약 `8.6h`다.
+- [x] Loop639 full375는 partial dispatch됐지만 approval 근거가 아니므로 Loop640 재시도 plan으로 supersede한다.
 - [ ] Run health를 생성하고 completed/flushed/pending/failed `375/375/0/0`을 확인한다.
 - [ ] Publication contract convergence를 `GO / violation 0`으로 확인한다.
 - [ ] `compare_projection_collateral.py --baseline-mode adjudicated_rebaseline`로 adjusted drift를 확인한다.
 - [ ] Always-on을 golden18 + adjusted full375 runtime 기준으로 재평가한다.
 - [ ] Full_scan path 검증 전까지 `full_scan_approval=false`를 유지한다.
-- Gate: runtime plan `READY_NOT_RUN`, re-baseline `APPLIED`, adjusted drift static `GO / 0`, always-on `NO-GO / runtime counts missing`, completion gate `adjusted full375 collateral GO + full_scan path`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- Gate: runtime plan `SUPERSEDED_BY_LOOP640_CONTRACT_FIX`, re-baseline `APPLIED`, adjusted drift static `GO / 0`, Loop639 partial `NO-GO`, always-on `NO-GO / runtime counts missing`, completion gate `adjusted full375 collateral GO + full_scan path`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-09 Loop638 이후 re-baseline 적용 / runtime 선결 TODO
 

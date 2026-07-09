@@ -1,5 +1,18 @@
 # Development History
 
+## 2026-07-10 - Loop640 Loop639 partial audit and runtime contract fix
+
+- Loop639 full375 dispatch `20260709_235040_236898`을 감사했다. 결과는 completed/flushed/pending/failed `40/24/16/0`, result rows `24`, large run complete `false`다.
+- Frontier는 global idx `25`, post_id `11663514`, title `슬라임의 올바른 사용법`이며 worker log에는 `in_progress_in_worker_log`로 남았다.
+- Loop639 partial은 manifest search contract가 `NO-GO`다. `mcp_health_include_search=false`, `mcp_health_light_mode=true`였으므로 search 포함 non-light full375 근거로 쓰지 않는다.
+- Pre/post external query audit은 shard `16/16`, query probe `16/16`, degraded `0`로 정상이다. 다만 child manifest 계약 실패를 면제하지 않는다.
+- `tools/run_independent_plan.py`가 script path invocation에서도 repo root를 `sys.path`에 추가해 `tools.test_run_dashboard_policy` import가 깨지지 않도록 했다.
+- Runner가 plan/run `required_env`와 `env_overrides`를 child process에 전달하도록 보강했다.
+- Loop640 재시도 plan을 만들었다. 필수 env는 `MCP_HEALTH_INCLUDE_SEARCH=1`, `MCP_HEALTH_LIGHT_MODE=0`, `MCP_HEALTH_REQUIRED_OK=16`, `MCP_HEALTH_PROBE_BATCH_SIZE=16`이다.
+- 새 output은 기존 partial을 덮지 않는 `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop640_full375_after_loop639_runtime_contract_fix_result.json`이다.
+- Report는 `docs/devs/loop_reports/LOOP_640_REPORT_20260710.md`다.
+- Gate는 Loop639 partial `NO-GO / PARTIAL_NOT_APPROVAL_EVIDENCE`, Loop640 plan `READY_RETRY_AFTER_CONTRACT_FIX`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-09 - Loop639 adjudicated baseline full375 runtime plan fixed
 
 - 새 full375 runtime은 이 회차에서 foreground로 발주하지 않았다.

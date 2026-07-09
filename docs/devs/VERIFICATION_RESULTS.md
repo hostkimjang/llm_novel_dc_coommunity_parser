@@ -1,5 +1,30 @@
 # Verification Results
 
+## 2026-07-10 Loop640 runtime 계약 보강 검증
+
+- 산출물:
+  - `docs/devs/loop639_full375_after_adjudicated_rebaseline_partial_run_health.json`
+  - `docs/devs/loop639_pre_full375_query_search_shard_audit.json`
+  - `docs/devs/loop639_post_abort_query_search_shard_audit.json`
+  - `docs/devs/loop640_full375_after_loop639_runtime_contract_fix_runtime_plan.json`
+  - `docs/devs/loop640_full375_after_loop639_runtime_contract_fix_runtime_plan.md`
+  - `docs/devs/loop_reports/LOOP_640_REPORT_20260710.md`
+- 검증:
+  - Loop639 partial manifest audit: expected `NO-GO`, completed/flushed/pending/failed `40/24/16/0`, result rows `24`, large run complete `false`.
+  - Frontier trace: PASS, post_id `11663514`, title `슬라임의 올바른 사용법`, worker trace `in_progress_in_worker_log`.
+  - Manifest search contract: expected `NO-GO`, `mcp_health_include_search=false`, `mcp_health_light_mode=true`.
+  - External query search audit: PASS, pre/post 모두 shard `16/16`, query probe `16/16`, degraded `0`, forbidden engine `0`.
+  - Publication contract partial audit: PASS for partial rows only, `GO / violation 0 / row 24`; full375 approval 근거는 아님.
+  - Runner import fix: PASS, `.venv312\Scripts\python.exe -m unittest tests.test_run_independent_plan -v` 중 `test_script_path_invocation_imports_tools_package`.
+  - Runner env forwarding: PASS, `.venv312\Scripts\python.exe -m unittest tests.test_run_independent_plan -v` 중 `test_plan_and_run_env_overrides_are_forwarded_to_child_process`.
+  - Unit tests: PASS, `tests.test_run_independent_plan`, `6` tests.
+  - Py compile: PASS, `.venv312\Scripts\python.exe -m py_compile tools\run_independent_plan.py`.
+  - Loop640 plan JSON parse: PASS, `.venv312\Scripts\python.exe -m json.tool docs\devs\loop640_full375_after_loop639_runtime_contract_fix_runtime_plan.json`.
+- 결과:
+  - Loop639 partial은 collateral approval 증거가 아니다.
+  - 다음 full375는 Loop640 plan으로만 실행하며 child manifest에 search 포함 non-light health가 남아야 한다.
+- Gate: Loop639 partial `NO-GO / PARTIAL_NOT_APPROVAL_EVIDENCE`, Loop640 plan `READY_RETRY_AFTER_CONTRACT_FIX`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-09 Loop639 adjudicated baseline full375 runtime 계획 검증
 
 - 산출물:
@@ -17,11 +42,11 @@
   - Plan JSON parse: PASS, `.venv312\Scripts\python.exe -m json.tool docs\devs\loop639_full375_after_adjudicated_rebaseline_runtime_plan.json`.
   - Planned run schema: PASS, `planned_runs[0]`, output path, `--parallel 16`, no `--no-dashboard`, completion metric `adjusted_drift_count`.
   - `git diff --check`: PASS, CRLF 경고만 있음.
-  - Launch status: `NOT_DISPATCHED_IN_THIS_TURN`. Loop629 full375 실측이 약 `8.6h`라 장시간 실행 전 계획 산출물을 먼저 고정했다.
+  - Launch status: `PARTIAL_DISPATCH_AFTER_PLAN_NOT_APPROVAL`. 최초 계획 시점에는 dispatch 전이었지만 이후 Loop639 partial `40/24/16/0`이 생겼고, search manifest 계약 실패로 Loop640 plan이 supersede한다.
 - 결과:
   - Loop639는 runtime approval 회차가 아니라 다음 full375 replay 계약 고정 회차다.
   - 완료 gate는 raw가 아니라 adjusted 기준이다. Raw `105`는 historical diagnostic이다.
-- Gate: runtime plan `READY_NOT_RUN`, re-baseline `APPLIED`, adjusted drift static `GO / 0`, always-on `NO-GO / runtime counts missing`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- Gate: runtime plan `SUPERSEDED_BY_LOOP640_CONTRACT_FIX`, re-baseline `APPLIED`, adjusted drift static `GO / 0`, Loop639 partial `NO-GO`, always-on `NO-GO / runtime counts missing`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-09 Loop638 candidate-set 6건 및 adjudicated re-baseline 검증
 

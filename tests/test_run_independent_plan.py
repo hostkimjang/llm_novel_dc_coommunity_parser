@@ -1,5 +1,6 @@
 import json
 import io
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -11,6 +12,22 @@ from tools.run_independent_plan import _dashboard_enabled_from_cli, run_plan
 
 
 class RunIndependentPlanTest(unittest.TestCase):
+    def test_script_path_invocation_imports_tools_package(self):
+        repo_root = Path(__file__).resolve().parents[1]
+        proc = subprocess.run(
+            [sys.executable, str(repo_root / "tools" / "run_independent_plan.py"), "--help"],
+            cwd=repo_root,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            check=False,
+        )
+
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertIn("--set-env", proc.stdout)
+
     def test_cli_no_dashboard_is_forced_on_without_breakglass_env(self):
         self.assertEqual(
             _dashboard_enabled_from_cli(True, env={}),
@@ -65,6 +82,55 @@ class RunIndependentPlanTest(unittest.TestCase):
 
             self.assertEqual(rc, 0)
             self.assertEqual(env_path.read_text(encoding="utf-8"), "0|0|45|45")
+
+    def test_plan_and_run_env_overrides_are_forwarded_to_child_process(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            env_path = root / "env.txt"
+            plan_path = root / "plan.json"
+            code = (
+                "import os,pathlib;"
+                f"pathlib.Path({str(env_path)!r}).write_text("
+                "os.environ.get('MCP_HEALTH_INCLUDE_SEARCH','')+'|'+"
+                "os.environ.get('MCP_HEALTH_LIGHT_MODE','')+'|'+"
+                "os.environ.get('MCP_HEALTH_REQUIRED_OK','')+'|'+"
+                "os.environ.get('MCP_HEALTH_PROBE_BATCH_SIZE',''),encoding='utf-8')"
+            )
+            plan_path.write_text(
+                json.dumps(
+                    {
+                        "required_env": {"MCP_HEALTH_INCLUDE_SEARCH": "1"},
+                        "runtime_contract": {
+                            "required_env": {
+                                "MCP_HEALTH_LIGHT_MODE": "0",
+                                "MCP_HEALTH_REQUIRED_OK": "16",
+                            }
+                        },
+                        "planned_runs": [
+                            {
+                                "post_id": 1,
+                                "repeat_index": 1,
+                                "output_json": "",
+                                "env_overrides": {"MCP_HEALTH_PROBE_BATCH_SIZE": "16"},
+                                "command_argv": [sys.executable, "-c", code],
+                            }
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            rc = run_plan(
+                plan_path=plan_path,
+                log_dir=root / "logs",
+                env_updates={},
+                skip_existing=False,
+                limit=None,
+                dashboard=False,
+            )
+
+            self.assertEqual(rc, 0)
+            self.assertEqual(env_path.read_text(encoding="utf-8"), "1|0|16|16")
 
     def test_runner_defaults_to_dashboard_mode_sets_forwarding_env_and_strips_no_dashboard(self):
         with tempfile.TemporaryDirectory() as tmp:

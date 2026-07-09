@@ -1,0 +1,136 @@
+{
+  "report_type": "runtime_plan",
+  "plan_id": "loop640_full375_after_loop639_runtime_contract_fix_runtime_plan",
+  "generated_at": "2026-07-10T01:05:00+09:00",
+  "gate": "READY_RETRY_AFTER_CONTRACT_FIX",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "launch_status": "READY_NOT_DISPATCHED_AFTER_FIX",
+  "rebaseline": {
+    "status": "APPLIED",
+    "source_manifest": "docs/devs/loop638_adjudicated_rebaseline_manifest.json",
+    "baseline_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/baseline/loop638_adjudicated_rebaseline_result.json",
+    "baseline_rows": 375,
+    "adjudication_ledger_rows": 59,
+    "completion_gate": "adjusted full375 collateral GO + full_scan path",
+    "completion_gate_metric": "adjusted_drift_count",
+    "raw_20260626_baseline_is_completion_gate": false,
+    "raw_20260626_baseline_role": "diagnostic historical compare only"
+  },
+  "loop639_partial_attempt": {
+    "run_id": "20260709_235040_236898",
+    "status": "PARTIAL_NOT_APPROVAL_EVIDENCE",
+    "manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop639_full375_after_adjudicated_rebaseline_result_manifest.json",
+    "partial_run_health": "docs/devs/loop639_full375_after_adjudicated_rebaseline_partial_run_health.json",
+    "completed_count": 40,
+    "flushed_count": 24,
+    "pending_count": 16,
+    "failed_count": 0,
+    "large_run_complete": false,
+    "flush_integrity": "IN_PROGRESS / ordered_flush_gap_in_progress",
+    "frontier_post_id": 11663514,
+    "frontier_title": "슬라임의 올바른 사용법",
+    "frontier_worker_trace": "in_progress_in_worker_log",
+    "manifest_mcp_health_include_search": false,
+    "manifest_mcp_health_light_mode": true,
+    "search_contract_gate": "NO-GO_MANIFEST_LIGHT_HEALTH",
+    "publication_contract_convergence_partial": "GO / violation 0 / row 24"
+  },
+  "search_preflight_observed": {
+    "preflight_query_audit": "docs/devs/loop639_pre_full375_query_search_shard_audit.json",
+    "post_abort_query_audit": "docs/devs/loop639_post_abort_query_search_shard_audit.json",
+    "shards_ok": "16/16",
+    "query_probe_ok": "16/16",
+    "degraded_count": 0,
+    "forbidden_engine_count": 0,
+    "note": "외부 query-level search audit은 GO였지만 Loop639 child manifest가 search 포함 non-light health를 남기지 않아 full375 collateral 근거로 쓰지 않는다."
+  },
+  "required_env": {
+    "MCP_HEALTH_INCLUDE_SEARCH": "1",
+    "MCP_HEALTH_LIGHT_MODE": "0",
+    "MCP_HEALTH_REQUIRED_OK": "16",
+    "MCP_HEALTH_PROBE_BATCH_SIZE": "16"
+  },
+  "runtime_contract": {
+    "run_scope": "full375",
+    "search_mode": "included_non_light",
+    "required_env": {
+      "MCP_HEALTH_INCLUDE_SEARCH": "1",
+      "MCP_HEALTH_LIGHT_MODE": "0",
+      "MCP_HEALTH_REQUIRED_OK": "16",
+      "MCP_HEALTH_PROBE_BATCH_SIZE": "16"
+    },
+    "requested_parallel": 16,
+    "dashboard_required": true,
+    "no_dashboard_forbidden": true,
+    "reuse_shards_only": true,
+    "slang_db": "off",
+    "vlm": "on",
+    "ocr": "on",
+    "require_vlm_ocr_for_images": true,
+    "estimated_duration_from_loop629_seconds": 31080.8,
+    "estimated_duration_from_loop629_hours": 8.63,
+    "estimated_average_seconds_per_post": 82.9
+  },
+  "planned_runs": [
+    {
+      "run_label": "loop640_full375_after_loop639_runtime_contract_fix",
+      "post_id": "full375",
+      "repeat_index": 1,
+      "output_json": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop640_full375_after_loop639_runtime_contract_fix_result.json",
+      "expected_manifest": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop640_full375_after_loop639_runtime_contract_fix_result_manifest.json",
+      "required_env": {
+        "MCP_HEALTH_INCLUDE_SEARCH": "1",
+        "MCP_HEALTH_LIGHT_MODE": "0",
+        "MCP_HEALTH_REQUIRED_OK": "16",
+        "MCP_HEALTH_PROBE_BATCH_SIZE": "16"
+      },
+      "command_argv": [
+        ".venv312\\Scripts\\python.exe",
+        "expert_main.py",
+        "out\\regression_safe_grounding_20260626_000008_928006_loop01\\panel\\regression_panel_input.jsonl",
+        "--output",
+        "out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop640_full375_after_loop639_runtime_contract_fix_result.json",
+        "--server-type",
+        "vllm",
+        "--llm-endpoint",
+        "http://10.20.0.101:8000",
+        "--llm-model",
+        "bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4",
+        "--reuse-shards-only",
+        "--slang-db",
+        "off",
+        "--parallel",
+        "16",
+        "--vlm",
+        "on",
+        "--ocr",
+        "on",
+        "--require-vlm-ocr-for-images"
+      ]
+    }
+  ],
+  "post_run_required_artifacts": {
+    "query_search_shard_preflight": "docs/devs/loop640_pre_full375_query_search_shard_audit.json",
+    "query_search_shard_postflight": "docs/devs/loop640_post_full375_query_search_shard_audit.json",
+    "run_health": "docs/devs/loop640_full375_after_loop639_runtime_contract_fix_run_health.json",
+    "publication_contract_convergence": "docs/devs/loop640_full375_after_loop639_runtime_contract_fix_publication_contract_convergence.json",
+    "adjusted_drift_compare": "docs/devs/loop640_full375_after_loop639_runtime_contract_fix_adjusted_drift_compare.json",
+    "always_on_gate": "docs/devs/loop640_always_on_after_full375_runtime.json"
+  },
+  "post_run_gate": {
+    "runtime_counts": "completed/flushed/pending/failed must be 375/375/0/0",
+    "manifest_search_health": "mcp_health_include_search=true and mcp_health_light_mode=false",
+    "dashboard": "manifest progress must be attached; dashboard is progress evidence, not approval evidence",
+    "row_search_health": "no hard blocker; any degraded or recovered rows must be split and replayed before using collateral as regression evidence",
+    "publication_contract_convergence": "GO / violation 0",
+    "adjusted_drift_count": 0,
+    "always_on_gate": "GO",
+    "full_scan_path": "defined and verified before full_scan_approval can become true",
+    "raw_20260626_count": "diagnostic only; never the completion blocker after re-baseline"
+  },
+  "blockers_until_run_completes": [
+    "collateral_runtime_counts_missing",
+    "full_scan_path_not_completed"
+  ]
+}

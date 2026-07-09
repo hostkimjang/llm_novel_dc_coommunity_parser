@@ -13,6 +13,10 @@ from urllib.error import URLError
 from urllib.parse import urlparse
 from urllib.request import urlopen
 
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 from tools.test_run_dashboard_policy import DEFAULT_DASHBOARD_URL, strip_no_dashboard
 
 
@@ -36,6 +40,41 @@ def _env_overrides(values: list[str]) -> dict[str, str]:
         if not key:
             raise ValueError(f"empty environment key in: {raw}")
         out[key] = value
+    return out
+
+
+def _env_mapping(raw: Any, *, field_name: str) -> dict[str, str]:
+    if raw in (None, ""):
+        return {}
+    if not isinstance(raw, dict):
+        raise ValueError(f"{field_name} must be an object")
+    out: dict[str, str] = {}
+    for key, value in raw.items():
+        if not isinstance(key, str) or not key.strip():
+            raise ValueError(f"{field_name} has an empty/non-string key")
+        out[key.strip()] = str(value)
+    return out
+
+
+def _plan_env_overrides(plan: dict[str, Any]) -> dict[str, str]:
+    out: dict[str, str] = {}
+    out.update(_env_mapping(plan.get("required_env"), field_name="required_env"))
+    out.update(_env_mapping(plan.get("env_overrides"), field_name="env_overrides"))
+    runtime_contract = plan.get("runtime_contract")
+    if isinstance(runtime_contract, dict):
+        out.update(
+            _env_mapping(
+                runtime_contract.get("required_env"),
+                field_name="runtime_contract.required_env",
+            )
+        )
+    return out
+
+
+def _run_env_overrides(run: dict[str, Any], *, index: int) -> dict[str, str]:
+    out: dict[str, str] = {}
+    out.update(_env_mapping(run.get("required_env"), field_name=f"planned_runs[{index}].required_env"))
+    out.update(_env_mapping(run.get("env_overrides"), field_name=f"planned_runs[{index}].env_overrides"))
     return out
 
 
@@ -245,7 +284,9 @@ def run_plan(
 
     selected = runs[: max(0, limit)] if limit is not None else runs
     log_dir.mkdir(parents=True, exist_ok=True)
+    plan_env_updates = _plan_env_overrides(plan)
     env = os.environ.copy()
+    env.update(plan_env_updates)
     env.update(env_updates)
     env.setdefault("PYTHONIOENCODING", "utf-8")
     env.setdefault("LLM_SUSPEND_ON_SERVER_ANOMALY", "0")
@@ -291,6 +332,7 @@ def run_plan(
     stripped_no_dashboard = 0
     dashboard_attach_started = 0
     dashboard_attach_records: list[dict[str, Any]] = []
+    run_env_override_records: list[dict[str, Any]] = []
     for index, run in enumerate(selected, start=1):
         if not isinstance(run, dict):
             raise ValueError(f"planned_runs[{index}] is not an object")
@@ -307,6 +349,11 @@ def run_plan(
         marker = log_dir / f"{stem}.marker.log"
         combined = log_dir / f"{stem}.combined.log"
         manifest_path = _manifest_path_for_run(run, output_path)
+        run_env_updates = _run_env_overrides(run, index=index)
+        if run_env_updates:
+            run_env_override_records.append({"index": index, "keys": sorted(run_env_updates)})
+        run_env = env.copy()
+        run_env.update(run_env_updates)
 
         if skip_existing and output_path is not None and output_path.exists():
             skipped += 1
@@ -332,7 +379,8 @@ def run_plan(
                 f"post_id={run.get('post_id')} repeat={run.get('repeat_index')} output={output_json} "
                 f"dashboard={dashboard_state.get('status')} "
                 f"dashboard_attach_pid={(attach_record or {}).get('pid', '')} "
-                f"manifest={manifest_path or ''}"
+                f"manifest={manifest_path or ''} "
+                f"env_override_keys={','.join(sorted(run_env_updates))}"
             ),
         )
         with combined.open("a", encoding="utf-8", errors="replace", newline="\n") as log_file:
@@ -341,7 +389,7 @@ def run_plan(
             proc = subprocess.Popen(
                 argv,
                 cwd=Path.cwd(),
-                env=env,
+                env=run_env,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 text=True,
@@ -379,6 +427,8 @@ def run_plan(
                 "completed_runs": completed,
                 "skipped_runs": skipped,
                 "env_overrides": sorted(env_updates),
+                "plan_env_overrides": sorted(plan_env_updates),
+                "run_env_overrides": run_env_override_records,
                 "dashboard": dashboard_state,
                 "stripped_no_dashboard_flags": stripped_no_dashboard,
                 "dashboard_attach_started_runs": dashboard_attach_started,

@@ -2,15 +2,18 @@
 
 Loop638에서 `true triage`와 intended recovery 계열 판결이 전 행 닫혔고, 59행 adjudication ledger를 바탕으로 `loop638_adjudicated_rebaseline_result.json`을 새 baseline으로 재동결했다. 따라서 다음 collateral은 2026-06-26 bootstrap raw 변화가 아니라 판결 baseline 대비 `adjusted_drift_count`를 잰다.
 
+> 2026-07-10 갱신: 이 계획은 이후 partial dispatch `20260709_235040_236898`로 실행됐지만 completed/flushed/pending/failed `40/24/16/0`에서 멈췄고, manifest가 `mcp_health_include_search=false`, `mcp_health_light_mode=true`라 search 포함 non-light 계약을 만족하지 못했다. 이 결과는 approval 근거가 아니며 `docs/devs/loop640_full375_after_loop639_runtime_contract_fix_runtime_plan.json/.md`가 재시도 계획으로 supersede한다.
+
 ## 현재 상태
 
-- Gate: `READY_NOT_RUN`
+- Gate: `SUPERSEDED_BY_LOOP640_CONTRACT_FIX`
 - Re-baseline: `APPLIED`
 - Baseline rows: `375`
 - Adjudication ledger rows: `59`
 - Adjusted drift at static compare: `0`
 - Historical raw vs 2026-06-26: `105`, diagnostic only
 - Always-on: `NO-GO / collateral_runtime_counts_missing`
+- Loop639 partial: `NO-GO / PARTIAL_NOT_APPROVAL_EVIDENCE`
 - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`
 
 ## Preflight 확인
@@ -23,7 +26,7 @@ Loop638에서 `true triage`와 intended recovery 계열 판결이 전 행 닫혔
 
 ## 실행 명령
 
-직접 실행:
+직접 실행 원형:
 
 ```powershell
 .\.venv312\Scripts\python.exe expert_main.py `
@@ -40,7 +43,7 @@ Loop638에서 `true triage`와 intended recovery 계열 판결이 전 행 닫혔
   --require-vlm-ocr-for-images
 ```
 
-Dashboard attach를 보장하는 planned runner:
+Dashboard attach를 보장하는 planned runner 원형:
 
 ```powershell
 .\.venv312\Scripts\python.exe tools\run_independent_plan.py `
@@ -49,7 +52,7 @@ Dashboard attach를 보장하는 planned runner:
   --dashboard-url http://127.0.0.1:8080
 ```
 
-`--no-dashboard`는 넣지 않는다. 모든 test/runtime run은 `--parallel 16`, search 포함 non-light, VLM/OCR ON, `slang_db off`, `--reuse-shards-only`로 실행한다.
+`--no-dashboard`는 넣지 않는다. 다만 이 Loop639 원형 명령은 child manifest에 non-light search env를 남기지 못했으므로 다시 쓰지 않는다. 다음 실행은 Loop640 plan의 `required_env` 포함 runner 명령을 사용한다.
 
 ## 예상 소요
 
@@ -78,4 +81,4 @@ Loop629 full375 완료 기준 실제 소요는 `31080.8s`, 약 `8.6h`, 평균 `8
 
 ## 결론
 
-재동결은 적용됐다. 이제 raw `105`는 6/26 대비 역사적 이동량 설명값이고, 완료/드리프트 게이트가 아니다. 다음 실행이 조용하면 `adjusted full375 collateral GO + full_scan path`를 완료 경로로 열고, 시끄러우면 raw 재소송이 아니라 판결 baseline 대비 drift 행만 triage한다.
+재동결은 적용됐다. 이제 raw `105`는 6/26 대비 역사적 이동량 설명값이고, 완료/드리프트 게이트가 아니다. Loop639 partial은 approval 근거가 아니므로 다음 실행은 Loop640 계약 수정 plan으로만 진행한다. 다음 실행이 조용하면 `adjusted full375 collateral GO + full_scan path`를 완료 경로로 열고, 시끄러우면 raw 재소송이 아니라 판결 baseline 대비 drift 행만 triage한다.

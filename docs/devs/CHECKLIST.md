@@ -1,5 +1,24 @@
 # Development Checklist
 
+## 2026-07-10 Loop640 Loop639 partial audit 및 재시도 계약 체크
+
+- [x] Loop639 partial run `20260709_235040_236898` manifest를 감사했다.
+- [x] Runtime counts는 completed/flushed/pending/failed `40/24/16/0`, result rows `24`로 full375 완료가 아님을 기록했다.
+- [x] Frontier는 global idx `25`, post_id `11663514`, title `슬라임의 올바른 사용법`이다.
+- [x] Flush integrity는 `IN_PROGRESS / ordered_flush_gap_in_progress`로 approval-ready가 아니다.
+- [x] Manifest search contract는 `NO-GO`: `mcp_health_include_search=false`, `mcp_health_light_mode=true`.
+- [x] Pre/post 외부 query audit은 shard `16/16`, query probe `16/16`, degraded `0`임을 확인했다.
+- [x] 외부 query audit GO만으로 child manifest search 계약 실패를 면제하지 않는다고 기록했다.
+- [x] `tools/run_independent_plan.py`의 script path import를 보강했다.
+- [x] Plan/run `required_env`와 `env_overrides`를 child process로 전달하도록 보강했다.
+- [x] Loop640 full375 재시도 계획 JSON/Markdown을 생성했다.
+- [x] Loop640 필수 env를 `MCP_HEALTH_INCLUDE_SEARCH=1`, `MCP_HEALTH_LIGHT_MODE=0`, `MCP_HEALTH_REQUIRED_OK=16`, `MCP_HEALTH_PROBE_BATCH_SIZE=16`로 고정했다.
+- [ ] Loop640 full375 runtime은 아직 완료하지 않았다.
+- [ ] Next full375 runtime counts `375/375/0/0` 전까지 always-on `NO-GO`를 유지한다.
+- [ ] Full_scan path 검증 전까지 `full_scan_approval=false`를 유지한다.
+- Gate: Loop639 partial `NO-GO / PARTIAL_NOT_APPROVAL_EVIDENCE`, Loop640 plan `READY_RETRY_AFTER_CONTRACT_FIX`, adjusted gate 기준 유지, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop639_full375_after_adjudicated_rebaseline_partial_run_health.json`, `docs/devs/loop640_full375_after_loop639_runtime_contract_fix_runtime_plan.json/.md`, `docs/devs/loop_reports/LOOP_640_REPORT_20260710.md`.
+
 ## 2026-07-09 Loop639 adjudicated baseline full375 runtime 계획 체크
 
 - [x] Loop638 re-baseline `APPLIED` 상태를 확인했다.
@@ -11,10 +30,10 @@
 - [x] vLLM endpoint/model은 `http://10.20.0.101:8000`, `bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4`다.
 - [x] 다음 runtime/test run 계약을 `--parallel 16`, dashboard ON, search 포함 non-light, `slang_db off`, VLM/OCR ON으로 고정했다.
 - [x] `tools/run_independent_plan.py`용 planned run JSON을 만들었다.
-- [ ] Loop639 full375 runtime은 아직 실행하지 않았다.
+- [x] Loop639 plan 이후 partial dispatch가 있었고, approval 근거가 아니라 Loop640로 supersede됨을 기록했다.
 - [ ] Runtime counts `375/375/0/0` 전까지 always-on `NO-GO`를 유지한다.
 - [ ] Full_scan path 검증 전까지 `full_scan_approval=false`를 유지한다.
-- Gate: runtime plan `READY_NOT_RUN`, re-baseline `APPLIED`, adjusted drift static `GO / 0`, always-on `NO-GO / runtime counts missing`, raw `105 diagnostic`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- Gate: runtime plan `SUPERSEDED_BY_LOOP640_CONTRACT_FIX`, re-baseline `APPLIED`, adjusted drift static `GO / 0`, Loop639 partial `NO-GO`, always-on `NO-GO / runtime counts missing`, raw `105 diagnostic`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 - 산출물: `docs/devs/loop639_full375_after_adjudicated_rebaseline_runtime_plan.json/.md`, `docs/devs/loop_reports/LOOP_639_REPORT_20260709.md`.
 
 ## 2026-07-09 Loop638 candidate-set 6건 및 adjudicated re-baseline 체크
