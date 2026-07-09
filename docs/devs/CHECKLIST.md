@@ -1,5 +1,18 @@
 # Development Checklist
 
+## 2026-07-09 Loop624 Loop609 raw139 collateral 판정 적격성 감사 체크
+
+- [x] 새 runtime replay/full375를 실행하지 않았다.
+- [x] `tools/audit_collateral_regression_admissibility.py`를 추가해 split report의 exact-count와 search admissibility를 별도 gate로 감사하게 했다.
+- [x] Loop609 raw `139` 회계가 expected_fp_removal `42`, intended recovery `24`(recall_miss `15`, wrong_work `9`), search degraded/recovered `109`, search health missing `9`, ok-search & non-FP `15`, 실제 triage `10`인지 검증했다.
+- [x] Loop609 degraded query `1801`, unrecovered degraded `234`를 감사 산출물에 고정했다.
+- [x] Audit 결과는 `NO-GO / collateral_regression_evidence=NOT_ADMISSIBLE`, validation issue `0`이다.
+- [x] Loop623 current-head true triage `57`은 현재 projection 배치 정렬일 뿐 Loop609 raw139 판정 적격성 대체물이 아니라고 goal/docs에 고정했다.
+- [ ] Search degraded/recovered `109`행은 검색 복구 뒤 해당 행만 재실행해 재판정한다.
+- [ ] Full375 재실행 전 검색 인프라 복구와 보류 행 재실행을 먼저 완료한다.
+- Gate: collateral admissibility `NO-GO`, full375 rerun `BLOCKED_UNTIL_SEARCH_RECOVERY_FOR_HELD_ROWS`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_624_REPORT_20260709.md`, `docs/devs/loop624_loop609_raw139_admissibility_audit.json/.md`, `tools/audit_collateral_regression_admissibility.py`, `tests/test_audit_collateral_regression_admissibility.py`.
+
 ## 2026-07-09 Loop623 current-head true triage batch 체크
 
 - [x] 새 runtime replay/full375를 실행하지 않았다.

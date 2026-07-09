@@ -74,6 +74,7 @@ tests/inputs/test01.jsonl
 !/tests/test_build_collateral_triage_review_batch.py
 !/tests/test_summarize_collateral_review_verdicts.py
 !/tests/test_split_collateral_action_queue.py
+!/tests/test_audit_collateral_regression_admissibility.py
 !/tests/test_projection_followup_queue.py
 !/tests/test_mcp_bridge_direct_search.py
 !/tests/test_search_recovery_contract.py
@@ -120,6 +121,7 @@ tests/inputs/test01.jsonl
 !/tools/build_collateral_triage_review_batch.py
 !/tools/summarize_collateral_review_verdicts.py
 !/tools/split_collateral_action_queue.py
+!/tools/audit_collateral_regression_admissibility.py
 !/tools/build_projection_followup_queue.py
 !/tools/audit_search_shards.py
 /qualitative_review

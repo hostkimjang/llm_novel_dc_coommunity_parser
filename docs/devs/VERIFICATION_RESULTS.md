@@ -1,5 +1,24 @@
 # Verification Results
 
+## 2026-07-09 Loop624 Loop609 raw139 collateral 판정 적격성 감사 검증
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_624_REPORT_20260709.md`
+  - `docs/devs/loop624_loop609_raw139_admissibility_audit.json/.md`
+  - `tools/audit_collateral_regression_admissibility.py`
+  - `tests/test_audit_collateral_regression_admissibility.py`
+- 검증:
+  - Runtime replay/full375: NOT_RUN.
+  - Admissibility audit: PASS 산출, gate `NO-GO`, collateral regression evidence `NOT_ADMISSIBLE`, full375 rerun gate `BLOCKED_UNTIL_SEARCH_RECOVERY_FOR_HELD_ROWS`.
+  - Exact count validation: PASS, raw `139`, expected_fp_removal `42`, intended recovery `24`, recall_miss `15`, wrong_work `9`, search overlay `109`, ok-search & non-FP `15`, true triage `10`, search missing `9`, degraded query `1801`, unrecovered degraded `234`.
+  - Validation issue: `0`.
+  - Focused unittest: PASS, `3` tests.
+- 결과:
+  - Loop609 raw139는 검색 비정상 run의 산출물이므로 회귀 판정 근거로 쓰지 않는다.
+  - Loop623 current-head true triage `57` 산출물은 현재 projection 배치 정렬이며 Loop609 raw139 판정 적격성을 대체하지 않는다.
+  - Full375 재실행은 검색 인프라 복구와 보류 행 재실행 전까지 열지 않는다.
+- Gate: collateral admissibility `NO-GO`, full375 rerun `BLOCKED_UNTIL_SEARCH_RECOVERY_FOR_HELD_ROWS`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-09 Loop623 current-head true triage batch 검증
 
 - 산출물:

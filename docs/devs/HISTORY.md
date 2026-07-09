@@ -1,5 +1,17 @@
 # Development History
 
+## 2026-07-09 - Loop624 Loop609 raw139 collateral admissibility audit
+
+- 새 runtime replay/full375는 실행하지 않았다.
+- `tools/audit_collateral_regression_admissibility.py`를 추가해 split report exact-count와 search admissibility를 별도 gate로 감사하게 했다.
+- `docs/devs/loop612_loop609_raw139_survey_search_health_split.json`을 감사해 `docs/devs/loop624_loop609_raw139_admissibility_audit.json/.md`를 생성했다.
+- 감사 결과는 raw `139`, expected_fp_removal `42`, intended recovery `24`(recall_miss `15`, wrong_work `9`), search degraded/recovered `109`, search health missing `9`, ok-search & non-FP `15`, 실제 triage `10`, degraded query `1801`, unrecovered degraded `234`, validation issue `0`이다.
+- Gate는 `NO-GO / collateral_regression_evidence=NOT_ADMISSIBLE`, full375 rerun `BLOCKED_UNTIL_SEARCH_RECOVERY_FOR_HELD_ROWS`다.
+- Loop623 current-head true triage `57` 산출물은 현재 projection 배치 정렬이지 Loop609 raw139 판정 적격성을 대체하지 않는다고 goal/docs에 고정했다.
+- Search health ok가 아닌 run의 collateral은 회귀 판정 근거로 쓰지 않는다.
+- Report는 `docs/devs/loop_reports/LOOP_624_REPORT_20260709.md`다.
+- Gate는 `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-09 - Loop623 current-head true triage batch
 
 - 새 runtime replay/full375는 실행하지 않았다.
