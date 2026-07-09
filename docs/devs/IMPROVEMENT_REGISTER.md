@@ -5,9 +5,9 @@
 | 항목 | 상태 | 근거 | 다음 |
 | --- | --- | --- | --- |
 | Runtime | RUNNING_BACKGROUND | run `20260710_005902_590310`, dashboard `http://127.0.0.1:8080` | full375 완료까지 background 감시 |
-| Live health | IN_PROGRESS | `loop640_full375_live_run_health_latest.json`, completed/flushed/pending/failed `26/19/7/0` | 완료 시 final audit 재실행 |
+| Live health | IN_PROGRESS | `loop640_full375_live_run_health_latest.json`, completed/flushed/pending/failed `32/19/13/0` | 완료 시 final audit 재실행 |
 | Flush integrity | ORDERED_GAP | prior frontier `4` 해소, current `next_save_idx=20`, `frontier_missing_from_checkpoint_and_pending` | frontier 해소 전 approval 금지 |
-| Search evidence | GO_SUBSET | row search ok `25`, degraded `0`, unrecovered degraded `0` | final 375 row 기준 재확인 |
+| Search evidence | GO_SUBSET | row search ok `31`, degraded `0`, unrecovered degraded `0` | final 375 row 기준 재확인 |
 | Publication contract | GO_SUBSET | flushed result `19`행, violation `0` | final 375 row 기준 재확인 |
 | Completion gate | NOT_OPEN | adjusted gate는 runtime counts `375/375/0/0` 이후 평가 | adjusted drift compare와 full_scan path 확인 |
 | Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | 완료 전 update_goal 금지 |
