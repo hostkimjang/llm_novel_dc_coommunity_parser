@@ -1,5 +1,17 @@
 # Development Checklist
 
+## 2026-07-09 Loop625 Loop609 held109 검색 복구 overlay 감사 체크
+
+- [x] 새 runtime replay/full375를 실행하지 않았다.
+- [x] `tools/audit_search_recovery_overlay.py`를 추가해 staged search replay audit을 post_id 최신 증거로 overlay할 수 있게 했다.
+- [x] Loop609 search-degraded/recovered hold `109`행을 Loop615 `109`, Loop616 hard blocker `16`, Loop617 missing `3` audit 순서로 overlay했다.
+- [x] Overlay 결과는 held/covered/missing `109/109/0`, status `ok 92 / SEARCH_DEGRADED_RECOVERED 17`, hard blocker `0`, unrecovered degraded `0`, blockers `[]`, gate `GO`다.
+- [x] Loop609 원본 raw139 collateral은 계속 `NOT_ADMISSIBLE`이며, 이번 GO는 held109 검색 복구 선결 closure일 뿐 full375 collateral/full_scan approval이 아니라고 문서화했다.
+- [ ] Current HEAD/Loop620 이후 남은 search non-ok 행을 별도 current gate로 분리한다.
+- [ ] Shared promotion gate repair batch는 search current gate와 분리해 처리한다.
+- Gate: Loop609 held109 search recovery `GO`, Loop609 source collateral evidence `NOT_ADMISSIBLE`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_625_REPORT_20260709.md`, `docs/devs/loop625_loop609_held109_search_recovery_overlay_audit.json/.md`, `tools/audit_search_recovery_overlay.py`, `tests/test_audit_search_recovery_overlay.py`.
+
 ## 2026-07-09 Loop624 Loop609 raw139 collateral 판정 적격성 감사 체크
 
 - [x] 새 runtime replay/full375를 실행하지 않았다.

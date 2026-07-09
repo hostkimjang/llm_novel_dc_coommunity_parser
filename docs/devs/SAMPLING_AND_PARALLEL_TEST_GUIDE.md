@@ -1,5 +1,12 @@
 # Sampling And Parallel Test Guide
 
+## 2026-07-09 Loop625 staged search replay overlay
+
+- Search recovery replay가 `109 -> 16 -> 3`처럼 단계적으로 좁혀졌다면, 마지막 작은 replay만 보고 전체 보류행을 닫지 않는다.
+- `tools/audit_search_recovery_overlay.py`로 원래 held post_id 전체가 최신 재실행 row로 덮였는지 확인한다.
+- Overlay closure 조건은 held/covered 일치, missing `0`, hard blocker `0`, unrecovered degraded `0`이다.
+- Overlay `GO`는 full375 실행 허용 선결 중 검색 보류행 closure일 뿐이며, full375 collateral GO나 full_scan approval이 아니다.
+
 ## 2026-07-08 Loop615 query preflight와 row-level search gate 분리
 
 - Query preflight가 pre/post 모두 `GO / 16 of 16`이어도 runtime row-level search health가 `NO-GO`이면 full375를 열지 않는다.

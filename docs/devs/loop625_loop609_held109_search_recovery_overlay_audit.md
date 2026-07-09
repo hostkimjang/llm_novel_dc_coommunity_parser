@@ -1,0 +1,142 @@
+# loop625_loop609_held109_search_recovery_overlay_audit 검색 복구 overlay 감사
+
+## 결론
+
+- gate: `GO`
+- held_rows: `109`
+- covered_rows: `109`
+- missing_rows: `0`
+- status_counts: `{"SEARCH_DEGRADED_RECOVERED": 17, "ok": 92}`
+- source_counts: `{"loop615_search_degraded109_after_loop614_replay_audit": 93, "loop616_search_hard_blocker16_replay_audit": 13, "loop617_search_health_missing3_replay_audit": 3}`
+- hard_blocker_row_count: `0`
+- recovered_observation_row_count: `20`
+- total_degraded: `76`
+- total_degraded_recovered: `46`
+- total_unrecovered_degraded: `0`
+- blockers: `[]`
+- semantic_quality: `REVIEW-LOCKED`
+- full_scan_approval: `false`
+
+## 해석
+
+- Loop609 search-degraded/recovered 보류 `109`행은 overlay 기준 모두 최신 재실행 증거로 덮였다.
+- 최신 row-level hard search blocker와 unrecovered degraded query가 `0`이므로 이 범위의 search recovery gate는 `GO`다.
+- 이는 Loop609 raw139의 검색 선결을 닫는 증거이지 full375 collateral GO나 full_scan approval이 아니다.
+
+## 입력 감사
+
+- `loop615_search_degraded109_after_loop614_replay_audit` path=`docs/devs/loop615_search_degraded109_after_loop614_replay_audit.json` gate=`NO-GO` run=`20260708_191732_513743` completed=`109` hard_blockers=`16` unrecovered=`17`
+- `loop616_search_hard_blocker16_replay_audit` path=`docs/devs/loop616_search_hard_blocker16_replay_audit.json` gate=`NO-GO` run=`20260708_223012_369319` completed=`16` hard_blockers=`3` unrecovered=`0`
+- `loop617_search_health_missing3_replay_audit` path=`docs/devs/loop617_search_health_missing3_replay_audit.json` gate=`GO` run=`20260708_231154_843681` completed=`3` hard_blockers=`0` unrecovered=`0`
+
+## 최신 행 목록
+
+- `11657045` status=`ok` unrecovered=`0` source=`loop616_search_hard_blocker16_replay_audit` title=`null`
+- `11657047` status=`SEARCH_DEGRADED_RECOVERED` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11658637` status=`ok` unrecovered=`0` source=`loop616_search_hard_blocker16_replay_audit` title=`재벌집 막내아들`
+- `11660241` status=`ok` unrecovered=`0` source=`loop616_search_hard_blocker16_replay_audit` title=`이세계 TRPG 게임마스터`
+- `11660257` status=`SEARCH_DEGRADED_RECOVERED` unrecovered=`0` source=`loop616_search_hard_blocker16_replay_audit` title=`암흑가 보스요? 제가요?`
+- `11660262` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11660268` status=`ok` unrecovered=`0` source=`loop616_search_hard_blocker16_replay_audit` title=`null`
+- `11660271` status=`SEARCH_DEGRADED_RECOVERED` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`월야의 전설이 되어라`
+- `11660273` status=`SEARCH_DEGRADED_RECOVERED` unrecovered=`0` source=`loop616_search_hard_blocker16_replay_audit` title=`null`
+- `11660277` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`아카메디 아카데미`
+- `11661856` status=`ok` unrecovered=`0` source=`loop616_search_hard_blocker16_replay_audit` title=`null`
+- `11661863` status=`SEARCH_DEGRADED_RECOVERED` unrecovered=`0` source=`loop616_search_hard_blocker16_replay_audit` title=`용의 신부로 바쳐지고 말았다`
+- `11661881` status=`ok` unrecovered=`0` source=`loop616_search_hard_blocker16_replay_audit` title=`여신이 나만 애호함`
+- `11663511` status=`ok` unrecovered=`0` source=`loop616_search_hard_blocker16_replay_audit` title=`null`
+- `11663514` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11663521` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`카미조 토우마가 IS세계관에 떨어지는 이야기. 꽤 예전에 썼던 글인데 저쪽에선 읽기 힘들어서 여기에 재업합니다`
+- `11663554` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`전 버튜버가 하고 싶은데요`
+- `11663557` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11665110` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`사이키델리아`
+- `11665121` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`후회 안 하는 프로듀서`
+- `11665124` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11666699` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`여동생이 맛있다`
+- `11666700` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`내 고향엔 무림인이 산다`
+- `11666713` status=`SEARCH_DEGRADED_RECOVERED` unrecovered=`0` source=`loop617_search_health_missing3_replay_audit` title=`21세기 무림세가 - 웹소설`
+- `11666725` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11668278` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11668300` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11668324` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`괴담에 휘말렸다`
+- `11668325` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11669907` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`약스포) 마법 좋아좋아좋아`
+- `11669908` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`아카데미에서 살아남기`
+- `11669913` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11669924` status=`SEARCH_DEGRADED_RECOVERED` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`용인족의 아카데미 생존기`
+- `11669926` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`싸울 아비룬`
+- `11669928` status=`SEARCH_DEGRADED_RECOVERED` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`탑의 성좌들이 날 애호한다`
+- `11669929` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`헌터갤러리의 국가권력급 기계공주`
+- `11669933` status=`SEARCH_DEGRADED_RECOVERED` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11671500` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`악당은 살고 싶다`
+- `11671514` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`악신의 총애를 받는 성직자가 되었다`
+- `11671538` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`망한 교단의 성기사`
+- `11673077` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`즉사기 들고 무림에 떨어지다`
+- `11673096` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11676314` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`마도서를 줍다 마법사가 되다`
+- `11676317` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`마도서를 줍다 마법사가 되다`
+- `11677919` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11677957` status=`ok` unrecovered=`0` source=`loop616_search_hard_blocker16_replay_audit` title=`null`
+- `11679547` status=`SEARCH_DEGRADED_RECOVERED` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`도굴왕`
+- `11681177` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11681180` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`아카데미 패드립 면역`
+- `11682749` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11682767` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11682768` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`마법소녀ㄴ은 은퇴하고 싶다`
+- `11685994` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`교황님 아 하세요 마왕 들어 가요`
+- `11685995` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11687618` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11687661` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11692436` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11694019` status=`ok` unrecovered=`0` source=`loop616_search_hard_blocker16_replay_audit` title=`이세계에서 사이비로 살아남기`
+- `11694035` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11694041` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11694044` status=`SEARCH_DEGRADED_RECOVERED` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11694049` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11694063` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`엘리시아 전기`
+- `11694065` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`아카데미에서 살아남기`
+- `11695599` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`창관전생(娼館轉生)`
+- `11695639` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11697231` status=`SEARCH_DEGRADED_RECOVERED` unrecovered=`0` source=`loop616_search_hard_blocker16_replay_audit` title=`아카데미 생존 갤러리`
+- `11697239` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11697242` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11697249` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11698865` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`[리제로] 스바루가 여자가 되었다.`
+- `11698870` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`인간실격 히로인들에게 집착당할 예정입니다`
+- `11698880` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11698904` status=`ok` unrecovered=`0` source=`loop617_search_health_missing3_replay_audit` title=`null`
+- `11698910` status=`SEARCH_DEGRADED_RECOVERED` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`판초우의의 마법사`
+- `11700483` status=`ok` unrecovered=`0` source=`loop617_search_health_missing3_replay_audit` title=`null`
+- `11702050` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`폴라리스 랩소디`
+- `11702081` status=`SEARCH_DEGRADED_RECOVERED` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11702094` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11703631` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`나의 악당들`
+- `11703645` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11703658` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11703674` status=`SEARCH_DEGRADED_RECOVERED` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`아카데미의 마피아가 되었다.`
+- `11705230` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11705231` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`탐식의 재림`
+- `11705251` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`월야환담 창월야`
+- `11705252` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11706844` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`범 먹는 괴이 사냥꾼`
+- `11706852` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`판초우의의 마법사`
+- `11706867` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11706871` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11708432` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`전지적 독자 시점`
+- `11708443` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`괴담에 떨어져도 출근을 해야 하는구나`
+- `11710020` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`주무시기 전에 무엇을 하셨나요?`
+- `11710036` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11710037` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`괴담 호텔 탈출기`
+- `11710047` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11710049` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11714887` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11714892` status=`SEARCH_DEGRADED_RECOVERED` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11714903` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`전 버튜버가 하고 싶은데요`
+- `11716464` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`슈라라펜란트`
+- `11716480` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11716505` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11718097` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`망겜의 힐러`
+- `11718098` status=`SEARCH_DEGRADED_RECOVERED` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`마법 좋아 좋아 좋아`
+- `11718099` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`판] 빌어먹을 환생`
+- `11718110` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`
+- `11718114` status=`ok` unrecovered=`0` source=`loop615_search_degraded109_after_loop614_replay_audit` title=`null`

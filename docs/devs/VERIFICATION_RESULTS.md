@@ -1,5 +1,24 @@
 # Verification Results
 
+## 2026-07-09 Loop625 Loop609 held109 검색 복구 overlay 감사 검증
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_625_REPORT_20260709.md`
+  - `docs/devs/loop625_loop609_held109_search_recovery_overlay_audit.json/.md`
+  - `tools/audit_search_recovery_overlay.py`
+  - `tests/test_audit_search_recovery_overlay.py`
+- 검증:
+  - Runtime replay/full375: NOT_RUN.
+  - Overlay audit: PASS 산출, gate `GO`, held/covered `109/109`, missing `0`, hard blocker `0`, unrecovered degraded `0`.
+  - Source audit order: Loop615 `109` base, Loop616 hard blocker `16`, Loop617 missing `3`.
+  - Status counts: `ok 92 / SEARCH_DEGRADED_RECOVERED 17`.
+  - Focused unittest: PASS, `3` tests.
+- 결과:
+  - Loop609 held109 search recovery precondition은 overlay 기준 닫혔다.
+  - Loop609 원본 raw139 collateral은 계속 `NOT_ADMISSIBLE`이다.
+  - 이 GO는 full375 collateral GO나 full_scan approval이 아니다.
+- Gate: Loop609 held109 search recovery `GO`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-09 Loop624 Loop609 raw139 collateral 판정 적격성 감사 검증
 
 - 산출물:

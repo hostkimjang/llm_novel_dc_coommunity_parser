@@ -1,5 +1,14 @@
 # Operation Quality Checklist
 
+## 2026-07-09 Loop625 staged search replay overlay 운영 메모
+
+- [x] Loop609 held `109`행을 Loop615/616/617 audit overlay로 재회계했다.
+- [x] Overlay 결과는 held/covered `109/109`, missing `0`, hard blocker `0`, unrecovered degraded `0`, gate `GO`다.
+- [x] 원본 Loop609 raw139 collateral은 계속 `NOT_ADMISSIBLE`로 유지했다.
+- [ ] 단계적 replay를 닫을 때는 마지막 small run만 보지 말고 원래 held set 전체 coverage를 확인한다.
+- [ ] Overlay `GO`를 full375 collateral GO나 full_scan approval로 승격하지 않는다.
+- Gate: Loop609 held109 search recovery `GO`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
 ## 2026-07-08 Loop615 row-level search recovery 운영 메모
 
 - [x] 동일 `109`행 replay를 `--parallel 16`, dashboard ON, search 포함 non-light로 완주했다.

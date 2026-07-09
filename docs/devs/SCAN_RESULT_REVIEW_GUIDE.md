@@ -2,6 +2,13 @@
 
 스캔 결과 디렉터리를 받았을 때 런타임 안정성, 검색 품질, 최종 판단 품질, `slang_db` 품질을 분리해서 리뷰하기 위한 운영 지침이다. 이 문서는 특정 런 하나를 잘 읽는 것보다, 반복 가능한 리뷰 절차와 이슈 전환 기준을 고정하는 데 목적이 있다.
 
+## 2026-07-09 Loop625 staged search replay overlay 규칙
+
+- Search-degraded/recovered 보류행을 여러 단계로 좁혀 재실행한 경우, 원래 held post_id 전체를 기준으로 최신 audit row를 overlay해 coverage를 확인한다.
+- Closure 조건은 held row coverage `100%`, latest hard blocker `0`, latest unrecovered degraded `0`이다.
+- 이 overlay `GO`는 검색 복구 선결 closure일 뿐 collateral GO나 full_scan approval이 아니다.
+- 원본 run의 search health가 비정상이면 원본 collateral은 계속 regression evidence로 쓰지 않는다.
+
 ## 2026-07-08 Loop614 query-level search audit 규칙
 
 - Search readiness `ok=16/16`은 기동/ready 증거일 뿐 query-level recovery가 아니다.
