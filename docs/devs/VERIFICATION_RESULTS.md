@@ -1,5 +1,33 @@
 # Verification Results
 
+## 2026-07-09 Loop628 remaining search blocker2 replay 검증
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_628_REPORT_20260709.md`
+  - `docs/devs/loop628_loop626_remaining_search_blocker2_replay_input_manifest.json`
+  - `docs/devs/loop628_loop626_remaining_search_blocker2_replay_audit.json/.md`
+  - `docs/devs/loop628_loop626_remaining_search_blocker2_replay_run_health.json`
+  - `docs/devs/loop628_pre_replay_query_search_shard_audit.json`
+  - `docs/devs/loop628_post_replay_query_search_shard_audit.json`
+  - `src/llm_batch/experts/orchestrator.py`
+  - `tests/test_title_lead_search_inferred_guard.py`
+- 검증:
+  - Runtime replay: PASS, run `20260709_121717_339578`, completed/flushed/pending/failed `2/2/0/0`.
+  - Parallel/dashboard: PASS, requested/effective `16/2`, dashboard forwarding `http://127.0.0.1:8080`.
+  - Flush integrity: PASS, `GO / clean_completed_source`.
+  - Pre/post query audit: PASS, shard `ok=16/16`, bad `0`.
+  - Row-level search audit: PASS, gate `GO`, status `ok 1 / SEARCH_DEGRADED_RECOVERED 1`, hard blocker `0`, unrecovered degraded `0`.
+  - Run health search evidence: PASS, `GO`, query total `28`, degraded/recovered `9/9`, unrecovered `0`.
+  - Publication contract convergence: PASS, `GO`, row count `2`, violation `0`.
+  - Log evidence: PASS, `11660258/11694026` resolved-title 검증에서 broad site-OR 쿼리가 뒤로 밀리고 `괴담 호텔 탈출기 웹소설 문피아/노벨피아`가 먼저 실행됐다.
+  - Focused unittest: PASS, `.venv312\Scripts\python.exe -m unittest tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_core_fast_demotes_broad_multi_site_or_official_probe_below_platform_text_queries tests.test_title_lead_search_inferred_guard.TitleLeadSearchInferredGuardTest.test_title_body_probe_rerank_prefers_site_scoped_detail_queries -v`, `2` tests.
+  - Py compile: PASS, `src/llm_batch/experts/orchestrator.py`, `tests/test_title_lead_search_inferred_guard.py`.
+- 결과:
+  - Loop626 remaining current search hard blocker `11660258/11694026`은 hard blocker 기준으로 닫혔다.
+  - 이 결과는 full375 collateral GO나 full_scan approval이 아니다.
+  - 다음 완료 기준은 계속 adjusted 기준 full375 collateral GO와 full_scan 경로 검증이다.
+- Gate: current search hard blocker `GO / 0`, full375 collateral `NOT_RUN_THIS_LOOP`, re-baseline `NOT_APPLIED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-09 Loop627 adjudicated re-baseline adjusted-drift gate wiring 검증
 
 - 산출물:

@@ -1,5 +1,19 @@
 # Improvement Register
 
+## IMP-20260709-628 - Loop626 remaining current search hard blockers closed
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime replay | GO | run `20260709_121717_339578`, completed/flushed/pending/failed `2/2/0/0` | full375 collateral 재확인 전 완료 선언 금지 |
+| Dashboard | GO_PROGRESS_VIEW_NOT_APPROVAL | `http://127.0.0.1:8080`, standalone forwarding ON, requested/effective parallel `16/2` | 진행 관측 전용 |
+| Query pre/post | GO | `loop628_pre/post_replay_query_search_shard_audit.json`, shard `16/16` | 다음 dispatch 전에도 반복 |
+| Search hard blocker | GO | row audit `GO`, hard blocker `0`, unrecovered degraded `0`, blockers `[]` | full375 current collateral로 확장 확인 |
+| Query ordering fix | PASS_UNIT | broad multi-site OR official-title probe 감점, 문피아/노벨피아 텍스트 쿼리 선실행 | substring cue 확장 없이 일반 술어 유지 |
+| Publication contract | GO | run health publication convergence `GO / violation 0 / rows 2` | full375 approval로 승격 금지 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 adjusted full375 collateral GO + full_scan path |
+
+Gate: current search hard blocker `GO / 0`, runtime replay `GO`, full375 collateral `NOT_RUN_THIS_LOOP`, re-baseline `NOT_APPLIED`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260708-615 - 109-row replay complete, row-level search recovery still blocked
 
 | 항목 | 상태 | 근거 | 다음 |

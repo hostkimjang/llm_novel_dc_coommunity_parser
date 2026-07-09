@@ -1,5 +1,18 @@
 # Development History
 
+## 2026-07-09 - Loop628 remaining search blocker2 replay
+
+- Loop626 remaining required-search hard blocker `11660258/11694026` 2행만 재실행했다.
+- 실행 조건은 `--parallel 16`, dashboard ON, search 포함 non-light, `slang_db off`, `--reuse-shards-only`다.
+- Run `20260709_121717_339578`은 requested/effective parallel `16/2`, completed/flushed/pending/failed `2/2/0/0`, integrity `GO / clean_completed_source`, dashboard forwarding `http://127.0.0.1:8080`이다.
+- Broad multi-site OR `official_title_verify` probe가 core-fast 첫 슬롯을 소비하지 않도록 `src/llm_batch/experts/orchestrator.py`의 context rerank에 감점을 추가했다.
+- 로그 기준 `11660258/11694026` 모두 `괴담 호텔 탈출기 웹소설 문피아/노벨피아`가 broad site-OR보다 먼저 실행됐다.
+- Row-level search audit은 `GO`, status `ok 1 / SEARCH_DEGRADED_RECOVERED 1`, hard blocker `0`, unrecovered degraded `0`, blockers `[]`다.
+- Run health는 flush integrity `GO`, search evidence `GO`, publication contract convergence `GO / violation 0`다.
+- Focused unit tests `2`개와 py_compile을 통과했다.
+- Report는 `docs/devs/loop_reports/LOOP_628_REPORT_20260709.md`다.
+- Gate는 current search hard blocker `GO / 0`, full375 collateral `NOT_RUN_THIS_LOOP`, re-baseline `NOT_APPLIED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-09 - Loop627 adjudicated re-baseline adjusted-drift gate wiring
 
 - 새 runtime replay/full375는 실행하지 않았다.

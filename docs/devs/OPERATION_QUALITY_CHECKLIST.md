@@ -1,5 +1,18 @@
 # Operation Quality Checklist
 
+## 2026-07-09 Loop628 current search hard blocker closure 운영 메모
+
+- [x] Loop626 remaining required-search hard blocker `11660258/11694026`만 분리해 재실행했다.
+- [x] Runtime은 `--parallel 16`, dashboard ON, search 포함 non-light로 실행했다. 입력이 2행이라 effective parallel은 `2`다.
+- [x] Runtime manifest는 completed/flushed/pending/failed `2/2/0/0`, integrity `GO / clean_completed_source`다.
+- [x] Pre/post query shard audit은 모두 `ok=16/16`이다.
+- [x] Row-level search audit은 hard blocker `0`, unrecovered degraded `0`, blockers `[]`로 `GO`다.
+- [x] Broad multi-site OR official-title probe는 core-fast 첫 슬롯에서 밀리고, 문피아/노벨피아 텍스트 쿼리가 먼저 실행됐다.
+- [ ] 이 closure를 full375 collateral GO나 full_scan approval로 승격하지 않는다.
+- [ ] 다음 full375 재확인도 `--parallel 16`, dashboard ON, search 포함 non-light 조건을 유지한다.
+- [ ] Re-baseline은 true triage/intended recovery 전 행 adjudication 뒤에만 적용한다.
+- Gate: current search hard blocker `GO / 0`, full375 collateral `NOT_RUN_THIS_LOOP`, re-baseline `NOT_APPLIED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-09 Loop626 current search hard replay와 re-baseline 운영 메모
 
 - [x] Current search non-ok `15`행을 hard replay `5`와 recovered-only observation `10`으로 분리했다.

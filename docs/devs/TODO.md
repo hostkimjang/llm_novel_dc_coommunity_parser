@@ -1,5 +1,18 @@
 # Developer TODO Index
 
+## 2026-07-09 Loop628 이후 current search hard blocker closure TODO
+
+- 상태 업데이트: Loop626 remaining required-search hard blocker `11660258/11694026`은 Loop628 replay 기준 hard blocker `0`으로 닫혔다.
+- [x] Broad multi-site OR `official_title_verify` probe가 core-fast 첫 슬롯을 소비하지 않도록 context rerank 감점을 추가한다.
+- [x] `11660258/11694026` 2행을 `--parallel 16`, dashboard ON, search 포함 non-light로 재실행한다.
+- [x] Row-level search audit을 생성한다. 결과는 `GO`, status `ok 1 / SEARCH_DEGRADED_RECOVERED 1`, unrecovered degraded `0`, hard blocker `0`.
+- [x] Run health를 생성한다. 결과는 flush integrity `GO`, search evidence `GO`, publication contract convergence `GO`.
+- [ ] Full375 collateral을 다시 실행/비교하기 전까지 goal 완료를 선언하지 않는다.
+- [ ] `true triage 57` 전 행 판결을 완료한다.
+- [ ] intended recovery 전 행 제목 정답성 판결을 완료한다.
+- [ ] 위 선결이 모두 닫힌 뒤에만 판결된 Loop620/Loop621 결과를 새 baseline으로 재동결한다.
+- Gate: current search hard blocker `GO / 0`, full375 collateral `NOT_RUN_THIS_LOOP`, re-baseline `NOT_APPLIED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-09 Loop627 이후 re-baseline 선결 TODO
 
 - 상태 업데이트: re-baseline을 실제 적용하지 않고, `adjusted_drift` gate wiring만 코드/문서/테스트로 고정했다.

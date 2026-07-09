@@ -24174,6 +24174,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
         def _score_request(_req: Dict[str, Any], _pr_i: int) -> tuple[float, str]:
             q_raw = str(_req.get("query", "") or "")
             q_norm = self._normalize_kor_token(q_raw)
+            q_lc = q_raw.lower()
             p_key = _purpose_key_for_rerank(_req.get("purpose"))
             score = 100.0 - (min(max(_pr_i, 0), 100) * 8.0)
             reasons: List[str] = [f"base={score:.1f}"]
@@ -24288,6 +24289,15 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 elif p_key in {"title_anchor_official_probe", "title_anchor_exact_probe"}:
                     score -= 26.0
                     reasons.append("-broad_anchor_before_direct_alias")
+            if (
+                p_key in {"official_title_verify", "platform_title_search"}
+                and q_lc.strip().startswith("(site:")
+                and " or site:" in q_lc
+                and q_lc.count("site:") >= 2
+                and "site:novelpia.com/novel" not in q_lc
+            ):
+                score -= 32.0
+                reasons.append("-broad_multi_site_or_probe")
             if p_key == "platform_issue_verify":
                 score += 14.0
                 reasons.append("+platform_issue_verify")

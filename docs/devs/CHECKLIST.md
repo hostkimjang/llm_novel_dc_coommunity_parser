@@ -1,5 +1,20 @@
 # Development Checklist
 
+## 2026-07-09 Loop628 remaining search blocker2 replay 체크
+
+- [x] Loop626 remaining required-search hard blocker `11660258/11694026` 2행 입력을 생성했다.
+- [x] Runtime은 `--parallel 16`, dashboard ON, search 포함 non-light, `slang_db off`, `--reuse-shards-only`로 실행했다.
+- [x] Run `20260709_121717_339578`은 completed/flushed/pending/failed `2/2/0/0`, integrity `GO / clean_completed_source`다.
+- [x] Dashboard forwarding은 `http://127.0.0.1:8080`이고 requested/effective parallel은 `16/2`다.
+- [x] Broad multi-site OR `official_title_verify` probe가 core-fast 첫 슬롯을 소비하지 않도록 context rerank 감점을 추가했다.
+- [x] `11660258/11694026` 로그에서 `괴담 호텔 탈출기 웹소설 문피아/노벨피아`가 broad site-OR보다 먼저 실행됨을 확인했다.
+- [x] Row-level search audit은 `GO`, hard blocker `0`, unrecovered degraded `0`, blockers `[]`다.
+- [x] Run health는 search evidence `GO`, publication contract convergence `GO / violation 0`다.
+- [ ] Full375 collateral을 재확인하기 전까지 이 결과를 full_scan approval로 승격하지 않는다.
+- [ ] `true triage 57`과 intended recovery 전 행 판결 전에는 re-baseline을 적용하지 않는다.
+- Gate: current search hard blocker `GO / 0`, runtime replay `GO`, full375 collateral `NOT_RUN_THIS_LOOP`, re-baseline `NOT_APPLIED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_628_REPORT_20260709.md`, `docs/devs/loop628_loop626_remaining_search_blocker2_replay_audit.json/.md`, `docs/devs/loop628_loop626_remaining_search_blocker2_replay_run_health.json`, `src/llm_batch/experts/orchestrator.py`, `tests/test_title_lead_search_inferred_guard.py`.
+
 ## 2026-07-09 Loop627 adjudicated re-baseline adjusted-drift gate wiring 체크
 
 - [x] 새 runtime replay/full375를 실행하지 않았다.

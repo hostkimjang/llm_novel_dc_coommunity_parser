@@ -11312,6 +11312,64 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         self.assertIn("두바 노벨피아", first_six)
         self.assertIn(("두바 노벨피아", "title_anchor_official_probe"), calls)
 
+    def test_core_fast_demotes_broad_multi_site_or_official_probe_below_platform_text_queries(self):
+        calls = []
+
+        def search_fn(query, purpose=""):
+            calls.append((query, purpose))
+            return []
+
+        orchestrator = Orchestrator(experts={}, search_fn=search_fn)
+        ctx = ConversationContext(
+            post_id=11660258,
+            post_data={
+                "title": "괴담텔 아리야...",
+                "content_blocks": [{"type": "text", "text": "니 엄만 이제 디졌어"}],
+            },
+            comments=[],
+        )
+        ctx.set_expert_output(
+            ExpertType.DISCOURSE,
+            {"discourse_analysis": {"primary_domain": "novel_literature", "intent": "discuss_work"}},
+        )
+        ctx.set_expert_output(
+            ExpertType.GATEKEEPER,
+            {"post_type": "work_discussion", "detected_entities": {"possible_titles": ["괴담 호텔 탈출기"]}},
+        )
+        requests = [
+            {
+                "purpose": "official_title_verify",
+                "priority": 0,
+                "query": (
+                    "(site:novelpia.com OR site:munpia.com OR site:series.naver.com "
+                    "OR site:page.kakao.com OR site:joara.com) 괴담 호텔 탈출기"
+                ),
+            },
+            {
+                "purpose": "official_title_verify",
+                "priority": 0,
+                "query": "괴담 호텔 탈출기 웹소설 문피아",
+            },
+            {
+                "purpose": "official_title_verify",
+                "priority": 0,
+                "query": "괴담 호텔 탈출기 웹소설 노벨피아",
+            },
+        ]
+
+        with patch.object(
+            orchestrator,
+            "_derive_search_budget_profile",
+            return_value={"profile": "core_fast_resolve", "max_q": 5, "stop_after_official_hit": False},
+        ), patch.dict(
+            os.environ,
+            {"PIPELINE_SEARCH_CONCURRENCY": "1", "LLM_ENABLE_CONTEXT_QUERY_RERANK": "1"},
+        ):
+            orchestrator._execute_searches(requests, post_id=ctx.post_id, ctx=ctx)
+
+        executed = [query for query, _purpose in calls]
+        self.assertEqual(executed, ["괴담 호텔 탈출기 웹소설 문피아", "괴담 호텔 탈출기 웹소설 노벨피아"])
+
     def test_core_fast_keeps_specific_title_body_probe_after_generic_nonzero(self):
         calls = []
 

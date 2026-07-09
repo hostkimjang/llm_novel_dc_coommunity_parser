@@ -1,0 +1,92 @@
+{
+  "report_type": "search_recovery_replay_audit",
+  "audit_id": "loop628_loop626_remaining_search_blocker2_replay",
+  "generated_at": "2026-07-09T12:26:15",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "gate": "GO",
+  "summary": {
+    "expected_replay_rows": 2,
+    "completed_rows": 2,
+    "status_counts": {
+      "SEARCH_DEGRADED_RECOVERED": 1,
+      "ok": 1
+    },
+    "total_queries": 28,
+    "total_degraded": 9,
+    "total_degraded_zero": 0,
+    "total_degraded_recovered": 9,
+    "total_unrecovered_degraded": 0,
+    "hard_blocker_row_count": 0,
+    "recovered_observation_row_count": 1,
+    "missing_search_health_row_count": 0,
+    "hard_missing_search_health_row_count": 0,
+    "search_not_required_observation_row_count": 0,
+    "non_ok_row_count": 0,
+    "blockers": []
+  },
+  "recovery_summary": {
+    "run_id": null,
+    "checkpoint_completed_rows": null,
+    "checkpoint_failed_rows": null,
+    "recovered_rows": null,
+    "large_run_complete": null,
+    "integrity_classification": null
+  },
+  "rows": [
+    {
+      "post_id": 11660258,
+      "title": "괴담 호텔 탈출기",
+      "search_status": "ok",
+      "queries_issued": 9,
+      "degraded": 0,
+      "degraded_zero": 0,
+      "degraded_recovered": 0,
+      "unrecovered_degraded": 0,
+      "context_sources": [
+        "title",
+        "body",
+        "search"
+      ],
+      "work_resolution": "resolved",
+      "title_resolution_allowed": true,
+      "is_relevant": true,
+      "search_evidence_catalog_present": true,
+      "publish_allowed": true,
+      "search_blocker_reason": null,
+      "search_missing_observation": null,
+      "recovered_observation": null
+    },
+    {
+      "post_id": 11694026,
+      "title": null,
+      "search_status": "SEARCH_DEGRADED_RECOVERED",
+      "queries_issued": 19,
+      "degraded": 9,
+      "degraded_zero": 0,
+      "degraded_recovered": 9,
+      "unrecovered_degraded": 0,
+      "context_sources": [
+        "title",
+        "body",
+        "comments",
+        "search"
+      ],
+      "work_resolution": "unresolved",
+      "title_resolution_allowed": false,
+      "is_relevant": true,
+      "search_evidence_catalog_present": true,
+      "publish_allowed": false,
+      "search_blocker_reason": null,
+      "search_missing_observation": null,
+      "recovered_observation": "search_degraded_recovered"
+    }
+  ],
+  "approval_boundary": {
+    "partial_replay_is_not_search_recovery": true,
+    "search_health_ok_required_before_full375_rerun": true,
+    "search_degraded_recovered_is_not_hard_blocker_without_unrecovered": true,
+    "missing_search_health_is_hard_only_when_search_or_publication_required": true,
+    "dashboard_is_progress_only": true
+  }
+}
