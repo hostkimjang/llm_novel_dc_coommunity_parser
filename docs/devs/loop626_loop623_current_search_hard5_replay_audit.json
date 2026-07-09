@@ -1,7 +1,7 @@
 {
   "report_type": "search_recovery_replay_audit",
   "audit_id": "loop626_loop623_current_search_hard5_replay_audit",
-  "generated_at": "2026-07-09T11:40:36",
+  "generated_at": "2026-07-09T11:54:26",
   "semantic_quality": "REVIEW-LOCKED",
   "full_scan_approval": false,
   "gate": "NO-GO",
@@ -19,13 +19,14 @@
     "total_degraded_zero": 2,
     "total_degraded_recovered": 22,
     "total_unrecovered_degraded": 2,
-    "hard_blocker_row_count": 3,
+    "hard_blocker_row_count": 2,
     "recovered_observation_row_count": 2,
     "missing_search_health_row_count": 1,
-    "non_ok_row_count": 3,
+    "hard_missing_search_health_row_count": 0,
+    "search_not_required_observation_row_count": 1,
+    "non_ok_row_count": 2,
     "blockers": [
       "row_search_hard_blocker_observed",
-      "search_health_missing_observed",
       "unrecovered_degraded_queries_observed"
     ]
   },
@@ -47,7 +48,18 @@
       "degraded_zero": 1,
       "degraded_recovered": 3,
       "unrecovered_degraded": 1,
+      "context_sources": [
+        "title",
+        "body",
+        "search"
+      ],
+      "work_resolution": "resolved",
+      "title_resolution_allowed": true,
+      "is_relevant": true,
+      "search_evidence_catalog_present": true,
+      "publish_allowed": true,
       "search_blocker_reason": "search_degraded",
+      "search_missing_observation": null,
       "recovered_observation": null
     },
     {
@@ -59,7 +71,19 @@
       "degraded_zero": 0,
       "degraded_recovered": 0,
       "unrecovered_degraded": 0,
+      "context_sources": [
+        "title",
+        "body",
+        "comments",
+        "search"
+      ],
+      "work_resolution": "none",
+      "title_resolution_allowed": false,
+      "is_relevant": false,
+      "search_evidence_catalog_present": true,
+      "publish_allowed": false,
       "search_blocker_reason": null,
+      "search_missing_observation": null,
       "recovered_observation": "ok_with_recovered_degradation_counter"
     },
     {
@@ -71,7 +95,19 @@
       "degraded_zero": 1,
       "degraded_recovered": 16,
       "unrecovered_degraded": 1,
+      "context_sources": [
+        "title",
+        "body",
+        "comments",
+        "search"
+      ],
+      "work_resolution": "unresolved",
+      "title_resolution_allowed": false,
+      "is_relevant": true,
+      "search_evidence_catalog_present": true,
+      "publish_allowed": false,
       "search_blocker_reason": "search_degraded",
+      "search_missing_observation": null,
       "recovered_observation": null
     },
     {
@@ -83,7 +119,19 @@
       "degraded_zero": 0,
       "degraded_recovered": 3,
       "unrecovered_degraded": 0,
+      "context_sources": [
+        "title",
+        "body",
+        "comments",
+        "search"
+      ],
+      "work_resolution": "resolved",
+      "title_resolution_allowed": true,
+      "is_relevant": true,
+      "search_evidence_catalog_present": true,
+      "publish_allowed": true,
       "search_blocker_reason": null,
+      "search_missing_observation": null,
       "recovered_observation": "search_degraded_recovered"
     },
     {
@@ -95,7 +143,18 @@
       "degraded_zero": 0,
       "degraded_recovered": 0,
       "unrecovered_degraded": 0,
-      "search_blocker_reason": "search_health_missing",
+      "context_sources": [
+        "title",
+        "body",
+        "comments"
+      ],
+      "work_resolution": "none",
+      "title_resolution_allowed": false,
+      "is_relevant": false,
+      "search_evidence_catalog_present": false,
+      "publish_allowed": false,
+      "search_blocker_reason": null,
+      "search_missing_observation": "search_not_required_null_result",
       "recovered_observation": null
     }
   ],
@@ -103,6 +162,7 @@
     "partial_replay_is_not_search_recovery": true,
     "search_health_ok_required_before_full375_rerun": true,
     "search_degraded_recovered_is_not_hard_blocker_without_unrecovered": true,
+    "missing_search_health_is_hard_only_when_search_or_publication_required": true,
     "dashboard_is_progress_only": true
   }
 }

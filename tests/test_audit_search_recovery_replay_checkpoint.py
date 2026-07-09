@@ -14,8 +14,31 @@ def _row(
     degraded: int = 0,
     unrecovered: int = 0,
     include_health: bool = True,
+    null_title: bool = False,
+    is_relevant: bool = True,
+    is_resolved_work_discussion: bool | None = None,
+    title_resolution_allowed: bool | None = None,
+    work_resolution: str | None = None,
+    context_sources: list[str] | None = None,
+    search_evidence_catalog: list[dict] | None = None,
+    promotion_decision: dict | None = None,
 ) -> dict:
-    identity = {"novel_identity": {"official_title": f"title {post_id}"}}
+    identity = {
+        "is_relevant": is_relevant,
+        "is_resolved_work_discussion": (
+            (not null_title) if is_resolved_work_discussion is None else is_resolved_work_discussion
+        ),
+        "title_resolution_allowed": (
+            (not null_title) if title_resolution_allowed is None else title_resolution_allowed
+        ),
+        "work_resolution": work_resolution or ("none" if null_title else "resolved"),
+        "context_sources": context_sources or ["title", "body", "search"],
+        "novel_identity": None if null_title else {"official_title": f"title {post_id}"},
+    }
+    if search_evidence_catalog is not None:
+        identity["search_evidence_catalog"] = search_evidence_catalog
+    if promotion_decision is not None:
+        identity["promotion_decision"] = promotion_decision
     if include_health:
         identity["search_health"] = {
             "status": status,
@@ -89,6 +112,66 @@ class AuditSearchRecoveryReplayCheckpointTest(unittest.TestCase):
 
         self.assertEqual(report["gate"], "NO-GO")
         self.assertEqual(report["summary"]["missing_search_health_row_count"], 1)
+        self.assertEqual(report["summary"]["hard_missing_search_health_row_count"], 1)
+        self.assertIn("search_health_missing_observed", report["summary"]["blockers"])
+
+    def test_missing_search_health_without_search_needed_is_observation(self) -> None:
+        report = audit_replay(
+            recovered_rows=[
+                _row(
+                    11710021,
+                    "MISSING",
+                    include_health=False,
+                    null_title=True,
+                    is_relevant=False,
+                    is_resolved_work_discussion=False,
+                    title_resolution_allowed=False,
+                    work_resolution="none",
+                    context_sources=["title", "body", "comments"],
+                    promotion_decision={
+                        "status": "candidate_only",
+                        "publish_allowed": False,
+                        "official_title": None,
+                    },
+                )
+            ],
+            input_manifest={"summary": {"runtime_input_rows": 1}},
+            recovery_summary={"large_run_complete": True, "checkpoint_completed_rows": 1},
+            audit_id="test",
+        )
+
+        self.assertEqual(report["gate"], "GO")
+        self.assertEqual(report["summary"]["missing_search_health_row_count"], 1)
+        self.assertEqual(report["summary"]["hard_missing_search_health_row_count"], 0)
+        self.assertEqual(report["summary"]["search_not_required_observation_row_count"], 1)
+        self.assertEqual(report["summary"]["blockers"], [])
+        self.assertIsNone(report["rows"][0]["search_blocker_reason"])
+        self.assertEqual(report["rows"][0]["search_missing_observation"], "search_not_required_null_result")
+
+    def test_missing_search_health_with_search_catalog_still_hard_blocks(self) -> None:
+        report = audit_replay(
+            recovered_rows=[
+                _row(
+                    1,
+                    "MISSING",
+                    include_health=False,
+                    null_title=True,
+                    is_relevant=False,
+                    is_resolved_work_discussion=False,
+                    title_resolution_allowed=False,
+                    work_resolution="none",
+                    context_sources=["title", "body"],
+                    search_evidence_catalog=[{"query": "title probe", "url": "https://example.test"}],
+                )
+            ],
+            input_manifest={"summary": {"runtime_input_rows": 1}},
+            recovery_summary={"large_run_complete": True, "checkpoint_completed_rows": 1},
+            audit_id="test",
+        )
+
+        self.assertEqual(report["gate"], "NO-GO")
+        self.assertEqual(report["summary"]["hard_missing_search_health_row_count"], 1)
+        self.assertEqual(report["summary"]["search_not_required_observation_row_count"], 0)
         self.assertIn("search_health_missing_observed", report["summary"]["blockers"])
 
     def test_accepts_expert_run_health_summary_shape(self) -> None:

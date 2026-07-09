@@ -5,11 +5,12 @@
 - [x] Current search non-ok `15`행을 hard replay `5`와 recovered-only observation `10`으로 분리했다.
 - [x] Hard `5`행은 `--parallel 16`, dashboard ON, search 포함 non-light로 실행했다.
 - [x] Runtime은 `5/5` clean completed source로 끝났다.
-- [x] Row-level search audit은 `NO-GO`이고 remaining hard blocker는 `11660258/11694026/11710021`이다.
+- [x] Row-level search audit은 `NO-GO`이고 remaining required-search hard blocker는 `11660258/11694026`이다.
+- [x] `11710021`처럼 검색을 쓰지 않고 공개 제목도 없는 null/FP 제거 관측은 `MISSING search_health`라도 hard blocker가 아니다.
 - [ ] Runtime completion `GO`를 search recovery `GO`나 full375 collateral `GO`로 승격하지 않는다.
 - [ ] true triage/intended recovery 전 행 판결 전 re-baseline을 적용하지 않는다.
 - [ ] Re-baseline 이후 완료 gate는 adjusted drift 기준이며, 6/26 raw diff는 참고 수치로만 둔다.
-- Gate: runtime replay `GO`, current search recovery `NO-GO / hard blocker 3`, re-baseline `NOT_APPLIED`, full375 `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+- Gate: runtime replay `GO`, current search recovery `NO-GO / required-search hard blocker 2`, re-baseline `NOT_APPLIED`, full375 `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
 
 ## 2026-07-09 Loop625 staged search replay overlay 운영 메모
 

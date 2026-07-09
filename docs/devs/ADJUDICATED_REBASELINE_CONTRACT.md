@@ -8,7 +8,7 @@ Loop620/Loop621 계열 full375 결과의 raw diff는 2026-06-26 bootstrap baseli
 
 - `true triage 57` 전 행이 `ACCEPT`, `REPROCESS`, `HOLD`, `expected_fp_removal_exempt`, `fixed` 등 명시 decision으로 닫혀야 한다.
 - intended recovery blind/title correctness 판정이 전 행 끝나야 한다. 제목 정답성 미판정 행은 re-baseline 대상에 넣지 않는다.
-- current search non-ok hard blocker가 `0`이어야 한다. `SEARCH_DEGRADED`, `MISSING`, unrecovered degraded가 남은 결과는 re-baseline source가 아니다.
+- current search non-ok hard blocker가 `0`이어야 한다. `SEARCH_DEGRADED`, unrecovered degraded, required-search/publication 행의 `MISSING search_health`가 남은 결과는 re-baseline source가 아니다. 검색을 쓰지 않고 공개 제목도 없는 null/FP 제거 관측은 hard blocker가 아니라 별도 observation으로 회계한다.
 - publication contract가 `GO`여야 한다.
 - source/baseline/after missing, duplicate post_id, runtime count mismatch가 없어야 한다.
 - `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` 상태는 re-baseline 준비 중 계속 유지한다.

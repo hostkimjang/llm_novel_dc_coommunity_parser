@@ -4,7 +4,7 @@
 
 - Current search non-ok 행은 runtime dispatch 전에 hard replay와 recovered-only observation으로 분리한다.
 - Hard replay는 사용자 지시대로 `--parallel 16`, web dashboard ON, search 포함 non-light로 실행한다. 입력 행 수가 16보다 작으면 effective parallel은 입력 수로 줄어들 수 있다.
-- Runtime completion `GO`와 row-level search recovery `GO`를 분리한다. Loop626은 runtime `5/5`였지만 row-level search audit이 `NO-GO`라 full375를 열지 않는다.
+- Runtime completion `GO`와 row-level search recovery `GO`를 분리한다. Loop626은 runtime `5/5`였지만 row-level search audit이 `NO-GO`라 full375를 열지 않는다. 재감사 기준 remaining required-search hard blocker는 `11660258/11694026` 두 건이고, `11710021`은 검색 미사용 null/FP 제거 관측으로 hard blocker에서 제외한다.
 - `true triage 57`과 intended recovery 전 행 판결이 끝난 뒤에는 판결된 결과를 새 baseline으로 재동결한다. 이후 완료 gate는 raw가 아니라 adjusted drift 기준이다.
 
 ## 2026-07-09 Loop625 staged search replay overlay

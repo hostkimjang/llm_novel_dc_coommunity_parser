@@ -68,6 +68,68 @@ def _title(row: dict[str, Any]) -> str | None:
     return title or None
 
 
+def _context_sources(identity: dict[str, Any]) -> list[str]:
+    sources = identity.get("context_sources")
+    if not isinstance(sources, list):
+        return []
+    return [str(source).strip() for source in sources if str(source).strip()]
+
+
+def _has_search_evidence_catalog(identity: dict[str, Any]) -> bool:
+    catalog = identity.get("search_evidence_catalog")
+    if isinstance(catalog, list):
+        return bool(catalog)
+    if isinstance(catalog, dict):
+        return bool(catalog)
+    return bool(catalog)
+
+
+def _publish_allowed(identity: dict[str, Any]) -> bool:
+    decision_candidates: list[Any] = [identity.get("promotion_decision")]
+    trace = identity.get("publish_contract_trace")
+    if isinstance(trace, dict):
+        decision_candidates.append(trace.get("gate_decision"))
+    ledger = identity.get("publish_ledger")
+    if isinstance(ledger, dict):
+        decision_candidates.append(ledger.get("gate_decision"))
+    for decision in decision_candidates:
+        if not isinstance(decision, dict):
+            continue
+        status = str(decision.get("status") or "").strip().lower()
+        if decision.get("publish_allowed") is True or status == "publish":
+            return True
+        if str(decision.get("official_title") or "").strip():
+            return True
+    return False
+
+
+def _missing_search_health_observation(row: dict[str, Any], audit_row: dict[str, Any]) -> str | None:
+    status = str(audit_row.get("search_status") or "").strip().upper()
+    if status != "MISSING":
+        return None
+    if _int(audit_row.get("queries_issued")) > 0:
+        return None
+    if _title(row):
+        return None
+
+    identity = _identity(row)
+    if _has_search_evidence_catalog(identity):
+        return None
+    if "search" in {source.lower() for source in _context_sources(identity)}:
+        return None
+    if identity.get("title_resolution_allowed") is not False:
+        return None
+    if identity.get("is_resolved_work_discussion") is True:
+        return None
+    if identity.get("is_relevant") is not False:
+        return None
+    if str(identity.get("work_resolution") or "").strip().lower() not in {"none", "nonwork"}:
+        return None
+    if _publish_allowed(identity):
+        return None
+    return "search_not_required_null_result"
+
+
 def _search_blocker_reason(row: dict[str, Any]) -> str | None:
     status = str(row.get("search_status") or "").strip().upper()
     unrecovered = _int(row.get("unrecovered_degraded"))
@@ -149,6 +211,7 @@ def audit_replay(
     rows: list[dict[str, Any]] = []
 
     for row in recovered_rows:
+        identity = _identity(row)
         health = _health(row)
         status = str(health.get("status") or "MISSING").strip() or "MISSING"
         degraded = _int(health.get("degraded") or health.get("degraded_count"))
@@ -171,22 +234,34 @@ def audit_replay(
             "degraded_zero": degraded_zero,
             "degraded_recovered": recovered,
             "unrecovered_degraded": unrecovered,
+            "context_sources": _context_sources(identity),
+            "work_resolution": identity.get("work_resolution"),
+            "title_resolution_allowed": identity.get("title_resolution_allowed"),
+            "is_relevant": identity.get("is_relevant"),
+            "search_evidence_catalog_present": _has_search_evidence_catalog(identity),
+            "publish_allowed": _publish_allowed(identity),
         }
-        blocker_reason = _search_blocker_reason(audit_row)
+        missing_observation = _missing_search_health_observation(row, audit_row)
+        blocker_reason = None if missing_observation else _search_blocker_reason(audit_row)
         recovered_reason = _recovered_observation(audit_row)
         audit_row["search_blocker_reason"] = blocker_reason
+        audit_row["search_missing_observation"] = missing_observation
         audit_row["recovered_observation"] = recovered_reason
         rows.append(audit_row)
 
     hard_blocker_rows = [row for row in rows if row.get("search_blocker_reason")]
     recovered_observation_rows = [row for row in rows if row.get("recovered_observation")]
     missing_health_rows = [row for row in rows if row.get("search_status") == "MISSING"]
+    hard_missing_health_rows = [
+        row for row in missing_health_rows if row.get("search_blocker_reason") == "search_health_missing"
+    ]
+    search_not_required_rows = [row for row in rows if row.get("search_missing_observation")]
     blockers: list[str] = []
     if expected_count and completed_count < expected_count:
         blockers.append("partial_replay_not_all_deferred_rows_completed")
     if hard_blocker_rows:
         blockers.append("row_search_hard_blocker_observed")
-    if missing_health_rows:
+    if hard_missing_health_rows:
         blockers.append("search_health_missing_observed")
     if total_unrecovered > 0:
         blockers.append("unrecovered_degraded_queries_observed")
@@ -212,6 +287,8 @@ def audit_replay(
             "hard_blocker_row_count": len(hard_blocker_rows),
             "recovered_observation_row_count": len(recovered_observation_rows),
             "missing_search_health_row_count": len(missing_health_rows),
+            "hard_missing_search_health_row_count": len(hard_missing_health_rows),
+            "search_not_required_observation_row_count": len(search_not_required_rows),
             "non_ok_row_count": len(hard_blocker_rows),
             "blockers": blockers,
         },
@@ -228,6 +305,7 @@ def audit_replay(
             "partial_replay_is_not_search_recovery": True,
             "search_health_ok_required_before_full375_rerun": True,
             "search_degraded_recovered_is_not_hard_blocker_without_unrecovered": True,
+            "missing_search_health_is_hard_only_when_search_or_publication_required": True,
             "dashboard_is_progress_only": True,
         },
     }
@@ -247,7 +325,8 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
     else:
         interpretation = [
             "- 이 산출물은 검색 복구 증명이 아니다.",
-            "- 완료 범위, missing search_health, 또는 unrecovered degraded hard blocker가 남아 있으므로 full375 재실행 차단은 유지한다.",
+            "- 완료 범위, required-search missing search_health, 또는 unrecovered degraded hard blocker가 남아 있으므로 full375 재실행 차단은 유지한다.",
+            "- 검색을 쓰지 않고 공개 제목도 없는 null/FP 제거 관측은 hard blocker가 아니라 별도 observation으로 회계한다.",
             "- 검색 인프라 복구 후 blocker 행 또는 동일 deferred 행을 다시 실행해야 한다.",
         ]
     lines = [
@@ -266,6 +345,8 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
         f"- hard_blocker_row_count: `{summary.get('hard_blocker_row_count')}`",
         f"- recovered_observation_row_count: `{summary.get('recovered_observation_row_count')}`",
         f"- missing_search_health_row_count: `{summary.get('missing_search_health_row_count')}`",
+        f"- hard_missing_search_health_row_count: `{summary.get('hard_missing_search_health_row_count')}`",
+        f"- search_not_required_observation_row_count: `{summary.get('search_not_required_observation_row_count')}`",
         f"- blockers: `{blockers}`",
         f"- recovered_subset: run_id `{recovery.get('run_id')}`, integrity `{recovery.get('integrity_classification')}`, large_run_complete `{recovery.get('large_run_complete')}`",
         "- semantic_quality: `REVIEW-LOCKED`",
@@ -281,13 +362,15 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
     for row in report.get("rows") or []:
         lines.append(
             "- `{post_id}` status=`{search_status}` degraded=`{degraded}` recovered=`{recovered}` "
-            "unrecovered=`{unrecovered}` blocker=`{blocker}` recovered_observation=`{observation}` title=`{title}`".format(
+            "unrecovered=`{unrecovered}` blocker=`{blocker}` missing_observation=`{missing_observation}` "
+            "recovered_observation=`{observation}` title=`{title}`".format(
                 post_id=row.get("post_id"),
                 search_status=row.get("search_status"),
                 degraded=row.get("degraded"),
                 recovered=row.get("degraded_recovered"),
                 unrecovered=row.get("unrecovered_degraded"),
                 blocker=row.get("search_blocker_reason"),
+                missing_observation=row.get("search_missing_observation"),
                 observation=row.get("recovered_observation"),
                 title=row.get("title"),
             )

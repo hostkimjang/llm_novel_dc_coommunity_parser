@@ -6,12 +6,12 @@
 - Hard `5`행만 `--parallel 16`, dashboard ON, search 포함 non-light, `slang_db off`, `--reuse-shards-only`로 실행했다.
 - Run `20260709_111842_982379`은 requested/effective parallel `16/5`, completed/flushed/pending/failed `5/5/0/0`, integrity `GO / clean_completed_source`, dashboard final `5/5`, total `544.8s`다.
 - Pre/post query audit은 모두 shard `ok=16/16`, query probe `16/16`, degraded `0`, forbidden engine `0`이다.
-- Row-level search audit은 `NO-GO`다. Status는 `MISSING 1 / SEARCH_DEGRADED 2 / SEARCH_DEGRADED_RECOVERED 1 / ok 1`, hard blocker `3`, unrecovered degraded `2`다.
-- Remaining hard blocker는 `11660258`, `11694026`, `11710021`이다.
+- Row-level search audit은 `NO-GO`다. Status는 `MISSING 1 / SEARCH_DEGRADED 2 / SEARCH_DEGRADED_RECOVERED 1 / ok 1`, required-search hard blocker `2`, hard missing search_health `0`, search-not-required null observation `1`, unrecovered degraded `2`다.
+- Remaining required-search hard blocker는 `11660258`, `11694026`이다. `11710021`은 검색을 쓰지 않고 공개 제목도 없는 null/FP 제거 관측으로 회계했다.
 - `tools/audit_search_non_ok_split.py`를 추가했고, search replay audit 도구가 run health summary shape를 읽도록 보강했다.
 - `docs/devs/ADJUDICATED_REBASELINE_CONTRACT.md`를 추가했다. `true triage 57`과 intended recovery 전 행 판결 뒤 판결된 Loop620/Loop621 결과를 새 baseline으로 재동결하고, 이후 collateral 완료 gate는 raw가 아니라 adjusted drift 기준으로 본다.
 - Report는 `docs/devs/loop_reports/LOOP_626_REPORT_20260709.md`다.
-- Gate는 runtime replay `GO`, current search recovery `NO-GO / hard blocker 3`, re-baseline `NOT_APPLIED`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+- Gate는 runtime replay `GO`, current search recovery `NO-GO / required-search hard blocker 2`, re-baseline `NOT_APPLIED`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
 
 ## 2026-07-09 - Loop625 Loop609 held109 search recovery overlay audit
 

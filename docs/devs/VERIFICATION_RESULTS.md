@@ -15,13 +15,17 @@
   - Parallel/dashboard: PASS, requested/effective `16/5`, dashboard final `5/5`, `batch_running=false`.
   - Flush integrity: PASS, `GO / clean_completed_source`.
   - Pre/post query audit: PASS, shard `ok=16/16`, query probe `16/16`, degraded `0`, forbidden engine `0`.
-  - Row-level search audit: expected `NO-GO`, hard blocker `3`, remaining `11660258/11694026/11710021`.
+  - Row-level search audit: expected `NO-GO`, required-search hard blocker `2`, remaining `11660258/11694026`.
+  - Search-not-required null observation: PASS, `11710021`은 `official_title=null`, `publish_allowed=false`, `context_sources=title/body/comments`, `search_evidence_catalog=null`이라 hard blocker가 아니라 `search_not_required_null_result`로 회계.
+  - Missing search health hard count: PASS, hard missing `0`.
+  - Focused unittest: PASS, `tests.test_audit_search_non_ok_split tests.test_audit_search_recovery_replay_checkpoint tests.test_build_search_recovery_replay_input tests.test_audit_search_recovery_overlay tests.test_audit_collateral_regression_admissibility`, `19` tests.
+  - Py compile: PASS, search replay/audit 관련 tools와 `tests/test_audit_search_recovery_replay_checkpoint.py`.
   - Re-baseline contract: PASS 문서화, 완료 gate는 adjusted drift 기준으로 명시.
 - 결과:
   - Loop626 runtime은 완료됐지만 current search recovery는 아직 `NO-GO`다.
   - 이 결과는 full375 collateral GO나 full_scan approval이 아니다.
   - 6/26 raw baseline diff는 참고 수치이며, 전 행 판결 후 re-baseline된 adjusted drift가 완료 gate 기준이다.
-- Gate: runtime replay `GO`, current search recovery `NO-GO / hard blocker 3`, re-baseline `NOT_APPLIED`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- Gate: runtime replay `GO`, current search recovery `NO-GO / required-search hard blocker 2`, re-baseline `NOT_APPLIED`, full375 collateral `NO-GO`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-09 Loop625 Loop609 held109 검색 복구 overlay 감사 검증
 

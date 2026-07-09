@@ -14,7 +14,8 @@
 
 - Current search non-ok 행은 hard replay와 recovered-only observation으로 먼저 분리한다.
 - `SEARCH_DEGRADED_RECOVERED`이고 unrecovered degraded가 `0`이면 hard blocker로 세지 않고 관찰로 남긴다.
-- `MISSING`, `SEARCH_DEGRADED`, unrecovered degraded가 남은 행은 runtime replay 대상이다.
+- 초기 current search split에서 `MISSING`, `SEARCH_DEGRADED`, unrecovered degraded가 남은 행은 runtime replay 대상이다.
+- Runtime replay 뒤 `MISSING search_health`는 검색 증거가 있거나 공개 제목/publish가 필요한 행이면 hard blocker다. 검색을 쓰지 않고 공개 제목도 없는 null/FP 제거 관측은 `search_not_required_null_result`로 별도 회계한다.
 - Replay가 runtime `GO`여도 row-level search audit이 `NO-GO`이면 full375는 열지 않는다.
 
 ## 2026-07-09 Loop625 staged search replay overlay 규칙
