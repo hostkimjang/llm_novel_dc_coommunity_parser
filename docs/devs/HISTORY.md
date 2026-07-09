@@ -1,5 +1,26 @@
 # Development History
 
+## 2026-07-09 - Loop622 Loop609 raw139 search-admissibility lock
+
+- 새 runtime replay/full375는 실행하지 않았다.
+- Loop609 raw collateral regression `139`건은 검색 비정상 런의 산출물이므로 일괄 triage나 approval 증거로 쓰지 않도록 현재 goal/docs 상단에 다시 고정했다.
+- Loop612 3분 회계를 기준으로 `resolved_to_null ∩ detection_survey FP` `42`건은 `expected_fp_removal` 회계 면제 후보로 유지한다.
+- `unsafe_promotion ∩ recall_miss` `15`건과 `wrong_work_flip ∩ wrong_work` `9`건은 의도 복구 방향이므로 제목 정답성 blind judge 후 면제/수정한다.
+- `SEARCH_DEGRADED/SEARCH_DEGRADED_RECOVERED` overlay `109`건은 Loop609 degraded query `1801`, unrecovered degraded `234` 때문에 검색 복구 후 재실행 전까지 판정 보류다.
+- ok-search & non-FP 후보는 `15`건, blind judge 대상 제외 후 실제 triage 후보는 `10`건이다.
+- Search health ok가 아닌 런의 collateral은 회귀 판정 근거로 쓰지 않는다.
+- Report는 `docs/devs/loop_reports/LOOP_622_REPORT_20260709.md`다.
+- Gate는 search-admissibility lock `REVIEW-LOCKED`, full375 rerun `BLOCKED_UNTIL_SEARCH_RECOVERY_FOR_LOOP609_HEALTH`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
+## 2026-07-09 - Loop621 publication candidate preservation projection
+
+- Loop620 full375 blocker `11677957`은 `promotion_gate_state.candidate_title=페도부`가 public scrub 뒤 candidate preservation trace/ledger에 남지 않던 계약 위반이었다.
+- `expert_main.py`의 final publication sync/convergence를 보강해 gate-state-only 후보를 publish 복원 입력으로 쓰지 않고, `candidate_only` 보존 payload로만 남기게 했다.
+- Loop620 375행에 current HEAD sync를 projection-only로 재적용했고 projected publication contract audit은 `GO / violation 0 / rows 375`다.
+- `11677957` projection은 public title/url `null`, candidate `페도부`, `candidate_ledger_status=promotion_blocked`, `candidate_preserved=true`다.
+- 검증은 focused tests `2`, `tests.test_expert_main_comment_metadata` `88`, `tests.test_publication_contract_convergence_audit` `20`, py_compile PASS다.
+- Gate는 publication contract projection `GO`, runtime replay `NOT_RUN`, full375 collateral `NO-GO / raw 143`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-08 - Loop615 109-row replay complete but row-level search NO-GO
 
 - Loop614 query-level search 복구 뒤 Loop613 동일 `109`행을 재실행했다.

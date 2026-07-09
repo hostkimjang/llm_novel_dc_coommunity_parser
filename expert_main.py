@@ -212,6 +212,63 @@ def _apply_model_parallel_cap(requested_parallel: int, model_name: Optional[str]
     }
 
 
+_NO_CANDIDATE_PUBLICATION_REASON_CODES = {
+    "hold_without_candidates",
+    "no_candidate_title",
+    "missing_candidate_title",
+    "no_public_candidate",
+}
+
+
+def _publication_has_candidate_payload(value: Any) -> bool:
+    if not isinstance(value, dict):
+        return False
+    return bool(
+        str(
+            value.get("official_title")
+            or value.get("official_novel_title")
+            or value.get("resolved_title")
+            or value.get("title")
+            or value.get("official_url")
+            or value.get("heretic_url")
+            or value.get("resolved_url")
+            or value.get("url")
+            or ""
+        ).strip()
+    )
+
+
+def _promotion_gate_state_candidate_payload(*sources: Any) -> Dict[str, Any]:
+    for source in sources:
+        if not isinstance(source, dict):
+            continue
+        candidate_title = str(
+            source.get("candidate_title")
+            or source.get("official_title")
+            or source.get("official_novel_title")
+            or source.get("resolved_title")
+            or source.get("title")
+            or ""
+        ).strip()
+        candidate_url = str(
+            source.get("candidate_url")
+            or source.get("official_url")
+            or source.get("heretic_url")
+            or source.get("resolved_url")
+            or source.get("url")
+            or ""
+        ).strip()
+        if not candidate_title and not candidate_url:
+            continue
+        payload: Dict[str, Any] = {
+            "official_title": candidate_title or None,
+            "official_url": candidate_url or None,
+            "source": str(source.get("source") or "promotion_gate_state_candidate"),
+        }
+        return payload
+    return {}
+
+
 def _enforce_publish_contract_trace_convergence(result_dict: Dict[str, Any]) -> bool:
     """Make promotion_decision, publish_contract_trace, and publish_ledger agree."""
     if not isinstance(result_dict, dict):
@@ -276,6 +333,7 @@ def _enforce_publish_contract_trace_convergence(result_dict: Dict[str, Any]) -> 
         for code in (gate_decision.get("reason_codes") or [])
         if str(code or "").strip()
     }
+    no_candidate_hold = bool(reason_code_set & _NO_CANDIDATE_PUBLICATION_REASON_CODES)
     url_withheld_by_title_mismatch = (
         publish_allowed and "official_url_withheld_by_title_mismatch" in reason_code_set
     )
@@ -298,6 +356,33 @@ def _enforce_publish_contract_trace_convergence(result_dict: Dict[str, Any]) -> 
             pre_gate_candidate.setdefault("source", "official_url_withheld_by_title_mismatch")
             converged_trace["pre_gate_candidate"] = pre_gate_candidate
         gate_decision["official_url"] = None
+
+    pre_gate_candidate = converged_trace.get("pre_gate_candidate")
+    if (
+        not publish_allowed
+        and not no_candidate_hold
+        and not _publication_has_candidate_payload(pre_gate_candidate)
+    ):
+        gate_candidate = _promotion_gate_state_candidate_payload(
+            identity.get("promotion_gate_state"),
+            ledger.get("promotion_gate_state"),
+        )
+        if gate_candidate:
+            converged_trace["pre_gate_candidate"] = gate_candidate
+            if gate_decision.get("candidate_preserved") is not True:
+                gate_decision["candidate_preserved"] = True
+            candidate_title = str(gate_candidate.get("official_title") or "").strip()
+            candidate_url = str(gate_candidate.get("official_url") or "").strip()
+            for target in (identity, ledger):
+                if candidate_title and not str(target.get("blocked_official_title") or "").strip():
+                    target["blocked_official_title"] = candidate_title
+                    changed = True
+                if candidate_url and not str(target.get("blocked_official_title_url") or "").strip():
+                    target["blocked_official_title_url"] = candidate_url
+                    changed = True
+                if str(target.get("candidate_ledger_status") or "").strip() == "hold_without_candidates":
+                    target["candidate_ledger_status"] = "promotion_blocked"
+                    changed = True
 
     post_gate_identity = converged_trace.get("post_gate_identity")
     if not isinstance(post_gate_identity, dict):
@@ -1293,6 +1378,7 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
         or ""
     ).strip()
 
+    pre_gate_candidate_source = "candidate_ledger_or_serialized_identity"
     if not blocked_title:
         candidate_sources = (
             identity.get("title_candidates") or [],
@@ -1310,7 +1396,6 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
             if blocked_title:
                 break
 
-    pre_gate_candidate_source = "candidate_ledger_or_serialized_identity"
     gate_competing_title, gate_competing_url = _gate_competing_candidate_for_trace(blocked_title)
     if gate_competing_title:
         blocked_title = gate_competing_title
@@ -3163,6 +3248,16 @@ def _scrub_promotion_blocked_result_contract(result_dict: Dict[str, Any], post_t
 
     if _ensure_blocked_candidate_ledger_summary():
         changed = True
+
+    if blocked_title and status == "hold_without_candidates":
+        status = "promotion_blocked"
+        if identity.get("candidate_ledger_status") != status:
+            identity["candidate_ledger_status"] = status
+            changed = True
+        if ledger.get("candidate_ledger_status") != status:
+            ledger["candidate_ledger_status"] = status
+            identity["candidate_ledger"] = ledger
+            changed = True
 
     primary_work = identity.get("primary_work")
     if isinstance(primary_work, dict):

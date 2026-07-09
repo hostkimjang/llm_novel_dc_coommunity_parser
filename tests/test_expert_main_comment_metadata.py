@@ -471,6 +471,162 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
             reason_codes,
         )
 
+    def test_publish_contract_convergence_preserves_gate_state_candidate_when_scrubbed(self):
+        decision = {
+            "status": "candidate_only",
+            "publish_allowed": False,
+            "official_title": None,
+            "official_url": None,
+            "candidate_preserved": False,
+            "reason_codes": [
+                "row_discusses_work_as_work",
+                "scope_current_work",
+                "work_consumption_marker",
+                "serialized_public_identity_scrubbed",
+            ],
+            "scope": {
+                "scope_kind": "current_work",
+                "confidence": "high",
+                "direct_bridge_sources": ["row_discusses_work_as_work"],
+            },
+            "bypassed_gate": False,
+        }
+        gate_state = {
+            "candidate_title": "페도부",
+            "candidate_url": "",
+            "source": "decoder_exact_post_title_surface_resolved",
+            "official_title_exists": False,
+            "row_discusses_work_as_work": True,
+            "scope": decision["scope"],
+        }
+        result = {
+            "identity": {
+                "title_resolution_allowed": False,
+                "title_resolution_state": "unresolved_matchable",
+                "work_resolution": "none",
+                "candidate_ledger_status": "hold_without_candidates",
+                "promotion_decision": dict(decision),
+                "promotion_gate_state": dict(gate_state),
+                "publish_contract_trace": {
+                    "pre_gate_candidate": {
+                        "official_title": None,
+                        "official_url": None,
+                        "source": "candidate_ledger_or_serialized_identity",
+                    },
+                    "gate_decision": dict(decision),
+                    "scope_state": decision["scope"],
+                    "post_gate_identity": {"official_title": None, "official_url": None},
+                    "reason_codes": list(decision["reason_codes"]),
+                    "bypassed_gate": False,
+                },
+                "publish_ledger": {"gate_decision": dict(decision)},
+                "candidate_ledger": {
+                    "promotion_decision": dict(decision),
+                    "promotion_gate_state": dict(gate_state),
+                },
+            }
+        }
+
+        changed = _enforce_publish_contract_trace_convergence(result)
+
+        self.assertTrue(changed)
+        identity = result["identity"]
+        self.assertEqual(identity["candidate_ledger_status"], "promotion_blocked")
+        self.assertEqual(identity["blocked_official_title"], "페도부")
+        self.assertTrue(identity["promotion_decision"]["candidate_preserved"])
+        trace = identity["publish_contract_trace"]
+        self.assertEqual(trace["pre_gate_candidate"]["official_title"], "페도부")
+        self.assertEqual(
+            identity["publish_ledger"]["candidate_preservation"],
+            trace["pre_gate_candidate"],
+        )
+        ledger = identity["candidate_ledger"]
+        self.assertEqual(ledger["blocked_official_title"], "페도부")
+        self.assertTrue(ledger["promotion_decision"]["candidate_preserved"])
+
+    def test_final_publication_sync_preserves_analysis_result_gate_state_candidate(self):
+        decision = {
+            "status": "candidate_only",
+            "publish_allowed": False,
+            "official_title": None,
+            "official_url": None,
+            "candidate_preserved": False,
+            "reason_codes": [
+                "row_discusses_work_as_work",
+                "scope_current_work",
+                "work_consumption_marker",
+                "serialized_public_identity_scrubbed",
+            ],
+            "scope": {
+                "scope_kind": "current_work",
+                "confidence": "high",
+                "direct_bridge_sources": ["row_discusses_work_as_work"],
+            },
+            "bypassed_gate": False,
+        }
+        gate_state = {
+            "post_id": 11677957,
+            "candidate_title": "페도부",
+            "candidate_url": "",
+            "source": "decoder_exact_post_title_surface_resolved",
+            "official_title_exists": False,
+            "row_discusses_work_as_work": True,
+            "scope": decision["scope"],
+        }
+        result = {
+            "post_id": 11677957,
+            "title": "페도부이 진짜 천재같네",
+            "content": ["눈깔사탕은 시발ㅋㅋ"],
+            "analysis_result": {
+                "identity": {
+                    "is_relevant": False,
+                    "is_novel_related": True,
+                    "is_resolved_work_discussion": False,
+                    "title_resolution_allowed": False,
+                    "title_resolution_state": "unresolved_matchable",
+                    "work_resolution": "none",
+                    "candidate_ledger_status": "hold_without_candidates",
+                    "promotion_decision": dict(decision),
+                    "promotion_gate_state": dict(gate_state),
+                    "publish_contract_trace": {
+                        "pre_gate_candidate": {
+                            "official_title": None,
+                            "official_url": None,
+                            "source": "candidate_ledger_or_serialized_identity",
+                        },
+                        "gate_decision": dict(decision),
+                        "scope_state": decision["scope"],
+                        "post_gate_identity": {"official_title": None, "official_url": None},
+                        "reason_codes": list(decision["reason_codes"]),
+                        "bypassed_gate": False,
+                    },
+                    "publish_ledger": {"gate_decision": dict(decision)},
+                    "candidate_ledger": {
+                        "promotion_decision": dict(decision),
+                        "promotion_gate_state": dict(gate_state),
+                    },
+                }
+            },
+        }
+
+        changed = _sync_final_publication_ledger_contract(result)
+
+        self.assertTrue(changed)
+        identity = result["analysis_result"]["identity"]
+        self.assertIsNone(identity.get("official_title"))
+        self.assertIsNone(identity.get("heretic_url"))
+        self.assertEqual(identity["candidate_ledger_status"], "promotion_blocked")
+        self.assertEqual(identity["blocked_official_title"], "페도부")
+        self.assertTrue(identity["promotion_decision"]["candidate_preserved"])
+        self.assertEqual(
+            identity["publish_contract_trace"]["pre_gate_candidate"]["official_title"],
+            "페도부",
+        )
+        self.assertEqual(
+            identity["publish_ledger"]["candidate_preservation"]["official_title"],
+            "페도부",
+        )
+
     def test_promotion_blocked_result_contract_scrubs_resolution_text(self):
         result = {
             "identity": {

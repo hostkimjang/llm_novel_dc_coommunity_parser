@@ -1,5 +1,42 @@
 # Verification Results
 
+## 2026-07-09 Loop622 Loop609 raw139 search-admissibility lock 검증
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_622_REPORT_20260709.md`
+  - `docs/devs/loop_reports/LOOP_612_REPORT_20260708.md`
+  - `docs/devs/loop612_loop609_raw139_survey_search_health_split.json/.md`
+- 검증:
+  - Runtime replay/full375: NOT_RUN.
+  - 기존 Loop612 split JSON/MD 확인: PASS, raw `139`, expected FP `42`, intended recovery blind judge `24`, search degraded/recovered overlay `109`, true triage `10`.
+  - Loop609 search health 근거 확인: degraded query `1801`, unrecovered degraded `234`.
+  - 정책 확인: search health ok가 아닌 런의 collateral은 regression evidence로 쓰지 않는다.
+- 결과:
+  - Loop609 raw139는 일괄 triage 대상이 아니다.
+  - `expected_fp_removal`은 정당 제거 회계 면제, 의도 복구 `24`건은 blind-title-correctness 선판정, search non-ok `109`건은 검색 복구 후 해당 행 재실행 전까지 보류다.
+  - full375 재실행은 검색 인프라 복구와 보류 행 재실행 전까지 열지 않는다.
+- Gate: search-admissibility lock `REVIEW-LOCKED`, full375 rerun `BLOCKED_UNTIL_SEARCH_RECOVERY_FOR_LOOP609_HEALTH`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
+## 2026-07-09 Loop621 publication candidate preservation projection 검증
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_621_REPORT_20260709.md`
+  - `docs/devs/loop621_loop620_current_head_publication_sync_projection_summary.json/.md`
+  - `docs/devs/loop621_loop620_current_head_publication_contract_projected_audit.json/.md`
+  - `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop621_loop620_current_head_publication_sync_projection_result.json`
+- 검증:
+  - Focused unittest: PASS, `2` tests.
+  - `tests.test_expert_main_comment_metadata`: PASS, `88` tests.
+  - `tests.test_publication_contract_convergence_audit`: PASS, `20` tests.
+  - Py compile: PASS, `expert_main.py`, `tests/test_expert_main_comment_metadata.py`.
+  - Projection: PASS, Loop620 `375` rows에 current HEAD final publication sync 재적용.
+  - Projected publication contract audit: PASS, gate `GO`, violation `0`, row_count `375`.
+- 결과:
+  - `11677957`은 public title/url을 계속 `null`로 유지하면서 candidate `페도부`를 `blocked_official_title`, `publish_contract_trace.pre_gate_candidate`, `publish_ledger.candidate_preservation`에 보존한다.
+  - `promotion_decision`은 `candidate_only`, `publish_allowed=false`, `candidate_preserved=true`다.
+  - 이 산출물은 projection-only이며 runtime replay 또는 full_scan approval이 아니다.
+- Gate: publication contract projection `GO`, runtime replay `NOT_RUN`, row search evidence `REVIEW`, full375 collateral `NO-GO / raw 143`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-09 Loop620 full375 stream-guard runtime 검증
 
 - 산출물:

@@ -1,5 +1,33 @@
 # Development Checklist
 
+## 2026-07-09 Loop622 Loop609 raw139 search-admissibility lock 체크
+
+- [x] 새 runtime replay/full375를 실행하지 않았다.
+- [x] Loop609 raw collateral regression `139`건은 검색 비정상 런의 산출물이므로 일괄 triage 또는 approval 증거로 쓰지 않는다고 고정했다.
+- [x] `resolved_to_null ∩ detection_survey FP` `42`건은 `expected_fp_removal` 회계 면제 후보로 유지한다.
+- [x] `unsafe_promotion ∩ recall_miss` `15`건과 `wrong_work_flip ∩ wrong_work` `9`건은 의도 복구 방향이므로 제목 정답성 blind judge 후 면제/수정한다.
+- [x] `SEARCH_DEGRADED/SEARCH_DEGRADED_RECOVERED` overlay `109`건은 Loop609 degraded query `1801`, unrecovered degraded `234` 때문에 판정 보류한다.
+- [x] Search health ok가 아닌 런의 collateral은 회귀 판정 근거로 쓰지 않는다.
+- [x] ok-search & non-FP 후보는 `15`건, blind judge 대상 제외 후 실제 triage 후보는 `10`건으로 유지한다.
+- [ ] Full375 재실행 전 검색 인프라 복구와 보류 행 재실행을 먼저 완료한다.
+- Gate: search-admissibility lock `REVIEW-LOCKED`, full375 rerun `BLOCKED_UNTIL_SEARCH_RECOVERY_FOR_LOOP609_HEALTH`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_622_REPORT_20260709.md`, 기존 근거 `docs/devs/loop_reports/LOOP_612_REPORT_20260708.md`, `docs/devs/loop612_loop609_raw139_survey_search_health_split.json/.md`.
+
+## 2026-07-09 Loop621 publication candidate preservation projection 체크
+
+- [x] 새 runtime replay를 실행하지 않았다.
+- [x] Loop620 blocker `11677957`의 원인을 `promotion_gate_state.candidate_title=페도부`가 public scrub 뒤 trace/ledger/blocked fields에 보존되지 않던 계약 위반으로 확인했다.
+- [x] Gate-state-only 후보를 shared-gate publish 복원 입력이 아니라 candidate-preservation payload로만 쓰도록 `expert_main.py`를 수리했다.
+- [x] `11677957` projection은 public title/url `null`, `candidate_ledger_status=promotion_blocked`, `candidate_preserved=true`, pre_gate/publish_ledger candidate `페도부`다.
+- [x] Focused tests `2`개, `tests.test_expert_main_comment_metadata` `88`개, `tests.test_publication_contract_convergence_audit` `20`개, py_compile을 통과했다.
+- [x] Loop620 375행 current HEAD publication sync projection을 생성했다.
+- [x] Projected publication contract audit은 `GO / violation 0 / rows 375`다.
+- [ ] Full375 collateral은 아직 `NO-GO / raw 143`이므로 approval로 승격하지 않는다.
+- [ ] True triage `58`건은 배치 lane으로 처리한다.
+- [ ] Intended recovery 잔여 `14`건은 후보셋 수정/새 blind judge/search 복구로 닫는다.
+- Gate: publication contract projection `GO`, runtime replay `NOT_RUN`, row search evidence `REVIEW`, full375 collateral `NO-GO / raw 143`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_621_REPORT_20260709.md`, `docs/devs/loop621_loop620_current_head_publication_sync_projection_summary.json/.md`, `docs/devs/loop621_loop620_current_head_publication_contract_projected_audit.json/.md`, `out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop621_loop620_current_head_publication_sync_projection_result.json`.
+
 ## 2026-07-09 Loop620 full375 stream-guard runtime / collateral split 체크
 
 - [x] Loop620 full375를 `--parallel 16`, dashboard ON, search 포함 non-light, VLM/OCR ON으로 완주했다.
@@ -12,7 +40,7 @@
 - [x] Full375 collateral compare는 changed `211`, raw regression `143`, gate `NO-GO`다.
 - [x] Raw `143`을 3분했다: expected FP removal `46`, intended recovery blind judge `28`, search overlay hold `10`, search health missing `4`, true triage `58`.
 - [x] Intended recovery `28`을 prior source-native/blind verdict와 대조했다: after title ACCEPT `14`, expected 맞지만 after title 다름 `1`, REPROCESS/HOLD 등 `11`, 새 judge 필요 `1`, search hold `1`.
-- [ ] `11677957` publication candidate preservation violation을 수리한다.
+- [x] `11677957` publication candidate preservation violation은 Loop621 projection에서 수리했다. 단 runtime replay/full375 approval은 아니다.
 - [ ] True triage `58`건을 단건이 아니라 배치 lane으로 처리한다.
 - [ ] Intended recovery 잔여 `14`건은 후보셋 수정/새 blind judge/search 복구로 닫는다.
 - [ ] Search health ok가 아닌 행은 검색 복구 후 재실행 전까지 regression evidence로 쓰지 않는다.
