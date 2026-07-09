@@ -1,0 +1,2559 @@
+{
+  "report_type": "residual_queue_shared_promotion_gate_projection",
+  "projection_id": "loop630_true_triage64_shared_gate_projection",
+  "generated_at": "2026-07-09T21:23:52",
+  "source_queue_id": "loop630_true_triage64_after_prior_compatible_action_queue",
+  "source_review_id": "loop630_true_triage64_source_native_combined_review",
+  "source_gate": "REVIEW-LOCKED",
+  "action_filter": "shared_promotion_gate_wiring_required",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "gate": "REVIEW-LOCKED",
+  "input_rows": 13,
+  "summary": {
+    "source_queue_rows": 59,
+    "projected_rows": 13,
+    "projected_status_counts": {
+      "safe_resolved": 13
+    },
+    "source_label_counts": {
+      "REPROCESS": 13
+    },
+    "source_bucket_counts": {
+      "safe_loss_resolved_to_null": 13
+    },
+    "publish_allowed_rows": 13,
+    "matches_source_native_title_rows": 13,
+    "validation_issue_count": 0
+  },
+  "validation_issues": [],
+  "rows": [
+    {
+      "post_id": 11660271,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_title": "월야의 여인들",
+      "selected_url": null,
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "source_review_id": "loop630_true_triage64_prior_compatible_source_native",
+      "evidence_grade": "Strong",
+      "source_actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "projected_status": "safe_resolved",
+      "projected_title": "월야의 여인들",
+      "projected_url": null,
+      "matches_source_native_title": true,
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "월야의 여인들",
+        "official_url": null,
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "publish_contract_trace": {
+        "pre_gate_candidate": {
+          "official_title": "월야의 여인들",
+          "official_url": null,
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "월야의 여인들",
+          "official_url": null,
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        },
+        "scope_state": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        },
+        "post_gate_identity": {
+          "official_title": "월야의 여인들",
+          "official_url": null,
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work"
+        ],
+        "bypassed_gate": false
+      },
+      "publish_ledger": {
+        "candidate_preservation": {
+          "official_title": "월야의 여인들",
+          "official_url": null,
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "public_publish": {
+          "official_title": "월야의 여인들",
+          "official_url": null,
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "월야의 여인들",
+          "official_url": null,
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        }
+      },
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "promotion_gate_state": {
+        "post_id": 11660271,
+        "candidate_title": "월야의 여인들",
+        "candidate_url": "",
+        "source": "source_native_residual_queue_shared_gate_projection",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "source_native_review",
+          "strength": "strong",
+          "source_path_or_snippet": "본문과 댓글이 `월야의 여인들`을 직접 말하고 아이돌 히로인 장면을 같은 작품 근거로 설명한다.",
+          "supports_publish": true,
+          "reason_code": "source_native_review_current_work"
+        }
+      ],
+      "rationale_ko": "본문과 댓글이 `월야의 여인들`을 직접 말하고 아이돌 히로인 장면을 같은 작품 근거로 설명한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11660271",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11660271",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11660271",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11660271",
+        "docs/devs/loop488_p0_prior_compatible_source_native_verdicts.json#post_id=11660271",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11660271"
+      ]
+    },
+    {
+      "post_id": 11660273,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_title": "마도서를 줍다 마법사가 되다",
+      "selected_url": "https://novelpia.com/novel/414963",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "source_review_id": "loop630_true_triage64_prior_compatible_source_native",
+      "evidence_grade": "Strong",
+      "source_actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "projected_status": "safe_resolved",
+      "projected_title": "마도서를 줍다 마법사가 되다",
+      "projected_url": "https://novelpia.com/novel/414963",
+      "matches_source_native_title": true,
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "마도서를 줍다 마법사가 되다",
+        "official_url": "https://novelpia.com/novel/414963",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "publish_contract_trace": {
+        "pre_gate_candidate": {
+          "official_title": "마도서를 줍다 마법사가 되다",
+          "official_url": "https://novelpia.com/novel/414963",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "마도서를 줍다 마법사가 되다",
+          "official_url": "https://novelpia.com/novel/414963",
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        },
+        "scope_state": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        },
+        "post_gate_identity": {
+          "official_title": "마도서를 줍다 마법사가 되다",
+          "official_url": "https://novelpia.com/novel/414963",
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false
+      },
+      "publish_ledger": {
+        "candidate_preservation": {
+          "official_title": "마도서를 줍다 마법사가 되다",
+          "official_url": "https://novelpia.com/novel/414963",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "public_publish": {
+          "official_title": "마도서를 줍다 마법사가 되다",
+          "official_url": "https://novelpia.com/novel/414963",
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "마도서를 줍다 마법사가 되다",
+          "official_url": "https://novelpia.com/novel/414963",
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        }
+      },
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work",
+        "official_detail_url"
+      ],
+      "promotion_gate_state": {
+        "post_id": 11660273,
+        "candidate_title": "마도서를 줍다 마법사가 되다",
+        "candidate_url": "https://novelpia.com/novel/414963",
+        "source": "source_native_residual_queue_shared_gate_projection",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "source_native_review",
+          "strength": "strong",
+          "source_path_or_snippet": "본문이 `마줍에 나오는 투명 우주 흡혈귀`라고 후보 작품의 약칭과 설정 대상을 직접 연결한다.",
+          "supports_publish": true,
+          "reason_code": "source_native_review_current_work"
+        },
+        {
+          "kind": "official_detail_url",
+          "strength": "strong",
+          "source_path_or_snippet": "https://novelpia.com/novel/414963",
+          "supports_publish": false,
+          "reason_code": "official_detail_url"
+        }
+      ],
+      "rationale_ko": "본문이 `마줍에 나오는 투명 우주 흡혈귀`라고 후보 작품의 약칭과 설정 대상을 직접 연결한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11660273",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11660273",
+        "https://novelpia.com/novel/414963",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11660273",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11660273",
+        "docs/devs/loop488_p0_prior_compatible_source_native_verdicts.json#post_id=11660273",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11660273"
+      ]
+    },
+    {
+      "post_id": 11663557,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_title": "퇴마록",
+      "selected_url": null,
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "source_review_id": "loop630_true_triage64_prior_compatible_source_native",
+      "evidence_grade": "Strong",
+      "source_actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "projected_status": "safe_resolved",
+      "projected_title": "퇴마록",
+      "projected_url": null,
+      "matches_source_native_title": true,
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "퇴마록",
+        "official_url": null,
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "publish_contract_trace": {
+        "pre_gate_candidate": {
+          "official_title": "퇴마록",
+          "official_url": null,
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "퇴마록",
+          "official_url": null,
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        },
+        "scope_state": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        },
+        "post_gate_identity": {
+          "official_title": "퇴마록",
+          "official_url": null,
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work"
+        ],
+        "bypassed_gate": false
+      },
+      "publish_ledger": {
+        "candidate_preservation": {
+          "official_title": "퇴마록",
+          "official_url": null,
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "public_publish": {
+          "official_title": "퇴마록",
+          "official_url": null,
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "퇴마록",
+          "official_url": null,
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        }
+      },
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "promotion_gate_state": {
+        "post_id": 11663557,
+        "candidate_title": "퇴마록",
+        "candidate_url": "",
+        "source": "source_native_residual_queue_shared_gate_projection",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "source_native_review",
+          "strength": "strong",
+          "source_path_or_snippet": "post title과 본문이 `퇴마록` 애니/이우혁을 직접 언급한다.",
+          "supports_publish": true,
+          "reason_code": "source_native_review_current_work"
+        }
+      ],
+      "rationale_ko": "post title과 본문이 `퇴마록` 애니/이우혁을 직접 언급한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11663557",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11663557",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11663557",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11663557",
+        "docs/devs/loop488_p0_prior_compatible_source_native_verdicts.json#post_id=11663557",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11663557"
+      ]
+    },
+    {
+      "post_id": 11668325,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_title": "Fate/stay night",
+      "selected_url": "https://ridibooks.com/books/505001486",
+      "selected_option_id": "C1",
+      "source_native_verdict": "comment_bridge_supports_safe_title_lost_to_null",
+      "source_review_id": "loop630_true_triage64_prior_compatible_source_native",
+      "evidence_grade": "Medium",
+      "source_actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "projected_status": "safe_resolved",
+      "projected_title": "Fate/stay night",
+      "projected_url": "https://ridibooks.com/books/505001486",
+      "matches_source_native_title": true,
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "Fate/stay night",
+        "official_url": "https://ridibooks.com/books/505001486",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "medium",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "publish_contract_trace": {
+        "pre_gate_candidate": {
+          "official_title": "Fate/stay night",
+          "official_url": "https://ridibooks.com/books/505001486",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "Fate/stay night",
+          "official_url": "https://ridibooks.com/books/505001486",
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "medium",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        },
+        "scope_state": {
+          "scope_kind": "current_work",
+          "confidence": "medium",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        },
+        "post_gate_identity": {
+          "official_title": "Fate/stay night",
+          "official_url": "https://ridibooks.com/books/505001486",
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false
+      },
+      "publish_ledger": {
+        "candidate_preservation": {
+          "official_title": "Fate/stay night",
+          "official_url": "https://ridibooks.com/books/505001486",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "public_publish": {
+          "official_title": "Fate/stay night",
+          "official_url": "https://ridibooks.com/books/505001486",
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "Fate/stay night",
+          "official_url": "https://ridibooks.com/books/505001486",
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "medium",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        }
+      },
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work",
+        "official_detail_url"
+      ],
+      "promotion_gate_state": {
+        "post_id": 11668325,
+        "candidate_title": "Fate/stay night",
+        "candidate_url": "https://ridibooks.com/books/505001486",
+        "source": "source_native_residual_queue_shared_gate_projection",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "medium",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "source_native_review",
+          "strength": "medium",
+          "source_path_or_snippet": "본문/댓글이 마파두부 밈과 `페이트스테이나이트`를 직접 연결하므로 후보 작품 맥락이 성립한다.",
+          "supports_publish": true,
+          "reason_code": "source_native_review_current_work"
+        },
+        {
+          "kind": "official_detail_url",
+          "strength": "strong",
+          "source_path_or_snippet": "https://ridibooks.com/books/505001486",
+          "supports_publish": false,
+          "reason_code": "official_detail_url"
+        }
+      ],
+      "rationale_ko": "본문/댓글이 마파두부 밈과 `페이트스테이나이트`를 직접 연결하므로 후보 작품 맥락이 성립한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11668325",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11668325",
+        "https://ridibooks.com/books/505001486",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11668325",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11668325",
+        "docs/devs/loop488_p0_prior_compatible_source_native_verdicts.json#post_id=11668325",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11668325"
+      ]
+    },
+    {
+      "post_id": 11677926,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_title": "재앙급 막내 공자의 회귀",
+      "selected_url": "https://page.kakao.com/content/66110131",
+      "selected_option_id": "C1",
+      "source_native_verdict": "comment_bridge_supports_safe_title_lost_to_null",
+      "source_review_id": "loop630_true_triage64_prior_compatible_source_native",
+      "evidence_grade": "Strong",
+      "source_actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "projected_status": "safe_resolved",
+      "projected_title": "재앙급 막내 공자의 회귀",
+      "projected_url": "https://page.kakao.com/content/66110131",
+      "matches_source_native_title": true,
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "재앙급 막내 공자의 회귀",
+        "official_url": "https://page.kakao.com/content/66110131",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "publish_contract_trace": {
+        "pre_gate_candidate": {
+          "official_title": "재앙급 막내 공자의 회귀",
+          "official_url": "https://page.kakao.com/content/66110131",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "재앙급 막내 공자의 회귀",
+          "official_url": "https://page.kakao.com/content/66110131",
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        },
+        "scope_state": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        },
+        "post_gate_identity": {
+          "official_title": "재앙급 막내 공자의 회귀",
+          "official_url": "https://page.kakao.com/content/66110131",
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false
+      },
+      "publish_ledger": {
+        "candidate_preservation": {
+          "official_title": "재앙급 막내 공자의 회귀",
+          "official_url": "https://page.kakao.com/content/66110131",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "public_publish": {
+          "official_title": "재앙급 막내 공자의 회귀",
+          "official_url": "https://page.kakao.com/content/66110131",
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "재앙급 막내 공자의 회귀",
+          "official_url": "https://page.kakao.com/content/66110131",
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        }
+      },
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work",
+        "official_detail_url"
+      ],
+      "promotion_gate_state": {
+        "post_id": 11677926,
+        "candidate_title": "재앙급 막내 공자의 회귀",
+        "candidate_url": "https://page.kakao.com/content/66110131",
+        "source": "source_native_residual_queue_shared_gate_projection",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "source_native_review",
+          "strength": "strong",
+          "source_path_or_snippet": "댓글이 `무영자 카카페 재앙급 막내공자 355`라고 직접 회차/플랫폼/작품을 확인한다.",
+          "supports_publish": true,
+          "reason_code": "source_native_review_current_work"
+        },
+        {
+          "kind": "official_detail_url",
+          "strength": "strong",
+          "source_path_or_snippet": "https://page.kakao.com/content/66110131",
+          "supports_publish": false,
+          "reason_code": "official_detail_url"
+        }
+      ],
+      "rationale_ko": "댓글이 `무영자 카카페 재앙급 막내공자 355`라고 직접 회차/플랫폼/작품을 확인한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11677926",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11677926",
+        "https://page.kakao.com/content/66110131",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11677926",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11677926",
+        "docs/devs/loop488_p0_prior_compatible_source_native_verdicts.json#post_id=11677926",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11677926"
+      ]
+    },
+    {
+      "post_id": 11698910,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_title": "판초우의의 마법사",
+      "selected_url": "https://novel.munpia.com/530500",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "source_review_id": "loop630_true_triage64_prior_compatible_source_native",
+      "evidence_grade": "Strong",
+      "source_actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "projected_status": "safe_resolved",
+      "projected_title": "판초우의의 마법사",
+      "projected_url": "https://novel.munpia.com/530500",
+      "matches_source_native_title": true,
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "판초우의의 마법사",
+        "official_url": "https://novel.munpia.com/530500",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "publish_contract_trace": {
+        "pre_gate_candidate": {
+          "official_title": "판초우의의 마법사",
+          "official_url": "https://novel.munpia.com/530500",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "판초우의의 마법사",
+          "official_url": "https://novel.munpia.com/530500",
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        },
+        "scope_state": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        },
+        "post_gate_identity": {
+          "official_title": "판초우의의 마법사",
+          "official_url": "https://novel.munpia.com/530500",
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false
+      },
+      "publish_ledger": {
+        "candidate_preservation": {
+          "official_title": "판초우의의 마법사",
+          "official_url": "https://novel.munpia.com/530500",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "public_publish": {
+          "official_title": "판초우의의 마법사",
+          "official_url": "https://novel.munpia.com/530500",
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "판초우의의 마법사",
+          "official_url": "https://novel.munpia.com/530500",
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        }
+      },
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work",
+        "official_detail_url"
+      ],
+      "promotion_gate_state": {
+        "post_id": 11698910,
+        "candidate_title": "판초우의의 마법사",
+        "candidate_url": "https://novel.munpia.com/530500",
+        "source": "source_native_residual_queue_shared_gate_projection",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "source_native_review",
+          "strength": "strong",
+          "source_path_or_snippet": "`판초우의`와 정부 대응/마법사 설정 논의가 후보 작품을 직접 지지한다.",
+          "supports_publish": true,
+          "reason_code": "source_native_review_current_work"
+        },
+        {
+          "kind": "official_detail_url",
+          "strength": "strong",
+          "source_path_or_snippet": "https://novel.munpia.com/530500",
+          "supports_publish": false,
+          "reason_code": "official_detail_url"
+        }
+      ],
+      "rationale_ko": "`판초우의`와 정부 대응/마법사 설정 논의가 후보 작품을 직접 지지한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11698910",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11698910",
+        "https://novel.munpia.com/530500",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11698910",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11698910",
+        "docs/devs/loop488_p0_prior_compatible_source_native_verdicts.json#post_id=11698910",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11698910"
+      ]
+    },
+    {
+      "post_id": 11706871,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_title": "파우스트",
+      "selected_url": "https://ridibooks.com/books/1242000797",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "source_review_id": "loop630_true_triage64_prior_compatible_source_native",
+      "evidence_grade": "Strong",
+      "source_actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "projected_status": "safe_resolved",
+      "projected_title": "파우스트",
+      "projected_url": "https://ridibooks.com/books/1242000797",
+      "matches_source_native_title": true,
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "파우스트",
+        "official_url": "https://ridibooks.com/books/1242000797",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "publish_contract_trace": {
+        "pre_gate_candidate": {
+          "official_title": "파우스트",
+          "official_url": "https://ridibooks.com/books/1242000797",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "파우스트",
+          "official_url": "https://ridibooks.com/books/1242000797",
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        },
+        "scope_state": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        },
+        "post_gate_identity": {
+          "official_title": "파우스트",
+          "official_url": "https://ridibooks.com/books/1242000797",
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false
+      },
+      "publish_ledger": {
+        "candidate_preservation": {
+          "official_title": "파우스트",
+          "official_url": "https://ridibooks.com/books/1242000797",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "public_publish": {
+          "official_title": "파우스트",
+          "official_url": "https://ridibooks.com/books/1242000797",
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "파우스트",
+          "official_url": "https://ridibooks.com/books/1242000797",
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        }
+      },
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work",
+        "official_detail_url"
+      ],
+      "promotion_gate_state": {
+        "post_id": 11706871,
+        "candidate_title": "파우스트",
+        "candidate_url": "https://ridibooks.com/books/1242000797",
+        "source": "source_native_residual_queue_shared_gate_projection",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "source_native_review",
+          "strength": "strong",
+          "source_path_or_snippet": "post title과 본문이 `파우스트` 독후감/결말을 직접 말한다.",
+          "supports_publish": true,
+          "reason_code": "source_native_review_current_work"
+        },
+        {
+          "kind": "official_detail_url",
+          "strength": "strong",
+          "source_path_or_snippet": "https://ridibooks.com/books/1242000797",
+          "supports_publish": false,
+          "reason_code": "official_detail_url"
+        }
+      ],
+      "rationale_ko": "post title과 본문이 `파우스트` 독후감/결말을 직접 말한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11706871",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11706871",
+        "https://ridibooks.com/books/1242000797",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11706871",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11706871",
+        "docs/devs/loop488_p0_prior_compatible_source_native_verdicts.json#post_id=11706871",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11706871"
+      ]
+    },
+    {
+      "post_id": 11710049,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "selected_url": null,
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_alias_and_comment_context_support_safe_title_lost_to_null",
+      "source_review_id": "loop630_true_triage64_prior_compatible_source_native",
+      "evidence_grade": "Strong",
+      "source_actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "projected_status": "safe_resolved",
+      "projected_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "projected_url": null,
+      "matches_source_native_title": true,
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "[림월드]변방계에서 회귀자로 살아남기",
+        "official_url": null,
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "publish_contract_trace": {
+        "pre_gate_candidate": {
+          "official_title": "[림월드]변방계에서 회귀자로 살아남기",
+          "official_url": null,
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "[림월드]변방계에서 회귀자로 살아남기",
+          "official_url": null,
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        },
+        "scope_state": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        },
+        "post_gate_identity": {
+          "official_title": "[림월드]변방계에서 회귀자로 살아남기",
+          "official_url": null,
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work"
+        ],
+        "bypassed_gate": false
+      },
+      "publish_ledger": {
+        "candidate_preservation": {
+          "official_title": "[림월드]변방계에서 회귀자로 살아남기",
+          "official_url": null,
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "public_publish": {
+          "official_title": "[림월드]변방계에서 회귀자로 살아남기",
+          "official_url": null,
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "[림월드]변방계에서 회귀자로 살아남기",
+          "official_url": null,
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        }
+      },
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "promotion_gate_state": {
+        "post_id": 11710049,
+        "candidate_title": "[림월드]변방계에서 회귀자로 살아남기",
+        "candidate_url": "",
+        "source": "source_native_residual_queue_shared_gate_projection",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "source_native_review",
+          "strength": "strong",
+          "source_path_or_snippet": "`랫따싶`, 림월드, 랫킨 설명이 후보 작품/태그 맥락을 직접 지지한다.",
+          "supports_publish": true,
+          "reason_code": "source_native_review_current_work"
+        }
+      ],
+      "rationale_ko": "`랫따싶`, 림월드, 랫킨 설명이 후보 작품/태그 맥락을 직접 지지한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11710049",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11710049",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11710049",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11710049",
+        "docs/devs/loop488_p0_prior_compatible_source_native_verdicts.json#post_id=11710049",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11710049"
+      ]
+    },
+    {
+      "post_id": 11714887,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_title": "도굴왕 1 |",
+      "selected_url": "https://page.kakao.com/content/53190884",
+      "selected_option_id": "C1",
+      "source_native_verdict": "supported_safe_title_lost_to_null",
+      "source_review_id": "loop630_true_triage64_prior_compatible_source_native",
+      "evidence_grade": "Strong",
+      "source_actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "projected_status": "safe_resolved",
+      "projected_title": "도굴왕 1 |",
+      "projected_url": "https://page.kakao.com/content/53190884",
+      "matches_source_native_title": true,
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "도굴왕 1 |",
+        "official_url": "https://page.kakao.com/content/53190884",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "publish_contract_trace": {
+        "pre_gate_candidate": {
+          "official_title": "도굴왕 1 |",
+          "official_url": "https://page.kakao.com/content/53190884",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "도굴왕 1 |",
+          "official_url": "https://page.kakao.com/content/53190884",
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        },
+        "scope_state": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        },
+        "post_gate_identity": {
+          "official_title": "도굴왕 1 |",
+          "official_url": "https://page.kakao.com/content/53190884",
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false
+      },
+      "publish_ledger": {
+        "candidate_preservation": {
+          "official_title": "도굴왕 1 |",
+          "official_url": "https://page.kakao.com/content/53190884",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "public_publish": {
+          "official_title": "도굴왕 1 |",
+          "official_url": "https://page.kakao.com/content/53190884",
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "도굴왕 1 |",
+          "official_url": "https://page.kakao.com/content/53190884",
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        }
+      },
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work",
+        "official_detail_url"
+      ],
+      "promotion_gate_state": {
+        "post_id": 11714887,
+        "candidate_title": "도굴왕 1 |",
+        "candidate_url": "https://page.kakao.com/content/53190884",
+        "source": "source_native_residual_queue_shared_gate_projection",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "source_native_review",
+          "strength": "strong",
+          "source_path_or_snippet": "post title과 본문 링크/영상 제목이 `도굴왕` PV를 직접 지지한다.",
+          "supports_publish": true,
+          "reason_code": "source_native_review_current_work"
+        },
+        {
+          "kind": "official_detail_url",
+          "strength": "strong",
+          "source_path_or_snippet": "https://page.kakao.com/content/53190884",
+          "supports_publish": false,
+          "reason_code": "official_detail_url"
+        }
+      ],
+      "rationale_ko": "post title과 본문 링크/영상 제목이 `도굴왕` PV를 직접 지지한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop481_safe_loss_resolved_to_null_review_batch.json#post_id=11714887",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11714887",
+        "https://page.kakao.com/content/53190884",
+        "docs/devs/loop481_safe_loss_resolved_to_null_source_native_verdicts.json#post_id=11714887",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_full375_current_head_p0_review_batch.json#post_id=11714887",
+        "docs/devs/loop488_p0_prior_compatible_source_native_verdicts.json#post_id=11714887",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11714887"
+      ]
+    },
+    {
+      "post_id": 11666741,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_title": "별을 품은 소드마스터",
+      "selected_url": "https://novel.munpia.com/254718",
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_abbreviation_supports_safe_title_lost_to_null",
+      "source_review_id": "loop630_true_triage64_prior_compatible_source_native",
+      "evidence_grade": "Strong",
+      "source_actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "projected_status": "safe_resolved",
+      "projected_title": "별을 품은 소드마스터",
+      "projected_url": "https://novel.munpia.com/254718",
+      "matches_source_native_title": true,
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "별을 품은 소드마스터",
+        "official_url": "https://novel.munpia.com/254718",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "publish_contract_trace": {
+        "pre_gate_candidate": {
+          "official_title": "별을 품은 소드마스터",
+          "official_url": "https://novel.munpia.com/254718",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "별을 품은 소드마스터",
+          "official_url": "https://novel.munpia.com/254718",
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        },
+        "scope_state": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        },
+        "post_gate_identity": {
+          "official_title": "별을 품은 소드마스터",
+          "official_url": "https://novel.munpia.com/254718",
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false
+      },
+      "publish_ledger": {
+        "candidate_preservation": {
+          "official_title": "별을 품은 소드마스터",
+          "official_url": "https://novel.munpia.com/254718",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "public_publish": {
+          "official_title": "별을 품은 소드마스터",
+          "official_url": "https://novel.munpia.com/254718",
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "별을 품은 소드마스터",
+          "official_url": "https://novel.munpia.com/254718",
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        }
+      },
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work",
+        "official_detail_url"
+      ],
+      "promotion_gate_state": {
+        "post_id": 11666741,
+        "candidate_title": "별을 품은 소드마스터",
+        "candidate_url": "https://novel.munpia.com/254718",
+        "source": "source_native_residual_queue_shared_gate_projection",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "source_native_review",
+          "strength": "strong",
+          "source_path_or_snippet": "원문 `별품소`와 기사뽕/웹툰 감상 맥락은 C1 `별을 품은 소드마스터`의 약칭 소비 맥락이다. after null은 safe title loss다.",
+          "supports_publish": true,
+          "reason_code": "source_native_review_current_work"
+        },
+        {
+          "kind": "official_detail_url",
+          "strength": "strong",
+          "source_path_or_snippet": "https://novel.munpia.com/254718",
+          "supports_publish": false,
+          "reason_code": "official_detail_url"
+        }
+      ],
+      "rationale_ko": "원문 `별품소`와 기사뽕/웹툰 감상 맥락은 C1 `별을 품은 소드마스터`의 약칭 소비 맥락이다. after null은 safe title loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json#post_id=11666741",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11666741",
+        "https://novel.munpia.com/254718",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11666741",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11666741",
+        "docs/devs/loop497_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11666741",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11666741"
+      ]
+    },
+    {
+      "post_id": 11679537,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_title": "죽었다 깨어도 수선",
+      "selected_url": "https://novelpia.com/novel/233173",
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_abbreviation_and_plot_context_support_safe_title_lost_to_null",
+      "source_review_id": "loop630_true_triage64_prior_compatible_source_native",
+      "evidence_grade": "Strong",
+      "source_actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "projected_status": "safe_resolved",
+      "projected_title": "죽었다 깨어도 수선",
+      "projected_url": "https://novelpia.com/novel/233173",
+      "matches_source_native_title": true,
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "죽었다 깨어도 수선",
+        "official_url": "https://novelpia.com/novel/233173",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "publish_contract_trace": {
+        "pre_gate_candidate": {
+          "official_title": "죽었다 깨어도 수선",
+          "official_url": "https://novelpia.com/novel/233173",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "죽었다 깨어도 수선",
+          "official_url": "https://novelpia.com/novel/233173",
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        },
+        "scope_state": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        },
+        "post_gate_identity": {
+          "official_title": "죽었다 깨어도 수선",
+          "official_url": "https://novelpia.com/novel/233173",
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false
+      },
+      "publish_ledger": {
+        "candidate_preservation": {
+          "official_title": "죽었다 깨어도 수선",
+          "official_url": "https://novelpia.com/novel/233173",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "public_publish": {
+          "official_title": "죽었다 깨어도 수선",
+          "official_url": "https://novelpia.com/novel/233173",
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "죽었다 깨어도 수선",
+          "official_url": "https://novelpia.com/novel/233173",
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        }
+      },
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work",
+        "official_detail_url"
+      ],
+      "promotion_gate_state": {
+        "post_id": 11679537,
+        "candidate_title": "죽었다 깨어도 수선",
+        "candidate_url": "https://novelpia.com/novel/233173",
+        "source": "source_native_residual_queue_shared_gate_projection",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "source_native_review",
+          "strength": "strong",
+          "source_path_or_snippet": "본문의 `죽깨수`와 선협/신선/단약 전개 언급이 C1 `죽었다 깨어도 수선`을 직접 지지한다. after null은 safe title loss다.",
+          "supports_publish": true,
+          "reason_code": "source_native_review_current_work"
+        },
+        {
+          "kind": "official_detail_url",
+          "strength": "strong",
+          "source_path_or_snippet": "https://novelpia.com/novel/233173",
+          "supports_publish": false,
+          "reason_code": "official_detail_url"
+        }
+      ],
+      "rationale_ko": "본문의 `죽깨수`와 선협/신선/단약 전개 언급이 C1 `죽었다 깨어도 수선`을 직접 지지한다. after null은 safe title loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json#post_id=11679537",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11679537",
+        "https://novelpia.com/novel/233173",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11679537",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11679537",
+        "docs/devs/loop497_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11679537",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11679537"
+      ]
+    },
+    {
+      "post_id": 11665121,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_title": "후회 안 하는 프로듀서",
+      "selected_url": null,
+      "selected_option_id": "C1",
+      "source_native_verdict": "comment_abbreviation_supports_safe_title_lost_to_null",
+      "source_review_id": "loop630_true_triage64_prior_compatible_source_native",
+      "evidence_grade": "Strong",
+      "source_actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "projected_status": "safe_resolved",
+      "projected_title": "후회 안 하는 프로듀서",
+      "projected_url": null,
+      "matches_source_native_title": true,
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "후회 안 하는 프로듀서",
+        "official_url": null,
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "publish_contract_trace": {
+        "pre_gate_candidate": {
+          "official_title": "후회 안 하는 프로듀서",
+          "official_url": null,
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "후회 안 하는 프로듀서",
+          "official_url": null,
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        },
+        "scope_state": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        },
+        "post_gate_identity": {
+          "official_title": "후회 안 하는 프로듀서",
+          "official_url": null,
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work"
+        ],
+        "bypassed_gate": false
+      },
+      "publish_ledger": {
+        "candidate_preservation": {
+          "official_title": "후회 안 하는 프로듀서",
+          "official_url": null,
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "public_publish": {
+          "official_title": "후회 안 하는 프로듀서",
+          "official_url": null,
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "후회 안 하는 프로듀서",
+          "official_url": null,
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        }
+      },
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work"
+      ],
+      "promotion_gate_state": {
+        "post_id": 11665121,
+        "candidate_title": "후회 안 하는 프로듀서",
+        "candidate_url": "",
+        "source": "source_native_residual_queue_shared_gate_projection",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "source_native_review",
+          "strength": "strong",
+          "source_path_or_snippet": "댓글 `후회 프듀`가 C1 `후회 안 하는 프로듀서` 약칭을 직접 지지한다. after null은 safe title loss다.",
+          "supports_publish": true,
+          "reason_code": "source_native_review_current_work"
+        }
+      ],
+      "rationale_ko": "댓글 `후회 프듀`가 C1 `후회 안 하는 프로듀서` 약칭을 직접 지지한다. after null은 safe title loss다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json#post_id=11665121",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11665121",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11665121",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11665121",
+        "docs/devs/loop497_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11665121",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11665121"
+      ]
+    },
+    {
+      "post_id": 11673077,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "selected_title": "판초우의의 마법사",
+      "selected_url": "https://novel.munpia.com/530500",
+      "selected_option_id": "C1",
+      "source_native_verdict": "direct_title_surface_supports_safe_title_lost_to_null",
+      "source_review_id": "loop630_true_triage64_prior_compatible_source_native",
+      "evidence_grade": "Strong",
+      "source_actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "projected_status": "safe_resolved",
+      "projected_title": "판초우의의 마법사",
+      "projected_url": "https://novel.munpia.com/530500",
+      "matches_source_native_title": true,
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "판초우의의 마법사",
+        "official_url": "https://novel.munpia.com/530500",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "publish_contract_trace": {
+        "pre_gate_candidate": {
+          "official_title": "판초우의의 마법사",
+          "official_url": "https://novel.munpia.com/530500",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "판초우의의 마법사",
+          "official_url": "https://novel.munpia.com/530500",
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        },
+        "scope_state": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        },
+        "post_gate_identity": {
+          "official_title": "판초우의의 마법사",
+          "official_url": "https://novel.munpia.com/530500",
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work",
+          "official_detail_url"
+        ],
+        "bypassed_gate": false
+      },
+      "publish_ledger": {
+        "candidate_preservation": {
+          "official_title": "판초우의의 마법사",
+          "official_url": "https://novel.munpia.com/530500",
+          "source": "source_native_residual_queue_shared_gate_projection"
+        },
+        "public_publish": {
+          "official_title": "판초우의의 마법사",
+          "official_url": "https://novel.munpia.com/530500",
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "work_resolution": "resolved",
+          "candidate_ledger_status": "safe_resolved"
+        },
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "판초우의의 마법사",
+          "official_url": "https://novel.munpia.com/530500",
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work",
+            "official_detail_url"
+          ],
+          "bypassed_gate": false,
+          "scope": {
+            "scope_kind": "current_work",
+            "confidence": "high",
+            "direct_bridge_sources": [
+              "source_native_review",
+              "shared_promotion_gate_wiring_required"
+            ],
+            "competing_candidates": [],
+            "conflict_reason_codes": []
+          }
+        }
+      },
+      "projected_reasons": [
+        "official_title_exists",
+        "row_discusses_work_as_work",
+        "scope_current_work",
+        "source_native_review_current_work",
+        "official_detail_url"
+      ],
+      "promotion_gate_state": {
+        "post_id": 11673077,
+        "candidate_title": "판초우의의 마법사",
+        "candidate_url": "https://novel.munpia.com/530500",
+        "source": "source_native_residual_queue_shared_gate_projection",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": true,
+        "title_resolution_state": "resolved",
+        "work_resolution": "resolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "source_native_review",
+          "strength": "strong",
+          "source_path_or_snippet": "원문 제목과 본문이 `판초우의`를 직접 평가한다. C1 title loss는 수리 대상이다.",
+          "supports_publish": true,
+          "reason_code": "source_native_review_current_work"
+        },
+        {
+          "kind": "official_detail_url",
+          "strength": "strong",
+          "source_path_or_snippet": "https://novel.munpia.com/530500",
+          "supports_publish": false,
+          "reason_code": "official_detail_url"
+        }
+      ],
+      "rationale_ko": "원문 제목과 본문이 `판초우의`를 직접 평가한다. C1 title loss는 수리 대상이다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_prior_incompatible_residual52_review_batch.json#post_id=11673077",
+        "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11673077",
+        "https://novel.munpia.com/530500",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop488_p0_full_source_native_review.json#post_id=11673077",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11673077",
+        "docs/devs/loop497_current_full375_p0_prior_compatible_source_native_verdicts.json#post_id=11673077",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11673077"
+      ]
+    }
+  ],
+  "approval_boundary": {
+    "projection_is_not_runtime_replay": true,
+    "projection_is_not_full375_approval": true,
+    "requires_runtime_replay_and_full375_collateral_go": true
+  }
+}

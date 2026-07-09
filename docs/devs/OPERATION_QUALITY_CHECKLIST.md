@@ -1,5 +1,18 @@
 # Operation Quality Checklist
 
+## 2026-07-09 Loop630 adjusted re-baseline 운영 메모
+
+- [x] 새 runtime replay/full375를 실행하지 않았다.
+- [x] Raw `137`은 2026-06-26 대비 historical diff로만 유지하고, 완료 gate로 쓰지 않는다고 다시 고정했다.
+- [x] True triage `64` 중 prior-compatible `45`를 회수했고 residual action queue는 `59`다.
+- [x] Intended recovery `21`은 새 blind judge 없이 prior 판정으로 전수 커버됐지만, hold/search/mismatch 행은 re-baseline 전 판결이 필요하다.
+- [x] Shared-gate projection `13`행은 contract plan에서 `SG_shared_gate_publish_release_candidate`로 수렴했다.
+- [x] Contract plan validation issue `0`, runtime replay allowed `0`을 확인했다.
+- [ ] Adjudicated 전에는 re-baseline을 실제 생성하지 않는다.
+- [ ] Re-baseline 이후 매 run은 raw 재소송이 아니라 `adjusted_drift`를 gate metric으로 본다.
+- [ ] Dashboard와 runtime completion은 진행 관측이며 full_scan approval 근거가 아니다.
+- Gate: shared-gate contract wiring `GO_UNIT`, residual action queue `REVIEW-LOCKED / 59`, intended recovery `REVIEW-LOCKED`, collateral `NO-GO / historical raw 137`, re-baseline `NOT_APPLIED`, adjusted gate `NOT_OPEN_UNTIL_ADJUDICATED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-09 Loop629 full375 collateral 운영 메모
 
 - [x] Full375를 `--parallel 16`, dashboard ON, search 포함 non-light 조건으로 완주했다.

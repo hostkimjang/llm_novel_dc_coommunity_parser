@@ -107,6 +107,56 @@ class BuildPostVerdictPromotionGateContractPlanTest(unittest.TestCase):
         self.assertEqual(row["promotion_decision"]["status"], "candidate_only")
         self.assertFalse(row["promotion_decision"]["publish_allowed"])
 
+    def test_shared_gate_projection_publish_row_becomes_restore_contract_case(self):
+        queue = {
+            "queue_id": "unit_projection",
+            "report_type": "residual_queue_shared_promotion_gate_projection",
+            "rows": [
+                {
+                    "post_id": 5,
+                    "triage_bucket": "safe_loss_resolved_to_null",
+                    "selected_title": "Supported Work",
+                    "selected_url": "https://novelpia.com/novel/123",
+                    "projected_status": "safe_resolved",
+                    "projected_title": "Supported Work",
+                    "projected_url": "https://novelpia.com/novel/123",
+                    "evidence_grade": "Strong",
+                    "source_actions": [
+                        "repair_safe_loss_restore_supported_title",
+                        "shared_promotion_gate_wiring_required",
+                    ],
+                    "promotion_decision": {
+                        "status": "publish",
+                        "publish_allowed": True,
+                        "official_title": "Supported Work",
+                        "official_url": "https://novelpia.com/novel/123",
+                        "bypassed_gate": False,
+                    },
+                    "publish_contract_trace": {
+                        "gate_decision": {
+                            "status": "publish",
+                            "publish_allowed": True,
+                            "official_title": "Supported Work",
+                        }
+                    },
+                    "rationale_ko": "원문과 댓글이 후보 작품을 직접 지지한다.",
+                    "evidence_refs": ["https://novelpia.com/novel/123"],
+                }
+            ],
+        }
+
+        plan = build_plan(queue, plan_id="unit_projection")
+        row = plan["rows"][0]
+
+        self.assertEqual(row["contract_batch_lane"], "SG_shared_gate_publish_release_candidate")
+        self.assertEqual(row["contract_action"], "expected_title_restore_contract_case")
+        self.assertEqual(row["promotion_decision"]["status"], "publish")
+        self.assertTrue(row["promotion_decision"]["publish_allowed"])
+        self.assertEqual(row["target_title"], "Supported Work")
+        self.assertEqual(row["target_url"], "https://novelpia.com/novel/123")
+        self.assertTrue(row["contract_test_required_before_runtime"])
+        self.assertFalse(row["runtime_replay_allowed"])
+
 
 if __name__ == "__main__":
     unittest.main()

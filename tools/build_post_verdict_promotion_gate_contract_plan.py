@@ -24,7 +24,11 @@ from llm_batch.promotion_gate import (  # noqa: E402
 C1 = "C1_expected_restore_or_candidate_scrub_contract"
 C2 = "C2_canonical_variant_policy_contract"
 C3 = "C3_stronger_evidence_or_native_web_hold"
+SG_PUBLISH = "SG_shared_gate_publish_release_candidate"
+SG_CANDIDATE_ONLY = "SG_shared_gate_candidate_only_hold"
 SEARCH_OK_FOR_CONTRACT_CASE = {"SEARCH_OK", "SEARCH_RECOVERED_CONDITIONAL"}
+TITLE_REQUIRED_LANES = {C1, C2, SG_PUBLISH}
+CONTRACT_TEST_LANES = {C1, C2, SG_PUBLISH}
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -55,8 +59,50 @@ def _grade(value: Any) -> str:
     return text if text in {"strong", "medium", "weak", "missing"} else "medium"
 
 
-def _contract_blocking_reason(row: dict[str, Any]) -> str:
+def _dict(value: Any) -> dict[str, Any]:
+    return value if isinstance(value, dict) else {}
+
+
+def _is_shared_projection_row(row: dict[str, Any]) -> bool:
     lane = _string(row.get("contract_batch_lane"))
+    if lane in {SG_PUBLISH, SG_CANDIDATE_ONLY}:
+        return True
+    actions = row.get("source_actions")
+    action_texts = {str(action or "").strip() for action in actions if str(action or "").strip()} if isinstance(actions, list) else set()
+    return bool(
+        row.get("projected_status")
+        and (
+            isinstance(row.get("promotion_decision"), dict)
+            or isinstance(row.get("publish_contract_trace"), dict)
+            or "shared_promotion_gate_wiring_required" in action_texts
+        )
+    )
+
+
+def _projection_decision(row: dict[str, Any]) -> dict[str, Any]:
+    decision = _dict(row.get("promotion_decision"))
+    if decision:
+        return decision
+    trace = _dict(row.get("publish_contract_trace"))
+    return _dict(trace.get("gate_decision"))
+
+
+def _normalized_lane(row: dict[str, Any]) -> str:
+    lane = _string(row.get("contract_batch_lane"))
+    if lane:
+        return lane
+    if not _is_shared_projection_row(row):
+        return ""
+    decision = _projection_decision(row)
+    if decision.get("publish_allowed") is True or _string(decision.get("status")) == "publish":
+        return SG_PUBLISH
+    if _string(row.get("projected_status")) == "safe_resolved":
+        return SG_PUBLISH
+    return SG_CANDIDATE_ONLY
+
+
+def _contract_blocking_reason(row: dict[str, Any]) -> str:
+    lane = _normalized_lane(row)
     search_gate = _string(row.get("search_gate"))
     if lane == C2:
         return "canonical_variant_policy_pending"
@@ -70,35 +116,65 @@ def _contract_blocking_reason(row: dict[str, Any]) -> str:
 
 
 def _target_title(row: dict[str, Any]) -> str:
-    lane = _string(row.get("contract_batch_lane"))
+    lane = _normalized_lane(row)
+    decision = _projection_decision(row)
+    if lane in {SG_PUBLISH, SG_CANDIDATE_ONLY}:
+        return _string(
+            row.get("projected_title")
+            or row.get("selected_title")
+            or decision.get("official_title")
+            or row.get("canonical_title")
+            or row.get("expected_or_source_native_title")
+            or row.get("current_projection_candidate_title")
+        )
     if lane in {C1, C2}:
         return _string(row.get("canonical_title") or row.get("expected_or_source_native_title"))
     return _string(row.get("canonical_title") or row.get("expected_or_source_native_title") or row.get("current_projection_candidate_title"))
 
 
 def _target_url(row: dict[str, Any]) -> str:
-    lane = _string(row.get("contract_batch_lane"))
+    lane = _normalized_lane(row)
+    decision = _projection_decision(row)
+    if lane in {SG_PUBLISH, SG_CANDIDATE_ONLY}:
+        return _string(row.get("projected_url") or row.get("selected_url") or decision.get("official_url"))
     if lane in {C1, C2}:
         return _string(row.get("canonical_url"))
     return ""
 
 
 def _row_discusses_current_work(row: dict[str, Any], blocking_reason: str) -> bool:
-    lane = _string(row.get("contract_batch_lane"))
+    lane = _normalized_lane(row)
     if lane == C3:
         return False
     if lane == C2:
         return True
     if lane == C1:
         return _string(row.get("search_gate")) in SEARCH_OK_FOR_CONTRACT_CASE and _grade(row.get("evidence_grade")) in {"strong", "medium"}
+    if lane == SG_PUBLISH:
+        decision = _projection_decision(row)
+        gate_state = _dict(row.get("promotion_gate_state"))
+        return bool(
+            not blocking_reason
+            and _string(row.get("projected_status")) == "safe_resolved"
+            and _grade(row.get("evidence_grade")) in {"strong", "medium"}
+            and (
+                decision.get("publish_allowed") is True
+                or _string(decision.get("status")) == "publish"
+                or gate_state.get("row_discusses_work_as_work") is True
+            )
+        )
     return False
 
 
 def _contract_action(row: dict[str, Any], decision_status: str, blocking_reason: str) -> str:
-    lane = _string(row.get("contract_batch_lane"))
+    lane = _normalized_lane(row)
     if lane == C1 and decision_status == "publish":
         return "expected_title_restore_contract_case"
     if lane == C1:
+        return "candidate_scrub_no_publish_contract_case"
+    if lane == SG_PUBLISH and decision_status == "publish":
+        return "expected_title_restore_contract_case"
+    if lane in {SG_PUBLISH, SG_CANDIDATE_ONLY}:
         return "candidate_scrub_no_publish_contract_case"
     if lane == C2:
         return "canonical_variant_policy_hold_contract_case"
@@ -108,19 +184,24 @@ def _contract_action(row: dict[str, Any], decision_status: str, blocking_reason:
 
 
 def _build_row(row: dict[str, Any]) -> dict[str, Any]:
-    lane = _string(row.get("contract_batch_lane"))
+    lane = _normalized_lane(row)
     target_title = _target_title(row)
     target_url = _target_url(row)
     blocking_reason = _contract_blocking_reason(row)
     row_discusses_work = _row_discusses_current_work(row, blocking_reason)
     scope_kind = "current_work" if row_discusses_work else "context_only"
     evidence_grade = _grade(row.get("evidence_grade"))
-    reason_code = blocking_reason or "post_verdict_source_native_contract_case"
+    reason_code = blocking_reason or (
+        "shared_gate_projection_current_work" if lane in {SG_PUBLISH, SG_CANDIDATE_ONLY} else "post_verdict_source_native_contract_case"
+    )
+    direct_bridge_sources = ["canonical_source_native_verdict", lane]
+    if lane in {SG_PUBLISH, SG_CANDIDATE_ONLY}:
+        direct_bridge_sources = ["source_native_review", "shared_promotion_gate_wiring_required", lane]
     state = GroundingState(
         post_id=row.get("post_id"),
         candidate_title=target_title,
         candidate_url=target_url,
-        source="post_verdict_contract_plan",
+        source="shared_gate_projection_contract_plan" if lane in {SG_PUBLISH, SG_CANDIDATE_ONLY} else "post_verdict_contract_plan",
         official_title_exists=bool(target_title),
         row_discusses_work_as_work=row_discusses_work,
         title_resolution_state="resolved" if row_discusses_work else "context_only",
@@ -129,7 +210,7 @@ def _build_row(row: dict[str, Any]) -> dict[str, Any]:
         scope=ScopeState(
             scope_kind=scope_kind,
             confidence="high" if evidence_grade == "strong" else "medium",
-            direct_bridge_sources=["canonical_source_native_verdict", lane],
+            direct_bridge_sources=direct_bridge_sources,
             competing_candidates=[_string(row.get("current_projection_candidate_title"))],
             conflict_reason_codes=[blocking_reason] if blocking_reason else [],
         ),
@@ -155,13 +236,16 @@ def _build_row(row: dict[str, Any]) -> dict[str, Any]:
         "target_url": target_url or None,
         "current_projection_candidate_title": row.get("current_projection_candidate_title"),
         "current_projection_candidate_url": row.get("current_projection_candidate_url"),
+        "source_projected_status": row.get("projected_status"),
+        "source_promotion_decision": row.get("promotion_decision"),
+        "source_publish_contract_trace": row.get("publish_contract_trace"),
         "contract_blocking_reason": blocking_reason or None,
         "contract_action": action,
         "promotion_decision": decision.to_dict(),
         "promotion_gate_state": state.to_dict(),
         "promotion_gate_evidence": [record.to_dict() for record in evidence],
         "runtime_replay_allowed": False,
-        "contract_test_required_before_runtime": lane in {C1, C2},
+        "contract_test_required_before_runtime": lane in CONTRACT_TEST_LANES,
         "stronger_evidence_required_before_runtime": lane == C3,
         "rationale_ko": row.get("rationale_ko"),
         "evidence_refs": row.get("evidence_refs") or [],
@@ -177,7 +261,7 @@ def build_plan(
     rows = [_build_row(row) for row in _rows(queue)]
     validation_issues: list[dict[str, Any]] = []
     for row in rows:
-        if not row.get("target_title") and row.get("contract_batch_lane") in {C1, C2}:
+        if not row.get("target_title") and row.get("contract_batch_lane") in TITLE_REQUIRED_LANES:
             validation_issues.append({"post_id": row.get("post_id"), "issue": "missing_target_title"})
         if row["promotion_decision"].get("bypassed_gate"):
             validation_issues.append({"post_id": row.get("post_id"), "issue": "promotion_gate_bypassed"})
@@ -227,7 +311,8 @@ def write_markdown(path: Path, plan: dict[str, Any]) -> None:
         f"# {plan.get('plan_id')}",
         "",
         "Post-verdict contract queue를 shared `can_publish_title` gate 입력으로 변환한 계약 계획이다. "
-        "이 산출물은 runtime replay 허가가 아니며, C1/C2 contract test와 C3 stronger evidence 확인 전에는 release를 열지 않는다.",
+        "SG projection과 C1/C2는 contract test 입력이고, C3는 stronger evidence 확인 전까지 release를 열지 않는다. "
+        "이 산출물은 runtime replay 허가가 아니다.",
         "",
         "## 요약",
         "",
@@ -255,7 +340,7 @@ def write_markdown(path: Path, plan: dict[str, Any]) -> None:
         )
     lines.extend(["", "## Gate 해석", ""])
     lines.append(
-        "Post-verdict C1 일부는 expected title restore contract case로 정리되지만 이는 contract test 입력일 뿐이다. "
+        "Post-verdict C1 또는 SG shared-gate projection 일부는 expected title restore contract case로 정리되지만 이는 contract test 입력일 뿐이다. "
         "C2는 canonical variant policy가 닫히기 전까지 candidate-only로 유지하고, "
         "C3는 stronger evidence/native-web 확인 전까지 hard hold로 둔다. "
         "따라서 goal은 `ACTIVE / NOT_COMPLETE`이고 완료 기준은 계속 `full375 collateral GO + full_scan 경로 정의`다."

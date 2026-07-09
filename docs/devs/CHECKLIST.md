@@ -1,5 +1,26 @@
 # Development Checklist
 
+## 2026-07-09 Loop630 true triage64 shared-gate 계약 체크
+
+- [x] 새 runtime replay/full375를 실행하지 않았다.
+- [x] Loop629 raw `137`을 일괄 회귀로 재소송하지 않고 triage batch로 재정렬했다.
+- [x] True triage batch는 `64`행이고 missing source/baseline/after는 `0/0/0`이다.
+- [x] Prior-compatible source-native verdict는 `45`건 회수했다.
+- [x] Combined review는 reviewed `64/64`, source-native decision `29`, info missing `35`다.
+- [x] Residual action queue는 `59`건이다: `REPROCESS 18`, `HOLD 6`, `INFO_MISSING 35`.
+- [x] Intended recovery `21`은 prior verdict covered `21`, after title accept `11`, expected accept but after differs `1`, prior hold/unusable/disagree `7`, search hold `2`, new blind judge `0`이다.
+- [x] Shared promotion gate projection은 `13/13 safe_resolved`, `publish_allowed 13/13`, source-native title match `13/13`이다.
+- [x] Contract plan은 lane `SG_shared_gate_publish_release_candidate 13`, action `expected_title_restore_contract_case 13`, promotion decision `publish 13`이다.
+- [x] Runtime replay allowed rows는 `0`이고 validation issue는 `0`이다.
+- [x] `build_post_verdict_promotion_gate_contract_plan.py`가 shared-gate projection 행을 unknown lane이 아니라 SG 계약 후보로 처리하도록 보강했다.
+- [x] 계약 테스트를 추가하고 PASS했다: `tests.test_build_post_verdict_promotion_gate_contract_plan` `5` tests.
+- [ ] `13`건 SG contract 후보를 실제 적용/계약 테스트 경로로 닫는다.
+- [ ] `INFO_MISSING 35`, `HOLD 6`, intended recovery hold/search/mismatch 행을 adjudicated 상태로 닫는다.
+- [ ] 전 행 adjudicated 전에는 re-baseline을 적용하지 않는다.
+- [ ] 완료 gate는 raw가 아니라 adjusted drift 기준으로 평가한다.
+- Gate: shared-gate contract wiring `GO_UNIT`, true triage adjudication `REVIEW-LOCKED / residual 59`, intended recovery adjudication `REVIEW-LOCKED`, full375 collateral `NO-GO / historical raw 137`, re-baseline `NOT_APPLIED`, adjusted gate `NOT_OPEN_UNTIL_ADJUDICATED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_630_REPORT_20260709.md`, `docs/devs/loop630_*`, `tools/build_post_verdict_promotion_gate_contract_plan.py`, `tests/test_build_post_verdict_promotion_gate_contract_plan.py`.
+
 ## 2026-07-09 Loop629 full375 collateral 재확인 체크
 
 - [x] Loop628 current search hard blocker closure 뒤 full375를 다시 실행했다.
