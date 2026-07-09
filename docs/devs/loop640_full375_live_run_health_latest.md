@@ -4,26 +4,26 @@
 
 ## 요약
 
-- generated_at: `2026-07-10T01:21:19`
+- generated_at: `2026-07-10T01:24:41`
 - run_integrity_gate: `IN_PROGRESS`
 - flush classification: `ordered_flush_gap_in_progress`
-- manifest counts: completed/flushed/pending/failed `19/17/2/0`
+- manifest counts: completed/flushed/pending/failed `23/19/4/0`
 - input_post_count: `375`
-- result rows: `17`
-- checkpoint completed rows: `19`
-- pending snapshot rows: `2`
-- next_save_idx: `18`
+- result rows: `19`
+- checkpoint completed rows: `23`
+- pending snapshot rows: `4`
+- next_save_idx: `20`
 - frontier status: `in_flight_or_missing`
 - frontier reason: `frontier_missing_from_checkpoint_and_pending`
 - search evidence: `GO`
-- row search health: ok `19`, degraded `0`, unrecovered degraded `0`
-- publication contract: `GO / row 17 / violation 0`
+- row search health: ok `23`, degraded `0`, unrecovered degraded `0`
+- publication contract: `GO / row 19 / violation 0`
 - reason errors: `0`
 - slang_db bad remaining: `0`
 
 ## 해석
 
-현재 artifact 정합성은 깨진 상태가 아니라 ordered flush가 앞선 idx `18`을 기다리는 진행 중 상태다. 이전 frontier `4`는 완료되어 result JSON이 `3`행에서 `17`행까지 flush됐지만, 아직 input `375` 중 일부 초반 index가 처리 중이다. checkpoint와 pending snapshot은 manifest count와 일치하지만, result JSON은 ordered flushed prefix `17`행만 담고 있다. 따라서 이 snapshot은 completed source가 아니며 full375 collateral approval 근거로 쓰지 않는다.
+현재 artifact 정합성은 깨진 상태가 아니라 ordered flush가 앞선 idx `20`을 기다리는 진행 중 상태다. 이전 frontier `18`도 일부 해소되어 result JSON이 `17`행에서 `19`행까지 flush됐지만, 아직 input `375` 중 일부 초반 index가 처리 중이다. checkpoint와 pending snapshot은 manifest count와 일치하지만, result JSON은 ordered flushed prefix `19`행만 담고 있다. 따라서 이 snapshot은 completed source가 아니며 full375 collateral approval 근거로 쓰지 않는다.
 
 Search evidence와 publication contract는 현재 관측된 completed/flushed subset 기준으로는 `GO`다. 그러나 full375 완료 gate는 completed/flushed/pending/failed `375/375/0/0`, manifest search non-light, publication contract `GO`, adjusted drift `0`, full_scan path가 모두 닫힌 뒤에만 열린다.
 
