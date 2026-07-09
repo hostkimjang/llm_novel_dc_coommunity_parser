@@ -5,11 +5,12 @@
 | 항목 | 상태 | 근거 | 다음 |
 | --- | --- | --- | --- |
 | Runtime | RUNNING_BACKGROUND | run `20260710_005902_590310`, dashboard `http://127.0.0.1:8080` | full375 완료까지 background 감시 |
-| Live health | IN_PROGRESS | `loop640_full375_live_run_health_latest.json`, generated_at `2026-07-10T02:38:16`, completed/flushed/pending/failed `61/51/10/0` | 완료 시 final audit 재실행 |
-| Flush integrity | ORDERED_GAP | prior `11698904` 해소, ordered prefix `50 -> 51`, current `next_save_idx=52`, `11700470`, W13 `in_progress_in_worker_log`, observed elapsed `2334.073s` | frontier 해소 전 approval 금지 |
-| Worker phase | LONG_TAIL_POSTPROCESS | W13 log reaches override audit/reason_review progress at `02:29`; dashboard `61/375`, progress `16.3%`, current post `11674694` | dispatch 반복 금지, background 감시 |
-| Search evidence | GO_SUBSET | row search ok `59`, `SEARCH_DEGRADED_RECOVERED 1`, unrecovered degraded `0` | final 375 row 기준 재확인 |
-| Publication contract | GO_SUBSET | flushed result `51`행, violation `0` | final 375 row 기준 재확인 |
+| Live health | IN_PROGRESS | `loop640_full375_live_run_health_latest.json`, generated_at `2026-07-10T02:49:59`, completed/flushed/pending/failed `66/66/0/0` but input `375` | 완료 시 final audit 재실행 |
+| Flush integrity | PREFIX_CLEAN_INCOMPLETE | prior `11706828` 해소, ordered prefix `62 -> 66`, current `next_save_idx=67`, `11714885`, W12 `in_progress_in_worker_log`, observed elapsed `702.444s` | full375 완료 전 approval 금지 |
+| Worker phase | LONG_TAIL_POSTPROCESS | dashboard `66/375`, progress `17.6%`, current post `11694019`, current expert `verifier` | dispatch 반복 금지, background 감시 |
+| Process tree | OK_SINGLE_CHAIN | runner/expert processes are parent-child wrapper chain, not independent duplicate dispatch | 중복 dispatch 반복 금지 유지 |
+| Search evidence | GO_SUBSET | row search ok `62`, `SEARCH_DEGRADED_RECOVERED 3`, unrecovered degraded `0` | final 375 row 기준 재확인 |
+| Publication contract | GO_SUBSET | flushed result `66`행, violation `0` | final 375 row 기준 재확인 |
 | Completion gate | NOT_OPEN | adjusted gate는 runtime counts `375/375/0/0` 이후 평가 | adjusted drift compare와 full_scan path 확인 |
 | Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | 완료 전 update_goal 금지 |
 

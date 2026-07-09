@@ -28,10 +28,11 @@
   - Loop640 frontier trace: PASS/RUNNING, `11676314 / 마도줍 완결이 빠를까`, W1 `in_progress_in_worker_log`, observed elapsed `462.254s`.
   - Loop640 partial gates: PASS/RUNNING, search evidence `GO`, partial publication contract `GO / row 1`, approval `false`.
   - Re-baseline boundary: PASS/RUNNING, Loop638 `APPLIED` 이후 completion metric은 `adjusted_drift_count`이고 2026-06-26 raw `105`는 historical diagnostic으로만 유지한다. Raw row는 매 run 재소송 대상이 아니다.
-  - Latest live audit refresh: PASS/RUNNING, `docs/devs/loop640_full375_live_run_health_latest.json`, generated_at `2026-07-10T02:38:16`, completed/flushed/pending/failed `61/51/10/0`, result rows `51`, checkpoint rows `61`, frontier `11700470`, W13 `in_progress_in_worker_log`, event_count `16`, observed elapsed `2334.073s`.
-  - Frontier movement: PASS/RUNNING, prior frontier `11698904` cleared and ordered flushed prefix advanced `50 -> 51`; current classification remains live long-tail postprocess, not completed source.
-  - W13 worker liveness: PASS/RUNNING, `11700470` log updated through `2026-07-10 02:29` with override audit and reason_review progress.
-  - Dashboard liveness: PASS/RUNNING, `batch_running=true`, done `61/375`, progress `16.3%`, current post `11674694`, current expert `gatekeeper`, parallel `16`, `llm_suspended=false`.
+  - Latest live audit refresh: PASS/RUNNING, `docs/devs/loop640_full375_live_run_health_latest.json`, generated_at `2026-07-10T02:49:59`, completed/flushed/pending/failed `66/66/0/0`, result rows `66`, checkpoint rows `66`, frontier `11714885`, W12 `in_progress_in_worker_log`, event_count `8`, observed elapsed `702.444s`.
+  - Frontier movement: PASS/RUNNING, prior frontier `11706828` cleared and ordered flushed prefix advanced `62 -> 66`; current classification is `incomplete_run_in_progress`, not completed source.
+  - Worker liveness: PASS/RUNNING, `11714885` is visible in W12 trace and dashboard/main log remains live.
+  - Dashboard liveness: PASS/RUNNING, `batch_running=true`, done `66/375`, progress `17.6%`, current post `11694019`, current expert `verifier`, current expert status `running`, parallel `16`, `llm_suspended=false`.
+  - Process tree check: PASS/RUNNING, `run_independent_plan`/`attach_manifest_dashboard`/`expert_main` processes are parent-child wrapper chain; independent duplicate dispatch to the same output was not observed.
 - 결과:
   - Loop639 partial은 collateral approval 증거가 아니다.
   - 다음 full375는 Loop640 plan으로만 실행하며 child manifest에 search 포함 non-light health가 남아야 한다.

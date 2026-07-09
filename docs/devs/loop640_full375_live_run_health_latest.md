@@ -4,24 +4,25 @@
 
 ## 요약
 
-- generated_at: `2026-07-10T02:38:16`
+- generated_at: `2026-07-10T02:49:59`
 - run_integrity_gate: `IN_PROGRESS`
-- flush classification: `ordered_flush_gap_in_progress`
-- manifest counts: completed/flushed/pending/failed `61/51/10/0`
+- flush classification: `incomplete_run_in_progress`
+- manifest counts: completed/flushed/pending/failed `66/66/0/0`
 - input_post_count: `375`
-- result rows: `51`
-- checkpoint completed rows: `61`
-- pending snapshot rows: `10`
-- next_save_idx: `52`
+- result rows: `66`
+- checkpoint completed rows: `66`
+- pending snapshot rows: `0`
+- next_save_idx: `67`
 - frontier status: `in_flight_or_missing`
 - frontier reason: `frontier_missing_from_checkpoint_and_pending`
-- frontier post: `11700470 / 어케 주인공 죄목이`
-- frontier worker trace: `in_progress_in_worker_log / W13 / event_count=16 / observed_elapsed_seconds=2334.073`
-- cleared frontier: previous `11698904` completed enough to move ordered flushed prefix `50 -> 51`
-- dashboard liveness: `batch_running=true`, done `61/375`, progress `16.3%`, current post `11674694`, current expert `gatekeeper`, parallel `16`, `llm_suspended=false`
+- frontier post: `11714885 / 자식들로 몸 갈아타는 부모 ㅁㅊ`
+- frontier worker trace: `in_progress_in_worker_log / W12 / event_count=8 / observed_elapsed_seconds=702.444`
+- cleared frontier: previous `11706828` completed enough to move ordered flushed prefix `62 -> 66`
+- dashboard liveness: `batch_running=true`, done `66/375`, progress `17.6%`, current post `11694019`, current expert `verifier`, current expert status `running`, parallel `16`, `llm_suspended=false`
 - search evidence: `GO`
-- row search health: ok `59`, `SEARCH_DEGRADED_RECOVERED 1`, unrecovered degraded `0`
-- publication contract: `GO / row 51 / violation 0`
+- row search health: ok `62`, `SEARCH_DEGRADED_RECOVERED 3`, unrecovered degraded `0`
+- publication contract: `GO / row 66 / violation 0`
+- worker log progress: post start `82`, post complete `66`, title anchor probes `85`, headless meta lines `116`
 - reason errors: `0`
 - slang_db bad remaining: `0`
 - baseline mode: `adjudicated_rebaseline`
@@ -30,9 +31,11 @@
 
 ## 해석
 
-현재 artifact 정합성은 깨진 상태가 아니라 ordered flush가 앞선 idx `52`를 기다리는 진행 중 상태다. checkpoint는 `61`행까지 완료를 확인했지만, result JSON은 ordered flushed prefix `51`행만 담고 있다. checkpoint와 pending snapshot은 manifest count와 일치한다. 따라서 이 snapshot은 completed source가 아니며 full375 collateral approval 근거로 쓰지 않는다.
+현재 artifact 정합성은 깨진 상태가 아니라 full375 입력 `375` 중 앞선 `66`행만 완료된 진행 중 상태다. checkpoint, result JSON, pending snapshot은 manifest count와 일치하고 ordered flush gap은 이 snapshot에서는 해소됐다. 그러나 전체 입력이 아직 `375/375/0/0`이 아니므로 이 snapshot은 completed source가 아니며 full375 collateral approval 근거로 쓰지 않는다.
 
-이전 frontier `11698904`는 해소되어 ordered flushed prefix가 `50 -> 51`로 이동했다. 새 frontier `11700470`은 checkpoint와 pending snapshot 양쪽에는 아직 없지만, W13 worker log에서 VLM, verifier, synthesizer, arbiter start, page_alive_check, final title correction, override audit, reason_review 진행까지 관측됐다. W13 log는 `2026-07-10 02:29` reason_review 진행을 남겼고 dashboard/main log도 살아 있어 worker death가 아니라 live long-tail postprocess 진행으로 본다. 단 ordered flush가 이 row를 기다리는 동안 뒤쪽 completed/pending row를 completed source approval 근거로 쓰지 않는다.
+이전 frontier `11706828`은 해소되어 ordered flushed prefix가 `62 -> 66`으로 이동했다. 새 frontier `11714885`는 아직 completed source가 아니지만, W12 worker log에서 진행 중 trace가 관측된다. Dashboard/main log도 살아 있어 worker death가 아니라 live long-tail postprocess 진행으로 본다. 현재 prefix가 `66`까지 깨끗해도 전체 `375`행 완료 전에는 completed source approval 근거로 쓰지 않는다.
+
+프로세스 점검에서는 `.venv312` runner가 `C:\Python312` child runner를 띄우고 그 자식이 attach/expert process를 띄운 wrapper chain으로 확인됐다. 같은 output path에 대한 별도 독립 duplicate dispatch 증거는 없으므로 현재 조치는 신규 dispatch가 아니라 background 감시다.
 
 Search evidence와 publication contract는 현재 관측된 completed/flushed subset 기준으로는 `GO`다. 그러나 full375 완료 gate는 completed/flushed/pending/failed `375/375/0/0`, manifest search non-light, publication contract `GO`, adjusted drift `0`, full_scan path가 모두 닫힌 뒤에만 열린다.
 

@@ -3,19 +3,20 @@
 ## 2026-07-10 Loop640 live run health 운영 메모
 
 - [x] Loop640 background full375 run `20260710_005902_590310`의 live health audit을 갱신했다.
-- [x] Latest audit generated_at `2026-07-10T02:38:16`, completed/flushed/pending/failed `61/51/10/0`이다.
-- [x] Run integrity는 `IN_PROGRESS / ordered_flush_gap_in_progress`이며 completed source가 아니다.
+- [x] Latest audit generated_at `2026-07-10T02:49:59`, completed/flushed/pending/failed `66/66/0/0`이다.
+- [x] Run integrity는 `IN_PROGRESS / incomplete_run_in_progress`이며 completed source가 아니다.
 - [x] Prior frontier `4`가 해소되어 ordered flushed prefix가 `3 -> 19`로 이동했다.
 - [x] Prior frontier `11714892`가 해소되어 ordered flushed prefix가 `19 -> 24`로 이동했다.
 - [x] Prior frontier `11663514`가 해소되어 ordered flushed prefix가 `24 -> 30`으로 이동했다.
 - [x] Prior frontier `11671501`이 해소되어 ordered flushed prefix가 `30 -> 32`로 이동했다.
 - [x] Prior frontier `11673086`이 해소되어 ordered flushed prefix가 `32 -> 36`으로 이동했다.
 - [x] Prior frontier `11698904`가 해소되어 ordered flushed prefix가 `50 -> 51`로 이동했다.
-- [x] Current frontier는 `next_save_idx=52`, post_id `11700470`, W13 `in_progress_in_worker_log`, event_count `16`, observed elapsed `2334.073s`다.
-- [x] W13 worker log는 `02:29`까지 override audit과 reason_review 진행을 남겼다.
-- [x] Dashboard는 `batch_running=true`, done `61/375`, progress `16.3%`, current post `11674694`, current expert `gatekeeper`, parallel `16`, `llm_suspended=false`로 살아 있다.
-- [x] Search evidence는 subset 기준 `GO`, row search ok `59`, `SEARCH_DEGRADED_RECOVERED 1`, unrecovered degraded `0`이다.
-- [x] Publication contract는 flushed result `51`행 기준 `GO / violation 0`이다.
+- [x] Prior frontier `11706828`이 해소되어 ordered flushed prefix가 `62 -> 66`으로 이동했다.
+- [x] Current frontier는 `next_save_idx=67`, post_id `11714885`, W12 `in_progress_in_worker_log`, event_count `8`, observed elapsed `702.444s`다.
+- [x] Dashboard는 `batch_running=true`, done `66/375`, progress `17.6%`, current post `11694019`, current expert `verifier`, current expert status `running`, parallel `16`, `llm_suspended=false`로 살아 있다.
+- [x] Process tree는 runner wrapper chain으로 확인했고, 같은 output에 대한 독립 duplicate dispatch 증거는 없다.
+- [x] Search evidence는 subset 기준 `GO`, row search ok `62`, `SEARCH_DEGRADED_RECOVERED 3`, unrecovered degraded `0`이다.
+- [x] Publication contract는 flushed result `66`행 기준 `GO / violation 0`이다.
 - [x] Loop638 re-baseline은 `APPLIED`이며, 현재 이후 collateral gate metric은 `adjusted_drift_count`다.
 - [x] 2026-06-26 raw `105`는 historical diagnostic이다. Raw가 0이 되지 않아도 완료 blocker가 아니며, 매 run raw row를 재소송하지 않는다.
 - [ ] Runtime counts `375/375/0/0` 전에는 full375 collateral approval이나 always-on `GO`로 승격하지 않는다.
