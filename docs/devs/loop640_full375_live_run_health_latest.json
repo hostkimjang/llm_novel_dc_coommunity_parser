@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T02:06:18",
+  "generated_at": "2026-07-10T02:13:59",
   "run_id": "20260710_005902_590310",
   "artifact_resolution": {
     "resolution": "explicit_paths",
@@ -119,11 +119,11 @@
     "mcp_endpoint_count_after_health_filter": 16,
     "mcp_parallel_before_health_filter": 16,
     "mcp_parallel_after_health_filter": 16,
-    "completed_count": 52,
-    "flushed_count": 50,
-    "pending_count": 2,
+    "completed_count": 55,
+    "flushed_count": 51,
+    "pending_count": 4,
     "failed_count": 0,
-    "next_save_idx": 51,
+    "next_save_idx": 52,
     "partial_flush_gap": true,
     "ordered_flush_blocked": true,
     "large_run_complete": false
@@ -141,12 +141,12 @@
     "path": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop640_full375_after_loop639_runtime_contract_fix_result.json",
     "exists": true,
     "shape": "list",
-    "row_count": 50,
+    "row_count": 51,
     "load_error": null
   },
-  "result_rows": 50,
-  "checkpoint_rows": 52,
-  "pending_count_actual": 2,
+  "result_rows": 51,
+  "checkpoint_rows": 55,
+  "pending_count_actual": 4,
   "flush_integrity": {
     "run_integrity_gate": "IN_PROGRESS",
     "classification": "ordered_flush_gap_in_progress",
@@ -163,15 +163,15 @@
     ],
     "counts": {
       "manifest_input_post_count": 375,
-      "manifest_completed_count": 52,
-      "manifest_flushed_count": 50,
-      "manifest_pending_count": 2,
+      "manifest_completed_count": 55,
+      "manifest_flushed_count": 51,
+      "manifest_pending_count": 4,
       "manifest_failed_count": 0,
-      "checkpoint_completed_count": 52,
+      "checkpoint_completed_count": 55,
       "checkpoint_failed_count": 0,
-      "result_rows": 50,
-      "pending_snapshot_rows": 2,
-      "completed_minus_flushed": 2
+      "result_rows": 51,
+      "pending_snapshot_rows": 4,
+      "completed_minus_flushed": 4
     },
     "consistency": {
       "result_rows_eq_flushed_count": true,
@@ -181,16 +181,16 @@
       "pending_snapshot_rows_eq_completed_minus_flushed": true
     },
     "frontier": {
-      "next_save_idx": 51,
+      "next_save_idx": 52,
       "status": "in_flight_or_missing",
       "reason": "frontier_missing_from_checkpoint_and_pending",
       "source_post": {
-        "global_idx": 51,
-        "post_id": 11698904,
-        "title": "타락한 ts녀가 참한 파릇파릇한 마법소녀타락시키는소설 추천좀",
-        "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11698904",
+        "global_idx": 52,
+        "post_id": 11700470,
+        "title": "어케 주인공 죄목이",
+        "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11700470",
         "gallery_id": "genrenovel",
-        "source_line": 51
+        "source_line": 52
       },
       "frontier_in_checkpoint_completed": false,
       "frontier_in_pending_snapshot": false,
@@ -200,13 +200,23 @@
       "pending_index_max": 65,
       "first_pending_at_or_after_frontier": 54,
       "first_completed_at_or_after_frontier": 54,
-      "frontier_gap_global_idx": 51
+      "frontier_gap_global_idx": 52
     },
     "pending_blocker_samples": [
       {
         "global_idx": 54,
         "post_id": 11700495,
         "title": "서문청 보지 내 거임"
+      },
+      {
+        "global_idx": 55,
+        "post_id": 11702067,
+        "title": "폴랩이 난해한 건 맞는데 올드해서 보기 힘든가?"
+      },
+      {
+        "global_idx": 62,
+        "post_id": 11705261,
+        "title": "이티알은 루루가 가장 승리자같기도"
       },
       {
         "global_idx": 65,
@@ -217,10 +227,10 @@
   },
   "frontier_worker_trace": {
     "target": {
-      "global_idx": 51,
-      "post_id": 11698904,
-      "title": "타락한 ts녀가 참한 파릇파릇한 마법소녀타락시키는소설 추천좀",
-      "source_line": 51
+      "global_idx": 52,
+      "post_id": 11700470,
+      "title": "어케 주인공 죄목이",
+      "source_line": 52
     },
     "status": "in_progress_in_worker_log",
     "event_count": 15,
@@ -241,172 +251,172 @@
       "arbiter_start": 1
     },
     "workers": {
-      "W2": 15
+      "W13": 15
     },
     "first_event": {
-      "file": "expert_run_20260710_005902_590310_W2.log",
-      "line": 5653,
-      "worker": "W2",
+      "file": "expert_run_20260710_005902_590310_W13.log",
+      "line": 4555,
+      "worker": "W13",
       "event": "global_start",
-      "text": "🤖 [W2][51/375] Agentic Pipeline 시작"
+      "text": "🤖 [W13][52/375] Agentic Pipeline 시작"
     },
     "last_event": {
-      "file": "expert_run_20260710_005902_590310_W2.log",
-      "line": 8109,
-      "worker": "W2",
+      "file": "expert_run_20260710_005902_590310_W13.log",
+      "line": 6866,
+      "worker": "W13",
       "event": "arbiter_start",
-      "text": "[01:59:42.628|W2][⚖️] Arbiter 최종 판정 시작: post_id=11698904",
-      "time": "01:59:42.628|W2",
-      "time_seconds": 7182.628
+      "text": "[02:00:38.364|W13][⚖️] Arbiter 최종 판정 시작: post_id=11700470",
+      "time": "02:00:38.364|W13",
+      "time_seconds": 7238.364
     },
     "first_timed_event": {
-      "file": "expert_run_20260710_005902_590310_W2.log",
-      "line": 5668,
-      "worker": "W2",
+      "file": "expert_run_20260710_005902_590310_W13.log",
+      "line": 4571,
+      "worker": "W13",
       "event": "pipeline_start",
-      "text": "[01:47:06.424|W2] 🚀 Agentic Pipeline start: Post 11698904 - 타락한 ts녀가 참한 파릇파릇한 마법소녀타락시키는소설 추천좀...",
-      "time": "01:47:06.424|W2",
-      "time_seconds": 6426.424
+      "text": "[01:47:59.783|W13] 🚀 Agentic Pipeline start: Post 11700470 - 어케 주인공 죄목이...",
+      "time": "01:47:59.783|W13",
+      "time_seconds": 6479.783
     },
     "last_timed_event": {
-      "file": "expert_run_20260710_005902_590310_W2.log",
-      "line": 8109,
-      "worker": "W2",
+      "file": "expert_run_20260710_005902_590310_W13.log",
+      "line": 6866,
+      "worker": "W13",
       "event": "arbiter_start",
-      "text": "[01:59:42.628|W2][⚖️] Arbiter 최종 판정 시작: post_id=11698904",
-      "time": "01:59:42.628|W2",
-      "time_seconds": 7182.628
+      "text": "[02:00:38.364|W13][⚖️] Arbiter 최종 판정 시작: post_id=11700470",
+      "time": "02:00:38.364|W13",
+      "time_seconds": 7238.364
     },
-    "observed_elapsed_seconds": 756.204,
+    "observed_elapsed_seconds": 758.581,
     "events": [
       {
-        "file": "expert_run_20260710_005902_590310_W2.log",
-        "line": 5653,
-        "worker": "W2",
+        "file": "expert_run_20260710_005902_590310_W13.log",
+        "line": 4555,
+        "worker": "W13",
         "event": "global_start",
-        "text": "🤖 [W2][51/375] Agentic Pipeline 시작"
+        "text": "🤖 [W13][52/375] Agentic Pipeline 시작"
       },
       {
-        "file": "expert_run_20260710_005902_590310_W2.log",
-        "line": 5655,
-        "worker": "W2",
+        "file": "expert_run_20260710_005902_590310_W13.log",
+        "line": 4557,
+        "worker": "W13",
         "event": "post_header",
-        "text": "📌 Post ID: 11698904"
+        "text": "📌 Post ID: 11700470"
       },
       {
-        "file": "expert_run_20260710_005902_590310_W2.log",
-        "line": 5658,
-        "worker": "W2",
+        "file": "expert_run_20260710_005902_590310_W13.log",
+        "line": 4560,
+        "worker": "W13",
         "event": "mention",
-        "text": "🔗 URL: https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11698904"
+        "text": "🔗 URL: https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11700470"
       },
       {
-        "file": "expert_run_20260710_005902_590310_W2.log",
-        "line": 5668,
-        "worker": "W2",
+        "file": "expert_run_20260710_005902_590310_W13.log",
+        "line": 4571,
+        "worker": "W13",
         "event": "pipeline_start",
-        "text": "[01:47:06.424|W2] 🚀 Agentic Pipeline start: Post 11698904 - 타락한 ts녀가 참한 파릇파릇한 마법소녀타락시키는소설 추천좀...",
-        "time": "01:47:06.424|W2",
-        "time_seconds": 6426.424
+        "text": "[01:47:59.783|W13] 🚀 Agentic Pipeline start: Post 11700470 - 어케 주인공 죄목이...",
+        "time": "01:47:59.783|W13",
+        "time_seconds": 6479.783
       },
       {
-        "file": "expert_run_20260710_005902_590310_W2.log",
-        "line": 5670,
-        "worker": "W2",
+        "file": "expert_run_20260710_005902_590310_W13.log",
+        "line": 4573,
+        "worker": "W13",
         "event": "vlm_chunk_request",
-        "text": "[01:47:07.203|W2] 🖼️ VLM chunk request: post_id=11698904 chunk=1/1, images=1, bytes=80162",
-        "time": "01:47:07.203|W2",
-        "time_seconds": 6427.203
+        "text": "[01:48:01.323|W13] 🖼️ VLM chunk request: post_id=11700470 chunk=1/1, images=1, bytes=11931",
+        "time": "01:48:01.323|W13",
+        "time_seconds": 6481.323
       },
       {
-        "file": "expert_run_20260710_005902_590310_W2.log",
-        "line": 5671,
-        "worker": "W2",
+        "file": "expert_run_20260710_005902_590310_W13.log",
+        "line": 4574,
+        "worker": "W13",
         "event": "vlm_chunk_result",
-        "text": "[01:47:21.007|W2] 🖼️ VLM chunk result: post_id=11698904 chunk=1/1, images=1, summary=이미지는 특정 게임(젤다의 전설로 추정되는) 캐릭터를 활용한 팬아트 일러스트입니다. 이미지 내에 명시적인 작품 제목은 없으며, 작가 혹은 워터마크로 보이는 '@uni_sd H'라는 텍스트만 존재합니다.",
-        "time": "01:47:21.007|W2",
-        "time_seconds": 6441.007
+        "text": "[01:48:10.068|W13] 🖼️ VLM chunk result: post_id=11700470 chunk=1/1, images=1, summary=웹소설의 본문 내용을 스크린샷한 이미지로, 주인공 '에이브'의 악행을 묘사하며 작품 제목(또는 등장인물/상황을 포함한 제목)이 명시되어 있습니다.",
+        "time": "01:48:10.068|W13",
+        "time_seconds": 6490.068
       },
       {
-        "file": "expert_run_20260710_005902_590310_W2.log",
-        "line": 5678,
-        "worker": "W2",
+        "file": "expert_run_20260710_005902_590310_W13.log",
+        "line": 4581,
+        "worker": "W13",
         "event": "vlm_merged_evidence",
-        "text": "[01:47:21.007|W2] 🖼️ VLM merged evidence: post_id=11698904 images=1, summary=이미지에서 작품 단서 추출: 젤다의 전설 스타일의 캐릭터, 링크와 젤다 추정",
-        "time": "01:47:21.007|W2",
-        "time_seconds": 6441.007
+        "text": "[01:48:12.771|W13] 🖼️ VLM merged evidence: post_id=11700470 images=1, summary=이미지에서 작품 단서 추출: B급 모험가 밤도깨비 에이브, 미소녀 납치 및 세뇌, 엘프 방생 및 생태계 교란, 수녀를 이용한 희롱",
+        "time": "01:48:12.771|W13",
+        "time_seconds": 6492.771
       },
       {
-        "file": "expert_run_20260710_005902_590310_W2.log",
-        "line": 5680,
-        "worker": "W2",
+        "file": "expert_run_20260710_005902_590310_W13.log",
+        "line": 4583,
+        "worker": "W13",
         "event": "vlm_image_enrichment",
-        "text": "[01:47:21.007|W2] 🖼️ VLM image enrichment: post_id=11698904 fetch=1/1, chunks=1, total_bytes=80162",
-        "time": "01:47:21.007|W2",
-        "time_seconds": 6441.007
+        "text": "[01:48:13.318|W13] 🖼️ VLM image enrichment: post_id=11700470 fetch=1/1, chunks=1, total_bytes=11931",
+        "time": "01:48:13.318|W13",
+        "time_seconds": 6493.318
       },
       {
-        "file": "expert_run_20260710_005902_590310_W2.log",
-        "line": 5682,
-        "worker": "W2",
+        "file": "expert_run_20260710_005902_590310_W13.log",
+        "line": 4585,
+        "worker": "W13",
         "event": "orchestrator_start",
-        "text": "[01:47:21.007|W2] 🎯 Orchestrator 시작: post_id=11698904",
-        "time": "01:47:21.007|W2",
-        "time_seconds": 6441.007
+        "text": "[01:48:13.635|W13] 🎯 Orchestrator 시작: post_id=11700470",
+        "time": "01:48:13.635|W13",
+        "time_seconds": 6493.635
       },
       {
-        "file": "expert_run_20260710_005902_590310_W2.log",
-        "line": 5683,
-        "worker": "W2",
+        "file": "expert_run_20260710_005902_590310_W13.log",
+        "line": 4586,
+        "worker": "W13",
         "event": "expert_start",
-        "text": "[01:47:21.008|W2][🎭] Gatekeeper 분석 시작: post_id=11698904",
-        "time": "01:47:21.008|W2",
-        "time_seconds": 6441.008
+        "text": "[01:48:15.072|W13][🎭] Gatekeeper 분석 시작: post_id=11700470",
+        "time": "01:48:15.072|W13",
+        "time_seconds": 6495.072
       },
       {
-        "file": "expert_run_20260710_005902_590310_W2.log",
-        "line": 5810,
-        "worker": "W2",
+        "file": "expert_run_20260710_005902_590310_W13.log",
+        "line": 4740,
+        "worker": "W13",
         "event": "expert_start",
-        "text": "[01:49:10.858|W2][📖] DiscourseAnalyzer 분석 시작: post_id=11698904",
-        "time": "01:49:10.858|W2",
-        "time_seconds": 6550.858
+        "text": "[01:49:10.886|W13][📖] DiscourseAnalyzer 분석 시작: post_id=11700470",
+        "time": "01:49:10.886|W13",
+        "time_seconds": 6550.886
       },
       {
-        "file": "expert_run_20260710_005902_590310_W2.log",
-        "line": 6248,
-        "worker": "W2",
+        "file": "expert_run_20260710_005902_590310_W13.log",
+        "line": 4992,
+        "worker": "W13",
         "event": "mention",
-        "text": "[01:50:19.344][🎯] 📋 자기참조 필터: post_id='11698904'",
-        "time": "01:50:19.344",
-        "time_seconds": 6619.344
+        "text": "[01:50:16.561][🎯] 📋 자기참조 필터: post_id='11700470'",
+        "time": "01:50:16.561",
+        "time_seconds": 6616.561
       },
       {
-        "file": "expert_run_20260710_005902_590310_W2.log",
-        "line": 7701,
-        "worker": "W2",
+        "file": "expert_run_20260710_005902_590310_W13.log",
+        "line": 6572,
+        "worker": "W13",
         "event": "verifier_start",
-        "text": "[01:56:09.657|W2][🔍] Verifier 검증 시작: post_id=11698904",
-        "time": "01:56:09.657|W2",
-        "time_seconds": 6969.657
+        "text": "[01:57:36.160|W13][🔍] Verifier 검증 시작: post_id=11700470",
+        "time": "01:57:36.160|W13",
+        "time_seconds": 7056.16
       },
       {
-        "file": "expert_run_20260710_005902_590310_W2.log",
-        "line": 7981,
-        "worker": "W2",
+        "file": "expert_run_20260710_005902_590310_W13.log",
+        "line": 6736,
+        "worker": "W13",
         "event": "synthesizer_start",
-        "text": "[01:57:49.079|W2][🔬] Synthesizer 증거 기반 재해석 시작: post_id=11698904",
-        "time": "01:57:49.079|W2",
-        "time_seconds": 7069.079
+        "text": "[01:59:29.965|W13][🔬] Synthesizer 증거 기반 재해석 시작: post_id=11700470",
+        "time": "01:59:29.965|W13",
+        "time_seconds": 7169.965
       },
       {
-        "file": "expert_run_20260710_005902_590310_W2.log",
-        "line": 8109,
-        "worker": "W2",
+        "file": "expert_run_20260710_005902_590310_W13.log",
+        "line": 6866,
+        "worker": "W13",
         "event": "arbiter_start",
-        "text": "[01:59:42.628|W2][⚖️] Arbiter 최종 판정 시작: post_id=11698904",
-        "time": "01:59:42.628|W2",
-        "time_seconds": 7182.628
+        "text": "[02:00:38.364|W13][⚖️] Arbiter 최종 판정 시작: post_id=11700470",
+        "time": "02:00:38.364|W13",
+        "time_seconds": 7238.364
       }
     ]
   },
@@ -421,23 +431,24 @@
       "mcp_health_failure_count": 0
     },
     "row_search_health": {
-      "rows_with_search_health": 51,
+      "rows_with_search_health": 54,
       "status_counts": {
-        "ok": 51
+        "ok": 53,
+        "SEARCH_DEGRADED_RECOVERED": 1
       },
       "flag_counts": {},
-      "rows_with_upstream_zero": 31,
+      "rows_with_upstream_zero": 33,
       "rows_with_degraded": 0,
-      "query_total": 483,
-      "degraded_total": 0,
-      "degraded_recovered_total": 0,
+      "query_total": 508,
+      "degraded_total": 2,
+      "degraded_recovered_total": 1,
       "unrecovered_degraded_total": 0
     },
     "worker_log_search": {
       "search_timeout": 0,
       "search_degraded_detected": 0,
-      "search_upstream_zero": 66,
-      "search_bridge_after_filter_zero": 14
+      "search_upstream_zero": 67,
+      "search_bridge_after_filter_zero": 15
     },
     "blockers": []
   },
@@ -446,7 +457,7 @@
     "approval_ready": true,
     "result_json": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\regression_safe_grounding_20260626_000008_928006_loop01\\canary\\loop640_full375_after_loop639_runtime_contract_fix_result.json",
     "summary": {
-      "row_count": 50,
+      "row_count": 51,
       "violation_row_count": 0,
       "violation_counts": {}
     },
@@ -454,22 +465,22 @@
     "blockers": []
   },
   "status_counts": {
-    "completed": 52
+    "completed": 55
   },
   "identity_state_counts": {
-    "resolved_title": 22,
-    "adjacent_relevant": 13,
+    "resolved_title": 24,
+    "adjacent_relevant": 14,
     "non_relevant": 11,
     "unresolved_title": 6
   },
   "discussion_type_counts_top": {
     "general": 17,
     "noise": 8,
-    "review": 6,
+    "review": 7,
     "recommendation": 6,
-    "character_talk": 4,
+    "character_talk": 5,
+    "author_talk": 3,
     "trope_discussion": 3,
-    "author_talk": 2,
     "community_banter": 2,
     "image_post": 1,
     "meta": 1,
@@ -477,45 +488,46 @@
     "meme": 1
   },
   "topicality_counts": {
-    "core_relevant": 28,
-    "adjacent_relevant": 13,
+    "core_relevant": 30,
+    "adjacent_relevant": 14,
     "unrelated": 11
   },
   "work_resolution_counts": {
-    "none": 24,
-    "resolved": 18,
-    "unresolved": 10
+    "none": 25,
+    "resolved": 19,
+    "unresolved": 11
   },
   "novel_confidence_counts": {
-    "": 28,
-    "High": 14,
-    "None": 6,
+    "": 29,
+    "High": 15,
+    "None": 7,
     "Medium": 4
   },
   "consistency_flag_counts_top": {
-    "notes_demoted_for_unresolved": 21,
-    "local_candidate_hold_preserved": 19,
+    "notes_demoted_for_unresolved": 22,
+    "local_candidate_hold_preserved": 20,
     "batch_memory_alias_rescue_blocked_nonwork_context": 16,
     "llm_only_sentence_candidate_pruned": 10,
     "same_url_official_detail_canonicalized": 10,
     "ocr_explicit_title_unresolved": 9,
     "official_url_recall_gate_recovered": 8,
     "serialized_public_identity_shared_gate_restored": 8,
+    "verified_alias_official_detail_anchor": 7,
+    "final_semantic_reread_reviewed": 7,
     "multi_work_guard_canonical_rescue_skipped": 7,
     "batch_memory_alias_rescue_blocked_deliberate_null": 7,
     "recommendation_context_only_no_work_anchor": 7,
-    "final_semantic_reread_reviewed": 6,
+    "official_url_recall_candidate_preserved": 6,
+    "explicit_alias_official_work_lock": 6,
     "batch_memory_alias_rescue_blocked_genre_context": 6,
     "external_ip_unresolved_final_blocked": 5,
-    "official_url_recall_candidate_preserved": 5,
-    "verified_alias_official_detail_anchor": 5,
+    "batch_memory_alias_rescue_blocked_by_author_meta": 5,
+    "official_url_recall_candidate_source_preserved": 5,
+    "official_url_recall_blocked_relation_non_work_context": 5,
     "primary_work_cleared_non_core": 5,
     "multi_work_title_cleared": 5,
     "official_url_recall_blocked_hard_non_novel_context": 4,
-    "batch_memory_alias_rescue_blocked_by_author_meta": 4,
-    "official_url_recall_candidate_source_preserved": 4,
-    "official_url_recall_blocked_relation_non_work_context": 4,
-    "explicit_alias_official_work_lock": 4,
+    "weak_public_title_bridge_verified_alias_detail_exempt": 4,
     "vlm_ocr_title_conflict_with_final_title": 4,
     "ocr_title_conflict_with_stable_alias": 4,
     "verified_alias_title_only_publication": 4,
@@ -523,11 +535,11 @@
     "genre_trope_context_only_no_work_anchor": 4,
     "context_only_no_work_anchor": 4,
     "batch_memory_alias_rescue_blocked_semantic_seed": 4,
+    "final_semantic_reread_accepted_resolution": 4,
     "direct_image_explicit_title_rescued": 3,
+    "weak_alias_surface_public_title_bridge": 3,
     "precision_seed_independent_official_detail_supported": 3,
-    "weak_public_title_bridge_verified_alias_detail_exempt": 3,
     "serialized_public_identity_gate_candidate_reconciled": 3,
-    "final_semantic_reread_accepted_resolution": 3,
     "official_detail_url_missing_direct_source_support": 3,
     "secondary_reference_official_alias_blocked_after_multi_work_title_cleared": 3,
     "official_detail_url_repaired_from_search": 3,
@@ -538,7 +550,6 @@
     "internal_work_signal_unresolved_recovered": 2,
     "full_title_surface": 2,
     "post_alias_official_detail_bridge_anchor": 2,
-    "weak_alias_surface_public_title_bridge": 2,
     "final_semantic_reread_rejected_resolution": 2,
     "batch_memory_exact_alias_rescued": 2,
     "batch_memory_alias_rescue_cleared_stale_demotions": 2,
@@ -547,20 +558,20 @@
   "reason_error_count": 0,
   "reason_error_samples": [],
   "query_stats": {
-    "parsed_count": 40,
-    "avg_executed_queries": 7.15,
-    "p95_executed_queries": 16,
+    "parsed_count": 42,
+    "avg_executed_queries": 7.38,
+    "p95_executed_queries": 14,
     "max_executed_queries": 16,
-    "avg_degraded_queries": null,
-    "max_degraded_queries": null
+    "avg_degraded_queries": 2,
+    "max_degraded_queries": 2
   },
   "slang": {
-    "slang_insight_count": 17,
-    "old_store_true_count": 8,
-    "new_store_true_after_patch_count": 7,
-    "old_store_true_blocked_by_patch_count": 1,
+    "slang_insight_count": 19,
+    "old_store_true_count": 9,
+    "new_store_true_after_patch_count": 8,
+    "old_store_true_blocked_by_patch_count": 2,
     "blocked_reason_counts": {
-      "unclear_canonical_alias": 1
+      "unclear_canonical_alias": 2
     },
     "blocked_samples": [
       {
@@ -577,6 +588,23 @@
         "new_canonical_work_alias": null,
         "official_title": null,
         "discussion_type": "general",
+        "topicality": "core_relevant",
+        "work_resolution": "unresolved"
+      },
+      {
+        "post_id": 11705261,
+        "post_title": "이티알은 루루가 가장 승리자같기도",
+        "detected_term": "이티알",
+        "decoded_term": "이세계 TRPG 게임마스터",
+        "old_store_in_slang_db": true,
+        "old_store_reason": "pure_work_alias",
+        "old_alias_scope": "pure_work_alias",
+        "new_store_in_slang_db": false,
+        "new_store_reason": "unclear_canonical_alias",
+        "new_alias_scope": "pure_work_alias",
+        "new_canonical_work_alias": null,
+        "official_title": null,
+        "discussion_type": "character_talk",
         "topicality": "core_relevant",
         "work_resolution": "unresolved"
       }
@@ -700,6 +728,23 @@
         "discussion_type": "general",
         "topicality": "core_relevant",
         "work_resolution": "resolved"
+      },
+      {
+        "post_id": 11702067,
+        "post_title": "폴랩이 난해한 건 맞는데 올드해서 보기 힘든가?",
+        "detected_term": "폴랩",
+        "decoded_term": "폴라리스 랩소디",
+        "old_store_in_slang_db": false,
+        "old_store_reason": "pure_work_alias",
+        "old_alias_scope": "pure_work_alias",
+        "new_store_in_slang_db": true,
+        "new_store_reason": "pure_work_alias",
+        "new_alias_scope": "pure_work_alias",
+        "new_canonical_work_alias": "폴랩",
+        "official_title": "폴라리스 랩소디",
+        "discussion_type": "review",
+        "topicality": "core_relevant",
+        "work_resolution": "resolved"
       }
     ],
     "slang_db": {
@@ -711,13 +756,14 @@
   },
   "logs": {
     "worker_log_count": 16,
-    "post_start_count_in_worker_logs": 68,
-    "post_complete_count_in_worker_logs": 52,
+    "post_start_count_in_worker_logs": 71,
+    "post_complete_count_in_worker_logs": 55,
     "counts": {
-      "title_anchor_exact_probe_lines": 57,
-      "search_bridge_after_filter_zero": 14,
-      "headless_meta_lines": 90,
-      "search_upstream_zero": 66
+      "title_anchor_exact_probe_lines": 58,
+      "search_bridge_after_filter_zero": 15,
+      "headless_meta_lines": 95,
+      "search_upstream_zero": 67,
+      "snippet_none_fallback": 1
     },
     "worker_counts_top": {
       "W5": {
@@ -739,24 +785,26 @@
         "search_upstream_zero": 7,
         "post_start": 6,
         "post_complete": 5,
-        "headless_meta_lines": 1
+        "headless_meta_lines": 3,
+        "snippet_none_fallback": 1
       },
       "W10": {
         "search_upstream_zero": 6,
-        "post_start": 4,
-        "post_complete": 3,
+        "post_start": 5,
+        "post_complete": 4,
         "title_anchor_exact_probe_lines": 2,
         "headless_meta_lines": 1
       },
       "W2": {
         "headless_meta_lines": 10,
+        "post_start": 5,
         "search_upstream_zero": 5,
-        "post_start": 4,
-        "post_complete": 3,
-        "search_bridge_after_filter_zero": 1
+        "post_complete": 4,
+        "search_bridge_after_filter_zero": 1,
+        "title_anchor_exact_probe_lines": 1
       },
       "W8": {
-        "headless_meta_lines": 10,
+        "headless_meta_lines": 11,
         "post_start": 5,
         "search_upstream_zero": 5,
         "post_complete": 4,
@@ -796,7 +844,7 @@
         "post_start": 5,
         "post_complete": 4,
         "title_anchor_exact_probe_lines": 4,
-        "search_upstream_zero": 3,
+        "search_upstream_zero": 4,
         "headless_meta_lines": 2
       },
       "W13": {
@@ -813,16 +861,17 @@
         "search_upstream_zero": 1
       },
       "W3": {
-        "headless_meta_lines": 4,
+        "headless_meta_lines": 6,
         "post_start": 3,
         "post_complete": 2,
-        "search_upstream_zero": 1
+        "search_upstream_zero": 1,
+        "search_bridge_after_filter_zero": 1
       },
       "W0": {
         "title_anchor_exact_probe_lines": 9,
+        "post_start": 5,
         "search_bridge_after_filter_zero": 5,
-        "post_start": 4,
-        "post_complete": 3,
+        "post_complete": 4,
         "headless_meta_lines": 2
       },
       "W14": {
@@ -838,8 +887,8 @@
   },
   "rates": {
     "reason_error_rate_pct": 0.0,
-    "resolved_title_rate_pct": 42.31,
-    "unresolved_title_rate_pct": 11.54,
+    "resolved_title_rate_pct": 43.64,
+    "unresolved_title_rate_pct": 10.91,
     "headless_line_per_completed_pct": 0.0
   }
 }
