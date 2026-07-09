@@ -1,5 +1,23 @@
 # Development Checklist
 
+## 2026-07-09 Loop631 shared-gate 13건 projection 적용 체크
+
+- [x] 새 runtime replay/full375를 실행하지 않았다.
+- [x] Loop630 SG contract plan `13`건을 Loop629 full375 375행 결과에 projection-only로 적용했다.
+- [x] Projection application은 applied publish contract `13`, applied restore `13`, validation issue `0`, runtime replay allowed `0`이다.
+- [x] Publication contract audit은 `GO / row 375 / violation 0`이다.
+- [x] Release gate audit은 pending `0`, violation `0`, release candidate `13`이다.
+- [x] Projection-only collateral compare는 shared `375/375`, changed `193`, historical raw regression `124`, gate `NO-GO`다.
+- [x] Golden18은 Loop629 PASS `18/18`을 재사용했고 always-on은 collateral 때문에 `NO-GO`다.
+- [x] Residual action queue는 `59 -> ordinary residual 46`으로 갱신했다.
+- [x] Ordinary residual dispatch lane은 `source_native_or_blind_review 35`, `native_web_image_evidence_review 6`, `candidate_set_rebuild_review 4`, `canonical_policy_cleanup_review 1`이다.
+- [x] 검증을 실행했다: projection/release audit tests `29` PASS, dispatch/accounting tests `12` PASS.
+- [ ] Release candidate `13`건을 full375 collateral GO 전 approval로 승격하지 않는다.
+- [ ] `source_native_or_blind_review 35`는 N건 배치로 판결한다.
+- [ ] Re-baseline은 전 행 adjudicated 후에만 적용한다.
+- Gate: shared-gate application `REVIEW-LOCKED / applied 13`, publication `GO`, release `REVIEW-LOCKED / candidate 13`, residual `REVIEW-LOCKED / ordinary 46`, always-on `NO-GO`, full375 collateral `NO-GO / historical raw 124`, re-baseline `NOT_APPLIED`, adjusted gate `NOT_OPEN_UNTIL_ADJUDICATED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_631_REPORT_20260709.md`, `docs/devs/loop631_*`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop631_loop630_shared_gate_expected_restore_projection_result.json`.
+
 ## 2026-07-09 Loop630 true triage64 shared-gate 계약 체크
 
 - [x] 새 runtime replay/full375를 실행하지 않았다.

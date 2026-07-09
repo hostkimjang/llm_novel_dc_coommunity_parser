@@ -1,5 +1,16 @@
 # Operation Quality Checklist
 
+## 2026-07-09 Loop631 shared-gate projection 적용 운영 메모
+
+- [x] Loop630 SG contract `13`건을 projection-only로 적용했다.
+- [x] Publication contract는 `GO / violation 0`이고 release gate는 `REVIEW-LOCKED / release candidate 13`이다.
+- [x] Historical raw collateral은 `137 -> 124`로 줄었지만 여전히 `NO-GO`다.
+- [x] Residual action queue는 `59 -> 46`으로 줄었고, 다음 최대 lane은 `source_native_or_blind_review 35`다.
+- [ ] Release candidate는 approval이 아니며 full375 collateral GO 전 publish/full_scan 근거로 쓰지 않는다.
+- [ ] Projection-only compare의 runtime counts missing을 runtime completion으로 보정하지 않는다.
+- [ ] Re-baseline 전에는 raw를 설명용 historical diff로만 다루고 adjusted gate는 열지 않는다.
+- Gate: application `REVIEW-LOCKED`, publication `GO`, release `REVIEW-LOCKED / candidate 13`, residual `REVIEW-LOCKED / ordinary 46`, always-on `NO-GO`, collateral `NO-GO / historical raw 124`, re-baseline `NOT_APPLIED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-09 Loop630 adjusted re-baseline 운영 메모
 
 - [x] 새 runtime replay/full375를 실행하지 않았다.
