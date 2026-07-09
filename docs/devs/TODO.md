@@ -1,5 +1,19 @@
 # Developer TODO Index
 
+## 2026-07-09 Loop636 이후 residual19 / re-baseline 선결 TODO
+
+- 상태 업데이트: Loop635 residual20 중 `11674731` canonical cleanup 1건을 projection-only 계약으로 처리했고, ordinary residual은 `19`로 줄었다.
+- [x] `11674731`을 clean title `여자아이 만들기`와 NovelPia URL로 canonical cleanup 처리한다.
+- [x] Publication/release audit을 생성한다. Publication은 `GO`, release는 candidate `1`, violation `0`.
+- [x] Always-on 산출물에 completion gate `adjusted full375 collateral GO + full_scan path`, completion metric `not_open_until_adjudicated_rebaseline`, raw completion flag `false`를 명시한다.
+- [x] Residual19 dispatch를 생성한다: `candidate_set_rebuild_review 6`, `canonical_policy_cleanup_review 1`, `native_web_image_evidence_review 12`.
+- [ ] Candidate-set 6건은 official support ref 확보 전 release 처리하지 않는다.
+- [ ] `11682768`은 native/alias relation 확인 전 canonical cleanup으로 처리하지 않는다.
+- [ ] Native/web/image evidence 12건을 N건 batch로 판결한다.
+- [ ] Full375 adjusted collateral GO 전 release candidate를 approval로 승격하지 않는다.
+- [ ] 전 행 adjudicated 전에는 re-baseline을 적용하지 않는다.
+- Gate: residual `REVIEW-LOCKED / 19`, publication `GO`, release `REVIEW-LOCKED / candidate 1`, full375 collateral `NO-GO / historical raw 109`, re-baseline `NOT_APPLIED`, completion gate `adjusted full375 collateral GO + full_scan path`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-09 Loop632 이후 residual41 / re-baseline 선결 TODO
 
 - 상태 업데이트: Loop631 ordinary residual `46` 중 candidate-set `4`건과 canonical cleanup `1`건을 projection-only 계약으로 처리했고, Loop631 shared `13`건과 합쳐 contract processed `18`, ordinary residual `41`로 줄였다.

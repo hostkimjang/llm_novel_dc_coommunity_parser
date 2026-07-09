@@ -124,6 +124,9 @@ class AlwaysOnRegressionGatesTest(unittest.TestCase):
 
         self.assertEqual(report["gate"], "NO-GO")
         self.assertEqual(report["collateral"]["gate"], "NO-GO")
+        self.assertEqual(report["completion_gate"], "adjusted full375 collateral GO + full_scan path")
+        self.assertEqual(report["completion_gate_metric"], "not_open_until_adjudicated_rebaseline")
+        self.assertFalse(report["raw_20260626_baseline_is_completion_gate"])
         self.assertIn("collateral:collateral_regression_count_nonzero", report["blockers"])
 
     def test_collateral_review_exclusions_reduce_but_do_not_hide_residual_queue(self):
@@ -397,6 +400,8 @@ class AlwaysOnRegressionGatesTest(unittest.TestCase):
         )
 
         self.assertEqual(report["gate"], "GO")
+        self.assertEqual(report["completion_gate_metric"], "adjusted_drift_count")
+        self.assertFalse(report["raw_20260626_baseline_is_completion_gate"])
         self.assertEqual(report["collateral"]["gate_metric"], "adjusted_drift_count")
         self.assertEqual(report["collateral"]["gate_regression_count"], 0)
         self.assertEqual(report["collateral"]["historical_raw_collateral_regression_count"], 141)

@@ -1,0 +1,46 @@
+{
+  "report_type": "post_verdict_projection_publish_contract_application",
+  "projection_id": "loop636_11674731_canonical_cleanup_projection_application",
+  "generated_at": "2026-07-09T22:51:15",
+  "source_contract_plan": "loop636_11674731_canonical_cleanup_contract_plan",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "projection_rows": 375,
+    "contract_plan_rows": 1,
+    "publish_contract_plan_rows": 1,
+    "applied_publish_contract_rows": 1,
+    "restore_plan_rows": 0,
+    "applied_restore_rows": 0,
+    "applied_expected_audit_update_rows": 0,
+    "applied_canonical_cleanup_rows": 1,
+    "applied_candidate_set_restore_rows": 0,
+    "validation_issue_count": 0,
+    "skipped_contract_action_counts": {},
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "adjusted full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "applied_rows": [
+    {
+      "post_id": 11674731,
+      "contract_action": "canonical_cleanup_or_url_correction_contract_case",
+      "target_title": "여자아이 만들기",
+      "target_url": "https://novelpia.com/novel/10594",
+      "superseded_projection_candidate": {
+        "official_title": "여자아 이 만들기 새 창 열림",
+        "official_url": null,
+        "source": "canonical_cleanup_or_url_correction_contract_case_superseded_projection_candidate"
+      },
+      "status": "applied"
+    }
+  ],
+  "approval_boundary": {
+    "projection_application_is_not_runtime_replay": true,
+    "release_candidate_is_not_full_scan_approval": true,
+    "runtime_replay_before_full375_collateral_forbidden": true,
+    "full375_collateral_remains_no_go": true
+  }
+}

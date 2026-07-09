@@ -1,5 +1,19 @@
 # Operation Quality Checklist
 
+## 2026-07-09 Loop636 canonical cleanup 운영 메모
+
+- [x] Loop635 residual20 중 URL/title 근거가 충분한 canonical cleanup `1`건만 처리했다.
+- [x] `11674731`은 clean title `여자아이 만들기`와 NovelPia URL `https://novelpia.com/novel/10594`로 projection-only 정리했다.
+- [x] Candidate-set 6건은 official support missing plan으로 남기고 release/processed로 계산하지 않았다.
+- [x] Publication contract는 `GO / violation 0`이고 release gate는 `REVIEW-LOCKED / release candidate 1 / violation 0`이다.
+- [x] Historical raw collateral은 `110 -> 109`로 줄었지만 여전히 diagnostic compare다.
+- [x] Residual action queue는 `20 -> 19`로 줄었고, 남은 lane은 `candidate_set_rebuild_review 6`, `canonical_policy_cleanup_review 1`, `native_web_image_evidence_review 12`다.
+- [x] Re-baseline readiness는 `NOT_APPLIED`이며 blocker는 ordinary residual `19`, adjusted full375 collateral GO 미확인, full_scan path 미완료다.
+- [ ] Projection-only compare의 runtime counts missing을 runtime completion으로 보정하지 않는다.
+- [ ] Release candidate 1건은 approval이 아니며 full375 adjusted GO 전 publish/full_scan 근거로 쓰지 않는다.
+- [ ] Re-baseline 전에는 raw를 historical diff로만 두고 adjusted gate를 열지 않는다.
+- Gate: application `REVIEW-LOCKED`, publication `GO`, release `REVIEW-LOCKED / candidate 1`, residual `REVIEW-LOCKED / ordinary 19`, always-on `NO-GO`, collateral `NO-GO / historical raw 109`, re-baseline `NOT_APPLIED`, completion metric `not_open_until_adjudicated_rebaseline`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-09 Loop635 no-publish residual4 운영 메모
 
 - [x] Loop634 residual24 중 no-publish intent guard 계약 후보 `4`건을 먼저 처리했다.

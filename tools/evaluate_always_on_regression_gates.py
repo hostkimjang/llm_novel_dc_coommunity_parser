@@ -432,12 +432,27 @@ def evaluate_gates(
         contract_accounting=contract_accounting,
     )
     gate = "GO" if golden_result["gate"] == "GO" and collateral_result["gate"] == "GO" else "NO-GO"
+    uses_adjudicated_rebaseline = (
+        collateral_result.get("baseline_mode") == "adjudicated_rebaseline"
+        or collateral_result.get("collateral_measure") == "adjusted_drift"
+    )
+    completion_gate_metric = (
+        "adjusted_drift_count"
+        if uses_adjudicated_rebaseline
+        else "not_open_until_adjudicated_rebaseline"
+    )
     return {
         "report_type": "always_on_regression_gates",
         "generated_at": datetime.now().replace(microsecond=0).isoformat(),
         "gate": gate,
         "semantic_quality": "REVIEW-LOCKED",
         "full_scan_approval": False,
+        "completion_gate": "adjusted full375 collateral GO + full_scan path",
+        "completion_gate_metric": completion_gate_metric,
+        "current_collateral_gate_metric": collateral_result.get("gate_metric"),
+        "raw_20260626_baseline_is_completion_gate": False,
+        "raw_20260626_baseline_role": "diagnostic historical compare only",
+        "rebaseline_status": "APPLIED" if uses_adjudicated_rebaseline else "NOT_APPLIED",
         "policy": {
             "golden_expected_rows": expected_golden_rows,
             "full_375_collateral_required": True,
@@ -446,7 +461,7 @@ def evaluate_gates(
             "collateral_source_native_exclusion_requires_clean_review_summary": True,
             "collateral_contract_accounting_is_not_full_scan_approval": True,
             "completion_gate_uses_adjusted_metric_after_adjudication": True,
-            "historical_raw_vs_20260626_is_not_completion_gate_after_rebaseline": True,
+            "historical_raw_vs_20260626_is_not_completion_gate": True,
         },
         "golden": golden_result,
         "collateral": collateral_result,
@@ -467,6 +482,14 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
         f"- gate: `{report['gate']}`",
         f"- semantic_quality: `{report['semantic_quality']}`",
         f"- full_scan_approval: `{str(report['full_scan_approval']).lower()}`",
+        f"- completion_gate: `{report.get('completion_gate')}`",
+        f"- completion_gate_metric: `{report.get('completion_gate_metric')}`",
+        f"- current_collateral_gate_metric: `{report.get('current_collateral_gate_metric')}`",
+        f"- rebaseline_status: `{report.get('rebaseline_status')}`",
+        (
+            "- raw_20260626_baseline_is_completion_gate: "
+            f"`{str(report.get('raw_20260626_baseline_is_completion_gate')).lower()}`"
+        ),
         f"- 정책: golden-{report['golden']['expected_rows']}과 full 375 collateral diff를 항상 함께 요구한다.",
         "",
         "## Golden 게이트",
@@ -537,9 +560,26 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
         f"- gate_regression_count: `{display(report['collateral'].get('gate_regression_count'))}`",
         f"- runtime_complete: `{report['collateral']['runtime_complete']}`",
         "",
-        "## Contract 회계 조정",
+        "## 완료 Gate 해석",
         "",
     ]
+    if report.get("completion_gate_metric") == "adjusted_drift_count":
+        lines.append(
+            "판결 baseline이 적용된 상태이므로 완료 gate는 `adjusted_drift_count`를 본다. "
+            "2026-06-26 raw diff는 historical compare로만 남긴다."
+        )
+    else:
+        lines.append(
+            "아직 adjudicated re-baseline이 적용되지 않았으므로 completion gate는 열리지 않는다. "
+            "현재 bootstrap raw diff는 진단용이며, 완료 기준은 전 행 판결 후 adjusted full375 collateral GO와 full_scan path다."
+        )
+    lines.extend(
+        [
+            "",
+            "## Contract 회계 조정",
+            "",
+        ]
+    )
     contract_accounting = report["collateral"]["review_adjustment"].get("contract_accounting") or {}
     if contract_accounting.get("provided"):
         lines.extend(

@@ -1,5 +1,19 @@
 # Development History
 
+## 2026-07-09 - Loop636 canonical cleanup 1 contract application and adjusted gate clarification
+
+- 새 runtime replay/full375는 실행하지 않았다.
+- Loop635 residual20 중 `11674731`을 clean title `여자아이 만들기`와 NovelPia URL `https://novelpia.com/novel/10594`로 canonical cleanup 처리했다.
+- Contract plan은 rows `1`, action `canonical_cleanup_or_url_correction_contract_case 1`, validation issue `0`이고 projection application은 applied canonical cleanup `1`이다.
+- Release gate audit은 pending `0`, violation `0`, release candidate `1`이며 publication contract convergence는 `GO / 375 rows / violation 0`이다.
+- Candidate-set 6건은 official support ref missing이라 hold preflight plan으로만 기록했고 residual 처리/approval로 계산하지 않았다.
+- Historical raw collateral은 `110 -> 109`로 줄었지만 2026-06-26 baseline 대비 diagnostic compare로만 둔다.
+- Residual accounting은 source `20`, contract processed `1`, ordinary residual `19`이고 dispatch lane은 `candidate_set_rebuild_review 6`, `canonical_policy_cleanup_review 1`, `native_web_image_evidence_review 12`다.
+- `tools/evaluate_always_on_regression_gates.py`는 completion gate, completion metric, raw completion flag를 명시해 bootstrap raw blocker와 adjudicated completion gate를 분리 표시한다.
+- 검증은 JSON parse `12`, unit tests `62`, py_compile, `git diff --check` PASS다. `git diff --check`는 CRLF 경고만 출력했다.
+- Report는 `docs/devs/loop_reports/LOOP_636_REPORT_20260709.md`다.
+- Gate는 publication `GO`, release `REVIEW-LOCKED / candidate 1`, residual `REVIEW-LOCKED / 19`, full375 collateral `NO-GO / historical raw 109`, re-baseline `NOT_APPLIED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-09 - Loop635 no-publish residual4 contract application
 
 - 새 runtime replay/full375는 실행하지 않았다.

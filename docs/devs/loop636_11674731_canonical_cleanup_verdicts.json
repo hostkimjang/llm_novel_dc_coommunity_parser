@@ -1,0 +1,49 @@
+{
+  "review_id": "loop636_11674731_canonical_cleanup_verdicts",
+  "generated_at": "2026-07-09T22:58:00",
+  "source_dispatch": "loop635_after_no_publish_guard4_ordinary_residual20_dispatch",
+  "source_projection": "loop635_no_publish_guard4_projection_result",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "rows": 1,
+    "review_label_counts": {
+      "REPROCESS": 1
+    },
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "adjusted full375 collateral GO + full_scan path",
+    "rebaseline": "NOT_APPLIED",
+    "adjusted_completion_gate": "NOT_OPEN_UNTIL_ADJUDICATED"
+  },
+  "rows": [
+    {
+      "post_id": 11674731,
+      "review_label": "REPROCESS",
+      "expected_title": "여자아이 만들기",
+      "actual_title": "여자아 이 만들기 새 창 열림",
+      "selected_title": "여자아이 만들기",
+      "selected_url": "https://novelpia.com/novel/10594",
+      "source_native_verdict": "same_url_noisy_title_requires_canonical_cleanup",
+      "evidence_grade": "Strong",
+      "rationale_ko": "Loop635 projection의 public title은 `여자아 이 만들기 새 창 열림`으로 띄어쓰기와 브라우저 UI 노이즈가 섞였지만 source-native verdict와 동일 URL `https://novelpia.com/novel/10594`는 clean title `여자아이 만들기`를 지지한다. Canonical cleanup은 clean title과 URL을 함께 보존하는 projection-only 계약이며 새 runtime approval이 아니다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_verdicts.json#post_id=11674731",
+        "docs/devs/loop635_after_no_publish_guard4_ordinary_residual20_dispatch.json#post_id=11674731",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop635_no_publish_guard4_projection_result.json#post_id=11674731",
+        "https://novelpia.com/novel/10594"
+      ],
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false
+    }
+  ],
+  "approval_boundary": {
+    "projection_cleanup_is_not_runtime_replay": true,
+    "canonical_cleanup_requires_same_url_or_native_evidence": true,
+    "raw_20260626_baseline_is_completion_gate": false,
+    "completion_gate_uses_adjusted_metric_after_adjudication": true,
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false
+  }
+}

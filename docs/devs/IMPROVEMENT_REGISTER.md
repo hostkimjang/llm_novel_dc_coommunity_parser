@@ -1,5 +1,21 @@
 # Improvement Register
 
+## IMP-20260709-636 - canonical cleanup 1 contract applied and adjusted completion gate clarified
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Canonical cleanup | REVIEW-LOCKED | `loop636_11674731_canonical_cleanup_contract_plan.json`, rows `1`, validation issue `0` | release candidate를 approval로 승격 금지 |
+| Projection application | PASS_STATIC | `loop636_11674731_canonical_cleanup_projection_application.json`, applied canonical cleanup `1` | full375 adjusted GO 전 publish 승인 금지 |
+| Candidate-set preflight | HOLD_PLAN_ONLY | `loop636_candidate_set6_contract_plan.json`, official support missing `6` | official support ref 확보 전 처리 금지 |
+| Publication contract | GO | `loop636_11674731_canonical_cleanup_publication_contract_convergence.json`, rows `375`, violation `0` | collateral gate와 분리 유지 |
+| Release gate | REVIEW-LOCKED | pending `0`, violation `0`, release candidate `1` | full375 재확인 필요 |
+| Residual accounting | REVIEW-LOCKED | `loop636_after_canonical_cleanup1_residual20_accounting.json`, ordinary residual `20 -> 19` | residual19 lane batch 처리 |
+| Collateral | NO-GO | historical raw `110 -> 109`, runtime counts missing | raw는 diagnostic compare로만 유지 |
+| Re-baseline | NOT_APPLIED | `loop636_adjudicated_rebaseline_readiness.json`, blocker residual `19` | adjusted full375 GO + full_scan path 이후 적용 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 adjusted full375 collateral GO + full_scan path |
+
+Gate: publication `GO`, release `REVIEW-LOCKED / candidate 1`, residual `REVIEW-LOCKED / 19`, full375 collateral `NO-GO / historical raw 109`, re-baseline `NOT_APPLIED`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260709-635 - no-publish residual4 contract applied
 
 | 항목 | 상태 | 근거 | 다음 |
