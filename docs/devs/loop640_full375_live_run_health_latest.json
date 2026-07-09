@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T02:32:04",
+  "generated_at": "2026-07-10T02:38:16",
   "run_id": "20260710_005902_590310",
   "artifact_resolution": {
     "resolution": "explicit_paths",
@@ -119,9 +119,9 @@
     "mcp_endpoint_count_after_health_filter": 16,
     "mcp_parallel_before_health_filter": 16,
     "mcp_parallel_after_health_filter": 16,
-    "completed_count": 58,
+    "completed_count": 61,
     "flushed_count": 51,
-    "pending_count": 7,
+    "pending_count": 10,
     "failed_count": 0,
     "next_save_idx": 52,
     "partial_flush_gap": true,
@@ -145,8 +145,8 @@
     "load_error": null
   },
   "result_rows": 51,
-  "checkpoint_rows": 58,
-  "pending_count_actual": 7,
+  "checkpoint_rows": 61,
+  "pending_count_actual": 10,
   "flush_integrity": {
     "run_integrity_gate": "IN_PROGRESS",
     "classification": "ordered_flush_gap_in_progress",
@@ -163,15 +163,15 @@
     ],
     "counts": {
       "manifest_input_post_count": 375,
-      "manifest_completed_count": 58,
+      "manifest_completed_count": 61,
       "manifest_flushed_count": 51,
-      "manifest_pending_count": 7,
+      "manifest_pending_count": 10,
       "manifest_failed_count": 0,
-      "checkpoint_completed_count": 58,
+      "checkpoint_completed_count": 61,
       "checkpoint_failed_count": 0,
       "result_rows": 51,
-      "pending_snapshot_rows": 7,
-      "completed_minus_flushed": 7
+      "pending_snapshot_rows": 10,
+      "completed_minus_flushed": 10
     },
     "consistency": {
       "result_rows_eq_flushed_count": true,
@@ -195,9 +195,9 @@
       "frontier_in_checkpoint_completed": false,
       "frontier_in_pending_snapshot": false,
       "completed_index_min": 1,
-      "completed_index_max": 65,
+      "completed_index_max": 66,
       "pending_index_min": 53,
-      "pending_index_max": 65,
+      "pending_index_max": 66,
       "first_pending_at_or_after_frontier": 53,
       "first_completed_at_or_after_frontier": 53,
       "frontier_gap_global_idx": 52
@@ -224,9 +224,19 @@
         "title": "담호텔기라리는 언제 완결날 각 보임?"
       },
       {
+        "global_idx": 57,
+        "post_id": 11702094,
+        "title": "댓글창 이딴게 왜 재밌는거냐..?"
+      },
+      {
         "global_idx": 59,
         "post_id": 11703645,
         "title": "오늘에 ts 맘마는~~~~~"
+      },
+      {
+        "global_idx": 61,
+        "post_id": 11705256,
+        "title": "하남자 탑은 국뽕을 못버티고 하차함"
       },
       {
         "global_idx": 62,
@@ -237,6 +247,11 @@
         "global_idx": 65,
         "post_id": 11706873,
         "title": "생각해보니까 미적은 전능뇌로 공부하는게 이득이네"
+      },
+      {
+        "global_idx": 66,
+        "post_id": 11710044,
+        "title": "가챠펑크 다음장이 아니였다고"
       }
     ]
   },
@@ -455,15 +470,15 @@
       "mcp_health_failure_count": 0
     },
     "row_search_health": {
-      "rows_with_search_health": 57,
+      "rows_with_search_health": 60,
       "status_counts": {
-        "ok": 56,
+        "ok": 59,
         "SEARCH_DEGRADED_RECOVERED": 1
       },
       "flag_counts": {},
-      "rows_with_upstream_zero": 34,
+      "rows_with_upstream_zero": 35,
       "rows_with_degraded": 0,
-      "query_total": 540,
+      "query_total": 559,
       "degraded_total": 2,
       "degraded_recovered_total": 1,
       "unrecovered_degraded_total": 0
@@ -471,8 +486,8 @@
     "worker_log_search": {
       "search_timeout": 0,
       "search_degraded_detected": 0,
-      "search_upstream_zero": 71,
-      "search_bridge_after_filter_zero": 16
+      "search_upstream_zero": 74,
+      "search_bridge_after_filter_zero": 17
     },
     "blockers": []
   },
@@ -489,18 +504,18 @@
     "blockers": []
   },
   "status_counts": {
-    "completed": 58
+    "completed": 61
   },
   "identity_state_counts": {
-    "resolved_title": 26,
+    "resolved_title": 28,
     "adjacent_relevant": 14,
     "non_relevant": 11,
-    "unresolved_title": 7
+    "unresolved_title": 8
   },
   "discussion_type_counts_top": {
-    "general": 20,
+    "general": 21,
+    "review": 9,
     "noise": 8,
-    "review": 7,
     "recommendation": 6,
     "character_talk": 5,
     "author_talk": 3,
@@ -512,27 +527,27 @@
     "meme": 1
   },
   "topicality_counts": {
-    "core_relevant": 33,
+    "core_relevant": 36,
     "adjacent_relevant": 14,
     "unrelated": 11
   },
   "work_resolution_counts": {
     "none": 25,
-    "resolved": 20,
-    "unresolved": 13
+    "resolved": 22,
+    "unresolved": 14
   },
   "novel_confidence_counts": {
-    "": 30,
-    "High": 16,
+    "": 31,
+    "High": 18,
     "None": 8,
     "Medium": 4
   },
   "consistency_flag_counts_top": {
     "notes_demoted_for_unresolved": 24,
-    "local_candidate_hold_preserved": 20,
+    "local_candidate_hold_preserved": 21,
     "batch_memory_alias_rescue_blocked_nonwork_context": 16,
-    "llm_only_sentence_candidate_pruned": 10,
-    "same_url_official_detail_canonicalized": 10,
+    "llm_only_sentence_candidate_pruned": 11,
+    "same_url_official_detail_canonicalized": 11,
     "ocr_explicit_title_unresolved": 9,
     "official_url_recall_gate_recovered": 9,
     "serialized_public_identity_shared_gate_restored": 8,
@@ -548,6 +563,7 @@
     "batch_memory_alias_rescue_blocked_by_author_meta": 5,
     "official_url_recall_candidate_source_preserved": 5,
     "official_url_recall_blocked_relation_non_work_context": 5,
+    "platform_seo_title_suffix_canonicalized": 5,
     "primary_work_cleared_non_core": 5,
     "multi_work_title_cleared": 5,
     "official_detail_url_repaired_from_search": 5,
@@ -556,7 +572,6 @@
     "vlm_ocr_title_conflict_with_final_title": 4,
     "ocr_title_conflict_with_stable_alias": 4,
     "verified_alias_title_only_publication": 4,
-    "platform_seo_title_suffix_canonicalized": 4,
     "genre_trope_context_only_no_work_anchor": 4,
     "context_only_no_work_anchor": 4,
     "batch_memory_alias_rescue_blocked_semantic_seed": 4,
@@ -590,9 +605,9 @@
     "max_degraded_queries": 2
   },
   "slang": {
-    "slang_insight_count": 20,
-    "old_store_true_count": 9,
-    "new_store_true_after_patch_count": 8,
+    "slang_insight_count": 22,
+    "old_store_true_count": 10,
+    "new_store_true_after_patch_count": 9,
     "old_store_true_blocked_by_patch_count": 2,
     "blocked_reason_counts": {
       "unclear_canonical_alias": 2
@@ -769,6 +784,23 @@
         "discussion_type": "review",
         "topicality": "core_relevant",
         "work_resolution": "resolved"
+      },
+      {
+        "post_id": 11710044,
+        "post_title": "가챠펑크 다음장이 아니였다고",
+        "detected_term": "가챠펑크",
+        "decoded_term": "가챠 중독자의 퓨전펑크 생활",
+        "old_store_in_slang_db": true,
+        "old_store_reason": "pure_work_alias",
+        "old_alias_scope": "pure_work_alias",
+        "new_store_in_slang_db": true,
+        "new_store_reason": "pure_work_alias",
+        "new_alias_scope": "pure_work_alias",
+        "new_canonical_work_alias": "가챠펑크",
+        "official_title": "가챠 중독자의 퓨전펑크 생활",
+        "discussion_type": "review",
+        "topicality": "core_relevant",
+        "work_resolution": "resolved"
       }
     ],
     "slang_db": {
@@ -780,13 +812,13 @@
   },
   "logs": {
     "worker_log_count": 16,
-    "post_start_count_in_worker_logs": 74,
-    "post_complete_count_in_worker_logs": 58,
+    "post_start_count_in_worker_logs": 77,
+    "post_complete_count_in_worker_logs": 61,
     "counts": {
       "title_anchor_exact_probe_lines": 62,
-      "search_bridge_after_filter_zero": 16,
-      "headless_meta_lines": 100,
-      "search_upstream_zero": 71,
+      "search_bridge_after_filter_zero": 17,
+      "headless_meta_lines": 101,
+      "search_upstream_zero": 74,
       "snippet_none_fallback": 1
     },
     "worker_counts_top": {
@@ -829,11 +861,19 @@
       },
       "W8": {
         "headless_meta_lines": 11,
-        "post_start": 5,
+        "post_start": 6,
         "search_upstream_zero": 5,
-        "post_complete": 4,
+        "post_complete": 5,
         "title_anchor_exact_probe_lines": 3,
         "search_bridge_after_filter_zero": 1
+      },
+      "W0": {
+        "title_anchor_exact_probe_lines": 11,
+        "post_start": 5,
+        "search_bridge_after_filter_zero": 5,
+        "post_complete": 4,
+        "search_upstream_zero": 4,
+        "headless_meta_lines": 2
       },
       "W1": {
         "headless_meta_lines": 19,
@@ -850,19 +890,19 @@
         "search_bridge_after_filter_zero": 1
       },
       "W4": {
-        "post_start": 4,
+        "post_start": 5,
+        "post_complete": 4,
         "search_upstream_zero": 4,
         "headless_meta_lines": 3,
-        "post_complete": 3,
         "title_anchor_exact_probe_lines": 2,
         "search_bridge_after_filter_zero": 1
       },
       "W6": {
         "title_anchor_exact_probe_lines": 10,
-        "post_start": 4,
+        "post_start": 5,
         "search_upstream_zero": 4,
+        "post_complete": 4,
         "headless_meta_lines": 3,
-        "post_complete": 3,
         "search_bridge_after_filter_zero": 2
       },
       "W7": {
@@ -871,14 +911,6 @@
         "title_anchor_exact_probe_lines": 4,
         "search_upstream_zero": 4,
         "headless_meta_lines": 2
-      },
-      "W0": {
-        "title_anchor_exact_probe_lines": 11,
-        "post_start": 5,
-        "search_bridge_after_filter_zero": 5,
-        "post_complete": 4,
-        "headless_meta_lines": 2,
-        "search_upstream_zero": 1
       },
       "W13": {
         "post_start": 3,
@@ -889,9 +921,10 @@
       },
       "W15": {
         "post_start": 4,
+        "headless_meta_lines": 3,
         "post_complete": 3,
-        "headless_meta_lines": 2,
-        "search_upstream_zero": 1
+        "search_upstream_zero": 1,
+        "search_bridge_after_filter_zero": 1
       },
       "W3": {
         "headless_meta_lines": 6,
@@ -913,8 +946,8 @@
   },
   "rates": {
     "reason_error_rate_pct": 0.0,
-    "resolved_title_rate_pct": 44.83,
-    "unresolved_title_rate_pct": 12.07,
+    "resolved_title_rate_pct": 45.9,
+    "unresolved_title_rate_pct": 13.11,
     "headless_line_per_completed_pct": 0.0
   }
 }
