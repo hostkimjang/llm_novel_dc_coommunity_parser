@@ -20,12 +20,17 @@
 - publication contract: `GO / row 19 / violation 0`
 - reason errors: `0`
 - slang_db bad remaining: `0`
+- baseline mode: `adjudicated_rebaseline`
+- completion metric: `adjusted_drift_count`
+- raw vs 2026-06-26: historical diagnostic only
 
 ## 해석
 
 현재 artifact 정합성은 깨진 상태가 아니라 ordered flush가 앞선 idx `20`을 기다리는 진행 중 상태다. checkpoint는 `32`행까지 완료를 확인했지만, result JSON은 ordered flushed prefix `19`행만 담고 있다. checkpoint와 pending snapshot은 manifest count와 일치한다. 따라서 이 snapshot은 completed source가 아니며 full375 collateral approval 근거로 쓰지 않는다.
 
 Search evidence와 publication contract는 현재 관측된 completed/flushed subset 기준으로는 `GO`다. 그러나 full375 완료 gate는 completed/flushed/pending/failed `375/375/0/0`, manifest search non-light, publication contract `GO`, adjusted drift `0`, full_scan path가 모두 닫힌 뒤에만 열린다.
+
+Loop638 이후 re-baseline은 이미 `APPLIED`다. 따라서 Loop640 이후 collateral은 `loop638_adjudicated_rebaseline_result.json` 대비 `adjusted_drift_count`로 판단하고, 2026-06-26 bootstrap raw `105`는 historical diagnostic으로만 둔다. Raw가 0이 되지 않는다는 이유로 매 run raw row를 다시 재소송하지 않는다.
 
 `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`를 유지한다.
 

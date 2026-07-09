@@ -32,6 +32,8 @@ Loop620/Loop621 계열 full375 결과의 raw diff는 2026-06-26 bootstrap baseli
 
 - 완료 gate와 매 run blocker는 `adjusted_drift` 기준으로 판단한다.
 - `raw_vs_20260626`은 역사적 이동량과 회계 설명용으로만 남긴다. 6/26 baseline 대비 raw는 정당 제거/복구 때문에 영구히 0이 아닐 수 있다.
+- re-baseline 적용 후에는 6/26 raw row를 매 run마다 다시 triage하거나 재소송하지 않는다. 새 run에서 확인할 대상은 판결 baseline 대비 drift, unreviewed adjusted row, search hard blocker, publication contract violation이다.
+- raw가 0이 아니어도 adjusted drift가 0이고 runtime/search/publication/full_scan 조건이 닫히면 collateral raw 자체는 완료 blocker가 아니다.
 - re-baseline 이후 새 run에서 `adjusted_drift > 0`, unreviewed adjusted row, search hard blocker, publication contract violation이 나오면 `NO-GO`다.
 - re-baseline 이전에는 raw를 approval blocker처럼 쓰지 말고, raw 행을 expected FP removal, intended recovery, search hold, true triage로 분해한 adjusted 회계로만 다룬다.
 

@@ -11,9 +11,11 @@
 - [x] Loop640 full375 runtime을 background로 실행한다. Run `20260710_005902_590310`.
 - [x] Loop640 manifest에서 `mcp_health_include_search=true`, `mcp_health_light_mode=false`, `mcp_health_ok_count=16`을 확인한다.
 - [x] Running health snapshot을 생성해 `IN_PROGRESS / ordered_flush_gap_in_progress`와 frontier `11676314`를 기록한다.
+- [x] Loop638 adjudicated re-baseline 이후 raw `105`는 historical diagnostic이며, completion metric은 `adjusted_drift_count`임을 현재 Loop640 TODO에도 반영한다.
 - [ ] Run health를 생성하고 completed/flushed/pending/failed `375/375/0/0`을 확인한다.
 - [ ] Publication contract convergence를 `GO / violation 0`으로 확인한다.
 - [ ] `compare_projection_collateral.py --baseline-mode adjudicated_rebaseline`로 adjusted drift를 확인한다.
+- [ ] 2026-06-26 raw row를 매 run 재소송하지 않는다. Loop640 결과는 판결 baseline 대비 drift와 gate 조건으로만 판단한다.
 - [ ] Always-on을 golden18 + adjusted full375 runtime 기준으로 재평가한다.
 - [ ] Full_scan path 검증 전까지 `full_scan_approval=false`를 유지한다.
 - Gate: Loop639 partial `NO-GO`, Loop640 run `RUNNING_BACKGROUND / NOT_APPROVAL_RUNNING`, completion gate `adjusted full375 collateral GO + full_scan path`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
