@@ -1,5 +1,20 @@
 # Operation Quality Checklist
 
+## 2026-07-09 Loop637 native hold/canonical cleanup 운영 메모
+
+- [x] Loop636 residual19 중 native/web/image evidence 12건을 no-release hold batch로 처리했다.
+- [x] Native hold는 applied hold `12`, scrubbed public identity `12`, release candidate `0`, violation `0`이다.
+- [x] `11682768`은 official page가 지지하는 `마법소녀ㄴ은 은퇴하고 싶다`로 canonical cleanup 처리했다.
+- [x] `11682768`은 release candidate `1`이지만 full375 adjusted GO 전 approval이 아니다.
+- [x] Publication contract는 최종 projection 기준 `GO / violation 0`이다.
+- [x] Residual action queue는 `19 -> 6`으로 줄었고, 남은 lane은 `candidate_set_rebuild_review 6`이다.
+- [x] Historical raw collateral은 `109`로 유지되지만 2026-06-26 baseline 대비 diagnostic compare다.
+- [x] Re-baseline readiness는 `NOT_READY / NOT_APPLIED`이며 blocker는 ordinary residual `6`, adjusted full375 collateral GO 미확인, full_scan path 미완료다.
+- [ ] Projection-only compare의 runtime counts missing을 runtime completion으로 보정하지 않는다.
+- [ ] Release candidate 1건은 approval이 아니며 full375 adjusted GO 전 publish/full_scan 근거로 쓰지 않는다.
+- [ ] Re-baseline 전에는 raw를 historical diff로만 두고 adjusted gate를 열지 않는다.
+- Gate: application `REVIEW-LOCKED`, publication `GO`, release `REVIEW-LOCKED / no-release 12 + candidate 1`, residual `REVIEW-LOCKED / ordinary 6`, always-on `NO-GO`, collateral `NO-GO / historical raw 109`, re-baseline `NOT_APPLIED`, completion metric `not_open_until_adjudicated_rebaseline`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-09 Loop636 canonical cleanup 운영 메모
 
 - [x] Loop635 residual20 중 URL/title 근거가 충분한 canonical cleanup `1`건만 처리했다.

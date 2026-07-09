@@ -1,0 +1,48 @@
+{
+  "review_id": "loop637_11682768_canonical_cleanup_verdicts",
+  "generated_at": "2026-07-09T23:04:10",
+  "source_dispatch": "loop637_after_native12_hold_ordinary_residual7_dispatch",
+  "source_projection": "loop637_native12_remaining_hold_projection_result",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "rows": 1,
+    "review_label_counts": {
+      "REPROCESS": 1
+    },
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "adjusted full375 collateral GO + full_scan path",
+    "rebaseline": "NOT_APPLIED",
+    "adjusted_completion_gate": "NOT_OPEN_UNTIL_ADJUDICATED"
+  },
+  "rows": [
+    {
+      "post_id": 11682768,
+      "review_label": "REPROCESS",
+      "expected_title": "마법소녀ㄴ은 은퇴하고 싶다",
+      "actual_title": "마법소녀ㄴ 은 은퇴하고 싶다",
+      "selected_title": "마법소녀ㄴ은 은퇴하고 싶다",
+      "selected_url": "https://novelpia.com/novel/347507",
+      "source_native_verdict": "official_page_confirms_spacing_cleanup",
+      "evidence_grade": "Strong",
+      "rationale_ko": "Loop637 projection의 public title은 `마법소녀ㄴ 은 은퇴하고 싶다`처럼 공식 제목 내부에 불필요한 공백이 들어갔다. NovelPia 상세 페이지 `https://novelpia.com/novel/347507`는 공식 표기 `마법소녀ㄴ은 은퇴하고 싶다`를 지지하므로 clean official title과 URL을 함께 보존한다. 이는 projection-only canonical cleanup이며 새 runtime approval이 아니다.",
+      "evidence_refs": [
+        "docs/devs/loop637_after_native12_hold_ordinary_residual7_dispatch.json#post_id=11682768",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop637_native12_remaining_hold_projection_result.json#post_id=11682768",
+        "https://novelpia.com/novel/347507"
+      ],
+      "runtime_replay_allowed": false,
+      "full_scan_approval": false
+    }
+  ],
+  "approval_boundary": {
+    "projection_cleanup_is_not_runtime_replay": true,
+    "canonical_cleanup_requires_official_page_or_native_evidence": true,
+    "raw_20260626_baseline_is_completion_gate": false,
+    "completion_gate_uses_adjusted_metric_after_adjudication": true,
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false
+  }
+}

@@ -1,5 +1,20 @@
 # Developer TODO Index
 
+## 2026-07-09 Loop637 이후 residual6 / re-baseline 선결 TODO
+
+- 상태 업데이트: Loop636 residual19 중 native/web/image evidence 12건을 no-release hold로 처리했고, `11682768`은 공식 페이지 확인 뒤 canonical cleanup으로 처리했다. Ordinary residual은 `6`으로 줄었다.
+- [x] Native/web/image evidence 12건을 N건 batch로 판결한다.
+- [x] Native hold release audit을 생성한다. 결과는 satisfied no-release `12`, release candidate `0`, violation `0`.
+- [x] `11682768`은 NovelPia 공식 상세 페이지 확인 뒤 `마법소녀ㄴ은 은퇴하고 싶다`로 canonical cleanup 처리한다.
+- [x] `11682768` release audit을 생성한다. 결과는 release candidate `1`, violation `0`.
+- [x] Publication contract convergence를 생성한다. 결과는 `GO / rows 375 / violation 0`.
+- [x] Residual6 dispatch를 생성한다: `candidate_set_rebuild_review 6`.
+- [x] Re-baseline readiness를 `NOT_READY / NOT_APPLIED`로 기록한다.
+- [ ] Candidate-set 6건은 official support ref와 candidate ledger 재구성 판결 전 release 처리하지 않는다.
+- [ ] Full375 adjusted collateral GO 전 release candidate를 approval로 승격하지 않는다.
+- [ ] 전 행 adjudicated 전에는 re-baseline을 적용하지 않는다.
+- Gate: residual `REVIEW-LOCKED / 6`, publication `GO`, release `REVIEW-LOCKED / no-release 12 + candidate 1`, full375 collateral `NO-GO / historical raw 109`, re-baseline `NOT_APPLIED`, completion gate `adjusted full375 collateral GO + full_scan path`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-09 Loop636 이후 residual19 / re-baseline 선결 TODO
 
 - 상태 업데이트: Loop635 residual20 중 `11674731` canonical cleanup 1건을 projection-only 계약으로 처리했고, ordinary residual은 `19`로 줄었다.
@@ -8,8 +23,8 @@
 - [x] Always-on 산출물에 completion gate `adjusted full375 collateral GO + full_scan path`, completion metric `not_open_until_adjudicated_rebaseline`, raw completion flag `false`를 명시한다.
 - [x] Residual19 dispatch를 생성한다: `candidate_set_rebuild_review 6`, `canonical_policy_cleanup_review 1`, `native_web_image_evidence_review 12`.
 - [ ] Candidate-set 6건은 official support ref 확보 전 release 처리하지 않는다.
-- [ ] `11682768`은 native/alias relation 확인 전 canonical cleanup으로 처리하지 않는다.
-- [ ] Native/web/image evidence 12건을 N건 batch로 판결한다.
+- [x] `11682768`은 Loop637에서 NovelPia 공식 상세 페이지 확인 뒤 canonical cleanup으로 처리했다.
+- [x] Native/web/image evidence 12건은 Loop637에서 no-release hold batch로 판결했다.
 - [ ] Full375 adjusted collateral GO 전 release candidate를 approval로 승격하지 않는다.
 - [ ] 전 행 adjudicated 전에는 re-baseline을 적용하지 않는다.
 - Gate: residual `REVIEW-LOCKED / 19`, publication `GO`, release `REVIEW-LOCKED / candidate 1`, full375 collateral `NO-GO / historical raw 109`, re-baseline `NOT_APPLIED`, completion gate `adjusted full375 collateral GO + full_scan path`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.

@@ -1,5 +1,22 @@
 # Development History
 
+## 2026-07-09 - Loop637 native hold 12 and canonical cleanup 1 contract application
+
+- 새 runtime replay/full375는 실행하지 않았다.
+- Loop636 residual19 중 `native_web_image_evidence_review` 12건을 no-release hold batch로 처리했다.
+- Native hold contract plan은 rows `12`, action `native_web_disambiguation_hold_contract_case 12`, validation issue `0`이고 projection application은 applied hold `12`, scrubbed public identity `12`다.
+- Native hold release gate audit은 pending `0`, violation `0`, satisfied no-release `12`, release candidate `0`이며 publication contract convergence는 `GO / 375 rows / violation 0`이다.
+- `11682768`은 NovelPia 공식 상세 페이지가 `마법소녀ㄴ은 은퇴하고 싶다`와 URL `https://novelpia.com/novel/347507`을 지지하므로 canonical cleanup 처리했다.
+- `11682768` contract plan은 rows `1`, validation issue `0`이고 projection application은 applied canonical cleanup `1`이다.
+- `11682768` release gate audit은 pending `0`, violation `0`, release candidate `1`이다.
+- 최종 publication contract convergence는 `GO / 375 rows / violation 0`이다.
+- Historical raw collateral은 `109`로 남았지만 2026-06-26 baseline 대비 diagnostic compare로만 둔다.
+- Residual accounting은 source `19`, native/canonical processed `13`, ordinary residual `6`이고 dispatch lane은 `candidate_set_rebuild_review 6`이다.
+- Re-baseline readiness는 `NOT_READY / NOT_APPLIED`다. Blocker는 ordinary residual `6`, adjusted full375 collateral GO 미확인, full_scan path 미완료다.
+- 검증은 JSON parse `21`, unit tests `64`, py_compile, `git diff --check` PASS다. `git diff --check`는 CRLF 경고만 출력했다.
+- Report는 `docs/devs/loop_reports/LOOP_637_REPORT_20260709.md`다.
+- Gate는 publication `GO`, release `REVIEW-LOCKED / no-release 12 + candidate 1`, residual `REVIEW-LOCKED / 6`, full375 collateral `NO-GO / historical raw 109`, re-baseline `NOT_APPLIED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-09 - Loop636 canonical cleanup 1 contract application and adjusted gate clarification
 
 - 새 runtime replay/full375는 실행하지 않았다.

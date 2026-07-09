@@ -1,5 +1,47 @@
 # Verification Results
 
+## 2026-07-09 Loop637 native hold 12건 및 11682768 canonical cleanup 검증
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_637_REPORT_20260709.md`
+  - `docs/devs/loop637_native12_hold_dispatch.json/.md`
+  - `docs/devs/loop637_native12_remaining_hold_contract_plan.json/.md`
+  - `docs/devs/loop637_native12_remaining_hold_projection_application.json/.md`
+  - `docs/devs/loop637_native12_remaining_hold_release_gate_audit.json/.md`
+  - `docs/devs/loop637_native12_remaining_hold_publication_contract_convergence.json/.md`
+  - `docs/devs/loop637_11682768_canonical_cleanup_verdicts.json/.md`
+  - `docs/devs/loop637_11682768_canonical_cleanup_contract_plan.json/.md`
+  - `docs/devs/loop637_11682768_canonical_cleanup_projection_application.json/.md`
+  - `docs/devs/loop637_11682768_canonical_cleanup_release_gate_audit.json/.md`
+  - `docs/devs/loop637_11682768_canonical_cleanup_publication_contract_convergence.json/.md`
+  - `docs/devs/loop637_11682768_canonical_cleanup_collateral_compare.json/.md`
+  - `docs/devs/loop637_after_native12_hold_plus_canonical1_residual7_accounting.json/.md`
+  - `docs/devs/loop637_after_native12_hold_plus_canonical1_ordinary_residual6_dispatch.json/.md`
+  - `docs/devs/loop637_always_on_golden18_full375_after_native12_hold_plus_canonical1.json/.md`
+  - `docs/devs/loop637_adjudicated_rebaseline_readiness.json/.md`
+- 검증:
+  - Native hold contract plan: PASS, rows `12`, action `native_web_disambiguation_hold_contract_case 12`, validation issue `0`.
+  - Native hold projection application: PASS, applied hold `12`, scrubbed public identity `12`, validation issue `0`, runtime replay allowed `0`.
+  - Native hold release gate audit: PASS, pending `0`, violation `0`, satisfied no-release `12`, release candidate `0`.
+  - `11682768` canonical cleanup verdict: PASS, selected title `마법소녀ㄴ은 은퇴하고 싶다`, URL `https://novelpia.com/novel/347507`, evidence grade `Strong`.
+  - Canonical cleanup plan/application: PASS, rows `1`, applied canonical cleanup `1`, validation issue `0`.
+  - Canonical cleanup release gate audit: PASS, pending `0`, violation `0`, release candidate `1`.
+  - Publication contract convergence: PASS, `GO`, row count `375`, violation `0`.
+  - Collateral compare: expected `NO-GO`, shared `375/375`, changed `182`, historical raw regression `109`, runtime counts missing.
+  - Always-on gate: expected `NO-GO`, golden18 `GO / 18 of 18`, completion gate `adjusted full375 collateral GO + full_scan path`, completion metric `not_open_until_adjudicated_rebaseline`.
+  - Residual accounting: PASS, source `19`, native/canonical processed `13`, ordinary residual `6`.
+  - Residual dispatch: PASS, lane `candidate_set_rebuild_review 6`.
+  - Re-baseline readiness: PASS, `NOT_READY / NOT_APPLIED`, raw 2026-06-26 baseline completion flag `false`.
+  - JSON parse: PASS, Loop637 JSON `21`개.
+  - Unit tests: PASS, `.venv312\Scripts\python.exe -m unittest tests.test_build_remaining_native_hold_contract_plan tests.test_build_title_mismatch_verdict_contract_plan tests.test_apply_post_verdict_expected_restore_projection_contract tests.test_audit_post_verdict_promotion_gate_release_contract tests.test_reaccount_residual_after_contract_reviews tests.test_build_ordinary_residual_dispatch tests.test_always_on_regression_gates -v`, `64` tests.
+  - Py compile: PASS, native hold/canonical cleanup/projection/release/accounting/dispatch/collateral/always-on 도구.
+  - `git diff --check`: PASS, CRLF 경고만 있음.
+- 결과:
+  - Loop637은 native hold 12건과 canonical cleanup 1건을 projection-only 계약으로 처리한 회차다.
+  - Runtime/full375 approval은 아니며 re-baseline도 적용하지 않았다.
+  - 완료 gate는 전 행 adjudicated 후 adjusted drift 기준이다.
+- Gate: publication `GO`, release `REVIEW-LOCKED / no-release 12 + candidate 1`, residual `REVIEW-LOCKED / 6`, full375 collateral `NO-GO / historical raw 109`, re-baseline `NOT_APPLIED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-09 Loop636 canonical cleanup 1건과 adjusted gate 명시 검증
 
 - 산출물:

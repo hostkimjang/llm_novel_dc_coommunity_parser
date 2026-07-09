@@ -1,0 +1,46 @@
+{
+  "report_type": "adjudicated_rebaseline_readiness",
+  "readiness_id": "loop637_adjudicated_rebaseline_readiness",
+  "generated_at": "2026-07-09T23:08:30+09:00",
+  "gate": "NOT_READY",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "rebaseline_status": "NOT_APPLIED",
+  "completion_gate": "adjusted full375 collateral GO + full_scan path",
+  "completion_gate_metric": "not_open_until_adjudicated_rebaseline",
+  "raw_20260626_baseline_is_completion_gate": false,
+  "raw_20260626_baseline_role": "diagnostic historical compare only",
+  "summary": {
+    "source_residual_rows": 19,
+    "native_web_image_evidence_hold_rows": 12,
+    "canonical_cleanup_rows": 1,
+    "contract_processed_rows_this_loop": 13,
+    "ordinary_residual_rows_after_loop": 6,
+    "ordinary_residual_lane_counts": {
+      "candidate_set_rebuild_review": 6
+    },
+    "golden18_gate": "GO",
+    "full375_collateral_gate": "NO-GO",
+    "historical_raw_collateral_regression_count": 109,
+    "adjusted_drift_count": null,
+    "runtime_collateral_counts": "missing",
+    "publication_contract_convergence_gate": "GO"
+  },
+  "blockers": [
+    "ordinary_residual_unprocessed_rows=6",
+    "candidate_set_rebuild_review_not_adjudicated",
+    "adjusted_full375_collateral_GO_not_observed",
+    "full_scan_path_not_completed"
+  ],
+  "inputs": {
+    "source_dispatch": "docs/devs/loop636_after_canonical_cleanup1_ordinary_residual19_dispatch.json",
+    "native_hold_dispatch": "docs/devs/loop637_native12_hold_dispatch.json",
+    "native_hold_contract_plan": "docs/devs/loop637_native12_remaining_hold_contract_plan.json",
+    "canonical_cleanup_contract_plan": "docs/devs/loop637_11682768_canonical_cleanup_contract_plan.json",
+    "residual_accounting": "docs/devs/loop637_after_native12_hold_plus_canonical1_residual7_accounting.json",
+    "residual_dispatch": "docs/devs/loop637_after_native12_hold_plus_canonical1_ordinary_residual6_dispatch.json",
+    "always_on_gate": "docs/devs/loop637_always_on_golden18_full375_after_native12_hold_plus_canonical1.json",
+    "projection_result": "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop637_11682768_canonical_cleanup_projection_result.json"
+  },
+  "next_required_action": "candidate_set_rebuild_review 6 rows must be adjudicated as a batch before adjudicated re-baseline can be applied."
+}

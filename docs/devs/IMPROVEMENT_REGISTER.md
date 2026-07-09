@@ -1,5 +1,21 @@
 # Improvement Register
 
+## IMP-20260709-637 - native hold 12 plus canonical cleanup 1 contract applied
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Native hold batch | REVIEW-LOCKED | `loop637_native12_remaining_hold_contract_plan.json`, rows `12`, validation issue `0` | no-release hold를 approval로 승격 금지 |
+| Native projection | PASS_STATIC | `loop637_native12_remaining_hold_projection_application.json`, applied hold `12`, scrubbed public identity `12` | full375 adjusted GO 전 publish 승인 금지 |
+| Canonical cleanup | REVIEW-LOCKED | `loop637_11682768_canonical_cleanup_contract_plan.json`, rows `1`, selected title `마법소녀ㄴ은 은퇴하고 싶다` | release candidate를 approval로 승격 금지 |
+| Publication contract | GO | `loop637_11682768_canonical_cleanup_publication_contract_convergence.json`, rows `375`, violation `0` | collateral gate와 분리 유지 |
+| Release gate | REVIEW-LOCKED | native no-release `12`, canonical release candidate `1`, violation `0` | full375 재확인 필요 |
+| Residual accounting | REVIEW-LOCKED | `loop637_after_native12_hold_plus_canonical1_residual7_accounting.json`, ordinary residual `19 -> 6` | candidate-set 6 batch 처리 |
+| Collateral | NO-GO | historical raw `109`, runtime counts missing | raw는 diagnostic compare로만 유지 |
+| Re-baseline | NOT_APPLIED | `loop637_adjudicated_rebaseline_readiness.json`, blocker residual `6` | adjusted full375 GO + full_scan path 이후 적용 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 adjusted full375 collateral GO + full_scan path |
+
+Gate: publication `GO`, release `REVIEW-LOCKED / no-release 12 + candidate 1`, residual `REVIEW-LOCKED / 6`, full375 collateral `NO-GO / historical raw 109`, re-baseline `NOT_APPLIED`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260709-636 - canonical cleanup 1 contract applied and adjusted completion gate clarified
 
 | 항목 | 상태 | 근거 | 다음 |

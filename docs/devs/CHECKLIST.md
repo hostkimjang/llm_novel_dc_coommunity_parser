@@ -1,5 +1,27 @@
 # Development Checklist
 
+## 2026-07-09 Loop637 native hold 12건 및 11682768 canonical cleanup 체크
+
+- [x] 새 runtime replay/full375를 실행하지 않았다.
+- [x] Loop636 residual19 중 native/web/image evidence 12건을 no-release hold 계약으로 처리했다.
+- [x] Native hold contract plan은 rows `12`, action `native_web_disambiguation_hold_contract_case 12`, validation issue `0`이다.
+- [x] Native hold projection application은 applied hold `12`, scrubbed public identity `12`, validation issue `0`이다.
+- [x] Native hold release audit은 pending `0`, violation `0`, satisfied no-release `12`, release candidate `0`이다.
+- [x] `11682768`은 NovelPia 공식 상세 페이지 기준 `마법소녀ㄴ은 은퇴하고 싶다`와 URL `https://novelpia.com/novel/347507`로 canonical cleanup 처리했다.
+- [x] `11682768` canonical cleanup contract plan은 rows `1`, validation issue `0`이고 projection application은 applied cleanup `1`이다.
+- [x] `11682768` release audit은 pending `0`, violation `0`, release candidate `1`이다. 이는 approval이 아니다.
+- [x] Publication contract convergence는 최종 projection 기준 `GO / row 375 / violation 0`이다.
+- [x] Residual accounting은 `19 -> 7 -> 6`으로 갱신했다.
+- [x] Residual6 dispatch lane은 `candidate_set_rebuild_review 6`이다.
+- [x] Always-on gate는 golden18 `GO`, full375 collateral `NO-GO`, completion metric `not_open_until_adjudicated_rebaseline`을 기록했다.
+- [x] Re-baseline readiness는 `NOT_READY / NOT_APPLIED`로 기록했다.
+- [x] 검증을 실행했다: JSON parse `21`, unit tests `64`, py_compile PASS, `git diff --check` PASS(CRLF 경고만 있음).
+- [ ] Candidate-set 6건은 official support ref와 candidate ledger 재구성 판결 전 release 처리하지 않는다.
+- [ ] 전 행 adjudicated 전에는 re-baseline을 적용하지 않는다.
+- [ ] 완료 gate는 historical raw가 아니라 adjusted drift 기준으로 평가한다.
+- Gate: native hold `REVIEW-LOCKED / no-release 12`, canonical cleanup `REVIEW-LOCKED / release candidate 1`, publication `GO`, residual `REVIEW-LOCKED / ordinary 6`, always-on `NO-GO`, full375 collateral `NO-GO / historical raw 109`, re-baseline `NOT_APPLIED`, completion gate `adjusted full375 collateral GO + full_scan path`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_637_REPORT_20260709.md`, `docs/devs/loop637_*`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop637_11682768_canonical_cleanup_projection_result.json`.
+
 ## 2026-07-09 Loop636 canonical cleanup 1건과 adjusted gate 명시 체크
 
 - [x] 새 runtime replay/full375를 실행하지 않았다.
@@ -15,7 +37,7 @@
 - [x] Residual19 dispatch lane은 `candidate_set_rebuild_review 6`, `canonical_policy_cleanup_review 1`, `native_web_image_evidence_review 12`다.
 - [x] Re-baseline readiness는 `NOT_APPLIED`로 기록했다.
 - [x] 검증을 실행했다: JSON parse `12`, unit tests `62`, py_compile PASS, `git diff --check` PASS(CRLF 경고만 있음).
-- [ ] `11682768`은 selected URL/native alias relation 확인 전 canonical cleanup으로 처리하지 않는다.
+- [x] `11682768`은 Loop637에서 NovelPia 공식 상세 페이지 확인 후 canonical cleanup으로 처리했다.
 - [ ] Candidate-set 6건은 official support ref 확인 전 release candidate로 승격하지 않는다.
 - [ ] 전 행 adjudicated 전에는 re-baseline을 적용하지 않는다.
 - [ ] 완료 gate는 historical raw가 아니라 adjusted drift 기준으로 평가한다.

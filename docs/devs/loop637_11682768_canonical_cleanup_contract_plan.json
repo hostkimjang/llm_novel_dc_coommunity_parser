@@ -1,0 +1,121 @@
+{
+  "report_type": "title_mismatch_verdict_contract_plan",
+  "plan_id": "loop637_11682768_canonical_cleanup_contract_plan",
+  "generated_at": "2026-07-09T23:06:45",
+  "source_verdicts": "loop637_11682768_canonical_cleanup_verdicts",
+  "source_batch": null,
+  "source_packet": null,
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "source_verdict_rows": 1,
+    "contract_plan_rows": 1,
+    "validation_issue_count": 0,
+    "review_label_counts": {
+      "REPROCESS": 1
+    },
+    "contract_batch_lane_counts": {
+      "T3_canonical_cleanup_or_url_correction_contract": 1
+    },
+    "contract_action_counts": {
+      "canonical_cleanup_or_url_correction_contract_case": 1
+    },
+    "promotion_decision_status_counts": {
+      "candidate_only": 1
+    },
+    "contract_blocking_reason_counts": {
+      "canonical_cleanup_required": 1
+    },
+    "runtime_replay_allowed_rows": 0,
+    "contract_test_required_rows": 1,
+    "stronger_evidence_required_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "adjusted full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "rows": [
+    {
+      "post_id": 11682768,
+      "contract_batch_lane": "T3_canonical_cleanup_or_url_correction_contract",
+      "review_label": "REPROCESS",
+      "source_native_verdict": "official_page_confirms_spacing_cleanup",
+      "evidence_grade": "Strong",
+      "expected_title": "마법소녀ㄴ은 은퇴하고 싶다",
+      "actual_title": "마법소녀ㄴ 은 은퇴하고 싶다",
+      "target_title": "마법소녀ㄴ은 은퇴하고 싶다",
+      "target_url": "https://novelpia.com/novel/347507",
+      "contract_blocking_reason": "canonical_cleanup_required",
+      "contract_action": "canonical_cleanup_or_url_correction_contract_case",
+      "promotion_decision": {
+        "status": "candidate_only",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": true,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discussion_missing",
+          "context_only",
+          "scope_context_only",
+          "scope_not_current_work",
+          "canonical_cleanup_required"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11682768,
+        "candidate_title": "마법소녀ㄴ은 은퇴하고 싶다",
+        "candidate_url": "https://novelpia.com/novel/347507",
+        "source": "title_mismatch_verdict_contract_plan",
+        "official_title_exists": true,
+        "row_discusses_work_as_work": false,
+        "title_resolution_state": "context_only",
+        "work_resolution": "unresolved",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "context_only",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "title_mismatch_source_native_verdict",
+            "T3_canonical_cleanup_or_url_correction_contract"
+          ],
+          "competing_candidates": [
+            "마법소녀ㄴ 은 은퇴하고 싶다",
+            "마법소녀ㄴ은 은퇴하고 싶다"
+          ],
+          "conflict_reason_codes": [
+            "canonical_cleanup_required"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "title_mismatch_source_native_verdict",
+          "strength": "strong",
+          "source_path_or_snippet": "Loop637 projection의 public title은 `마법소녀ㄴ 은 은퇴하고 싶다`처럼 공식 제목 내부에 불필요한 공백이 들어갔다. NovelPia 상세 페이지 `https://novelpia.com/novel/347507`는 공식 표기 `마법소녀ㄴ은 은퇴하고 싶다`를 지지하므로 clean official title과 URL을 함께 보존한다. 이는 projection-only canonical cleanup이며 새 runtime approval이 아니다.",
+          "supports_publish": false,
+          "reason_code": "canonical_cleanup_required"
+        }
+      ],
+      "runtime_replay_allowed": false,
+      "contract_test_required_before_runtime": true,
+      "stronger_evidence_required_before_runtime": false,
+      "rationale_ko": "Loop637 projection의 public title은 `마법소녀ㄴ 은 은퇴하고 싶다`처럼 공식 제목 내부에 불필요한 공백이 들어갔다. NovelPia 상세 페이지 `https://novelpia.com/novel/347507`는 공식 표기 `마법소녀ㄴ은 은퇴하고 싶다`를 지지하므로 clean official title과 URL을 함께 보존한다. 이는 projection-only canonical cleanup이며 새 runtime approval이 아니다.",
+      "evidence_refs": [
+        "docs/devs/loop637_after_native12_hold_ordinary_residual7_dispatch.json#post_id=11682768",
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop637_native12_remaining_hold_projection_result.json#post_id=11682768",
+        "https://novelpia.com/novel/347507"
+      ]
+    }
+  ],
+  "approval_boundary": {
+    "title_mismatch_plan_is_not_runtime_replay": true,
+    "accept_label_is_expected_audit_update_contract_only": true,
+    "runtime_replay_before_contract_tests_forbidden": true,
+    "full375_collateral_remains_no_go": true
+  }
+}
