@@ -292,7 +292,7 @@ def build_plan(
             "contract_test_required_rows": sum(1 for row in rows if row.get("contract_test_required_before_runtime")),
             "stronger_evidence_required_rows": sum(1 for row in rows if row.get("stronger_evidence_required_before_runtime")),
             "full375_collateral_gate": "NO-GO",
-            "completion_gate": "full375 collateral GO + full_scan path",
+            "completion_gate": "adjusted full375 collateral GO + full_scan path",
         },
         "validation_issues": validation_issues,
         "rows": rows,
@@ -343,7 +343,7 @@ def write_markdown(path: Path, plan: dict[str, Any]) -> None:
         "Post-verdict C1 또는 SG shared-gate projection 일부는 expected title restore contract case로 정리되지만 이는 contract test 입력일 뿐이다. "
         "C2는 canonical variant policy가 닫히기 전까지 candidate-only로 유지하고, "
         "C3는 stronger evidence/native-web 확인 전까지 hard hold로 둔다. "
-        "따라서 goal은 `ACTIVE / NOT_COMPLETE`이고 완료 기준은 계속 `full375 collateral GO + full_scan 경로 정의`다."
+        "따라서 goal은 `ACTIVE / NOT_COMPLETE`이고 완료 기준은 계속 `adjusted full375 collateral GO + full_scan 경로 정의`다."
     )
     lines.append("")
     path.parent.mkdir(parents=True, exist_ok=True)

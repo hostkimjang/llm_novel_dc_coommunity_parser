@@ -323,7 +323,7 @@ def write_markdown(dispatch: dict[str, Any], path: Path) -> None:
         "- 이 dispatch는 residual 처리 순서를 정한 산출물이며 approval이 아니다.",
         "- 모든 lane은 review/contract/full375 재확인 전까지 `publish_allowed=false`, `runtime_replay_allowed=false`다.",
         "- Dashboard는 다음 runtime 진행 관측 도구일 뿐 semantic/full_scan approval 근거가 아니다.",
-        "- 완료 기준은 계속 `full375 collateral GO + full_scan 경로 정의`다.",
+        "- 완료 기준은 계속 `adjusted full375 collateral GO + full_scan 경로 정의`다.",
         "",
         "## Lanes",
         "",

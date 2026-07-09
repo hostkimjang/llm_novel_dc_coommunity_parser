@@ -403,7 +403,7 @@ def apply_expected_restore_contract(
         "skipped_contract_action_counts": dict(skipped_counts),
         "runtime_replay_allowed_rows": 0,
         "full375_collateral_gate": "NO-GO",
-        "completion_gate": "full375 collateral GO + full_scan path",
+        "completion_gate": "adjusted full375 collateral GO + full_scan path",
     }
     report = {
         "report_type": "post_verdict_projection_publish_contract_application",

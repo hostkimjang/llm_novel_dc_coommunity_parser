@@ -1,5 +1,18 @@
 # Development History
 
+## 2026-07-09 - Loop634 shared-gate residual6 contract application
+
+- 새 runtime replay/full375는 실행하지 않았다.
+- Loop633 residual30 중 `shared_gate_restore_contract_review` 6건을 contract queue, plan, projection application, release audit, publication convergence까지 처리했다.
+- Contract plan은 rows `6`, action `expected_title_restore_contract_case 6`, validation issue `0`이고 projection application은 applied restore `6`이다.
+- Release gate audit은 pending `0`, violation `0`, release candidate `6`이며 publication contract convergence는 `GO / 375 rows / violation 0`이다.
+- Historical raw collateral은 `120 -> 114`로 줄었지만 full375 collateral은 `NO-GO`이고 runtime counts는 projection-only라 missing이다.
+- Residual accounting은 source `30`, contract processed `6`, ordinary residual `24`이고 dispatch lane은 `candidate_set_rebuild_review 6`, `canonical_policy_cleanup_review 2`, `native_web_image_evidence_review 12`, `no_publish_multiwork_guard_review 4`다.
+- `tools/build_ordinary_residual_dispatch.py`와 `tools/build_projection_followup_queue.py`의 Markdown/approval boundary 완료 기준 문구를 `adjusted full375 collateral GO + full_scan path`로 정정했다.
+- 검증은 JSON parse `11`, unit tests `54`, py_compile PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_634_REPORT_20260709.md`다.
+- Gate는 publication `GO`, release `REVIEW-LOCKED / candidate 6`, residual `REVIEW-LOCKED / 24`, full375 collateral `NO-GO / historical raw 114`, re-baseline `NOT_APPLIED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-09 - Loop628 remaining search blocker2 replay
 
 - Loop626 remaining required-search hard blocker `11660258/11694026` 2행만 재실행했다.

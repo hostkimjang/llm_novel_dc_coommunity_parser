@@ -1,5 +1,26 @@
 # Development Checklist
 
+## 2026-07-09 Loop634 shared-gate residual6 계약 적용 체크
+
+- [x] 새 runtime replay/full375를 실행하지 않았다.
+- [x] Loop633 residual30 중 `shared_gate_restore_contract_review` 6건을 contract queue로 분리했다.
+- [x] Contract plan은 rows `6`, lane `SG_shared_gate_publish_release_candidate 6`, action `expected_title_restore_contract_case 6`, validation issue `0`이다.
+- [x] Projection application은 projection rows `375`, applied restore `6`, validation issue `0`, runtime replay allowed `0`이다.
+- [x] Release gate audit은 pending `0`, violation `0`, release candidate `6`이다.
+- [x] Publication contract convergence는 `GO / row 375 / violation 0`이다.
+- [x] Historical raw collateral은 `120 -> 114`로 줄었지만 gate는 `NO-GO`다.
+- [x] Always-on gate는 golden18 `GO / 18 of 18`과 full375 collateral `NO-GO / raw 114 / runtime counts missing`를 함께 기록했다.
+- [x] Residual accounting은 source `30`, contract processed `6`, ordinary residual `24`로 갱신했다.
+- [x] Residual24 dispatch lane은 `candidate_set_rebuild_review 6`, `canonical_policy_cleanup_review 2`, `native_web_image_evidence_review 12`, `no_publish_multiwork_guard_review 4`다.
+- [x] Re-baseline readiness는 `NOT_APPLIED`로 기록했다.
+- [x] 검증을 실행했다: JSON parse `11`, unit tests `54`, py_compile PASS.
+- [ ] Release candidate `6`건을 full375 collateral GO 전 approval로 승격하지 않는다.
+- [ ] Residual `24`건은 단건 반복이 아니라 lane batch로 처리한다.
+- [ ] 전 행 adjudicated 전에는 re-baseline을 적용하지 않는다.
+- [ ] 완료 gate는 historical raw가 아니라 adjusted drift 기준으로 평가한다.
+- Gate: shared-gate application `REVIEW-LOCKED / applied 6`, publication `GO`, release `REVIEW-LOCKED / candidate 6`, residual `REVIEW-LOCKED / ordinary 24`, always-on `NO-GO`, full375 collateral `NO-GO / historical raw 114`, re-baseline `NOT_APPLIED`, completion gate `adjusted full375 collateral GO + full_scan path`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_634_REPORT_20260709.md`, `docs/devs/loop634_*`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop634_shared_gate_residual6_projection_result.json`.
+
 ## 2026-07-09 Loop632 ordinary residual5 계약 적용 체크
 
 - [x] 새 runtime replay/full375를 실행하지 않았다.

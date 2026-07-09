@@ -418,7 +418,7 @@ def build_followup_queue(
             "projection_queue_is_not_approval": True,
             "runtime_replay_required_for_projected_safe_resolved": True,
             "full375_collateral_remains_no_go_until_replayed": True,
-            "completion_gate": "full375 collateral GO + full_scan path",
+            "completion_gate": "adjusted full375 collateral GO + full_scan path",
         },
     }
 
@@ -557,7 +557,7 @@ def write_markdown(queue: dict[str, Any], path: Path) -> None:
         "- `safe_resolved` projection도 runtime replay와 publication contract audit 전에는 해소 처리하지 않는다.",
         "- prior runtime expected-audit 실패 행은 같은 입력 반복 실행 전에 repair/source-native review lane으로 보낸다.",
         "- source-native exact title mismatch는 canonical variant 또는 wrong-work review 전까지 publish 근거가 아니다.",
-        "- 완료 기준은 여전히 `full375 collateral GO + full_scan 경로 정의`다.",
+        "- 완료 기준은 여전히 `adjusted full375 collateral GO + full_scan 경로 정의`다.",
         "",
         "## Action groups",
         "",

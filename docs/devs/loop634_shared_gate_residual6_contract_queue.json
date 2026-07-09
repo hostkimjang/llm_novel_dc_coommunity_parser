@@ -1,0 +1,390 @@
+{
+  "report_type": "post_verdict_contract_queue",
+  "queue_id": "loop634_shared_gate_residual6_contract_queue",
+  "generated_at": "2026-07-09T22:17:32",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "source_dispatch": "docs/devs/loop633_after_source_native35_ordinary_residual30_dispatch.json",
+    "source_verdicts": "docs/devs/loop633_source_native_or_blind35_verdicts.json",
+    "contract_queue_rows": 6,
+    "lane_counts": {
+      "SG_shared_gate_publish_release_candidate": 6
+    },
+    "completion_gate": "adjusted full375 collateral GO + full_scan path"
+  },
+  "rows": [
+    {
+      "post_id": 11660241,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "contract_batch_lane": "SG_shared_gate_publish_release_candidate",
+      "projected_status": "safe_resolved",
+      "selected_title": "이세계 TRPG 게임마스터",
+      "selected_url": "https://novelpia.com/novel/242412",
+      "expected_or_source_native_title": "이세계 TRPG 게임마스터",
+      "evidence_grade": "Strong",
+      "source_actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "제목의 `이티알`과 본문 TRPG/현실 파트 감상, after blocked title `이세계 TRPG 게임마스터`가 같은 작품을 가리킨다. null 해소는 정당 제거가 아니라 shared gate를 통한 restore 대상이다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11660241"
+      ],
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "이세계 TRPG 게임마스터",
+        "official_url": "https://novelpia.com/novel/242412",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_state": {
+        "row_discusses_work_as_work": true
+      },
+      "publish_contract_trace": {
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "이세계 TRPG 게임마스터",
+          "official_url": "https://novelpia.com/novel/242412",
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "bypassed_gate": false
+        }
+      }
+    },
+    {
+      "post_id": 11660268,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "contract_batch_lane": "SG_shared_gate_publish_release_candidate",
+      "projected_status": "safe_resolved",
+      "selected_title": "■■을 위한 세계는 없다",
+      "selected_url": "https://novel.munpia.com/479313",
+      "expected_or_source_native_title": "■■을 위한 세계는 없다",
+      "evidence_grade": "Strong",
+      "source_actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "제목의 `ㅁㅁ세계`와 초대용사/운명/스탈린전 대화가 blocked title `■■을 위한 세계는 없다` 후보와 이어진다. after null은 raw safe-loss이며 restore gate로 넘긴다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11660268"
+      ],
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "■■을 위한 세계는 없다",
+        "official_url": "https://novel.munpia.com/479313",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_state": {
+        "row_discusses_work_as_work": true
+      },
+      "publish_contract_trace": {
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "■■을 위한 세계는 없다",
+          "official_url": "https://novel.munpia.com/479313",
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "bypassed_gate": false
+        }
+      }
+    },
+    {
+      "post_id": 11663511,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "contract_batch_lane": "SG_shared_gate_publish_release_candidate",
+      "projected_status": "safe_resolved",
+      "selected_title": "부캐 키우는 황태자님",
+      "selected_url": "https://novelpia.com/novel/330363",
+      "expected_or_source_native_title": "부캐 키우는 황태자님",
+      "evidence_grade": "Strong",
+      "source_actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "게시글 제목 `부캐황태자99화`가 prior 공식 제목 `부캐 키우는 황태자님`을 직접 약칭한다. after의 `문피아 새 창 열림` 차단은 후보 오염이므로 null 상태를 복구 대상으로 본다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11663511"
+      ],
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "부캐 키우는 황태자님",
+        "official_url": "https://novelpia.com/novel/330363",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_state": {
+        "row_discusses_work_as_work": true
+      },
+      "publish_contract_trace": {
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "부캐 키우는 황태자님",
+          "official_url": "https://novelpia.com/novel/330363",
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "bypassed_gate": false
+        }
+      }
+    },
+    {
+      "post_id": 11676321,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "contract_batch_lane": "SG_shared_gate_publish_release_candidate",
+      "projected_status": "safe_resolved",
+      "selected_title": "마도서를 줍다 마법사가 되다",
+      "selected_url": "https://novel.munpia.com/477135",
+      "expected_or_source_native_title": "마도서를 줍다 마법사가 되다",
+      "evidence_grade": "Strong",
+      "source_actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "제목 `마도서줍 시리즈`가 blocked title `마도서를 줍다 마법사가 되다`와 직접 맞고 댓글도 연재 재개 맥락이다. null은 restore 대상이다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11676321"
+      ],
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "마도서를 줍다 마법사가 되다",
+        "official_url": "https://novel.munpia.com/477135",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_state": {
+        "row_discusses_work_as_work": true
+      },
+      "publish_contract_trace": {
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "마도서를 줍다 마법사가 되다",
+          "official_url": "https://novel.munpia.com/477135",
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "bypassed_gate": false
+        }
+      }
+    },
+    {
+      "post_id": 11682767,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "contract_batch_lane": "SG_shared_gate_publish_release_candidate",
+      "projected_status": "safe_resolved",
+      "selected_title": "묵향",
+      "selected_url": "https://mm.munpia.com/?menu=novel&action=view&id=51088&entry_id=776982",
+      "expected_or_source_native_title": "묵향",
+      "evidence_grade": "Strong",
+      "source_actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "게시글 제목이 `묵향`을 직접 말하고 댓글도 태허무령심법/아르티어스/드래곤 하트 맥락을 이어간다. after의 `묵향 1권` 차단은 canonical variant 문제일 뿐 null 해소 근거가 아니다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11682767"
+      ],
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "묵향",
+        "official_url": "https://mm.munpia.com/?menu=novel&action=view&id=51088&entry_id=776982",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_state": {
+        "row_discusses_work_as_work": true
+      },
+      "publish_contract_trace": {
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "묵향",
+          "official_url": "https://mm.munpia.com/?menu=novel&action=view&id=51088&entry_id=776982",
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "bypassed_gate": false
+        }
+      }
+    },
+    {
+      "post_id": 11708443,
+      "triage_bucket": "safe_loss_resolved_to_null",
+      "contract_batch_lane": "SG_shared_gate_publish_release_candidate",
+      "projected_status": "safe_resolved",
+      "selected_title": "괴담에 떨어져도 출근을 해야 하는구나",
+      "selected_url": "https://page.kakao.com/content/65171279",
+      "expected_or_source_native_title": "괴담에 떨어져도 출근을 해야 하는구나",
+      "evidence_grade": "Strong",
+      "source_actions": [
+        "repair_safe_loss_restore_supported_title",
+        "shared_promotion_gate_wiring_required"
+      ],
+      "rationale_ko": "게시글 제목 `괴담출근`은 blocked official URL의 작품 약어로 직접 쓰였고 본문도 괴담물 독창성 평가다. null은 restore 대상이다.",
+      "evidence_refs": [
+        "docs/devs/loop633_source_native_or_blind35_review_batch.json#post_id=11708443"
+      ],
+      "promotion_decision": {
+        "status": "publish",
+        "publish_allowed": true,
+        "official_title": "괴담에 떨어져도 출근을 해야 하는구나",
+        "official_url": "https://page.kakao.com/content/65171279",
+        "candidate_preserved": false,
+        "reason_codes": [
+          "official_title_exists",
+          "row_discusses_work_as_work",
+          "scope_current_work",
+          "source_native_review_current_work"
+        ],
+        "bypassed_gate": false,
+        "scope": {
+          "scope_kind": "current_work",
+          "confidence": "high",
+          "direct_bridge_sources": [
+            "source_native_review",
+            "shared_promotion_gate_wiring_required"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": []
+        }
+      },
+      "promotion_gate_state": {
+        "row_discusses_work_as_work": true
+      },
+      "publish_contract_trace": {
+        "gate_decision": {
+          "status": "publish",
+          "publish_allowed": true,
+          "official_title": "괴담에 떨어져도 출근을 해야 하는구나",
+          "official_url": "https://page.kakao.com/content/65171279",
+          "candidate_preserved": false,
+          "reason_codes": [
+            "official_title_exists",
+            "row_discusses_work_as_work",
+            "scope_current_work",
+            "source_native_review_current_work"
+          ],
+          "bypassed_gate": false
+        }
+      }
+    }
+  ],
+  "approval_boundary": {
+    "queue_is_not_runtime_replay": true,
+    "publish_candidates_are_not_full_scan_approval": true,
+    "raw_20260626_baseline_is_not_completion_gate": true
+  }
+}

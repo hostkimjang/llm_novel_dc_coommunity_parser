@@ -363,7 +363,7 @@ def build_audit(
             "release_gate_state_counts": dict(state_counts),
             "violation_counts": dict(violation_counts),
             "full375_collateral_gate": "NO-GO",
-            "completion_gate": "full375 collateral GO + full_scan path",
+            "completion_gate": "adjusted full375 collateral GO + full_scan path",
         },
         "validation_issues": validation_issues,
         "violation_rows": violation_rows,

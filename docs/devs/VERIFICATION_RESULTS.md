@@ -1,5 +1,38 @@
 # Verification Results
 
+## 2026-07-09 Loop634 shared-gate residual6 계약 적용 검증
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_634_REPORT_20260709.md`
+  - `docs/devs/loop634_shared_gate_residual6_contract_queue.json/.md`
+  - `docs/devs/loop634_shared_gate_residual6_contract_plan.json/.md`
+  - `docs/devs/loop634_shared_gate_residual6_projection_application.json/.md`
+  - `docs/devs/loop634_shared_gate_residual6_release_gate_audit.json/.md`
+  - `docs/devs/loop634_shared_gate_residual6_publication_contract_convergence.json/.md`
+  - `docs/devs/loop634_shared_gate_residual6_collateral_compare.json/.md`
+  - `docs/devs/loop634_always_on_golden18_full375_after_shared_gate6.json/.md`
+  - `docs/devs/loop634_after_shared_gate6_residual30_accounting.json/.md`
+  - `docs/devs/loop634_after_shared_gate6_ordinary_residual24_dispatch.json/.md`
+  - `docs/devs/loop634_adjudicated_rebaseline_readiness.json/.md`
+- 검증:
+  - Contract plan: PASS, rows `6`, action `expected_title_restore_contract_case 6`, validation issue `0`.
+  - Projection application: PASS, applied restore `6`, validation issue `0`, runtime replay allowed `0`.
+  - Release gate audit: PASS, pending `0`, violation `0`, release candidate `6`.
+  - Publication contract convergence: PASS, `GO`, row count `375`, violation `0`.
+  - Collateral compare: expected `NO-GO`, shared `375/375`, changed `187`, historical raw regression `114`, runtime counts missing.
+  - Always-on gate: expected `NO-GO`, golden18 `GO / 18 of 18`, collateral `NO-GO`.
+  - Residual accounting: PASS, source `30`, contract processed `6`, ordinary residual `24`.
+  - Residual dispatch: PASS, lane `candidate_set_rebuild_review 6 / canonical_policy_cleanup_review 2 / native_web_image_evidence_review 12 / no_publish_multiwork_guard_review 4`.
+  - Re-baseline readiness: PASS, `NOT_APPLIED`, completion gate `adjusted full375 collateral GO + full_scan path`.
+  - JSON parse: PASS, Loop634 JSON `11`개.
+  - Unit tests: PASS, `.venv312\Scripts\python.exe -m unittest tests.test_build_post_verdict_promotion_gate_contract_plan tests.test_apply_post_verdict_expected_restore_projection_contract tests.test_audit_post_verdict_promotion_gate_release_contract tests.test_reaccount_residual_after_contract_reviews tests.test_build_ordinary_residual_dispatch tests.test_projection_followup_queue -v`, `54` tests.
+  - Py compile: PASS, shared-gate contract/release, residual accounting/dispatch, projection follow-up, collateral/always-on 관련 도구.
+- 결과:
+  - Loop634는 shared-gate residual 6건을 projection-only 계약으로 닫은 회차다.
+  - Runtime/full375 approval은 아니며 re-baseline도 적용하지 않았다.
+  - 완료 gate는 전 행 adjudicated 후 adjusted drift 기준이다.
+- Gate: publication `GO`, release `REVIEW-LOCKED / candidate 6`, residual `REVIEW-LOCKED / 24`, full375 collateral `NO-GO / historical raw 114`, re-baseline `NOT_APPLIED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-09 Loop632 ordinary residual5 계약 적용 검증
 
 - 산출물:

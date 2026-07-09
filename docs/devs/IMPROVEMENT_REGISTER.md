@@ -1,5 +1,20 @@
 # Improvement Register
 
+## IMP-20260709-634 - shared-gate residual6 contract applied
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Shared-gate contract | REVIEW-LOCKED | `loop634_shared_gate_residual6_contract_plan.json`, rows `6`, validation issue `0` | release candidate를 approval로 승격 금지 |
+| Projection application | PASS_STATIC | `loop634_shared_gate_residual6_projection_application.json`, applied restore `6` | full375 adjusted GO 전 publish 승인 금지 |
+| Publication contract | GO | `loop634_shared_gate_residual6_publication_contract_convergence.json`, rows `375`, violation `0` | collateral gate와 분리 유지 |
+| Release gate | REVIEW-LOCKED | pending `0`, violation `0`, release candidate `6` | full375 재확인 필요 |
+| Residual accounting | REVIEW-LOCKED | `loop634_after_shared_gate6_residual30_accounting.json`, ordinary residual `30 -> 24` | residual24 lane batch 처리 |
+| Collateral | NO-GO | historical raw `120 -> 114`, runtime counts missing | adjusted re-baseline 전 raw 재소송 금지 |
+| Re-baseline | NOT_APPLIED | `loop634_adjudicated_rebaseline_readiness.json`, blocker residual `24` | adjusted full375 GO + full_scan path 이후 적용 |
+| Goal 상태 | ACTIVE | `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false` | completion gate는 adjusted full375 collateral GO + full_scan path |
+
+Gate: publication `GO`, release `REVIEW-LOCKED`, residual `REVIEW-LOCKED / 24`, full375 collateral `NO-GO / historical raw 114`, re-baseline `NOT_APPLIED`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## IMP-20260709-633 - source-native residual35 adjudicated and adjusted gate fixed
 
 | 항목 | 상태 | 근거 | 다음 |
