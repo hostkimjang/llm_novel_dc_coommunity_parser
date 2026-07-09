@@ -383,6 +383,38 @@ class AlwaysOnRegressionGatesTest(unittest.TestCase):
         self.assertEqual(report["collateral"]["review_adjusted_regression_count"], 0)
         self.assertFalse(report["full_scan_approval"])
 
+    def test_adjudicated_rebaseline_gate_uses_adjusted_drift_not_historical_raw(self):
+        report = evaluate_gates(
+            golden=_golden(),
+            collateral=_collateral(
+                changed_post_count=141,
+                collateral_regression_count=141,
+                historical_raw_collateral_regression_count=141,
+                baseline_mode="adjudicated_rebaseline",
+                collateral_measure="adjusted_drift",
+                adjusted_drift_count=0,
+            ),
+        )
+
+        self.assertEqual(report["gate"], "GO")
+        self.assertEqual(report["collateral"]["gate_metric"], "adjusted_drift_count")
+        self.assertEqual(report["collateral"]["gate_regression_count"], 0)
+        self.assertEqual(report["collateral"]["historical_raw_collateral_regression_count"], 141)
+        self.assertNotIn("collateral:collateral_regression_count_nonzero", report["blockers"])
+        self.assertFalse(report["full_scan_approval"])
+
+    def test_adjudicated_rebaseline_requires_explicit_adjusted_drift_count(self):
+        report = evaluate_gates(
+            golden=_golden(),
+            collateral=_collateral(
+                baseline_mode="adjudicated_rebaseline",
+                collateral_measure="adjusted_drift",
+            ),
+        )
+
+        self.assertEqual(report["gate"], "NO-GO")
+        self.assertIn("collateral:collateral_adjusted_drift_count_missing", report["blockers"])
+
     def test_contract_accounting_can_clear_reviewed_actionable_residuals_without_approval(self):
         review = _collateral_review(
             summary={

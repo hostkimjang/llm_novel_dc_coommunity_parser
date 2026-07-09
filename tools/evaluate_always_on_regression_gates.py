@@ -326,6 +326,13 @@ def collateral_gate(
     shared = _safe_int(collateral.get("shared_post_count"))
     changed = _safe_int(collateral.get("changed_post_count"))
     regression_count = _safe_int(collateral.get("collateral_regression_count"))
+    baseline_mode = str(collateral.get("baseline_mode") or "bootstrap_20260626").strip()
+    collateral_measure = str(collateral.get("collateral_measure") or "").strip()
+    adjusted_drift_count = _safe_int(collateral.get("adjusted_drift_count"))
+    uses_adjudicated_drift = (
+        baseline_mode == "adjudicated_rebaseline"
+        or collateral_measure == "adjusted_drift"
+    )
     runtime_completed = _safe_int(collateral.get("runtime_completed_count"))
     runtime_pending = _safe_int(collateral.get("runtime_pending_count"))
     runtime_failed = _safe_int(collateral.get("runtime_failed_count"))
@@ -341,19 +348,38 @@ def collateral_gate(
         raw_regression_post_ids=_raw_regression_post_ids(collateral),
     )
     adjusted_regression_count = review_adjustment.get("review_adjusted_regression_count")
+    gate_regression_count = (
+        adjusted_drift_count
+        if uses_adjudicated_drift and adjusted_drift_count is not None
+        else adjusted_regression_count
+    )
+    gate_metric = (
+        "adjusted_drift_count"
+        if uses_adjudicated_drift
+        else "review_adjusted_regression_count"
+        if review_adjustment.get("applied")
+        else "collateral_regression_count"
+    )
+    metric_blockers: list[str] = []
+    if uses_adjudicated_drift and adjusted_drift_count is None:
+        metric_blockers.append("collateral_adjusted_drift_count_missing")
     passed = (
         shared == expected_shared_posts
-        and (adjusted_regression_count or 0) == 0
+        and (gate_regression_count or 0) == 0
         and not review_adjustment.get("blockers")
+        and not metric_blockers
         and runtime_complete
     )
     blockers: list[str] = []
     if shared != expected_shared_posts:
         blockers.append("collateral_shared_post_count_mismatch")
+    blockers.extend(metric_blockers)
     blockers.extend(review_adjustment.get("blockers") or [])
-    if (adjusted_regression_count or 0) != 0:
+    if (gate_regression_count or 0) != 0:
         blockers.append(
-            "collateral_review_adjusted_regression_count_nonzero"
+            "collateral_adjusted_drift_count_nonzero"
+            if uses_adjudicated_drift
+            else "collateral_review_adjusted_regression_count_nonzero"
             if review_adjustment.get("applied")
             else "collateral_regression_count_nonzero"
         )
@@ -371,8 +397,18 @@ def collateral_gate(
         "expected_shared_posts": expected_shared_posts,
         "shared_post_count": shared,
         "changed_post_count": changed,
+        "baseline_mode": baseline_mode,
+        "collateral_measure": collateral_measure or (
+            "adjusted_drift" if uses_adjudicated_drift else "historical_raw_vs_20260626"
+        ),
         "collateral_regression_count": regression_count,
+        "historical_raw_collateral_regression_count": _safe_int(
+            collateral.get("historical_raw_collateral_regression_count")
+        ),
+        "adjusted_drift_count": adjusted_drift_count,
         "review_adjusted_regression_count": adjusted_regression_count,
+        "gate_metric": gate_metric,
+        "gate_regression_count": gate_regression_count,
         "review_adjustment": review_adjustment,
         "runtime_complete": runtime_complete,
         "blockers": blockers,
@@ -409,6 +445,8 @@ def evaluate_gates(
             "collateral_runtime_pass_alone_is_not_approval": True,
             "collateral_source_native_exclusion_requires_clean_review_summary": True,
             "collateral_contract_accounting_is_not_full_scan_approval": True,
+            "completion_gate_uses_adjusted_metric_after_adjudication": True,
+            "historical_raw_vs_20260626_is_not_completion_gate_after_rebaseline": True,
         },
         "golden": golden_result,
         "collateral": collateral_result,
@@ -446,8 +484,15 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
             "- shared posts: "
             f"`{report['collateral']['shared_post_count']}/{report['collateral']['expected_shared_posts']}`"
         ),
+        f"- baseline_mode: `{report['collateral'].get('baseline_mode')}`",
+        f"- collateral_measure: `{report['collateral'].get('collateral_measure')}`",
         f"- changed posts: `{report['collateral']['changed_post_count']}`",
         f"- raw collateral_regression_count: `{report['collateral']['collateral_regression_count']}`",
+        (
+            "- historical_raw_collateral_regression_count: "
+            f"`{display(report['collateral'].get('historical_raw_collateral_regression_count'))}`"
+        ),
+        f"- adjusted_drift_count: `{display(report['collateral'].get('adjusted_drift_count'))}`",
         (
             "- review exclusion candidates: "
             f"`{report['collateral']['review_adjustment'].get('exclusion_candidate_rows')}`"
@@ -488,6 +533,8 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
             "- review_adjusted_regression_count: "
             f"`{report['collateral']['review_adjusted_regression_count']}`"
         ),
+        f"- gate_metric: `{report['collateral'].get('gate_metric')}`",
+        f"- gate_regression_count: `{display(report['collateral'].get('gate_regression_count'))}`",
         f"- runtime_complete: `{report['collateral']['runtime_complete']}`",
         "",
         "## Contract 회계 조정",

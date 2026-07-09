@@ -1,5 +1,18 @@
 # Developer TODO Index
 
+## 2026-07-09 Loop627 이후 re-baseline 선결 TODO
+
+- 상태 업데이트: re-baseline을 실제 적용하지 않고, `adjusted_drift` gate wiring만 코드/문서/테스트로 고정했다.
+- [x] `compare_projection_collateral.py --baseline-mode adjudicated_rebaseline`를 추가한다.
+- [x] 판결 baseline 모드에서 `adjusted_drift_count`를 산출한다.
+- [x] `evaluate_always_on_regression_gates.py`가 `gate_metric=adjusted_drift_count`를 완료 기준으로 쓰게 한다.
+- [x] 2026-06-26 raw는 `historical_raw_collateral_regression_count`/`historical_raw_compare` 참고값이며 완료 blocker가 아님을 문서화한다.
+- [ ] Remaining required-search hard blocker `11660258/11694026`을 닫는다.
+- [ ] `true triage 57` 전 행 판결을 완료한다.
+- [ ] intended recovery 전 행 제목 정답성 판결을 완료한다.
+- [ ] 위 선결이 모두 닫힌 뒤에만 판결된 Loop620/Loop621 결과를 새 baseline으로 재동결한다.
+- Gate: adjusted-drift gate wiring `GO_UNIT`, re-baseline `NOT_APPLIED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-08 Loop615 이후 109행 완주 / row-level search NO-GO
 
 - 상태 업데이트: 동일 `109`행 replay는 완주했다. Run `20260708_191732_513743`은 completed/flushed/pending/failed `109/109/0/0`, integrity `clean_completed_run`, dashboard final `109/109`, requested/effective parallel `16/16`이다.

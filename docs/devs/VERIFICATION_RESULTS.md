@@ -1,5 +1,29 @@
 # Verification Results
 
+## 2026-07-09 Loop627 adjudicated re-baseline adjusted-drift gate wiring 검증
+
+- 산출물:
+  - `docs/devs/loop_reports/LOOP_627_REPORT_20260709.md`
+  - `docs/devs/ADJUDICATED_REBASELINE_CONTRACT.md`
+  - `tools/compare_projection_collateral.py`
+  - `tools/evaluate_always_on_regression_gates.py`
+  - `tests/test_regression_safe_grounding_bootstrap.py`
+  - `tests/test_always_on_regression_gates.py`
+- 검증 대상:
+  - `compare_projection_collateral.py`는 `--baseline-mode adjudicated_rebaseline`에서 `baseline_mode=adjudicated_rebaseline`, `collateral_measure=adjusted_drift`, `adjusted_drift_count`를 산출해야 한다.
+  - `evaluate_always_on_regression_gates.py`는 판결 baseline 모드에서 `gate_metric=adjusted_drift_count`를 완료 기준으로 써야 한다.
+  - `historical_raw_collateral_regression_count > 0`이어도 `adjusted_drift_count=0`이면 raw 때문에 collateral gate를 막지 않아야 한다.
+- 실행 검증:
+  - Unit tests: PASS, `.venv312\Scripts\python.exe -m unittest tests.test_regression_safe_grounding_bootstrap tests.test_always_on_regression_gates -v`, `28` tests.
+  - Py compile: PASS, `tools/compare_projection_collateral.py`, `tools/evaluate_always_on_regression_gates.py`, 관련 테스트 파일 `2`개.
+- Gate:
+  - adjusted-drift gate wiring: `GO_UNIT`
+  - re-baseline: `NOT_APPLIED`
+  - runtime/full375: `NOT_RUN_THIS_LOOP`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+  - goal `ACTIVE / NOT_COMPLETE`
+
 ## 2026-07-09 Loop626 current search hard5 replay 및 re-baseline 계약 검증
 
 - 산출물:

@@ -20,6 +20,13 @@ Loop620/Loop621 계열 full375 결과의 raw diff는 2026-06-26 bootstrap baseli
 - `adjusted_baseline_manifest`: source run id, projection id, commit, row count, search/publication gate, ledger hash.
 - `historical_raw_compare`: 2026-06-26 baseline 대비 raw diff. 참고용이며 완료 blocker가 아니다.
 
+## 도구 필드 계약
+
+- 판결 baseline을 비교 기준으로 쓸 때 `tools/compare_projection_collateral.py`는 `--baseline-mode adjudicated_rebaseline`로 실행한다.
+- 이 모드의 산출물은 `baseline_mode=adjudicated_rebaseline`, `collateral_measure=adjusted_drift`, `adjusted_drift_count=<판결 baseline 대비 drift>`를 남긴다.
+- 2026-06-26 bootstrap 대비 raw 수치는 `historical_raw_collateral_regression_count` 또는 `historical_raw_compare`에만 둔다. 이 값은 설명용이며 완료 gate metric이 아니다.
+- `tools/evaluate_always_on_regression_gates.py`는 `baseline_mode=adjudicated_rebaseline` 또는 `collateral_measure=adjusted_drift`를 보면 `gate_metric=adjusted_drift_count`로 평가한다. 이때 `historical_raw_collateral_regression_count > 0`이어도 `adjusted_drift_count=0`, runtime complete, search/publication gate clean이면 collateral blocker로 보지 않는다.
+
 ## 이후 Collateral 판정
 
 - 완료 gate와 매 run blocker는 `adjusted_drift` 기준으로 판단한다.

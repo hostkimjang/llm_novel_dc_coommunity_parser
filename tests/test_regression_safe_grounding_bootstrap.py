@@ -195,6 +195,36 @@ class RegressionSafeGroundingBootstrapTest(unittest.TestCase):
             self.assertIn("projection 결과를 baseline full375와 비교한 정적 collateral diff", text)
             self.assertNotIn("Loop580 projection", text)
 
+    def test_projection_compare_adjudicated_rebaseline_reports_adjusted_drift(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            baseline = root / "adjudicated_baseline.json"
+            after = root / "after.json"
+            manifest = root / "golden_manifest.json"
+            output_md = root / "compare.md"
+            write_json(baseline, [result_row(1, "same", "A")])
+            write_json(after, [result_row(1, "same", "B")])
+            write_json(manifest, {"rows": []})
+
+            report = build_compare(
+                baseline_path=baseline,
+                after_path=after,
+                golden_manifest=manifest,
+                compare_id="unit_adjudicated_rebaseline",
+                expected_shared_posts=1,
+                baseline_mode="adjudicated_rebaseline",
+            )
+            write_markdown(output_md, report)
+
+            self.assertEqual(report["baseline_mode"], "adjudicated_rebaseline")
+            self.assertEqual(report["collateral_measure"], "adjusted_drift")
+            self.assertEqual(report["adjusted_drift_count"], 1)
+            self.assertIsNone(report["historical_raw_collateral_regression_count"])
+            self.assertIn("adjusted_drift_nonzero", report["blockers"])
+            text = output_md.read_text(encoding="utf-8")
+            self.assertIn("판결 baseline full375", text)
+            self.assertIn("adjusted_drift", text)
+
     def test_projection_compare_runtime_manifest_marks_full_replay_complete(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

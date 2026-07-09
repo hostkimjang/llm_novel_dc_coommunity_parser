@@ -40,8 +40,11 @@ def build_compare(
     compare_id: str,
     expected_shared_posts: int = 375,
     runtime_manifest: Path | None = None,
+    baseline_mode: str = "bootstrap_20260626",
     generated_at: str | None = None,
 ) -> dict[str, Any]:
+    if baseline_mode not in {"bootstrap_20260626", "adjudicated_rebaseline"}:
+        raise ValueError(f"Unsupported baseline_mode: {baseline_mode}")
     baseline_rows = load_json_or_jsonl(baseline_path)
     after_rows = load_json_or_jsonl(after_path)
     runtime_payload = load_json(runtime_manifest) if runtime_manifest else None
@@ -60,6 +63,11 @@ def build_compare(
     )
     shared = collateral.get("shared_post_count")
     regressions = collateral.get("collateral_regression_count")
+    collateral_measure = (
+        "adjusted_drift"
+        if baseline_mode == "adjudicated_rebaseline"
+        else "historical_raw_vs_20260626"
+    )
     static_gate = "GO" if shared == expected_shared_posts and regressions == 0 else "NO-GO"
     runtime_gate = "GO" if runtime_complete and static_gate == "GO" else "NO-GO"
     runtime_blockers: list[str] = []
@@ -84,6 +92,14 @@ def build_compare(
         "after_path": str(after_path),
         "golden_manifest_path": str(golden_manifest),
         "runtime_manifest_path": str(runtime_manifest) if runtime_manifest else None,
+        "baseline_mode": baseline_mode,
+        "collateral_measure": collateral_measure,
+        "adjusted_drift_count": (
+            regressions if baseline_mode == "adjudicated_rebaseline" else None
+        ),
+        "historical_raw_collateral_regression_count": (
+            regressions if baseline_mode == "bootstrap_20260626" else None
+        ),
         "expected_shared_posts": expected_shared_posts,
         **collateral,
         "runtime_completed_count": runtime_completed,
@@ -91,7 +107,15 @@ def build_compare(
         "runtime_failed_count": runtime_failed,
         "runtime_complete": runtime_complete,
         "blockers": [
-            *([] if static_gate == "GO" else ["projection_static_collateral_regression_nonzero"]),
+            *(
+                []
+                if static_gate == "GO"
+                else [
+                    "adjusted_drift_nonzero"
+                    if baseline_mode == "adjudicated_rebaseline"
+                    else "projection_static_collateral_regression_nonzero"
+                ]
+            ),
             *runtime_blockers,
         ],
         "approval_boundary": {
@@ -99,6 +123,12 @@ def build_compare(
             "runtime_compare_is_not_semantic_approval": runtime_manifest is not None,
             "projection_static_gate_is_not_full_scan_approval": True,
             "full_scan_approval_requires_full_scan_path": True,
+            "adjudicated_rebaseline_adjusted_drift_is_completion_metric": (
+                baseline_mode == "adjudicated_rebaseline"
+            ),
+            "historical_raw_vs_20260626_is_reference_only": (
+                baseline_mode == "adjudicated_rebaseline"
+            ),
         },
     }
     return report
@@ -106,13 +136,23 @@ def build_compare(
 
 def write_markdown(path: Path, report: dict[str, Any]) -> None:
     runtime_manifest_path = report.get("runtime_manifest_path")
-    scope_sentence = (
-        "baseline full375와 runtime replay 결과를 비교한 collateral diff다. "
-        "runtime 375 완주 여부를 포함하지만 semantic/full_scan approval은 별도 게이트에서 판단한다."
-        if runtime_manifest_path
-        else "projection 결과를 baseline full375와 비교한 정적 collateral diff다. "
-        "runtime 375 완주가 아니므로 regression 수가 줄어도 full_scan approval은 열리지 않는다."
-    )
+    baseline_mode = str(report.get("baseline_mode") or "bootstrap_20260626")
+    if baseline_mode == "adjudicated_rebaseline":
+        scope_sentence = (
+            "판결 baseline과 runtime replay 결과를 비교한 adjusted_drift collateral diff다. "
+            "runtime 375 완주 여부를 포함하지만 semantic/full_scan approval은 별도 게이트에서 판단한다."
+            if runtime_manifest_path
+            else "projection 결과를 판결 baseline full375와 비교한 정적 adjusted_drift collateral diff다. "
+            "runtime 375 완주가 아니므로 drift가 0이어도 full_scan approval은 열리지 않는다."
+        )
+    else:
+        scope_sentence = (
+            "baseline full375와 runtime replay 결과를 비교한 collateral diff다. "
+            "runtime 375 완주 여부를 포함하지만 semantic/full_scan approval은 별도 게이트에서 판단한다."
+            if runtime_manifest_path
+            else "projection 결과를 baseline full375와 비교한 정적 collateral diff다. "
+            "runtime 375 완주가 아니므로 regression 수가 줄어도 full_scan approval은 열리지 않는다."
+        )
     runtime_counts = (
         f"completed={report['runtime_completed_count']}, "
         f"pending={report['runtime_pending_count']}, "
@@ -133,9 +173,16 @@ def write_markdown(path: Path, report: dict[str, Any]) -> None:
         f"- runtime_collateral_gate: `{report['runtime_collateral_gate']}`",
         f"- semantic_quality: `{report['semantic_quality']}`",
         f"- full_scan_approval: `{str(report['full_scan_approval']).lower()}`",
+        f"- baseline_mode: `{report.get('baseline_mode')}`",
+        f"- collateral_measure: `{report.get('collateral_measure')}`",
         f"- shared posts: `{report['shared_post_count']}/{report['expected_shared_posts']}`",
         f"- changed rows: `{report['changed_post_count']}`",
         f"- raw collateral_regression_count: `{report['collateral_regression_count']}`",
+        f"- adjusted_drift_count: `{report.get('adjusted_drift_count')}`",
+        (
+            "- historical_raw_collateral_regression_count: "
+            f"`{report.get('historical_raw_collateral_regression_count')}`"
+        ),
         f"- status_counts: `{report['status_counts']}`",
         f"- regression_status_counts: `{report['regression_status_counts']}`",
         f"- runtime counts: `{runtime_counts}`",
@@ -157,7 +204,18 @@ def write_markdown(path: Path, report: dict[str, Any]) -> None:
                 f"({before.get('candidate_ledger_status')} -> {after.get('candidate_ledger_status')})"
             )
     lines.extend(["", "## Gate 해석", ""])
-    if report["projection_static_collateral_gate"] == "GO":
+    if baseline_mode == "adjudicated_rebaseline":
+        if report["projection_static_collateral_gate"] == "GO":
+            lines.append(
+                "판결 baseline 대비 adjusted_drift는 0건이다. 단 이 산출물만으로 full_scan approval을 열지 않고 "
+                "always-on gate와 full_scan 경로 조건을 함께 확인한다."
+            )
+        else:
+            lines.append(
+                f"판결 baseline 대비 adjusted_drift `{report.get('adjusted_drift_count')}`건이 남아 있다. "
+                "따라서 이는 옛 6/26 버그 재소송이 아니라 올바른 행동 대비 drift로 triage한다."
+            )
+    elif report["projection_static_collateral_gate"] == "GO":
         lines.append(
             "full375 collateral regression은 0건이다. 단 이 산출물만으로 full_scan approval을 열지 않고 "
             "always-on gate와 full_scan 경로 조건을 함께 확인한다."
@@ -180,6 +238,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--compare-id", default="full375_projection_collateral_compare")
     parser.add_argument("--expected-shared-posts", type=int, default=375)
     parser.add_argument("--runtime-manifest", type=Path, default=None)
+    parser.add_argument(
+        "--baseline-mode",
+        choices=["bootstrap_20260626", "adjudicated_rebaseline"],
+        default="bootstrap_20260626",
+    )
     parser.add_argument("--output-json", required=True, type=Path)
     parser.add_argument("--output-md", required=True, type=Path)
     parser.add_argument("--fail-on-regression", action="store_true")
@@ -195,6 +258,7 @@ def main() -> int:
         compare_id=args.compare_id,
         expected_shared_posts=args.expected_shared_posts,
         runtime_manifest=args.runtime_manifest,
+        baseline_mode=args.baseline_mode,
     )
     write_json(args.output_json, report)
     write_markdown(args.output_md, report)
@@ -206,6 +270,9 @@ def main() -> int:
                 "shared_post_count": report["shared_post_count"],
                 "changed_post_count": report["changed_post_count"],
                 "collateral_regression_count": report["collateral_regression_count"],
+                "baseline_mode": report["baseline_mode"],
+                "collateral_measure": report["collateral_measure"],
+                "adjusted_drift_count": report["adjusted_drift_count"],
                 "blockers": report["blockers"],
             },
             ensure_ascii=False,

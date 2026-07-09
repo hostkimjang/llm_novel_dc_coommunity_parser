@@ -1,5 +1,19 @@
 # Development Checklist
 
+## 2026-07-09 Loop627 adjudicated re-baseline adjusted-drift gate wiring 체크
+
+- [x] 새 runtime replay/full375를 실행하지 않았다.
+- [x] `compare_projection_collateral.py`에 `--baseline-mode adjudicated_rebaseline` 옵션을 추가했다.
+- [x] 판결 baseline 모드 산출물이 `baseline_mode=adjudicated_rebaseline`, `collateral_measure=adjusted_drift`, `adjusted_drift_count`를 남기도록 했다.
+- [x] `evaluate_always_on_regression_gates.py`가 판결 baseline 모드에서 `gate_metric=adjusted_drift_count`를 완료 기준으로 쓰도록 했다.
+- [x] 2026-06-26 bootstrap 대비 raw는 `historical_raw_collateral_regression_count`/`historical_raw_compare` 참고값이며 완료 blocker가 아님을 문서화했다.
+- [x] 계약 테스트를 추가했다: re-baseline compare 산출물, historical raw nonzero + adjusted drift zero gate.
+- [x] Re-baseline 계약 문서 `docs/devs/ADJUDICATED_REBASELINE_CONTRACT.md`를 갱신했다.
+- [ ] Remaining required-search hard blocker `11660258/11694026`을 닫는다.
+- [ ] `true triage 57`과 intended recovery 전 행 판결 후에만 실제 re-baseline을 생성한다.
+- Gate: adjusted-drift gate wiring `GO_UNIT`, re-baseline `NOT_APPLIED`, runtime/full375 `NOT_RUN_THIS_LOOP`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_627_REPORT_20260709.md`, `docs/devs/ADJUDICATED_REBASELINE_CONTRACT.md`, `tools/compare_projection_collateral.py`, `tools/evaluate_always_on_regression_gates.py`, `tests/test_regression_safe_grounding_bootstrap.py`, `tests/test_always_on_regression_gates.py`.
+
 ## 2026-07-09 Loop626 current search hard5 replay 및 re-baseline gate 체크
 
 - [x] Loop623 current search non-ok `15`행을 hard replay `5`와 recovered-only observation `10`으로 분리했다.
