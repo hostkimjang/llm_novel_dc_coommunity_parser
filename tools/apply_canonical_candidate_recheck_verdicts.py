@@ -262,7 +262,7 @@ def build_application_summary(
             "runtime_replay_allowed_rows": 0,
             "contract_test_required_rows": len(out_rows),
             "full375_collateral_gate": "NO-GO",
-            "completion_gate": "full375 collateral GO + full_scan path",
+            "completion_gate": "adjusted full375 collateral GO + full_scan path",
         },
         "validation_issues": validation_issues,
         "unreviewed_post_ids": unreviewed_post_ids,

@@ -377,7 +377,7 @@ def _write_md(path: Path, application: dict[str, Any]) -> None:
             "",
             "- Source-native HOLD 적용은 projection/static 계약 수렴이며 full_scan approval이 아니다.",
             "- Public title은 제거하고 candidate ledger/trace에 보존한다.",
-            "- 완료 기준은 계속 `full375 collateral GO + full_scan 경로 정의`다.",
+            "- 완료 기준은 계속 `adjusted full375 collateral GO + full_scan 경로 정의`다.",
         ]
     )
     path.parent.mkdir(parents=True, exist_ok=True)

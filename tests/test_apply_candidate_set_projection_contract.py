@@ -170,6 +170,10 @@ class ApplyCandidateSetProjectionContractTest(unittest.TestCase):
         self.assertEqual(report["gate"], "REVIEW-LOCKED")
         self.assertEqual(report["summary"]["applied_restore_rows"], 1)
         self.assertEqual(report["summary"]["applied_hold_rows"], 3)
+        self.assertEqual(
+            report["summary"]["completion_gate"],
+            "adjusted full375 collateral GO + full_scan path",
+        )
         self.assertEqual(report["summary"]["scrubbed_public_identity_rows"], 2)
         self.assertEqual(report["summary"]["already_blocked_hold_rows"], 1)
 

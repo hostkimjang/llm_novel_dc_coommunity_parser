@@ -85,6 +85,10 @@ class BuildCandidateSetContractPlanTest(unittest.TestCase):
         plan = build_plan(self._batch(), plan_id="unit")
 
         self.assertEqual(plan["summary"]["candidate_set_contract_plan_rows"], 3)
+        self.assertEqual(
+            plan["summary"]["completion_gate"],
+            "adjusted full375 collateral GO + full_scan path",
+        )
         self.assertEqual(plan["execution_contract"]["requested_parallel"], 16)
         self.assertEqual(
             plan["execution_contract"]["dashboard_contract"]["dashboard_policy"],

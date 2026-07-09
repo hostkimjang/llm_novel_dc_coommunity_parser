@@ -1,5 +1,18 @@
 # Operation Quality Checklist
 
+## 2026-07-09 Loop635 no-publish residual4 운영 메모
+
+- [x] Loop634 residual24 중 no-publish intent guard 계약 후보 `4`건을 먼저 처리했다.
+- [x] Contract plan/application은 rows `4`, applied hold `4`, scrubbed public identity `4`, validation issue `0`이다.
+- [x] Publication contract는 `GO / violation 0`이고 release gate는 `REVIEW-LOCKED / no-release 4 / release candidate 0 / violation 0`이다.
+- [x] Historical raw collateral은 `114 -> 110`으로 줄었지만 여전히 `NO-GO`다.
+- [x] Residual action queue는 `24 -> 20`으로 줄었고, 남은 lane은 `candidate_set_rebuild_review 6`, `canonical_policy_cleanup_review 2`, `native_web_image_evidence_review 12`다.
+- [x] Re-baseline readiness는 `NOT_APPLIED`이며 blocker는 ordinary residual `20`, adjusted full375 collateral GO 미확인, full_scan path 미완료다.
+- [ ] Projection-only compare의 runtime counts missing을 runtime completion으로 보정하지 않는다.
+- [ ] No-publish no-release 계약을 release candidate나 approval로 승격하지 않는다.
+- [ ] Re-baseline 전에는 raw를 historical diff로만 두고 adjusted gate를 열지 않는다.
+- Gate: application `REVIEW-LOCKED`, publication `GO`, release `REVIEW-LOCKED / no-release 4`, residual `REVIEW-LOCKED / ordinary 20`, always-on `NO-GO`, collateral `NO-GO / historical raw 110`, re-baseline `NOT_APPLIED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
 ## 2026-07-09 Loop634 shared-gate residual6 운영 메모
 
 - [x] Loop633 residual30 중 shared-gate restore 계약 후보 `6`건을 먼저 처리했다.

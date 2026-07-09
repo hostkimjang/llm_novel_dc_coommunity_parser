@@ -212,7 +212,7 @@ def build_plan(
             "contract_test_required_rows": sum(1 for row in rows if row.get("contract_test_required_before_runtime")),
             "stronger_evidence_required_rows": sum(1 for row in rows if row.get("stronger_evidence_required_before_runtime")),
             "full375_collateral_gate": "NO-GO",
-            "completion_gate": "full375 collateral GO + full_scan path",
+            "completion_gate": "adjusted full375 collateral GO + full_scan path",
         },
         "validation_issues": validation_issues,
         "rows": rows,

@@ -141,7 +141,7 @@ def build_plan(
             "candidate_only_no_publish_rows": no_publish_rows,
             "runtime_replay_allowed_rows": 0,
             "full375_collateral_gate": "NO-GO",
-            "completion_gate": "full375 collateral GO + full_scan path",
+            "completion_gate": "adjusted full375 collateral GO + full_scan path",
         },
         "validation_issues": validation_issues,
         "rows": rows,

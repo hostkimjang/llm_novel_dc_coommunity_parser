@@ -1,0 +1,66 @@
+{
+  "report_type": "candidate_set_projection_contract_application",
+  "projection_id": "loop635_no_publish_guard4_projection_application",
+  "generated_at": "2026-07-09T22:31:32",
+  "source_contract_plan": "loop635_no_publish_guard4_contract_plan",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "projection_rows": 375,
+    "contract_plan_rows": 4,
+    "candidate_set_contract_rows": 4,
+    "applied_restore_rows": 0,
+    "applied_hold_rows": 4,
+    "applied_candidate_set_rebuild_hold_rows": 0,
+    "applied_no_publish_intent_guard_rows": 4,
+    "scrubbed_public_identity_rows": 4,
+    "already_blocked_hold_rows": 0,
+    "validation_issue_count": 0,
+    "skipped_contract_action_counts": {},
+    "runtime_replay_allowed_rows": 0,
+    "requested_parallel_for_future_runtime": 16,
+    "dashboard_policy": "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+    "dashboard_url": "http://127.0.0.1:8080",
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "adjusted full375 collateral GO + full_scan path"
+  },
+  "validation_issues": [],
+  "applied_rows": [
+    {
+      "post_id": 11657038,
+      "contract_action": "no_publish_intent_guard_contract_case",
+      "preserved_candidate_title": "레드 데스티니 [D]",
+      "preserved_candidate_url": "https://novel.munpia.com/377504",
+      "status": "scrubbed_public_identity"
+    },
+    {
+      "post_id": 11657044,
+      "contract_action": "no_publish_intent_guard_contract_case",
+      "preserved_candidate_title": "웨딩드레스",
+      "preserved_candidate_url": "https://novelpia.com/novel/60892",
+      "status": "scrubbed_public_identity"
+    },
+    {
+      "post_id": 11681180,
+      "contract_action": "no_publish_intent_guard_contract_case",
+      "preserved_candidate_title": "아카데미 패드립 면역",
+      "preserved_candidate_url": "https://novelpia.com/novel/383527",
+      "status": "scrubbed_public_identity"
+    },
+    {
+      "post_id": 11710045,
+      "contract_action": "no_publish_intent_guard_contract_case",
+      "preserved_candidate_title": "공주는 언니를 황제로 만든다",
+      "preserved_candidate_url": "https://novel.munpia.com/331535",
+      "status": "scrubbed_public_identity"
+    }
+  ],
+  "approval_boundary": {
+    "projection_application_is_not_runtime_replay": true,
+    "release_candidate_is_not_full_scan_approval": true,
+    "runtime_replay_before_full375_collateral_forbidden": true,
+    "full375_collateral_remains_no_go": true,
+    "test_runs_require_parallel_16_and_web_dashboard": true
+  }
+}

@@ -403,7 +403,7 @@ def apply_candidate_set_projection_contract(
         "dashboard_policy": "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
         "dashboard_url": "http://127.0.0.1:8080",
         "full375_collateral_gate": "NO-GO",
-        "completion_gate": "full375 collateral GO + full_scan path",
+        "completion_gate": "adjusted full375 collateral GO + full_scan path",
     }
     report = {
         "report_type": "candidate_set_projection_contract_application",

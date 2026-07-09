@@ -160,7 +160,7 @@ def build_review(
             "publish_allowed_rows": 0,
             "runtime_replay_allowed_rows": 0,
             "full375_collateral_gate": "NO-GO",
-            "completion_gate": "full375 collateral GO + full_scan path",
+            "completion_gate": "adjusted full375 collateral GO + full_scan path",
         },
         "validation_issues": validation_issues,
         "rows": rows,

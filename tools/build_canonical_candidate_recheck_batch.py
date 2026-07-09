@@ -474,7 +474,7 @@ def build_canonical_recheck_batch(
             "batch_generation_is_not_canonical_verdict": True,
             "runtime_replay_before_canonical_verdict_forbidden": True,
             "hard_hold_relaxation_requires_blind_or_source_native_verdict": True,
-            "completion_gate": "full375 collateral GO + full_scan path",
+            "completion_gate": "adjusted full375 collateral GO + full_scan path",
         },
     }
 
@@ -507,7 +507,7 @@ def write_markdown(batch: dict[str, Any], path: Path) -> None:
         "- 이 batch는 canonical verdict가 아니라 판정 입력이다.",
         "- B1 row는 source-native 또는 blind canonical review 전까지 runtime replay로 넘기지 않는다.",
         "- 판정 뒤에도 contract test와 full375 collateral 확인 전에는 full_scan approval을 열지 않는다.",
-        "- 완료 기준은 계속 `full375 collateral GO + full_scan 경로 정의`다.",
+            "- 완료 기준은 계속 `adjusted full375 collateral GO + full_scan 경로 정의`다.",
         "",
         "## Review groups",
         "",

@@ -230,7 +230,7 @@ def build_audit(
             "outcome_counts": dict(outcome_counts),
             "violation_counts": dict(violation_counts),
             "full375_collateral_gate": "NO-GO",
-            "completion_gate": "full375 collateral GO + full_scan path",
+            "completion_gate": "adjusted full375 collateral GO + full_scan path",
         },
         "violation_rows": violation_rows,
         "pending_rows": pending_rows,

@@ -1,5 +1,27 @@
 # Development Checklist
 
+## 2026-07-09 Loop635 no-publish residual4 계약 적용 체크
+
+- [x] 새 runtime replay/full375를 실행하지 않았다.
+- [x] Loop634 residual24 중 `no_publish_multiwork_guard_review` 4건을 contract plan으로 분리했다.
+- [x] Contract plan은 rows `4`, action `no_publish_intent_guard_contract_case 4`, promotion decision `reject 4`, validation issue `0`이다.
+- [x] Projection application은 projection rows `375`, applied hold `4`, applied no-publish intent guard `4`, scrubbed public identity `4`, validation issue `0`, runtime replay allowed `0`이다.
+- [x] Release gate audit은 pending `0`, violation `0`, satisfied no-release `4`, release candidate `0`이다.
+- [x] Publication contract convergence는 `GO / row 375 / violation 0`이다.
+- [x] Historical raw collateral은 `114 -> 110`으로 줄었지만 gate는 `NO-GO`다.
+- [x] Always-on gate는 golden18 `GO / 18 of 18`과 full375 collateral `NO-GO / raw 110 / runtime counts missing`를 함께 기록했다.
+- [x] Residual accounting은 source `24`, contract processed `4`, ordinary residual `20`으로 갱신했다.
+- [x] Residual20 dispatch lane은 `candidate_set_rebuild_review 6`, `canonical_policy_cleanup_review 2`, `native_web_image_evidence_review 12`다.
+- [x] Re-baseline readiness는 `NOT_APPLIED`로 기록했다.
+- [x] 검증을 실행했다: JSON parse `9`, unit tests `45`, py_compile PASS, `git diff --check` PASS.
+- [x] Tools/tests의 old exact completion gate 문자열을 `0`건으로 수렴시켰다.
+- [ ] No-publish 4건을 release candidate나 approval로 승격하지 않는다.
+- [ ] Residual `20`건은 단건 반복이 아니라 lane batch로 처리한다.
+- [ ] 전 행 adjudicated 전에는 re-baseline을 적용하지 않는다.
+- [ ] 완료 gate는 historical raw가 아니라 adjusted drift 기준으로 평가한다.
+- Gate: no-publish application `REVIEW-LOCKED / applied 4`, publication `GO`, release `REVIEW-LOCKED / no-release 4 / candidate 0`, residual `REVIEW-LOCKED / ordinary 20`, always-on `NO-GO`, full375 collateral `NO-GO / historical raw 110`, re-baseline `NOT_APPLIED`, completion gate `adjusted full375 collateral GO + full_scan path`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+- 산출물: `docs/devs/loop_reports/LOOP_635_REPORT_20260709.md`, `docs/devs/loop635_*`, `out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop635_no_publish_guard4_projection_result.json`.
+
 ## 2026-07-09 Loop634 shared-gate residual6 계약 적용 체크
 
 - [x] 새 runtime replay/full375를 실행하지 않았다.

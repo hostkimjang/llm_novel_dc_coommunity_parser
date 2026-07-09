@@ -122,7 +122,7 @@ def merge_plan(
             ),
             "runtime_replay_allowed_rows": 0,
             "full375_collateral_gate": "NO-GO",
-            "completion_gate": "full375 collateral GO + full_scan path",
+            "completion_gate": "adjusted full375 collateral GO + full_scan path",
         }
     )
     return {
@@ -188,7 +188,7 @@ def merge_application(
             "addition_applied_rows": len(addition_rows),
             "runtime_replay_allowed_rows": 0,
             "full375_collateral_gate": "NO-GO",
-            "completion_gate": "full375 collateral GO + full_scan path",
+            "completion_gate": "adjusted full375 collateral GO + full_scan path",
         }
     )
     return {
@@ -238,7 +238,7 @@ def write_plan_markdown(path: Path, plan: dict[str, Any], addition: dict[str, An
     lines.extend(["", "## Gate 해석", ""])
     lines.append(
         "추가 publish 행은 release candidate이며 approval이 아니다. candidate-only 행은 no-publish contract로 보존한다. "
-        "완료 기준은 계속 `full375 collateral GO + full_scan path`다."
+            "완료 기준은 계속 `adjusted full375 collateral GO + full_scan path`다."
     )
     lines.append("")
     path.parent.mkdir(parents=True, exist_ok=True)

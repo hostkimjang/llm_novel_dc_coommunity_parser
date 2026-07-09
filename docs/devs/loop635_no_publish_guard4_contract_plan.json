@@ -1,0 +1,398 @@
+{
+  "report_type": "no_publish_guard_contract_plan",
+  "plan_id": "loop635_no_publish_guard4_contract_plan",
+  "generated_at": "2026-07-09T22:31:23",
+  "source_batch": "loop634_after_shared_gate6_ordinary_residual24_dispatch",
+  "gate": "REVIEW-LOCKED",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "summary": {
+    "source_batch_rows": 24,
+    "no_publish_contract_plan_rows": 4,
+    "validation_issue_count": 0,
+    "contract_action_counts": {
+      "no_publish_intent_guard_contract_case": 4
+    },
+    "promotion_decision_status_counts": {
+      "reject": 4
+    },
+    "label_counts": {
+      "HOLD": 4
+    },
+    "triage_bucket_counts": {
+      "unsafe_promotion_from_hold": 4
+    },
+    "no_publish_contract_rows": 4,
+    "release_candidate_not_approval_rows": 0,
+    "publish_allowed_rows": 0,
+    "runtime_replay_allowed_rows": 0,
+    "full375_collateral_gate": "NO-GO",
+    "completion_gate": "adjusted full375 collateral GO + full_scan path"
+  },
+  "execution_contract": {
+    "runtime_replay_allowed": false,
+    "requested_parallel": 16,
+    "dashboard_contract": {
+      "dashboard_policy": "WEB_DASHBOARD_REQUIRED_FOR_TEST_RUNS",
+      "dashboard_url": "http://127.0.0.1:8080",
+      "forbidden_flags": [
+        "--no-dashboard"
+      ]
+    }
+  },
+  "validation_issues": [],
+  "rows": [
+    {
+      "post_id": 11657038,
+      "contract_origin": "ordinary_residual_no_publish_guard_dispatch",
+      "contract_batch_lane": "NP_no_publish_guard_contract",
+      "source_dispatch_lane": "no_publish_multiwork_guard_review",
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "HOLD",
+      "source_native_verdict": "unsafe_promotion_ambiguous_url_and_game_surface_hard_hold",
+      "evidence_grade": "Missing",
+      "target_title": null,
+      "target_url": null,
+      "official_support_refs": [],
+      "official_support_ref_count": 0,
+      "actions": [
+        "repair_unsafe_promotion",
+        "intent_guard_review",
+        "native_web_or_image_evidence_required"
+      ],
+      "contract_action": "no_publish_intent_guard_contract_case",
+      "promotion_decision": {
+        "status": "reject",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": false,
+        "reason_codes": [
+          "no_candidate_title",
+          "row_discussion_missing",
+          "nonwork",
+          "scope_platform_meta_nonwork",
+          "scope_not_current_work",
+          "no_publish_policy_guard",
+          "public_identity_scrubbed_before_policy_contract",
+          "no_publish_guard_source_native_contract_case"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11657038,
+        "candidate_title": "",
+        "candidate_url": "",
+        "source": "no_publish_guard_contract_plan",
+        "official_title_exists": false,
+        "row_discusses_work_as_work": false,
+        "title_resolution_state": "nonwork",
+        "work_resolution": "nonwork",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "platform_meta_nonwork",
+          "confidence": "medium",
+          "direct_bridge_sources": [
+            "ordinary_residual_dispatch",
+            "no_publish_multiwork_guard_review",
+            "no_publish_intent_guard_contract_case"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "no_publish_policy_guard",
+            "public_identity_scrubbed_before_policy_contract"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "no_publish_source_native_contract",
+          "strength": "missing",
+          "source_path_or_snippet": "댓글에는 별도 novelpia URL과 게임 `데스티니` 표면이 섞여 있고 after `레드 데스티니 [D]`는 직접 제목 근거가 부족하다. unsafe promotion은 no-publish hard-hold로 남긴다.",
+          "supports_publish": false,
+          "reason_code": "no_publish_guard_source_native_contract_case"
+        }
+      ],
+      "release_candidate_not_approval": false,
+      "no_publish_contract_required_before_publish": true,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": true,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "댓글에는 별도 novelpia URL과 게임 `데스티니` 표면이 섞여 있고 after `레드 데스티니 [D]`는 직접 제목 근거가 부족하다. unsafe promotion은 no-publish hard-hold로 남긴다.",
+      "evidence_refs": [
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11657038",
+        "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11657044,
+      "contract_origin": "ordinary_residual_no_publish_guard_dispatch",
+      "contract_batch_lane": "NP_no_publish_guard_contract",
+      "source_dispatch_lane": "no_publish_multiwork_guard_review",
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "HOLD",
+      "source_native_verdict": "unsafe_promotion_character_or_image_context_requires_native_evidence",
+      "evidence_grade": "Missing",
+      "target_title": null,
+      "target_url": null,
+      "official_support_refs": [],
+      "official_support_ref_count": 0,
+      "actions": [
+        "repair_unsafe_promotion",
+        "intent_guard_review",
+        "native_web_or_image_evidence_required"
+      ],
+      "contract_action": "no_publish_intent_guard_contract_case",
+      "promotion_decision": {
+        "status": "reject",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": false,
+        "reason_codes": [
+          "no_candidate_title",
+          "row_discussion_missing",
+          "nonwork",
+          "scope_platform_meta_nonwork",
+          "scope_not_current_work",
+          "no_publish_policy_guard",
+          "public_identity_scrubbed_before_policy_contract",
+          "no_publish_guard_source_native_contract_case"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11657044,
+        "candidate_title": "",
+        "candidate_url": "",
+        "source": "no_publish_guard_contract_plan",
+        "official_title_exists": false,
+        "row_discusses_work_as_work": false,
+        "title_resolution_state": "nonwork",
+        "work_resolution": "nonwork",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "platform_meta_nonwork",
+          "confidence": "medium",
+          "direct_bridge_sources": [
+            "ordinary_residual_dispatch",
+            "no_publish_multiwork_guard_review",
+            "no_publish_intent_guard_contract_case"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "no_publish_policy_guard",
+            "public_identity_scrubbed_before_policy_contract"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "no_publish_source_native_contract",
+          "strength": "missing",
+          "source_path_or_snippet": "화은쌤/이준 캐릭터 표면만으로 after `웨딩드레스` 공식 제목을 확정하기 어렵다. 이미지 또는 native character bridge 확인 전 publish를 막는다.",
+          "supports_publish": false,
+          "reason_code": "no_publish_guard_source_native_contract_case"
+        }
+      ],
+      "release_candidate_not_approval": false,
+      "no_publish_contract_required_before_publish": true,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": true,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "화은쌤/이준 캐릭터 표면만으로 after `웨딩드레스` 공식 제목을 확정하기 어렵다. 이미지 또는 native character bridge 확인 전 publish를 막는다.",
+      "evidence_refs": [
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11657044",
+        "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11681180,
+      "contract_origin": "ordinary_residual_no_publish_guard_dispatch",
+      "contract_batch_lane": "NP_no_publish_guard_contract",
+      "source_dispatch_lane": "no_publish_multiwork_guard_review",
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "HOLD",
+      "source_native_verdict": "unsafe_abbrev_requires_alias_relation_or_native_evidence",
+      "evidence_grade": "Missing",
+      "target_title": null,
+      "target_url": null,
+      "official_support_refs": [],
+      "official_support_ref_count": 0,
+      "actions": [
+        "repair_unsafe_promotion",
+        "intent_guard_review",
+        "native_web_or_image_evidence_required"
+      ],
+      "contract_action": "no_publish_intent_guard_contract_case",
+      "promotion_decision": {
+        "status": "reject",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": false,
+        "reason_codes": [
+          "no_candidate_title",
+          "row_discussion_missing",
+          "nonwork",
+          "scope_platform_meta_nonwork",
+          "scope_not_current_work",
+          "no_publish_policy_guard",
+          "public_identity_scrubbed_before_policy_contract",
+          "no_publish_guard_source_native_contract_case"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11681180,
+        "candidate_title": "",
+        "candidate_url": "",
+        "source": "no_publish_guard_contract_plan",
+        "official_title_exists": false,
+        "row_discusses_work_as_work": false,
+        "title_resolution_state": "nonwork",
+        "work_resolution": "nonwork",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "platform_meta_nonwork",
+          "confidence": "medium",
+          "direct_bridge_sources": [
+            "ordinary_residual_dispatch",
+            "no_publish_multiwork_guard_review",
+            "no_publish_intent_guard_contract_case"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "no_publish_policy_guard",
+            "public_identity_scrubbed_before_policy_contract"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "no_publish_source_native_contract",
+          "strength": "missing",
+          "source_path_or_snippet": "`아카엠창` 표면은 after `아카데미 패드립 면역` 후보와 연결될 수 있지만 별칭 관계가 소스만으로 확정되지 않는다. alias relation/native evidence 전 hard-hold한다.",
+          "supports_publish": false,
+          "reason_code": "no_publish_guard_source_native_contract_case"
+        }
+      ],
+      "release_candidate_not_approval": false,
+      "no_publish_contract_required_before_publish": true,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": true,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "`아카엠창` 표면은 after `아카데미 패드립 면역` 후보와 연결될 수 있지만 별칭 관계가 소스만으로 확정되지 않는다. alias relation/native evidence 전 hard-hold한다.",
+      "evidence_refs": [
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11681180",
+        "loop630_true_triage64_prior_compatible_source_native#unreviewed_current_batch_row"
+      ]
+    },
+    {
+      "post_id": 11710045,
+      "contract_origin": "ordinary_residual_no_publish_guard_dispatch",
+      "contract_batch_lane": "NP_no_publish_guard_contract",
+      "source_dispatch_lane": "no_publish_multiwork_guard_review",
+      "triage_bucket": "unsafe_promotion_from_hold",
+      "review_label": "HOLD",
+      "source_native_verdict": "unsafe_promotion_contextless_post_no_publish_hold",
+      "evidence_grade": "Missing",
+      "target_title": null,
+      "target_url": null,
+      "official_support_refs": [],
+      "official_support_ref_count": 0,
+      "actions": [
+        "repair_unsafe_promotion",
+        "intent_guard_review"
+      ],
+      "contract_action": "no_publish_intent_guard_contract_case",
+      "promotion_decision": {
+        "status": "reject",
+        "publish_allowed": false,
+        "official_title": null,
+        "official_url": null,
+        "candidate_preserved": false,
+        "reason_codes": [
+          "no_candidate_title",
+          "row_discussion_missing",
+          "nonwork",
+          "scope_platform_meta_nonwork",
+          "scope_not_current_work",
+          "no_publish_policy_guard",
+          "public_identity_scrubbed_before_policy_contract",
+          "no_publish_guard_source_native_contract_case"
+        ],
+        "bypassed_gate": false
+      },
+      "promotion_gate_state": {
+        "post_id": 11710045,
+        "candidate_title": "",
+        "candidate_url": "",
+        "source": "no_publish_guard_contract_plan",
+        "official_title_exists": false,
+        "row_discusses_work_as_work": false,
+        "title_resolution_state": "nonwork",
+        "work_resolution": "nonwork",
+        "discussion_type": "review",
+        "prior_variance_quarantine": false,
+        "same_title_source_movement": false,
+        "caveated_alias_boundary": false,
+        "scope": {
+          "scope_kind": "platform_meta_nonwork",
+          "confidence": "medium",
+          "direct_bridge_sources": [
+            "ordinary_residual_dispatch",
+            "no_publish_multiwork_guard_review",
+            "no_publish_intent_guard_contract_case"
+          ],
+          "competing_candidates": [],
+          "conflict_reason_codes": [
+            "no_publish_policy_guard",
+            "public_identity_scrubbed_before_policy_contract"
+          ]
+        }
+      },
+      "promotion_gate_evidence": [
+        {
+          "kind": "no_publish_source_native_contract",
+          "strength": "missing",
+          "source_path_or_snippet": "본문 근거가 사실상 없고 baseline도 context-only였다. after `공주는 언니를 황제로 만든다` 승격은 current source만으로 정답성을 확인할 수 없어 no-publish hard-hold한다.",
+          "supports_publish": false,
+          "reason_code": "no_publish_guard_source_native_contract_case"
+        }
+      ],
+      "release_candidate_not_approval": false,
+      "no_publish_contract_required_before_publish": true,
+      "runtime_replay_allowed": false,
+      "contract_application_required_before_runtime": true,
+      "full375_recheck_required": true,
+      "full_scan_approval": false,
+      "rationale_ko": "본문 근거가 사실상 없고 baseline도 context-only였다. after `공주는 언니를 황제로 만든다` 승격은 current source만으로 정답성을 확인할 수 없어 no-publish hard-hold한다.",
+      "evidence_refs": [
+        "out/regression_safe_grounding_20260626_000008_928006_loop01/review/loop497_current_full375_p0_review_batch.json#post_id=11710045",
+        "loop497_current_full375_p0_prior_compatible_source_native#unreviewed_current_batch_row",
+        "docs/devs/loop497_current_full375_p0_unreviewed_placeholder_verdicts.json#post_id=11710045",
+        "docs/devs/loop630_true_triage64_source_native_review_batch.json#post_id=11710045"
+      ]
+    }
+  ],
+  "approval_boundary": {
+    "no_publish_contract_plan_is_not_approval": true,
+    "no_publish_rows_hold_public_identity": true,
+    "runtime_replay_allowed": false,
+    "full375_collateral_remains_no_go": true,
+    "full_scan_approval": false
+  }
+}

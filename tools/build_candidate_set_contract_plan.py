@@ -313,7 +313,7 @@ def build_plan(
             "publish_allowed_rows": 0,
             "runtime_replay_allowed_rows": 0,
             "full375_collateral_gate": "NO-GO",
-            "completion_gate": "full375 collateral GO + full_scan path",
+            "completion_gate": "adjusted full375 collateral GO + full_scan path",
         },
         "execution_contract": {
             "runtime_replay_allowed": False,
@@ -396,7 +396,7 @@ def write_markdown(plan: dict[str, Any], path: Path) -> None:
             "- `candidate_set_expected_restore_contract_case`는 source-native 근거와 공식 detail URL을 갖춘 contract case다. 이는 release 후보 표시일 뿐 승인 완료가 아니다.",
             "- `candidate_set_rebuild_required_before_publish`는 현재 후보셋이 source-supported title을 담지 못하므로 publish 금지 상태로 둔다.",
             "- `no_publish_intent_guard_contract_case`는 고전/비작품 intent guard로 같은 표면 웹소설 promotion을 막는다.",
-            "- 완료 기준은 계속 `full375 collateral GO + full_scan 경로 정의`다.",
+            "- 완료 기준은 계속 `adjusted full375 collateral GO + full_scan 경로 정의`다.",
             "",
         ]
     )

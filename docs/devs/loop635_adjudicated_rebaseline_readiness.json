@@ -1,0 +1,53 @@
+{
+  "report_type": "adjudicated_rebaseline_readiness",
+  "readiness_id": "loop635_adjudicated_rebaseline_readiness",
+  "generated_at": "2026-07-09T22:36:08",
+  "gate": "NO-GO",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "rebaseline_status": "NOT_APPLIED",
+  "rebaseline_blockers": [
+    "ordinary_residual_followup_rows_nonzero",
+    "full375_adjusted_collateral_go_not_observed",
+    "full_scan_path_not_completed"
+  ],
+  "summary": {
+    "no_publish_contract_rows": 4,
+    "release_candidate_not_approval_rows": 0,
+    "satisfied_no_release_rows": 4,
+    "scrubbed_public_identity_rows": 4,
+    "publication_contract_gate": "GO",
+    "publication_contract_violation_rows": 0,
+    "ordinary_residual_followup_rows": 20,
+    "dispatch_lane_counts": {
+      "candidate_set_rebuild_review": 6,
+      "canonical_policy_cleanup_review": 2,
+      "native_web_image_evidence_review": 12
+    },
+    "golden18_gate": "GO",
+    "full375_collateral_gate": "NO-GO",
+    "historical_raw_collateral_regression_count": 110,
+    "adjusted_drift_count": null,
+    "completion_gate": "adjusted full375 collateral GO + full_scan path",
+    "raw_20260626_baseline_is_completion_gate": false,
+    "raw_20260626_baseline_role": "diagnostic historical compare only"
+  },
+  "inputs": {
+    "source_dispatch": "docs/devs/loop634_after_shared_gate6_ordinary_residual24_dispatch.json",
+    "contract_plan": "docs/devs/loop635_no_publish_guard4_contract_plan.json",
+    "projection_application": "docs/devs/loop635_no_publish_guard4_projection_application.json",
+    "release_gate_audit": "docs/devs/loop635_no_publish_guard4_release_gate_audit.json",
+    "publication_contract_convergence": "docs/devs/loop635_no_publish_guard4_publication_contract_convergence.json",
+    "collateral_compare": "docs/devs/loop635_no_publish_guard4_collateral_compare.json",
+    "accounting": "docs/devs/loop635_after_no_publish_guard4_residual24_accounting.json",
+    "dispatch": "docs/devs/loop635_after_no_publish_guard4_ordinary_residual20_dispatch.json",
+    "always_on": "docs/devs/loop635_always_on_golden18_full375_after_no_publish_guard4.json"
+  },
+  "approval_boundary": {
+    "rebaseline_requires_all_adjudicated_and_adjusted_full375_go": true,
+    "no_publish_contract_rows_are_not_release_candidates": true,
+    "raw_regression_can_remain_nonzero_after_rebaseline": true,
+    "runtime_replay_allowed_rows": 0,
+    "publish_allowed_rows": 0
+  }
+}

@@ -394,7 +394,7 @@ def build_plan(
             "review_disposition_counts": dict(disposition_counts),
             "runtime_replay_allowed_rows": 0,
             "full375_collateral_gate": "NO-GO",
-            "completion_gate": "full375 collateral GO + full_scan path",
+            "completion_gate": "adjusted full375 collateral GO + full_scan path",
         },
         "validation_issues": validation_issues,
         "rows": rows,
@@ -453,7 +453,7 @@ def write_markdown(path: Path, plan: dict[str, Any]) -> None:
     lines.extend(["", "## Gate 해석", ""])
     lines.append(
         "publish 행은 release candidate일 뿐이고 no-publish 행도 full_scan approval이 아니다. "
-        "남은 hold 행은 native-web/image evidence review가 필요하다. 완료 기준은 계속 `full375 collateral GO + full_scan path`다."
+            "남은 hold 행은 native-web/image evidence review가 필요하다. 완료 기준은 계속 `adjusted full375 collateral GO + full_scan path`다."
     )
     lines.append("")
     path.parent.mkdir(parents=True, exist_ok=True)

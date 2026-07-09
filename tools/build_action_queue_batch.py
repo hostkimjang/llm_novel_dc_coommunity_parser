@@ -317,7 +317,7 @@ def build_action_batch(
             "batch_generation_is_not_approval": True,
             "runtime_input_generation_is_not_runtime_approval": True,
             "source_native_packet_generation_is_not_review_completion": True,
-            "completion_gate": "full375 collateral GO + full_scan path",
+            "completion_gate": "adjusted full375 collateral GO + full_scan path",
         },
     }
 
@@ -454,7 +454,7 @@ def write_markdown(batch: dict[str, Any], path: Path) -> None:
         "- 이 batch는 실행 순서를 정한 산출물이며 approval이 아니다.",
         "- `runtime_input_candidate_rows`는 입력 생성 후보일 뿐 runtime replay 결과가 아니다.",
         "- `HOLD`/`INFO_MISSING` 행은 source-native/blind review 전까지 hard-hold 완화 대상이 아니다.",
-        "- 완료 기준은 계속 `full375 collateral GO + full_scan 경로 정의`다.",
+            "- 완료 기준은 계속 `adjusted full375 collateral GO + full_scan 경로 정의`다.",
         "",
         "## 처리 lane",
         "",

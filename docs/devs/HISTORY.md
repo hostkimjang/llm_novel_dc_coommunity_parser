@@ -1,5 +1,19 @@
 # Development History
 
+## 2026-07-09 - Loop635 no-publish residual4 contract application
+
+- 새 runtime replay/full375는 실행하지 않았다.
+- Loop634 residual24 중 `no_publish_multiwork_guard_review` 4건을 contract plan, projection application, release audit, publication convergence까지 처리했다.
+- Contract plan은 rows `4`, action `no_publish_intent_guard_contract_case 4`, validation issue `0`이고 projection application은 applied hold `4`, applied no-publish intent guard `4`, scrubbed public identity `4`다.
+- Release gate audit은 pending `0`, violation `0`, satisfied no-release `4`, release candidate `0`이며 publication contract convergence는 `GO / 375 rows / violation 0`이다.
+- Historical raw collateral은 `114 -> 110`으로 줄었지만 full375 collateral은 `NO-GO`이고 runtime counts는 projection-only라 missing이다.
+- Residual accounting은 source `24`, contract processed `4`, ordinary residual `20`이고 dispatch lane은 `candidate_set_rebuild_review 6`, `canonical_policy_cleanup_review 2`, `native_web_image_evidence_review 12`다.
+- no-publish/candidate-set projection contract 도구의 완료 기준 문구를 `adjusted full375 collateral GO + full_scan path`로 고정하고 테스트를 추가했다.
+- 다른 residual/contract 도구의 old exact completion gate 문구도 adjusted 기준으로 수렴시켜 future lane 산출물이 raw gate를 다시 쓰지 않게 했다.
+- 검증은 JSON parse `9`, unit tests `45`, old exact completion gate string search `0`, py_compile, `git diff --check` PASS다.
+- Report는 `docs/devs/loop_reports/LOOP_635_REPORT_20260709.md`다.
+- Gate는 publication `GO`, release `REVIEW-LOCKED / no-release 4`, residual `REVIEW-LOCKED / 20`, full375 collateral `NO-GO / historical raw 110`, re-baseline `NOT_APPLIED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다.
+
 ## 2026-07-09 - Loop634 shared-gate residual6 contract application
 
 - 새 runtime replay/full375는 실행하지 않았다.

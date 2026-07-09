@@ -284,7 +284,7 @@ def write_markdown(path: Path, queue: dict[str, Any]) -> None:
             "",
             "- 이 readiness queue는 replay 승인이나 full375 GO가 아니다.",
             "- `ready_for_runtime_replay_rows=0`이므로 prepared 14건 입력을 즉시 실행하지 않는다.",
-            "- 완료 기준은 계속 `full375 collateral GO + full_scan 경로 정의`다.",
+            "- 완료 기준은 계속 `adjusted full375 collateral GO + full_scan 경로 정의`다.",
             "",
         ]
     )

@@ -51,6 +51,10 @@ class BuildNoPublishGuardContractPlanTest(unittest.TestCase):
         )
         self.assertEqual(plan["summary"]["promotion_decision_status_counts"], {"candidate_only": 2})
         self.assertEqual(plan["summary"]["label_counts"], {"HOLD": 1, "REJECT": 1})
+        self.assertEqual(
+            plan["summary"]["completion_gate"],
+            "adjusted full375 collateral GO + full_scan path",
+        )
         for row in plan["rows"]:
             self.assertEqual(row["contract_action"], "no_publish_intent_guard_contract_case")
             self.assertFalse(row["promotion_decision"]["publish_allowed"])

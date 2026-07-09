@@ -420,7 +420,7 @@ def build_failure_queue(
             "loop489_runtime_health_go_is_not_semantic_approval": True,
             "publication_contract_go_is_not_expected_title_approval": True,
             "full375_collateral_remains_no_go_until_replayed": True,
-            "completion_gate": "full375 collateral GO + full_scan path",
+            "completion_gate": "adjusted full375 collateral GO + full_scan path",
         },
     }
 
@@ -451,7 +451,7 @@ def write_markdown(queue: dict[str, Any], path: Path) -> None:
         "",
         "- 이 큐는 Loop489 runtime expected-audit 실패를 다음 작업 단위로 나눈 산출물이며 approval이 아니다.",
         "- Runtime completion, publication contract `GO`, expected-audit queue 정리는 full375 collateral 승인이 아니다.",
-        "- 완료 기준은 계속 `full375 collateral GO + full_scan 경로 정의`다.",
+            "- 완료 기준은 계속 `adjusted full375 collateral GO + full_scan 경로 정의`다.",
         "",
         "## Action groups",
         "",

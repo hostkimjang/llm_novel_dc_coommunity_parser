@@ -214,7 +214,7 @@ def build_plan(
             "publish_allowed_rows": 0,
             "runtime_replay_allowed_rows": 0,
             "full375_collateral_gate": "NO-GO",
-            "completion_gate": "full375 collateral GO + full_scan path",
+            "completion_gate": "adjusted full375 collateral GO + full_scan path",
         },
         "execution_contract": {
             "runtime_replay_allowed": False,
@@ -284,7 +284,7 @@ def write_markdown(plan: dict[str, Any], path: Path) -> None:
             "",
             "- `no_publish_intent_guard_contract_case`는 고전/비웹소설/교차매체 wrong-work 표면이 웹소설 public identity로 승격되는 것을 막는다.",
             "- 이 plan의 모든 행은 release candidate가 아니며 projection application에서 public identity를 scrub 또는 no-release 상태로 보존해야 한다.",
-            "- 완료 기준은 계속 `full375 collateral GO + full_scan 경로 정의`다.",
+            "- 완료 기준은 계속 `adjusted full375 collateral GO + full_scan 경로 정의`다.",
             "",
         ]
     )

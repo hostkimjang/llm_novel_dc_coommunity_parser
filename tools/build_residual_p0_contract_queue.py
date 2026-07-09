@@ -246,7 +246,7 @@ def build_contract_queue(
             "priority_counts": _counter_to_dict(priority_counts),
             "evidence_grade_counts": _counter_to_dict(grade_counts),
             "action_counts": _counter_to_dict(action_counts),
-            "completion_gate": "full375 collateral GO + full_scan path",
+            "completion_gate": "adjusted full375 collateral GO + full_scan path",
         },
         "execution_contract": test_run_execution_contract(len(rows)),
         "validation_issues": validation_issues,
@@ -325,7 +325,7 @@ def write_markdown(queue: dict[str, Any], path: Path) -> None:
             "- 공식 detail URL이 없는 shared-gate restore 행은 publish contract 후보가 아니라 URL 보존/보강 대상이다.",
             "- native web/image 또는 no-publish guard가 붙은 행은 해당 사전 검토가 끝나기 전 shared-gate restore로 승격하지 않는다.",
             "- INFO_MISSING 행은 source-native/blind judge 판정 전 hard-hold 완화 대상이 아니다.",
-            "- 완료 기준은 계속 `full375 collateral GO + full_scan 경로 정의`다.",
+            "- 완료 기준은 계속 `adjusted full375 collateral GO + full_scan 경로 정의`다.",
             "",
         ]
     )
