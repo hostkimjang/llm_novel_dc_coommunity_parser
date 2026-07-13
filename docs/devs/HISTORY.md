@@ -1,5 +1,13 @@
 # 개발 이력 (Development History)
 
+## 2026-07-13 - GitHub README와 아키텍처 문서 재구성
+
+- 루트 `README.md`를 1,362줄의 장문 기능 사전에서 253줄의 사용자 중심 안내로 재구성했다. 장식용 이모지, 오래된 `NEW` 표기, 코드 줄 수, 중복 전문가 설명과 P0~P4 장문 계보를 제거하고 상세 문서로 연결했다.
+- 공개 경로는 `AgenticPipeline -> shared promotion gate -> publication exact-once -> public result`로, stage adapter·DecisionLedgerV2·CandidateSet/NIL·typed confidence는 기본 OFF 또는 shadow·no-write 경로로 분리했다.
+- 상태 표현을 아키텍처 통합 `COMPLETE_SAFE_TERMINAL / ARCHITECTURE_V2_INTEGRATED`, 실제 효과 `ACTUAL_BLOCKED_HANDOFF / NOT_COMPLETE`, 운영 `REVIEW-LOCKED / full_scan_approval=false`로 분리했다.
+- `docs/ARCHITECTURE.md`, `docs/devs/README.md`, Architecture V2 내부 재감사, launch-readiness runbook을 같은 설명 체계로 동기화했다.
+- 문서 전용 변경이다. Architecture V2 통합 시점의 `181 tests PASS`를 현재 작업트리 전체 검증으로 재해석하지 않았고, 실제 성능 수치도 추가하지 않았다.
+
 ## 2026-07-13 - Architecture V2 active 재개와 confidence 의미 분리
 
 - Architecture V2 137경로를 `5caf9596d`로 커밋하고, 로컬 `main`을 별도 clean worktree에서 `--ff-only`로 통합했다. `main` 검증은 compile/import, 핵심 `181 tests PASS`, README 상대 링크 누락 `0`, worktree clean이다. 원본 dirty worktree의 미커밋 파일은 포함하거나 수정하지 않았다.

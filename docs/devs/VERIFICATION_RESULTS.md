@@ -1,10 +1,19 @@
 # 검증 결과 (Verification Results)
 
+## 2026-07-13 GitHub README·문서 동기화
+
+- 범위: `README.md`, `docs/ARCHITECTURE.md`, `docs/devs/README.md`, Architecture V2 내부 재감사, launch-readiness runbook, `HISTORY.md`, `CHECKLIST.md`.
+- 루트 README를 1,362줄에서 253줄로 줄이고 장식용 이모지, 오래된 `NEW` 표기, 중복된 전문가·설정 설명을 제거했다.
+- 코드 대조: 현재 공개 경로의 shared promotion gate, 기본 OFF인 stage runtime adapter, legacy-first DecisionLedgerV2 shadow, CandidateSet/NIL 비간섭, 독립 typed-confidence reader를 각 구현 파일과 대조했다.
+- 상태 대조: 내부 통합 `COMPLETE_SAFE_TERMINAL / ARCHITECTURE_V2_INTEGRATED`, 실제 효과 `ACTUAL_BLOCKED_HANDOFF / NOT_COMPLETE`, 운영 `REVIEW-LOCKED / full_scan_approval=false`로 분리했다.
+- 문서 전용 변경이므로 runtime·LLM·production scan을 실행하지 않았다. Architecture V2 통합 시점의 `181 tests PASS`는 아래 commit-scoped 기록으로만 유지한다.
+- 검증: 변경 문서 상대 링크 누락 `0`, 루트 README와 Architecture V2 상단 독자 문서의 장식용 이모지 잔존 `0`, `git diff --check` 통과.
+
 ## 2026-07-13 Architecture V2 typed confidence contract
 
 - Git 통합: Architecture V2 137경로 커밋 `5caf9596d334f6498d6f9855b639c65295d0eaa1`; 로컬 `main`을 `f7e18e98f`에서 해당 커밋으로 `--ff-only`했다.
 - `main` clean worktree 검증: `compileall PASS`, 핵심 import PASS, `181 tests PASS` (`28.577s`), README 상대 링크 누락 `0`, status clean.
-- 원격 상태: fetch 기준 `origin/main=f59d9f642`, 로컬 `main`은 원격보다 누적 400개 이상의 전체 계보가 앞선다. push는 수행하지 않았다.
+- 당시 원격 상태: fetch 기준 `origin/main=f59d9f642`, 로컬 `main`은 원격보다 누적 400개 이상의 전체 계보가 앞서 push를 보류했다. 이후 main 단일화와 원격 동기화가 완료됐으며 이 줄은 통합 당시 기록이다.
 - Goal 종료 판정: `019f4f3f-4f46-78d1-8418-50834da44924 / COMPLETE_SAFE_TERMINAL / ARCHITECTURE_V2_INTEGRATED / ACTUAL_EFFECT_WAITING_EXTERNAL_INPUT`.
 - 명령: `./.venv312/Scripts/python.exe -m unittest -q tests.test_confidence_report tests.test_candidate_set_shadow_contract tests.test_candidate_set_calibration_shadow_contract tests.test_calibration_actual_readback`
 - 결과: `71 tests PASS`.
@@ -20560,7 +20569,7 @@
   - VLM/OCR: `vlm_enabled=true`, `ocr_enabled=true`, `image_post_count=0`, `vlm_ocr_semantic_review_ready=true`
   - Docker lifecycle: `mcp_auto_up_shards=false`, `mcp_auto_recreate_shards=false`, `mcp_local_shard_management_enabled=false`, `mcp_small_run_shard_lifecycle_blocked=true`
   - result: `11718091`은 `is_relevant=false`, `official_title=null`, `discussion_type=noise`, `title_resolution_allowed=false`
-  - log evidence: Discourse raw `search_suggestions=["은영 23세"]`가 sanitized result에서 `search_suggestions=[]`가 됐고, `verification_search`는 `kept=0 pruned=3`으로 제거됐다. 실제 `🔍 검 ...` 검색 실행은 없었다.
+  - log evidence: Discourse raw `search_suggestions=["은영 23세"]`가 sanitized result에서 `search_suggestions=[]`가 됐고, `verification_search`는 `kept=0 pruned=3`으로 제거됐다. 실제 `검 ...` 검색 실행은 없었다.
 - 판정:
   - 표면 오타/나이 감상 targeted regression: `GO`
   - 10만 건 semantic approval: `REVIEW-LOCKED`

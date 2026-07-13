@@ -4,6 +4,8 @@
 
 Goal `019f4f3f-4f46-78d1-8418-50834da44924`의 종료 판정은 `COMPLETE_SAFE_TERMINAL / ARCHITECTURE_V2_INTEGRATED / ACTUAL_EFFECT_WAITING_EXTERNAL_INPUT`이다. exact Git closure와 staged-tree clean export까지 통과했다. 과거 `M1_SHADOW_FOUNDATION_COMPLETE`는 역사적 기반이다. source-backed 자료 부재는 C 실제 효과만 `NOT_ESTIMABLE`로 남기며 운영은 `REVIEW-LOCKED / full_scan_approval=false`다. production `20260711_113712_379597`은 읽기 전용으로 유지했다.
 
+이 종료 판정의 범위는 Architecture V2 내부 통합이다. 실제 효과·M2 lane은 이후 동일 external blocker가 3회 확인되어 `ACTUAL_BLOCKED_HANDOFF / NOT_COMPLETE`로 이관됐다. 재개에는 owner policy v3, source-backed DEV/CAL/FROZEN, 10+6 actual packet, 별도 fresh BEFORE/AFTER가 필요하다. 최신 외부 입력 상태는 `ACTUAL_PACKET_INPUT_INVENTORY_KO_20260712.md`를 따른다.
+
 ## 실제 흐름 전·후
 
 ```text

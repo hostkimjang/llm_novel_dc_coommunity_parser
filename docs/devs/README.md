@@ -1,24 +1,32 @@
-# Developer Docs Hub
+# 개발 문서 허브
 
-## 2026-07-13 Architecture V2 최신 읽기 순서
+## Architecture V2 읽는 순서
 
-1. 최종 아키텍처와 기능 경계: `../ARCHITECTURE.md`
-2. 내부 통합 재감사와 남은 실제 입력: `ARCHITECTURE_V2_INTERNAL_REAUDIT_KO_20260713.md`
-3. 실행·테스트 근거: `VERIFICATION_RESULTS.md`
-4. actual packet과 fresh pair 절차: `LAUNCH_READINESS_RUNBOOK_KO.md`
-5. 이전 P2/P3/P4 계보: `LLM_PIPELINE_IMPROVEMENT_STATUS_KO_20260712.md`, `loop_reports/LOOP_P3_P4_DENOMINATOR_EXECUTION_ENVELOPE_20260712.md`
+1. [시스템 아키텍처](../ARCHITECTURE.md): 현재 공개 경로와 기본 OFF인 shadow·측정 계층
+2. [Architecture V2 내부 재감사](ARCHITECTURE_V2_INTERNAL_REAUDIT_KO_20260713.md): 내부 통합 범위와 검증 근거
+3. [Actual packet 입력 인벤토리](ACTUAL_PACKET_INPUT_INVENTORY_KO_20260712.md): 실제 효과 검증의 external blocker와 재개 조건
+4. [검증 결과](VERIFICATION_RESULTS.md): 실행한 테스트와 증거 경계
+5. [실제 입력 준비와 출시 판정 런북](LAUNCH_READINESS_RUNBOOK_KO.md): packet, preflight, fresh pair 순서
+6. [LLM 파이프라인 개선 현황](LLM_PIPELINE_IMPROVEMENT_STATUS_KO_20260712.md): P2/P3/P4 계보와 정확도·비용 지표 설명
 
-현재 내부 상태는 `ARCHITECTURE_V2_INTEGRATED`다. Stage runtime adapter, DecisionLedgerV2 dual-write/rollback, CandidateSet/NIL, typed confidence와 no-write metrics reader, packet intake를 exact Git closure와 staged-tree clean export까지 검증했다. 실제 DEV/CAL/FROZEN과 fresh paired runtime은 아직 없으므로 실제 효과는 `ACTUAL_EFFECT_WAITING_EXTERNAL_INPUT / null/NOT_ESTIMABLE`, 운영은 `REVIEW-LOCKED / full_scan_approval=false`다.
+현재 상태는 범위별로 다르다.
+
+| 범위 | 상태 | 설명 |
+| --- | --- | --- |
+| 아키텍처 통합 | `COMPLETE_SAFE_TERMINAL / ARCHITECTURE_V2_INTEGRATED` | Stage runtime adapter, DecisionLedgerV2 dual-write/rollback, CandidateSet/NIL, typed confidence 계약과 reader, packet 도구의 내부 통합을 닫았다. |
+| 실제 효과·M2 | `ACTUAL_BLOCKED_HANDOFF / NOT_COMPLETE` | policy v3, source-backed DEV/CAL/FROZEN, 10+6 packet, fresh pair가 없어 동일 external blocker가 3회 확인됐다. |
+| 실제 지표 | `null / NOT_ESTIMABLE` | 정확도·비용·지연 개선률을 주장할 actual artifact가 없다. |
+| 운영 승인 | `REVIEW-LOCKED / full_scan_approval=false` | cheap routing과 전체 스캔은 열지 않는다. |
 
 ### 현재 계약을 읽을 때의 구분
 
 - `confidence_percentage`: 행별 보정 확률. 전체 정확도가 아니다.
 - `ARCHITECTURE_V2_INTEGRATED`: 내부 코드·rollback·비간섭·clean-export 완료. 실제 성능 승인이 아니다.
-- `WAITING_EXTERNAL_INPUT`: actual packet만 대기한다. 내부 구현을 blocked로 되돌리지 않는다.
+- `WAITING_EXTERNAL_INPUT`: external blocker를 처음 확인한 역사 상태다. 최신 actual lane은 `ACTUAL_BLOCKED_HANDOFF`다.
 - `FULL_EXPERT_REQUIRED`/`CHEAP_RULE_ELIGIBLE`: shadow 관측 값이며 운영 라우팅 허가가 아니다.
 - 실제 run은 `--parallel 16`, dashboard ON을 기본으로 하고 manifest의 requested/effective parallel을 함께 확인한다.
 
-이 디렉터리는 개발 TODO, 기능 개선, 런 리뷰, 체크리스트, 검증 결과를 한곳에서 추적하기 위한 운영 문서 허브다.
+이 디렉터리는 개발 TODO, 기능 개선, 런 리뷰, 체크리스트, 검증 결과를 추적하는 문서 허브다. 최신 독자용 정본은 위 1~6번이며, `LLM_PIPELINE_IMPROVEMENT_READER_GUIDE_KO_20260711.md`는 P3/P4 v14 시점의 역사적 설명으로만 사용한다.
 
 ## 이전 개선 상태 — 2026-07-12 P4 선택적 비용 라우팅 그림자 v3
 

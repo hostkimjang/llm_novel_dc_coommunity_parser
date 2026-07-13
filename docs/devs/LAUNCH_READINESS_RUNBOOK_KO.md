@@ -1,8 +1,8 @@
-# Actual launch-readiness runbook
+# 실제 입력 준비와 출시 판정 런북
 
-상태: `NOT_READY / REVIEW-LOCKED / full_scan_approval=false`.
+상태: `NOT_READY / ACTUAL_BLOCKED_HANDOFF / NOT_COMPLETE / REVIEW-LOCKED / full_scan_approval=false`.
 
-이 runbook은 active production `20260711_113712_379597`에 쓰거나 중지하지 않는다. 현재 actual DEV/CAL/FROZEN 자료가 없으므로 1단계 결과는 `NOT_READY`가 정상이다. `READY_FOR_NO_WRITE_PREFLIGHT`도 runtime·정확도·운영 승인 증거가 아니다.
+이 runbook은 active production `20260711_113712_379597`에 쓰거나 중지하지 않는다. 현재 policy v3, source-backed DEV/CAL/FROZEN, complete 10+6 packet, fresh pair가 없으므로 1단계 결과는 `NOT_READY`가 정상이다. 같은 external blocker가 3회 확인된 최신 actual lane은 `ACTUAL_BLOCKED_HANDOFF`다. `READY_FOR_NO_WRITE_PREFLIGHT`도 runtime·정확도·운영 승인 증거가 아니다.
 
 ## 0. 외부 입력을 별도 packet 경로에 준비
 

@@ -1,8 +1,12 @@
-# 🏗️ 시스템 아키텍처 문서
+# 시스템 아키텍처
 
-> **프로젝트**: llm_novel_dc_coommunity_parser  
-> **목적**: DC인사이드 장르소설 갤러리 포스트에서 웹소설 작품을 식별하는 LLM Agentic Pipeline  
-> **최종 갱신**: 2026-07-13
+> 프로젝트: `llm_novel_dc_coommunity_parser`
+>
+> 목적: DC인사이드 장르소설 갤러리 게시글에서 웹소설 작품을 식별하는 LLM 파이프라인
+>
+> 최종 갱신: 2026-07-13
+
+이 문서는 현재 공개 결과를 만드는 경로와 기본 OFF인 shadow·측정 경로를 함께 설명한다. 아키텍처 통합은 `COMPLETE_SAFE_TERMINAL / ARCHITECTURE_V2_INTEGRATED`로 닫혔지만, 실제 효과 검증은 외부 입력 부족으로 `ACTUAL_BLOCKED_HANDOFF / NOT_COMPLETE`다. 정확도·비용·지연 개선은 아직 `null/NOT_ESTIMABLE`이며 운영은 `REVIEW-LOCKED / full_scan_approval=false`다.
 
 ---
 
@@ -43,19 +47,21 @@ DC인사이드 장르소설 갤러리(장르소설 마이너갤러리)의 포스
 | **검증 우선** | Decoder가 식별 → Verifier가 반론 → Critic이 메타분석 → Arbiter가 종합 |
 | **환각 방지** | Arbiter는 Decoder/Verifier가 제시하지 않은 제목을 독자적으로 생성할 수 없음 |
 
-### 1.3 Architecture V2 shadow 계층
+### 1.3 Architecture V2와 공개 경로
 
-현재 공개 파이프라인은 `src/llm_batch/agentic_pipeline.py`와 `src/llm_batch/experts/` 아래의 기존 경로를 사용한다. V2는 공개 제목·URL·판정을 바꾸지 않는 OFF-by-default 계층이다. 현재 Goal은 `019f4f3f-4f46-78d1-8418-50834da44924 active`이며 외부 자료 대기는 C에만 적용한다.
+현재 공개 결과는 `src/llm_batch/agentic_pipeline.py`의 전문가 근거를 `src/llm_batch/promotion_gate.py`의 공통 판정 경계로 통과시킨 뒤 기록한다. V2는 이 경로를 바꾸지 않으면서 후보 보존, 호출 추적, 확률·비용 측정을 추가하는 선택적 계층이다.
 
 | 계층 | 역할 | 현재 경계 |
 | --- | --- | --- |
-| StageBudget/limiter/cache/singleflight | stage/provider별 비용·대기·cache provenance를 receipt로 관찰 | `AgenticPipeline` 명시 주입 runtime adapter, 기본 OFF, search stage 범위 |
-| DecisionLedgerV2 framed WAL | legacy call ledger를 segment/index/checkpoint로 독립 재생 | legacy 우선 dual-write shadow, coordination/restart/one-way rollback, 자동 production enable 금지 |
-| CandidateSet/NIL·typed confidence | producer completion, 후보/NIL label space, 행별 보정 확률을 분리 | public action은 항상 false, source-less fixture는 `NOT_ESTIMABLE_NOT_FROZEN_ACTUAL` |
-| calibration/paired reader | ECE/Brier/log loss/selective risk/AURC와 paired cost/E2E를 재독 | policy 판정·운영 라우팅과 분리된 no-write reader |
-| packet operations | 10+6 packet, preflight, fresh pair 명령을 결속 | 내부 intake/명령 계약 구현, 외부 C는 `WAITING_EXTERNAL_INPUT`/`NOT_ESTIMABLE` |
+| 공통 publication gate | title·URL·scope·검색 근거를 하나의 typed decision으로 판정 | 현재 공개 경로의 fail-close 경계. 차단된 제목은 후보와 reason code로 보존 |
+| publication exact-once | 같은 실행 범위와 입력의 첫 정상 판정을 정본으로 유지 | 재시도 덮어쓰기와 다른 scope 혼합을 차단 |
+| StageBudget/limiter/cache/singleflight | search 단계의 비용·대기·cache provenance를 receipt로 관찰 | `AgenticPipeline` 명시 주입 runtime adapter, 기본 OFF. limiter는 process-local, shared result는 filesystem 범위 |
+| DecisionLedgerV2 framed WAL | legacy call ledger를 segment/index/checkpoint로 독립 재생 | legacy 우선 dual-write shadow, restart/one-way rollback 지원. 자동 production enable 금지 |
+| CandidateSet/NIL | producer 완료 상태와 후보/NIL 사건 공간을 보존 | candidate ledger 내부 shadow. 공개 결과 비간섭 |
+| typed confidence와 metrics reader | 행별 보정 확률과 집계 accuracy/ECE/Brier/log loss/selective risk/AURC를 분리 | 운영 writer 미연결, no-write reader. 정확히 결속된 `FROZEN_ACTUAL` 외 입력은 `NOT_ESTIMABLE` |
+| packet operations | policy, 10+6 packet, 동일 frozen input과 BEFORE/AFTER를 사전 결속 | preflight 도구가 스스로 runtime을 시작하지 않음. 현재 actual lane은 `ACTUAL_BLOCKED_HANDOFF` |
 
-이 계층의 내부 A는 exact Git closure와 staged-tree clean export까지 통과해 `ARCHITECTURE_V2_INTEGRATED`다. 상세 운영 계약은 `docs/devs/ARCHITECTURE_V2_INTERNAL_REAUDIT_KO_20260713.md`를 따른다. actual effect는 외부 source-backed 자료 대기이며 운영은 `REVIEW-LOCKED / full_scan_approval=false`다.
+이 계층의 내부 통합은 exact Git closure와 staged-tree clean export까지 통과했다. 상세 근거는 `docs/devs/ARCHITECTURE_V2_INTERNAL_REAUDIT_KO_20260713.md`를 따른다. actual effect 재개 조건은 `docs/devs/ACTUAL_PACKET_INPUT_INVENTORY_KO_20260712.md`에 정리돼 있다.
 
 ---
 
@@ -63,32 +69,24 @@ DC인사이드 장르소설 갤러리(장르소설 마이너갤러리)의 포스
 
 ### 2.1 전체 흐름도
 
+```mermaid
+flowchart LR
+    A["게시글 입력"] --> B["AgenticPipeline"]
+    B --> C["Gatekeeper / Discourse"]
+    C --> D["검색 / Decoder / Verifier / Critic"]
+    D --> E["Arbiter와 후보 근거"]
+    E --> F["공통 publication gate"]
+    F --> H["publication exact-once journal"]
+    H --> G["PickvelOutputItemV2"]
+
+    D -. "명시 주입, 기본 OFF" .-> I["search runtime adapter"]
+    B -. "legacy 우선, 선택적 dual-write" .-> J["DecisionLedgerV2 shadow"]
+    E -. "공개 결과 비간섭" .-> K["CandidateSet + NIL"]
+    K -. "운영 writer 미연결" .-> L["typed confidence"]
+    L -. "FROZEN_ACTUAL만 집계" .-> M["no-write metrics reader"]
 ```
-┌──────────────────────────────────────────────────────────────────┐
-│                     AgenticPipeline                              │
-│  ┌───────────────────────────────────────────────────────────┐   │
-│  │                    Orchestrator                           │   │
-│  │                                                           │   │
-│  │  Phase 1: Gatekeeper ──── noise? ──→ [조기 종료]          │   │
-│  │     │                                                     │   │
-│  │  Phase 1.5: DiscourseAnalyzer (도메인/의도 파악)          │   │
-│  │     │                                                     │   │
-│  │  Phase 2: 검색 실행 (Gatekeeper의 search_requests)        │   │
-│  │     │                                                     │   │
-│  │  Phase 3: 동적 루프 ─────────────────────────┐            │   │
-│  │     │  ┌─────────────────────────────────┐   │            │   │
-│  │     │  │ Decoder ──→ Verifier ──→ Critic │   │            │   │
-│  │     │  │    ↕              ↕              │   │            │   │
-│  │     │  │   [검색 재실행] [협력 요청]       │   │            │   │
-│  │     │  └─────────────────────────────────┘   │            │   │
-│  │     │                                        │            │   │
-│  │  Phase 4: Arbiter (최종 종합 판정)            │            │   │
-│  │                                               │            │   │
-│  └───────────────────────────────────────────────────────────┘   │
-│                                                                  │
-│  _context_to_output() → PickvelOutputItemV2                      │
-└──────────────────────────────────────────────────────────────────┘
-```
+
+실선은 현재 공개 결과를 만드는 경로다. 점선은 기본 OFF이거나 관측·측정만 수행하는 경로다.
 
 ### 2.2 Phase별 상세
 
@@ -376,7 +374,7 @@ ConversationContext
 ├── search_results: List[Dict]      # 누적 검색 결과 (URL 중복 제거됨)
 ├── messages: List[ExpertMessage]   # 전문가 간 메시지 로그
 ├── expert_outputs: Dict            # 전문가별 최종 출력 {"gatekeeper": {...}, ...}
-├── suspected_titles: List[Dict]    # ⭐ 추정 작품 목록 (전문가 간 공유)
+├── suspected_titles: List[Dict]    # 추정 작품 목록 (전문가 간 공유)
 ├── primary_domain: Optional[str]   # DiscourseAnalyzer 결과
 ├── discourse_intent: Optional[str] # DiscourseAnalyzer 결과
 ├── expert_confidence: Dict         # 전문가별 신뢰도
@@ -443,7 +441,7 @@ ctx.search_results (전체 누적)
     │
     ├── Decoder: 전체 search_results 수신
     │
-    └── Verifier: ⭐ Decoder가 참조한 URL만 필터링 (limited_search)
+    └── Verifier: Decoder가 참조한 URL만 필터링 (limited_search)
         └── Orchestrator._call_expert()에서 필터링 로직 수행
             used_urls = Decoder의 best_match + supporting_evidence URL
             limited_search = [r for r if r.url in used_urls][:8]
