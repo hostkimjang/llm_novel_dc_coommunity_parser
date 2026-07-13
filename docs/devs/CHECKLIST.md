@@ -2,6 +2,10 @@
 
 ## 2026-07-13 Architecture V2 재개 체크
 
+- [x] Architecture V2 커밋 `5caf9596d`를 만들고 로컬 `main`에 `--ff-only`로 통합했다.
+- [x] `main` clean worktree에서 compile/import, 핵심 `181 tests PASS`, README 상대 링크 누락 `0`, clean status를 확인했다.
+- [x] 원본 dirty worktree의 unstaged/untracked 사용자 파일은 통합 커밋에서 제외했다.
+- [x] `origin/main`보다 누적 409커밋 앞인 원격 push는 별도 승인 전 보류했다.
 - [x] 현재 Goal `019f4f3f-4f46-78d1-8418-50834da44924`가 `active`이며 외부 입력 부재는 C만 `WAITING_EXTERNAL_INPUT`으로 기록한다. 과거 blocker streak는 승계하지 않는다.
 - [x] 기존 M1 완료 표기가 shadow foundation만 뜻함을 재감사했다. active runtime wiring, dual-write rollback, clean-clone 추적, packet operator contract는 완료로 읽지 않는다.
 - [x] typed confidence report가 producer `COMPLETE/TRUNCATED/UNKNOWN`, CandidateSet/NIL label space, 행별 calibrated percentage, aggregate accuracy를 서로 다른 필드로 분리하는지 회귀했다.
