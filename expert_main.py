@@ -10,7 +10,10 @@ Agentic Pipeline (유기적 전문가 시스템) 원클릭 엔트리포인트.
 """
 
 import argparse
+import copy
 from difflib import SequenceMatcher
+import hashlib
+import io
 import json
 import os
 import re
@@ -23,18 +26,1261 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from queue import Queue, Empty
 from datetime import datetime
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Callable, Iterable, Mapping, Optional, Tuple
 from urllib.parse import parse_qs, urlsplit, urlunsplit
 
 try:
-    from llm_batch.promotion_gate import normalize_scope_reason_codes
+    from llm_batch.promotion_gate import (
+        PUBLISH_CONTRACT_VERSION,
+        candidate_inventory_evidence_from_sources,
+        candidate_inventory_pairs,
+        candidate_inventory_records,
+        EvidenceRecord,
+        GroundingState,
+        ScopeState,
+        apply_publish_contract,
+        build_publish_ledger,
+        evaluate_publish_contract,
+        evidence_records_from_payload,
+        grounding_state_from_dict,
+        normalize_scope_reason_codes,
+    )
 except ModuleNotFoundError:
-    from src.llm_batch.promotion_gate import normalize_scope_reason_codes
+    from src.llm_batch.promotion_gate import (
+        PUBLISH_CONTRACT_VERSION,
+        candidate_inventory_evidence_from_sources,
+        candidate_inventory_pairs,
+        candidate_inventory_records,
+        EvidenceRecord,
+        GroundingState,
+        ScopeState,
+        apply_publish_contract,
+        build_publish_ledger,
+        evaluate_publish_contract,
+        evidence_records_from_payload,
+        grounding_state_from_dict,
+        normalize_scope_reason_codes,
+    )
+
+try:
+    from llm_batch.publication_commit import (
+        PUBLICATION_COMMIT_OWNER,
+        PUBLICATION_COMMIT_SCHEMA,
+        PUBLICATION_COMMIT_JOURNAL_SCHEMA,
+        PublicationCommitError,
+        PublicationCommitRegistry,
+        build_publication_scope_descriptor,
+        commit_publication_result,
+        compute_publication_decision_commit,
+        validate_publication_result_commit,
+        validate_publication_result_decision,
+    )
+except ModuleNotFoundError:
+    from src.llm_batch.publication_commit import (
+        PUBLICATION_COMMIT_OWNER,
+        PUBLICATION_COMMIT_SCHEMA,
+        PUBLICATION_COMMIT_JOURNAL_SCHEMA,
+        PublicationCommitError,
+        PublicationCommitRegistry,
+        build_publication_scope_descriptor,
+        commit_publication_result,
+        compute_publication_decision_commit,
+        validate_publication_result_commit,
+        validate_publication_result_decision,
+    )
+
+try:
+    from llm_batch.selective_compute_shadow import (
+        COST_STATUS_PARTIAL_RUNTIME,
+        DecisionCostTrace,
+        normalize_optional_nonnegative_count,
+    )
+except ModuleNotFoundError:
+    from src.llm_batch.selective_compute_shadow import (
+        COST_STATUS_PARTIAL_RUNTIME,
+        DecisionCostTrace,
+        normalize_optional_nonnegative_count,
+    )
+
+try:
+    from llm_batch.early_route_measurement import (
+        ACCURACY_NOT_ESTIMABLE,
+        ARM_AFTER,
+        FROZEN_TRUTH_NOT_AVAILABLE,
+        LANE_CHEAP_NIL,
+        LANE_FULL,
+        EarlyRouteComparisonReceipt,
+        EarlyRouteDecision,
+        EarlyRoutePolicyV1,
+        EarlyRouteSourceView,
+        canonical_hash as early_route_canonical_hash,
+        compare_early_route,
+        decide_early_route,
+    )
+except ModuleNotFoundError:
+    from src.llm_batch.early_route_measurement import (
+        ACCURACY_NOT_ESTIMABLE,
+        ARM_AFTER,
+        FROZEN_TRUTH_NOT_AVAILABLE,
+        LANE_CHEAP_NIL,
+        LANE_FULL,
+        EarlyRouteComparisonReceipt,
+        EarlyRouteDecision,
+        EarlyRoutePolicyV1,
+        EarlyRouteSourceView,
+        canonical_hash as early_route_canonical_hash,
+        compare_early_route,
+        decide_early_route,
+    )
 
 _DEFAULT_VLM_MAX_IMAGE_BYTES = "16777216"
+_FRESH375_RUN_BINDING_TOKEN_ENV = "FRESH375_RUN_BINDING_TOKEN"
+_FRESH375_RUN_BINDING_TOKEN_FIELD = "fresh375_run_binding_token"
+_RUNTIME_RELEASE_FINGERPRINT_ENV = "RUNTIME_RELEASE_FINGERPRINT_SHA256"
+_RUNTIME_RELEASE_FINGERPRINT_FIELD = "runtime_release_fingerprint_sha256"
+_DECISION_CALL_LEDGER_MODE_ENV = "PIPELINE_DECISION_CALL_LEDGER_MODE"
+_DECISION_LEDGER_V2_SHADOW_MODE_ENV = "PIPELINE_DECISION_LEDGER_V2_SHADOW_MODE"
+_MEASUREMENT_RUN_SPEC_SHA256_ENV = "PIPELINE_MEASUREMENT_RUN_SPEC_SHA256"
+_MEASUREMENT_PAIR_ID_ENV = "PIPELINE_MEASUREMENT_PAIR_ID"
+_MEASUREMENT_ARM_ENV = "PIPELINE_MEASUREMENT_ARM"
+_MEASUREMENT_EXECUTION_MODE_ENV = "PIPELINE_MEASUREMENT_EXECUTION_MODE"
+_MEASUREMENT_EARLY_ROUTE_MODE_ENV = "PIPELINE_MEASUREMENT_EARLY_ROUTE_MODE"
+_MEASUREMENT_MUTABLE_CONTEXT_MODE_ENV = "PIPELINE_MEASUREMENT_MUTABLE_CONTEXT_MODE"
+_EARLY_ROUTE_MODE_OFF = "OFF"
+_EARLY_ROUTE_MODE_SOURCE_ONLY_V1 = "SOURCE_ONLY_V1"
+_MEASUREMENT_MUTABLE_CONTEXT_NORMAL = "NORMAL"
+_MEASUREMENT_MUTABLE_CONTEXT_FROZEN_OFF = "FROZEN_OFF"
+_MEASUREMENT_ONLY_ENV_PREFIXES = (
+    "PIPELINE_MEASUREMENT_",
+    "PIPELINE_DECISION_CALL_",
+    "PIPELINE_DECISION_LEDGER_V2_",
+)
+_PUBLICATION_DECISION_ENV_PREFIXES = (
+    "LLM_",
+    "PIPELINE_",
+    "MCP_",
+    "BROWSER_SEARCH_",
+    "SEARCH_",
+    "VLM_",
+    "OCR_",
+)
 
 # 대시보드 비활성화 플래그: --no-dashboard
 _NO_DASHBOARD = "--no-dashboard" in sys.argv
+
+
+def _decision_call_measurement_config(
+    environment: Optional[Mapping[str, str]] = None,
+) -> Dict[str, Any]:
+    """Normalize fail-closed bindings for future paired call-cost runs.
+
+    Ordinary runs remain ``OFF``.  A run that claims complete typed call
+    measurement must explicitly bind an immutable RunSpec, pair, arm, and a
+    fresh-execution policy so durable publication replay cannot masquerade as
+    a zero-call execution.
+    """
+
+    env = os.environ if environment is None else environment
+    mode = str(env.get(_DECISION_CALL_LEDGER_MODE_ENV, "OFF") or "OFF").strip().upper()
+    if mode not in {"OFF", "SHADOW", "REQUIRED"}:
+        raise ValueError(
+            f"{_DECISION_CALL_LEDGER_MODE_ENV} must be OFF, SHADOW, or REQUIRED"
+        )
+    run_spec_sha256 = str(
+        env.get(_MEASUREMENT_RUN_SPEC_SHA256_ENV, "") or ""
+    ).strip().lower()
+    if run_spec_sha256 and re.fullmatch(r"[0-9a-f]{64}", run_spec_sha256) is None:
+        raise ValueError(
+            f"{_MEASUREMENT_RUN_SPEC_SHA256_ENV} must be a lowercase sha256"
+        )
+    pair_id = str(env.get(_MEASUREMENT_PAIR_ID_ENV, "") or "").strip()
+    arm = str(env.get(_MEASUREMENT_ARM_ENV, "") or "").strip().upper()
+    if arm and arm not in {"BEFORE", "AFTER"}:
+        raise ValueError(f"{_MEASUREMENT_ARM_ENV} must be BEFORE or AFTER")
+    execution_mode = str(
+        env.get(_MEASUREMENT_EXECUTION_MODE_ENV, "NORMAL") or "NORMAL"
+    ).strip().upper()
+    if execution_mode not in {"NORMAL", "FRESH_EXECUTION_REQUIRED"}:
+        raise ValueError(
+            f"{_MEASUREMENT_EXECUTION_MODE_ENV} must be NORMAL or FRESH_EXECUTION_REQUIRED"
+        )
+    early_route_mode = str(
+        env.get(_MEASUREMENT_EARLY_ROUTE_MODE_ENV, _EARLY_ROUTE_MODE_OFF)
+        or _EARLY_ROUTE_MODE_OFF
+    ).strip().upper()
+    if early_route_mode not in {
+        _EARLY_ROUTE_MODE_OFF,
+        _EARLY_ROUTE_MODE_SOURCE_ONLY_V1,
+    }:
+        raise ValueError(
+            f"{_MEASUREMENT_EARLY_ROUTE_MODE_ENV} must be OFF or SOURCE_ONLY_V1"
+        )
+    mutable_context_mode = str(
+        env.get(
+            _MEASUREMENT_MUTABLE_CONTEXT_MODE_ENV,
+            _MEASUREMENT_MUTABLE_CONTEXT_NORMAL,
+        )
+        or _MEASUREMENT_MUTABLE_CONTEXT_NORMAL
+    ).strip().upper()
+    if mutable_context_mode not in {
+        _MEASUREMENT_MUTABLE_CONTEXT_NORMAL,
+        _MEASUREMENT_MUTABLE_CONTEXT_FROZEN_OFF,
+    }:
+        raise ValueError(
+            f"{_MEASUREMENT_MUTABLE_CONTEXT_MODE_ENV} must be NORMAL or FROZEN_OFF"
+        )
+    raw_slang_mode = str(env.get("PIPELINE_SLANG_DB", "0") or "0").strip().lower()
+    if raw_slang_mode in {"0", "off", "false", "no"}:
+        measurement_slang_access_mode = "OFF"
+    elif raw_slang_mode in {"read_only", "read-only", "readonly"}:
+        measurement_slang_access_mode = "READ_ONLY"
+    else:
+        measurement_slang_access_mode = "MUTABLE_WRITE"
+    bindings = (run_spec_sha256, pair_id, arm)
+    if all(bindings):
+        binding_status = "BOUND"
+    elif any(bindings):
+        binding_status = "PARTIAL_UNBOUND"
+    else:
+        binding_status = "UNBOUND"
+    if mode == "OFF" and any(bindings):
+        raise ValueError(
+            "measurement bindings require PIPELINE_DECISION_CALL_LEDGER_MODE=SHADOW or REQUIRED"
+        )
+    if mode == "REQUIRED" and (
+        binding_status != "BOUND" or execution_mode != "FRESH_EXECUTION_REQUIRED"
+    ):
+        raise ValueError(
+            "REQUIRED decision call measurement needs complete RunSpec/pair/arm bindings "
+            "and FRESH_EXECUTION_REQUIRED"
+        )
+    if mode == "REQUIRED" and mutable_context_mode != _MEASUREMENT_MUTABLE_CONTEXT_FROZEN_OFF:
+        raise ValueError(
+            "REQUIRED paired measurement needs explicit "
+            f"{_MEASUREMENT_MUTABLE_CONTEXT_MODE_ENV}=FROZEN_OFF"
+        )
+    if mode == "REQUIRED" and measurement_slang_access_mode not in {"OFF", "READ_ONLY"}:
+        raise ValueError(
+            "REQUIRED paired measurement permits only slang DB OFF or READ_ONLY"
+        )
+    early_route_enabled = bool(
+        early_route_mode == _EARLY_ROUTE_MODE_SOURCE_ONLY_V1
+        and mode == "REQUIRED"
+        and binding_status == "BOUND"
+        and arm == ARM_AFTER
+        and execution_mode == "FRESH_EXECUTION_REQUIRED"
+        and mutable_context_mode == _MEASUREMENT_MUTABLE_CONTEXT_FROZEN_OFF
+        and measurement_slang_access_mode in {"OFF", "READ_ONLY"}
+    )
+    mutable_context_binding = {
+        "schema_version": "paired_measurement_mutable_context_binding_v1",
+        "mutable_context_mode": mutable_context_mode,
+        "batch_context_enabled": not (
+            mode == "REQUIRED"
+            and mutable_context_mode == _MEASUREMENT_MUTABLE_CONTEXT_FROZEN_OFF
+        ),
+        "slang_access_mode": measurement_slang_access_mode,
+        "central_slang_db_write_allowed": False if mode == "REQUIRED" else None,
+    }
+    return {
+        "mode": mode,
+        "run_spec_sha256": run_spec_sha256 or None,
+        "pair_id": pair_id or None,
+        "arm": arm or None,
+        "execution_mode": execution_mode,
+        "binding_status": binding_status,
+        "fresh_execution_required": execution_mode == "FRESH_EXECUTION_REQUIRED",
+        "actual_kpi_eligible": bool(
+            mode == "REQUIRED"
+            and binding_status == "BOUND"
+            and execution_mode == "FRESH_EXECUTION_REQUIRED"
+        ),
+        "early_route_mode": early_route_mode,
+        "early_route_enabled": early_route_enabled,
+        "early_route_enable_status": (
+            "ENABLED_AFTER_REQUIRED_FRESH_SOURCE_ONLY_V1"
+            if early_route_enabled
+            else "DISABLED_CONDITIONS_NOT_MET"
+            if early_route_mode == _EARLY_ROUTE_MODE_SOURCE_ONLY_V1
+            else "DISABLED"
+        ),
+        "mutable_context_mode": mutable_context_mode,
+        "mutable_context_frozen": (
+            mutable_context_mode == _MEASUREMENT_MUTABLE_CONTEXT_FROZEN_OFF
+        ),
+        "slang_access_mode": measurement_slang_access_mode,
+        "central_slang_db_write_allowed": False if mode == "REQUIRED" else None,
+        "mutable_context_binding": mutable_context_binding,
+        "mutable_context_binding_sha256": early_route_canonical_hash(
+            mutable_context_binding
+        ),
+    }
+
+
+def _decision_ledger_v2_shadow_config(
+    measurement_config: Mapping[str, Any],
+    environment: Optional[Mapping[str, str]] = None,
+) -> Dict[str, Any]:
+    """Normalize the explicit, OFF-by-default legacy-first V2 shadow mode."""
+
+    env = os.environ if environment is None else environment
+    mode = str(env.get(_DECISION_LEDGER_V2_SHADOW_MODE_ENV, "OFF") or "OFF").strip().upper()
+    if mode not in {"OFF", "DUAL_WRITE_SHADOW"}:
+        raise ValueError(
+            f"{_DECISION_LEDGER_V2_SHADOW_MODE_ENV} must be OFF or DUAL_WRITE_SHADOW"
+        )
+    measurement_mode = str(measurement_config.get("mode") or "OFF").upper()
+    if mode == "DUAL_WRITE_SHADOW" and measurement_mode not in {"SHADOW", "REQUIRED"}:
+        raise ValueError(
+            "DecisionLedgerV2 shadow dual-write requires the legacy decision-call ledger"
+        )
+    return {
+        "schema_version": "decision_ledger_v2_runtime_shadow_config_v1",
+        "mode": mode,
+        "enabled": mode == "DUAL_WRITE_SHADOW",
+        "legacy_authoritative": True,
+        "public_result_interference": False,
+        "production_auto_enable_allowed": False,
+    }
+
+
+def _maybe_enable_decision_ledger_v2_shadow(
+    registry: Any,
+    *,
+    shadow_config: Mapping[str, Any],
+    v2_root: Path,
+    attempt_run_id: str,
+    output_attempt_sha256: str,
+) -> Any:
+    """Keep the optional adapter completely unimported while shadow mode is OFF."""
+
+    if not bool(shadow_config.get("enabled")):
+        return registry
+    try:
+        from llm_batch.decision_ledger_dual_write import (
+            DecisionLedgerV2DualWriteAdapter,
+        )
+    except ModuleNotFoundError:
+        from src.llm_batch.decision_ledger_dual_write import (
+            DecisionLedgerV2DualWriteAdapter,
+        )
+    return DecisionLedgerV2DualWriteAdapter(
+        registry,
+        v2_root=v2_root,
+        shadow_enabled=True,
+        reconcile_on_start=True,
+        attempt_run_id=attempt_run_id,
+        output_attempt_sha256=output_attempt_sha256,
+    )
+
+
+def _decision_ledger_v2_off_status() -> Dict[str, Any]:
+    """Return the canonical status shape without importing the optional adapter."""
+
+    return {
+        "schema_version": "decision_ledger_v2_dual_write_status_v1",
+        "shadow_enabled": False,
+        "status": "SHADOW_DISABLED",
+        "reason_code": "OFF_BY_DEFAULT",
+        "legacy_authoritative": True,
+        "public_result_interference": False,
+        "v2_frame_count": None,
+        "v2_index_sha256": None,
+        "actual_metrics": None,
+        "actual_metrics_eligible": False,
+        "rollback_latched": False,
+        "rollback_persisted": None,
+        "control_persisted": None,
+        "rollback_persist_error": None,
+        "control_persist_error": None,
+        "shadow_evidence_complete": False,
+        "shadow_evidence_reason": "OFF_BY_DEFAULT",
+        "attempt_binding_status": "EXPLICIT_NULL_LIMITED",
+    }
+
+
+_EARLY_ROUTE_INJECTED_EVIDENCE_FIELDS = (
+    "search_results",
+    "source_search_results",
+    "precomputed_search_results",
+    "search_evidence_catalog",
+    "native_web_seed",
+    "source_evidence",
+    "judge_seed",
+    "projection_followup",
+)
+_EARLY_ROUTE_IMAGE_TYPES = frozenset({"image", "img", "photo", "picture"})
+_EARLY_ROUTE_TEXT_TYPES = frozenset({"text", "plain_text", "paragraph"})
+
+
+def _early_route_post_value(post: Any, field_name: str, default: Any = None) -> Any:
+    if isinstance(post, Mapping):
+        return post.get(field_name, default)
+    return getattr(post, field_name, default)
+
+
+def _early_route_item_mapping(value: Any) -> Optional[Dict[str, Any]]:
+    if isinstance(value, Mapping):
+        return dict(value)
+    if hasattr(value, "model_dump"):
+        dumped = value.model_dump()
+        return dict(dumped) if isinstance(dumped, Mapping) else None
+    if hasattr(value, "__dict__"):
+        return {
+            key: getattr(value, key, None)
+            for key in ("type", "url", "image_url", "src", "text", "content")
+            if hasattr(value, key)
+        }
+    return None
+
+
+def _early_route_present(value: Any) -> bool:
+    if value is None or value is False:
+        return False
+    if isinstance(value, (str, bytes, list, tuple, set, dict)):
+        return bool(value)
+    return True
+
+
+def _build_early_route_source_view(
+    post: Any,
+    *,
+    measurement_config: Mapping[str, Any],
+    publication_scope_id: str,
+    input_index: int,
+) -> EarlyRouteSourceView:
+    """Build the router's source-only view without reading WAL/truth state."""
+
+    pair_id = str(measurement_config.get("pair_id") or "").strip()
+    arm = str(measurement_config.get("arm") or "").strip().upper()
+    if not pair_id or arm != ARM_AFTER:
+        raise ValueError("source-only early route requires a bound AFTER pair")
+
+    parse_errors: set[str] = set()
+    unknown_block_count = 0
+    raw_title = _early_route_post_value(post, "title", "")
+    if not isinstance(raw_title, str):
+        parse_errors.add("TITLE_NOT_STRING")
+        title = ""
+    else:
+        title = raw_title
+
+    text_blocks: list[str] = []
+    block_kinds: list[str] = []
+    image_urls: list[str] = []
+    external_urls: list[str] = []
+    raw_blocks = _early_route_post_value(post, "content_blocks", [])
+    if not isinstance(raw_blocks, (list, tuple)):
+        parse_errors.add("CONTENT_BLOCKS_NOT_SEQUENCE")
+        raw_blocks = []
+        unknown_block_count += 1
+    for block_index, raw_block in enumerate(raw_blocks):
+        if isinstance(raw_block, str):
+            block_kinds.append("text")
+            text_blocks.append(raw_block)
+            continue
+        mapped = _early_route_item_mapping(raw_block)
+        if not isinstance(mapped, dict):
+            parse_errors.add("CONTENT_BLOCK_UNPARSEABLE")
+            block_kinds.append("unknown")
+            unknown_block_count += 1
+            continue
+        try:
+            early_route_canonical_hash(mapped)
+        except Exception:
+            parse_errors.add("CONTENT_BLOCK_MAPPING_COLLISION")
+            block_kinds.append("unknown")
+            unknown_block_count += 1
+            continue
+        allowed_keys = {"type", "url", "image_url", "src", "text"}
+        if set(mapped) - allowed_keys:
+            parse_errors.add("CONTENT_BLOCK_UNKNOWN_FIELDS")
+            unknown_block_count += 1
+        raw_kind = mapped.get("type")
+        if not isinstance(raw_kind, str) or not raw_kind.strip():
+            kind = "unknown"
+            parse_errors.add("CONTENT_BLOCK_TYPE_MISSING_OR_INVALID")
+            unknown_block_count += 1
+        else:
+            kind = raw_kind.strip().casefold()
+            if kind not in _EARLY_ROUTE_TEXT_TYPES | _EARLY_ROUTE_IMAGE_TYPES:
+                unknown_block_count += 1
+        block_kinds.append(kind)
+        raw_text = mapped.get("text")
+        if raw_text is not None:
+            if isinstance(raw_text, str):
+                text_blocks.append(raw_text)
+            else:
+                parse_errors.add("CONTENT_BLOCK_TEXT_NOT_STRING")
+        aliases = [
+            str(mapped.get(key) or "").strip()
+            for key in ("url", "image_url", "src")
+            if mapped.get(key) not in (None, "")
+        ]
+        if any(not isinstance(mapped.get(key), str) for key in ("url", "image_url", "src") if mapped.get(key) not in (None, "")):
+            parse_errors.add("CONTENT_BLOCK_URL_NOT_STRING")
+        distinct_aliases = list(dict.fromkeys(aliases))
+        if len(distinct_aliases) > 1:
+            parse_errors.add("CONTENT_BLOCK_URL_ALIAS_CONFLICT")
+        external_urls.extend(distinct_aliases)
+        if distinct_aliases and (
+            kind in _EARLY_ROUTE_IMAGE_TYPES
+            or mapped.get("image_url") not in (None, "")
+            or mapped.get("src") not in (None, "")
+            or any(re.search(r"\.(?:png|jpe?g|gif|webp)(?:[?#].*)?$", url, re.I) for url in distinct_aliases)
+        ):
+            image_urls.extend(distinct_aliases)
+
+    comments: list[str] = []
+    raw_comments = _early_route_post_value(post, "comments", [])
+    if not isinstance(raw_comments, (list, tuple)):
+        parse_errors.add("COMMENTS_NOT_SEQUENCE")
+        raw_comments = []
+    for raw_comment in raw_comments:
+        if isinstance(raw_comment, str):
+            comments.append(raw_comment)
+            continue
+        mapped = _early_route_item_mapping(raw_comment)
+        if not isinstance(mapped, dict):
+            parse_errors.add("COMMENT_UNPARSEABLE")
+            continue
+        allowed_comment_keys = {
+            "comment_id",
+            "post_id",
+            "author",
+            "ip",
+            "created_at",
+            "reply_to_comment_id",
+            "reply_level",
+            "gallery_id",
+            "content",
+            "text",
+            "content_html",
+            "url",
+            "image_url",
+            "src",
+            "attachment",
+        }
+        if set(mapped) - allowed_comment_keys:
+            parse_errors.add("COMMENT_UNKNOWN_FIELDS")
+        content = mapped.get("content")
+        text = mapped.get("text")
+        if content not in (None, "") and text not in (None, "") and content != text:
+            parse_errors.add("COMMENT_TEXT_ALIAS_CONFLICT")
+        selected = content if content not in (None, "") else text
+        if selected is None:
+            parse_errors.add("COMMENT_TEXT_MISSING")
+        elif isinstance(selected, str):
+            comments.append(selected)
+        else:
+            parse_errors.add("COMMENT_TEXT_NOT_STRING")
+        if _early_route_present(mapped.get("content_html")):
+            parse_errors.add("COMMENT_HTML_PRESENT")
+        comment_urls: list[str] = []
+        for key in ("url", "image_url", "src", "attachment"):
+            raw_url = mapped.get(key)
+            if raw_url in (None, ""):
+                continue
+            if not isinstance(raw_url, str):
+                parse_errors.add("COMMENT_URL_NOT_STRING")
+                continue
+            comment_urls.append(raw_url.strip())
+        external_urls.extend(value for value in comment_urls if value)
+        if mapped.get("image_url") not in (None, "") or mapped.get("src") not in (None, ""):
+            image_urls.extend(value for value in comment_urls if value)
+
+    injected_names = sorted(
+        field_name
+        for field_name in _EARLY_ROUTE_INJECTED_EVIDENCE_FIELDS
+        if _early_route_present(_early_route_post_value(post, field_name))
+    )
+    truncated = False
+    for field_name in ("input_truncated", "truncated", "_input_truncated"):
+        raw_flag = _early_route_post_value(post, field_name)
+        if raw_flag is None:
+            continue
+        if not isinstance(raw_flag, bool):
+            parse_errors.add("TRUNCATION_FLAG_NOT_BOOLEAN")
+            truncated = True
+        elif raw_flag:
+            truncated = True
+    for field_name in ("parse_error_codes", "parse_errors", "_parse_errors"):
+        if _early_route_present(_early_route_post_value(post, field_name)):
+            parse_errors.add("UPSTREAM_PARSE_AMBIGUITY")
+
+    image_inventory_sha256 = early_route_canonical_hash(sorted(set(image_urls)))
+    external_inventory_sha256 = early_route_canonical_hash(sorted(set(external_urls)))
+    evidence_inventory_sha256 = early_route_canonical_hash(injected_names)
+    source_material = {
+        "post_id": str(_early_route_post_value(post, "post_id", "")),
+        "title": title,
+        "text_blocks": text_blocks,
+        "comments": comments,
+        "block_kinds": block_kinds,
+        "image_url_count": len(set(image_urls)),
+        "image_inventory_sha256": image_inventory_sha256,
+        "external_url_count": len(set(external_urls)),
+        "external_url_inventory_sha256": external_inventory_sha256,
+        "source_evidence_count": len(injected_names),
+        "source_evidence_sha256": evidence_inventory_sha256,
+        "unknown_block_count": unknown_block_count,
+        "input_truncated": truncated,
+        "parse_error_codes": sorted(parse_errors),
+    }
+    return EarlyRouteSourceView.create(
+        publication_scope_id=publication_scope_id,
+        pair_id=pair_id,
+        arm=arm,
+        input_index=input_index,
+        post_id=_early_route_post_value(post, "post_id", ""),
+        source_input_sha256=early_route_canonical_hash(source_material),
+        title=title,
+        text_blocks=text_blocks,
+        comments=comments,
+        block_kinds=block_kinds,
+        image_url_count=len(set(image_urls)),
+        image_inventory_sha256=image_inventory_sha256,
+        external_url_count=len(set(external_urls)),
+        external_url_inventory_sha256=external_inventory_sha256,
+        source_evidence_count=len(injected_names),
+        source_evidence_sha256=evidence_inventory_sha256,
+        unknown_block_count=unknown_block_count,
+        input_truncated=truncated,
+        parse_error_codes=sorted(parse_errors),
+    )
+
+
+def _build_fail_closed_early_route_source_view(
+    post: Any,
+    *,
+    measurement_config: Mapping[str, Any],
+    publication_scope_id: str,
+    input_index: int,
+) -> EarlyRouteSourceView:
+    material = {
+        "post_id": str(_early_route_post_value(post, "post_id", "")),
+        "failure": "SOURCE_VIEW_BUILD_EXCEPTION",
+    }
+    return EarlyRouteSourceView.create(
+        publication_scope_id=publication_scope_id,
+        pair_id=str(measurement_config.get("pair_id") or ""),
+        arm=ARM_AFTER,
+        input_index=input_index,
+        post_id=_early_route_post_value(post, "post_id", ""),
+        source_input_sha256=early_route_canonical_hash(material),
+        title="",
+        unknown_block_count=1,
+        parse_error_codes=("SOURCE_VIEW_BUILD_EXCEPTION",),
+    )
+
+
+def _build_early_route_execution_receipt(
+    decision: EarlyRouteDecision,
+    *,
+    compute_skip_applied: bool,
+) -> Dict[str, Any]:
+    expected_skip = decision.selected_lane == LANE_CHEAP_NIL
+    if compute_skip_applied is not expected_skip:
+        raise ValueError("early-route skip status does not match the immutable decision")
+    payload = {
+        "schema_version": "early_route_execution_receipt_v1",
+        "mode": _EARLY_ROUTE_MODE_SOURCE_ONLY_V1,
+        "route_decision": decision.to_dict(),
+        "execution_status": (
+            "CHEAP_ZERO_CALL_AUTHORITATIVE_REFERENCE_COPY"
+            if compute_skip_applied
+            else "FULL_EXPERT_EXECUTED"
+        ),
+        "compute_skip_applied": compute_skip_applied,
+        "public_action_applied": False,
+        "production_enable_allowed": False,
+        "accuracy_status": ACCURACY_NOT_ESTIMABLE,
+    }
+    return {**payload, "receipt_sha256": early_route_canonical_hash(payload)}
+
+
+def _execute_source_only_early_route(
+    post: Any,
+    *,
+    measurement_config: Mapping[str, Any],
+    publication_scope_id: str,
+    input_index: int,
+    process_full: Callable[[], Any],
+    authoritative_reference_result: Optional[Mapping[str, Any]] = None,
+    authoritative_reference_loader: Optional[
+        Callable[[], Mapping[str, Any]]
+    ] = None,
+) -> Tuple[Any, Optional[EarlyRouteDecision], Optional[Dict[str, Any]], bool]:
+    """Execute AFTER measurement routing; WAL data is touched only after routing."""
+
+    if not bool(measurement_config.get("early_route_enabled")):
+        return process_full(), None, None, False
+    try:
+        source = _build_early_route_source_view(
+            post,
+            measurement_config=measurement_config,
+            publication_scope_id=publication_scope_id,
+            input_index=input_index,
+        )
+    except Exception:
+        source = _build_fail_closed_early_route_source_view(
+            post,
+            measurement_config=measurement_config,
+            publication_scope_id=publication_scope_id,
+            input_index=input_index,
+        )
+    decision = decide_early_route(source, EarlyRoutePolicyV1.create())
+    if decision.selected_lane == LANE_CHEAP_NIL:
+        if authoritative_reference_loader is not None:
+            authoritative_reference_result = authoritative_reference_loader()
+        if not isinstance(authoritative_reference_result, Mapping):
+            raise PublicationCommitError(
+                "cheap early-route measurement requires an authoritative WAL result copy"
+            )
+        result = copy.deepcopy(dict(authoritative_reference_result))
+        skipped = True
+    else:
+        result = process_full()
+        skipped = False
+    execution_receipt = _build_early_route_execution_receipt(
+        decision,
+        compute_skip_applied=skipped,
+    )
+    return result, decision, execution_receipt, skipped
+
+
+def _validated_early_route_public_projection(
+    result: Mapping[str, Any],
+    receipt: Any,
+) -> Tuple[bool, Optional[str], Optional[str]]:
+    validate_publication_result_decision(result, receipt)
+    analysis = result.get("analysis_result")
+    identity = analysis.get("identity") if isinstance(analysis, Mapping) else result.get("identity")
+    if not isinstance(identity, Mapping):
+        raise PublicationCommitError("early-route comparison identity is missing")
+    decision = identity.get("promotion_decision")
+    ledger = identity.get("publish_ledger")
+    public_projection = ledger.get("public_publish") if isinstance(ledger, Mapping) else None
+    if not isinstance(decision, Mapping) or not isinstance(public_projection, Mapping):
+        raise PublicationCommitError(
+            "early-route comparison requires typed promotion_decision/publish_ledger"
+        )
+    publish_allowed = decision.get("publish_allowed")
+    if not isinstance(publish_allowed, bool):
+        raise PublicationCommitError("early-route comparison publish_allowed is not boolean")
+    title = str(decision.get("official_title") or "").strip() or None
+    url = str(decision.get("official_url") or "").strip() or None
+    projected_title = str(public_projection.get("official_title") or "").strip() or None
+    projected_url = str(public_projection.get("official_url") or "").strip() or None
+    expected_title = title if publish_allowed else None
+    expected_url = url if publish_allowed else None
+    if projected_title != expected_title or projected_url != expected_url:
+        raise PublicationCommitError("early-route typed public projection mismatch")
+    if not publish_allowed and (title is not None or url is not None):
+        raise PublicationCommitError("early-route HOLD projection must keep title/URL null")
+    return publish_allowed, expected_title, expected_url
+
+
+def _compare_early_route_publication(
+    decision: EarlyRouteDecision,
+    *,
+    current_result: Mapping[str, Any],
+    current_receipt: Any,
+    authoritative_result: Mapping[str, Any],
+    authoritative_receipt: Any,
+) -> Dict[str, Any]:
+    if current_receipt.decision_id != authoritative_receipt.decision_id:
+        raise PublicationCommitError(
+            "early-route current decision ID differs from authoritative WAL"
+        )
+    validate_publication_result_commit(authoritative_result, authoritative_receipt)
+    validate_publication_result_decision(current_result, authoritative_receipt)
+    publish_allowed, title, url = _validated_early_route_public_projection(
+        authoritative_result,
+        authoritative_receipt,
+    )
+    comparison = compare_early_route(
+        decision,
+        authoritative_wal_receipt_sha256=authoritative_receipt.commit_sha256,
+        authoritative_wal_outcome=authoritative_receipt.outcome,
+        authoritative_publish_allowed=publish_allowed,
+        authoritative_title=title,
+        authoritative_url=url,
+        public_projection_before_sha256=authoritative_receipt.public_projection_sha256,
+        public_projection_after_sha256=current_receipt.public_projection_sha256,
+        frozen_truth_status=FROZEN_TRUTH_NOT_AVAILABLE,
+    )
+    return comparison.to_dict()
+
+
+def _build_early_route_manifest_aggregate(
+    rows_by_index: Mapping[int, Mapping[str, Any]],
+    *,
+    expected_input_count: int,
+    measurement_config: Mapping[str, Any],
+    decision_call_rows_by_index: Optional[Mapping[int, Mapping[str, Any]]] = None,
+) -> Dict[str, Any]:
+    enabled = bool(measurement_config.get("early_route_enabled"))
+    call_rows = decision_call_rows_by_index or {}
+    reason_codes: set[str] = set()
+    row_bindings: list[Dict[str, Any]] = []
+    cheap_count = 0
+    full_count = 0
+    comparison_count = 0
+    cheap_zero_call_verified_count = 0
+    valid_indices: set[int] = set()
+    expected_indices = set(range(1, expected_input_count + 1))
+
+    for raw_index, raw_row in sorted(rows_by_index.items(), key=lambda item: str(item[0])):
+        if isinstance(raw_index, bool) or not isinstance(raw_index, int) or raw_index <= 0:
+            reason_codes.add("ROUTE_INDEX_INVALID")
+            continue
+        if raw_index not in expected_indices:
+            reason_codes.add("ROUTE_INDEX_OUT_OF_SCOPE")
+        if not isinstance(raw_row, Mapping):
+            reason_codes.add("ROUTE_ROW_INVALID")
+            continue
+        execution = raw_row.get("execution_receipt")
+        if not isinstance(execution, Mapping):
+            reason_codes.add("EXECUTION_RECEIPT_MISSING")
+            continue
+        expected_execution_keys = {
+            "schema_version",
+            "mode",
+            "route_decision",
+            "execution_status",
+            "compute_skip_applied",
+            "public_action_applied",
+            "production_enable_allowed",
+            "accuracy_status",
+            "receipt_sha256",
+        }
+        if set(execution) != expected_execution_keys:
+            reason_codes.add("EXECUTION_RECEIPT_SHAPE_MISMATCH")
+            continue
+        if execution.get("receipt_sha256") != early_route_canonical_hash(
+            {key: value for key, value in execution.items() if key != "receipt_sha256"}
+        ):
+            reason_codes.add("EXECUTION_RECEIPT_HASH_MISMATCH")
+            continue
+        try:
+            decision = EarlyRouteDecision.from_dict(execution.get("route_decision"))
+        except Exception:
+            reason_codes.add("ROUTE_DECISION_INVALID")
+            continue
+        if (
+            decision.input_index != raw_index
+            or decision.pair_id != measurement_config.get("pair_id")
+            or decision.arm != measurement_config.get("arm")
+        ):
+            reason_codes.add("ROUTE_DECISION_BINDING_MISMATCH")
+            continue
+        valid_indices.add(raw_index)
+        if decision.selected_lane == LANE_CHEAP_NIL:
+            cheap_count += 1
+        elif decision.selected_lane == LANE_FULL:
+            full_count += 1
+
+        comparison = raw_row.get("comparison_receipt")
+        typed_comparison: Optional[EarlyRouteComparisonReceipt] = None
+        if not isinstance(comparison, Mapping):
+            reason_codes.add("COMPARISON_RECEIPT_MISSING")
+        else:
+            try:
+                typed_comparison = EarlyRouteComparisonReceipt.from_dict(comparison)
+            except Exception:
+                reason_codes.add("COMPARISON_RECEIPT_INVALID")
+            else:
+                comparison_count += 1
+                if (
+                    typed_comparison.input_index != raw_index
+                    or typed_comparison.post_id != decision.post_id
+                    or typed_comparison.pair_id != decision.pair_id
+                    or typed_comparison.route_decision_sha256 != decision.decision_sha256
+                    or typed_comparison.selected_lane != decision.selected_lane
+                ):
+                    reason_codes.add("COMPARISON_RECEIPT_BINDING_MISMATCH")
+                if typed_comparison.public_noninterference_status != "GO":
+                    reason_codes.add("PUBLIC_PROJECTION_INTERFERENCE")
+                if (
+                    decision.selected_lane == LANE_CHEAP_NIL
+                    and typed_comparison.baseline_equivalence_status
+                    != "BASELINE_EQUIVALENT"
+                ):
+                    reason_codes.add("CHEAP_BASELINE_MISMATCH")
+
+        call_entry = call_rows.get(raw_index)
+        zero_call_verified = False
+        event_root_sha256 = None
+        if not isinstance(call_entry, Mapping):
+            reason_codes.add("DECISION_CALL_ROW_EVIDENCE_MISSING")
+        else:
+            ledger_ref = call_entry.get("ledger_ref")
+            row_summary = call_entry.get("row_summary")
+            attempt_receipt = call_entry.get("attempt_receipt")
+            if not isinstance(ledger_ref, Mapping) or ledger_ref.get("closure_kind") != "ROW_SEAL":
+                reason_codes.add("DECISION_CALL_ROW_NOT_SEALED")
+            else:
+                event_root_sha256 = ledger_ref.get("event_root_sha256")
+            if (
+                not isinstance(attempt_receipt, Mapping)
+                or attempt_receipt.get("publication_link_status")
+                != "LINKED_EXTERNAL_LEDGER"
+            ):
+                reason_codes.add("DECISION_CALL_ROW_NOT_LINKED")
+            if decision.selected_lane == LANE_CHEAP_NIL:
+                derived = (
+                    row_summary.get("derived_observation")
+                    if isinstance(row_summary, Mapping)
+                    else None
+                )
+                zero_fields = (
+                    "expert_calls",
+                    "text_calls",
+                    "vlm_calls",
+                    "retry_count",
+                    "prompt_tokens",
+                    "completion_tokens",
+                    "total_tokens",
+                )
+                zero_call_verified = bool(
+                    isinstance(row_summary, Mapping)
+                    and row_summary.get("writer_complete") is True
+                    and row_summary.get("usage_status") == "NO_CALLS"
+                    and isinstance(derived, Mapping)
+                    and all(derived.get(field) == 0 for field in zero_fields)
+                )
+                if not zero_call_verified:
+                    reason_codes.add("CHEAP_ZERO_CALL_NOT_PROVEN_BY_WRITER")
+                else:
+                    cheap_zero_call_verified_count += 1
+
+        row_bindings.append(
+            {
+                "input_index": raw_index,
+                "post_id": decision.post_id,
+                "selected_lane": decision.selected_lane,
+                "source_view_sha256": decision.source_view_sha256,
+                "policy_sha256": decision.policy_sha256,
+                "route_decision_sha256": decision.decision_sha256,
+                "execution_receipt_sha256": execution.get("receipt_sha256"),
+                "comparison_receipt_sha256": (
+                    typed_comparison.receipt_sha256
+                    if typed_comparison is not None
+                    else None
+                ),
+                "comparison_gate": (
+                    typed_comparison.gate if typed_comparison is not None else None
+                ),
+                "decision_call_event_root_sha256": event_root_sha256,
+                "cheap_zero_call_writer_verified": zero_call_verified,
+            }
+        )
+
+    if enabled:
+        if valid_indices != expected_indices:
+            reason_codes.add("ROUTE_COVERAGE_INCOMPLETE")
+        if comparison_count != expected_input_count:
+            reason_codes.add("COMPARISON_COVERAGE_INCOMPLETE")
+        if cheap_count + full_count != expected_input_count:
+            reason_codes.add("ROUTE_LANE_COUNT_MISMATCH")
+        if cheap_zero_call_verified_count != cheap_count:
+            reason_codes.add("CHEAP_ZERO_CALL_COVERAGE_INCOMPLETE")
+    execution_gate = (
+        "GO"
+        if enabled and not reason_codes
+        else "NO_GO"
+        if enabled
+        else "NOT_REQUIRED"
+    )
+    payload = {
+        "schema_version": "early_route_manifest_aggregate_v1",
+        "mode": str(measurement_config.get("early_route_mode") or _EARLY_ROUTE_MODE_OFF),
+        "enabled": enabled,
+        "measurement_arm": measurement_config.get("arm"),
+        "mutable_context_mode": measurement_config.get("mutable_context_mode"),
+        "mutable_context_binding_sha256": measurement_config.get(
+            "mutable_context_binding_sha256"
+        ),
+        "slang_access_mode": measurement_config.get("slang_access_mode"),
+        "central_slang_db_write_allowed": measurement_config.get(
+            "central_slang_db_write_allowed"
+        ),
+        "expected_input_count": expected_input_count,
+        "observed_route_count": len(valid_indices),
+        "observed_comparison_count": comparison_count,
+        "cheap_count": cheap_count,
+        "full_count": full_count,
+        "cheap_zero_call_writer_verified_count": cheap_zero_call_verified_count,
+        "missing_route_count": max(0, expected_input_count - len(valid_indices)) if enabled else 0,
+        "missing_comparison_count": max(0, expected_input_count - comparison_count) if enabled else 0,
+        "row_bindings": row_bindings,
+        "row_bindings_sha256": early_route_canonical_hash(row_bindings),
+        "execution_gate": execution_gate,
+        "execution_reason_codes": sorted(reason_codes),
+        "production_enable_allowed": False,
+        "accuracy_status": ACCURACY_NOT_ESTIMABLE,
+        "gate": (
+            "NO_GO_ACCURACY_NOT_ESTIMABLE"
+            if enabled
+            else "NOT_ENABLED"
+        ),
+    }
+    return {**payload, "aggregate_sha256": early_route_canonical_hash(payload)}
+
+
+def _decision_affecting_publication_config(
+    run_config: Mapping[str, Any],
+) -> Dict[str, Any]:
+    """Return the config that may legitimately change a publication scope.
+
+    Attempt-local measurement routing is deliberately excluded: changing
+    BEFORE/AFTER or the ledger mode must not create a different logical public
+    decision owner.
+    """
+
+    snapshot = dict(run_config)
+    snapshot.pop("decision_call_measurement", None)
+    snapshot.pop("decision_ledger_v2_shadow", None)
+    return snapshot
+
+
+def _measurement_environment_key_is_attempt_local(key: str) -> bool:
+    """Return whether an env key only routes paired measurement evidence."""
+
+    normalized = str(key or "").strip().upper()
+    return normalized.startswith(_MEASUREMENT_ONLY_ENV_PREFIXES)
+
+
+def _publication_decision_environment(
+    environment: Optional[Mapping[str, str]] = None,
+) -> Dict[str, str]:
+    """Snapshot only environment values that can change a public decision.
+
+    Paired-call routing is attempt-local.  It remains in the measurement
+    manifest and ledger scope, but must never fork the durable publication
+    scope or its sidecar hash.
+    """
+
+    env = os.environ if environment is None else environment
+    return {
+        str(key): str(value)
+        for key, value in sorted(env.items())
+        if str(key).startswith(_PUBLICATION_DECISION_ENV_PREFIXES)
+        and not _decision_env_key_is_secret(str(key))
+        and not _measurement_environment_key_is_attempt_local(str(key))
+    }
+
+
+def _fresh_execution_authoritative_reference_for_row(
+    references_by_index: Mapping[int, Any],
+    *,
+    input_index: int,
+    post_id: Any,
+) -> tuple[Dict[str, Any], Any]:
+    """Return the pre-existing public decision required by a fresh attempt."""
+
+    reference = references_by_index.get(input_index)
+    if (
+        not isinstance(reference, tuple)
+        or len(reference) != 2
+        or not isinstance(reference[0], dict)
+        or reference[1] is None
+    ):
+        raise PublicationCommitError(
+            "FRESH_EXECUTION_NO_PUBLIC_WRITE requires an authoritative WAL "
+            f"decision reference (input_index={input_index}, post_id={post_id})"
+        )
+    return reference[0], reference[1]
+
+
+def _require_fresh_execution_authoritative_references(
+    references_by_index: Mapping[int, Any],
+    *,
+    post_ids: Iterable[Any],
+) -> None:
+    """Fail before provider dispatch when a fresh measurement has no WAL peer."""
+
+    missing: list[str] = []
+    for input_index, post_id in enumerate(post_ids, 1):
+        try:
+            _fresh_execution_authoritative_reference_for_row(
+                references_by_index,
+                input_index=input_index,
+                post_id=post_id,
+            )
+        except PublicationCommitError:
+            missing.append(f"{input_index}:{post_id}")
+    if missing:
+        preview = ", ".join(missing[:10])
+        suffix = "" if len(missing) <= 10 else f" (+{len(missing) - 10})"
+        raise PublicationCommitError(
+            "FRESH_EXECUTION_NO_PUBLIC_WRITE requires an authoritative WAL "
+            f"decision reference for every row; missing={preview}{suffix}"
+        )
+
+
+def _build_decision_call_measurement_gate(
+    *,
+    measurement_config: Mapping[str, Any],
+    ledger_summary: Mapping[str, Any],
+    row_attempts: Mapping[int, Mapping[str, Any]],
+    expected_input_count: int,
+) -> Dict[str, Any]:
+    """Build a fail-closed measurement completion gate without mutating WALs."""
+
+    mode = str(measurement_config.get("mode") or "OFF").upper()
+    required = mode == "REQUIRED"
+    ledger_reason_codes = sorted(
+        {
+            str(reason)
+            for reason in (ledger_summary.get("reason_codes") or [])
+            if str(reason).strip()
+        }
+    )
+    base = {
+        "schema_version": "decision_call_measurement_gate_v1",
+        "required": required,
+        "mode": mode,
+        "expected_input_count": expected_input_count,
+        "observed_row_attempt_count": len(row_attempts),
+        "ledger_status": str(ledger_summary.get("ledger_status") or "UNMEASURED"),
+        "actual_kpi_status": str(
+            ledger_summary.get("actual_kpi_status") or "NOT_ESTIMABLE"
+        ),
+        "ledger_reason_codes": ledger_reason_codes,
+    }
+    if not required:
+        return {
+            **base,
+            "status": "NOT_REQUIRED",
+            "blocks_large_run_complete": False,
+            "reason_codes": [],
+        }
+
+    reasons: list[str] = []
+    if not bool(measurement_config.get("actual_kpi_eligible")):
+        reasons.append("REQUIRED_MEASUREMENT_BINDING_INELIGIBLE")
+    if str(ledger_summary.get("instrumentation_status") or "") != "ENABLED":
+        reasons.append("MEASUREMENT_INSTRUMENTATION_DISABLED")
+    if base["ledger_status"] != "COMPLETE":
+        reasons.append("LEDGER_NOT_COMPLETE")
+    if base["actual_kpi_status"] != "PENDING_INDEPENDENT_READBACK":
+        reasons.append("LEDGER_ACTUAL_KPI_NOT_ESTIMABLE")
+    reasons.extend(f"LEDGER_{reason}" for reason in ledger_reason_codes)
+
+    for input_index in range(1, expected_input_count + 1):
+        entry = row_attempts.get(input_index)
+        if not isinstance(entry, Mapping):
+            reasons.append("ROW_MEASUREMENT_MISSING")
+            continue
+        ledger_ref = entry.get("ledger_ref")
+        row_summary = entry.get("row_summary")
+        attempt_receipt = entry.get("attempt_receipt")
+        if not isinstance(ledger_ref, Mapping) or str(
+            ledger_ref.get("closure_kind") or ""
+        ) != "ROW_SEAL":
+            reasons.append("ROW_TERMINAL_NOT_SEALED")
+        if not isinstance(row_summary, Mapping) or not bool(
+            row_summary.get("writer_complete")
+        ):
+            reasons.append("ROW_WRITER_INCOMPLETE")
+        if not isinstance(row_summary, Mapping) or str(
+            row_summary.get("actual_kpi_status") or ""
+        ) != "PENDING_INDEPENDENT_READBACK":
+            reasons.append("ROW_NOT_ESTIMABLE")
+        if not isinstance(attempt_receipt, Mapping) or str(
+            attempt_receipt.get("publication_link_status") or ""
+        ) != "LINKED_EXTERNAL_LEDGER":
+            reasons.append("ROW_EXTERNAL_LEDGER_UNLINKED")
+
+    reason_codes = sorted(set(reasons))
+    return {
+        **base,
+        "status": "GO" if not reason_codes else "NO_GO",
+        "blocks_large_run_complete": bool(reason_codes),
+        "reason_codes": reason_codes,
+    }
+
+
+def _build_runtime_completion_gate(
+    *,
+    input_post_count: int,
+    completed_count: int,
+    pending_count: int,
+    failed_count: int,
+    terminal_artifacts_finalized: bool,
+) -> Dict[str, Any]:
+    """Report physical run completion separately from semantic approval."""
+
+    reasons: list[str] = []
+    if completed_count != input_post_count:
+        reasons.append("COMPLETED_COUNT_MISMATCH")
+    if pending_count != 0:
+        reasons.append("PENDING_ROWS")
+    if failed_count != 0:
+        reasons.append("FAILED_ROWS")
+    if not terminal_artifacts_finalized:
+        reasons.append("TERMINAL_ARTIFACTS_NOT_FINALIZED")
+    reason_codes = sorted(set(reasons))
+    return {
+        "schema_version": "runtime_completion_gate_v1",
+        "status": "GO" if not reason_codes else "NO_GO",
+        "input_post_count": input_post_count,
+        "completed_count": completed_count,
+        "pending_count": pending_count,
+        "failed_count": failed_count,
+        "terminal_artifacts_finalized": bool(terminal_artifacts_finalized),
+        "reason_codes": reason_codes,
+    }
+
+
+def _large_run_complete_from_gates(
+    runtime_completion_gate: Mapping[str, Any],
+    measurement_gate: Mapping[str, Any],
+) -> bool:
+    """A physical completion still fails closed when REQUIRED measurement fails."""
+
+    return bool(
+        runtime_completion_gate.get("status") == "GO"
+        and not bool(measurement_gate.get("blocks_large_run_complete"))
+    )
+
+
+def _preview_publication_decision(
+    result_item: Mapping[str, Any],
+    *,
+    publication_scope_id: str,
+    attempt_run_id: str,
+    input_index: int,
+    post_id: Any,
+    reference_receipt: Any = None,
+):
+    """Compute and validate a decision without writing the publication WAL."""
+
+    receipt = compute_publication_decision_commit(
+        result_item,
+        publication_scope_id=publication_scope_id,
+        attempt_run_id=attempt_run_id,
+        input_index=input_index,
+        post_id=post_id,
+    )
+    validate_publication_result_commit(
+        result_item,
+        receipt,
+        expected_scope_id=publication_scope_id,
+        expected_input_index=input_index,
+        expected_post_id=post_id,
+    )
+    if reference_receipt is not None:
+        validate_publication_result_decision(
+            result_item,
+            reference_receipt,
+            expected_scope_id=publication_scope_id,
+            expected_input_index=input_index,
+            expected_post_id=post_id,
+        )
+    return receipt
 
 
 def _canonical_official_detail_url(value: Any) -> str:
@@ -66,6 +1312,57 @@ def _canonical_official_detail_url(value: Any) -> str:
         if menu == "novel" and novel_id.isdigit():
             return f"https://novel.munpia.com/{novel_id}"
     return ""
+
+
+def _runtime_candidate_audit_seed(
+    identity: Dict[str, Any],
+    judge_seed: Optional[Dict[str, Any]],
+) -> Optional[Dict[str, Any]]:
+    """Keep judge/adjudication labels out of authoritative v2 runtime evidence."""
+    if not isinstance(identity, dict):
+        return judge_seed
+    ledger = identity.get("candidate_ledger")
+    ledger = ledger if isinstance(ledger, dict) else {}
+    version = str(
+        identity.get("publish_contract_version")
+        or ledger.get("publish_contract_version")
+        or ""
+    ).strip()
+    return None if version == PUBLISH_CONTRACT_VERSION else judge_seed
+
+
+def _runtime_binding_echo_fields() -> Dict[str, str]:
+    """Echo supervisor/release bindings without normalizing their exact bytes."""
+    fields: Dict[str, str] = {}
+    for environment_name, output_field in (
+        (_FRESH375_RUN_BINDING_TOKEN_ENV, _FRESH375_RUN_BINDING_TOKEN_FIELD),
+        (_RUNTIME_RELEASE_FINGERPRINT_ENV, _RUNTIME_RELEASE_FINGERPRINT_FIELD),
+    ):
+        value = os.getenv(environment_name)
+        if value not in (None, ""):
+            fields[output_field] = value
+    return fields
+
+
+def _decision_env_key_is_secret(key: str) -> bool:
+    upper = str(key or "").strip().upper()
+    # Token budgets and token-timeout controls change truncation/decision
+    # behavior; they are not credentials and must remain scope-bound.
+    if "TOKENS" in upper or "TOKEN_TIMEOUT" in upper:
+        return False
+    if any(
+        marker in upper
+        for marker in (
+            "API_KEY",
+            "SECRET",
+            "PASSWORD",
+            "COOKIE",
+            "CREDENTIAL",
+            "PRIVATE_KEY",
+        )
+    ):
+        return True
+    return upper.endswith(("_TOKEN", "_AUTH", "_BEARER"))
 
 # ─── CLI 인자 파싱 ──────────────────────────────────────
 def _build_arg_parser(*, add_help: bool) -> argparse.ArgumentParser:
@@ -7811,6 +9108,300 @@ def _demote_unverified_image_ocr_publication_contract(
     return changed
 
 
+def _reapply_authoritative_publish_contract(result_dict: Dict[str, Any]) -> bool:
+    """Finish serialization with typed state/evidence recomputation or a safe HOLD."""
+    if not isinstance(result_dict, dict):
+        return False
+    identity = result_dict.get("identity")
+    if not isinstance(identity, dict):
+        return False
+    before = json.dumps(identity, ensure_ascii=False, sort_keys=True, default=str)
+    ledger = identity.get("candidate_ledger")
+    ledger = ledger if isinstance(ledger, dict) else {}
+    serialized_inventory_mirrors = {}
+    if "title_candidates" in identity or "candidate_preservation_sources" in identity:
+        serialized_inventory_mirrors["identity"] = (
+            identity.get("title_candidates"),
+            identity.get("candidate_preservation_sources"),
+        )
+    if "title_candidates" in ledger or "candidate_preservation_sources" in ledger:
+        serialized_inventory_mirrors["candidate_ledger"] = (
+            ledger.get("title_candidates"),
+            ledger.get("candidate_preservation_sources"),
+        )
+    serialized_inventory_evidence = candidate_inventory_evidence_from_sources(
+        *(
+            payload
+            for mirror_payloads in serialized_inventory_mirrors.values()
+            for payload in mirror_payloads
+        )
+    )
+
+    identity_state_payload = identity.get("promotion_gate_state")
+    ledger_state_payload = ledger.get("promotion_gate_state")
+    identity_evidence_payload = identity.get("promotion_gate_evidence")
+    ledger_evidence_payload = ledger.get("promotion_gate_evidence")
+    identity_decision_payload = identity.get("promotion_decision")
+    ledger_decision_payload = ledger.get("promotion_decision")
+    identity_trace_payload = identity.get("publish_contract_trace")
+    ledger_trace_payload = ledger.get("publish_contract_trace")
+    identity_publish_ledger = identity.get("publish_ledger")
+    ledger_publish_ledger = ledger.get("publish_ledger")
+    identity_version = str(identity.get("publish_contract_version") or "").strip()
+    ledger_version = str(ledger.get("publish_contract_version") or "").strip()
+    identity_fingerprint = str(
+        identity.get("publish_contract_input_fingerprint") or ""
+    ).strip()
+    ledger_fingerprint = str(
+        ledger.get("publish_contract_input_fingerprint") or ""
+    ).strip()
+    existing_v2_marker = bool(
+        identity_version == PUBLISH_CONTRACT_VERSION
+        or ledger_version == PUBLISH_CONTRACT_VERSION
+        or (
+            isinstance(identity_decision_payload, dict)
+            and identity_decision_payload.get("contract_version") == PUBLISH_CONTRACT_VERSION
+        )
+        or (
+            isinstance(ledger_decision_payload, dict)
+            and ledger_decision_payload.get("contract_version") == PUBLISH_CONTRACT_VERSION
+        )
+        or (
+            isinstance(identity_state_payload, dict)
+            and isinstance(identity_evidence_payload, list)
+            and isinstance(identity_trace_payload, dict)
+        )
+        or (
+            isinstance(ledger_state_payload, dict)
+            and isinstance(ledger_evidence_payload, list)
+            and isinstance(ledger_trace_payload, dict)
+        )
+    )
+    authority_state_payload = (
+        identity_state_payload
+        if isinstance(identity_state_payload, dict)
+        else ledger_state_payload if isinstance(ledger_state_payload, dict) else {}
+    )
+    authority_evidence_payload = (
+        identity_evidence_payload
+        if isinstance(identity_evidence_payload, list)
+        else ledger_evidence_payload if isinstance(ledger_evidence_payload, list) else []
+    )
+    typed_inputs_present = bool(
+        identity_version == PUBLISH_CONTRACT_VERSION
+        and isinstance(identity_state_payload, dict)
+        and isinstance(identity_evidence_payload, list)
+    )
+    mirror_match = bool(
+        typed_inputs_present
+        and ledger_version == identity_version
+        and ledger_state_payload == identity_state_payload
+        and ledger_evidence_payload == identity_evidence_payload
+        and ledger_decision_payload == identity_decision_payload
+        and ledger_trace_payload == identity_trace_payload
+        and ledger_publish_ledger == identity_publish_ledger
+        and ledger_fingerprint == identity_fingerprint
+    )
+
+    novel = identity.get("novel_identity")
+    novel = novel if isinstance(novel, dict) else {}
+    current_title = str(
+        novel.get("official_title")
+        or identity.get("official_title")
+        or identity.get("official_novel_title")
+        or identity.get("resolved_title")
+        or ""
+    ).strip()
+    current_url = str(
+        novel.get("heretic_url")
+        or novel.get("official_url")
+        or identity.get("heretic_url")
+        or identity.get("official_url")
+        or identity.get("resolved_url")
+        or ""
+    ).strip()
+
+    recomputed = None
+    typed_state = None
+    typed_evidence = (
+        evidence_records_from_payload(authority_evidence_payload)
+        if existing_v2_marker
+        else ()
+    )
+    typed_input_error = ""
+    if typed_inputs_present:
+        try:
+            typed_state = grounding_state_from_dict(identity_state_payload)
+            typed_evidence = evidence_records_from_payload(identity_evidence_payload)
+            # Existing v2 state/evidence are immutable authority.  Final
+            # serializer lists are compared below; they never re-baseline the
+            # typed inventory or its fingerprint.
+            recomputed = evaluate_publish_contract(typed_state, typed_evidence)
+        except (TypeError, ValueError) as exc:
+            typed_input_error = str(exc)
+
+    def _title_key(value: Any) -> str:
+        return re.sub(r"[^0-9A-Za-z가-힣]+", "", str(value or "")).lower()
+
+    authoritative_match = bool(
+        recomputed is not None
+        and mirror_match
+        and identity_fingerprint == recomputed.input_fingerprint
+        and isinstance(identity_decision_payload, dict)
+        and identity_decision_payload == recomputed.decision.to_dict()
+        and identity_trace_payload == recomputed.trace.to_dict()
+        and identity_publish_ledger
+        == build_publish_ledger(recomputed.trace.to_dict())
+    )
+    if authoritative_match:
+        expected_title = str(recomputed.decision.official_title or "").strip()
+        expected_url = str(recomputed.decision.official_url or "").strip()
+        authoritative_match = bool(
+            _title_key(current_title) == _title_key(expected_title)
+            and current_url == expected_url
+        )
+
+    authoritative_inventory = candidate_inventory_records(typed_evidence)
+    inventory_integrity_match = True
+    inventory_mirror_matches: dict[str, bool] = {}
+    if recomputed is not None and typed_state is not None and not typed_state.candidate_title:
+        authoritative_inventory_pairs = candidate_inventory_pairs(authoritative_inventory)
+        serialized_inventory_pairs = candidate_inventory_pairs(serialized_inventory_evidence)
+        inventory_mirror_matches = {
+            name: candidate_inventory_pairs(
+                candidate_inventory_evidence_from_sources(*payloads)
+            )
+            == authoritative_inventory_pairs
+            for name, payloads in serialized_inventory_mirrors.items()
+        }
+        inventory_integrity_match = bool(
+            typed_state.candidate_inventory_count == len(authoritative_inventory)
+            and authoritative_inventory_pairs == serialized_inventory_pairs
+            and all(inventory_mirror_matches.values())
+        )
+        authoritative_match = bool(authoritative_match and inventory_integrity_match)
+
+    integrity_error_payload = None
+    if not authoritative_match:
+        existing_v2_authority = existing_v2_marker
+        safe_source = (
+            "post_serializer_contract_mismatch"
+            if existing_v2_authority
+            else "post_serializer_legacy_inventory_bootstrap"
+        )
+        candidate_title = str(
+            (
+                (typed_state.candidate_title if typed_state is not None else "")
+                or (
+                    authority_state_payload.get("candidate_title")
+                    if existing_v2_authority
+                    else ""
+                )
+                or (
+                    current_title
+                    or identity.get("blocked_official_title")
+                    or ledger.get("blocked_official_title")
+                    if not existing_v2_authority
+                    else ""
+                )
+            )
+            or ""
+        ).strip()
+        candidate_url = str(
+            (
+                (typed_state.candidate_url if typed_state is not None else "")
+                or (
+                    authority_state_payload.get("candidate_url")
+                    if existing_v2_authority
+                    else ""
+                )
+                or (
+                    current_url
+                    or identity.get("blocked_official_title_url")
+                    or ledger.get("blocked_official_title_url")
+                    if not existing_v2_authority
+                    else ""
+                )
+            )
+            or ""
+        ).strip()
+        preserved_inventory = (
+            authoritative_inventory
+            if existing_v2_authority
+            else serialized_inventory_evidence
+        )
+        safe_state = GroundingState(
+            post_id=(
+                typed_state.post_id
+                if typed_state is not None
+                else authority_state_payload.get("post_id")
+                if isinstance(authority_state_payload.get("post_id"), int)
+                and not isinstance(authority_state_payload.get("post_id"), bool)
+                else None
+            ),
+            candidate_title=candidate_title,
+            candidate_url=candidate_url,
+            source=safe_source,
+            official_title_exists=False,
+            row_discusses_work_as_work=False,
+            title_resolution_state=str(identity.get("title_resolution_state") or "unresolved_matchable"),
+            work_resolution=str(identity.get("work_resolution") or "unresolved"),
+            discussion_type=str(identity.get("discussion_type") or ""),
+            candidate_inventory_count=(
+                len(preserved_inventory) if not candidate_title else 0
+            ),
+            scope=ScopeState(
+                scope_kind="unknown",
+                confidence="low",
+                conflict_reason_codes=[safe_source],
+            ),
+        )
+        mismatch_evidence = list(preserved_inventory) if not candidate_title else list(typed_evidence)
+        if existing_v2_authority or candidate_title or candidate_url:
+            mismatch_evidence.append(
+                EvidenceRecord(
+                    kind=safe_source,
+                    strength="strong",
+                    source_path_or_snippet=(
+                        candidate_title
+                        or candidate_url
+                        or typed_input_error
+                        or "typed_contract_or_inventory_mismatch"
+                    ),
+                    supports_publish=False,
+                    reason_code=safe_source,
+                    candidate_title=candidate_title,
+                    candidate_url=candidate_url,
+                )
+            )
+        recomputed = evaluate_publish_contract(
+            safe_state,
+            mismatch_evidence,
+        )
+        if existing_v2_authority:
+            integrity_error_payload = {
+                "code": "post_serializer_authoritative_contract_mismatch",
+                "typed_input_error": typed_input_error or None,
+                "candidate_inventory_match": inventory_integrity_match,
+                "candidate_inventory_count": len(authoritative_inventory),
+                "candidate_inventory_mirror_matches": inventory_mirror_matches,
+                "bypassed_gate": False,
+            }
+
+    apply_publish_contract(identity, recomputed)
+    if integrity_error_payload is not None:
+        identity["publish_contract_integrity_error"] = integrity_error_payload
+        candidate_ledger = identity.get("candidate_ledger")
+        if isinstance(candidate_ledger, dict):
+            candidate_ledger["publish_contract_integrity_error"] = dict(
+                integrity_error_payload
+            )
+    if not recomputed.decision.publish_allowed:
+        identity["is_resolved_work_discussion"] = False
+    after = json.dumps(identity, ensure_ascii=False, sort_keys=True, default=str)
+    return before != after
+
+
 def _sync_final_publication_ledger_contract(result_dict: Dict[str, Any], post_title: Optional[str] = None) -> bool:
     """Normalize blocked and allowed publication ledgers after candidate audit."""
     if isinstance(result_dict, dict) and not isinstance(result_dict.get("identity"), dict):
@@ -7824,6 +9415,34 @@ def _sync_final_publication_ledger_contract(result_dict: Dict[str, Any], post_ti
                 sync_result_dict,
                 post_title=post_title or result_dict.get("title"),
             )
+
+    identity = result_dict.get("identity") if isinstance(result_dict, dict) else None
+    ledger = identity.get("candidate_ledger") if isinstance(identity, dict) else None
+    decision = (identity or {}).get("promotion_decision")
+    if not isinstance(decision, dict):
+        decision = (ledger or {}).get("promotion_decision")
+    v2_marker = bool(
+        str((identity or {}).get("publish_contract_version") or "").strip()
+        == PUBLISH_CONTRACT_VERSION
+        or str((ledger or {}).get("publish_contract_version") or "").strip()
+        == PUBLISH_CONTRACT_VERSION
+        or (
+            isinstance(decision, dict)
+            and decision.get("contract_version") == PUBLISH_CONTRACT_VERSION
+        )
+        or (
+            isinstance((identity or {}).get("promotion_gate_state"), dict)
+            and isinstance((identity or {}).get("promotion_gate_evidence"), list)
+            and isinstance((identity or {}).get("publish_contract_trace"), dict)
+        )
+        or (
+            isinstance((ledger or {}).get("promotion_gate_state"), dict)
+            and isinstance((ledger or {}).get("promotion_gate_evidence"), list)
+            and isinstance((ledger or {}).get("publish_contract_trace"), dict)
+        )
+    )
+    if v2_marker:
+        return _reapply_authoritative_publish_contract(result_dict)
 
     changed = _demote_unsafe_url_title_verified_publication_contract(result_dict, post_title=post_title)
     if _demote_context_only_thematic_overlap_publication_contract(result_dict, post_title=post_title):
@@ -7903,6 +9522,41 @@ def _build_completed_subset_rows(
     return list(flushed_results) + [
         item for _, item in sorted(pending_results.items(), key=lambda kv: kv[0])
     ]
+
+
+def _assert_fresh_output_attempt(paths: Iterable[Path]) -> None:
+    """Refuse to truncate or overwrite evidence from an earlier attempt."""
+    existing = [Path(path) for path in paths if Path(path).exists()]
+    if existing:
+        raise FileExistsError(
+            "기존 output attempt artifact를 덮어쓰지 않습니다. 새 --output 경로를 사용하고 "
+            "중단 artifact는 recover_expert_run_from_checkpoint.py로 감사하세요: "
+            + ", ".join(str(path) for path in existing)
+        )
+
+
+def _create_output_attempt_claim(path: Path, payload: Mapping[str, Any]) -> str:
+    """Atomically claim one output-attempt namespace and keep the claim as evidence."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    encoded = (json.dumps(dict(payload), ensure_ascii=False, sort_keys=True) + "\n").encode(
+        "utf-8"
+    )
+    with path.open("xb") as handle:
+        handle.write(encoded)
+        handle.flush()
+        os.fsync(handle.fileno())
+    try:
+        directory_fd = os.open(str(path.parent), os.O_RDONLY)
+    except OSError:
+        directory_fd = None
+    if directory_fd is not None:
+        try:
+            os.fsync(directory_fd)
+        except OSError:
+            pass
+        finally:
+            os.close(directory_fd)
+    return hashlib.sha256(encoded).hexdigest()
 
 
 def _public_comment_metadata(
@@ -9123,8 +10777,13 @@ def main() -> None:
     if not INPUT_PATH.exists():
         raise FileNotFoundError(f"Input not found: {INPUT_PATH}")
 
-    input_nonempty_lines = _count_nonempty_jsonl_lines(INPUT_PATH)
-    posts = load_jsonl_posts(INPUT_PATH)
+    _input_snapshot_bytes = INPUT_PATH.read_bytes()
+    _input_snapshot_sha256 = hashlib.sha256(_input_snapshot_bytes).hexdigest()
+    input_nonempty_lines = _count_nonempty_jsonl_lines(
+        INPUT_PATH,
+        snapshot_bytes=_input_snapshot_bytes,
+    )
+    posts = load_jsonl_posts(INPUT_PATH, snapshot_bytes=_input_snapshot_bytes)
     if input_nonempty_lines and not posts:
         raise ValueError(
             "입력 JSONL에 내용이 있지만 로드된 post가 0개입니다. "
@@ -9418,7 +11077,6 @@ def main() -> None:
     # 타임스탬프 기반 파일명
     # 초 단위만 쓰면 같은 초에 두 런이 시작될 때 로그/결과 파일이 충돌한다.
     ts = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
-    import hashlib
     _prompt_version = os.getenv("PIPELINE_PROMPT_VERSION", "2026-03-30-semantic-contract-v1").strip() or "unknown"
     _reuse_health_filter_meta: Dict[str, Any] = {}
 
@@ -9432,6 +11090,42 @@ def main() -> None:
         ):
             return f"effective_parallel=min({requested_term},input_post_count,healthy_mcp_endpoint_count)"
         return f"effective_parallel=min({requested_term},input_post_count)"
+
+    _decision_environment = _publication_decision_environment()
+    _decision_environment_sha256 = hashlib.sha256(
+        json.dumps(
+            _decision_environment,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()
+    _scope_slang_db_path = Path(
+        os.getenv("PIPELINE_SLANG_DB_PATH", "slang_db/slang_db.json").strip()
+        or "slang_db/slang_db.json"
+    )
+    if not _scope_slang_db_path.is_absolute():
+        _scope_slang_db_path = (repo_root / _scope_slang_db_path).resolve()
+    _scope_slang_db_enabled = os.getenv("PIPELINE_SLANG_DB", "0").strip() == "1"
+    _scope_slang_db_snapshot_bytes = (
+        _scope_slang_db_path.read_bytes()
+        if _scope_slang_db_enabled and _scope_slang_db_path.is_file()
+        else None
+    )
+    _scope_slang_db_snapshot_text = (
+        _scope_slang_db_snapshot_bytes.decode("utf-8", errors="strict")
+        if _scope_slang_db_snapshot_bytes is not None
+        else None
+    )
+    _scope_slang_db_sha256 = (
+        hashlib.sha256(_scope_slang_db_snapshot_bytes).hexdigest()
+        if _scope_slang_db_snapshot_bytes is not None
+        else None
+    )
+    _decision_call_measurement = _decision_call_measurement_config()
+    _decision_ledger_v2_shadow = _decision_ledger_v2_shadow_config(
+        _decision_call_measurement
+    )
 
     _run_config_payload = {
         "llm_mode": LLM_MODE,
@@ -9468,8 +11162,16 @@ def main() -> None:
         "mcp_small_targeted_run": _is_small_targeted_run(),
         "mcp_small_run_shard_lifecycle_blocked": _small_run_shard_lifecycle_blocked(),
         "slang_db": os.getenv("PIPELINE_SLANG_DB", "0"),
+        "slang_db_path": str(_scope_slang_db_path),
+        "slang_db_input_sha256": _scope_slang_db_sha256,
+        "vlm_enabled": vlm_enabled,
+        "ocr_enabled": ocr_enabled,
+        "decision_environment_sha256": _decision_environment_sha256,
+        "decision_environment_keys": sorted(_decision_environment),
         "reason_full_mode": os.getenv("PIPELINE_REASON_FULL_MODE", os.getenv("REASON_FULL_MODE", "1")),
         "prompt_version": _prompt_version,
+        "decision_call_measurement": _decision_call_measurement,
+        "decision_ledger_v2_shadow": _decision_ledger_v2_shadow,
     }
     _config_hash = hashlib.sha256(
         json.dumps(_run_config_payload, ensure_ascii=False, sort_keys=True).encode("utf-8")
@@ -9487,6 +11189,134 @@ def main() -> None:
         out_result_path.stem + "_completed_subset_manifest.json"
     )
     result_manifest_path = out_result_path.with_name(out_result_path.stem + "_manifest.json")
+    attempt_claim_path = out_result_path.with_name(out_result_path.stem + "_attempt_claim.json")
+    slang_db_work_path = out_result_path.with_name(out_result_path.stem + "_slang_db_work.json")
+    decision_call_ledger_path = out_result_path.with_name(
+        out_result_path.stem + "_decision_call_ledger"
+    )
+    decision_call_ledger_v2_shadow_path = out_result_path.with_name(
+        out_result_path.stem + "_decision_call_ledger_v2_shadow"
+    )
+    _attempt_artifact_paths = (
+        out_result_path,
+        checkpoint_jsonl_path,
+        pending_snapshot_path,
+        completed_subset_path,
+        completed_subset_manifest_path,
+        result_manifest_path,
+        attempt_claim_path,
+    ) + ((slang_db_work_path,) if _scope_slang_db_enabled else ()) + (
+        (decision_call_ledger_path,)
+        if _decision_call_measurement["mode"] != "OFF"
+        else ()
+    ) + (
+        (decision_call_ledger_v2_shadow_path,)
+        if _decision_ledger_v2_shadow["enabled"]
+        else ()
+    )
+    _assert_fresh_output_attempt(_attempt_artifact_paths)
+    _attempt_claim_sha256 = _create_output_attempt_claim(
+        attempt_claim_path,
+        {
+            "schema_version": "expert_output_attempt_claim_v1",
+            "run_id": ts,
+            "pid": os.getpid(),
+            "output_file": str(out_result_path.resolve()),
+            "input_file": str(INPUT_PATH.resolve()),
+            "decision_call_ledger_mode": _decision_call_measurement["mode"],
+            "decision_call_ledger_path": (
+                str(decision_call_ledger_path.resolve())
+                if _decision_call_measurement["mode"] != "OFF"
+                else None
+            ),
+            "decision_call_measurement": dict(_decision_call_measurement),
+            "decision_ledger_v2_shadow": dict(_decision_ledger_v2_shadow),
+            "decision_call_ledger_v2_shadow_path": (
+                str(decision_call_ledger_v2_shadow_path.resolve())
+                if _decision_ledger_v2_shadow["enabled"]
+                else None
+            ),
+        },
+    )
+
+    def _fsync_parent_directory(path: Path) -> None:
+        try:
+            descriptor = os.open(str(path.parent), os.O_RDONLY)
+        except OSError:
+            return
+        try:
+            os.fsync(descriptor)
+        except OSError:
+            pass
+        finally:
+            os.close(descriptor)
+
+    def _atomic_write_text(path: Path, text: str) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        tmp_path = path.with_name(
+            f".{path.name}.{os.getpid()}.{threading.get_ident()}.{time.time_ns()}.tmp"
+        )
+        with tmp_path.open("x", encoding="utf-8", newline="\n") as handle:
+            handle.write(text)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(tmp_path, path)
+        _fsync_parent_directory(path)
+
+    def _atomic_write_json(path: Path, payload: Any, *, indent: int = 2) -> None:
+        _atomic_write_text(
+            path,
+            json.dumps(payload, ensure_ascii=False, indent=indent) + "\n",
+        )
+
+    def _append_jsonl_fsync(path: Path, payload: Mapping[str, Any]) -> None:
+        with path.open("a", encoding="utf-8", newline="\n") as handle:
+            handle.write(json.dumps(payload, ensure_ascii=False) + "\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+
+    _publication_release_fingerprint = str(
+        os.getenv(_RUNTIME_RELEASE_FINGERPRINT_ENV, "") or ""
+    ).strip().lower()
+    if _publication_release_fingerprint:
+        if re.fullmatch(r"[0-9a-f]{64}", _publication_release_fingerprint) is None:
+            raise ValueError(
+                f"{_RUNTIME_RELEASE_FINGERPRINT_ENV} must be a 64-character lowercase hex digest"
+            )
+        _publication_release_fingerprint_source = "trusted_runtime_environment"
+        _publication_release_attestation_status = "OPERATOR_ATTESTED"
+    else:
+        _publication_release_digest = hashlib.sha256()
+        _publication_release_paths = [Path(__file__).resolve()] + sorted(
+            (repo_root / "src" / "llm_batch").rglob("*.py"),
+            key=lambda path: path.as_posix(),
+        )
+        for _publication_release_path in _publication_release_paths:
+            _release_stat_before = _publication_release_path.stat()
+            _release_bytes = _publication_release_path.read_bytes()
+            _release_stat_after = _publication_release_path.stat()
+            if (
+                _release_stat_before.st_size != _release_stat_after.st_size
+                or _release_stat_before.st_mtime_ns != _release_stat_after.st_mtime_ns
+            ):
+                raise RuntimeError(
+                    f"release fingerprint source changed while reading: {_publication_release_path}"
+                )
+            _publication_release_digest.update(
+                _publication_release_path.relative_to(repo_root).as_posix().encode("utf-8")
+            )
+            _publication_release_digest.update(b"\0")
+            _publication_release_digest.update(_release_bytes)
+        _publication_release_fingerprint = _publication_release_digest.hexdigest()
+        _publication_release_fingerprint_source = "development_disk_snapshot"
+        _publication_release_attestation_status = "NOT_PROVABLE"
+    _run_config_payload.update(
+        {
+            "release_fingerprint": _publication_release_fingerprint,
+            "release_fingerprint_source": _publication_release_fingerprint_source,
+            "release_attestation_status": _publication_release_attestation_status,
+        }
+    )
 
     _orig_out = sys.stdout
     _orig_err = sys.stderr
@@ -9691,6 +11521,11 @@ def main() -> None:
             sys.path.insert(0, str(repo_root / "src"))
 
             from llm_batch.agentic_pipeline import AgenticPipeline
+            from llm_batch.decision_call_events import (
+                DecisionCallLedgerRegistry,
+                RowAttemptScope,
+            )
+            from llm_batch.decision_tracing_llm import DecisionTracingLLMClient
             from llm_batch.llm.client import LLMClient
             from llm_batch.search.client import MCPClient
             from llm_batch.models import PostInput, ContentBlock
@@ -9712,6 +11547,7 @@ def main() -> None:
                 apply_official_title_promotion_guard,
                 apply_post_surface_candidate_hints,
                 apply_weak_public_title_bridge_guard,
+                has_authoritative_publish_contract,
             )
 
             print(f"\n{'='*70}", file=sys.stderr, flush=True)
@@ -10212,22 +12048,189 @@ def main() -> None:
                     return
                 print(f"⚠️  검색 없이 진행합니다. 결과 품질이 저하될 수 있습니다.", file=sys.stderr, flush=True)
 
+            _publication_decision_config_payload = _decision_affecting_publication_config(
+                _run_config_payload
+            )
+            _publication_config_hash = hashlib.sha256(
+                json.dumps(
+                    _publication_decision_config_payload,
+                    ensure_ascii=False,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                ).encode("utf-8")
+            ).hexdigest()
+            publication_scope_descriptor = build_publication_scope_descriptor(
+                input_file_sha256=_input_snapshot_sha256,
+                post_ids=[post.post_id for post in posts],
+                config_hash=_publication_config_hash,
+                release_fingerprint=_publication_release_fingerprint,
+            )
+            publication_scope_id = publication_scope_descriptor.publication_scope_id
+            # Scope-owned location is intentionally independent of the
+            # timestamped result filename.  Identical retries reload the same
+            # durable CAS journal, while each attempt keeps immutable output
+            # sidecars at its own output path.
+            publication_commit_journal_path = (
+                OUT_DIR / "publication_commit_journals" / f"{publication_scope_id}.jsonl"
+            )
+            publication_scope_config_path = publication_commit_journal_path.with_name(
+                publication_commit_journal_path.name + ".config.json"
+            )
+            _publication_scope_config_payload = {
+                "schema_version": "publication_scope_config_v1",
+                "publication_scope_id": publication_scope_id,
+                "input_snapshot_sha256": _input_snapshot_sha256,
+                "ordered_post_ids": [post.post_id for post in posts],
+                "decision_config": _publication_decision_config_payload,
+                "decision_config_sha256": _publication_config_hash,
+                "decision_environment": _decision_environment,
+                "decision_environment_sha256": _decision_environment_sha256,
+                "release_fingerprint": _publication_release_fingerprint,
+                "release_fingerprint_source": _publication_release_fingerprint_source,
+                "release_attestation_status": _publication_release_attestation_status,
+                "slang_db_input_sha256": _scope_slang_db_sha256,
+            }
+            _publication_scope_config_text = (
+                json.dumps(
+                    _publication_scope_config_payload,
+                    ensure_ascii=False,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                )
+                + "\n"
+            )
+            _publication_scope_config_sha256 = hashlib.sha256(
+                _publication_scope_config_text.encode("utf-8")
+            ).hexdigest()
+            if publication_scope_config_path.exists():
+                if publication_scope_config_path.read_text(
+                    encoding="utf-8"
+                ) != _publication_scope_config_text:
+                    raise PublicationCommitError(
+                        "publication scope config sidecar does not match requested scope"
+                    )
+            else:
+                _atomic_write_text(
+                    publication_scope_config_path,
+                    _publication_scope_config_text,
+                )
+            try:
+                publication_commit_registry = PublicationCommitRegistry(
+                    publication_commit_journal_path,
+                    scope_descriptor=publication_scope_descriptor,
+                    create_new=True,
+                )
+            except FileExistsError:
+                publication_commit_registry = PublicationCommitRegistry(
+                    publication_commit_journal_path,
+                    scope_descriptor=publication_scope_descriptor,
+                    create_new=False,
+                )
+            _publication_replay_by_index: Dict[int, tuple[Dict[str, Any], Any]] = {}
+            for _replay_receipt in publication_commit_registry.receipts():
+                _replay_result = publication_commit_registry.result(_replay_receipt.post_id)
+                if not isinstance(_replay_result, dict):
+                    raise PublicationCommitError(
+                        "publication WAL receipt is missing its recoverable result row"
+                    )
+                validate_publication_result_commit(
+                    _replay_result,
+                    _replay_receipt,
+                    expected_scope_id=publication_scope_id,
+                    expected_input_index=_replay_receipt.input_index,
+                    expected_post_id=_replay_receipt.post_id,
+                )
+                _publication_replay_by_index[_replay_receipt.input_index] = (
+                    _replay_result,
+                    _replay_receipt,
+                )
+            _publication_reference_by_index = dict(_publication_replay_by_index)
+            if _decision_call_measurement["fresh_execution_required"]:
+                # A paired measurement must execute the model path again.  A
+                # stored publication row may be used only as a comparison
+                # reference; it must never skip work and become a fake zero-call
+                # observation.  The measurement attempt also does not append to
+                # the public decision WAL (handled in _commit_final_result).
+                # Validate full coverage before any provider dispatch so an
+                # empty or partial WAL cannot yield a fresh provider result
+                # without an authoritative public decision peer.
+                _require_fresh_execution_authoritative_references(
+                    _publication_reference_by_index,
+                    post_ids=[post.post_id for post in posts],
+                )
+                _publication_replay_by_index = {}
+
+            if _decision_call_measurement["mode"] == "OFF":
+                decision_call_ledger_registry = DecisionCallLedgerRegistry()
+            else:
+                decision_call_ledger_registry = DecisionCallLedgerRegistry(
+                    decision_call_ledger_path,
+                    scope_descriptor=publication_scope_descriptor,
+                    create_new=True,
+                    enabled=True,
+                    run_spec_sha256=_decision_call_measurement["run_spec_sha256"],
+                    pair_id=_decision_call_measurement["pair_id"],
+                    arm=_decision_call_measurement["arm"],
+                    fresh_execution_mode=(
+                        _decision_call_measurement["fresh_execution_required"]
+                        if _decision_call_measurement["binding_status"] == "BOUND"
+                        else None
+                    ),
+                )
+            _decision_call_ledger_scope_sha256 = None
+            if decision_call_ledger_registry.enabled:
+                _decision_call_scope_payload = json.loads(
+                    (decision_call_ledger_path / "scope.json").read_text(encoding="utf-8")
+                )
+                _decision_call_ledger_scope_sha256 = str(
+                    _decision_call_scope_payload.get("scope_sha256") or ""
+                ) or None
+            decision_call_ledger_registry = _maybe_enable_decision_ledger_v2_shadow(
+                decision_call_ledger_registry,
+                shadow_config=_decision_ledger_v2_shadow,
+                v2_root=decision_call_ledger_v2_shadow_path,
+                attempt_run_id=ts,
+                output_attempt_sha256=_attempt_claim_sha256,
+            )
+            _decision_call_attempts_by_index: Dict[int, Dict[str, Any]] = {}
+            _decision_call_attempts_lock = threading.RLock()
+            _early_route_by_index: Dict[int, Dict[str, Any]] = {}
+            _early_route_lock = threading.RLock()
+
             # ─── 배치 컨텍스트 메모리 (포스트 간 지식 공유) ──
-            _batch_context = BatchContextMemory(enabled=True)
-            print(f"🧠 BatchContextMemory 활성화 (포스트 간 약칭/작가/캐릭터 공유)", file=sys.stderr, flush=True)
+            _measurement_context_frozen = bool(
+                _decision_call_measurement["mode"] == "REQUIRED"
+                and _decision_call_measurement.get("mutable_context_frozen")
+            )
+            _batch_context = BatchContextMemory(enabled=not _measurement_context_frozen)
+            print(
+                (
+                    "🧊 BatchContextMemory 비활성화 "
+                    "(paired REQUIRED FROZEN_OFF; cross-row mutable state 차단)"
+                    if _measurement_context_frozen
+                    else "🧠 BatchContextMemory 활성화 (포스트 간 약칭/작가/캐릭터 공유)"
+                ),
+                file=sys.stderr,
+                flush=True,
+            )
             _recent_post_index = AgenticPipeline.build_recent_post_index(posts)
             print(
                 f"🪟 RecentPostIndex 구성 완료 ({len(_recent_post_index)}건, ±30분/20post)",
                 file=sys.stderr,
                 flush=True,
             )
-            _slang_db_enabled = os.getenv("PIPELINE_SLANG_DB", "0").strip() == "1"
-            _slang_db_path_raw = os.getenv("PIPELINE_SLANG_DB_PATH", "slang_db/slang_db.json").strip() or "slang_db/slang_db.json"
-            _slang_db_path = Path(_slang_db_path_raw)
-            if not _slang_db_path.is_absolute():
-                _slang_db_path = repo_root / _slang_db_path
+            _slang_db_enabled = _scope_slang_db_enabled
+            _slang_db_path = _scope_slang_db_path
+            _slang_db_manager_path = _slang_db_path
+            if _slang_db_enabled:
+                if _scope_slang_db_snapshot_text is not None:
+                    _atomic_write_text(
+                        slang_db_work_path,
+                        _scope_slang_db_snapshot_text,
+                    )
+                _slang_db_manager_path = slang_db_work_path
             _slang_db_manager = SlangDBManager(
-                path=_slang_db_path,
+                path=_slang_db_manager_path,
                 run_id=ts,
                 enabled=_slang_db_enabled,
                 flush_posts=int(os.getenv("PIPELINE_SLANG_DB_FLUSH_POSTS", "1") or 1),
@@ -10235,7 +12238,12 @@ def main() -> None:
                 log_fn=lambda msg: print(msg, file=sys.stderr, flush=True),
             )
             if _slang_db_enabled:
-                print(f"🗂️ Slang DB 저장 활성화: {_slang_db_path}", file=sys.stderr, flush=True)
+                print(
+                    f"🗂️ Slang DB 지연 writeback 활성화: source={_slang_db_path}, "
+                    f"work={_slang_db_manager_path}",
+                    file=sys.stderr,
+                    flush=True,
+                )
                 _seeded_slang_aliases = 0
                 _held_slang_alias_seeds = 0
                 try:
@@ -10274,10 +12282,31 @@ def main() -> None:
                 except Exception as _exc:
                     print(f"🗂️ Slang DB alias seed 주입 실패: {_exc}", file=sys.stderr, flush=True)
 
+            for _replay_index, (_replay_result, _replay_receipt) in sorted(
+                _publication_replay_by_index.items()
+            ):
+                _batch_context.learn_from_result(_replay_result)
+                _slang_db_manager.record_result(_replay_result)
+
+            def _finalize_slang_db(*, publish: bool) -> None:
+                _slang_db_manager.finalize()
+                if _slang_db_enabled and publish and slang_db_work_path.is_file():
+                    print(
+                        "🗂️ Slang DB work artifact 준비 완료; 원본 반영은 "
+                        "별도 post-run promotion 단계에서 수행합니다.",
+                        file=sys.stderr,
+                        flush=True,
+                    )
+
             # ─── 워커 팩토리 ──────────────────────────────
             def _create_pipeline(worker_id: int = 0) -> AgenticPipeline:
                 """워커별 독립 LLMClient/MCPClient/Pipeline 인스턴스 생성"""
-                _llm = LLMClient()
+                if decision_call_ledger_registry.enabled:
+                    _llm = DecisionTracingLLMClient(
+                        decision_call_ledger=decision_call_ledger_registry
+                    )
+                else:
+                    _llm = LLMClient()
                 _endpoint = _mcp_endpoint_pool[worker_id % len(_mcp_endpoint_pool)]
                 _mcp = MCPClient(endpoint=_endpoint)
                 _pipe = AgenticPipeline(
@@ -10292,6 +12321,285 @@ def main() -> None:
                 )
                 print(f"[expert_main] worker W{worker_id} -> MCP shard {_endpoint}", file=sys.stderr, flush=True)
                 return _pipe
+
+            def _decision_call_row_attempt_id(index: int, post_id: Any) -> str:
+                material = {
+                    "publication_scope_id": publication_scope_id,
+                    "attempt_run_id": ts,
+                    "input_index": index,
+                    "post_id": post_id,
+                }
+                return hashlib.sha256(
+                    json.dumps(
+                        material,
+                        ensure_ascii=False,
+                        sort_keys=True,
+                        separators=(",", ":"),
+                    ).encode("utf-8")
+                ).hexdigest()
+
+            def _closure_frame(value: Any) -> Optional[Dict[str, Any]]:
+                candidate = value[0] if isinstance(value, tuple) and value else value
+                return dict(candidate) if isinstance(candidate, Mapping) else None
+
+            def _record_decision_call_closure(
+                *,
+                index: int,
+                row: Any,
+                closure: Any,
+                trace_client: Any,
+            ) -> None:
+                if not decision_call_ledger_registry.enabled:
+                    return
+                row_payload = row.to_dict() if hasattr(row, "to_dict") else dict(row)
+                frame = _closure_frame(closure)
+                frame_kind = str((frame or {}).get("frame_kind") or "CLOSURE_WRITE_FAILED")
+                payload = (
+                    dict(frame.get("payload") or {})
+                    if isinstance(frame, Mapping)
+                    else {}
+                )
+                trace_errors = [
+                    dict(item)
+                    for item in getattr(trace_client, "trace_errors", ())
+                    if isinstance(item, Mapping)
+                ]
+                reasons = ["INDEPENDENT_READBACK_NOT_BOUND"]
+                if frame_kind != "ROW_SEAL":
+                    reasons.append(frame_kind)
+                usage_status = str(payload.get("usage_status") or "UNAVAILABLE")
+                if usage_status == "UNAVAILABLE":
+                    reasons.append("USAGE_UNAVAILABLE")
+                elif usage_status == "COMPLETE_WITH_ESTIMATES":
+                    reasons.append("USAGE_ESTIMATED")
+                if trace_errors:
+                    reasons.append("TRACE_ERROR")
+                writer_complete = (
+                    frame_kind == "ROW_SEAL"
+                    and usage_status in {"NO_CALLS", "COMPLETE_PROVIDER_REPORTED"}
+                    and not trace_errors
+                )
+                ledger_ref = {
+                    "schema_version": "decision_call_row_ledger_ref_v1",
+                    "path": str(decision_call_ledger_path.resolve()),
+                    "ledger_scope_sha256": _decision_call_ledger_scope_sha256,
+                    "publication_scope_id": publication_scope_id,
+                    "row": row_payload,
+                    "closure_kind": frame_kind,
+                    "closure_frame_sha256": (frame or {}).get("frame_sha256"),
+                    "event_root_sha256": payload.get("event_root_sha256"),
+                    "event_frame_count": payload.get("event_frame_count"),
+                }
+                row_summary = {
+                    "schema_version": "decision_call_row_summary_v1",
+                    "writer_complete": writer_complete,
+                    "actual_kpi_status": (
+                        "PENDING_INDEPENDENT_READBACK"
+                        if writer_complete
+                        else "NOT_ESTIMABLE"
+                    ),
+                    "actual_metrics": {
+                        "expert_calls": None,
+                        "prompt_tokens": None,
+                        "completion_tokens": None,
+                        "total_tokens": None,
+                    },
+                    "derived_observation": {
+                        "expert_calls": payload.get("expert_calls"),
+                        "text_calls": payload.get("text_calls"),
+                        "vlm_calls": payload.get("vlm_calls"),
+                        "retry_count": payload.get("retry_count"),
+                        "prompt_tokens": payload.get("prompt_tokens"),
+                        "completion_tokens": payload.get("completion_tokens"),
+                        "total_tokens": payload.get("total_tokens"),
+                    },
+                    "usage_status": usage_status,
+                    "reason_codes": sorted(set(reasons)),
+                    "trace_errors": trace_errors,
+                }
+                attempt_receipt = {
+                    "schema_version": "decision_call_attempt_receipt_v1",
+                    "row": row_payload,
+                    "closure_frame_sha256": ledger_ref["closure_frame_sha256"],
+                    "event_root_sha256": ledger_ref["event_root_sha256"],
+                    "publication_decision_id_preview": None,
+                    "publication_link_status": (
+                        "PENDING_PUBLICATION_DECISION"
+                        if frame_kind == "ROW_SEAL"
+                        else "NOT_LINKABLE_ROW_NOT_SEALED"
+                    ),
+                    "publication_link_frame_sha256": None,
+                }
+                with _decision_call_attempts_lock:
+                    _decision_call_attempts_by_index[index] = {
+                        "ledger_ref": ledger_ref,
+                        "row_summary": row_summary,
+                        "attempt_receipt": attempt_receipt,
+                    }
+
+            def _decision_call_run_meta_fields(index: int) -> Dict[str, Any]:
+                with _decision_call_attempts_lock:
+                    entry = _decision_call_attempts_by_index.get(index)
+                    if entry is None:
+                        return {}
+                    snapshot = json.loads(json.dumps(entry, ensure_ascii=False))
+                return {
+                    "decision_call_ledger": snapshot["ledger_ref"],
+                    "decision_call_ledger_summary": snapshot["row_summary"],
+                    "decision_call_attempt_receipt": snapshot["attempt_receipt"],
+                }
+
+            def _record_early_route_execution(
+                *,
+                index: int,
+                execution_receipt: Dict[str, Any],
+            ) -> None:
+                with _early_route_lock:
+                    _early_route_by_index[index] = {
+                        "execution_receipt": json.loads(
+                            json.dumps(execution_receipt, ensure_ascii=False)
+                        ),
+                        "comparison_receipt": None,
+                    }
+
+            def _record_early_route_comparison(
+                *,
+                index: int,
+                comparison_receipt: Dict[str, Any],
+            ) -> None:
+                with _early_route_lock:
+                    entry = _early_route_by_index.get(index)
+                    if not isinstance(entry, dict):
+                        raise PublicationCommitError(
+                            "early-route comparison has no bound execution receipt"
+                        )
+                    entry["comparison_receipt"] = json.loads(
+                        json.dumps(comparison_receipt, ensure_ascii=False)
+                    )
+
+            def _early_route_run_meta_fields(index: int) -> Dict[str, Any]:
+                with _early_route_lock:
+                    entry = _early_route_by_index.get(index)
+                    if not isinstance(entry, Mapping):
+                        return {}
+                    snapshot = json.loads(json.dumps(entry, ensure_ascii=False))
+                return {"early_route_measurement": snapshot}
+
+            def _early_route_decision_for_index(
+                index: int,
+            ) -> Optional[EarlyRouteDecision]:
+                with _early_route_lock:
+                    entry = _early_route_by_index.get(index)
+                    execution = (
+                        entry.get("execution_receipt")
+                        if isinstance(entry, Mapping)
+                        else None
+                    )
+                    raw_decision = (
+                        execution.get("route_decision")
+                        if isinstance(execution, Mapping)
+                        else None
+                    )
+                    snapshot = (
+                        json.loads(json.dumps(raw_decision, ensure_ascii=False))
+                        if isinstance(raw_decision, Mapping)
+                        else None
+                    )
+                return (
+                    EarlyRouteDecision.from_dict(snapshot)
+                    if isinstance(snapshot, Mapping)
+                    else None
+                )
+
+            def _attach_early_route_run_meta(
+                result_item: Dict[str, Any],
+                *,
+                index: int,
+            ) -> None:
+                fields = _early_route_run_meta_fields(index)
+                if not fields:
+                    return
+                run_meta = result_item.get("run_meta")
+                if not isinstance(run_meta, dict):
+                    run_meta = {}
+                    result_item["run_meta"] = run_meta
+                run_meta.update(fields)
+
+            def _attach_decision_call_run_meta(
+                result_item: Dict[str, Any],
+                *,
+                index: int,
+            ) -> None:
+                fields = _decision_call_run_meta_fields(index)
+                if not fields:
+                    return
+                run_meta = result_item.get("run_meta")
+                if not isinstance(run_meta, dict):
+                    run_meta = {}
+                    result_item["run_meta"] = run_meta
+                run_meta.update(fields)
+
+            def _set_decision_call_preview(
+                *,
+                index: int,
+                decision_id: str,
+            ) -> None:
+                with _decision_call_attempts_lock:
+                    entry = _decision_call_attempts_by_index.get(index)
+                    if entry is None:
+                        return
+                    receipt = entry["attempt_receipt"]
+                    receipt["publication_decision_id_preview"] = decision_id
+                    if entry["ledger_ref"]["closure_kind"] == "ROW_SEAL":
+                        receipt["publication_link_status"] = "PENDING_EXTERNAL_LEDGER_LINK"
+
+            def _link_decision_call_attempt(
+                *,
+                index: int,
+                decision_id: str,
+            ) -> None:
+                if not decision_call_ledger_registry.enabled:
+                    return
+                with _decision_call_attempts_lock:
+                    entry = _decision_call_attempts_by_index.get(index)
+                    if entry is None:
+                        return
+                    ledger_ref = entry.get("ledger_ref")
+                    row_summary = entry.get("row_summary")
+                    if (
+                        not isinstance(ledger_ref, Mapping)
+                        or str(ledger_ref.get("closure_kind") or "") != "ROW_SEAL"
+                        or not isinstance(row_summary, Mapping)
+                        or not bool(row_summary.get("writer_complete"))
+                    ):
+                        receipt = entry.get("attempt_receipt")
+                        if isinstance(receipt, dict):
+                            receipt["publication_link_status"] = (
+                                "NOT_LINKABLE_WRITER_INCOMPLETE"
+                            )
+                        return
+                    row_payload = dict(entry["ledger_ref"]["row"])
+                try:
+                    link_result = decision_call_ledger_registry.link_publication(
+                        RowAttemptScope.from_dict(row_payload),
+                        publication_decision_id=decision_id,
+                    )
+                    link_frame = _closure_frame(link_result)
+                    if link_frame is None:
+                        raise RuntimeError("publication link did not return an immutable frame")
+                except Exception as exc:
+                    error_material = f"{type(exc).__name__}:{exc}"
+                    with _decision_call_attempts_lock:
+                        receipt = _decision_call_attempts_by_index[index]["attempt_receipt"]
+                        receipt["publication_link_status"] = "LINK_FAILED_NOT_ESTIMABLE"
+                        receipt["publication_link_error_sha256"] = hashlib.sha256(
+                            error_material.encode("utf-8", "replace")
+                        ).hexdigest()
+                    return
+                with _decision_call_attempts_lock:
+                    receipt = _decision_call_attempts_by_index[index]["attempt_receipt"]
+                    receipt["publication_link_status"] = "LINKED_EXTERNAL_LEDGER"
+                    receipt["publication_link_frame_sha256"] = link_frame.get("frame_sha256")
 
             # ─── 단일 포스트 처리 함수 ────────────────────
             def _process_one(
@@ -10341,6 +12649,7 @@ def main() -> None:
                 # 📊 대시보드: post_start — 배너 출력 전에 emit하여
                 # 인메모리 포스트별 로그에 배너 라인도 포함되도록 함
                 _post_start_t = time.time()
+                _post_started_at = datetime.now().astimezone().isoformat(timespec="milliseconds")
                 if _monitor:
                     _monitor.emit("post_start", {
                         "index": index,
@@ -10372,29 +12681,173 @@ def main() -> None:
                         print(f"   ... ({len(comment_texts) - 5}개 더)", file=sys.stderr, flush=True)
                     print(f"{'─'*70}", file=sys.stderr, flush=True)
 
-                result = pipeline.process_post(post)
+                _trace_client = (
+                    pipeline.llm
+                    if isinstance(pipeline.llm, DecisionTracingLLMClient)
+                    else None
+                )
+                _trace_row = None
+                if _trace_client is not None:
+                    _trace_row = _trace_client.begin_row_attempt(
+                        ts,
+                        _decision_call_row_attempt_id(index, post.post_id),
+                        index,
+                        post.post_id,
+                    )
+                _early_route_skipped = False
+                _authoritative_reference_loader: Optional[
+                    Callable[[], Mapping[str, Any]]
+                ] = None
+                if _decision_call_measurement.get("early_route_enabled"):
+                    _authoritative_reference_loader = lambda: (
+                        _fresh_execution_authoritative_reference_for_row(
+                            _publication_reference_by_index,
+                            input_index=index,
+                            post_id=post.post_id,
+                        )[0]
+                    )
+                try:
+                    (
+                        result,
+                        _early_route_decision,
+                        _early_route_execution_receipt,
+                        _early_route_skipped,
+                    ) = _execute_source_only_early_route(
+                        post,
+                        measurement_config=_decision_call_measurement,
+                        publication_scope_id=publication_scope_id,
+                        input_index=index,
+                        process_full=lambda: pipeline.process_post(post),
+                        authoritative_reference_loader=(
+                            _authoritative_reference_loader
+                        ),
+                    )
+                    if (
+                        _early_route_decision is not None
+                        and _early_route_execution_receipt is not None
+                    ):
+                        _record_early_route_execution(
+                            index=index,
+                            execution_receipt=_early_route_execution_receipt,
+                        )
+                except BaseException:
+                    if _trace_client is not None and _trace_row is not None:
+                        _trace_closure = None
+                        try:
+                            _trace_closure = _trace_client.abort_row_attempt(
+                                "PIPELINE_PROCESS_EXCEPTION"
+                            )
+                        except Exception:
+                            pass
+                        _record_decision_call_closure(
+                            index=index,
+                            row=_trace_row,
+                            closure=_trace_closure,
+                            trace_client=_trace_client,
+                        )
+                    raise
+                else:
+                    if _trace_client is not None and _trace_row is not None:
+                        _trace_closure = None
+                        try:
+                            _trace_closure = _trace_client.seal_row_attempt()
+                        except Exception:
+                            try:
+                                _trace_closure = _trace_client.abort_row_attempt(
+                                    "ROW_SEAL_EXCEPTION"
+                                )
+                            except Exception:
+                                pass
+                        _record_decision_call_closure(
+                            index=index,
+                            row=_trace_row,
+                            closure=_trace_closure,
+                            trace_client=_trace_client,
+                        )
+                if _early_route_skipped:
+                    if not isinstance(result, Mapping):
+                        raise PublicationCommitError(
+                            "cheap early-route authoritative reference copy is not an object"
+                        )
+                    full_result = copy.deepcopy(dict(result))
+                    run_meta = full_result.get("run_meta")
+                    if not isinstance(run_meta, dict):
+                        run_meta = {}
+                        full_result["run_meta"] = run_meta
+                    for stale_key in (
+                        "run_id",
+                        "worker_id",
+                        "worker_log_file",
+                        "main_log_file",
+                        "decision_cost_trace",
+                        "decision_call_ledger",
+                        "decision_call_ledger_summary",
+                        "decision_call_attempt_receipt",
+                        "decision_call_measurement",
+                        "measurement_execution_source",
+                        "early_route_measurement",
+                        "fresh375_run_binding_token",
+                    ):
+                        run_meta.pop(stale_key, None)
+                    run_meta.update(
+                        {
+                            "run_id": ts,
+                            "worker_id": worker_id,
+                            "worker_log_file": (
+                                str(LOG_DIR / f"expert_run_{ts}_W{worker_id}.log")
+                                if _PARALLEL > 1
+                                else str(log_path)
+                            ),
+                            "main_log_file": str(log_path),
+                            "decision_call_measurement": dict(
+                                _decision_call_measurement
+                            ),
+                            "measurement_execution_source": (
+                                "FRESH_EXECUTION_NO_PUBLIC_WRITE"
+                            ),
+                            **_early_route_run_meta_fields(index),
+                            **_decision_call_run_meta_fields(index),
+                        }
+                    )
+                    return full_result
                 result_dict = result.model_dump() if hasattr(result, "model_dump") else dict(result)
                 identity_dict = result_dict.get("identity")
                 if isinstance(identity_dict, dict):
-                    apply_author_angle_official_detail_canonicalization(identity_dict)
-                    apply_official_title_promotion_guard(identity_dict)
-                    apply_judge_seed_precision_guard(identity_dict, getattr(post, "judge_seed", None))
-                    apply_judge_seed_hygiene_expected_title_guard(identity_dict, getattr(post, "judge_seed", None))
-                    apply_judge_seed_hygiene_alias_conflict_guard(identity_dict, getattr(post, "judge_seed", None))
-                    apply_judge_seed_title_hygiene_guard(identity_dict, getattr(post, "judge_seed", None))
-                    apply_judge_seed_unverified_ocr_title_guard(identity_dict, getattr(post, "judge_seed", None))
-                    apply_judge_seed_title_image_mismatch_guard(identity_dict, getattr(post, "judge_seed", None))
-                    apply_judge_seed_wrong_relevance_public_title_guard(identity_dict, getattr(post, "judge_seed", None))
-                    apply_weak_public_title_bridge_guard(identity_dict, post.title)
-                    apply_post_surface_candidate_hints(identity_dict, post.title)
-                    apply_comment_surface_candidate_hints(identity_dict, post.comments or [])
-                    apply_judge_seed_expected_candidate_preservation(identity_dict, getattr(post, "judge_seed", None))
-                    apply_judge_seed_trope_boundary_hold_guard(identity_dict, getattr(post, "judge_seed", None))
-                    apply_candidate_audit_fields(identity_dict, getattr(post, "judge_seed", None))
-                    _apply_projection_followup_promotion_seed(
-                        result_dict,
-                        getattr(post, "projection_followup", None),
+                    authoritative_v2 = has_authoritative_publish_contract(identity_dict)
+                    candidate_audit_seed = _runtime_candidate_audit_seed(
+                        identity_dict,
+                        getattr(post, "judge_seed", None),
                     )
+                    if not authoritative_v2:
+                        apply_author_angle_official_detail_canonicalization(identity_dict)
+                        apply_official_title_promotion_guard(identity_dict)
+                        apply_judge_seed_precision_guard(identity_dict, getattr(post, "judge_seed", None))
+                        apply_judge_seed_hygiene_expected_title_guard(identity_dict, getattr(post, "judge_seed", None))
+                        apply_judge_seed_hygiene_alias_conflict_guard(identity_dict, getattr(post, "judge_seed", None))
+                        apply_judge_seed_title_hygiene_guard(identity_dict, getattr(post, "judge_seed", None))
+                        apply_judge_seed_unverified_ocr_title_guard(identity_dict, getattr(post, "judge_seed", None))
+                        apply_judge_seed_title_image_mismatch_guard(identity_dict, getattr(post, "judge_seed", None))
+                        apply_judge_seed_wrong_relevance_public_title_guard(identity_dict, getattr(post, "judge_seed", None))
+                        apply_weak_public_title_bridge_guard(identity_dict, post.title)
+                    if authoritative_v2:
+                        apply_candidate_audit_fields(identity_dict, candidate_audit_seed)
+                    else:
+                        apply_post_surface_candidate_hints(identity_dict, post.title)
+                        apply_comment_surface_candidate_hints(identity_dict, post.comments or [])
+                        apply_judge_seed_expected_candidate_preservation(
+                            identity_dict,
+                            getattr(post, "judge_seed", None),
+                        )
+                        apply_judge_seed_trope_boundary_hold_guard(identity_dict, getattr(post, "judge_seed", None))
+                        apply_candidate_audit_fields(
+                            identity_dict,
+                            candidate_audit_seed,
+                        )
+                    if not authoritative_v2:
+                        _apply_projection_followup_promotion_seed(
+                            result_dict,
+                            getattr(post, "projection_followup", None),
+                        )
                     sync_result_dict = dict(result_dict)
                     sync_result_dict.update(
                         {
@@ -10408,6 +12861,95 @@ def main() -> None:
                     )
                     _sync_final_publication_ledger_contract(sync_result_dict, post_title=post.title)
                 
+                # P4 비용 계측의 첫 단계. 현재 ConversationContext는 token
+                # aggregate만 제공하고 호출별 event를 제공하지 않으므로,
+                # expert_calls는 의도적으로 null인 PARTIAL trace로 저장한다.
+                # 이 값은 dashboard 전용 휘발성 정보가 아니라 future paired
+                # before/after RunSpec에 결속할 수 있는 행별 sidecar receipt다.
+                _post_elapsed = time.time() - _post_start_t
+                _post_finished_at = datetime.now().astimezone().isoformat(timespec="milliseconds")
+                _ctx_token: Dict[str, Any] = {}
+                try:
+                    _last_ctx = pipeline.orchestrator._last_ctx
+                    if _last_ctx and hasattr(_last_ctx, "token_usage"):
+                        _ctx_token = dict(_last_ctx.token_usage)
+                except Exception:
+                    _ctx_token = {}
+
+                _prompt_tokens = normalize_optional_nonnegative_count(
+                    _ctx_token.get("prompt_tokens") if _ctx_token else None
+                )
+                _completion_tokens = normalize_optional_nonnegative_count(
+                    _ctx_token.get("completion_tokens") if _ctx_token else None
+                )
+                if _prompt_tokens is None or _completion_tokens is None:
+                    _prompt_tokens = None
+                    _completion_tokens = None
+                    _total_tokens = None
+                    _ctx_token = {}
+                else:
+                    _total_tokens = _prompt_tokens + _completion_tokens
+                    _ctx_token = {
+                        "prompt_tokens": _prompt_tokens,
+                        "completion_tokens": _completion_tokens,
+                        "total_tokens": _total_tokens,
+                    }
+                _row_search_health = (
+                    identity_dict.get("search_health")
+                    if isinstance(identity_dict, dict)
+                    and isinstance(identity_dict.get("search_health"), dict)
+                    else {}
+                )
+                _search_calls = normalize_optional_nonnegative_count(
+                    _row_search_health.get("queries_issued")
+                    if "queries_issued" in _row_search_health
+                    else None
+                )
+                _search_retries = normalize_optional_nonnegative_count(
+                    _row_search_health.get("retried")
+                    if "retried" in _row_search_health
+                    else None
+                )
+                if len(image_urls) == 0:
+                    _vlm_retries: Optional[int] = 0
+                    _vlm_chunks: Optional[int] = 0
+                else:
+                    _vlm_retries = normalize_optional_nonnegative_count(
+                        identity_dict.get("vlm_ocr_retry_count")
+                        if isinstance(identity_dict, dict)
+                        and "vlm_ocr_retry_count" in identity_dict
+                        else None
+                    )
+                    _vlm_chunks = normalize_optional_nonnegative_count(
+                        identity_dict.get("vlm_chunks_sent")
+                        if isinstance(identity_dict, dict)
+                        and "vlm_chunks_sent" in identity_dict
+                        else None
+                    )
+                _retry_count = (
+                    None
+                    if _search_retries is None or _vlm_retries is None
+                    else _search_retries + _vlm_retries
+                )
+                _decision_cost_trace = DecisionCostTrace.create(
+                    publication_scope_id=publication_scope_id,
+                    run_id=ts,
+                    input_index=index,
+                    post_id=post.post_id,
+                    model_tier=os.getenv("LLM_MODEL", "") or "UNKNOWN_MODEL_TIER",
+                    processing_started_at=_post_started_at,
+                    processing_finished_at=_post_finished_at,
+                    wall_ms=max(0, round(_post_elapsed * 1000)),
+                    prompt_tokens=_prompt_tokens,
+                    completion_tokens=_completion_tokens,
+                    total_tokens=_total_tokens,
+                    expert_calls=None,
+                    search_calls=_search_calls,
+                    retry_count=_retry_count,
+                    vlm_chunks=_vlm_chunks,
+                    measurement_status=COST_STATUS_PARTIAL_RUNTIME,
+                )
+
                 full_result = {
                     "gallery_id": getattr(post, "gallery_id", ""),
                     "post_id": post.post_id,
@@ -10429,6 +12971,7 @@ def main() -> None:
                     "comment_dialogue_context_lines": comment_dialogue_context_lines,
                     "analysis_result": result_dict,
                     "run_meta": {
+                        **_runtime_binding_echo_fields(),
                         "run_id": ts,
                         "model": os.getenv("LLM_MODEL", ""),
                         "llm_mode": LLM_MODE,
@@ -10456,6 +12999,15 @@ def main() -> None:
                         "mcp_health_ok_count": len(_health_ok),
                         "mcp_health_failure_count": len(_health_failures),
                         "search_health": identity_dict.get("search_health") if isinstance(identity_dict, dict) else None,
+                        "decision_cost_trace": _decision_cost_trace.to_dict(),
+                        "decision_call_measurement": dict(_decision_call_measurement),
+                        "measurement_execution_source": (
+                            "FRESH_EXECUTION_NO_PUBLIC_WRITE"
+                            if _decision_call_measurement["fresh_execution_required"]
+                            else "NORMAL_PUBLICATION_OWNER"
+                        ),
+                        **_early_route_run_meta_fields(index),
+                        **_decision_call_run_meta_fields(index),
                         **_reuse_health_filter_meta,
                         "worker_id": worker_id,
                         "worker_log_file": str(LOG_DIR / f"expert_run_{ts}_W{worker_id}.log") if _PARALLEL > 1 else str(log_path),
@@ -10480,16 +13032,8 @@ def main() -> None:
 
                 # 📊 대시보드: post_complete
                 if _monitor:
-                    _post_elapsed = time.time() - _post_start_t
                     _identity = result_dict.get("identity", {})
                     _novel_id = _identity.get("novel_identity") or {}
-                    _ctx_token = {}
-                    try:
-                        _last_ctx = pipeline.orchestrator._last_ctx
-                        if _last_ctx and hasattr(_last_ctx, 'token_usage'):
-                            _ctx_token = dict(_last_ctx.token_usage)
-                    except Exception:
-                        pass
                     _monitor.emit("post_complete", {
                         "post_id": post.post_id,
                         "title": post.title,
@@ -10536,6 +13080,120 @@ def main() -> None:
             results = []
             total_start = time.time()
 
+            def _commit_final_result(
+                result_item: Dict[str, Any],
+                *,
+                global_idx: int,
+                post_id: Any,
+            ):
+                """Main-thread durable terminal decision owner."""
+                preview = None
+                early_route_decision = _early_route_decision_for_index(global_idx)
+                reference = _publication_reference_by_index.get(global_idx)
+                if _decision_call_measurement["fresh_execution_required"]:
+                    reference = _fresh_execution_authoritative_reference_for_row(
+                        _publication_reference_by_index,
+                        input_index=global_idx,
+                        post_id=post_id,
+                    )
+                if decision_call_ledger_registry.enabled:
+                    _attach_decision_call_run_meta(result_item, index=global_idx)
+                    preview = _preview_publication_decision(
+                        result_item,
+                        publication_scope_id=publication_scope_id,
+                        attempt_run_id=ts,
+                        input_index=global_idx,
+                        post_id=post_id,
+                        reference_receipt=(
+                            reference[1]
+                            if _decision_call_measurement["fresh_execution_required"]
+                            and reference is not None
+                            else None
+                        ),
+                    )
+                    if early_route_decision is not None:
+                        if reference is None:
+                            raise PublicationCommitError(
+                                "early-route comparison requires authoritative WAL reference"
+                            )
+                        comparison_receipt = _compare_early_route_publication(
+                            early_route_decision,
+                            current_result=result_item,
+                            current_receipt=preview,
+                            authoritative_result=reference[0],
+                            authoritative_receipt=reference[1],
+                        )
+                        _record_early_route_comparison(
+                            index=global_idx,
+                            comparison_receipt=comparison_receipt,
+                        )
+                        _attach_early_route_run_meta(
+                            result_item,
+                            index=global_idx,
+                        )
+                    _set_decision_call_preview(
+                        index=global_idx,
+                        decision_id=preview.decision_id,
+                    )
+                    # The preview/link fields are attempt-local and therefore
+                    # do not change the logical decision ID, but they remain in
+                    # the exact stored-row result hash for the first WAL owner.
+                    _attach_decision_call_run_meta(result_item, index=global_idx)
+                if _decision_call_measurement["fresh_execution_required"]:
+                    receipt = _preview_publication_decision(
+                        result_item,
+                        publication_scope_id=publication_scope_id,
+                        attempt_run_id=ts,
+                        input_index=global_idx,
+                        post_id=post_id,
+                        reference_receipt=(reference[1] if reference is not None else None),
+                    )
+                    if preview is not None and receipt.decision_id != preview.decision_id:
+                        raise PublicationCommitError(
+                            "attempt-local decision call receipt changed publication decision ID"
+                        )
+                    _link_decision_call_attempt(
+                        index=global_idx,
+                        decision_id=receipt.decision_id,
+                    )
+                    _attach_decision_call_run_meta(result_item, index=global_idx)
+                    _attach_early_route_run_meta(result_item, index=global_idx)
+                    return receipt, False, result_item
+                receipt, created = commit_publication_result(
+                    result_item,
+                    registry=publication_commit_registry,
+                    attempt_run_id=ts,
+                    input_index=global_idx,
+                    post_id=post_id,
+                )
+                if preview is not None and receipt.decision_id != preview.decision_id:
+                    raise PublicationCommitError(
+                        "publication owner decision ID differs from precomputed call-ledger link"
+                    )
+                _link_decision_call_attempt(
+                    index=global_idx,
+                    decision_id=receipt.decision_id,
+                )
+                _attach_decision_call_run_meta(result_item, index=global_idx)
+                _attach_early_route_run_meta(result_item, index=global_idx)
+                canonical_result = (
+                    result_item
+                    if created
+                    else publication_commit_registry.result(post_id)
+                )
+                if not isinstance(canonical_result, dict):
+                    raise PublicationCommitError(
+                        "authoritative publication WAL row is missing"
+                    )
+                validate_publication_result_commit(
+                    canonical_result,
+                    receipt,
+                    expected_scope_id=publication_scope_id,
+                    expected_input_index=global_idx,
+                    expected_post_id=post_id,
+                )
+                return receipt, created, canonical_result
+
             # 📊 대시보드: batch_start
             if _monitor:
                 _monitor.emit("batch_start", {
@@ -10557,8 +13215,47 @@ def main() -> None:
                     except Exception:
                         pass
 
+            # The result manifest must not advertise a terminally complete run
+            # before all attempt-local artifacts have been finalized.  An
+            # enabled slang DB remains an attempt work artifact; source
+            # promotion is an explicit post-run phase, never an in-run write.
+            _terminal_artifacts_finalized = False
+            _slang_db_writeback_complete = not _slang_db_enabled
+            _slang_db_work_artifact_complete = False
+            _slang_db_promotion_ready = False
+
             def _parallel_manifest_fields() -> Dict[str, Any]:
+                _tail_repair_records = publication_commit_registry.tail_repair_records()
+                _decision_call_ledger_summary = decision_call_ledger_registry.summary()
+                with _decision_call_attempts_lock:
+                    _decision_call_snapshot = json.loads(
+                        json.dumps(_decision_call_attempts_by_index, ensure_ascii=False)
+                    )
+                with _early_route_lock:
+                    _early_route_snapshot = json.loads(
+                        json.dumps(_early_route_by_index, ensure_ascii=False)
+                    )
+                _early_route_aggregate = _build_early_route_manifest_aggregate(
+                    _early_route_snapshot,
+                    expected_input_count=len(posts),
+                    measurement_config=_decision_call_measurement,
+                    decision_call_rows_by_index=_decision_call_snapshot,
+                )
+                _decision_ledger_v2_shadow_status = (
+                    decision_call_ledger_registry.shadow_status()
+                    if hasattr(decision_call_ledger_registry, "shadow_status")
+                    else _decision_ledger_v2_off_status()
+                )
+                _tail_repair_ledger_sha256 = hashlib.sha256(
+                    json.dumps(
+                        _tail_repair_records,
+                        ensure_ascii=False,
+                        sort_keys=True,
+                        separators=(",", ":"),
+                    ).encode("utf-8")
+                ).hexdigest()
                 return {
+                    **_runtime_binding_echo_fields(),
                     "requested_parallel_raw": _REQUESTED_PARALLEL_RAW,
                     "requested_parallel": _REQUESTED_PARALLEL,
                     "effective_parallel": _PARALLEL,
@@ -10651,17 +13348,206 @@ def main() -> None:
                     "mcp_health_search_min_results": _run_config_payload.get("mcp_health_search_min_results"),
                     "mcp_health_ok_count": len(_health_ok),
                     "mcp_health_failure_count": len(_health_failures),
+                    "publication_commit_schema": PUBLICATION_COMMIT_SCHEMA,
+                    "publication_commit_journal_schema": PUBLICATION_COMMIT_JOURNAL_SCHEMA,
+                    "publication_commit_owner": PUBLICATION_COMMIT_OWNER,
+                    "publication_scope_id": publication_scope_id,
+                    "publication_input_snapshot_sha256": _input_snapshot_sha256,
+                    "publication_commit_journal": str(publication_commit_journal_path),
+                    "publication_commit_tail_repair_dir": str(
+                        publication_commit_registry.tail_repair_dir
+                    ),
+                    "publication_commit_tail_repair_count": len(
+                        _tail_repair_records
+                    ),
+                    "publication_commit_tail_repair_ledger_sha256": (
+                        _tail_repair_ledger_sha256
+                    ),
+                    "publication_scope_descriptor": str(
+                        publication_commit_registry.scope_descriptor_path
+                    ),
+                    "publication_scope_descriptor_sha256": (
+                        publication_scope_descriptor.descriptor_sha256
+                    ),
+                    "publication_config_sha256": _publication_config_hash,
+                    "publication_scope_config": str(publication_scope_config_path),
+                    "publication_scope_config_sha256": (
+                        _publication_scope_config_sha256
+                    ),
+                    "publication_decision_environment_sha256": (
+                        _decision_environment_sha256
+                    ),
+                    "publication_slang_db_path": str(_scope_slang_db_path),
+                    "publication_slang_db_input_sha256": _scope_slang_db_sha256,
+                    "publication_slang_db_work_path": str(slang_db_work_path),
+                    "publication_slang_db_delayed_writeback": bool(_slang_db_enabled),
+                    "publication_slang_db_promotion_policy": (
+                        "explicit_post_run_only"
+                        if _slang_db_enabled
+                        else "not_applicable"
+                    ),
+                    "publication_slang_db_work_artifact_complete": bool(
+                        _slang_db_work_artifact_complete
+                    ),
+                    "publication_slang_db_promotion_ready": bool(
+                        _slang_db_promotion_ready
+                    ),
+                    "publication_slang_db_writeback_complete": bool(
+                        _slang_db_writeback_complete
+                    ),
+                    "terminal_artifacts_finalized": bool(
+                        _terminal_artifacts_finalized
+                    ),
+                    "publication_release_fingerprint": _publication_release_fingerprint,
+                    "publication_release_fingerprint_source": (
+                        _publication_release_fingerprint_source
+                    ),
+                    "publication_release_attestation_status": (
+                        _publication_release_attestation_status
+                    ),
+                    "publication_commit_count": publication_commit_registry.count,
+                    "publication_execution_mode": (
+                        "FRESH_EXECUTION_NO_PUBLIC_WRITE"
+                        if _decision_call_measurement["fresh_execution_required"]
+                        else "NORMAL_PUBLICATION_OWNER"
+                    ),
+                    "decision_call_measurement": dict(_decision_call_measurement),
+                    "decision_ledger_v2_shadow_config": dict(
+                        _decision_ledger_v2_shadow
+                    ),
+                    "decision_ledger_v2_shadow_path": (
+                        str(decision_call_ledger_v2_shadow_path.resolve())
+                        if _decision_ledger_v2_shadow["enabled"]
+                        else None
+                    ),
+                    "decision_ledger_v2_shadow_status": (
+                        _decision_ledger_v2_shadow_status
+                    ),
+                    "decision_call_ledger_path": (
+                        str(decision_call_ledger_path.resolve())
+                        if decision_call_ledger_registry.enabled
+                        else None
+                    ),
+                    "decision_call_ledger_scope_sha256": (
+                        _decision_call_ledger_scope_sha256
+                    ),
+                    "decision_call_ledger_storage_policy": (
+                        "IMMUTABLE_FRAME_V1_BOUNDED_18_59_ONLY"
+                        if decision_call_ledger_registry.enabled
+                        else "DISABLED"
+                    ),
+                    "decision_call_ledger_production_enable_allowed": False,
+                    "decision_call_ledger_summary": _decision_call_ledger_summary,
+                    "early_route_measurement": _early_route_aggregate,
+                    "output_attempt_claim": str(attempt_claim_path),
+                    "output_attempt_claim_sha256": _attempt_claim_sha256,
                     **_scale_up_meta,
                     **_reuse_health_filter_meta,
                 }
 
+            def _completion_manifest_gate_fields(
+                *,
+                completed_count: int,
+                pending_count: int,
+                failed_count: int,
+            ) -> Dict[str, Any]:
+                """Keep runtime completion, measurement, and semantic review distinct."""
+
+                ledger_summary = decision_call_ledger_registry.summary()
+                with _decision_call_attempts_lock:
+                    row_attempts = json.loads(
+                        json.dumps(_decision_call_attempts_by_index, ensure_ascii=False)
+                    )
+                measurement_gate = _build_decision_call_measurement_gate(
+                    measurement_config=_decision_call_measurement,
+                    ledger_summary=ledger_summary,
+                    row_attempts=row_attempts,
+                    expected_input_count=len(posts),
+                )
+                with _early_route_lock:
+                    early_route_rows = json.loads(
+                        json.dumps(_early_route_by_index, ensure_ascii=False)
+                    )
+                early_route_aggregate = _build_early_route_manifest_aggregate(
+                    early_route_rows,
+                    expected_input_count=len(posts),
+                    measurement_config=_decision_call_measurement,
+                    decision_call_rows_by_index=row_attempts,
+                )
+                early_route_execution_gate = {
+                    "schema_version": "early_route_execution_gate_v1",
+                    "required": bool(
+                        _decision_call_measurement.get("early_route_enabled")
+                    ),
+                    "status": early_route_aggregate["execution_gate"],
+                    "expected_input_count": len(posts),
+                    "observed_route_count": early_route_aggregate[
+                        "observed_route_count"
+                    ],
+                    "observed_comparison_count": early_route_aggregate[
+                        "observed_comparison_count"
+                    ],
+                    "cheap_count": early_route_aggregate["cheap_count"],
+                    "cheap_zero_call_writer_verified_count": early_route_aggregate[
+                        "cheap_zero_call_writer_verified_count"
+                    ],
+                    "reason_codes": early_route_aggregate[
+                        "execution_reason_codes"
+                    ],
+                    "aggregate_sha256": early_route_aggregate["aggregate_sha256"],
+                }
+                if (
+                    early_route_execution_gate["required"]
+                    and early_route_execution_gate["status"] != "GO"
+                ):
+                    merged_reasons = set(measurement_gate.get("reason_codes") or [])
+                    merged_reasons.update(
+                        f"EARLY_ROUTE_{reason}"
+                        for reason in early_route_execution_gate["reason_codes"]
+                    )
+                    if not early_route_execution_gate["reason_codes"]:
+                        merged_reasons.add("EARLY_ROUTE_EXECUTION_GATE_NOT_GO")
+                    measurement_gate = {
+                        **measurement_gate,
+                        "status": "NO_GO",
+                        "blocks_large_run_complete": True,
+                        "reason_codes": sorted(merged_reasons),
+                    }
+                runtime_completion_gate = _build_runtime_completion_gate(
+                    input_post_count=len(posts),
+                    completed_count=completed_count,
+                    pending_count=pending_count,
+                    failed_count=failed_count,
+                    terminal_artifacts_finalized=_terminal_artifacts_finalized,
+                )
+                large_run_complete = _large_run_complete_from_gates(
+                    runtime_completion_gate,
+                    measurement_gate,
+                )
+                return {
+                    "runtime_completion_gate": runtime_completion_gate,
+                    "measurement_gate": measurement_gate,
+                    "early_route_execution_gate": early_route_execution_gate,
+                    "semantic_approval": {
+                        "status": "NOT_EVALUATED",
+                        "runtime_completion_is_semantic_approval": False,
+                        "reason_codes": [
+                            "RUNTIME_COMPLETION_SEPARATE_FROM_SEMANTIC_APPROVAL"
+                        ],
+                    },
+                    "large_run_runtime_complete": (
+                        runtime_completion_gate["status"] == "GO"
+                    ),
+                    "large_run_complete": large_run_complete,
+                }
+
             if _PARALLEL <= 1:
                 # ===== 순차 모드 (기존 동작 유지) =====
-                checkpoint_jsonl_path.write_text("", encoding="utf-8")
-                pending_snapshot_path.write_text("[]\n", encoding="utf-8")
-                result_manifest_path.write_text(
-                    json.dumps(
-                        {
+                _atomic_write_text(checkpoint_jsonl_path, "")
+                _atomic_write_text(pending_snapshot_path, "[]\n")
+                _atomic_write_json(
+                    result_manifest_path,
+                    {
                             "run_id": ts,
                             "output_file": str(out_result_path),
                             "checkpoint_jsonl": str(checkpoint_jsonl_path),
@@ -10679,41 +13565,60 @@ def main() -> None:
                             "next_save_idx": 1,
                             "partial_flush_gap": False,
                             "ordered_flush_blocked": False,
-                            "large_run_complete": False,
-                        },
-                        ensure_ascii=False,
-                        indent=2,
-                    ),
-                    encoding="utf-8",
+                            **_completion_manifest_gate_fields(
+                                completed_count=0,
+                                pending_count=0,
+                                failed_count=0,
+                            ),
+                    },
                 )
                 pipeline = _create_pipeline(worker_id=0)
+                _sequential_failed_count = 0
                 try:
                     for i, post in enumerate(posts, 1):
                         if _shutdown_event.is_set():
                             break
-                        full_result = _process_one(post, i, len(posts), pipeline, worker_id=0)
-                        results.append(full_result)
-                        _slang_db_manager.record_result(full_result)
-                        with checkpoint_jsonl_path.open("a", encoding="utf-8", newline="\n") as _fp:
-                            _fp.write(
-                                json.dumps(
-                                    {
-                                        "global_idx": i,
-                                        "post_id": post.post_id,
-                                        "status": "completed",
-                                        "result": full_result,
-                                    },
-                                    ensure_ascii=False,
-                                ) + "\n"
+                        _replay_entry = _publication_replay_by_index.get(i)
+                        if _replay_entry is not None:
+                            full_result, publication_commit = _replay_entry
+                            checkpoint_status = (
+                                "failed_replay"
+                                if publication_commit.outcome == "ERROR_HOLD"
+                                else "durable_replay"
                             )
-                        # 점진적 저장
-                        out_result_path.write_text(
-                            json.dumps(results, ensure_ascii=False, indent=2),
-                            encoding="utf-8"
+                        else:
+                            full_result = _process_one(
+                                post, i, len(posts), pipeline, worker_id=0
+                            )
+                            publication_commit, _, full_result = _commit_final_result(
+                                full_result,
+                                global_idx=i,
+                                post_id=post.post_id,
+                            )
+                            _slang_db_manager.record_result(full_result)
+                            checkpoint_status = (
+                                "failed"
+                                if publication_commit.outcome == "ERROR_HOLD"
+                                else "completed"
+                            )
+                        if publication_commit.outcome == "ERROR_HOLD":
+                            _sequential_failed_count += 1
+                        results.append(full_result)
+                        _append_jsonl_fsync(
+                            checkpoint_jsonl_path,
+                            {
+                                "global_idx": i,
+                                "post_id": post.post_id,
+                                "status": checkpoint_status,
+                                "publication_commit": publication_commit.to_dict(),
+                                "result": full_result,
+                            },
                         )
-                        result_manifest_path.write_text(
-                            json.dumps(
-                                {
+                        # 점진적 저장
+                        _atomic_write_json(out_result_path, results)
+                        _atomic_write_json(
+                            result_manifest_path,
+                            {
                                     "run_id": ts,
                                     "output_file": str(out_result_path),
                                     "checkpoint_jsonl": str(checkpoint_jsonl_path),
@@ -10727,28 +13632,25 @@ def main() -> None:
                                     "completed_count": len(results),
                                     "flushed_count": len(results),
                                     "pending_count": 0,
-                                    "failed_count": 0,
+                                    "failed_count": _sequential_failed_count,
                                     "next_save_idx": len(results) + 1,
                                     "partial_flush_gap": False,
                                     "ordered_flush_blocked": False,
-                                    "large_run_complete": bool(len(results) == len(posts)),
-                                },
-                                ensure_ascii=False,
-                                indent=2,
-                            ),
-                            encoding="utf-8",
+                                    **_completion_manifest_gate_fields(
+                                        completed_count=len(results),
+                                        pending_count=0,
+                                        failed_count=_sequential_failed_count,
+                                    ),
+                            },
                         )
                 except KeyboardInterrupt:
                     _shutdown_event.set()
                     print("\n⚠️  Ctrl+C 감지 — 종료 중...", file=sys.stderr, flush=True)
                     if results:
-                        out_result_path.write_text(
-                            json.dumps(results, ensure_ascii=False, indent=2),
-                            encoding="utf-8"
-                        )
-                        result_manifest_path.write_text(
-                            json.dumps(
-                                {
+                        _atomic_write_json(out_result_path, results)
+                        _atomic_write_json(
+                            result_manifest_path,
+                            {
                                     "run_id": ts,
                                     "output_file": str(out_result_path),
                                     "checkpoint_jsonl": str(checkpoint_jsonl_path),
@@ -10762,19 +13664,19 @@ def main() -> None:
                                     "completed_count": len(results),
                                     "flushed_count": len(results),
                                     "pending_count": 0,
-                                    "failed_count": 0,
+                                    "failed_count": _sequential_failed_count,
                                     "next_save_idx": len(results) + 1,
                                     "partial_flush_gap": False,
                                     "ordered_flush_blocked": False,
-                                    "large_run_complete": bool(len(results) == len(posts)),
-                                },
-                                ensure_ascii=False,
-                                indent=2,
-                            ),
-                            encoding="utf-8",
+                                    **_completion_manifest_gate_fields(
+                                        completed_count=len(results),
+                                        pending_count=0,
+                                        failed_count=_sequential_failed_count,
+                                    ),
+                            },
                         )
-                        _slang_db_manager.finalize()
                         print(f"💾 중단 시점까지 {len(results)}건 저장됨: {out_result_path}", file=sys.stderr, flush=True)
+                    _finalize_slang_db(publish=False)
                     sys.stdout = _orig_out
                     sys.stderr = _orig_err
                     print("\n🛑 사용자 중단 (Ctrl+C) — 프로세스 종료", file=sys.stderr, flush=True)
@@ -10783,11 +13685,11 @@ def main() -> None:
                 # ===== 병렬 모드 =====
                 global _parallel_mode
                 _parallel_mode = True
-                checkpoint_jsonl_path.write_text("", encoding="utf-8")
-                pending_snapshot_path.write_text("[]\n", encoding="utf-8")
-                result_manifest_path.write_text(
-                    json.dumps(
-                        {
+                _atomic_write_text(checkpoint_jsonl_path, "")
+                _atomic_write_text(pending_snapshot_path, "[]\n")
+                _atomic_write_json(
+                    result_manifest_path,
+                    {
                             "run_id": ts,
                             "output_file": str(out_result_path),
                             "checkpoint_jsonl": str(checkpoint_jsonl_path),
@@ -10797,11 +13699,15 @@ def main() -> None:
                             "flushed_count": 0,
                             "pending_count": 0,
                             "failed_count": 0,
-                        },
-                        ensure_ascii=False,
-                        indent=2,
-                    ),
-                    encoding="utf-8",
+                            "next_save_idx": 1,
+                            "partial_flush_gap": False,
+                            "ordered_flush_blocked": False,
+                            **_completion_manifest_gate_fields(
+                                completed_count=0,
+                                pending_count=0,
+                                failed_count=0,
+                            ),
+                    },
                 )
                 
                 print(f"\n🚀 병렬 모드 활성화: {_PARALLEL} 워커", file=sys.stderr, flush=True)
@@ -10854,6 +13760,7 @@ def main() -> None:
 
                 # 결과를 순서대로 저장하기 위한 dict
                 _pending_results: Dict[int, Any] = {}
+                _pending_commit_receipts: Dict[int, Dict[str, Any]] = {}
                 _next_save_idx = 1  # 다음으로 results에 추가할 global_idx
                 _failed_count = 0
                 _completed_subset_state: Dict[str, Any] = {
@@ -10864,16 +13771,30 @@ def main() -> None:
                     "completed_subset_reason": "",
                 }
 
-                def _append_checkpoint(*, global_idx: int, post_id: int, result_item: Any, status: str) -> None:
+                def _append_checkpoint(
+                    *,
+                    global_idx: int,
+                    post_id: int,
+                    result_item: Any,
+                    status: str,
+                    publication_commit: Any,
+                ) -> None:
+                    validate_publication_result_commit(
+                        result_item,
+                        publication_commit,
+                        expected_scope_id=publication_scope_id,
+                        expected_input_index=global_idx,
+                        expected_post_id=post_id,
+                    )
                     payload = {
                         "global_idx": global_idx,
                         "post_id": post_id,
                         "status": status,
+                        "publication_commit": publication_commit.to_dict(),
                         "result": result_item,
                     }
                     with _results_lock:
-                        with checkpoint_jsonl_path.open("a", encoding="utf-8", newline="\n") as _fp:
-                            _fp.write(json.dumps(payload, ensure_ascii=False) + "\n")
+                        _append_jsonl_fsync(checkpoint_jsonl_path, payload)
 
                 def _write_manifest(*, failed_count: int = 0) -> None:
                     failed_total = max(failed_count, _failed_count)
@@ -10883,6 +13804,8 @@ def main() -> None:
                         "output_file": str(out_result_path),
                         "checkpoint_jsonl": str(checkpoint_jsonl_path),
                         "pending_snapshot": str(pending_snapshot_path),
+                        "publication_commit_journal": str(publication_commit_journal_path),
+                        "publication_scope_id": publication_scope_id,
                         "completed_subset_json": _completed_subset_state["completed_subset_json"],
                         "completed_subset_manifest": _completed_subset_state["completed_subset_manifest"],
                         "completed_subset_written": _completed_subset_state["completed_subset_written"],
@@ -10896,13 +13819,14 @@ def main() -> None:
                         "next_save_idx": _next_save_idx,
                         "partial_flush_gap": pending_count > 0,
                         "ordered_flush_blocked": bool(pending_count and _next_save_idx <= len(posts)),
-                        "large_run_complete": bool(len(results) == len(posts) and pending_count == 0 and failed_total == 0),
+                        **_completion_manifest_gate_fields(
+                            completed_count=len(results),
+                            pending_count=pending_count,
+                            failed_count=failed_total,
+                        ),
                     }
                     with _results_lock:
-                        result_manifest_path.write_text(
-                            json.dumps(payload, ensure_ascii=False, indent=2),
-                            encoding="utf-8",
-                        )
+                        _atomic_write_json(result_manifest_path, payload)
 
                 def _result_item_post_id(item: Any) -> int:
                     if isinstance(item, dict):
@@ -10926,6 +13850,9 @@ def main() -> None:
                         "output_file": str(out_result_path),
                         "checkpoint_jsonl": str(checkpoint_jsonl_path),
                         "pending_snapshot": str(pending_snapshot_path),
+                        "publication_commit_journal": str(publication_commit_journal_path),
+                        "publication_scope_id": publication_scope_id,
+                        **_parallel_manifest_fields(),
                         "completed_subset_json": str(completed_subset_path),
                         "completed_subset_count": len(subset_rows),
                         "flushed_count": len(results),
@@ -10939,14 +13866,8 @@ def main() -> None:
                         ),
                     }
                     with _results_lock:
-                        completed_subset_path.write_text(
-                            json.dumps(subset_rows, ensure_ascii=False, indent=2),
-                            encoding="utf-8",
-                        )
-                        completed_subset_manifest_path.write_text(
-                            json.dumps(manifest, ensure_ascii=False, indent=2),
-                            encoding="utf-8",
-                        )
+                        _atomic_write_json(completed_subset_path, subset_rows)
+                        _atomic_write_json(completed_subset_manifest_path, manifest)
                     _completed_subset_state.update(
                         {
                             "completed_subset_written": True,
@@ -10963,15 +13884,13 @@ def main() -> None:
                         {
                             "global_idx": idx,
                             "post_id": _result_item_post_id(item),
+                            "publication_commit": _pending_commit_receipts.get(idx),
                             "result": item,
                         }
                         for idx, item in sorted(_pending_results.items(), key=lambda kv: kv[0])
                     ]
                     with _results_lock:
-                        pending_snapshot_path.write_text(
-                            json.dumps(pending_rows, ensure_ascii=False, indent=2),
-                            encoding="utf-8",
-                        )
+                        _atomic_write_json(pending_snapshot_path, pending_rows)
                     _write_manifest()
 
                 def _flush_ordered():
@@ -10980,15 +13899,13 @@ def main() -> None:
                     flushed = False
                     while _next_save_idx in _pending_results:
                         _result_item = _pending_results.pop(_next_save_idx)
+                        _pending_commit_receipts.pop(_next_save_idx, None)
                         results.append(_result_item)
                         _next_save_idx += 1
                         flushed = True
                     if flushed:
                         with _results_lock:
-                            out_result_path.write_text(
-                                json.dumps(results, ensure_ascii=False, indent=2),
-                                encoding="utf-8"
-                            )
+                            _atomic_write_json(out_result_path, results)
                         _write_pending_snapshot()
 
                 _executor_ref = None  # Ctrl+C에서 접근용
@@ -10999,21 +13916,16 @@ def main() -> None:
                     done_list = [f for f in futures_dict if f.done()]
                     for fut in done_list:
                         gidx, pid, wid_done = futures_dict.pop(fut)
+                        failure_counted = False
                         try:
                             full_result = fut.result()
-                            _slang_db_manager.record_result(full_result)
-                            _pending_results[gidx] = full_result
-                            _append_checkpoint(
-                                global_idx=gidx,
-                                post_id=pid,
-                                result_item=full_result,
-                                status="completed",
-                            )
                         except (SystemExit, KeyboardInterrupt):
-                            pass  # 셧다운 중 — 무시
+                            _worker_pool.put(wid_done)
+                            continue
                         except Exception as e:
                             _failed_count += 1
-                            _pending_results[gidx] = {
+                            failure_counted = True
+                            full_result = {
                                 "post_id": pid,
                                 "title": "",
                                 "error": str(e),
@@ -11021,16 +13933,79 @@ def main() -> None:
                                     "identity": {"is_relevant": False, "reason": f"처리 오류: {e}"},
                                 },
                             }
-                            _append_checkpoint(
+                            status = "failed"
+                        else:
+                            status = "completed"
+
+                        try:
+                            publication_commit, _, full_result = _commit_final_result(
+                                full_result,
                                 global_idx=gidx,
                                 post_id=pid,
-                                result_item=_pending_results[gidx],
-                                status="failed",
                             )
+                        except PublicationCommitError as commit_error:
+                            if not failure_counted:
+                                _failed_count += 1
+                                failure_counted = True
+                            full_result = {
+                                "post_id": pid,
+                                "title": "",
+                                "error": f"publication commit rejected: {commit_error}",
+                                "analysis_result": {
+                                    "identity": {
+                                        "is_relevant": False,
+                                        "reason": "최종 공개 판정 무결성 오류",
+                                    },
+                                },
+                            }
+                            status = "failed"
+                            publication_commit, _, full_result = _commit_final_result(
+                                full_result,
+                                global_idx=gidx,
+                                post_id=pid,
+                            )
+
+                        _slang_db_manager.record_result(full_result)
+
+                        if publication_commit.outcome == "ERROR_HOLD":
+                            if not failure_counted:
+                                _failed_count += 1
+                                failure_counted = True
+                            status = "failed"
+                        else:
+                            status = "completed"
+
+                        _pending_results[gidx] = full_result
+                        _pending_commit_receipts[gidx] = publication_commit.to_dict()
+                        _append_checkpoint(
+                            global_idx=gidx,
+                            post_id=pid,
+                            result_item=full_result,
+                            status=status,
+                            publication_commit=publication_commit,
+                        )
                         _worker_pool.put(wid_done)
                     if done_list:
                         _write_pending_snapshot()
                         _flush_ordered()
+
+                for _replay_index, (_replay_result, _replay_receipt) in sorted(
+                    _publication_replay_by_index.items()
+                ):
+                    _pending_results[_replay_index] = _replay_result
+                    _pending_commit_receipts[_replay_index] = _replay_receipt.to_dict()
+                    _append_checkpoint(
+                        global_idx=_replay_index,
+                        post_id=_replay_receipt.post_id,
+                        result_item=_replay_result,
+                        status="durable_replay",
+                        publication_commit=_replay_receipt,
+                    )
+                    if _replay_receipt.outcome == "ERROR_HOLD":
+                        _failed_count += 1
+                if _publication_replay_by_index:
+                    _write_pending_snapshot()
+                    _flush_ordered()
 
                 try:
                     executor = ThreadPoolExecutor(max_workers=_PARALLEL)
@@ -11040,6 +14015,8 @@ def main() -> None:
                     for i, post in enumerate(posts, 1):
                         if _shutdown_event.is_set():
                             break
+                        if i in _publication_replay_by_index:
+                            continue
 
                         # 빈 워커가 생길 때까지 대기 (완료된 future 수거)
                         while not _shutdown_event.is_set():
@@ -11091,14 +14068,10 @@ def main() -> None:
                 if _shutdown_event.is_set():
                     if results or _pending_results:
                         with _results_lock:
-                            out_result_path.write_text(
-                                json.dumps(results, ensure_ascii=False, indent=2),
-                                encoding="utf-8"
-                            )
+                            _atomic_write_json(out_result_path, results)
                         if _pending_results:
                             _write_completed_subset(reason="shutdown_pending_flush_gap")
                         _write_pending_snapshot()
-                        _slang_db_manager.finalize()
                         _cli_progress(
                             "💾 중단 시점까지 flushed={flushed}, pending={pending}건 저장됨: {path}".format(
                                 flushed=len(results),
@@ -11106,6 +14079,7 @@ def main() -> None:
                                 path=out_result_path,
                             )
                         )
+                    _finalize_slang_db(publish=False)
                     sys.stdout = _orig_out
                     sys.stderr = _orig_err
                     print("\n🛑 사용자 중단 (Ctrl+C) — 프로세스 종료", file=sys.stderr, flush=True)
@@ -11131,8 +14105,9 @@ def main() -> None:
                     print(f"   워커 수:      {_PARALLEL}개 (독립 캐시)", file=sys.stderr, flush=True)
                 print(f"{'='*70}", file=sys.stderr, flush=True)
             
-            # 전체 완료
-            _slang_db_manager.finalize()
+            # 전체 완료: ordered flush 결과까지 확정한 뒤 attempt-local
+            # slang DB를 원본에 반영한다. 이 순서로 중단/오류 재시도가
+            # 실행 중 변경된 slang DB 해시 때문에 다른 scope로 이탈하지 않는다.
             if _PARALLEL > 1:
                 _flush_ordered()
                 if _pending_results:
@@ -11147,8 +14122,55 @@ def main() -> None:
                     )
                 else:
                     with _results_lock:
-                        pending_snapshot_path.write_text("[]\n", encoding="utf-8")
+                        _atomic_write_text(pending_snapshot_path, "[]\n")
+            if _PARALLEL <= 1:
+                _slang_publish_ready = bool(
+                    len(results) == len(posts) and _sequential_failed_count == 0
+                )
+            else:
+                _slang_publish_ready = bool(
+                    len(results) == len(posts)
+                    and not _pending_results
+                    and _failed_count == 0
+                )
+            _finalize_slang_db(publish=_slang_publish_ready)
+            _slang_db_work_artifact_complete = True
+            _slang_db_promotion_ready = bool(
+                _slang_db_enabled
+                and _slang_publish_ready
+                and slang_db_work_path.is_file()
+            )
+            _terminal_artifacts_finalized = True
+            if _PARALLEL > 1:
                 _write_manifest()
+            else:
+                _atomic_write_json(
+                    result_manifest_path,
+                    {
+                        "run_id": ts,
+                        "output_file": str(out_result_path),
+                        "checkpoint_jsonl": str(checkpoint_jsonl_path),
+                        "pending_snapshot": str(pending_snapshot_path),
+                        "completed_subset_json": "",
+                        "completed_subset_manifest": "",
+                        "completed_subset_written": False,
+                        "completed_subset_count": 0,
+                        "completed_subset_reason": "",
+                        **_parallel_manifest_fields(),
+                        "completed_count": len(results),
+                        "flushed_count": len(results),
+                        "pending_count": 0,
+                        "failed_count": _sequential_failed_count,
+                        "next_save_idx": len(results) + 1,
+                        "partial_flush_gap": False,
+                        "ordered_flush_blocked": False,
+                        **_completion_manifest_gate_fields(
+                            completed_count=len(results),
+                            pending_count=0,
+                            failed_count=_sequential_failed_count,
+                        ),
+                    },
+                )
             total_elapsed = time.time() - total_start
             print(f"\n{'='*70}", file=sys.stderr, flush=True)
             print(f"✅ 처리 완료!", file=sys.stderr, flush=True)
@@ -11213,7 +14235,7 @@ def main() -> None:
             sys.stderr = _orig_err
 
 
-def load_jsonl_posts(path: Path) -> List:
+def load_jsonl_posts(path: Path, *, snapshot_bytes: bytes | None = None) -> List:
     """JSONL 파일에서 포스트만 로드 (댓글 제외)"""
     sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
     from llm_batch.models import PostInput, ContentBlock
@@ -11252,6 +14274,159 @@ def load_jsonl_posts(path: Path) -> List:
                 if text:
                     blocks.append(ContentBlock(type="text", text=text))
         return blocks
+
+    def _early_route_raw_input_guard(
+        data: Mapping[str, Any],
+    ) -> Tuple[bool, Tuple[str, ...]]:
+        """Preserve fail-closed facts that PostInput normalization would erase."""
+
+        errors: set[str] = set()
+        truncated = False
+        for field_name in ("input_truncated", "truncated", "_input_truncated"):
+            if field_name not in data:
+                continue
+            raw_flag = data.get(field_name)
+            if not isinstance(raw_flag, bool):
+                errors.add("RAW_TRUNCATION_FLAG_NOT_BOOLEAN")
+                truncated = True
+            elif raw_flag:
+                truncated = True
+        for field_name in ("parse_error_codes", "parse_errors", "_parse_errors"):
+            if field_name in data and _early_route_present(data.get(field_name)):
+                errors.add("RAW_UPSTREAM_PARSE_AMBIGUITY")
+
+        raw_blocks = data.get("content_blocks")
+        raw_content = data.get("content")
+        if _early_route_present(raw_blocks) and _early_route_present(raw_content):
+            try:
+                if early_route_canonical_hash(raw_blocks) != early_route_canonical_hash(
+                    raw_content
+                ):
+                    errors.add("RAW_CONTENT_ALIAS_CONFLICT")
+            except Exception:
+                errors.add("RAW_CONTENT_ALIAS_UNHASHABLE")
+        if raw_blocks is None:
+            raw_blocks = raw_content
+        if raw_blocks is None:
+            raw_blocks = []
+        if isinstance(raw_blocks, str):
+            raw_blocks = [raw_blocks]
+        elif not isinstance(raw_blocks, list):
+            errors.add("RAW_CONTENT_BLOCKS_NOT_SEQUENCE")
+            raw_blocks = [raw_blocks]
+        allowed_block_keys = {
+            "type",
+            "url",
+            "image_url",
+            "src",
+            "text",
+            "content",
+        }
+        known_block_types = _EARLY_ROUTE_TEXT_TYPES | _EARLY_ROUTE_IMAGE_TYPES
+        for block in raw_blocks:
+            if isinstance(block, str):
+                continue
+            if not isinstance(block, Mapping):
+                errors.add("RAW_CONTENT_BLOCK_UNPARSEABLE")
+                continue
+            if set(block) - allowed_block_keys:
+                errors.add("RAW_CONTENT_BLOCK_UNKNOWN_FIELDS")
+            raw_kind = block.get("type")
+            if not isinstance(raw_kind, str) or not raw_kind.strip():
+                errors.add("RAW_CONTENT_BLOCK_TYPE_MISSING_OR_INVALID")
+            elif raw_kind.strip().casefold() not in known_block_types:
+                errors.add("RAW_CONTENT_BLOCK_UNKNOWN_TYPE")
+            raw_text = block.get("text")
+            raw_content_alias = block.get("content")
+            if (
+                raw_text not in (None, "")
+                and raw_content_alias not in (None, "")
+                and raw_text != raw_content_alias
+            ):
+                errors.add("RAW_CONTENT_BLOCK_TEXT_ALIAS_CONFLICT")
+            for raw_value in (raw_text, raw_content_alias):
+                if raw_value not in (None, "") and not isinstance(raw_value, str):
+                    errors.add("RAW_CONTENT_BLOCK_TEXT_NOT_STRING")
+            url_aliases: list[str] = []
+            for key in ("url", "image_url", "src"):
+                raw_value = block.get(key)
+                if raw_value in (None, ""):
+                    continue
+                if not isinstance(raw_value, str):
+                    errors.add("RAW_CONTENT_BLOCK_URL_NOT_STRING")
+                    continue
+                url_aliases.append(raw_value.strip())
+            if len(set(url_aliases)) > 1:
+                errors.add("RAW_CONTENT_BLOCK_URL_ALIAS_CONFLICT")
+
+        raw_comments = data.get("comments")
+        if raw_comments in (None, ""):
+            raw_comments = data.get("comments_raw") or []
+        if isinstance(raw_comments, (str, Mapping)):
+            raw_comments = [raw_comments]
+        elif not isinstance(raw_comments, list):
+            errors.add("RAW_COMMENTS_NOT_SEQUENCE")
+            raw_comments = []
+        for comment in raw_comments:
+            if isinstance(comment, str):
+                continue
+            if not isinstance(comment, Mapping):
+                errors.add("RAW_COMMENT_UNPARSEABLE")
+                continue
+            allowed_comment_keys = {
+                "comment_id",
+                "post_id",
+                "author",
+                "ip",
+                "created_at",
+                "reply_to_comment_id",
+                "reply_level",
+                "gallery_id",
+                "content",
+                "text",
+                "content_html",
+                "url",
+                "image_url",
+                "src",
+                "attachment",
+            }
+            if set(comment) - allowed_comment_keys:
+                errors.add("RAW_COMMENT_UNKNOWN_FIELDS")
+            content = comment.get("content")
+            text = comment.get("text")
+            if content not in (None, "") and text not in (None, "") and content != text:
+                errors.add("RAW_COMMENT_TEXT_ALIAS_CONFLICT")
+            selected = content if content not in (None, "") else text
+            if selected is None:
+                errors.add("RAW_COMMENT_TEXT_MISSING")
+            elif not isinstance(selected, str):
+                errors.add("RAW_COMMENT_TEXT_NOT_STRING")
+            if _early_route_present(comment.get("content_html")):
+                errors.add("RAW_COMMENT_HTML_PRESENT")
+            for key in ("url", "image_url", "src", "attachment"):
+                raw_value = comment.get(key)
+                if raw_value not in (None, "") and not isinstance(raw_value, str):
+                    errors.add("RAW_COMMENT_URL_NOT_STRING")
+
+        typed_hidden_fields = {
+            "search_results": list,
+            "source_search_results": list,
+            "precomputed_search_results": list,
+            "search_evidence_catalog": list,
+            "native_web_seed": Mapping,
+            "source_evidence": Mapping,
+            "judge_seed": Mapping,
+            "_judge_seed": Mapping,
+            "projection_followup": Mapping,
+            "_loop_projection_followup": Mapping,
+        }
+        for field_name, expected_type in typed_hidden_fields.items():
+            raw_value = data.get(field_name)
+            if not _early_route_present(raw_value):
+                continue
+            if not isinstance(raw_value, expected_type):
+                errors.add("RAW_HIDDEN_EVIDENCE_INVALID_TYPE")
+        return truncated, tuple(sorted(errors))
 
     def _embedded_comments_from_data(pid: int, data: Dict[str, Any]) -> List[Dict[str, Any]]:
         raw_comments = data.get("comments")
@@ -11314,8 +14489,13 @@ def load_jsonl_posts(path: Path) -> List:
     post_map: Dict[int, Dict[str, Any]] = {}
     comments_map: Dict[int, List[Dict[str, Any]]] = {}
 
-    with path.open("r", encoding="utf-8-sig") as f:
-        for line in f:
+    post_line_numbers: Dict[int | str, int] = {}
+    if snapshot_bytes is None:
+        source_stream = path.open("r", encoding="utf-8-sig")
+    else:
+        source_stream = io.StringIO(snapshot_bytes.decode("utf-8-sig", errors="strict"))
+    with source_stream as f:
+        for line_number, line in enumerate(f, 1):
             line = line.strip()
             if not line:
                 continue
@@ -11337,7 +14517,14 @@ def load_jsonl_posts(path: Path) -> List:
                 pid = _post_id_key(item.get("post_id"))
                 if pid is None:
                     continue
+                if pid in post_map:
+                    raise ValueError(
+                        "입력 JSONL에 중복 post_id가 있습니다: "
+                        f"post_id={pid}, first_line={post_line_numbers[pid]}, "
+                        f"duplicate_line={line_number}"
+                    )
                 post_map[pid] = item
+                post_line_numbers[pid] = line_number
 
     # PostInput으로 변환
     for pid, data in post_map.items():
@@ -11366,7 +14553,8 @@ def load_jsonl_posts(path: Path) -> List:
                 comment.setdefault("gallery_id", data.get("gallery_id", ""))
             comments.append(comment)
 
-        posts.append(PostInput(
+        _raw_truncated, _raw_parse_errors = _early_route_raw_input_guard(data)
+        post = PostInput(
             post_id=pid,
             title=data.get("title", ""),
             author=data.get("author", ""),
@@ -11378,7 +14566,13 @@ def load_jsonl_posts(path: Path) -> List:
             url=data.get("url", ""),
             created_at=data.get("created_at", ""),
             comments=comments,
-            judge_seed=data.get("_judge_seed") if isinstance(data.get("_judge_seed"), dict) else None,
+            judge_seed=(
+                data.get("_judge_seed")
+                if isinstance(data.get("_judge_seed"), dict)
+                else data.get("judge_seed")
+                if isinstance(data.get("judge_seed"), dict)
+                else None
+            ),
             search_results=data.get("search_results") if isinstance(data.get("search_results"), list) else None,
             source_search_results=(
                 data.get("source_search_results")
@@ -11400,17 +14594,30 @@ def load_jsonl_posts(path: Path) -> List:
             projection_followup=(
                 data.get("_loop_projection_followup")
                 if isinstance(data.get("_loop_projection_followup"), dict)
+                else data.get("projection_followup")
+                if isinstance(data.get("projection_followup"), dict)
                 else None
             ),
-        ))
+        )
+        object.__setattr__(post, "_input_truncated", _raw_truncated)
+        object.__setattr__(post, "_parse_errors", _raw_parse_errors)
+        posts.append(post)
 
     return posts
 
 
-def _count_nonempty_jsonl_lines(path: Path) -> int:
+def _count_nonempty_jsonl_lines(
+    path: Path,
+    *,
+    snapshot_bytes: bytes | None = None,
+) -> int:
     """입력 파일이 비어 있는지 빠르게 확인한다. BOM은 내용으로 세지 않는다."""
     count = 0
-    with path.open("r", encoding="utf-8-sig") as f:
+    if snapshot_bytes is None:
+        source_stream = path.open("r", encoding="utf-8-sig")
+    else:
+        source_stream = io.StringIO(snapshot_bytes.decode("utf-8-sig", errors="strict"))
+    with source_stream as f:
         for line in f:
             if line.strip():
                 count += 1

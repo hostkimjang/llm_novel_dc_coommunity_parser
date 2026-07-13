@@ -37,6 +37,14 @@ from .decoder import (
 from .utils import _ts, set_worker_context, get_kiwi, KNOWN_TITLE_ABBREVIATIONS
 from ..search.content_trim import smart_trim_content, smart_trim_contents_parallel
 from ..candidate_audit import TITLE_LED_WORK_CONSUMPTION_RE
+from ..candidate_generation import (
+    CandidateProducerPlan,
+    build_candidate_producer_plan,
+    build_candidate_producer_receipt,
+    candidate_producer_plan_from_dict,
+    candidate_producer_plans_from_payload,
+    candidate_producer_receipts_from_payload,
+)
 
 # 이벤모니(lazy import, 없으면 무시)
 
@@ -147,6 +155,30 @@ class ConversationContext:
     
     # NEW: 추정/후보 작품 목록 (Decoder 이상의 전문가가 각자 공유)
     suspected_titles: List[Dict[str, Any]] = field(default_factory=list)
+    # 전문가 내부 cap 직전 후보 목록의 진단 영수증. expert_outputs/prompt에는 넣지 않고
+    # 최종 candidate_ledger에만 사후 감사용으로 복사한다.
+    _candidate_generation_stage_receipts: List[Dict[str, Any]] = field(
+        default_factory=list,
+        repr=False,
+    )
+    # query/MCP/fetch의 bounded 실행 증명. 원문 query/URL/후보는 넣지 않고
+    # plan/input/output fingerprint와 count/status만 최종 ledger에 복사한다.
+    _candidate_producer_plans: List[Dict[str, Any]] = field(
+        default_factory=list,
+        repr=False,
+    )
+    _candidate_producer_receipts: List[Dict[str, Any]] = field(
+        default_factory=list,
+        repr=False,
+    )
+    _candidate_producer_integrity_errors: List[str] = field(
+        default_factory=list,
+        repr=False,
+    )
+    _candidate_producer_lock: Any = field(
+        default_factory=threading.RLock,
+        repr=False,
+    )
     
     # 단계 1: DiscourseAnalyzer 결과 저장 (도메인 교차 검증용)
     primary_domain: Optional[str] = None  # "novel_work", "real_world", "meta", etc.
@@ -243,6 +275,60 @@ class ConversationContext:
     def add_message(self, msg: ExpertMessage) -> None:
         self.messages.append(msg)
 
+    def next_candidate_producer_plan_occurrence(self, producer: str) -> int:
+        with self._candidate_producer_lock:
+            plans = candidate_producer_plans_from_payload(
+                self._candidate_producer_plans
+            )
+            normalized = str(producer or "").strip().casefold()
+            return max(
+                (plan.occurrence for plan in plans if plan.producer == normalized),
+                default=0,
+            ) + 1
+
+    def record_candidate_producer_plan(self, plan: Any) -> CandidateProducerPlan:
+        validated = (
+            plan
+            if isinstance(plan, CandidateProducerPlan)
+            else candidate_producer_plan_from_dict(plan)
+        )
+        with self._candidate_producer_lock:
+            candidate_producer_plans_from_payload(
+                [*self._candidate_producer_plans, validated.to_ledger_dict()]
+            )
+            self._candidate_producer_plans.append(validated.to_ledger_dict())
+        return validated
+
+    def record_candidate_producer_outcome(
+        self,
+        *,
+        producer: str,
+        operation_input: Any,
+        purpose: str,
+        plan_fingerprint: str,
+        results: Any,
+        meta: Any,
+    ) -> None:
+        with self._candidate_producer_lock:
+            existing = candidate_producer_receipts_from_payload(
+                self._candidate_producer_receipts
+            )
+            occurrence = max((item.occurrence for item in existing), default=0) + 1
+            result_values = results if isinstance(results, list) else []
+            receipt = build_candidate_producer_receipt(
+                result_values,
+                meta,
+                producer=producer,
+                operation_input=operation_input,
+                purpose=purpose,
+                plan_fingerprint=plan_fingerprint,
+                occurrence=occurrence,
+            )
+            candidate_producer_receipts_from_payload(
+                [*self._candidate_producer_receipts, receipt.to_ledger_dict()]
+            )
+            self._candidate_producer_receipts.append(receipt.to_ledger_dict())
+
     def mark_executed_query(self, query: str) -> None:
         """실제로 실행된 검색 쿼리를 중복 없이 기록."""
         q = " ".join(str(query or "").split()).strip()
@@ -279,6 +365,10 @@ class ConversationContext:
         direct_search_count: int = 0,
         direct_search_providers: Optional[List[str]] = None,
         direct_search_errors: Optional[List[str]] = None,
+        producer_query: Any = None,
+        producer_results: Any = None,
+        producer_meta: Any = None,
+        producer_plan_fingerprint: str = "",
     ) -> None:
         """쿼리 단위 검색 결과/품질 집계.
 
@@ -461,6 +551,21 @@ class ConversationContext:
                     p_stat["zero"] = int(p_stat.get("zero", 0) or 0) + 1
                 else:
                     p_stat["nonzero"] = int(p_stat.get("nonzero", 0) or 0) + 1
+        if producer_query not in (None, "") and producer_plan_fingerprint:
+            try:
+                self.record_candidate_producer_outcome(
+                    producer="search",
+                    operation_input=producer_query,
+                    purpose=purpose,
+                    plan_fingerprint=producer_plan_fingerprint,
+                    results=producer_results,
+                    meta=producer_meta,
+                )
+            except Exception:
+                if "search_receipt_record_failed" not in self._candidate_producer_integrity_errors:
+                    self._candidate_producer_integrity_errors.append(
+                        "search_receipt_record_failed"
+                    )
     
     def add_evidence_for_candidate(self, candidate_title: str, evidence_type: str, evidence: Any) -> None:
         """
@@ -1100,12 +1205,99 @@ class Orchestrator:
         self._page_analyzer_cache: Dict[str, Dict[str, Any]] = {}
         self._page_analyzer_cache_lock = threading.Lock()
 
+    def _fetch_with_context_receipt(
+        self,
+        ctx: Optional[ConversationContext],
+        url: str,
+        *,
+        purpose: str,
+    ) -> Optional[Dict[str, Any]]:
+        """Use fetch metadata when available and append a redacted receipt."""
+
+        fetch_fn = self.fetch_fn
+        if not fetch_fn:
+            return None
+        owner = getattr(fetch_fn, "__self__", None)
+        fetch_with_meta = getattr(owner, "_fetch_with_meta", None)
+        predeclared_occurrence = 0
+        predeclared_fingerprint = ""
+        if ctx is not None:
+            try:
+                predeclared_occurrence = ctx.next_candidate_producer_plan_occurrence(
+                    "fetch"
+                )
+                predeclared_fingerprint = build_candidate_producer_plan(
+                    [{"url": url, "purpose": purpose}],
+                    producer="fetch",
+                    occurrence=predeclared_occurrence,
+                    enumeration_finished=False,
+                ).plan_fingerprint
+            except Exception:
+                if (
+                    "orchestrator_fetch_plan_build_failed"
+                    not in ctx._candidate_producer_integrity_errors
+                ):
+                    ctx._candidate_producer_integrity_errors.append(
+                        "orchestrator_fetch_plan_build_failed"
+                    )
+        if callable(fetch_with_meta):
+            result, meta = fetch_with_meta(url)
+        else:
+            try:
+                result = fetch_fn(url)
+                meta = {
+                    "attempted_count": 1,
+                    "raw_count": 1 if isinstance(result, dict) else 0,
+                    "enumeration_finished": False,
+                    "error_status": "MISSING_META",
+                }
+            except Exception:
+                result = None
+                meta = {
+                    "attempted_count": 1,
+                    "raw_count": 0,
+                    "enumeration_finished": False,
+                    "error_status": "ERROR",
+                    "degraded": True,
+                }
+        if ctx is not None:
+            try:
+                if not predeclared_fingerprint or predeclared_occurrence <= 0:
+                    raise ValueError("fetch plan was not predeclared")
+                plan = build_candidate_producer_plan(
+                    [{"url": url, "purpose": purpose}],
+                    producer="fetch",
+                    occurrence=predeclared_occurrence,
+                    enumeration_finished=True,
+                )
+                if plan.plan_fingerprint != predeclared_fingerprint:
+                    raise ValueError("fetch plan fingerprint changed after execution")
+                ctx.record_candidate_producer_plan(plan)
+                ctx.record_candidate_producer_outcome(
+                    producer="fetch",
+                    operation_input=url,
+                    purpose=purpose,
+                    plan_fingerprint=plan.plan_fingerprint,
+                    results=[result] if isinstance(result, dict) else [],
+                    meta=meta,
+                )
+            except Exception:
+                if (
+                    "orchestrator_fetch_receipt_record_failed"
+                    not in ctx._candidate_producer_integrity_errors
+                ):
+                    ctx._candidate_producer_integrity_errors.append(
+                        "orchestrator_fetch_receipt_record_failed"
+                    )
+        return result
+
     def _fetch_urls_ordered(
         self,
         fetch_fn: Callable[[str], Optional[Dict[str, Any]]],
         urls: List[str],
         *,
         phase_label: str,
+        ctx: Optional[ConversationContext] = None,
     ) -> List[Tuple[int, str, Optional[Dict[str, Any]], Optional[Exception]]]:
         """Run URL fetches concurrently but preserve original URL order for application."""
         if not urls:
@@ -1116,7 +1308,16 @@ class Orchestrator:
             ordered_results: List[Tuple[int, str, Optional[Dict[str, Any]], Optional[Exception]]] = []
             for idx, url in enumerate(urls):
                 try:
-                    ordered_results.append((idx, url, fetch_fn(url), None))
+                    result = (
+                        self._fetch_with_context_receipt(
+                            ctx,
+                            url,
+                            purpose="ordered_candidate_fetch",
+                        )
+                        if ctx is not None
+                        else fetch_fn(url)
+                    )
+                    ordered_results.append((idx, url, result, None))
                 except Exception as exc:
                     ordered_results.append((idx, url, None, exc))
             return ordered_results
@@ -1129,8 +1330,17 @@ class Orchestrator:
 
         ordered_results = []
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            _parallel_fetch_fn = (
+                lambda _url: self._fetch_with_context_receipt(
+                    ctx,
+                    _url,
+                    purpose="ordered_candidate_fetch",
+                )
+                if ctx is not None
+                else fetch_fn(_url)
+            )
             future_map = {
-                executor.submit(fetch_fn, url): (idx, url)
+                executor.submit(_parallel_fetch_fn, url): (idx, url)
                 for idx, url in enumerate(urls)
             }
             for future in as_completed(future_map):
@@ -20109,7 +20319,11 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                     _adaptive_fetch_urls = self._trim_fetch_candidates_for_budget(ctx, _adaptive_fetch_urls)
                     for fu in _adaptive_fetch_urls[:2]:
                         try:
-                            fi = fetch_fn(fu)
+                            fi = self._fetch_with_context_receipt(
+                                ctx,
+                                fu,
+                                purpose="adaptive_chain_fetch",
+                            )
                             if fi and isinstance(fi, dict):
                                 if not hasattr(ctx, 'fetched_page_info'):
                                     ctx.fetched_page_info = []
@@ -20684,7 +20898,11 @@ Gatekeeper 추정 캐릭터: {gk_chars}
         
         for _url in _chain_urls[:2]:  # 비용 절감: 최대 2 페이지만 페치
             try:
-                _page = self.fetch_fn(_url)
+                _page = self._fetch_with_context_receipt(
+                    ctx,
+                    _url,
+                    purpose="community_chain_fetch",
+                )
                 if not _page:
                     continue
                 _page_text = str(_page.get("text") or _page.get("content") or "")
@@ -22960,6 +23178,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 fetch_fn,
                 _fetch_urls[:6],
                 phase_label="Phase32",
+                ctx=ctx,
             )
             _MAX_TEXT_PREVIEW = 12000
             _query_for_trim = " ".join(key_terms[:5]) if key_terms else ""
@@ -23215,7 +23434,11 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                     )
                 for fb_url in _fallback_urls:
                     try:
-                        result = fetch_fn(fb_url)
+                        result = self._fetch_with_context_receipt(
+                            ctx,
+                            fb_url,
+                            purpose="candidate_fetch_fallback",
+                        )
                         if result and isinstance(result, dict):
                             structured = result.get("structured_info") or {}
                             text_preview = result.get("text") or ""
@@ -24483,6 +24706,36 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                         file=sys.stderr,
                     )
 
+        _candidate_search_plan_inputs = [
+            {
+                "query": str(item[3].get("query") or "").strip(),
+                "purpose": str(item[3].get("purpose") or "").strip(),
+            }
+            for item in sortable
+            if str(item[3].get("query") or "").strip()
+        ]
+        _candidate_search_plan_occurrence = 0
+        _candidate_search_plan_fingerprint = ""
+        if ctx_ref is not None and _candidate_search_plan_inputs:
+            try:
+                _candidate_search_plan_occurrence = (
+                    ctx_ref.next_candidate_producer_plan_occurrence("search")
+                )
+                _candidate_search_plan_fingerprint = build_candidate_producer_plan(
+                    _candidate_search_plan_inputs,
+                    producer="search",
+                    occurrence=_candidate_search_plan_occurrence,
+                    enumeration_finished=False,
+                ).plan_fingerprint
+            except Exception:
+                if (
+                    "search_plan_build_failed"
+                    not in ctx_ref._candidate_producer_integrity_errors
+                ):
+                    ctx_ref._candidate_producer_integrity_errors.append(
+                        "search_plan_build_failed"
+                    )
+
         _smart_prune_on = os.getenv("LLM_ENABLE_SMART_SEARCH_PRUNE", "1").strip().lower() in {
             "1", "true", "yes", "on"
         }
@@ -25348,6 +25601,10 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                         direct_search_count=_meta_direct_count,
                         direct_search_providers=_meta_direct_providers,
                         direct_search_errors=_meta_direct_errors,
+                        producer_query=_query,
+                        producer_results=_result_list,
+                        producer_meta=_search_meta,
+                        producer_plan_fingerprint=_candidate_search_plan_fingerprint,
                     )
                 except Exception:
                     pass
@@ -25759,4 +26016,30 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                         else:
                             print(f"[{_eid}] {_title[:90]}", file=sys.stderr)
         
+        if (
+            ctx_ref is not None
+            and _candidate_search_plan_inputs
+            and _candidate_search_plan_occurrence > 0
+        ):
+            try:
+                _plan_finished = bool(
+                    not _stop_search and _cursor >= len(sortable)
+                )
+                ctx_ref.record_candidate_producer_plan(
+                    build_candidate_producer_plan(
+                        _candidate_search_plan_inputs,
+                        producer="search",
+                        occurrence=_candidate_search_plan_occurrence,
+                        enumeration_finished=_plan_finished,
+                    )
+                )
+            except Exception:
+                if (
+                    "search_plan_record_failed"
+                    not in ctx_ref._candidate_producer_integrity_errors
+                ):
+                    ctx_ref._candidate_producer_integrity_errors.append(
+                        "search_plan_record_failed"
+                    )
+
         return all_results

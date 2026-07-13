@@ -245,6 +245,15 @@ class PickvelIdentity(BaseModel):
     # public title_candidates to avoid unsafe final-title promotion.
     candidate_preservation_sources: Optional[List[Dict[str, Any]]] = None
     candidate_ledger: Optional[Dict[str, Any]] = None
+    promotion_decision: Optional[Dict[str, Any]] = None
+    promotion_gate_state: Optional[Dict[str, Any]] = None
+    promotion_gate_evidence: Optional[List[Dict[str, Any]]] = None
+    publish_contract_trace: Optional[Dict[str, Any]] = None
+    publish_ledger: Optional[Dict[str, Any]] = None
+    publish_contract_input_fingerprint: Optional[str] = None
+    publish_contract_version: Optional[str] = None
+    blocked_official_title: Optional[str] = None
+    blocked_official_title_url: Optional[str] = None
     candidate_ledger_status: Optional[Literal[
         "candidate_generation_miss",
         "promotion_blocked",

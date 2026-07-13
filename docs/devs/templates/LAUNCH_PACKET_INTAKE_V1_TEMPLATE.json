@@ -1,0 +1,22 @@
+{
+  "schema_version": "pipeline_launch_packet_intake_v1",
+  "operator_id": "REPLACE_WITH_ACCOUNTABLE_OPERATOR",
+  "policy_owner_state": "PENDING_OWNER_DECISION",
+  "source_backed_attestation": "PENDING_EXTERNAL",
+  "manifest_path": null,
+  "artifact_root": null,
+  "requested_parallel": 16,
+  "dashboard_required": true,
+  "slang_access_mode": "OFF",
+  "paired_command_plan": {
+    "before_environment": {
+      "PIPELINE_MEASUREMENT_EARLY_ROUTE_MODE": "OFF"
+    },
+    "after_environment": {
+      "PIPELINE_MEASUREMENT_EARLY_ROUTE_MODE": "SOURCE_ONLY_V1"
+    },
+    "before_command": "python expert_main.py --input <frozen-input.jsonl> --output <fresh-before-output> --parallel 16 --reuse-shards-only --slang-db off --vlm on --ocr on --require-vlm-ocr-for-images",
+    "after_command": "python expert_main.py --input <frozen-input.jsonl> --output <fresh-after-output> --parallel 16 --reuse-shards-only --slang-db off --vlm on --ocr on --require-vlm-ocr-for-images",
+    "recovery_command": "python tools/recover_expert_run_from_checkpoint.py --manifest <interrupted-arm-manifest>"
+  }
+}

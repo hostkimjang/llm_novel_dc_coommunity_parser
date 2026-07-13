@@ -18,6 +18,7 @@ from .prompts import (
     build_verifier_system_prompt,
 )
 from .decoder import abbreviation_match_score
+from ..candidate_generation import record_candidate_stage_receipt
 from .utils import (
     parse_json_with_think_removal,
     build_search_aggregation_summary,
@@ -2358,7 +2359,18 @@ class VerifierExpert:
                         file=sys.stderr,
                     )
                     # 작가명은 suspected_titles에 추가하지 않음
-                    ctx.suspected_titles = sorted(updated, key=lambda x: x.get("confidence", 0), reverse=True)[:5]
+                    ranked_updated = sorted(
+                        updated,
+                        key=lambda x: x.get("confidence", 0),
+                        reverse=True,
+                    )
+                    record_candidate_stage_receipt(
+                        ctx,
+                        producer="verifier",
+                        stage="ranked_update",
+                        observed_sources=ranked_updated,
+                    )
+                    ctx.suspected_titles = ranked_updated[:5]
                     return
 
                 # �🔧 Phase26-B: Decoder 최종 결과가 null이면 Verifier 독자 추가의 confidence 제한
@@ -2407,7 +2419,18 @@ class VerifierExpert:
                     "status": new_status,
                 })
         
-        ctx.suspected_titles = sorted(updated, key=lambda x: x.get("confidence", 0), reverse=True)[:5]
+        ranked_updated = sorted(
+            updated,
+            key=lambda x: x.get("confidence", 0),
+            reverse=True,
+        )
+        record_candidate_stage_receipt(
+            ctx,
+            producer="verifier",
+            stage="ranked_update",
+            observed_sources=ranked_updated,
+        )
+        ctx.suspected_titles = ranked_updated[:5]
 
         # 🆕 FIX-5: 댓글 질문→확인 패턴 감지 ("무한회귀?" + "ㅇㅇ" → 작품명 확인 신호)
         self._boost_comment_confirmed_title(ctx)
@@ -2504,11 +2527,18 @@ class VerifierExpert:
                     break
         
         # 재정렬
-        ctx.suspected_titles = sorted(
+        ranked_boosted = sorted(
             ctx.suspected_titles,
             key=lambda x: x.get("confidence", 0),
             reverse=True,
-        )[:5]
+        )
+        record_candidate_stage_receipt(
+            ctx,
+            producer="verifier",
+            stage="comment_boost",
+            observed_sources=ranked_boosted,
+        )
+        ctx.suspected_titles = ranked_boosted[:5]
     
     def _summarize_gatekeeper(self, gk: Dict[str, Any]) -> Dict[str, Any]:
         """Gatekeeper 결과 요약 (토큰 절약)"""

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import hashlib
 import json
 import os
 import select
@@ -8,8 +9,12 @@ import sys
 import threading
 import time
 import socket
+import uuid
+from contextlib import contextmanager
+from contextvars import ContextVar
+from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Callable, Dict, List, Optional, TypeVar
+from typing import Any, Callable, Dict, Iterator, List, Literal, Optional, TypeVar
 
 import httpx
 
@@ -22,6 +27,79 @@ from .prompt import (
 )
 
 T = TypeVar("T")
+
+
+@dataclass(frozen=True)
+class RetryAttemptObservation:
+    """Observer-only metadata for one physical provider-call attempt.
+
+    The payload deliberately omits request prompts and provider results so a
+    caller can use it for cost/retry accounting without receiving model data.
+    """
+
+    event: Literal["ATTEMPT_STARTED", "ATTEMPT_SUCCEEDED", "ATTEMPT_FAILED"]
+    attempt_number: int
+    max_attempts: int
+    will_retry: Optional[bool]
+    error_type: Optional[str] = None
+    error_message: Optional[str] = None
+    retry_operation_id: str = ""
+    # Hash-only success evidence.  Raw provider results never cross the
+    # observer boundary; callers that do not need it can ignore this field.
+    result_sha256: Optional[str] = None
+
+
+RetryAttemptObserver = Callable[[RetryAttemptObservation], None]
+_llm_retry_attempt_observer: ContextVar[Optional[RetryAttemptObserver]] = ContextVar(
+    "llm_retry_attempt_observer",
+    default=None,
+)
+
+
+def _emit_retry_attempt_observation(observation: RetryAttemptObservation) -> None:
+    """Notify the scoped observer without changing provider-call behavior."""
+    observer = _llm_retry_attempt_observer.get()
+    if observer is None:
+        return
+    try:
+        observer(observation)
+    except Exception:
+        # Cost/trace observers must never change retry, fallback, or provider
+        # outcomes.  Deliberately do not log here: an observer can be used in
+        # error paths where another secondary failure would be misleading.
+        return
+
+
+def _retry_result_sha256(value: Any) -> Optional[str]:
+    """Return a deterministic digest without retaining the provider result."""
+    try:
+        if isinstance(value, bytes):
+            payload = value
+        else:
+            payload = json.dumps(
+                value,
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+                allow_nan=False,
+            ).encode("utf-8")
+        return hashlib.sha256(payload).hexdigest()
+    except Exception:
+        return None
+@contextmanager
+def observe_llm_retry_attempts(
+    observer: Optional[RetryAttemptObserver] = None,
+) -> Iterator[None]:
+    """Temporarily observe physical LLM provider-call attempts in this context.
+
+    ContextVar scoping keeps worker threads and nested instrumentation isolated;
+    passing ``None`` is an explicit no-op/disabled inner scope.
+    """
+    token = _llm_retry_attempt_observer.set(observer)
+    try:
+        yield
+    finally:
+        _llm_retry_attempt_observer.reset(token)
 
 
 def _env_flag(name: str, default: str = "0") -> bool:
@@ -369,11 +447,32 @@ def retry_with_backoff(
         Remote LLM 서버는 모든 HTTP 에러를 재시도 (일시적 장애 가능성)
     """
     last_exception = None
+    retry_operation_id = uuid.uuid4().hex
     for attempt in range(max_retries):
         _LLM_SERVER_SUSPEND_CONTROLLER.wait_if_paused()
+        attempt_number = attempt + 1
+        _emit_retry_attempt_observation(
+            RetryAttemptObservation(
+                event="ATTEMPT_STARTED",
+                attempt_number=attempt_number,
+                max_attempts=max_retries,
+                will_retry=None,
+                retry_operation_id=retry_operation_id,
+            )
+        )
         try:
             result = func()
             _LLM_SERVER_SUSPEND_CONTROLLER.record_success()
+            _emit_retry_attempt_observation(
+                RetryAttemptObservation(
+                    event="ATTEMPT_SUCCEEDED",
+                    attempt_number=attempt_number,
+                    max_attempts=max_retries,
+                    will_retry=None,
+                    retry_operation_id=retry_operation_id,
+                    result_sha256=_retry_result_sha256(result),
+                )
+            )
             return result
         except exceptions as e:
             last_exception = e
@@ -385,8 +484,21 @@ def retry_with_backoff(
                     status_code = 0
                 if status_code in {400, 401, 403, 413, 422}:
                     retryable = False
+
+            will_retry = retryable and attempt < max_retries - 1
+            _emit_retry_attempt_observation(
+                RetryAttemptObservation(
+                    event="ATTEMPT_FAILED",
+                    attempt_number=attempt_number,
+                    max_attempts=max_retries,
+                    will_retry=will_retry,
+                    error_type=type(e).__name__,
+                    error_message=str(e),
+                    retry_operation_id=retry_operation_id,
+                )
+            )
             
-            if (not retryable) or attempt >= max_retries - 1:
+            if not will_retry:
                 _LLM_SERVER_SUSPEND_CONTROLLER.record_final_failure(e)
                 # 재시도하지 않거나 마지막 시도 실패
                 ts = time.strftime("%H:%M:%S")
@@ -481,6 +593,7 @@ class LLMClient:
 
         # last call meta (for tracing)
         self.last_usage: Optional[Dict[str, Any]] = None
+        self.last_usage_provenance: Optional[str] = None
         self.last_model: Optional[str] = None
         self.last_finish_reason: Optional[str] = None
 
@@ -747,6 +860,7 @@ class LLMClient:
         acc: List[str] = []
         token_count = 0
         last_usage = None
+        last_model = None
         last_finish_reason = None
         all_chunks: List[Dict[str, Any]] = []  # 모든 청크 저장 (디버깅용)
         first_token_at: Optional[float] = None
@@ -927,6 +1041,8 @@ class LLMClient:
                             try:
                                 chunk = _json.loads(data_str)
                                 all_chunks.append(chunk)  # 모든 청크 저장
+                                if isinstance(chunk, dict) and chunk.get("model"):
+                                    last_model = str(chunk.get("model"))
                                 
                                 # usage 정보 추출 (마지막 청크 또는 중간 청크에 포함될 수 있음)
                                 if "usage" in chunk:
@@ -1234,6 +1350,10 @@ class LLMClient:
             "completion_tokens": completion_tokens,
             "total_tokens": total_tokens,
         }
+        self.last_usage_provenance = (
+            "PROVIDER_REPORTED" if last_usage else "ESTIMATED"
+        )
+        self.last_model = last_model
         self.last_finish_reason = last_finish_reason
         
         # 출력
@@ -1387,6 +1507,9 @@ class LLMClient:
                     "completion_tokens": completion_tokens,
                     "total_tokens": total_tokens,
                 }
+                self.last_usage_provenance = (
+                    "PROVIDER_REPORTED" if usage else "UNAVAILABLE"
+                )
                 self.last_model = data.get("model") if isinstance(data, dict) else None
                 self._print_usage_details(tag, {"usage": self.last_usage}, _elapsed)
                 try:
@@ -1467,6 +1590,9 @@ class LLMClient:
                 "completion_tokens": completion_tokens,
                 "total_tokens": total_tokens,
             }
+            self.last_usage_provenance = (
+                "PROVIDER_REPORTED" if usage else "UNAVAILABLE"
+            )
             self.last_model = data.get("model") if isinstance(data, dict) else None
             self._print_usage_details(tag, {"usage": self.last_usage}, _elapsed)
             
@@ -2265,7 +2391,11 @@ ws ::= [ \t\n\r]*
             resp = httpx.post(url, json=body, timeout=self.timeout_s)
             resp.raise_for_status()
             data = resp.json()
-            self.last_usage = data.get("usage") if isinstance(data, dict) else None
+            usage = data.get("usage") if isinstance(data, dict) else None
+            self.last_usage = usage
+            self.last_usage_provenance = (
+                "PROVIDER_REPORTED" if usage else "UNAVAILABLE"
+            )
             self.last_model = data.get("model") if isinstance(data, dict) else None
             try:
                 content = data["choices"][0]["message"]["content"]
@@ -2370,7 +2500,11 @@ ws ::= [ \t\n\r]*
             resp = httpx.post(url, json=body, timeout=self.timeout_s)
             resp.raise_for_status()
             data = resp.json()
-            self.last_usage = data.get("usage") if isinstance(data, dict) else None
+            usage = data.get("usage") if isinstance(data, dict) else None
+            self.last_usage = usage
+            self.last_usage_provenance = (
+                "PROVIDER_REPORTED" if usage else "UNAVAILABLE"
+            )
             self.last_model = data.get("model") if isinstance(data, dict) else None
             try:
                 content = data["choices"][0]["message"]["content"]
@@ -2573,7 +2707,11 @@ ws ::= [ \t\n\r]*
             resp = httpx.post(url, json=body, timeout=self.timeout_s)
             resp.raise_for_status()
             data = resp.json()
-            self.last_usage = data.get("usage") if isinstance(data, dict) else None
+            usage = data.get("usage") if isinstance(data, dict) else None
+            self.last_usage = usage
+            self.last_usage_provenance = (
+                "PROVIDER_REPORTED" if usage else "UNAVAILABLE"
+            )
             self.last_model = data.get("model") if isinstance(data, dict) else None
             try:
                 content = data["choices"][0]["message"]["content"]
@@ -2934,7 +3072,11 @@ ws ::= [ \t\n\r]*
             resp = httpx.post(url, json=body, timeout=self.timeout_s)
             resp.raise_for_status()
             data = resp.json()
-            self.last_usage = data.get("usage") if isinstance(data, dict) else None
+            usage = data.get("usage") if isinstance(data, dict) else None
+            self.last_usage = usage
+            self.last_usage_provenance = (
+                "PROVIDER_REPORTED" if usage else "UNAVAILABLE"
+            )
             self.last_model = data.get("model") if isinstance(data, dict) else None
             try:
                 content = data["choices"][0]["message"]["content"]

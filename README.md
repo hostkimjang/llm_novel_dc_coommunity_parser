@@ -2,7 +2,62 @@
 
 디시인사이드 장르소설 갤러리 크롤링 데이터를 **유기적 전문가 시스템(Agentic Expert System)**으로 분석하여 웹소설을 식별하고 담론 메타데이터를 추출합니다.
 
-> 운영 상태 2026-07-01: 최신 Loop236은 URL-title 직접 지지 가드 focused proof다. Patched canary `20260701_214126_569050`은 `11663540`을 `전 버튜버가 하고 싶은데요` / `https://novelpia.com/novel/275975`로 복구했지만 parent replay는 아직 `NOT_RUN`이다. `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal은 `ACTIVE / NOT_COMPLETE`다.
+## 현재 파이프라인 상태: Architecture V2 통합 완료
+
+| 구분 | 현재 상태 | 쉬운 뜻 |
+| --- | --- | --- |
+| 내부 아키텍처 | `ARCHITECTURE_V2_INTEGRATED` | 기본 OFF인 새 계층을 기존 공개 결과 경로에 안전하게 접목하고 clean export까지 검증했다. |
+| 실제 효과 | `ACTUAL_EFFECT_WAITING_EXTERNAL_INPUT`, `null/NOT_ESTIMABLE` | source-backed DEV/CAL/FROZEN과 fresh BEFORE/AFTER가 없어 정확도·비용 개선률을 아직 주장하지 않는다. |
+| 운영 적용 | `REVIEW-LOCKED`, `full_scan_approval=false` | 내부 통합 완료는 cheap routing 또는 전체 스캔 운영 승인이 아니다. |
+
+### Architecture V2가 추가한 기능
+
+| 계층 | 하는 일 | 현재 안전 경계 |
+| --- | --- | --- |
+| Stage runtime adapter | search 단계의 rate limit, filesystem shared cache, singleflight와 영수증을 연결 | 명시 주입만 가능하고 기본 OFF. limiter는 process-local, cache/singleflight는 같은 filesystem 범위 |
+| DecisionLedgerV2 | 기존 원장을 정본으로 둔 채 framed WAL에 dual-write하고 재시작 시 대조·복구 | V2-root coordination lock, one-way rollback latch, receipt coverage. production 자동 활성화 금지 |
+| CandidateSet/NIL | 여러 작품 후보와 `작품 없음(NIL)`을 하나의 사건 공간으로 보존 | producer가 `UNKNOWN/TRUNCATED`면 후보 재현율·확률 평가를 중단 |
+| Typed confidence | 행별 보정 확률과 전체 정확도 지표를 분리 | `confidence_percentage`는 그 행의 선택 확률이며 전체 정확도 `%`가 아님 |
+| Policy-free metrics reader | ECE, Brier, log loss, candidate recall, selective risk, AURC를 무쓰기 재계산 | source/label/calibration/prediction이 결속된 `FROZEN_ACTUAL`만 산출 가능 |
+| Packet intake | actual packet, policy, 동일 frozen input, BEFORE/AFTER 명령과 복구 명령을 사전 검사 | 입력이 없으면 runtime을 시작하지 않고 `WAITING_EXTERNAL_INPUT` |
+
+```mermaid
+flowchart LR
+    A["게시글 입력"] --> B["AgenticPipeline"]
+    B --> C["Search stage\n기존 경로"]
+    C -. "명시 주입, 기본 OFF" .-> D["Rate limit + shared cache + singleflight"]
+    B --> E["기존 DecisionCallLedger\n정본"]
+    E -. "dual-write shadow" .-> F["DecisionLedgerV2\nframed WAL"]
+    B --> G["CandidateSet + NIL"]
+    G --> H["Typed confidence\n행별 확률"]
+    H --> I["No-write metrics reader"]
+    B --> J["기존 공개 결과"]
+    D -. "공개 결과 비간섭 검증" .-> J
+    F -. "legacy 우선" .-> J
+    H -. "shadow only" .-> J
+```
+
+### 검증과 다음 단계
+
+- 로컬 회귀 네 묶음: `187`, `113`, `53`, `197` tests PASS.
+- exact 137-path Git index를 clean export한 뒤 compile/import와 `181 tests PASS`.
+- confidence source-less fixture는 `NOT_ESTIMABLE_NOT_FROZEN_ACTUAL`이며 실제 성능 자료가 아니다.
+- 실제 자료가 도착하면 동일 RunSpec으로 `--parallel 16`, dashboard ON의 fresh BEFORE/AFTER를 실행하고 accuracy, candidate recall, calls/tokens, E2E p50/p95 paired CI를 검증한다.
+- 정본: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), [`Architecture V2 내부 재감사`](docs/devs/ARCHITECTURE_V2_INTERNAL_REAUDIT_KO_20260713.md), [`검증 결과`](docs/devs/VERIFICATION_RESULTS.md), [`actual packet runbook`](docs/devs/LAUNCH_READINESS_RUNBOOK_KO.md).
+
+## 이전 P0~P4 계보 기록
+
+> 이전 기록 — P4 v3(현재 P4 v21가 대체): 글의 공개 결과를 바꾸지 않고 전체 전문가 처리가 필요한지를 관측하는 **선택적 비용 라우팅 그림자 계약**의 초기 기반이다. Golden18은 `FULL_EXPERT_REQUIRED 18 / CHEAP_RULE_ELIGIBLE 0`, 공개 결과·CandidateSet 불변 `18/18`이었다. 실제 calls/post·절감률·처리시간 개선률은 전부 `null/NOT_ESTIMABLE`이며, 합성 4행의 호출 `16→8`·50% 회피는 계산식 시험이지 실제 절감률이 아니다. 당시 정본은 `out/selective_compute_shadow_harness_20260712/v3/comparison.md`이고, 현재 판단에는 위 P4 v21 정본을 사용한다.
+
+> 이전 단계 — 2026-07-11 P3: 후보 작품들과 `작품 없음(NIL)`에 확률을 나누는 정확도 퍼센트 그림자 기록의 안전 계약 기반을 구현했다. v20은 actual policy v3의 `top_label_accuracy` ABSTAIN 분모를 hash-bind하고, P1·라벨·동결 split·source manifest·행별 source payload·외부 예상 행·producer·AFTER·baseline·replay 6종을 재판독한다. `actual-preflight`는 쓰기와 runtime 없이 누락·readiness·구조·coverage를 먼저 보여주며, actual-readback은 같은 파일을 다시 검증한다. 실제 DEV/CAL/FROZEN 자료가 없어 지표는 계속 `null`이며 현재 판정은 `GO_P3_CONTRACT_FOUNDATION_ONLY / NOT_RUN / REVIEW-LOCKED / full_scan_approval=false / ACTIVE_NOT_COMPLETE`다. 쉬운 설명은 `docs/devs/loop_reports/LOOP_P3_P4_DENOMINATOR_EXECUTION_ENVELOPE_20260712.md`, 최신 정본은 `out/candidate_set_calibration_shadow_harness_20260711/v20/comparison.md`를 따른다.
+
+> 이전 단계 — 2026-07-11 P2: 같은 실행 범위의 같은 게시글에 대해 **최종 공개 판정을 한 번만 확정**하는 WAL(선행기록 로그) 계약을 구현했다. 재시도는 첫 정상 결과를 다시 사용하고, 실제 분석 내용이 다르거나 다른 입력·설정·코드 범위가 섞이면 중단한다. v8은 exact recovery witness를 만드는 복구 도구 구현까지 새 해시로 재결속했다. Golden18 저장본은 유효 판정 영수증 `0→18`, 재시작 무쓰기 `18/18`, 기존 공개 결과·전체 행 불변 `18/18`, 합성 공격 `21/21`, 거짓 통과 `0`이다. 이것은 저장본·합성 범위의 `GO`이며 실제 새 LLM 실행은 `NOT_RUN`, 의미 품질은 `REVIEW-LOCKED`, `full_scan_approval=false`, goal은 `ACTIVE / NOT_COMPLETE`다. 기능 설명은 `docs/devs/loop_reports/LOOP_P2_PUBLICATION_EXACT_ONCE_20260711.md`, 최신 정본은 `out/publication_exact_once_harness_20260711/v8/comparison.md`를 따른다.
+
+> 이전 단계 — 2026-07-11 P1 v8/v6: query/search/fetch 계획과 실제 실행 영수증을 비교하는 `ProducerCompletionProof`를 추가했다. canonical search+fetch 계획이 사전에 고정되고, 모든 작업이 명시적으로 끝나며 누락·저하·오류·결과 손실이 없을 때만 `COMPLETE(정해 둔 범위 완료)`가 된다. 웹 전체 후보를 모두 찾았다는 뜻은 아니다. 합성 6개 시나리오는 `COMPLETE 1 / UNKNOWN 4 / TRUNCATED 1 / 거짓 COMPLETE 0`이다. 원 실행 receipt/hash에 결합되지 않은 cache, 사후 direct plan, 부분 엔진 실패, 검색·fetch fallback은 `UNKNOWN`이다. Golden18 저장본은 새 영수증이 없어 실제 행 모두 `UNKNOWN`, 후보 재현율 `NOT_EVALUABLE`이다. 공개 작품명·주소·판정은 `18/18` 불변이고 확률은 `null`이다. 집중 `62/62`, 영향 범위 `529/529 tests OK`; 실제 새 runtime은 `NOT_RUN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다. 기능 설명은 `docs/devs/loop_reports/LOOP_P1_PRODUCER_COMPLETION_PROOF_20260711.md`, 정본은 `out/candidate_set_nil_shadow_harness_20260711/v8/`와 `out/candidate_generation_completeness_harness_20260711/v6/comparison.md`를 따른다.
+
+> 현재 개선 작업 2026-07-11: Loop643 Golden18 저장본을 변경하지 않고 재생하는 P0 RunSpec v2 정적 하네스를 추가했다. Required-search blocker 5건에서 baseline promotion 결정을 `5/5` 재현한 뒤 실제 fail-close 게이트를 적용한 결과, 잘못된 공개 게시가 `1 -> 0`으로 줄었지만 검색 근거를 회복하지 않아 hard blocker는 `5 -> 5`다. 후보 누락은 `0`, 합성 계약 시험은 unsafe publish `5 -> 0`, correct publish `2 -> 2`, 결정적 회귀 시험은 `275 tests OK`다. 확률값은 calibration 전이라 제공하지 않는다. 실제 after runtime은 아직 실행하지 않았고 `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`다. 읽기 쉬운 설명은 `docs/devs/LLM_PIPELINE_ARCHITECTURE_RESEARCH_20260711.md`, 정본 수치와 게이트는 `docs/devs/loop_reports/LOOP_P0_RETRIEVAL_FAILCLOSE_HARNESS_20260711.md`, 실행 명세는 `out/pipeline_improvement_harness_20260711/retrieval_failclose_v5/run_spec.json`을 따른다.
+
+> 운영 상태 2026-07-11: 승인된 Loop643 `ARCH-MULTIWORK-TITLE-BODY-SUBJECT-CONFLICT`를 구현하고 새 fingerprint의 Golden18을 run `20260711_062543_156139`로 정확히 1회 실행했다. Runtime/Golden/publication은 `18/18/18/0/0`, semantic `18/18`, violation `0`이지만 publish-dependent search hard blocker `5`가 남았다. Non-required miss 4건은 safe terminal ledger로 닫아 unreviewed `0`이며, hard fail stop rule에 따라 N=5/fresh375는 실행하지 않았다. 현재 판정은 `LIMIT_REACHED_HANDOFF`, `semantic_quality=REVIEW-LOCKED`, production `full_scan_approval=false`다. 상세는 `docs/devs/loop643_limit_reached_handoff_20260711_071812.json`을 따른다.
 
 ---
 

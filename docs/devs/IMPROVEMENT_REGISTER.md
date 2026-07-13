@@ -1,4 +1,313 @@
-# Improvement Register
+# 개선 등록부 (Improvement Register)
+
+## IMP-20260712-P3V3-P4V20-EXECUTION-ENVELOPE - 분모 정책과 E2E 지연 재판독
+
+| 항목 | 구현 | 실측 | 운영 적용 | 다음 증거 |
+| --- | --- | --- | --- | --- |
+| P3 분모 정책 | actual policy v3가 `top_label_accuracy_denominator`를 payload/SHA에 결속, P3 v18 legacy v2는 호환 유지 | actual policy·자료 없음 | 정확도 수치 생성 금지 | 소유자 정책 확정과 source-backed packet |
+| P4 execution envelope | source-bound trace를 RunSpec·arm·scope/run/index/post와 대조해 batch envelope 재생 | fixture 계약만 | reference-copy 행 KPI 제외 | fresh pair full-expert E2E p50/p95·paired CI |
+| latency 해석 | full-expert 같은 행만 paired bootstrap 비교 | actual p50/p95 `null` | `physical_call_wall_ms_sum`을 E2E로 승격 금지 | 동일 RunSpec runtime readback |
+| 정본 계보 | P2 v8 → P3 v20 → P4 v21 | 집중 회귀 `82/82 PASS` | `REVIEW-LOCKED`, `full_scan_approval=false` | actual DEV/CAL/FROZEN·fresh pair |
+
+P3 분모 hash-binding과 P4 execution envelope은 더 이상 구조 부채가 아니다. 남은 것은 소유자 정책·actual 자료·fresh runtime으로 실제 수치를 독립 readback하는 일이다.
+
+## IMP-20260712-P4-RECOVERED-ARM-WITNESS-V19 - 중단 복구 arm exact source replay
+
+| 항목 | 구현 | 실측 | 운영 적용 | 다음 증거 |
+| --- | --- | --- | --- | --- |
+| witness 계약 | self-hash + RunSpec/arm/pair + source manifest/result/checkpoint/pending + summary/output/claim/WAL/ledger/route 결속 | 정상 BEFORE/AFTER 합성 fixture 통과 | 실제 runtime GO 아님 | 실제 강제 중단 arm witness |
+| source replay | checkpoint 결과·receipt를 recovered output·WAL·single-attempt ledger·AFTER route와 독립 대조 | partial/multi-attempt/source 변경 공격 차단 | unwitnessed recovery 거부 | actual recovery source bundle |
+| 원자 게시 | witness 먼저, recovered manifest pointer 마지막; NO-GO stale target 제거 | 계약 시험 통과 | 기존 비측정 복구 호출 호환 | crash 지점별 파일 시스템 canary |
+| 정본 계보 | P2 v8 → P3 v18 → P4 v19 | recovery/paired 71, P2/P3 58, P4 33, 합계 162 PASS | `REVIEW-LOCKED`, `full_scan_approval=false` | active production 종료 뒤 fresh pair |
+
+당시 후속 구조 부채였던 P3 ABSTAIN 분모 hash-binding과 P4 batch execution-envelope는 위 IMP-20260712-P3V3-P4V20-EXECUTION-ENVELOPE에서 정적으로 닫았다. 실제 fresh evidence 전에는 물리 호출 누적 wall time을 배치 지연으로 승격하지 않는다.
+
+## IMP-20260712-P3-ACTUAL-BOUND-RUNNER-V16 - 무쓰기 사전점검·실제 정책·분할·원본 결속 강화
+
+| 항목 | 구현 | 실측 | 운영 적용 | 다음 증거 |
+| --- | --- | --- | --- | --- |
+| readiness v2 | 정책 의미 SHA + 파일 path/raw SHA/bytes source replay | Golden18 ready `0/18` | split 생성 금지 | 실제 COMPLETE·판결·provenance |
+| raw SHA 제거 | CLI의 RunSpec/source/metric SHA 문자열 제거, 검증 파일에서 유도 | 실제 파일 없음 | actual GO 아님 | bound bundle 생성 |
+| actual preflight | 필수 입력·replay 6종·readiness·bound build 가능 여부를 무쓰기/무런타임 회계 | missing packet NO-GO 확인 | 사전점검 GO를 성능으로 승격 금지 | 실제 packet으로 재실행 |
+| KPI 사전등록 결정 | 안전 우선 A·제한적 비열화 B와 표본 산식 분리 | 실제 baseline 없음 | owner 확정 전 JSON 생성 금지 | A/B 또는 수정값 확정 |
+| frozen split 결속 | post ID뿐 아니라 truth/candidate ID/content/source/label provenance exact 비교 | 계약 시험만 | `REVIEW-LOCKED` | 실제 DEV/CAL/FROZEN split |
+| source manifest 결속 | producer source digest를 필수 source manifest raw SHA와 대조 | 계약 시험만 | KPI 승격 금지 | 실제 source manifest와 producer receipt |
+| source payload 결속 | 행별 원문을 최상위 `ArtifactRef`로 재판독하고 내부 schema/run/example/post 신원을 exact-match | 계약 시험만 | 실제 원문 없는 GO 금지 | 실제 source payload와 immutable bundle |
+| replay 구조 결속 | 양쪽 base shadow·score vector·calibration artifact·prediction을 parser/coverage/split/policy로 검증 | 계약 시험만 | 빈 JSON readback 금지 | 실제 replay 6종 |
+| 정본 계보 | P2 v7 → P3 v16 → P4 v16 | P3 `54`, P4 `33` 집중 시험 | `full_scan_approval=false` | actual accuracy와 cost를 별도 통과 |
+| Goal 재개 | 이전 v16 handoff 뒤 사용자 재개, 전체 Goal과 actual 하위 게이트 분리 | 실제 개선률 null | `ACTIVE / NOT_COMPLETE`; `REVIEW-LOCKED` | 정적 개선 계속, 정책 확정·새 판결·production 종료 뒤 actual 측정 |
+
+## 이전 IMP-20260712-P3P4-READBACK-LINEAGE-V12 - 실제 자료·구간·계보 fail-close 강화
+
+| 항목 | 구현 | 실측 | 운영 적용 | 다음 증거 |
+| --- | --- | --- | --- | --- |
+| P3 actual-readback v2 | 외부 universe·producer·AFTER·baseline 독립 재판독, 중복 key/source digest/의미 영수증 검증 | 실제 DEV/CAL/FROZEN 없음 | 실제 % 표시 금지 | actual 전용 runner와 완결 artifact |
+| 준비도 source replay | P1 RunSpec·비교표·P1 결속 라벨 원장에서 18행 재계산 | ready `0/18`, `NO_GO_ACTUAL_DATASET_NOT_READY` | GO 금지 | producer COMPLETE와 판결 완료 라벨 |
+| 여섯 paired CI 게이트 | accuracy 하한, Brier/log loss/ECE/선택 위험/AURC 상한 정책 판정 | actual CI 없음 | 기준 변경·부분 통과 금지 | 사전 고정 정책과 실제 CI 출력 |
+| P4 교차 계보 | P3/P4 P1·P2 부모와 P1/P3 라벨 원장 exact path/bytes/SHA 검증 | 계약·공격 시험만 | `REVIEW-LOCKED` | 동일 RunSpec fresh pair |
+| 당시 정본 계보 | P2 v7 → P3 v12 → P4 v12 | 계약·합성 범위만 | `full_scan_approval=false` | actual accuracy와 cost를 별도 게이트로 통과 |
+
+당시 실제 지표는 전부 `null/NOT_ESTIMABLE`이고 실제 runtime은 `NOT_RUN`이었다. 정본은 `out/candidate_set_calibration_shadow_harness_20260711/v12/`, `out/selective_compute_shadow_harness_20260712/v12/`였다.
+
+## 이전 IMP-20260712-P3P4-READBACK-PAIR-V10 - 정확도·비용 독립 재판독 기반
+
+| 항목 | 구현 | 실측 | 운영 적용 | 다음 증거 |
+| --- | --- | --- | --- | --- |
+| P3 실제 자료 reader | bytes·coverage·producer·prediction 재판독 구현 | 실제 DEV/CAL/FROZEN 없음 | 실제 % 표시 금지 | 분리 자료와 completed metric output |
+| P3 불확실성 | 그룹 bootstrap·paired baseline 차이 계산 기반 구현 | actual 구간 없음 | 기준 변경 금지 | 사전 등록 seed/bin/표본과 실제 CI |
+| 물리 호출 reader | writer 독립 frame replay·retry·token·source snapshot 구현 | actual paired ledger 없음 | 104k 비활성 | coverage 100%, orphan/duplicate/unlinked 0 |
+| AFTER 측정 라우터 | source-only 위험 신호 full, 무신호 NIL 후보 구현 | reference copy만 가능 | production route 금지 | 실제 동일 RunSpec AFTER 실행 |
+| paired source replay | RunSpec·input/output·WAL·ledger·route receipt 결속 구현 | fresh BEFORE/AFTER 없음 | 해당 없음 | 양쪽 새 run ID와 exact readback |
+| fresh 복구 | 논리 WAL과 측정 원장 분리 fail-close 구현 | 강제 중단·재시작 미실행 | 해당 없음 | actual crash/restart와 WAL v2 scale |
+| 당시 정본 계보 | P2 v7 → P3 v10 → P4 v10 | 계약·합성 범위만 | `REVIEW-LOCKED` | actual accuracy와 cost를 별도 게이트로 통과 |
+
+현재 P4에서 0-call cheap 행은 `REFERENCE_COPY_COST_ONLY`이며 실제 production 비용 절감으로 계산하지 않는다. actual 지표는 전부 `null/NOT_ESTIMABLE`, `full_scan_approval=false`다.
+
+## IMP-20260712-P4-CALL-LEDGER-V6 - 물리 호출 원장과 fresh paired 측정 기반
+
+| 항목 | 구현 | 실측 | 운영 적용 | 다음 증거 |
+| --- | --- | --- | --- | --- |
+| 물리 호출 원장 | bounded v1 구현 | 새 runtime 미실행 | 104k 비활성 | 독립 readback·aggregate replay·WAL v2 |
+| fresh paired 실행 | WAL 전수 reference/no-public-write 구현 | BEFORE·AFTER 없음 | 해당 없음 | 양쪽 새 run ID와 동일 RunSpec |
+| 정확도 퍼센트 | P3 계약 기반 구현 | `FROZEN_ACTUAL` 없음 | 숫자 표시 금지 | candidate recall→top-label/NIL→calibration→risk-coverage 신뢰구간 |
+| 비용 KPI | schema와 null 정책 구현 | calls/post·회피율·p50/p95 `null` | cheap route 금지 | 동일 행·동일 coverage paired delta |
+| 운영 활성화 | shadow만 구현 | 품질 승인 없음 | `NO-GO / full_scan_approval=false` | hard regression 0, public 비간섭, 명시 승인 |
+
+## 이전 IMP-20260712-P4-SELECTIVE-COMPUTE-V3 - 선택적 비용 라우팅 그림자
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Compute lane contract | GO_SHADOW_ONLY | `FULL_EXPERT_REQUIRED / CHEAP_RULE_ELIGIBLE`, 적용 flag false | 실제 적용 전 별도 promotion 승인 |
+| Hard-risk fail-close | GO_20_OF_20 | 검색·후보·복수 작품·VLM/OCR·HOLD·scope/source/budget 공격, false cheap 0 | property/fuzz 확대 |
+| Actual readback | NOT_IMPLEMENTED_FAIL_CLOSED | 모든 실제 scope에 readback hard risk 강제 | P3 FROZEN_ACTUAL bytes/coverage/payload/source receipt |
+| Golden18 route | FULL_18_CHEAP_0 | public/CandidateSet `18/18` 불변 | typed readback 뒤 재평가 |
+| Actual safe coverage | NOT_ESTIMABLE_NULL | frozen truth/readback 부재 | 동결 label paired 평가 |
+| Actual calls/post | NOT_ESTIMABLE_NULL | typed expert call events 부재 | 행별 call event와 aggregate replay |
+| Actual avoidance | NOT_ESTIMABLE_NULL | paired before/after runtime 부재 | 동일 RunSpec paired 실행 |
+| Actual wall time | NOT_ESTIMABLE_NULL | after runtime 부재 | 행별·run p50/p95 측정 |
+| Sidecar diagnostics | PARTIAL_LOG_ONLY | prompt 191, VLM 14, token 2,269,227; canonical receipt 아님 | typed event 전 KPI 승격 금지 |
+| Synthetic math | GO_CONTRACT_ONLY | 4행 `16→8`, 50%; actual savings 아님 | 상태 `SYNTHETIC_CONTRACT_ONLY` 유지 |
+| Public noninterference | GO_18_OF_18 | title/url/promotion/CandidateSet 쓰기 금지 | live shadow에서도 유지 |
+| P2 exact-once compatibility | GO_33 | trace attempt-local, publication tests 33/33 | actual crash/restart canary |
+| P4 focused regression | GO_30 | contract+harness 30/30 | broader 영향 회귀 유지 |
+| Implementation set integrity | GO_ADVERSARIAL | current exact artifact set 비교, self-consistent 축소 재해시 거부 | CI invariant 유지 |
+| Immutable artifact | GO_V3 | snapshot→staging fsync→validate→rename→parent fsync | clean-clone CI |
+| Runtime | NOT_RUN | active production 비간섭 | 종료 뒤 parallel16+dashboard+slang off/read-only |
+| Semantic/approval | REVIEW-LOCKED_NO_GO | 합성·저장본 계약은 실제 비용·정확도 승인 아님 | `full_scan_approval=false` 유지 |
+
+정본 보고서: `docs/devs/loop_reports/LOOP_P4_SELECTIVE_COMPUTE_SHADOW_20260712.md`.
+
+## IMP-20260711-P3-CALIBRATION-V1 - 정확도 퍼센트 계약 기반
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Truth event | GO_CONTRACT | `Y={candidate_id,NIL}`, ABSTAIN 행동 분리, 질량 합 `1,000,000` | 실제 label ledger 확대 |
+| Split leakage | GO_SYNTHETIC | group/content/source/candidate-set/gold-work 교차 누수 차단 | 실제 immutable split manifest |
+| Fit receipt | GO_CONTRACT | CAL resolved labels·표본 수·scorer·temperature·policy 결속, DEV unresolved 거부 | 실제 fit artifact 실행/readback |
+| Source replay | GO_CONTRACT | base/score/artifact/policy/assignment 재생, 저장 shadow·publication input 변조 거부 | file bytes readback |
+| Time-of-check stability | GO_ADVERSARIAL | time-varying Mapping metric/retrieval 세탁 차단, 평가 시작 snapshot | CI invariant 유지 |
+| Retrieval no-number | GO_CONTRACT | blocker 존재 시 `NOT_EVALUABLE_RETRIEVAL_BLOCKED`, headline null | 실제 retrieval-bound holdout |
+| Small-sample statistics | GO_FOUNDATION | Clopper–Pearson 경계, NIL 0건 null, small sample/bin NOT_ESTIMABLE | group bootstrap |
+| Report integrity | GO_ADVERSARIAL | policy/RunSpec/공격 summary/approval 재검증, `full_scan_approval=true` writer 거부 | signed release attestation |
+| Golden18 actual probability | NOT_AVAILABLE_UNCALIBRATED | generation UNKNOWN, recall NOT_EVALUABLE, all metrics null | 실제 COMPLETE holdout |
+| Unbound numeric claim | IMPROVED_1_TO_0 | legacy synthetic 1, P3 authoritative sidecar 0 | CI invariant 유지 |
+| Synthetic attacks | GO_20_OF_20 | false GO 0 | broader property/fuzz tests |
+| Focused regression | GO_20 | contract 15 + harness 5 | affected/broader regression 유지 |
+| Actual evidence readback | NOT_IMPLEMENTED_FAIL_CLOSED | receipt SHA 문자열만으로 actual 수치 금지 | bytes·coverage·payload exact readback |
+| Full interval protocol | INCOMPLETE | ECE/Brier/log-loss/AURC 및 paired baseline group CI 없음 | pre-registered seed/resample/method |
+| Runtime | NOT_RUN | active production 비간섭 | 종료 뒤 parallel16+dashboard |
+| Semantic/approval | REVIEW-LOCKED_NO_GO | 합성 계약은 실제 정확도·운영 승인 아님 | `full_scan_approval=false` 유지 |
+
+정본 보고서: `docs/devs/loop_reports/LOOP_P3_CALIBRATION_CONTRACT_FOUNDATION_20260711.md`.
+
+## IMP-20260711-P2-PUBLICATION-V2 - 최종 공개 판정 exact-once
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Scope binding | GO_SAVED_ARTIFACT | input SHA·post_id 순서·전체 config·release/slang provenance 결속 | 서명된 build/image attestation |
+| First-writer WAL | GO_18_OF_18 | 신규 commit 18, journal line 18, restart no-op 18 | actual runtime 재시작 검증 |
+| Public noninterference | GO_18_OF_18 | title/url 및 전체 결과 행 불변 | live shadow에서도 유지 |
+| Adversarial boundaries | GO_21_OF_21 | false GO 0, 16-way 신규 commit/line 1/1, tail repair PASS | CI invariant 유지 |
+| Recovery separation | GO_CONTRACT | row coverage·terminal finalize·semantic approval을 분리 | 실제 crash/restart canary |
+| WAL complexity | GO_STRUCTURAL | 최초 전수 검사 뒤 append tail만 검증; 800행 개발 probe 16.042초 | 정식 p50/p95/디스크 측정 |
+| Slang isolation | IMPLEMENTED_WORK_ARTIFACT_ONLY | 실행 중 공용 DB 자동 승격 금지 | 검토·병합·승격 도구 |
+| Runtime | NOT_RUN | active production 비간섭 | 별도 parallel16+dashboard 실행 |
+| Semantic quality | REVIEW-LOCKED | exact-once는 작품 판단 정확도 증거가 아님 | P3 frozen holdout 보정 |
+| Production approval | NO-GO | `full_scan_approval=false` | runtime·semantic 게이트 각각 통과 |
+
+## IMP-20260711-P1-PRODUCER-V6 - 검색·fetch bounded 완료 증명
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Producer plan contract | GO_V1 | query/search/fetch 입력 원문 대신 fingerprint와 작업 수를 실행 전에 고정 | actual runtime plan 생성 검증 |
+| Producer receipt contract | GO_V1 | explicit 완료·raw/retained·degraded/throttle/error·결과 SHA strict 검증; origin 미결합 cache UNKNOWN | cache origin receipt/hash 별도 계약 |
+| Composite proof | GO_SYNTHETIC | exact plan/receipt multiset, canonical required search+fetch, 누락·중복·변조 fail-close | broader adversarial fixtures |
+| 정상 합성 | COMPLETE_1 | 사전 고정 정상 search+fetch | 실제 COMPLETE holdout |
+| 실패 합성 | UNKNOWN_4_TRUNCATED_1 | cache/receipt 누락·저하/오류·조기 종료 UNKNOWN, raw 11→10 TRUNCATED | 실제 장애 주입 runtime |
+| False COMPLETE | GO_0 | 누락·중복·tamper에서 완료 승격 0 | CI invariant 유지 |
+| CandidateSet composition | GO_SYNTHETIC_ONLY | proof COMPLETE + local no-loss일 때만 합성 CandidateSet COMPLETE | Golden18은 receipt 부재로 UNKNOWN |
+| Stage receipts | GO_DIAGNOSTIC_ONLY | 전문가 cap 7곳은 다른 경로 회복 가능성 때문에 미합성 | 진단 경계 유지 |
+| Public noninterference | GO_18_OF_18 | title/url/decision 불변, probabilities null | live shadow에서도 유지 |
+| Adversarial boundaries | GO_62 | completion/cache/direct/engine/error/fallback/required-set/count 공격 경계 | CI invariant 유지 |
+| Affected regression | GO_529 | producer/candidate/P1/search/publication/title-lead 관련 14개 모듈 | clean-clone CI |
+| Runtime | IMPLEMENTED_NOT_RUNTIME_VALIDATED | active 104k 비간섭, 새 LLM/MCP run 없음 | 종료 뒤 parallel16+dashboard+slang off/read-only |
+| Candidate-set recall | NOT_EVALUABLE | Golden18에 producer receipt 없음 | broader frozen holdout+CI |
+| Probability | NOT_AVAILABLE_UNCALIBRATED | DEV/CAL/HOLDOUT 미구축 | P3 temperature scaling+ECE/Brier/log loss/NIL PR/AURC |
+| Approval | REVIEW-LOCKED | 합성 계약 통과는 semantic/production 승인 아님 | `full_scan_approval=false` 유지 |
+
+정본 보고서: `docs/devs/loop_reports/LOOP_P1_PRODUCER_COMPLETION_PROOF_20260711.md`.
+
+## IMP-20260711-P1-GEN-V4 - 후보 생성 2단계·전문가 7단계 잘림 진단 (이전 단계)
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Frozen generation contract | GO_V1 | `UNKNOWN/TRUNCATED`, cap/count/source/metadata SHA, `COMPLETE` 생성 금지 | 상류 exhaustive proof 전 버전 유지 |
+| Ranked-title local scan | GO_CAP6 | 정책 필터 뒤 고유 제목 7개를 관측 후 앞 6개 보존 | upstream producer receipts |
+| Serializer local scan | GO_CAP24 | 고유 25개를 끝까지 관측 후 앞 24개 보존 | 실제 runtime 배선 검증 |
+| Expert stage receipts | GO_DIAGNOSTIC_7 | Gatekeeper1·Decoder1·Verifier2·Arbiter3 cap 직전 원문 비노출 count/hash, cap+1 `7/7` | 검색 query/MCP/fetch receipt |
+| Stage composition boundary | GO_NONE | 다른 경로 회복 가능성이 있어 CandidateSet/확률/public 판정에 미합성 | future exhaustive producer contract 전 유지 |
+| Boundary behavior | GO_SYNTHETIC_7 | title7·unique25 `TRUNCATED`; cap 이하·중복 제거 cap 이하 `UNKNOWN` | producer completion proof |
+| Duplicate COMPLETE guard | GO | raw observation 24 기준 강제 COMPLETE 차단 | future COMPLETE proof contract |
+| Ledger-only isolation | GO | nested ledger strict parser, root/mixed/tamper fail-close | candidate audit unavailable reason 세분화 선택 |
+| Retained compatibility | GO_7_OF_7 | 합성 일곱 경계 기존 items/order 불변 | broader source-role fixture |
+| P1 structure | GO_V6 | Golden18 candidate/public `18/18`, candidate/NIL 구조 `9/9`, `6/6` | broader frozen holdout |
+| Candidate-set recall | NOT_EVALUABLE | cap 6/24 로컬 잘림은 계측했으나 upstream enumeration completion 미증명 | producer count/proof 연결 |
+| Probability | NOT_AVAILABLE_UNCALIBRATED | COMPLETE holdout/calibration 없음 | ECE/Brier/log loss/NIL PR/risk-coverage 후속 |
+| Affected regression | GO_518 | candidate/serializer/audit/promotion/retrieval/P0/P1/publication/title-lead/Decoder/Arbiter | broader 554의 선행 red 2와 기존 8F+1E baseline debt 별도 adjudication |
+| Runtime | NOT_RUN_SHADOW_ONLY | active 104k 비간섭 | 종료 뒤 parallel16+dashboard+slang off/read-only |
+| Approval | REVIEW-LOCKED | 잘림 탐지는 정확도·운영 승인 아님 | `full_scan_approval=false` 유지 |
+
+정본 보고서: `docs/devs/loop_reports/LOOP_P1_CANDIDATE_GENERATION_COMPLETENESS_20260711.md`.
+
+## IMP-20260711-P1-V6 - 여러 후보·작품 없음 그림자 하네스
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| CandidateSet typed shadow | GO_SAVED_ARTIFACT_V6 | frozen option/set/decision, Golden18 integrity `18/18` | 실제 selector shadow |
+| NIL event | GO_STRUCTURE_18 | 모든 행에 정확히 1개, NIL 원장 행 공통 선택지 `6/6`; 선택 정확도 아님 | 보정용 NIL 표본 확대 |
+| ABSTAIN separation | GO_CONTRACT | 확률 사건에 ABSTAIN `0`, 행동으로만 허용 | retrieval/integrity runtime shadow |
+| Alias handling | GO_SPECIAL_ROWS | `아생갤` 비사건 보존, `11698880` work2+alias1 | broader alias holdout |
+| Candidate truth observation | GO_9_OF_9_NOT_RECALL | 기대 작품 9개가 사건 후보 내 관측 | COMPLETE 표본에서 recall+CI |
+| Candidate generation | GO_LOCAL_TRUNCATION_V4 | cap 6/24 + 전문가 cap 7곳 UNKNOWN/TRUNCATED 기록, COMPLETE 금지; stage receipt는 diagnostic-only | 검색/MCP/fetch producer completion proof |
+| Probability | NOT_AVAILABLE_UNCALIBRATED | 전 확률·selected label null | 분리된 calibration/frozen holdout |
+| Public noninterference | GO_18_OF_18 | title/url/decision/gate/trace/fingerprint/version/bypass 불변 | live shadow에서도 유지 |
+| Affected regression | GO_518 | candidate/P1 harness/promotion/retrieval/P0 harness/publication/title-lead/serializer/Decoder/Arbiter | 선행 baseline debt 별도 관리 |
+| Runtime | NOT_RUN_SAVED_ARTIFACT_ONLY | 새 LLM/MCP run 없음 | active 종료 뒤 별도 parallel16+dashboard |
+| Approval | REVIEW-LOCKED | 구조 검증은 정확도·운영 승인 아님 | `full_scan_approval=false` 유지 |
+
+정본 보고서: `docs/devs/loop_reports/LOOP_P1_CANDIDATE_SET_NIL_SHADOW_HARNESS_20260711.md`.
+
+## IMP-20260711-P0-V5 - 검색 미복구 공개 차단 전·후 하네스
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Typed retrieval gate | IMPLEMENTED_GATE_ONLY | strict `RetrievalState`, default no-op, serialized roundtrip | live search state 배선 |
+| Actual artifact baseline replay | GO_5_OF_5 | current gate가 대상 5건 저장 decision exact 재현 | 동일 계약 유지 |
+| Static safety movement | PARTIAL_IMPROVEMENT | unsafe publish `1→0`, candidate missing `0` | 실제 after runtime 필요 |
+| Search evidence | NO-GO_5 | hard blocker `5→5` | row search 복구와 live gate 검증 |
+| Synthetic contract | GO_7 | unsafe `5→0`, correct publish `2→2` | 실제 수치와 분리 유지 |
+| Immutable RunSpec | GO_V5 | input/result/manifest/plan/integrity/gate/runtime metadata/implementation SHA | after runtime에도 같은 계약 적용 |
+| Probability shadow | NOT_AVAILABLE_UNCALIBRATED | 보정 holdout 없음; `candidate/NIL` 정답 사건과 `ABSTAIN` 행동 분리 필요 | P3에서 candidate-set recall 선행, 분리된 개발/보정/동결 표본의 ECE·classwise Brier/log loss·NIL PR·risk-coverage 신뢰구간 측정 |
+| Runtime | NOT_RUN_STATIC_PROJECTION | active 104k 비간섭 | active 종료 뒤 parallel16+dashboard+slang off |
+| Regression | GO_275 | `119 + 156` tests | CI/Git 추적 필요 |
+| Approval | REVIEW-LOCKED | static safety는 semantic/production 승인 아님 | `full_scan_approval=false` 유지 |
+
+정본 보고서: `docs/devs/loop_reports/LOOP_P0_RETRIEVAL_FAILCLOSE_HARNESS_20260711.md`.
+
+## IMP-20260711-ARCH-RESEARCH - LLM 처리 파이프라인 최신 한계와 Claude/Fable 후속안
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Promotion Contract v2 | IMPLEMENTED_PARTIAL | typed/frozen contract, single apply boundary, Loop643 Golden `18/18` | legacy mutation 정적 강제와 terminal envelope 보강 |
+| Candidate selection | NO-GO_SINGLE_CANDIDATE | gate는 선택된 한 후보를 판정 | CandidateSet + candidate-conditioned global Select |
+| Search decision binding | PARTIAL_GATE_ONLY | typed gate + baseline replay `5/5` + static unsafe `1→0`; search blocker `5→5` | live retrieval 배선과 실제 after runtime |
+| Claude calibrated/NIL | PROPOSED_NEEDS_EVENT_CONTRACT | commit `7ba58a454`, shadow-first 합의; Opus 감사에서 후보/NIL 정답 사건과 ABSTAIN 행동 분리 필요 확인 | candidate-set recall 선행, `Y={candidate_id,NIL}` 및 독립 calibration/최종 동결 gate 고정 |
+| Fable provenance | AUDIT_ONLY_CONFIRMED | Loop643 `HARD_UNSAFE 0`, `5/5 PASS`, provider 400 note | 설계 originator로 과대표현 금지 |
+| Active 104k runtime | RUNNING_NOT_APPROVAL | 12:51 snapshot `138/129/9/0`, parallel `16/16`, naive linear `38.9d` | mid-run 개입 금지, 완료 후 독립 gate |
+| Runtime durability | OPEN | ordered full-JSON rewrite, manual recovery | append-only row store + deterministic compaction A/B |
+| Slang DB | OPEN_MUTABLE_WRITEBACK | current argv `--slang-db on`, repeated dirty flush | frozen read-only snapshot + proposal event materialization |
+| Test durability | OPEN_UNTRACKED | allowlist worktree 존재, test file Git untracked | 실제 Git/CI 추적 |
+| Approval | REVIEW-LOCKED | runtime/search/semantic/full-scan 분리 | production `full_scan_approval=false` 유지 |
+
+상세는 `docs/devs/LLM_PIPELINE_ARCHITECTURE_RESEARCH_20260711.md`다. 이 항목은 연구/설계 판정이며 code 변경이나 active run 제어를 포함하지 않는다.
+
+## IMP-20260711-643-ARCH - multi-work subject conflict와 search-dependent publish handoff
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Subject conflict architecture | IMPLEMENTED | A/B typed candidate preservation, explicit primary arbitration, shared fail-close | 새 기능 개입 금지 |
+| Static verification | PASS | integrated `585 PASS / skip 1`, search tools `26/26` | fingerprint 보존 |
+| Golden semantic | PASS_18_OF_18 | wrong-work/candidate loss `0/0` | search hard gate와 분리 |
+| Runtime integrity | GO | exact-once `18/18/18/0/0`, missing/extra/duplicate `0` | 같은 fingerprint 재실행 금지 |
+| Search terminal | PARTIAL_CLOSED | safe terminal `4`, unreviewed `0` | ledger 보존 |
+| Required search blocker | HARD_5 | positive/publish dependency 5건 | 별도 infra/architecture goal |
+| Unsafe publish | ACTIONABLE_UNFIXED_1 | `11694019`, unrecovered search에서 publish | generalized required-search fail-close |
+| N=5 / fresh375 | NOT_RUN_BY_CONTRACT | Golden hard NO-GO | 새 goal 전 금지 |
+| Current outcome | LIMIT_REACHED_HANDOFF | hard completion condition 미충족 | handoff resume 조건 대기 |
+| Approval | REVIEW-LOCKED | production `full_scan_approval=false` | 10만 scan과 분리 |
+
+## IMP-20260711-642-BLOCKED - authority blocker 3/3 strict handoff
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Hard residual | ACTIONABLE_UNFIXED_1 | `11698880` public wrong-work | 별도 architecture/model goal |
+| Safe internal action | NONE | i8/rerun/N5/fresh375/terminalization 금지 | 권한 없이 반복 금지 |
+| Blocker streak | 3_OF_3 | handoff → continuation2 → current3 | strict blocked 전환 |
+| Runtime drift | NONE | fingerprint `b035ffcd...aa06`, SHA unchanged | i7 artifact 재사용 금지 |
+| Goal status | BLOCKED_HANDOFF | protocol strict threshold 충족 | resume command 대기 |
+| Approval | REVIEW-LOCKED | full_scan approval `false` | production과 분리 유지 |
+
+## IMP-20260711-642-RA1 - limit handoff 재감사와 문서 current-state 정합성
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Runtime drift | NONE | fingerprint `b035ffcd...aa06`, 58 files exact match | i7 재실행 금지 유지 |
+| Exact-once budget | PRESERVED | bound manifest `1`, N=5/fresh375 `0/0` | 새 goal 전 소비 금지 |
+| Hard residual | ACTIONABLE_UNFIXED | `11698880`, unsafe/wrong-work `1/1` | 별도 architecture/model backlog |
+| Docs current-state | REPAIRED | Loop641 historical current 문구와 root README stale 상태 교정 | Loop642 handoff를 단일 current anchor로 유지 |
+| Authority blocker | STREAK_2_OF_3 | 새 resolution goal 미승인 | 3회 전 `update_goal(blocked)` 금지 |
+| Current gate | LIMIT_REACHED_HANDOFF | `REVIEW-LOCKED`, `full_scan_approval=false` | 명시적 새 goal 대기 |
+
+## IMP-20260711-642-I7 - title integrity closure와 multi-work subject conflict handoff
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Official title identity component | CLOSED_SAFE | i6 괄호 누락을 exact matcher가 검출; i7 `11698897`은 정답 후보 보존 public-null HOLD | 공식 제목 무작정 확대 금지 유지 |
+| Same-URL evidence laundering | CLOSED_P0 | 비호환 title evidence를 non-publish로 강등, independent 105/105 PASS | shared gate 우회 금지 유지 |
+| Late-fetch deleted/community/listing | CLOSED_P0 | fetch 후 exact URL active state 재검사, 3상태 identity `{}` | page-state fail-close 유지 |
+| i7 Golden runtime | GO_INTEGRITY_NO_GO_SEMANTIC | `18/18/0/0`, publication 0, search blocker 0, Golden `17/18` | 같은 fingerprint 재실행 금지 |
+| Multi-work title/body subject conflict | P0_BACKLOG_SEPARATE_GOAL | `11698880` expected B, public A wrong-work | `ARCH-MULTIWORK-TITLE-BODY-SUBJECT-CONFLICT`; 불확실 시 candidate-preserving public-null HOLD |
+| Bounded convergence | LIMIT_REACHED_HANDOFF | i7 마지막 개입, residual 1/1 classified | 사용자 새 goal 승인 전 patch/N5/fresh375 금지 |
+
+## IMP-20260710-641 - interrupted-run durable recovery와 adjudicated semantic gate
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Loop640 recovery | GO_SUBSET | `75/68/7/0`, checkpoint-only 7 = pending 7, recovered SHA `e0ff0823...` | 원본 output 재실행 금지 유지 |
+| Residual partition | GO | source/recovered/residual `375/75/300`, overlap/missing/extra/duplicate `0`, original order | Loop641 300 완주 |
+| Runtime homogeneity | GO_PRELAUNCH | runtime code diff 0, stable row/manifest/argv/env/runtime signature 동일; raw config hash 차이는 input count 포함으로 설명 | residual run_meta 재확인 후 merge |
+| Deterministic merge | HARDENED_TESTED | original-order merge, checkpoint position, row↔manifest↔plan binding | 실제 75+300 병합 |
+| Blind adjudication | HARDENED_TESTED | actual 375 재계산, source allow-list, drift_id, packet/map rehash, publication/golden/terminal validator | merged drift union 전수 판결 |
+| Always-on | FAIL_CLOSED_HARDENED | validator receipt/artifact readback과 runtime 375/375/0/0 필수 | 실제 validator artifact 연결 |
+| Search terminal gate | HARDENED_TESTED | 375/16, run/result/shard/time/golden 결박, source-only terminal packet+independent SHA | merged375 전 행 감사 |
+| Focused validation | GO_TOOL_CONTRACT_ONLY | 관련 8개 suite `86 tests PASS`, pycompile PASS | runtime/semantic gate와 분리 유지 |
+| Historical gate at Loop641 time | CONTINUE | 당시 Loop641 `RUNNING_NOT_APPROVAL`, convergence state | 최신 current gate는 위 IMP-20260711-642-RA1 참조 |
+
+상세는 `loop_reports/LOOP_641_REPORT_20260710.md`와 `loop641_convergence_state.json/.md`다.
+
+## IMP-20260710-900 - 현재 LLM 개선 아키텍처 단일 결정점 및 runtime 동형성 감사
+
+| 항목 | 상태 | 근거 | 다음 |
+| --- | --- | --- | --- |
+| Claude provenance | CONFIRMED | commit `7ba58a454`, `ARCHITECTURE_RESEARCH_AND_CASE_STUDY_20260704.md`, `RESEARCH_JOURNAL_AND_INDEX_20260705.md` | calibrated probability + NIL shadow mode를 별도 후속안으로 유지 |
+| Shared gate ownership | NO-GO | candidate audit/expert main이 post-gate decision을 재작성하고 `bypassed_gate=false`를 직접 기록 가능 | typed write-once `DecisionEnvelope`와 single `commit_publication()` 도입 |
+| Gate semantics | NO-GO | evidence strength/confidence/competition이 판정에 반영되지 않고 caller boolean이 우선 | hard-negative monotonicity와 candidate-conditioned scorer shadow 검증 |
+| Projection/runtime conformance | NO-GO | Loop640 checkpoint `75`행 중 adjusted drift 후보 `18`, adjudication overlap `4/4` 불일치 | 4행 × 3회 후 ledger 59행 runtime differential gate |
+| Test durability | NO-GO | `tests/test_promotion_gate_contract.py`는 local `24 tests OK`지만 Git ignored/untracked | `.gitignore` allowlist 및 CI 추적을 코드 변경 전 P0로 처리 |
+| Runtime durability | NO-GO | Loop640 `75/68/7/0`, process/dashboard 종료, ordered flush gap | immutable row commit + deterministic compaction A/B |
+| Gate 상태 | REVIEW-LOCKED | runtime/semantic/full-scan 미완료 | `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE` 유지 |
+
+상세 보고서: `docs/devs/LLM_IMPROVEMENT_ARCHITECTURE_REVIEW_20260710.md`. 이 항목은 architecture review이며 코드 수정이나 full375 재실행을 포함하지 않는다.
 
 ## IMP-20260710-640 - Loop640 full375 live health audit snapshot
 
@@ -19065,3 +19374,18 @@ Gate: Loop616 runtime `GO`, search degraded recovery `PARTIAL-GO`, row-level sea
 | full375 collateral | READY_NOT_RUN | 검색 선행 blocker는 닫혔지만 full375는 아직 미실행 | `--parallel 16`, dashboard ON으로 실행 |
 
 Gate: search accounting repair `GO`, Loop617 runtime `GO`, row-level search recovery `GO`, full375 collateral `READY_NOT_RUN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## IMP-20260711-P0 - typed 검색 fail-close (RetrievalState)
+
+테스트구동 개선 루프의 P0. 연구 보고서 `LLM_PIPELINE_ARCHITECTURE_RESEARCH_20260711.md` 1단계.
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| 한계 재현(개선 전) | Measured | `tools/search_fail_close_probe.py` before: unsafe publish `5/7` (필수검색 미복구/하드블록 행이 제목 공개) | 라이브 배선 단계에서 실제 행으로 재측정 |
+| 개선 구현 | Patched | `promotion_gate.py`에 `RetrievalState`(required/attempted/recovered/hard_blocked) typed 입력 추가, `_state_reason_codes`에서 `search_evidence_missing`/`search_blind_condition` 파생 fail-close | `agentic_pipeline`/`orchestrator`가 실제 검색 상태를 `GroundingState.retrieval`로 채우도록 배선(별도 승인) |
+| 개선 후 측정 | Measured | after: unsafe publish `0/7`, 정상 공개 2행 보존, lost correct publish `0` | frozen holdout 확장 |
+| 개선도 | GO | unsafe publish `5 → 0` (감소 5), recall 유지, fingerprint 안정(none==default, populated!=none) | - |
+| 회귀 | PASS | harness/retrieval/promotion `13+10+96=119`, composite/candidate/publication `156`, 합계 `275` OK | always-on guard로 유지 |
+| 라이브 반영 | NOT_WIRED | 게이트는 opt-in(기본 no-op). 진행 중 대형 런/판정 비침습 | P1 이후 또는 명시적 승인 시 배선 |
+
+Gate: P0 typed 검색 fail-close `GO(gate-only)`, 라이브 배선 `NOT_WIRED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.

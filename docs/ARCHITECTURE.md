@@ -2,7 +2,7 @@
 
 > **프로젝트**: llm_novel_dc_coommunity_parser  
 > **목적**: DC인사이드 장르소설 갤러리 포스트에서 웹소설 작품을 식별하는 LLM Agentic Pipeline  
-> **최종 갱신**: 2025-01-XX  
+> **최종 갱신**: 2026-07-13
 
 ---
 
@@ -42,6 +42,20 @@ DC인사이드 장르소설 갤러리(장르소설 마이너갤러리)의 포스
 | **전문가 분업** | 각 전문가는 자기 역할에 특화된 관점으로만 분석 |
 | **검증 우선** | Decoder가 식별 → Verifier가 반론 → Critic이 메타분석 → Arbiter가 종합 |
 | **환각 방지** | Arbiter는 Decoder/Verifier가 제시하지 않은 제목을 독자적으로 생성할 수 없음 |
+
+### 1.3 Architecture V2 shadow 계층
+
+현재 공개 파이프라인은 `src/llm_batch/agentic_pipeline.py`와 `src/llm_batch/experts/` 아래의 기존 경로를 사용한다. V2는 공개 제목·URL·판정을 바꾸지 않는 OFF-by-default 계층이다. 현재 Goal은 `019f4f3f-4f46-78d1-8418-50834da44924 active`이며 외부 자료 대기는 C에만 적용한다.
+
+| 계층 | 역할 | 현재 경계 |
+| --- | --- | --- |
+| StageBudget/limiter/cache/singleflight | stage/provider별 비용·대기·cache provenance를 receipt로 관찰 | `AgenticPipeline` 명시 주입 runtime adapter, 기본 OFF, search stage 범위 |
+| DecisionLedgerV2 framed WAL | legacy call ledger를 segment/index/checkpoint로 독립 재생 | legacy 우선 dual-write shadow, coordination/restart/one-way rollback, 자동 production enable 금지 |
+| CandidateSet/NIL·typed confidence | producer completion, 후보/NIL label space, 행별 보정 확률을 분리 | public action은 항상 false, source-less fixture는 `NOT_ESTIMABLE_NOT_FROZEN_ACTUAL` |
+| calibration/paired reader | ECE/Brier/log loss/selective risk/AURC와 paired cost/E2E를 재독 | policy 판정·운영 라우팅과 분리된 no-write reader |
+| packet operations | 10+6 packet, preflight, fresh pair 명령을 결속 | 내부 intake/명령 계약 구현, 외부 C는 `WAITING_EXTERNAL_INPUT`/`NOT_ESTIMABLE` |
+
+이 계층의 내부 A는 exact Git closure와 staged-tree clean export까지 통과해 `ARCHITECTURE_V2_INTEGRATED`다. 상세 운영 계약은 `docs/devs/ARCHITECTURE_V2_INTERNAL_REAUDIT_KO_20260713.md`를 따른다. actual effect는 외부 source-backed 자료 대기이며 운영은 `REVIEW-LOCKED / full_scan_approval=false`다.
 
 ---
 

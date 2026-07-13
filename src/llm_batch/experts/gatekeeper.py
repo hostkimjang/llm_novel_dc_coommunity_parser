@@ -17,6 +17,7 @@ from .prompts import (
     build_gatekeeper_system_prompt,
 )
 from .utils import parse_json_with_think_removal, _ts, get_kiwi
+from ..candidate_generation import record_candidate_stage_receipt
 
 
 class GatekeeperExpert:
@@ -110,7 +111,7 @@ class GatekeeperExpert:
             result = self._prune_speculative_alias_expansions(result, post)
             
             # 🚨 코드 레벨 보강: 댓글에서 제목 답변 후보 추출
-            result = self._postprocess_comment_titles(result, post, comments)
+            result = self._postprocess_comment_titles(result, post, comments, ctx=ctx)
             
             # 🔥 이미지 전용 게시글 코드 레벨 감지
             result = self._detect_image_only_post(result, post, ctx=ctx)
@@ -660,6 +661,7 @@ class GatekeeperExpert:
         result: Dict[str, Any],
         post: Dict[str, Any],
         comments: List[str],
+        ctx: Optional[Any] = None,
     ) -> Dict[str, Any]:
         """
         코드 레벨 후처리: 댓글 중 제목 답변으로 보이는 것을 possible_titles에 추가.
@@ -738,6 +740,12 @@ class GatekeeperExpert:
 
         comment_title_candidates = _dedupe_titles(comment_title_candidates)
         merge_candidates = _dedupe_titles(merge_candidates)
+        record_candidate_stage_receipt(
+            ctx,
+            producer="gatekeeper",
+            stage="comment_title_candidates",
+            observed_sources=comment_title_candidates,
+        )
 
         if comment_title_candidate_details:
             _deduped_details = []

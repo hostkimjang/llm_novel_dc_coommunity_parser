@@ -183,6 +183,48 @@ def _safe_str(value: Any) -> str:
     return str(value or "").strip()
 
 
+def has_authoritative_publish_contract(identity: Any) -> bool:
+    """Return whether *identity* carries an authoritative v2 contract marker.
+
+    The serializer/final-sync contract deliberately accepts structural markers
+    when a lossy intermediate writer drops an explicit version field.  Every
+    pre-audit mutation guard must use the same predicate; otherwise a v2 row can
+    be changed by legacy candidate/title helpers before final sync fail-closes
+    the mismatch.
+    """
+    if not isinstance(identity, dict):
+        return False
+    ledger = nested_dict(identity.get("candidate_ledger"))
+    decision = nested_dict(identity.get("promotion_decision"))
+    ledger_decision = nested_dict(ledger.get("promotion_decision"))
+    contract_version = _safe_str(
+        identity.get("publish_contract_version")
+        or ledger.get("publish_contract_version")
+        or decision.get("contract_version")
+        or ledger_decision.get("contract_version")
+    )
+    root_marker = bool(
+        isinstance(identity.get("promotion_gate_state"), dict)
+        and isinstance(identity.get("promotion_gate_evidence"), list)
+        and isinstance(identity.get("publish_contract_trace"), dict)
+    )
+    ledger_marker = bool(
+        isinstance(ledger.get("promotion_gate_state"), dict)
+        and isinstance(ledger.get("promotion_gate_evidence"), list)
+        and isinstance(ledger.get("publish_contract_trace"), dict)
+    )
+    return bool(
+        contract_version == "promotion_contract_v2"
+        or root_marker
+        or ledger_marker
+    )
+
+
+def _has_authoritative_publish_contract(identity: Any) -> bool:
+    """Backward-compatible private alias for legacy helper call sites."""
+    return has_authoritative_publish_contract(identity)
+
+
 def _safe_list(value: Any) -> List[Any]:
     return value if isinstance(value, list) else []
 
@@ -924,6 +966,8 @@ def _candidate_dicts_for_canonicalization(identity: Dict[str, Any]) -> List[Dict
 def apply_author_angle_official_detail_canonicalization(identity: Dict[str, Any]) -> List[str]:
     """Prefer official detail title over author-prefixed search surfaces."""
     if not isinstance(identity, dict):
+        return []
+    if _has_authoritative_publish_contract(identity):
         return []
 
     current_title = official_title(identity)
@@ -1837,6 +1881,8 @@ def _official_detail_support_dicts(identity: Dict[str, Any]) -> List[Dict[str, A
 
 
 def _apply_same_url_official_detail_canonicalization(identity: Dict[str, Any]) -> List[str]:
+    if _has_authoritative_publish_contract(identity):
+        return []
     current_title = official_title(identity)
     if not current_title:
         return []
@@ -1910,6 +1956,8 @@ def _apply_same_url_official_detail_canonicalization(identity: Dict[str, Any]) -
 
 
 def _apply_same_url_official_page_title_over_alias_canonicalization(identity: Dict[str, Any]) -> List[str]:
+    if _has_authoritative_publish_contract(identity):
+        return []
     current_title = official_title(identity)
     if not current_title:
         return []
@@ -2019,6 +2067,8 @@ def _strip_platform_seo_title_suffix(title: Any) -> str:
 
 
 def _apply_platform_seo_title_suffix_canonicalization(identity: Dict[str, Any]) -> List[str]:
+    if _has_authoritative_publish_contract(identity):
+        return []
     current_title = official_title(identity)
     canonical_title = _strip_platform_seo_title_suffix(current_title)
     if not current_title or not canonical_title or canonical_title == current_title:
@@ -2068,6 +2118,8 @@ def apply_judge_seed_title_hygiene_guard(
     and the official platform search title for the same URL.
     """
     if not isinstance(identity, dict):
+        return []
+    if _has_authoritative_publish_contract(identity):
         return []
     if _judge_disagreement_type(judge_seed) != "title_noisy_ocr":
         return []
@@ -2704,6 +2756,14 @@ def _shared_current_work_gate_exempts_weak_alias_bridge(
     alias: Any,
     title: Any,
 ) -> bool:
+    authoritative_ledger = nested_dict(identity.get("candidate_ledger"))
+    authoritative_version = _safe_str(
+        identity.get("publish_contract_version")
+        or authoritative_ledger.get("publish_contract_version")
+    )
+    if authoritative_version == "promotion_contract_v2":
+        return _promotion_gate_decision(identity).get("publish_allowed") is True
+
     alias_key = _compact_title(alias)
     title_key = _compact_title(title)
     post_key = _compact_title(post_title)
@@ -3345,6 +3405,8 @@ def apply_weak_public_title_bridge_guard(identity: Dict[str, Any], post_title: A
     reference.
     """
     if not isinstance(identity, dict):
+        return []
+    if _has_authoritative_publish_contract(identity):
         return []
     _apply_same_url_official_page_title_over_alias_canonicalization(identity)
     _apply_same_url_official_detail_canonicalization(identity)
@@ -4669,8 +4731,36 @@ def build_candidate_audit_fields(
     judge_seed: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     existing_ledger = nested_dict(identity.get("candidate_ledger"))
-    ledger = build_candidate_ledger(identity, judge_seed)
     promotion_decision = _promotion_gate_decision(identity)
+    authoritative_v2 = has_authoritative_publish_contract(identity)
+    # v2 candidate audit is observational.  Rebuilding the ledger with the
+    # broad collector would append URL-less title/entity/image observations
+    # after the serializer froze its typed (title, URL) inventory.  Preserve
+    # the authoritative ledger byte-for-byte apart from explicit lint/status
+    # mirrors added below; legacy rows still receive the broad audit ledger.
+    ledger = (
+        dict(existing_ledger)
+        if authoritative_v2
+        else build_candidate_ledger(identity, judge_seed)
+    )
+    shadow_lint: List[str] = []
+    if authoritative_v2:
+        # CandidateSet/NIL is observational only.  Keep it inside the existing
+        # candidate ledger so Pydantic root output and the v2 publish
+        # fingerprint remain unchanged, and never feed it back into selection
+        # or public-title mutation.
+        from .candidate_set_shadow import (
+            selective_shadow_from_identity,
+            unavailable_shadow_payload,
+        )
+
+        try:
+            ledger["candidate_set_shadow"] = selective_shadow_from_identity(identity).to_dict()
+        except ValueError:
+            ledger["candidate_set_shadow"] = unavailable_shadow_payload(
+                "typed_publish_contract_replay_failed"
+            )
+            shadow_lint.append("candidate_set_shadow_contract_invalid")
     if promotion_decision:
         ledger["promotion_decision"] = promotion_decision
         gate_state = nested_dict(identity.get("promotion_gate_state"))
@@ -4683,15 +4773,48 @@ def build_candidate_audit_fields(
             gate_evidence = existing_ledger.get("promotion_gate_evidence")
         if isinstance(gate_evidence, list):
             ledger["promotion_gate_evidence"] = gate_evidence
+        # Candidate-audit enrichment is observational.  It must preserve the
+        # complete authoritative v2 mirror rather than rebuilding a partial
+        # ledger that silently drops trace/fingerprint/version bindings.
+        for field in (
+            "publish_contract_trace",
+            "publish_ledger",
+            "publish_contract_input_fingerprint",
+            "publish_contract_version",
+            "publish_contract_integrity_error",
+            "candidate_ledger_status",
+            "title_resolution_allowed",
+            "title_resolution_state",
+            "work_resolution",
+            "promotion_blocked",
+            "hold_without_candidates",
+            "safe_resolved",
+        ):
+            if field in identity:
+                ledger[field] = identity.get(field)
+            elif field in existing_ledger:
+                ledger[field] = existing_ledger.get(field)
     existing_official_lint = _safe_list(identity.get("official_title_lint"))
     official_lint = list(dict.fromkeys(existing_official_lint + official_title_lint_reasons(identity)))
     identity_lint = identity_consistency_lint_reasons(identity, judge_seed)
     output_lint = output_consistency_lint_reasons(identity, judge_seed)
     existing_candidate_lint = _safe_list(identity.get("candidate_audit_lint"))
     candidate_lint = list(
-        dict.fromkeys(existing_candidate_lint + noisy_expected_seed_candidate_lint_reasons(identity, judge_seed))
+        dict.fromkeys(
+            existing_candidate_lint
+            + noisy_expected_seed_candidate_lint_reasons(identity, judge_seed)
+            + shadow_lint
+        )
     )
     status = classify_candidate_audit(identity, judge_seed)
+    if authoritative_v2:
+        contract_status = str(
+            identity.get("candidate_ledger_status")
+            or existing_ledger.get("candidate_ledger_status")
+            or ""
+        ).strip()
+        if contract_status:
+            status = contract_status
     fields: Dict[str, Any] = {
         "candidate_ledger": {
             **ledger,
@@ -4720,8 +4843,12 @@ def apply_candidate_audit_fields(
 ) -> Dict[str, Any]:
     if not isinstance(identity, dict):
         return {}
-    preserve_recoverable_official_detail_candidate(identity)
-    prune_noisy_llm_only_candidates(identity, judge_seed)
+    existing_ledger = nested_dict(identity.get("candidate_ledger"))
+    promotion_decision = _promotion_gate_decision(identity)
+    authoritative_v2 = has_authoritative_publish_contract(identity)
+    if not authoritative_v2:
+        preserve_recoverable_official_detail_candidate(identity)
+        prune_noisy_llm_only_candidates(identity, judge_seed)
     fields = build_candidate_audit_fields(identity, judge_seed)
     identity.update(fields)
     consistency_flags = identity.get("consistency_flags")

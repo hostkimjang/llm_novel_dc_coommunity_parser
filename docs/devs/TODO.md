@@ -1,5 +1,309 @@
 # Developer TODO Index
 
+## 2026-07-13 Architecture V2 active 재감사 — 내부 작업을 외부 blocker와 분리
+
+상태: Goal `019f4f3f-4f46-78d1-8418-50834da44924` `COMPLETE_SAFE_TERMINAL / ARCHITECTURE_V2_INTEGRATED / ACTUAL_EFFECT_WAITING_EXTERNAL_INPUT`. 기존 `ACTUAL_BLOCKED_HANDOFF`는 역사 기록이다. production `20260711_113712_379597`은 읽기 전용이다.
+
+- [x] `P0_INTERNAL_REPRODUCIBILITY`: exact 137개 source/test/tool/docs 경로를 Git index에 올리고 staged-tree ZIP에서 compile/import와 핵심 `181 tests PASS`를 확인했다. 대량 `out/**`, lock/claim, 실행 산출물은 제외했다.
+- [x] `P1_RUNTIME_SAFE_SHADOW_ADAPTERS` 로컬 구현: `AgenticPipeline` search 경로에 명시 주입·기본 OFF인 StageBudget/limiter/cache/singleflight adapter를 접목하고 fail-close receipt, 구형 checkpoint 기본-OFF 호환, raw-query 비저장, legacy 결과 동등성을 회귀했다. clean export는 P0에서 별도 확인한다.
+- [x] `P1_DECISION_LEDGER_MIGRATION` 로컬 구현: legacy registry 우선 dual-write, V2-root coordination lock, crash/restart reconcile, one-way rollback latch, cross-adapter rollback, receipt identity coverage, OFF 무-import를 구현·회귀했다. production 자동 enable은 금지한다.
+- [x] `P2_TYPED_CONFIDENCE`: CandidateSet/NIL/producer completion/행별 confidence percentage를 분리한 `typed_confidence_report_v1`과 policy-free ECE/Brier/log loss/selective risk/AURC reader를 추가했다. `FROZEN_ACTUAL`이 아닌 입력은 `NOT_ESTIMABLE`이고 public 적용은 항상 false다.
+  - 근거: `src/llm_batch/confidence_report.py`, `tools/read_typed_confidence_metrics.py`, `tests/test_confidence_report.py`, `tests/fixtures/typed_confidence_source_less_contract_v1.jsonl` (`NOT_ESTIMABLE_NOT_FROZEN_ACTUAL`).
+- [x] `P3_PACKET_OPERATIONS` 로컬 구현: packet intake validator와 operator template, no-write 상태, 동일 frozen input의 BEFORE/AFTER, `--parallel 16`, dashboard ON 전제, recovery 명령을 versioned artifact로 고정했다. 실제 packet은 `WAITING_EXTERNAL_INPUT`이다.
+- [x] `INTERNAL_A_CLOSURE`: P0~P3, public 비간섭, crash/restart/rollback, confidence 근거 결속, packet operator contract와 문서 정합성을 닫아 `ARCHITECTURE_V2_INTEGRATED`로 판정했다.
+- [ ] `C_ACTUAL_EFFECT`: source-backed DEV/CAL/FROZEN·policy v3·10+6 packet과 fresh BEFORE/AFTER가 도착한 뒤에만 실제 정확도/recall/NIL/CI/cost/E2E를 산출한다. 그 전 숫자는 `null/NOT_ESTIMABLE`이다.
+
+## 2026-07-12 M1/M2 이전 handoff 체크리스트 — 역사 기록
+
+상태: `BLOCKED / ARCHITECTURE_INTEGRATION_COMPLETE / ACTUAL_BLOCKED_HANDOFF / NOT_COMPLETE`. M1 정적·shadow foundation은 닫혔고 같은 M2 external input blocker가 `3/3`으로 확인됐다. production `20260711_113712_379597`은 읽기 전용이다.
+
+정적 foundation 재감사: `docs/devs/M1_FOUNDATION_ACCEPTANCE_AUDIT_KO_20260712.md`의 selected `120 tests PASS`와 P1→P4 lineage/DecisionLedger focused evidence는 M1의 OFF/shadow integration을 증명한다. source-backed packet과 fresh runtime evidence는 M2에서만 요구하며 전체 Goal은 계속 `NOT_COMPLETE`다.
+
+### M1 — `ARCHITECTURE_INTEGRATION_COMPLETE`
+
+- [x] P0~P4 최신 계보를 P2 v8 → P3 v20 → P4 v21로 고정했다.
+  - 근거: `out/publication_exact_once_harness_20260711/v8/`, `out/candidate_set_calibration_shadow_harness_20260711/v20/`, `out/selective_compute_shadow_harness_20260712/v21/`.
+- [x] StageBudget read-only metrics schema와 local limiter/singleflight·RunSpec namespace cache 계약을 분리했다.
+  - 근거: `src/llm_batch/stage_budget.py`, `src/llm_batch/local_stage_gate.py`, `src/llm_batch/shared_cache_contract.py`, `tests/test_stage_foundations.py`.
+- [x] existing `*_slang_db_work.json`의 no-write proposal 변환을 추가했다.
+  - 근거: `src/llm_batch/slang_governance.py`, `tests/test_slang_governance.py`.
+- [x] generic framed WAL의 incomplete-tail vs complete-corruption 구분 단위 시험을 추가했다.
+  - 근거: `src/llm_batch/framed_wal.py`, `tests/test_framed_wal.py`.
+- [x] StageBudget v2 shadow-only receipt가 RunSpec/scope/attempt/decision-ledger ArtifactRef와 self-hash, stage/provider calls·retry·cache source·wait ms·dedupe·limiter aggregate를 결속하고 independent reader가 재생한다.
+  - 근거: `src/llm_batch/stage_budget.py`, `tests/test_stage_foundations.py`; mixed RunSpec/scope/attempt, decision-ledger bytes, count mismatch, NaN, 직접 self-hash 위조를 fail-close한다.
+- [x] StageBudget v2 receipt를 dedicated shadow canary output에 연결하고 external writer/reader artifact를 생성했다. active production wiring은 금지한다.
+  - `out/stage_budget_shadow_canary_20260712/`은 manifest·receipt·events ArtifactRef를 atomic publish하고 independent reader가 교차 재생한다. `runtime_started=false`, `writes_to_production=false`이며 dedicated canary runtime 연결은 아직 없다.
+  - event provenance는 stage/provider, logical-call SHA, limiter config SHA/deadline, cache namespace/response SHA, singleflight role, `PROCESS_LOCAL_THREADS_ONLY` scope를 요구하고 누락 시 fail-close한다. runtime wiring/cross-process 보장은 아직 없다.
+- [x] local singleflight failure fanout/leader hang cleanup·limiter 최대 wait/deny·disabled no-op을 포함한 bounded harness를 보강했다.
+- [x] stage/provider별 `StageLimiterRegistry`가 finite rate/burst/max-wait, absolute deadline, configured-limit/deny-reason·actual wait receipt를 구현한다. 현재 `LocalTokenBucket`은 객체 단위라 global/provider-wide limiter가 아니다.
+  - `PROCESS_LOCAL_THREADS_ONLY` receipt에서 actual `wait_ms`, required wait, deadline exhaustion을 분리한다. cross-process 보장은 아직 없다.
+- [x] canonical stage/provider/scope key의 same-process singleflight leader timeout/stale-flight cleanup과 leader/follower/timeout receipt를 구현했다.
+  - `StageSingleflightKey`는 RunSpec/scope/input/stage/provider/model/prompt SHA를 fail-close하고 receipt에는 canonical key SHA만 남긴다. cross-process dedupe는 아직 없다.
+- [x] filesystem-local cross-process cache-fill lease가 follower timeout, stale lease takeover, late leader release 차단과 poison fail-close receipt를 제공한다.
+  - stale follower/late leader의 delete는 동일 OS-file guard 안에서 owner token·self-hash·expiry를 재검증한 뒤에만 수행한다. `FileSingleflightLease`는 결과를 공유하거나 runtime pipeline을 호출하지 않는다. follower는 lease release 뒤 file cache를 재조회해야 하며 network/global coordinator는 아직 없다.
+- [x] optional shared-cache adapter를 RunSpec/scope/input/provider/model/prompt hash namespace·TTL·degraded exclusion·provenance receipt와 함께 shadow/read-only부터 검증했다. production ready로 과장하지 않는다.
+- [x] cache namespace 64-hex/finite TTL/payload non-finite 검증, expired eviction, namespace/response SHA/provenance receipt를 구현했다.
+  - `FileSharedCacheAdapter`는 atomic file replace와 entry OS-file guard를 쓰는 `CROSS_PROCESS_FILE_SHADOW_ONLY` filesystem-local backend다. expired reader는 lock 안에서 observed entry SHA/expiry를 재검증해 fresh replacement를 삭제하지 않는다. 별도 Python process HIT, TTL expiry, degraded exclusion과 poison fail-close를 확인했지만 network/global cache 또는 runtime wiring은 아니다.
+  - `ProcessSharedCacheAdapter`는 동일 Python process의 thread worker 간만 공유하며 receipt에 `PROCESS_SHARED_THREADS_ONLY`를 기록한다.
+- [x] OFF-by-default filesystem-local shared-result singleflight가 cache namespace와 lease key의 RunSpec/scope/input/provider/model/prompt exact binding, leader-only publish, follower cache re-read, wait/role/cache-source receipt를 제공한다.
+  - leader의 lease가 만료되거나 대체되면 late result는 discard하고 follower는 producer memory를 직접 받지 않는다. child-process reuse, follower timeout, producer failure cleanup, disabled no-op, namespace mismatch를 회귀했다. `src/llm_batch/shared_result_singleflight.py`, `tests/test_shared_result_singleflight.py`이며 network/global coordinator 또는 active runtime wiring은 아니다.
+- [x] `AgenticPipeline._search_with_meta()`에 explicit-injection `PipelineSearchStageShadow` observer를 접목했다.
+  - 기본값 `None`이고 환경변수 자동 활성화가 없다. observer에는 deep copy만 전달하며 오류/변조가 기존 MCP 검색·in-memory cache·반환 meta를 바꾸지 않는다. scope namespace는 raw label이 아니라 exact publication-scope ArtifactRef SHA에서만 유도한다. `src/llm_batch/pipeline_stage_shadow.py`, `tests/test_pipeline_stage_shadow.py`; fresh runtime 실행·파일 write·rate/cache/singleflight control은 수행하지 않는다.
+- [x] replay-only `AgenticPipeline` stage-shadow canonical canary와 independent reader를 추가했다.
+  - `out/pipeline_stage_shadow_canary_20260712/`은 local replay MCP로 pipeline observer event를 재생하고, reader가 동일 replay를 temporary output sandbox에서 다시 실행해 event artifact를 비교한다. `GO_PIPELINE_STAGE_SHADOW_REPLAY_ONLY`, `runtime_started=false`, `writes_to_production=false`, active production interaction `NONE`이다. CWD `out/` 생성/접촉은 금지하며 raw query는 manifest/event에 저장하지 않는다. synthetic/no-network라 source-backed actual packet 또는 M2 증거가 아니다.
+- [x] bounded temp DB용 slang transaction sidecar가 DB별 OS lock, fsync intent/backup/DB replace/terminal journal, receipt self-hash, apply/rollback의 intent·DB replace·terminal receipt crash injection과 reconciliation을 제공한다.
+  - 근거: `src/llm_batch/slang_transaction.py`, `tests/test_slang_transaction.py`; `sidecar_root`가 시스템 temporary root 아래이고 DB·journal을 감싸며 DB가 2 MB 이하일 때만 저수준 apply/reconcile/rollback을 허용한다. active production 및 `SlangDBManager.flush`에 연결하지 않았다.
+- [x] slang proposal self-hash·별도 owner approval manifest·source work artifact/run manifest 재검증을 transaction sidecar의 apply/rollback에 exact 결속했다.
+  - proposal/approval file SHA, source work entry SHA, expert_main `work_artifact_complete`/`promotion_ready`/delayed-writeback policy와 base DB bytes를 authorization·journal·application receipt에서 재생한다. receipt-gap recovery와 rollback terminal-gap도 bounded temp DB에서 검증했다. in-run `SlangDBManager.flush`는 수정하지 않았다.
+- [x] `DecisionCallLedgerRegistry` 전용 framed WAL v2 shadow adapter가 length+hash segment/index/checkpoint, legacy frame replay equivalence, compaction과 104,502 acceptance를 제공한다. P2 `PublicationCommitRegistry v3` journal은 변경하지 않았다.
+  - `decision_ledger_binding.py`가 run/pair/arm, RunSpec/scope/attempt ArtifactRef, ledger index/checkpoint/replay SHA를 shadow sidecar로 결속하고 independent reader가 재생한다. active `DecisionCallLedgerRegistry` writer 교체·production wiring은 별도 runtime-safe 접목 게이트로 남긴다.
+- [x] DecisionLedgerV2 torn/orphan/corruption/concurrent/replay equivalence/104,502 scale acceptance를 shadow adapter에서 실행했다.
+  - 104,502 acceptance는 `409` segments, index/replay `104502/104502`, total `10.317s`로 통과했다. legacy registry frame replay equivalence, orphan fail-close, checkpoint+receipt compaction/reconciliation도 shadow adapter에서 통과했다. active runtime wiring은 아직 없다.
+- [x] legacy DecisionCallLedger의 post-run readback을 isolated V2 mirror로 replay하고 independent reader가 binding/equivalence를 검증한다.
+  - source registry scope/frame에는 write하지 않고 temporary clone에서 legacy validator를 실행한다. output은 legacy root 내부를 거부하며 run/pair/arm, scope SHA, V2 root/index/checkpoint를 교차 결속한다. canonical synthetic artifact `out/decision_ledger_v2_mirror_canary_20260712/`은 4 frame `GO_DECISION_LEDGER_V2_POSTRUN_MIRROR`다. `src/llm_batch/decision_ledger_v2_mirror.py`; fresh runtime/production wiring은 아니다.
+- [x] launch-readiness manifest builder가 required/replay ArtifactRef를 읽어 `NOT_READY` 또는 `READY_FOR_NO_WRITE_PREFLIGHT`만 기록한다.
+  - v2 reader는 required 10/replay 6 exact set과 missing list/path collision을 재계산한다. rehash된 manifest가 ref를 지우고 `READY`를 주장하면 fail-close한다. 근거: `tools/build_launch_readiness_manifest.py`, `tests/test_launch_readiness_manifest.py`; runtime/production write/승인은 수행하지 않는다.
+- [x] actual packet 생성 → no-write preflight → fresh pair → recovery readback의 경로·출력을 결속하는 한국어 runbook과 launch-readiness manifest/wrapper를 완성했다.
+  - [x] preflight receipt provenance은 같은 packet의 no-write preflight 재계산으로 재검증하고, actual-readback writer 자체가 packet root의 직접 자식 새 directory만 허용한다. writer는 무작위 staging에 쓴 뒤 rename하며 staging identity/reparse 교체가 보이면 cleanup을 포기한다. handle-relative/no-reparse open을 쓰는 hostile-parent 완전 방어는 아직 제공하지 않는다.
+  - [x] P1 v8→P2 v8→P3 v20→P4 v21의 historical parent replay를 `frozen parent` 모드로 분리했다. RunSpec/비교표/라벨/행·artifact bytes/self-hash와 implementation record의 경계는 계속 fail-close하지만, 과거 implementation SHA를 current working-tree와 같다고 요구하지 않는다. 직접 validator 기본값은 current implementation bytes를 계속 대조한다.
+  - current implementation을 새 P1 lineage로 재봉인할 필요가 생기면 별도 versioned artifact와 P3/P4 부모 재결속을 명시적으로 승인·생성한다. 이는 신규 fingerprint 작업이며 v8/v20/v21을 제자리 수정하거나 actual packet 근거로 승격하지 않는다.
+  - runbook: `docs/devs/LAUNCH_READINESS_RUNBOOK_KO.md`; build→manifest reader→preflight→receipt reader→`tools/run_launch_packet_actual_readback.py` 순서가 manifest/GO receipt/root-relative 10+6 ref를 재결속한다. `NOT_READY` packet은 `NO_GO_LAUNCH_PACKET_ACTUAL_READBACK`으로 receipt/engine 전에 닫는다. 실제 source-backed packet은 아직 없으며 `docs/devs/ACTUAL_PACKET_INPUT_INVENTORY_KO_20260712.md`를 따른다.
+
+### M2 — `ACTUAL_EFFECT_VERIFIED`
+
+- [ ] source-backed 10 required + 6 replay artifact packet을 만들어 `READY_FOR_NO_WRITE_PREFLIGHT` positive path와 actual readback을 검증한다.
+  - 2026-07-13 no-write recheck: canonical manifest `NOT_READY / GO_LAUNCH_MANIFEST_BOUND`, preflight `NO_GO_LAUNCH_PACKET_PREFLIGHT` (engine/runtime/write false)다. policy `DECISION_REQUIRED`, readiness `ready_rows=0/18`·producer COMPLETE `0/18`이므로 입력을 만들기 전까지 이 상태를 fail-close로 유지한다.
+  - 2026-07-13 두 번째 recheck도 policy/readiness/manifest SHA가 각각 `650a41da...7fc3`/`77f96e51...d3466`/`62616f49...cc8b`인 같은 입력에서 동일 NO-GO를 재현했다. external blocker streak는 `2/3`이며 runtime은 열지 않는다.
+  - 2026-07-13 세 번째 recheck도 같은 SHA·reader/preflight gate·exit `2`를 재현해 external blocker streak `3/3`을 충족했다. M1 완료·안전 작업 0 조건에서 `ACTUAL_BLOCKED_HANDOFF`로 전환하며, source-backed 10+6 packet·policy v3·DEV/CAL/FROZEN·fresh runtime이 제공될 때만 재개한다.
+- [ ] policy v3 owner decision과 source-backed DEV/CAL/FROZEN을 고정한다.
+- [ ] 같은 RunSpec fresh BEFORE/AFTER를 `--parallel 16`, dashboard ON으로 실행한다.
+- [ ] accuracy·candidate recall·NIL·Brier/log loss/ECE·selective risk/AURC·calls/tokens·batch E2E p50/p95 paired CI를 독립 readback한다.
+- [ ] hard regression 0, public/CandidateSet 비간섭, crash/restart recovery를 확인한다.
+- [ ] 전 조건 전까지 `REVIEW-LOCKED`, `full_scan_approval=false`를 유지한다.
+
+M1 완료 후 M2 외부 조건만 남은 최초 2회 audit까지는 `ACTIVE / ACTUAL_EFFECT_PENDING`으로 유지한다. 현재는 같은 외부 blocker가 `3/3`이어서 `ACTUAL_BLOCKED_HANDOFF`이며, 새 입력으로 재개하면 audit streak를 다시 시작한다. 최초 유효 pair 뒤 서로 다른 수정 fingerprint 최대 2회에서 실패하면 `COMPLETE_SAFE_TERMINAL / ACTUAL_EFFECT_NOT_PROVEN`이며 운영 전환은 금지한다.
+
+## 2026-07-12 최초 목표 중간점검 후 잔여 우선순위
+
+- [x] blocked Goal을 거짓 complete로 우회하지 않고 새 작업의 active Goal로 이관했다.
+- [x] 최초 아키텍처 아이디어 대비 P0~P4 구현·시험·actual 증거를 한국어 중간점검 보고서로 정리했다.
+- [ ] P3 실제 정책을 확정하고 source-backed DEV/CAL/FROZEN packet을 만든다.
+- [x] P3 actual policy v3가 `top_label_accuracy`의 ABSTAIN 포함/제외 분모를 명시하고 hash-bind하도록 구현했다. P3 v18 legacy v2 정본은 유지한다.
+- [ ] `--parallel 16`, dashboard ON fresh BEFORE/AFTER와 강제 중단·재시작을 별도 경로에서 실행한다.
+- [x] P4 paired reader가 source-bound `DecisionCostTrace`에서 batch execution envelope와 full-expert comparable E2E p50/p95·paired bootstrap CI를 계산하도록 구현했다. reference-copy 행은 KPI에서 제외한다.
+- [ ] static shadow foundation, explicit search observer와 synthetic replay canary는 구현됐지만, source-backed actual packet과 fresh runtime evidence를 만들고 slang/단계 제어/DecisionLedgerV2의 다음 runtime-safe 접목 범위를 검증한다.
+- [x] framed WAL v2의 torn/orphan/corruption/concurrent/replay/compaction과 104,502 scale acceptance를 shadow foundation에서 완료했다. active production enable은 아직 금지한다.
+
+## 2026-07-12 P3/P4 최신 다음 작업
+
+- 상태: `BLOCKED / ARCHITECTURE_INTEGRATION_COMPLETE / ACTUAL_BLOCKED_HANDOFF / NOT_COMPLETE`. 2026-07-12 재개 뒤 정적 구현·검증은 M1까지 완료했고, 정책 A/B 확정·미판정 3행의 새 source-backed 판결·active production 정상 종료·fresh pair 자료가 제공될 때 M2를 재개한다.
+
+- [x] 실제 model send마다 `run/scope/post/row_attempt/logical_call/call` 식별자, 단계·모델, retry 부모 관계, 성공·실패 terminal, token 출처를 남기는 bounded physical-call ledger를 구현했다.
+- [x] 성공 terminal 없는 행, 비어 있는 fallback, reason-review의 알려진 비어 있지 않은 실패 fallback, late seal race, hash key collision을 fail-close한다.
+- [x] REQUIRED 측정의 missing/unsealed/unlinked/`NOT_ESTIMABLE`/ambiguous 행이 병렬 초기·진행·최종 manifest의 `large_run_complete`를 막게 했다.
+- [x] 외부 원장을 writer와 독립적으로 재읽어 expert/text/VLM 호출, retry, token, model-call wall을 계산하는 reader를 구현했다. 실제 paired ledger readback run은 아직 없다.
+- [x] authoritative publication WAL의 논리 decision과 fresh 측정 원장을 분리 검증하는 복구 게이트를 구현했다. 실제 강제 중단·재시작 runtime은 아직 없다.
+- [x] P3 actual-readback v2가 외부 예상 행 목록·producer·AFTER·baseline을 각각 재판독하고, 중복 JSON key·source digest·행 순서·확률 질량·의미 영수증 불일치를 거부한다.
+- [x] readiness v2가 사전 등록 정책의 의미 SHA뿐 아니라 정책 파일 path·raw SHA·bytes를 저장하고 source replay한다.
+- [x] actual bound runner가 수동 SHA 인자를 제거하고 정책·P1·라벨 원장·동결 split·source manifest·네 JSONL에서 RunSpec/source/metric SHA를 유도한다.
+- [x] `actual-preflight`가 필수 입력·replay 6종·readiness·bound readback 가능 여부를 무쓰기/무런타임으로 회계하고 누락 시 exit 2로 닫게 했다.
+- [x] synthetic fixture 숫자를 actual 정책으로 복사하지 않고, 안전 우선 A·제한적 비열화 B와 표본 산식을 `P3_ACTUAL_POLICY_DECISION_KO_20260712.md`에 분리했다.
+- [ ] actual 정책 A/B 또는 필드별 숫자를 소유자가 확정한 뒤에만 실행 가능한 policy JSON과 새 readiness를 만든다.
+- [x] 같은 post ID만 맞춘 다른 정답·분할과 producer 자기신고 source digest를 거부하도록 split/readiness 전체 필드와 source manifest raw SHA를 결속했다.
+- [x] 각 동결 행의 source payload를 최상위 `ArtifactRef`로 RunSpec/readback에 넣고 내부 `schema_version/source_run_id/example_id/post_id`를 exact-match해 행 바꿔치기와 평가 중 파일 변경을 차단했다.
+- [x] replay 6종을 실제 base-shadow/score-vector/calibration-artifact/prediction parser로 읽고 frozen coverage·post identity·split/policy 결속을 검증해 이름만 맞춘 빈 JSON을 거부했다.
+- [x] 실제 자료 준비도가 P1 RunSpec과 비교표를 원본에서 다시 만들고 P1 결속 라벨 원장으로 18행을 재계산하도록 했다. blocker 삭제 뒤 재해시한 거짓 READY도 source replay에서 거부한다.
+- [x] 동일 행 AFTER−BEFORE의 정확도·Brier·log loss·ECE·선택 위험·AURC 여섯 paired CI를 사전 정책 경계와 비교하는 fail-closed GO 조건을 구현했다.
+- [x] REQUIRED/FRESH/AFTER/`SOURCE_ONLY_V1`/`FROZEN_OFF`에서만 작동하는 source-only early route를 구현했다. cheap 행은 authoritative WAL reference copy라 actual production 절감으로 계산하지 않는다.
+- [x] 최신 기능·정확도 %·비용 감소 %의 분모를 설명하는 한국어 독자 보고서 `LLM_PIPELINE_IMPROVEMENT_STATUS_KO_20260712.md`를 추가했다.
+- [x] paired reader가 RunSpec bytes/self-hash, 양쪽 actual input bytes·post_id 순서, output, attempt claim, WAL, ledger, early-route receipt를 source replay로 결속한다. 설명 없는 0-call은 거부하고 reference-copy는 production 절감 KPI에서 제외한다.
+- [x] P4가 읽는 P1·P2와 P3가 실제 사용한 P1·P2, P1·P3 라벨 원장이 exact path/bytes/SHA로 같은지 검증한다.
+- [x] recovered BEFORE/AFTER를 무조건 거부하지 않고 exact self-hashed witness가 source manifest/result/checkpoint/pending·summary·output·claim·WAL·single-attempt ledger·AFTER route를 재생할 때만 허용한다.
+- [x] 복구 도구가 exact GO에서만 witness를 먼저, recovered manifest pointer를 마지막에 원자 게시하고 NO-GO·예외에서 stale target을 제거하도록 했다. 기존 비측정 호출은 호환한다.
+- [x] P2 v8 → P3 v20 → P4 v21 불변 계약 산출물을 새 구현 SHA로 재봉인하고 부모·구현 SHA를 검증했다. P3 v18/v19·P4 v19/v20은 legacy 정본으로 보존한다.
+- [x] P3/P4 집중 회귀 `82/82 PASS`와 변경 Python `py_compile`을 확인했다. 이는 actual 성능 수치가 아니다.
+- [ ] immutable-frame v1의 전역 reload·small-file 구조를 framed WAL v2로 교체하고 crash/scale 검증 전에는 104k production enable을 금지한다.
+- [ ] 소유자가 P3 actual policy v3의 `top_label_accuracy_denominator`와 A/B 수치를 확정한 뒤 source-backed policy JSON을 만든다. 구현된 hash-binding 자체는 완료됐다.
+- [ ] fresh paired runtime에서 execution envelope의 실제 full-expert comparable p50/p95·paired CI를 만든다. `physical_call_wall_ms_sum`은 계속 모델 호출 누적시간으로만 읽는다.
+- [ ] 실제 DEV/CALIBRATION/FROZEN 자료·정책·split/source manifest·producer/AFTER/baseline JSONL을 만들고 bound runner를 통과한 뒤 실제 보정 객체로 paired CI output을 생성한다.
+- [ ] active production 종료 후 동일 RunSpec으로 fresh BEFORE와 fresh AFTER를 각각 새로 실행한다. `--parallel 16`, dashboard ON, search/VLM/OCR/slang 조건을 고정한다.
+- [ ] 실제 비용이 좋아도 정확도·후보 재현율·hard regression·public/CandidateSet 비간섭이 모두 통과하기 전에는 cheap routing 운영 승인을 요청하지 않는다.
+
+## 이전 P4 선택적 비용 라우팅 그림자 v3 TODO
+
+- [x] 공개 결과를 바꾸지 않는 `FULL_EXPERT_REQUIRED / CHEAP_RULE_ELIGIBLE` 그림자 라우팅 계약을 구현했다.
+- [x] 검색 차단·저하·미확인, 후보 `UNKNOWN/TRUNCATED`, 복수 작품·주제 충돌, VLM/OCR 누락·충돌, HOLD·격리·미판결, scope/source/budget 불일치를 hard risk로 합쳤다.
+- [x] 실제 scope는 source readback 미구현 위험을 무조건 추가해 cheap lane을 fail-close하고 실제 비용 KPI를 전부 `null/NOT_ESTIMABLE`로 유지했다.
+- [x] `DecisionCostTrace`를 publication scope/run/input index/post_id에 결속하고 결측·잘못된 count를 0으로 세탁하지 않도록 했다.
+- [x] `decision_cost_trace`를 attempt-local metadata로 분리해 P2 exact-once 재시도 CAS 결과를 바꾸지 않도록 했다.
+- [x] Golden18 `FULL_EXPERT_REQUIRED 18 / cheap 0`, public/CandidateSet 불변 `18/18`, 적대 공격 `20/20`, false cheap `0`을 확인했다.
+- [x] 합성 `16→8`·50%를 실제 절감률로 승격하지 않고, 합성 escalation 상태도 `SYNTHETIC_CONTRACT_ONLY`로 분리했다.
+- [x] 부모 결속을 P2 v4, P3 v4로 갱신하고 구현 artifact 집합 exact compare를 추가해 P4 v3 immutable bundle로 재봉인했다.
+- [x] expert 호출을 행별 typed event로 기록하고 독립 reader가 exact replay하는 기반을 구현했다. 실제 paired run은 미실행이다.
+- [x] P3 `FROZEN_ACTUAL` 파일·producer coverage·prediction payload·source digest readback 기반을 구현했다. 실제 자료·run은 없다.
+- [ ] 동일 RunSpec·동결셋 paired before/after 실제 런으로 calls/post·회피율·wall p50/p95를 측정한다.
+- [ ] 모델별 가격표의 출처·시점·통화를 RunSpec에 고정하기 전에는 금액 비용 KPI를 만들지 않는다.
+- [ ] active production 종료 뒤 별도 `--parallel 16`, dashboard ON, slang off/read-only 경로로 실행한다.
+- [ ] 실제 정확도·후보 재현율·hard regression·public 비간섭을 통과하기 전에는 public cheap routing을 열지 않는다.
+
+## 2026-07-11 P3 정확도 퍼센트 계약 기반 v1 TODO
+
+- [x] 정답 사건을 `후보 작품 ID 또는 NIL`로, `ABSTAIN`을 별도 행동으로 고정했다.
+- [x] DEV/CALIBRATION/FROZEN_HOLDOUT의 게시글 그룹·본문·출처·후보 묶음·작품 지문 교차 누수를 차단했다.
+- [x] 보정기 학습 영수증에 분할·점수 생성기·표본 수·해결/미해결 라벨·온도·정책을 결속하고 미해결 DEV/CAL 라벨을 거부했다.
+- [x] 기본 후보 기록·원점수·보정기·정책·행을 재생해 저장 shadow 변조와 점수/입력 지문 위조를 차단했다.
+- [x] 평가 입력을 시작 시 고정 snapshot으로 복제해 시간차 Mapping 지표·검색 blocker 세탁을 차단했다.
+- [x] 검색 blocker, 후보 누락, 소표본, 작은 ECE 구간, NIL 예측 0건에서 0%·100% 대신 `null` 또는 `NOT_ESTIMABLE`을 유지했다.
+- [x] 후보 재현율·NIL 비율·선택 위험에 Clopper–Pearson 경계를 구현하고 알려진 수치로 검증했다.
+- [x] RunSpec에 전체 합성 정책·지표 규약을 결속하고, 보고서 저장 전 RunSpec·공격 요약·승인 경계를 재검증했다.
+- [x] Golden18 실제 지표 전부 `null`, 무결속 숫자 `1→0`, 합성 공격 `20/20`, false GO `0`, focused `20 tests OK`를 v1 정본으로 봉인했다.
+- [ ] 실제 DEV/CALIBRATION/FROZEN 라벨 자료의 표본 수를 목표 오차폭·허용 위험에서 사전 계산하고 immutable manifest로 만든다.
+- [x] 실제 파일 바이트·producer coverage·prediction payload를 readback하는 `FROZEN_ACTUAL` 증거 계약 기반을 구현했다. 실제 자료·fit/run 산출물은 후속이다.
+- [x] top-label accuracy/ECE/Brier/자연로그 손실/AURC/선택 위험의 그룹 bootstrap과 동일 행 baseline 차이 계산 기반을 구현했다. 실제 CI output은 후속이다.
+- [ ] active production 종료 뒤 별도 `--parallel 16`, dashboard ON, slang off/read-only runtime으로 P2/P3를 검증한다.
+- [ ] 신규 module/harness/tests/v1 산출물을 검토한 뒤 Git 추적·clean-clone CI 대상에 포함한다.
+
+## 2026-07-11 P2 최종 공개 판정 exact-once v2 TODO
+
+- [x] scope-owned WAL, 최초 기록자 우선, 같은 재시도 무쓰기 재생, 상충 판정 거부를 구현했다.
+- [x] 입력·순서·전체 설정·decision 환경·release·slang provenance를 sidecar와 manifest SHA로 결속했다.
+- [x] 복구 도구에서 공개 행 완결, 종료 산출물 완결, 의미 품질 승인을 별도 게이트로 판정하도록 했다.
+- [x] Golden18 저장본 전후와 21개 합성 공격을 v2 RunSpec에 봉인했다.
+- [x] `O(n²)` 전체 WAL 재검사를 최초 전수 검사 뒤 새 프레임만 읽는 증분 구조로 바꿨다.
+- [ ] 실제 새 runtime에서 WAL/checkpoint/result/manifest 수와 SHA가 끝까지 일치하는지 확인한다.
+- [ ] 강제 중단 뒤 재시작에서 LLM 재호출 없이 WAL 정본을 복구하는지 검증한다.
+- [ ] slang work artifact의 명시적 검토·병합·승격 도구를 구현한다.
+- [x] P3 후보/NIL 보정 확률의 분할·영수증·원본 재생·무수치 계약 기반을 구현했다.
+- [x] P3 실제 파일 readback과 ECE/Brier/log loss/AURC·paired baseline 그룹 bootstrap 계산 기반을 구현했다.
+- [ ] 실제 분리 라벨·prediction 산출물을 reader에 넣어 actual 구간을 생성한다.
+
+## 2026-07-11 P1 검색·fetch 완료 증명 v6 TODO
+
+- [x] 실행 전 bounded query/search/fetch plan과 작업별 결과 receipt를 frozen typed contract로 만들었다.
+- [x] search/fetch 실제 경로의 explicit completion, 오류·저하·throttle·raw/retained 손실 상태를 receipt에 연결했다. origin 미결합 cache는 `UNKNOWN`으로 닫았다.
+- [x] plan과 receipt의 exact multiset·required producer·완료 상태를 결합한 `CandidateGenerationProof`를 CandidateSet shadow가 재검증하도록 했다.
+- [x] 합성 결과 `COMPLETE 1 / UNKNOWN 4 / TRUNCATED 1 / false COMPLETE 0`을 v6 하네스로 봉인했다.
+- [x] P1 v8과 completeness v6의 public `18/18` 불변, 확률 `null`, 집중 `62/62`, 영향 범위 `529/529 tests OK`를 확인했다.
+- [x] partial/generic/blocked/malformed search, snippet/restricted fetch fallback, posthoc direct plan, required set 축소, 빈 required plan, raw count underreport를 fail-close했다.
+- [ ] active production 종료 뒤 별도 `--parallel 16`, dashboard ON, slang off/read-only runtime으로 실제 배선을 검증한다.
+- [ ] cache origin receipt/hash 결합을 구현한 뒤에만 cache replay COMPLETE를 검토한다.
+- [ ] broader frozen holdout에서 위험 유형별 candidate-set recall과 신뢰구간을 측정한다.
+- [x] P2 post_id별 최종 판정 exact-once·우회 0을 저장본·합성 범위에서 감사했다. 실제 runtime 감사는 위 열린 항목으로 유지한다.
+- [x] P3 DEV/CALIBRATION/FROZEN-HOLDOUT 분할·temperature scaling 산출물·합성 지표 계약 기반을 구현했다.
+- [ ] 실제 분리 라벨·파일 readback·ECE/Brier/log loss/NIL PR/coverage-risk/AURC 그룹 신뢰구간 gate를 구현한다.
+- [ ] 신규 module/harness/tests/v8/v6 산출물을 검토한 뒤 Git 추적·CI 대상에 포함한다.
+
+## 2026-07-11 P1 후보 생성 잘림·전문가 단계 영수증 v4 TODO (이전 단계)
+
+- [x] frozen `candidate_generation_v1`에 `UNKNOWN/TRUNCATED`, cap, 고유 수, 보존 수, source/metadata 지문을 추가했다.
+- [x] serializer가 24번째에서 조기 반환하지 않고 로컬 고유 source를 끝까지 센 뒤 기존과 같은 앞 24개를 보존하도록 바꿨다.
+- [x] nested `candidate_ledger.candidate_generation`만 허용하고 root 혼입·flat/nested 혼합·cap/수/지문 변조를 fail-close했다.
+- [x] 동일 후보 24회 + 강제 `COMPLETE` 우회를 원 관측 레코드 cap 기준으로 차단했다.
+- [x] Golden18 P1 v6 공개 계약 `18/18`, 후보/NIL 구조 `9/9`, `6/6`을 유지했다. 두 구조 수치는 정확도가 아니다.
+- [x] completeness v4에서 제목 7개 `TRUNCATED 7→6`, serializer 후보 25개 `TRUNCATED 25→24`, cap 이하 `UNKNOWN`, 기존 보존 출력 7/7 불변을 확인했다.
+- [x] Gatekeeper 1·Decoder 1·Verifier 2·Arbiter 3개 실제 cap 직전에 원문 비노출 stage receipt를 연결했다. 합성 cap+1 `7/7`, 경계 오탐 `0`, 유지 출력 `9/9`이다.
+- [x] 집중 `71 tests OK`, 영향 회귀 `518 tests OK`를 통과했다. broader 554 중 red 2개는 변경 전 로그와 recorder no-op 재현으로 선행 부채임을 확인했다.
+- [x] `_build_title_candidates(max_items=6)`의 정책 필터 뒤 ranked-title 원 관측 수·잘림을 계측했다.
+- [x] Decoder·Gatekeeper·Verifier·Arbiter 후보 상태의 pre-cap count/truncated 진단을 연결했다.
+- [ ] 검색 query budget·MCP 결과·fetch URL 등 앞선 producer의 pre-cap count와 `enumeration_finished` proof를 연결한다.
+- [ ] `COMPLETE` 표본과 broader frozen holdout이 생기기 전 candidate-set recall·정확도 퍼센트를 계산하지 않는다.
+- [ ] active production 종료 뒤 별도 `--parallel 16`, dashboard ON, slang off/read-only runtime으로 실제 배선을 검증한다.
+- [ ] 신규 module/harness/tests/v6/v4 artifacts를 검토한 뒤 Git 추적·CI 대상에 포함한다.
+
+## 2026-07-11 P1 여러 후보·작품 없음 그림자 하네스 v3 TODO
+
+- [x] frozen `CandidateOption/CandidateSet/SelectiveShadowDecision` 계약을 추가했다.
+- [x] 정답 사건을 `Y={event candidate_id, NIL}`로 고정하고 `ABSTAIN`을 별도 행동으로 분리했다.
+- [x] 보정 전 확률·선택 라벨을 전부 `null`, `NOT_AVAILABLE_UNCALIBRATED`로 유지했다.
+- [x] 동일 URL alias 병합, 동일 제목·상이 URL 분리, URL 없는 약칭 비사건 보존을 회귀 시험했다.
+- [x] malformed root/ledger/evidence/ID/boolean/fingerprint/probability를 fail-close했다.
+- [x] Golden18 라벨 원장을 SHA-bound `CANDIDATE 9 / NIL 6 / UNJUDGED 3`으로 고정했다.
+- [x] P0 v5 부모 전체 검증과 P1 구현 SHA·post_id order/set·감사·라벨 원장을 RunSpec에 결속했다.
+- [x] 실제 candidate audit 부착 뒤 공개 title/URL/decision/gate/trace/fingerprint/version/bypass 불변 `18/18`을 확인했다.
+- [x] 작품 후보 정답의 사건 후보 내 관측 `9/9`, NIL 정답 원장 행의 공통 선택지 `6/6`을 구조 검사로 확인했다. 정확도 검사는 아니다.
+- [x] `generation_status=UNKNOWN`이므로 candidate-set recall을 `NOT_EVALUABLE`로 두고 정확도 100% 주장을 금지했다.
+- [x] candidate/P1 harness/promotion/retrieval/P0 harness/publication 영향 회귀 `199 tests OK`와 py_compile을 통과했다.
+- [x] ranked-title cap 6, serializer cap 24, 전문가 후보 상태 cap 7곳의 `UNKNOWN/TRUNCATED` 기록은 후속 v4에서 완료했다. 검색/MCP/fetch producer completion proof는 남았다.
+- [ ] 분리된 개발·보정·동결 표본을 만들고 ECE/Brier 또는 log loss/NIL PR/risk-coverage를 측정한다.
+- [ ] P0 live retrieval 배선과 동일 입력 실제 after runtime을 먼저 닫기 전 P1 선택을 public 결과에 적용하지 않는다.
+- [ ] 신규 P1 module/harness/tests/v6/v4 artifacts를 의도한 변경 범위로 검토한 뒤 Git 추적·CI 대상에 포함한다.
+
+## 2026-07-11 P0 검색 미복구 공개 차단 하네스 v5 TODO
+
+- [x] `RetrievalState`를 optional typed 입력으로 추가하고 기본 None/default에서 기존 판정·지문을 유지했다.
+- [x] 저장/복원 경로에서 retrieval 상태가 사라지지 않게 하고 malformed boolean을 fail-close했다.
+- [x] Loop643 Golden18 input/result/manifest/runtime plan/integrity/search gate와 현재 구현 지문을 RunSpec에 묶었다.
+- [x] 대상 5건의 저장 baseline 판정을 현재 게이트로 `5/5` 재현한 뒤 retrieval만 추가해 unsafe publish `1→0`, 후보 누락 `0`을 확인했다.
+- [x] 검색 hard blocker가 `5→5`로 남고 실제 runtime이 `NOT_RUN_STATIC_PROJECTION`임을 별도 게이트로 유지했다.
+- [x] 합성 7행 `5→0`, 정상 공개 `2→2`를 실제 저장본 `1→0`과 분리했다.
+- [x] py_compile과 결정적 회귀 `119 + 156 = 275 tests OK`를 확인했다.
+- [ ] 진행 중 104,502건 실행이 끝난 뒤 실제 검색 상태를 live `GroundingState.retrieval`에 연결한다.
+- [ ] 별도 출력·`--parallel 16`·대시보드·검색 16/16·VLM/OCR READY·`--slang-db off`로 동일 입력 개선 후 runtime을 실행한다.
+- [x] P0 실제 runtime 전에는 P1 CandidateSet/NIL을 shadow 계약·정적/합성 하네스 범위로만 진행했다. public 선택 적용은 하지 않았다.
+
+## 2026-07-11 Loop643 LIMIT_REACHED_HANDOFF TODO
+
+- [x] `ARCH-MULTIWORK-TITLE-BODY-SUBJECT-CONFLICT`를 production literal 없이 test-first로 구현했다.
+- [x] synthetic/affected/integrated 계약과 독립 공격 감사를 통과하고 fingerprint `d732342f...00f`를 동결했다.
+- [x] Golden18을 run `20260711_062543_156139`로 정확히 1회 실행해 runtime `18/18/18/0/0`과 Golden semantic `18/18`을 확인했다.
+- [x] Search non-light pre/post shard/query `16/16`, VLM/OCR READY, publication violation `0`을 확인했다.
+- [x] Non-required search miss 4건을 deterministic two-review consensus ledger로 terminal화해 `unreviewed_search_rows=0`으로 닫았다.
+- [x] Publish-dependent hard blocker 5건을 확인한 즉시 N=5/fresh375와 동일 fingerprint 재실행을 금지하고 `PLATEAU_AUDIT_ONLY`로 전환했다.
+- [x] Residual 9건을 `safe_terminal 4 / external_or_capability_blocker 4 / generalizable_fix 1`로 전수 분류했다.
+- [x] Outcome을 `LIMIT_REACHED_HANDOFF`, `semantic_quality=REVIEW-LOCKED`, production `full_scan_approval=false`로 동결했다.
+- [x] 사용자 승인에 따라 별도 architecture/harness goal에서 required-search publish fail-close를 gate-only·정적 비교까지 진행했다. Loop643 동일 fingerprint runtime은 재실행하지 않았다.
+
+## 2026-07-11 Loop642 strict BLOCKED_HANDOFF TODO
+
+- [x] 동일 user-authority blocker의 세 goal turn을 immutable report로 연결했다.
+- [x] runtime fingerprint·Golden SHA·process·N=5/fresh375 부재를 세 번째로 재확인했다.
+- [x] safe material action `0`, blocker streak `3/3`, reset 없음으로 판정했다.
+- [x] `BLOCKED_HANDOFF` report와 resume command를 생성했다.
+- [x] strict 조건 충족 뒤 `update_goal(blocked)` 전환을 수행했다.
+- [ ] 사용자가 새 architecture/model goal로 resume할 때만 새 fingerprint 작업을 시작한다.
+
+## 2026-07-11 Loop642 handoff continuation 재감사 TODO
+
+- [x] current HEAD/runtime fingerprint와 i7 immutable SHA를 다시 확인했다.
+- [x] 같은 fingerprint manifest `1`, i7 N=5/fresh375 artifact `0/0`, expert process `0`을 확인했다.
+- [x] `11698880`은 adjudication/docs-only safe terminal 불가로 재판정했다.
+- [x] stale Loop641 `Current Gate`와 루트 README 운영 상태를 historical/current로 동기화했다.
+- [x] 동일 사용자 권한 blocker streak를 `2/3`으로 기록하고 `update_goal(blocked)`를 호출하지 않았다.
+- [ ] 별도 `ARCH-MULTIWORK-TITLE-BODY-SUBJECT-CONFLICT` architecture/model goal의 명시 승인 전에는 patch/runtime을 시작하지 않는다.
+
+## 2026-07-11 Loop642 i7 LIMIT_REACHED_HANDOFF TODO
+
+- [x] i7 title-integrity, same-URL evidence laundering 차단, late-fetch page-state 재검사와 serializer fail-close를 구현했다.
+- [x] 관련 계약 `541 PASS / 조건부 skip 1 / 실패·오류 0`, safe-loss `53/53`, 독립 P0 감사 `105/105 PASS`를 확인했다.
+- [x] fingerprint `b035ffcd...aa06`을 동결하고 pre-search `16/16` 뒤 Golden18 r8/i7을 정확히 1회 실행했다.
+- [x] runtime integrity `18/18/0/0`, publication violation `0`, post-search `16/16`, required search blocker `0`, VLM/OCR READY를 확인했다.
+- [x] exact Golden `17/18`의 잔여 1건을 `GENERALIZABLE_FIX_REQUIRED_HARD_UNSAFE`로 전수 분류하고 `PLATEAU_AUDIT_ONLY`를 닫았다.
+- [x] Golden hard GO 미충족에 따라 N=5와 fresh375를 미실행·미승인으로 고정했다.
+- [x] `LIMIT_REACHED_HANDOFF`와 별도 goal backlog `ARCH-MULTIWORK-TITLE-BODY-SUBJECT-CONFLICT`를 생성했다.
+- [ ] 사용자가 새 resolution-enhancing architecture/model goal을 명시 승인한 경우에만 새 fingerprint로 재개한다. i7 fingerprint 재실행은 금지한다.
+
+## 2026-07-10 bounded convergence TODO
+
+- [x] `full_scan path`를 homogeneous panel375+post-run gate chain으로 한정하고 10만 production scan을 별도 goal로 분리한다.
+- [x] exact runtime 변화량 0 대신 전 행 adjudication 후 `unreviewed_adjusted_rows=0`, `true_semantic_regression_count=0`을 종료 metric으로 고정한다.
+- [x] publish 의존 search hard blocker와 safe no-public terminal row를 분리한다.
+- [x] fingerprint/progress vector, 동일 재실행 금지, bounded flip, plateau, strict blocked audit을 `docs/devs/REGRESSION_SAFE_GROUNDING_BOUNDED_CONVERGENCE_PROTOCOL.md`에 문서화한다.
+- [x] Source-only anonymous A/B blind packet, deterministic 5분류 builder, independent validator, always-on fail-closed 연동, unit tests를 구현했다. 실제 merged375 verdict 전 gate는 계속 `NOT_RUN / NO-GO`다.
+- [x] 독립 공격 감사에서 self-authored compare/receipt, packet/map tamper, checkpoint/run composition 미결박, incomplete search proof, self-review terminal을 재현하고 actual artifact/hash/readback에 결박했다. 관련 `86 tests PASS`다.
+- [x] N=5 flip probe 직접 실행 import 결함을 고쳤다. 새 fingerprint의 flip 실행 예산 1회는 아직 사용하지 않았다.
+- [x] Loop641 recovery/dispatch 회차의 `loop641_convergence_state.json/.md`를 생성했다. Terminal ledger는 merged375에서 search/drift issue row가 확정된 뒤 생성한다.
+- [ ] 진척 없는 `ACTIVE / NOT_COMPLETE`를 유지하지 말고 `CONTINUE`, `COMPLETE_GO`, `COMPLETE_SAFE_TERMINAL`, `BLOCKED_HANDOFF` 중 계약에 맞는 상태로 귀결한다.
+
+## 2026-07-10 GPT-5.6 Loop640 중단 복구 TODO
+
+- 상태: Loop640 최신 artifact는 `75/68/7/0`, checkpoint completed `75`, result `68`, pending `7`, `large_run_complete=false`이며 process/dashboard는 종료 상태다. 기존 `66/375 RUNNING` 문구는 historical snapshot이다.
+- [x] 새 실행용 `/goal` prompt를 `docs/devs/LOOP640_RECOVERY_GPT56_CONTINUOUS_GOAL_PROMPT.md`에 작성한다.
+- [x] 기존 Loop640 output을 재실행하지 않고 checkpoint 완료 `75`행을 별도 SHA 고정/read-only immutable artifact로 복구·감사했다.
+- [x] same runtime code/prompt/config(HEAD drift docs-only)·input·baseline·Gemma/search/VLM/OCR/slang 계약을 확인했다.
+- [ ] 원본 panel에서 완료 post_id를 뺀 original-order residual `300`을 Loop641 run `20260710_043316_869117`로 실행 중이다. 완료 뒤 homogeneous unique375로 병합한다.
+- [ ] merged `375/375/0/0`, publish 의존 search hard blocker `0`, publication `GO/0`, golden18, deterministic adjudication builder/validator 기반 `adjusted_full375_collateral=GO`(`unreviewed_adjusted_rows=0`, `true_semantic_regression_count=0`), always-on, panel375 full_scan path를 검증한다.
+- Gate: `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`; queue0/runtime/dashboard만으로 승인하지 않는다.
+
 ## 2026-07-10 Loop640 full375 재시도 TODO
 
 - 상태 업데이트: Loop639 full375 dispatch는 partial이며 approval 근거가 아니다. Run `20260709_235040_236898`은 `40/24/16/0`, frontier `11663514`, manifest search contract `NO-GO`다.
@@ -11,7 +315,7 @@
 - [x] Loop640 full375 runtime을 background로 실행한다. Run `20260710_005902_590310`.
 - [x] Loop640 manifest에서 `mcp_health_include_search=true`, `mcp_health_light_mode=false`, `mcp_health_ok_count=16`을 확인한다.
 - [x] Running health snapshot을 생성해 `IN_PROGRESS / ordered_flush_gap_in_progress`와 frontier `11676314`를 기록한다.
-- [x] Loop638 adjudicated re-baseline 이후 raw `105`는 historical diagnostic이며, completion metric은 `adjusted_drift_count`임을 현재 Loop640 TODO에도 반영한다.
+- [x] Loop638 당시 `adjusted_drift_count` completion metric 기록은 historical/superseded다. 현재 metric은 deterministic adjudication의 `unreviewed_adjusted_rows=0` 및 `true_semantic_regression_count=0`이다.
 - [x] Latest live audit을 갱신했다: generated_at `2026-07-10T02:49:59`, completed/flushed/pending/failed `66/66/0/0`, frontier `11714885`.
 - [x] Process tree가 wrapper chain인지 확인해 독립 duplicate dispatch가 아님을 기록했다.
 - [ ] Run health를 생성하고 completed/flushed/pending/failed `375/375/0/0`을 확인한다.

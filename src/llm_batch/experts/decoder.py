@@ -19,6 +19,7 @@ from .prompts import (
     build_decoder_system_prompt,
 )
 from ..prompts.expert_prompts import PLATFORM_ABBREVIATION_MAP
+from ..candidate_generation import record_candidate_stage_receipt
 from ..rules import (
     OFFICIAL_PLATFORMS, GENRE_KEYWORDS, GENRE_ARCHETYPE_TERMS,
     PLATFORM_ABBREVIATIONS, PLATFORM_FEATURE_TERMS, ASSOCIATION_PATTERNS,
@@ -2684,6 +2685,12 @@ class DecoderExpert:
                         file=sys.stderr,
                     )
         
+        record_candidate_stage_receipt(
+            ctx,
+            producer="decoder",
+            stage="new_suspected_titles",
+            observed_sources=suspected,
+        )
         ctx.suspected_titles = existing + suspected[:5]  # 최대 5개
         
         if suspected:

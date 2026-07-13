@@ -26,6 +26,7 @@ from .utils import (
 from ..prompts.expert_prompts import LF_ARBITER, PLATFORM_ABBREVIATION_MAP
 from ..prompts.prompt_router import build_arbiter_system_prompt
 from ..rules import OFFICIAL_PLATFORMS, GENRE_ARCHETYPE_TERMS, PLATFORM_ABBREVIATIONS
+from ..candidate_generation import record_candidate_stage_receipt
 from .decoder import abbreviation_match_score, KNOWN_ABBREVIATIONS
 
 if TYPE_CHECKING:
@@ -1649,6 +1650,12 @@ class ArbiterExpert:
                     continue
                 _st["critic_reviewed"] = True
                 _adjusted.append(_st)
+            record_candidate_stage_receipt(
+                ctx,
+                producer="arbiter",
+                stage="critic_filter",
+                observed_sources=_adjusted,
+            )
             ctx.suspected_titles = _adjusted[:5]
             print(f"[{_ts()}][{self.emoji}] [Phase28] suspected_titles 코드레벨 정리: {len(ctx.suspected_titles)}건", file=sys.stderr)
         
@@ -1860,7 +1867,18 @@ class ArbiterExpert:
                 st['source_expert'] = 'arbiter'
                 merged.append(st)
         
-        ctx.suspected_titles = sorted(merged, key=self._suspected_title_sort_key, reverse=True)[:5]
+        ranked_merged = sorted(
+            merged,
+            key=self._suspected_title_sort_key,
+            reverse=True,
+        )
+        record_candidate_stage_receipt(
+            ctx,
+            producer="arbiter",
+            stage="candidate_merge",
+            observed_sources=ranked_merged,
+        )
+        ctx.suspected_titles = ranked_merged[:5]
         print(f"[{_ts()}][{self.emoji}] 📋 suspected_titles 최종 병합: {len(ctx.suspected_titles)}건", file=sys.stderr)
         
         # suspected_titles 내용 출력
@@ -2683,6 +2701,12 @@ class ArbiterExpert:
 
                     ctx.suspected_titles = list(_by_norm.values())
                     ctx.suspected_titles.sort(key=lambda x: _st_conf_num(x.get("confidence")), reverse=True)
+                    record_candidate_stage_receipt(
+                        ctx,
+                        producer="arbiter",
+                        stage="llm_candidate_merge",
+                        observed_sources=ctx.suspected_titles,
+                    )
                     ctx.suspected_titles = ctx.suspected_titles[:5]
 
                     print(

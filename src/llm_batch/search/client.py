@@ -190,7 +190,14 @@ class MCPClient:
                     response.raise_for_status()
                     data = response.json()
                     if not isinstance(data, dict):
-                        return {"query": query, "results": [], "total": 0}
+                        return {
+                            "query": query,
+                            "results": [],
+                            "total": 0,
+                            "raw_total": 0,
+                            "malformed_response": True,
+                            "error": "non_object_search_response",
+                        }
 
                     results = data.get("results", [])
                     degraded = bool(data.get("degraded") or data.get("possible_throttle"))

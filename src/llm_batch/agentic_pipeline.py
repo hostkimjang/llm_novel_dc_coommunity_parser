@@ -14,7 +14,9 @@ import csv
 import hashlib
 import re
 import httpx
+from copy import deepcopy
 from collections import Counter
+from dataclasses import replace
 from datetime import datetime
 from functools import lru_cache
 from pathlib import Path
@@ -60,9 +62,32 @@ from .batch_context import BatchContextMemory
 from .candidate_audit import (
     TITLE_LED_WORK_CONSUMPTION_RE,
     apply_weak_public_title_bridge_guard,
+    official_title_promotion_block_reasons,
     official_url_recoverable,
 )
-from .promotion_gate import EvidenceRecord, GroundingState, ScopeState, can_publish_title
+from .candidate_generation import (
+    CandidateGenerationSnapshot,
+    build_candidate_generation_proof,
+    build_candidate_generation_snapshot,
+    build_candidate_producer_plan,
+    build_title_candidate_generation_snapshot,
+    candidate_producer_plans_from_payload,
+    candidate_producer_receipts_from_payload,
+    candidate_stage_receipts_from_payload,
+)
+from .promotion_gate import (
+    candidate_inventory_evidence_from_sources,
+    EvidenceRecord,
+    GroundingState,
+    PublishContract,
+    ScopeState,
+    apply_publish_contract,
+    evaluate_publish_contract,
+    normalize_blocked_resolution_state,
+)
+from .title_integrity import parse_title_integrity_parts
+from .pipeline_stage_shadow import PipelineSearchStageShadow
+from .pipeline_stage_runtime_adapter import PipelineSearchRuntimeShadowAdapter
 from .experts.utils import (
     _ts, set_worker_context,
     _norm_domain_text, _detect_domain_groups, _has_domain_conflict_for_mapping,
@@ -167,6 +192,8 @@ class AgenticPipeline:
         parallel_count: int = 1,
         batch_context: Optional[BatchContextMemory] = None,
         recent_post_index: Optional[Dict[int, Dict[str, Any]]] = None,
+        search_stage_shadow: Optional[PipelineSearchStageShadow] = None,
+        search_runtime_shadow: Optional[PipelineSearchRuntimeShadowAdapter] = None,
     ):
         self.llm = llm or LLMClient()
         self.mcp = mcp or MCPClient()
@@ -200,6 +227,12 @@ class AgenticPipeline:
         self._search_degraded_zero_suppression: Dict[str, Dict[str, Any]] = {}
         self._search_degraded_zero_suppression_hits = 0
         self._search_cache_lock = threading.Lock()
+        # Explicit dependency injection only.  This observer never controls
+        # search/cache behavior and is OFF unless a caller supplies it.
+        self._search_stage_shadow = search_stage_shadow
+        # Explicit dependency injection only.  No environment variable or
+        # production entry point constructs or enables this runtime adapter.
+        self._search_runtime_shadow = search_runtime_shadow
 
         # Orchestrator
         self.orchestrator = Orchestrator(
@@ -317,6 +350,7 @@ class AgenticPipeline:
 
         # URL fetch cache — 동일 URL 반복 fetch 방지
         self._url_fetch_cache: Dict[str, Optional[Dict[str, Any]]] = {}
+        self._url_fetch_cache_meta: Dict[str, Dict[str, Any]] = {}
         self._url_fetch_cache_hits = 0
         self._url_fetch_cache_misses = 0
         self._url_fetch_cache_lock = threading.Lock()
@@ -600,7 +634,63 @@ class AgenticPipeline:
         return max(0.0, min(ttl, 3600.0))
 
     def _search_with_meta(self, query: str, purpose: str = "") -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+        """Run the unchanged legacy search path unless an adapter is injected.
+
+        The memoized operation prevents a failing third-party adapter from
+        causing a second MCP call after it already invoked the legacy path.
+        """
+        # Older checkpoint/test reconstruction paths may bypass ``__init__``.
+        # Missing injection state must remain exactly equivalent to the
+        # default-OFF legacy path instead of breaking restored pipelines.
+        adapter = getattr(self, "_search_runtime_shadow", None)
+        if adapter is None:
+            return self._search_with_meta_legacy(query, purpose)
+        try:
+            if not bool(getattr(adapter, "enabled", False)):
+                return self._search_with_meta_legacy(query, purpose)
+        except Exception:
+            return self._search_with_meta_legacy(query, purpose)
+        operation_called = False
+        operation_value: Optional[Tuple[List[Dict[str, Any]], Dict[str, Any]]] = None
+        operation_error: Optional[BaseException] = None
+
+        def legacy_once() -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+            nonlocal operation_called, operation_value, operation_error
+            if operation_called:
+                if operation_error is not None:
+                    raise operation_error
+                assert operation_value is not None
+                return deepcopy(operation_value)
+            operation_called = True
+            try:
+                operation_value = self._search_with_meta_legacy(query, purpose)
+                return deepcopy(operation_value)
+            except BaseException as exc:
+                operation_error = exc
+                raise
+
+        try:
+            adapted = adapter.execute(query=query, purpose=purpose, operation=legacy_once)
+            if (
+                not isinstance(adapted, (tuple, list))
+                or len(adapted) != 2
+                or not isinstance(adapted[0], list)
+                or not isinstance(adapted[1], dict)
+            ):
+                raise ValueError("runtime shadow adapter returned an invalid search shape")
+            return deepcopy(adapted[0]), deepcopy(adapted[1])
+        except Exception:
+            # Adapter mechanics fail open, but a legacy exception keeps its
+            # original behavior and is never converted into a second call.
+            if operation_error is not None:
+                raise operation_error
+            if operation_value is not None:
+                return deepcopy(operation_value)
+            return legacy_once()
+
+    def _search_with_meta_legacy(self, query: str, purpose: str = "") -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
         """Run MCP search with in-memory query cache and return bridge metadata."""
+        stage_started = time.monotonic()
         purpose_key = str(purpose or "").strip().lower()
         cache_key = f"{purpose_key}||{query.strip().lower()}" if purpose_key else query.strip().lower()
         search_meta: Dict[str, Any] = {
@@ -610,6 +700,11 @@ class AgenticPipeline:
             "from_cache": False,
             "degraded": False,
             "possible_throttle": False,
+            "enumeration_finished": False,
+            "error_status": "NONE",
+            "blocked": False,
+            "malformed_response": False,
+            "upstream_failure": False,
             "attempts": 1,
             "retry_count": 0,
             "total": 0,
@@ -677,6 +772,12 @@ class AgenticPipeline:
             search_meta.update(
                 {
                     "from_cache": True,
+                    "enumeration_finished": bool(
+                        cached_meta.get("enumeration_finished", False)
+                    ),
+                    "error_status": str(
+                        cached_meta.get("error_status") or "MISSING_META"
+                    ),
                     "total": int(cached_meta.get("total") or len(cached_results)),
                     "raw_total": int(cached_meta.get("raw_total") or len(cached_results)),
                     "lang_filtered": int(cached_meta.get("lang_filtered") or 0),
@@ -711,6 +812,7 @@ class AgenticPipeline:
                   f"[{_ts()}] 🔁 검색 캐시 히트: '{query}' -> {len(cached_results)}건 "
                   f"(hit {hit_count}/{hit_count + miss_count})",
                   file=sys.stderr)
+            self._observe_search_stage_shadow(query, purpose, cached_results, search_meta, stage_started)
             return cached_results, dict(search_meta)
 
         if suppressed_entry is not None:
@@ -747,6 +849,8 @@ class AgenticPipeline:
                     "direct_search_providers": [],
                     "direct_search_errors": [],
                     "suppressed_degraded_zero": True,
+                    "enumeration_finished": False,
+                    "error_status": "SKIPPED",
                     "suppressed_original_attempts": int(previous_meta.get("attempts") or 1),
                     "suppressed_original_retry_count": int(previous_meta.get("retry_count") or 0),
                 }
@@ -758,6 +862,7 @@ class AgenticPipeline:
                 f"(suppressed_hit {suppression_hit_count})",
                 file=sys.stderr,
             )
+            self._observe_search_stage_shadow(query, purpose, [], search_meta, stage_started)
             return [], dict(search_meta)
         
         # 연속 degraded 시 적응적 백오프: 엔진 복구 시간 확보
@@ -776,6 +881,27 @@ class AgenticPipeline:
             raw = self.mcp.search(query, purpose=purpose)
             results = raw.get("results", []) if isinstance(raw, dict) else []
             if isinstance(raw, dict):
+                raw_status = str(
+                    raw.get("status") or raw.get("error_status") or ""
+                ).strip().casefold()
+                explicit_search_failure = bool(
+                    raw.get("error")
+                    or raw.get("errors")
+                    or raw.get("blocked")
+                    or raw.get("malformed_response")
+                    or raw.get("ok") is False
+                    or raw.get("success") is False
+                    or raw_status
+                    in {
+                        "error",
+                        "failed",
+                        "failure",
+                        "blocked",
+                        "timeout",
+                        "degraded",
+                        "partial",
+                    }
+                )
                 search_meta.update(
                     {
                         "degraded": bool(raw.get("degraded")),
@@ -805,8 +931,32 @@ class AgenticPipeline:
                         "direct_search_count": int(raw.get("direct_search_count") or 0),
                         "direct_search_providers": list(raw.get("direct_search_providers") or []),
                         "direct_search_errors": list(raw.get("direct_search_errors") or []),
+                        "blocked": bool(raw.get("blocked")),
+                        "malformed_response": bool(raw.get("malformed_response")),
+                        "upstream_failure": explicit_search_failure,
                     }
                 )
+                structured_failure = bool(
+                    search_meta.get("unresponsive_engines")
+                    or search_meta.get("engine_errors")
+                    or search_meta.get("headless_blocked")
+                    or search_meta.get("direct_search_errors")
+                    or search_meta.get("blocked")
+                    or search_meta.get("malformed_response")
+                    or search_meta.get("upstream_failure")
+                )
+                if structured_failure:
+                    # A structured response can still be incomplete when one
+                    # configured retrieval path failed. Preserve the payload,
+                    # but make its completion receipt fail closed.
+                    search_meta["degraded"] = True
+                    search_meta["error_status"] = "ERROR"
+                    search_meta["enumeration_finished"] = False
+                else:
+                    # One bounded MCP search call returned and its raw/result
+                    # counts are now fixed. Degraded/throttle still fails
+                    # closed at receipt construction.
+                    search_meta["enumeration_finished"] = True
                 _current_consecutive = None
                 if (not results) and (
                     search_meta["degraded"] or search_meta["possible_throttle"]
@@ -827,6 +977,15 @@ class AgenticPipeline:
                     with self._search_cache_lock:
                         self._consecutive_degraded = 0
             
+            else:
+                search_meta.update(
+                    {
+                        "degraded": True,
+                        "enumeration_finished": False,
+                        "error_status": "ERROR",
+                    }
+                )
+
             # Compact results (top-k + content truncation)
             top_k = int(os.getenv("MCP_TOP_K_RESULTS", "10"))
             max_content = int(os.getenv("MCP_MAX_CONTENT_CHARS", "0"))
@@ -891,53 +1050,106 @@ class AgenticPipeline:
                     f"suppressed_next={_suppress_degraded_zero_ok}",
                     file=sys.stderr,
                 )
+            self._observe_search_stage_shadow(query, purpose, compacted, search_meta, stage_started)
             return compacted, dict(search_meta)
         except Exception as e:
             search_meta.update(
                 {
                     "degraded": True,
                     "possible_throttle": True,
+                    "enumeration_finished": False,
+                    "error_status": "ERROR",
                     "error": str(e),
                 }
             )
             with self._search_cache_lock:
                 self._last_search_meta = dict(search_meta)
             print(f"[{_ts()}] 🔎 검색 오류: {e}", file=sys.stderr)
+            self._observe_search_stage_shadow(query, purpose, [], search_meta, stage_started)
             return [], dict(search_meta)
+
+    def _observe_search_stage_shadow(self, query: str, purpose: str, results: List[Dict[str, Any]], search_meta: Dict[str, Any], stage_started: float) -> None:
+        """Record hash-only shadow evidence without changing any search outcome."""
+        # Checkpoint/test reconstruction can bypass ``__init__``.  A missing
+        # observer is the historical default-OFF state.
+        observer = getattr(self, "_search_stage_shadow", None)
+        if observer is None:
+            return
+        try:
+            # The observer receives copies only.  A non-throwing observer must
+            # not be able to alter a returned/cached result or its metadata.
+            observer.observe_search(query=query, purpose=purpose, results=deepcopy(results), search_meta=deepcopy(search_meta), elapsed_ms=max(0, int((time.monotonic() - stage_started) * 1000)))
+        except Exception:
+            # Shadow telemetry must not alter legacy cache/search behavior.
+            return
     
     def _fetch(self, url: str) -> Optional[Dict[str, Any]]:
-        """Fetch URL details via MCP with in-memory URL cache."""
+        """Backward-compatible fetch wrapper returning only the payload."""
+
+        result, _meta = self._fetch_with_meta(url)
+        return result
+
+    def _fetch_with_meta(
+        self,
+        url: str,
+    ) -> Tuple[Optional[Dict[str, Any]], Dict[str, Any]]:
+        """Fetch URL details while preserving fail-closed cache/error provenance."""
+
         def _cache_path_for(_url: str) -> Path:
             digest = hashlib.sha1(str(_url or "").encode("utf-8", errors="ignore")).hexdigest()
             return self.url_fetch_cache_dir / f"{digest}.json"
 
-        def _load_disk_cache(_url: str) -> tuple[bool, Optional[Dict[str, Any]]]:
+        def _load_disk_cache(
+            _url: str,
+        ) -> tuple[bool, Optional[Dict[str, Any]], Optional[Dict[str, Any]]]:
             if not self.enable_url_fetch_disk_cache:
-                return False, None
+                return False, None, None
             cache_path = _cache_path_for(_url)
             if not cache_path.exists():
-                return False, None
+                return False, None, None
             try:
                 payload = json.loads(cache_path.read_text(encoding="utf-8"))
                 if isinstance(payload, dict) and payload.get("url") == _url:
-                    return True, payload.get("result")
+                    cached_meta = payload.get("meta")
+                    return (
+                        True,
+                        payload.get("result"),
+                        dict(cached_meta) if isinstance(cached_meta, dict) else None,
+                    )
             except Exception:
-                return False, None
-            return False, None
+                return False, None, None
+            return False, None, None
 
-        def _store_disk_cache(_url: str, _result: Optional[Dict[str, Any]]) -> None:
+        def _store_disk_cache(
+            _url: str,
+            _result: Optional[Dict[str, Any]],
+            _meta: Dict[str, Any],
+        ) -> None:
             if not self.enable_url_fetch_disk_cache:
                 return
             cache_path = _cache_path_for(_url)
             try:
                 cache_path.write_text(
-                    json.dumps({"url": _url, "result": _result}, ensure_ascii=False),
+                    json.dumps(
+                        {"url": _url, "result": _result, "meta": _meta},
+                        ensure_ascii=False,
+                    ),
                     encoding="utf-8",
                 )
             except Exception:
                 pass
 
         cache_key = url.strip()
+        fetch_meta: Dict[str, Any] = {
+            "from_cache": False,
+            "cache_source": "",
+            "attempted_count": 0,
+            "raw_count": 0,
+            "enumeration_finished": False,
+            "error_status": "NONE",
+            "degraded": False,
+            "possible_throttle": False,
+        }
         waiter: Optional[threading.Event] = None
         should_fetch = False
 
@@ -945,26 +1157,57 @@ class AgenticPipeline:
             if cache_key in self._url_fetch_cache:
                 self._url_fetch_cache_hits += 1
                 cached = self._url_fetch_cache[cache_key]
+                cached_meta = self._url_fetch_cache_meta.get(cache_key)
                 total = self._url_fetch_cache_hits + self._url_fetch_cache_misses
                 print(
                     f"[{_ts()}] 🔁 fetch 캐시 히트: {url[:80]} "
                     f"(hit {self._url_fetch_cache_hits}/{total})",
                     file=sys.stderr,
                 )
-                return cached
+                if isinstance(cached_meta, dict):
+                    fetch_meta.update(cached_meta)
+                    fetch_meta["from_cache"] = True
+                    fetch_meta["cache_source"] = "memory"
+                else:
+                    fetch_meta.update(
+                        {
+                            "from_cache": True,
+                            "cache_source": "memory_legacy",
+                            "error_status": "MISSING_META",
+                            "enumeration_finished": False,
+                            "raw_count": 1 if isinstance(cached, dict) else 0,
+                        }
+                    )
+                return cached, dict(fetch_meta)
 
-        disk_hit, disk_cached = _load_disk_cache(cache_key)
+        disk_hit, disk_cached, disk_meta = _load_disk_cache(cache_key)
         if disk_hit:
             with self._url_fetch_cache_lock:
                 self._url_fetch_cache_hits += 1
                 self._url_fetch_cache[cache_key] = disk_cached
+                if isinstance(disk_meta, dict):
+                    self._url_fetch_cache_meta[cache_key] = dict(disk_meta)
                 total = self._url_fetch_cache_hits + self._url_fetch_cache_misses
             print(
                 f"[{_ts()}] 🔁 fetch 디스크 캐시 히트: {url[:80]} "
                 f"(hit {self._url_fetch_cache_hits}/{total})",
                 file=sys.stderr,
             )
-            return disk_cached
+            if isinstance(disk_meta, dict):
+                fetch_meta.update(disk_meta)
+                fetch_meta["from_cache"] = True
+                fetch_meta["cache_source"] = "disk"
+            else:
+                fetch_meta.update(
+                    {
+                        "from_cache": True,
+                        "cache_source": "disk_legacy",
+                        "error_status": "MISSING_META",
+                        "enumeration_finished": False,
+                        "raw_count": 1 if isinstance(disk_cached, dict) else 0,
+                    }
+                )
+            return disk_cached, dict(fetch_meta)
 
         with self._url_fetch_cache_lock:
             waiter = self._url_fetch_inflight.get(cache_key)
@@ -979,29 +1222,107 @@ class AgenticPipeline:
             with self._url_fetch_cache_lock:
                 self._url_fetch_cache_hits += 1
                 cached = self._url_fetch_cache.get(cache_key)
+                cached_meta = self._url_fetch_cache_meta.get(cache_key)
                 total = self._url_fetch_cache_hits + self._url_fetch_cache_misses
                 print(
                     f"[{_ts()}] 🔁 fetch 대기 후 캐시 히트: {url[:80]} "
                     f"(hit {self._url_fetch_cache_hits}/{total})",
                     file=sys.stderr,
                 )
-                return cached
+                if isinstance(cached_meta, dict):
+                    fetch_meta.update(cached_meta)
+                    fetch_meta["from_cache"] = True
+                    fetch_meta["cache_source"] = "inflight"
+                else:
+                    fetch_meta.update(
+                        {
+                            "from_cache": True,
+                            "cache_source": "inflight_missing_meta",
+                            "error_status": "MISSING_META",
+                            "enumeration_finished": False,
+                            "raw_count": 1 if isinstance(cached, dict) else 0,
+                        }
+                    )
+                return cached, dict(fetch_meta)
 
         result: Optional[Dict[str, Any]] = None
         try:
+            fetch_meta["attempted_count"] = 1
             result = self.mcp.fetch(url)
-            return result
+            fetch_meta["raw_count"] = 1 if isinstance(result, dict) else 0
+            result_structured = (
+                result.get("structured_info")
+                if isinstance(result, dict)
+                and isinstance(result.get("structured_info"), dict)
+                else {}
+            )
+            result_status = str(
+                (result.get("status") or result.get("error_status") or "")
+                if isinstance(result, dict)
+                else ""
+            ).strip().casefold()
+            fallback_payload = bool(
+                isinstance(result, dict)
+                and (
+                    result.get("fallback")
+                    or result.get("restricted_domain")
+                    or result.get("direct_fetch_error")
+                    or result.get("fetch_error")
+                    or result.get("error")
+                    or result.get("blocked")
+                    or result.get("malformed_response")
+                    or result.get("ok") is False
+                    or result.get("success") is False
+                    or result_status
+                    in {
+                        "error",
+                        "failed",
+                        "failure",
+                        "blocked",
+                        "timeout",
+                        "degraded",
+                        "partial",
+                        "unavailable",
+                    }
+                    or result_structured.get("fallback_source")
+                )
+            )
+            if fallback_payload:
+                # Search-snippet or restricted-domain fallbacks are useful
+                # diagnostic payloads, but they do not prove that the URL was
+                # fetched. Preserve the payload and fail completion closed.
+                fetch_meta.update(
+                    {
+                        "enumeration_finished": False,
+                        "error_status": "ERROR",
+                        "degraded": True,
+                    }
+                )
+            else:
+                fetch_meta["enumeration_finished"] = True
+                fetch_meta["error_status"] = (
+                    "NONE" if isinstance(result, dict) else "EMPTY_RESULT"
+                )
+            return result, dict(fetch_meta)
         except Exception as e:
+            fetch_meta.update(
+                {
+                    "enumeration_finished": False,
+                    "error_status": "ERROR",
+                    "degraded": True,
+                }
+            )
             print(f"[{_ts()}] 🔗 fetch error: {url} -> {e}", file=sys.stderr)
-            return None
+            return None, dict(fetch_meta)
         finally:
             with self._url_fetch_cache_lock:
                 # 실패도 캐시 (재시도 낭비 방지, sentinel=None)
                 self._url_fetch_cache[cache_key] = result
+                self._url_fetch_cache_meta[cache_key] = dict(fetch_meta)
                 event = self._url_fetch_inflight.pop(cache_key, None)
                 if event is not None:
                     event.set()
-            _store_disk_cache(cache_key, result)
+            _store_disk_cache(cache_key, result, dict(fetch_meta))
 
     def _supports_vlm_runtime(self) -> bool:
         if not self.enable_vlm:
@@ -1589,9 +1910,13 @@ class AgenticPipeline:
     def _non_promotable_vlm_title_allows_direct_rescue(self, item: Dict[str, Any]) -> bool:
         if not isinstance(item, dict):
             return False
-        if item.get("promotion_eligible") is not False:
+        promotion_eligible = item.get("promotion_eligible")
+        if promotion_eligible is True:
             return True
-        return self._non_promotable_cover_anchor_has_catalog_signal(item)
+        if promotion_eligible is False or promotion_eligible is None:
+            return self._non_promotable_cover_anchor_has_catalog_signal(item)
+        # Reject schema-invalid truthy strings/integers instead of coercing them.
+        return False
 
     def _collect_direct_image_titles(self, ctx) -> List[str]:
         """배경 리스트가 아닌 이미지 직접 근거(explicit_text/cover_title)의 제목만 수집."""
@@ -2010,7 +2335,7 @@ class AgenticPipeline:
         verification_result: Optional[Dict[str, Any]],
     ) -> bool:
         """Avoid late canonical scans for image/OCR scene-only holds without a title surface."""
-        if not ctx or direct_strong_suspected_title_support:
+        if not ctx:
             return False
 
         post_data = getattr(ctx, "post_data", None) or {}
@@ -2025,30 +2350,37 @@ class AgenticPipeline:
         if not image_items:
             return False
 
-        has_promotion_eligible_image_title = False
-        for item in image_items:
-            explicit_title = str(item.get("explicit_work_title") or "").strip()
-            if not explicit_title:
-                continue
-            if (
-                item.get("promotion_eligible") is True
-                or self._has_structured_direct_image_work_surface_evidence(ctx, explicit_title)
-            ):
-                has_promotion_eligible_image_title = True
-                break
-        if has_promotion_eligible_image_title:
-            return False
-
         if strong_suspected_title:
             try:
                 if (
-                    self._title_mentioned_in_non_image_main_context(ctx, strong_suspected_title)
+                    self._has_strict_non_image_candidate_surface(
+                        ctx,
+                        strong_suspected_title,
+                        final_decision=final_decision,
+                    )
+                    or self._post_direct_official_detail_url_for_title(
+                        ctx,
+                        title=strong_suspected_title,
+                    )
                     or self._has_structured_direct_image_work_surface_evidence(ctx, strong_suspected_title)
-                    or self._has_strong_verified_character_work_links(ctx, strong_suspected_title)
+                    or self._has_image_primary_promotion_signal(ctx, strong_suspected_title)
+                    or self._has_packet_bound_official_detail_visual_release_candidate(
+                        ctx,
+                        strong_suspected_title,
+                    )
                 ):
                     return False
             except Exception:
                 pass
+        else:
+            # With no candidate yet, retain canonical rescue only when the
+            # runtime-owned image packet itself contains a vetted primary title.
+            # LLM-owned relation/catalog labels and character convergence do not
+            # establish this local bridge.
+            for item in image_items:
+                explicit_title = str(item.get("explicit_work_title") or "").strip()
+                if explicit_title and self._has_image_primary_promotion_signal(ctx, explicit_title):
+                    return False
 
         final = final_decision if isinstance(final_decision, dict) else {}
         vf = verification_result if isinstance(verification_result, dict) else {}
@@ -2314,7 +2646,13 @@ class AgenticPipeline:
             cover_work_anchor = bool(evidence_type == "cover_title" and focus_role == "work_anchor")
             if not self._non_promotable_vlm_title_allows_direct_rescue(item):
                 continue
-            if not bool(item.get("promotion_eligible")) and not cover_work_anchor:
+            promotion_eligible = item.get("promotion_eligible")
+            cover_catalog_rescue = bool(
+                cover_work_anchor
+                and (promotion_eligible is False or promotion_eligible is None)
+                and self._non_promotable_cover_anchor_has_catalog_signal(item)
+            )
+            if promotion_eligible is not True and not cover_catalog_rescue:
                 continue
             if focus_role not in {"work_anchor", "supporting_text"}:
                 continue
@@ -2418,6 +2756,183 @@ class AgenticPipeline:
         if has_non_promotable_matching_image:
             return True
         return False
+
+    def _image_only_author_meta_requires_hold(
+        self,
+        ctx,
+        title: Optional[str],
+        *,
+        final_decision: Optional[Dict[str, Any]] = None,
+        verification_result: Optional[Dict[str, Any]] = None,
+    ) -> bool:
+        """Detect author/provenance questions where an image title is contextual.
+
+        This is intentionally narrower than a blanket image-only HOLD.  A
+        genuine cover/work surface remains publishable, while questions about
+        what an author wrote cannot turn the pictured title into the current
+        work without a non-image title relation.
+        """
+
+        candidate = str(title or "").strip()
+        if not ctx or not candidate:
+            return False
+        try:
+            setattr(
+                ctx,
+                "_image_identity_without_non_image_relation_bridge",
+                False,
+            )
+        except Exception:
+            pass
+        containers = [
+            item
+            for item in (final_decision, verification_result)
+            if isinstance(item, dict)
+        ]
+        typed_author_meta = any(
+            any(
+                str(container.get(key) or "").strip().lower()
+                in {"author_meta", "author_talk", "author_criticism"}
+                for key in ("primary_subject_type", "subtype", "discussion_type")
+            )
+            or "forced_adjacent_author_meta_context"
+            in {
+                str(flag or "").strip()
+                for flag in (container.get("consistency_flags") or [])
+            }
+            for container in containers
+        )
+        try:
+            non_image_text = self._collect_non_image_post_text(
+                ctx,
+                include_comments=True,
+            )
+        except Exception:
+            non_image_text = ""
+        explicit_author_question = bool(
+            re.search(
+                r"(?:도대체\s*)?(?:뭘|뭐|무슨\s*(?:글|작품)|이런\s*(?:거|것도?))"
+                r".{0,12}(?:쓰|쓴|썼|집필)|"
+                r"(?:작가|저자|필명|누가|내가\s*아는)"
+                r".{0,20}(?:쓰|쓴|썼|집필|작품|맞(?:아|음)?)",
+                non_image_text,
+                flags=re.IGNORECASE,
+            )
+        )
+        requires_hold = bool(typed_author_meta or explicit_author_question)
+        if requires_hold:
+            try:
+                setattr(
+                    ctx,
+                    "_image_identity_without_non_image_relation_bridge",
+                    True,
+                )
+            except Exception:
+                pass
+        return requires_hold
+
+    def _non_image_specific_work_relation_bridge(
+        self,
+        ctx,
+        title: Optional[str],
+        *,
+        include_comments: bool = True,
+        require_title_surface: bool = True,
+    ) -> bool:
+        """Require non-image evidence that relates an identity to a work.
+
+        A bare title, author question, or official URL proves identity only.  A
+        publication bridge additionally needs a consumption, story, character,
+        episode, serialization, or explicit launch/promotion relation.
+        """
+
+        candidate = str(title or "").strip()
+        if not ctx or not candidate:
+            return False
+        try:
+            text = self._collect_non_image_post_text(
+                ctx,
+                include_comments=include_comments,
+            )
+        except Exception:
+            text = ""
+        if not text:
+            return False
+        text_without_urls = re.sub(r"https?://[^\s<>\]\[()'\"`]+", " ", text)
+        if not text_without_urls.strip():
+            return False
+        title_surface = self._text_matches_title_strict(text_without_urls, candidate)
+        if require_title_surface and not title_surface:
+            return False
+        # Markers embedded inside the title itself (for example ``연재작`` or
+        # ``완결 이후`` as a title) are identity text, not an external relation.
+        relation_text = re.sub(
+            re.escape(candidate),
+            " ",
+            text_without_urls,
+            flags=re.IGNORECASE,
+        )
+        relation_signal = bool(
+            TITLE_LED_WORK_CONSUMPTION_RE.search(relation_text)
+            or re.search(
+                r"(?:주인공|캐릭터|인물|이번\s*화|회차|에피소드|전개|설정|세계관|"
+                r"줄거리|서사|장면|대사|결말|스포|연재|연중|휴재|완결|표지|삽화|"
+                r"읽(?:었|어|는|고|기)|보(?:았|는|고)\s*(?:중|작품|소설)|리뷰|감상)",
+                relation_text,
+                flags=re.IGNORECASE,
+            )
+        )
+        return bool(relation_signal)
+
+    def _source_native_non_image_work_relation_bridge(
+        self,
+        ctx,
+        title: Optional[str],
+    ) -> bool:
+        """Separate packet-local URL identity from its work-discussion relation."""
+
+        if self._non_image_specific_work_relation_bridge(
+            ctx,
+            title,
+            include_comments=False,
+            require_title_surface=True,
+        ):
+            return True
+        try:
+            text = self._collect_non_image_post_text(ctx, include_comments=False)
+        except Exception:
+            text = ""
+        text = re.sub(r"https?://[^\s<>\]\[()'\"`]+", " ", text or "")
+        try:
+            competition_text = self._collect_body_comment_text(
+                ctx,
+                include_comments=False,
+            )
+        except Exception:
+            competition_text = text
+        competition_text = re.sub(
+            r"https?://[^\s<>\]\[()'\"`]+",
+            " ",
+            competition_text or "",
+        )
+        candidate_norm = self._normalize_match_text(title or "")
+        for pattern in (
+            r"(?:작품명|소설명|제목)\s*[:：]\s*([^\n:：]{2,80})",
+            r"([^\n:：]{2,60})\s*[:：]\s*(?:주인공|캐릭터|설정|세계관|전개|신작|작품|소설)",
+        ):
+            for match in re.finditer(pattern, competition_text, flags=re.IGNORECASE):
+                named_surface = str(match.group(1) or "").strip(" \t\"'[]()<>-–—")
+                named_norm = self._normalize_match_text(named_surface)
+                if named_norm and candidate_norm and named_norm != candidate_norm:
+                    return False
+        return bool(
+            re.search(
+                r"(?:많은\s*관심\s*부탁|처음\s*공식적으로\s*내보내는\s*글|"
+                r"신작\s*(?:소개|홍보)|작품\s*(?:소개|홍보)|소설\s*(?:소개|홍보))",
+                text,
+                flags=re.IGNORECASE,
+            )
+        )
 
     def _direct_image_item_title_matches_candidate(
         self,
@@ -4590,7 +5105,11 @@ class AgenticPipeline:
         # Final title correction from evidence pool
         if official_title:
             _before_final_title_fix = str(official_title or "").strip()
-            official_title = self._correct_title_final(official_title, ctx)
+            official_title = self._correct_title_final(
+                official_title,
+                ctx,
+                candidate_url=heretic_url,
+            )
             try:
                 _ack_title_after_final = str(
                     getattr(ctx, "_acknowledged_previous_work_comment_override_title", "") or ""
@@ -10838,13 +11357,15 @@ class AgenticPipeline:
             reason_lines.append(_audit_suffix.strip())
         
         # 후보 title군 구성 (resolved/unresolved 관련 포스트 공통)
-        title_candidates = self._build_title_candidates(
+        title_candidates, title_candidate_generation_snapshot = (
+            self._build_title_candidates_with_snapshot(
             ctx=ctx,
             is_relevant=is_relevant,
             official_title=official_title,
             heretic_url=heretic_url,
             confidence=confidence,
             vf_result=vf_result,
+            )
         )
         title_candidates, _removed_direct_image_conflicts = self._filter_direct_image_conflicting_candidates(
             ctx=ctx,
@@ -14609,6 +15130,38 @@ class AgenticPipeline:
             official_title=official_title,
         )
 
+        serializer_display_binding: Dict[str, str] = {}
+        if official_title and heretic_url:
+            serializer_display_binding = self._official_detail_display_title_binding(
+                ctx,
+                official_title,
+                heretic_url,
+                fetch_if_missing=False,
+            )
+            if serializer_display_binding.get("status") == "compatible":
+                canonical_display_title = str(
+                    serializer_display_binding.get("canonical_title") or ""
+                ).strip()
+                if canonical_display_title:
+                    official_title = canonical_display_title
+            try:
+                setattr(
+                    ctx,
+                    "_serializer_official_detail_display_binding",
+                    dict(serializer_display_binding),
+                )
+            except Exception:
+                pass
+            binding_flag = {
+                "compatible": "official_detail_display_title_bound",
+                "mismatch": "official_detail_display_title_mismatch_held",
+            }.get(str(serializer_display_binding.get("status") or ""))
+            if binding_flag:
+                binding_flags = list(extended_identity.get("consistency_flags") or [])
+                if binding_flag not in binding_flags:
+                    binding_flags.append(binding_flag)
+                extended_identity["consistency_flags"] = binding_flags
+
         if (
             official_title
             and _direct_image_work_surface_lock
@@ -14695,14 +15248,6 @@ class AgenticPipeline:
                 resolution_scope_fields=resolution_scope_fields,
             )
 
-        novel_identity = None
-        if is_relevant and (official_title or heretic_url):
-            novel_identity = NovelIdentity(
-                official_title=official_title,
-                heretic_url=heretic_url,
-                confidence=confidence,
-                alias_resolution_sources=self._collect_alias_resolution_sources(ctx, official_title),
-            )
         title_candidates = self._prune_rejected_alias_inference_candidates_for_hold(
             ctx=ctx,
             title_candidates=title_candidates,
@@ -14716,30 +15261,462 @@ class AgenticPipeline:
             if "known_title_abbreviation_candidate_preserved" not in _flags_known_title_preserved:
                 _flags_known_title_preserved.append("known_title_abbreviation_candidate_preserved")
             extended_identity["consistency_flags"] = _flags_known_title_preserved
-        candidate_preservation_sources = self._build_candidate_preservation_sources(
+
+        # A unique novel-detail URL embedded in the post body is a stronger
+        # identity source than later search-title guesses.  Bind its fetched
+        # canonical title before the serializer freezes the typed contract.
+        # If the post/work relation is insufficient, keep the pair only as a
+        # candidate; never fall back to a conflicting search-derived publish.
+        source_native_identity = self._source_native_official_detail_identity(ctx)
+        try:
+            setattr(
+                ctx,
+                "_source_native_official_detail_identity",
+                dict(source_native_identity),
+            )
+        except Exception:
+            pass
+        if source_native_identity:
+            source_native_title = str(source_native_identity.get("title") or "").strip()
+            source_native_url = str(source_native_identity.get("url") or "").strip()
+            source_native_candidate = DetectedTitle(
+                official_title=source_native_title,
+                heretic_url=source_native_url,
+                confidence="Max",
+                alias_or_mention=None,
+                source_tier="official_detail",
+                locked=True,
+                resolved_recall_anchor=True,
+                reference_role="primary",
+            )
+            source_native_key = (
+                self._normalize_match_text(source_native_title),
+                self._normalize_url_for_match(source_native_url),
+            )
+            title_candidates = [
+                source_native_candidate,
+                *[
+                    candidate
+                    for candidate in (title_candidates or [])
+                    if not (
+                        isinstance(candidate, DetectedTitle)
+                        and (
+                            self._normalize_match_text(
+                                getattr(candidate, "official_title", "") or ""
+                            ),
+                            self._normalize_url_for_match(
+                                getattr(candidate, "heretic_url", "") or ""
+                            ),
+                        )
+                        == source_native_key
+                    )
+                ],
+            ]
+            source_native_gate = self._record_source_native_official_detail_gate_decision(
+                ctx,
+                source_native_title,
+                candidate_url=source_native_url,
+                final_decision=(
+                    final_decision if isinstance(final_decision, dict) else None
+                ),
+                verification_result=(
+                    verification_result
+                    if isinstance(verification_result, dict)
+                    else None
+                ),
+            )
+            source_native_discusses_work = bool(
+                isinstance(source_native_gate, dict)
+                and source_native_gate.get("publish_allowed") is True
+            )
+            source_native_flags = list(extended_identity.get("consistency_flags") or [])
+            source_native_flag = (
+                "source_native_official_detail_precedence"
+                if source_native_discusses_work
+                else "source_native_official_detail_conflict_held"
+            )
+            if source_native_flag not in source_native_flags:
+                source_native_flags.append(source_native_flag)
+            extended_identity["consistency_flags"] = source_native_flags
+
+            if source_native_discusses_work:
+                official_title = source_native_title
+                heretic_url = source_native_url
+                is_relevant = True
+                confidence = "Max"
+                primary_work = source_native_candidate
+                discussion_type = (
+                    discussion_type
+                    if str(discussion_type or "").strip().lower()
+                    not in {"", "noise", "off_topic", "community_banter"}
+                    else "general"
+                )
+                extended_identity["work_resolution"] = "resolved"
+                extended_identity["title_resolution_state"] = "resolved"
+                extended_identity["topicality"] = "core_relevant"
+                extended_identity["relevance_scope"] = "core"
+                extended_identity["subtype"] = "resolved_work"
+                resolution_scope_fields.update(
+                    {
+                        "is_novel_related": True,
+                        "is_resolved_work_discussion": True,
+                        "title_resolution_state": "resolved",
+                        "title_resolution_allowed": True,
+                        "work_resolution": "resolved",
+                    }
+                )
+            else:
+                official_title = None
+                heretic_url = None
+                extended_identity["work_resolution"] = "unresolved"
+                extended_identity["title_resolution_state"] = "unresolved_matchable"
+                resolution_scope_fields.update(
+                    {
+                        "is_novel_related": True,
+                        "is_resolved_work_discussion": False,
+                        "title_resolution_state": "unresolved_matchable",
+                        "title_resolution_allowed": False,
+                        "work_resolution": "unresolved",
+                    }
+                )
+        boundary_candidate_title = str(official_title or "").strip()
+        boundary_candidate_url = str(heretic_url or "").strip()
+        publish_contract = getattr(ctx, "_last_publish_contract", None)
+        serializer_candidate_mismatch = False
+        if isinstance(publish_contract, PublishContract) and boundary_candidate_title:
+            serializer_candidate_mismatch = bool(
+                self._normalize_match_text(publish_contract.state.candidate_title)
+                != self._normalize_match_text(boundary_candidate_title)
+            )
+        if serializer_candidate_mismatch:
+            title_candidates, _serializer_mismatch_candidates_added = (
+                self._append_serializer_mismatch_candidate_preservation_candidates(
+                    ctx=ctx,
+                    title_candidates=title_candidates,
+                    prior_contract=publish_contract,
+                    boundary_title=boundary_candidate_title,
+                    boundary_url=boundary_candidate_url,
+                )
+            )
+            if _serializer_mismatch_candidates_added:
+                _flags_mismatch_preservation = list(
+                    extended_identity.get("consistency_flags") or []
+                )
+                if "serializer_mismatch_candidate_inventory_preserved" not in _flags_mismatch_preservation:
+                    _flags_mismatch_preservation.append(
+                        "serializer_mismatch_candidate_inventory_preserved"
+                    )
+                extended_identity["consistency_flags"] = _flags_mismatch_preservation
+        candidate_generation_snapshot = self._build_candidate_preservation_snapshot(
             title_candidates=title_candidates,
             mentioned_works=mentioned_works,
             comparison_target=comparison_target,
             recommendation_candidates=recommendation_candidates,
             secondary_reference_works=extended_identity.get("secondary_reference_works"),
         )
-        promotion_decision = getattr(ctx, "_last_promotion_gate_decision", None)
-        if isinstance(promotion_decision, dict):
-            gate_ledger = dict(extended_identity.get("candidate_ledger") or {})
-            gate_ledger["promotion_decision"] = promotion_decision
-            gate_state = getattr(ctx, "_last_promotion_gate_state", None)
-            gate_evidence = getattr(ctx, "_last_promotion_gate_evidence", None)
-            if isinstance(gate_state, dict):
-                gate_ledger["promotion_gate_state"] = gate_state
-            if isinstance(gate_evidence, list):
-                gate_ledger["promotion_gate_evidence"] = gate_evidence
-            extended_identity["candidate_ledger"] = gate_ledger
+        candidate_preservation_sources = list(
+            candidate_generation_snapshot.retained_sources or ()
+        )
+        candidate_ledger = dict(extended_identity.get("candidate_ledger") or {})
+        candidate_ledger["candidate_generation"] = (
+            candidate_generation_snapshot.to_ledger_dict()
+        )
+        candidate_ledger["title_candidate_generation"] = (
+            title_candidate_generation_snapshot.to_ledger_dict()
+        )
+        candidate_ledger["title_candidate_generation_retained_sources"] = list(
+            title_candidate_generation_snapshot.retained_sources or ()
+        )
+        stage_receipt_payload = getattr(
+            ctx,
+            "_candidate_generation_stage_receipts",
+            [],
+        )
+        if stage_receipt_payload:
+            stage_receipts = candidate_stage_receipts_from_payload(
+                stage_receipt_payload
+            )
+            candidate_ledger["candidate_stage_receipts"] = [
+                receipt.to_ledger_dict() for receipt in stage_receipts
+            ]
+        producer_plan_payload = getattr(ctx, "_candidate_producer_plans", [])
+        producer_receipt_payload = getattr(
+            ctx,
+            "_candidate_producer_receipts",
+            [],
+        )
+        producer_integrity_errors = list(
+            getattr(ctx, "_candidate_producer_integrity_errors", []) or []
+        )
+        if producer_plan_payload or producer_receipt_payload:
+            producer_plans = candidate_producer_plans_from_payload(
+                producer_plan_payload
+            )
+            producer_receipts = candidate_producer_receipts_from_payload(
+                producer_receipt_payload
+            )
+            candidate_ledger["candidate_producer_plans"] = [
+                plan.to_ledger_dict() for plan in producer_plans
+            ]
+            candidate_ledger["candidate_producer_receipts"] = [
+                receipt.to_ledger_dict() for receipt in producer_receipts
+            ]
+            if producer_integrity_errors:
+                candidate_ledger["candidate_producer_integrity_errors"] = sorted(
+                    {str(item) for item in producer_integrity_errors if str(item)}
+                )
+            else:
+                candidate_generation_proof = build_candidate_generation_proof(
+                    producer_plans,
+                    producer_receipts,
+                    local_snapshots=(
+                        candidate_generation_snapshot,
+                        title_candidate_generation_snapshot,
+                    ),
+                    required_producers=("search", "fetch"),
+                )
+                candidate_ledger["candidate_generation_proof"] = (
+                    candidate_generation_proof.to_ledger_dict()
+                )
+        extended_identity["candidate_ledger"] = candidate_ledger
+        candidate_inventory_evidence = candidate_inventory_evidence_from_sources(
+            candidate_preservation_sources
+        )
+        if not isinstance(publish_contract, PublishContract):
+            publish_contract = evaluate_publish_contract(
+                GroundingState(
+                    post_id=getattr(ctx, "post_id", None),
+                    candidate_title=boundary_candidate_title,
+                    candidate_url=boundary_candidate_url,
+                    source="serializer_missing_typed_contract",
+                    official_title_exists=False,
+                    row_discusses_work_as_work=False,
+                    title_resolution_state=str(
+                        extended_identity.get("title_resolution_state")
+                        or "unresolved_matchable"
+                    ),
+                    work_resolution=str(
+                        extended_identity.get("work_resolution") or "unresolved"
+                    ),
+                    discussion_type=str(extended_identity.get("discussion_type") or ""),
+                    candidate_inventory_count=len(candidate_inventory_evidence),
+                    scope=ScopeState(
+                        scope_kind="unknown",
+                        confidence="low",
+                        conflict_reason_codes=["serializer_missing_typed_contract"],
+                    ),
+                ),
+                candidate_inventory_evidence,
+                post_gate_context=extended_identity,
+            )
+        selected_serializer_hold = {}
+        if (
+            isinstance(publish_contract, PublishContract)
+            and not publish_contract.decision.publish_allowed
+            and candidate_inventory_evidence
+        ):
+            selected_serializer_hold = (
+                self._select_authoritative_serializer_hold_candidate(
+                    ctx=ctx,
+                    inventory_evidence=candidate_inventory_evidence,
+                    prior_contract=publish_contract,
+                    preferred_title=(
+                        boundary_candidate_title
+                        or publish_contract.state.candidate_title
+                    ),
+                )
+            )
+            if selected_serializer_hold:
+                boundary_candidate_title = str(
+                    selected_serializer_hold.get("title") or ""
+                ).strip()
+                boundary_candidate_url = str(
+                    selected_serializer_hold.get("url") or ""
+                ).strip()
+            else:
+                boundary_candidate_title = ""
+                boundary_candidate_url = ""
+            publish_contract = self._build_serializer_inventory_only_publish_contract(
+                prior_contract=publish_contract,
+                inventory_evidence=candidate_inventory_evidence,
+                extended_identity=extended_identity,
+                selected_candidate_title=boundary_candidate_title,
+                selected_candidate_url=boundary_candidate_url,
+                selected_scope_kind="context_only",
+            )
+        candidate_quality_preview = dict(extended_identity)
+        candidate_quality_preview["novel_identity"] = {
+            "official_title": boundary_candidate_title or None,
+            "heretic_url": boundary_candidate_url or None,
+            "confidence": confidence,
+        }
+        candidate_quality_preview["search_evidence_catalog"] = self._build_search_evidence_catalog(ctx)
+        candidate_quality_reasons = official_title_promotion_block_reasons(
+            candidate_quality_preview
+        )
+        if isinstance(publish_contract, PublishContract):
+            contract_title_norm = self._normalize_match_text(
+                publish_contract.state.candidate_title
+            )
+            boundary_title_norm = self._normalize_match_text(boundary_candidate_title)
+            if contract_title_norm == boundary_title_norm and candidate_quality_reasons:
+                publish_contract = evaluate_publish_contract(
+                    publish_contract.state,
+                    [
+                        *publish_contract.evidence,
+                        *[
+                            EvidenceRecord(
+                                kind="candidate_quality_blocker",
+                                strength="strong",
+                                source_path_or_snippet=boundary_candidate_title,
+                                supports_publish=False,
+                                reason_code=reason,
+                                candidate_title=boundary_candidate_title,
+                                candidate_url=boundary_candidate_url,
+                            )
+                            for reason in candidate_quality_reasons
+                        ],
+                    ],
+                    post_gate_context=extended_identity,
+                )
+            if not boundary_candidate_title and candidate_inventory_evidence:
+                publish_contract = self._build_serializer_inventory_only_publish_contract(
+                    prior_contract=publish_contract,
+                    inventory_evidence=candidate_inventory_evidence,
+                    extended_identity=extended_identity,
+                )
+            elif (
+                not selected_serializer_hold
+                and (not is_relevant or not boundary_candidate_title)
+            ):
+                removed_state = GroundingState(
+                    post_id=publish_contract.state.post_id,
+                    candidate_title=publish_contract.state.candidate_title,
+                    candidate_url=publish_contract.state.candidate_url,
+                    source="serializer_candidate_removed",
+                    official_title_exists=publish_contract.state.official_title_exists,
+                    row_discusses_work_as_work=False,
+                    title_resolution_state="context_only",
+                    work_resolution=str(
+                        extended_identity.get("work_resolution") or "unresolved"
+                    ),
+                    discussion_type=str(extended_identity.get("discussion_type") or ""),
+                    scope=ScopeState(
+                        scope_kind="unknown",
+                        confidence="low",
+                        conflict_reason_codes=["serializer_candidate_removed"],
+                    ),
+                )
+                publish_contract = evaluate_publish_contract(
+                    removed_state,
+                    [
+                        EvidenceRecord(
+                            kind="serializer_candidate_removed",
+                            strength="strong",
+                            source_path_or_snippet=publish_contract.state.candidate_title,
+                            supports_publish=False,
+                            reason_code="serializer_candidate_removed",
+                            candidate_title=publish_contract.state.candidate_title,
+                            candidate_url=publish_contract.state.candidate_url,
+                        ),
+                    ],
+                    post_gate_context=extended_identity,
+                )
+            elif contract_title_norm != boundary_title_norm:
+                publish_contract = self._build_serializer_mismatch_publish_contract(
+                    prior_contract=publish_contract,
+                    boundary_candidate_title=boundary_candidate_title,
+                    boundary_candidate_url=boundary_candidate_url,
+                    inventory_evidence=candidate_inventory_evidence,
+                    extended_identity=extended_identity,
+                )
+            elif boundary_candidate_url != str(
+                publish_contract.state.candidate_url or ""
+            ).strip():
+                url_adjusted_state = GroundingState(
+                    **{
+                        **publish_contract.state.to_dict(),
+                        "candidate_url": boundary_candidate_url,
+                        "scope": publish_contract.state.scope,
+                    }
+                )
+                publish_contract = evaluate_publish_contract(
+                    url_adjusted_state,
+                    publish_contract.evidence,
+                    post_gate_context=extended_identity,
+                )
+        else:
+            publish_contract = evaluate_publish_contract(
+                GroundingState(
+                    post_id=getattr(ctx, "post_id", None),
+                    candidate_title=boundary_candidate_title,
+                    candidate_url=boundary_candidate_url,
+                    source="serializer_missing_typed_contract",
+                    official_title_exists=False,
+                    row_discusses_work_as_work=False,
+                    title_resolution_state=str(
+                        extended_identity.get("title_resolution_state") or "unresolved_matchable"
+                    ),
+                    work_resolution=str(
+                        extended_identity.get("work_resolution") or "unresolved"
+                    ),
+                    discussion_type=str(extended_identity.get("discussion_type") or ""),
+                    candidate_inventory_count=len(candidate_inventory_evidence),
+                    scope=ScopeState(
+                        scope_kind="unknown",
+                        confidence="low",
+                        conflict_reason_codes=["serializer_missing_typed_contract"],
+                    ),
+                ),
+                candidate_inventory_evidence,
+                post_gate_context=extended_identity,
+            )
+
+        contract_identity: Dict[str, Any] = {
+            "novel_identity": {
+                "official_title": boundary_candidate_title or None,
+                "heretic_url": boundary_candidate_url or None,
+                "confidence": confidence,
+                "alias_resolution_sources": self._collect_alias_resolution_sources(
+                    ctx,
+                    boundary_candidate_title,
+                ),
+            },
+            "candidate_ledger": dict(extended_identity.get("candidate_ledger") or {}),
+        }
+        if isinstance(publish_contract, PublishContract):
+            apply_publish_contract(contract_identity, publish_contract)
+            try:
+                setattr(ctx, "_last_publish_contract", publish_contract)
+                setattr(ctx, "_last_promotion_gate_decision", publish_contract.decision.to_dict())
+                setattr(ctx, "_last_promotion_gate_state", publish_contract.state.to_dict())
+                setattr(
+                    ctx,
+                    "_last_promotion_gate_evidence",
+                    [record.to_dict() for record in publish_contract.evidence],
+                )
+            except Exception:
+                pass
+        extended_identity["candidate_ledger"] = contract_identity.get("candidate_ledger")
+        official_title = str(
+            (contract_identity.get("novel_identity") or {}).get("official_title") or ""
+        ).strip() or None
+        heretic_url = str(
+            (contract_identity.get("novel_identity") or {}).get("heretic_url") or ""
+        ).strip() or None
+        novel_identity = None
+        if is_relevant and (official_title or heretic_url):
+            novel_identity = NovelIdentity(**contract_identity["novel_identity"])
         identity = PickvelIdentity(
             is_relevant=is_relevant,
             is_novel_related=resolution_scope_fields.get("is_novel_related"),
             is_resolved_work_discussion=resolution_scope_fields.get("is_resolved_work_discussion"),
             title_resolution_state=resolution_scope_fields.get("title_resolution_state"),
-            title_resolution_allowed=resolution_scope_fields.get("title_resolution_allowed"),
+            title_resolution_allowed=(
+                bool(publish_contract.decision.publish_allowed)
+                if isinstance(publish_contract, PublishContract)
+                else False
+            ),
             novel_identity=novel_identity,
             discussion_type=discussion_type,  # normalized discussion type
             slang_insight=_slang_insight_obj,
@@ -14767,7 +15744,21 @@ class AgenticPipeline:
             **self._build_image_execution_public_fields(ctx),
             candidate_preservation_sources=candidate_preservation_sources or None,
             candidate_ledger=extended_identity.get("candidate_ledger"),
-            candidate_ledger_status=extended_identity.get("candidate_ledger_status"),
+            promotion_decision=contract_identity.get("promotion_decision"),
+            promotion_gate_state=contract_identity.get("promotion_gate_state"),
+            promotion_gate_evidence=contract_identity.get("promotion_gate_evidence"),
+            publish_contract_trace=contract_identity.get("publish_contract_trace"),
+            publish_ledger=contract_identity.get("publish_ledger"),
+            publish_contract_input_fingerprint=contract_identity.get(
+                "publish_contract_input_fingerprint"
+            ),
+            publish_contract_version=contract_identity.get("publish_contract_version"),
+            blocked_official_title=contract_identity.get("blocked_official_title"),
+            blocked_official_title_url=contract_identity.get("blocked_official_title_url"),
+            candidate_ledger_status=(
+                contract_identity.get("candidate_ledger_status")
+                or extended_identity.get("candidate_ledger_status")
+            ),
             reason=reason if reason else None,
             reason_lines=reason_lines if reason_lines else None,
             system_state=self._derive_system_state(
@@ -14833,6 +15824,279 @@ class AgenticPipeline:
             post_id=ctx.post_id,
             identity=identity,
             analysis=analysis,
+        )
+
+    def _select_authoritative_serializer_hold_candidate(
+        self,
+        *,
+        ctx,
+        inventory_evidence: Iterable[EvidenceRecord],
+        prior_contract: Optional[PublishContract] = None,
+        preferred_title: Any = None,
+    ) -> Dict[str, str]:
+        """Select one verified inventory pair for a fail-closed typed HOLD.
+
+        The candidate inventory remains lossless.  Selection is allowed only
+        when exactly one title/URL pair is both an official novel detail and
+        bound to a packet-local title, alias, image, or source-native URL
+        surface.  Ambiguous inventories remain unselected.
+        """
+
+        if not ctx:
+            return {}
+        _ = preferred_title
+        post_data = getattr(ctx, "post_data", None) or {}
+        post_title = str(
+            post_data.get("title") or post_data.get("normalized_title") or ""
+        )
+        source_native = self._source_native_official_detail_identity(ctx)
+        if not isinstance(source_native, dict):
+            source_native = {}
+        source_native_key = (
+            self._normalize_match_text(source_native.get("title") or ""),
+            self._normalize_url_for_match(source_native.get("url") or ""),
+        )
+        prior_verified_pairs = {
+            (
+                self._normalize_match_text(record.candidate_title or ""),
+                self._normalize_url_for_match(record.candidate_url or ""),
+            )
+            for record in (
+                prior_contract.evidence
+                if isinstance(prior_contract, PublishContract)
+                else ()
+            )
+            if isinstance(record, EvidenceRecord)
+            and record.title_url_match is True
+            and self._normalize_match_text(record.candidate_title or "")
+            and self._normalize_url_for_match(record.candidate_url or "")
+        }
+
+        selected: Dict[Tuple[str, str], Dict[str, str]] = {}
+        for record in inventory_evidence or ():
+            if not isinstance(record, EvidenceRecord):
+                continue
+            title = str(record.candidate_title or "").strip()
+            url = str(record.candidate_url or "").strip()
+            title_norm = self._normalize_match_text(title)
+            url_norm = self._normalize_url_for_match(url)
+            if (
+                not title_norm
+                or not url_norm
+                or not self._is_novel_platform_url(url)
+                or not self._is_novel_detail_url(url)
+            ):
+                continue
+            if (
+                self._is_title_matched_non_novel_media_url(
+                    title,
+                    url,
+                    getattr(ctx, "search_results", None) or [],
+                )
+            ):
+                continue
+
+            fetched_binding = self._official_detail_display_title_binding(
+                ctx,
+                title,
+                url,
+                fetch_if_missing=False,
+            )
+            fetched_canonical_title = str(
+                fetched_binding.get("canonical_title") or ""
+            ).strip()
+            verified_pair = bool(
+                source_native_key == (title_norm, url_norm)
+                or (title_norm, url_norm) in prior_verified_pairs
+                or fetched_binding.get("status") == "compatible"
+            )
+            if not verified_pair:
+                continue
+
+            known_alias_surface = any(
+                self._normalize_match_text(known_title) == title_norm
+                and self._curated_alias_surface_in_text(post_title, str(alias or ""))
+                for alias, known_title in (KNOWN_TITLE_ABBREVIATIONS or {}).items()
+            )
+            packet_bound = bool(
+                self._title_mentioned_in_non_image_main_context(ctx, title)
+                or self._title_matches_direct_image_partial(ctx, title)
+                or self._has_structured_direct_image_work_surface_evidence(ctx, title)
+                or known_alias_surface
+                or (source_native_key == (title_norm, url_norm))
+            )
+            if not packet_bound:
+                continue
+            selected[(title_norm, url_norm)] = {
+                "title": fetched_canonical_title or title,
+                "url": url,
+            }
+
+        if len(selected) != 1:
+            return {}
+        return next(iter(selected.values()))
+
+    def _build_serializer_inventory_only_publish_contract(
+        self,
+        *,
+        prior_contract: PublishContract,
+        inventory_evidence: Iterable[EvidenceRecord],
+        extended_identity: Optional[Dict[str, Any]] = None,
+        selected_candidate_title: Any = None,
+        selected_candidate_url: Any = None,
+        selected_scope_kind: str = "context_only",
+    ) -> PublishContract:
+        """Freeze a pre-prune unselected candidate inventory at the serializer boundary."""
+
+        if not isinstance(prior_contract, PublishContract):
+            raise TypeError("prior_contract must be a typed PublishContract")
+        records = tuple(
+            record for record in inventory_evidence if isinstance(record, EvidenceRecord)
+        )
+        context = extended_identity if isinstance(extended_identity, dict) else {}
+        title_resolution_state, work_resolution, normalized_resolution = (
+            normalize_blocked_resolution_state(
+                context.get("title_resolution_state") or "unresolved_matchable",
+                context.get("work_resolution") or "unresolved",
+            )
+        )
+        candidate_title = str(selected_candidate_title or "").strip()
+        candidate_url = str(selected_candidate_url or "").strip()
+        selected_pair = bool(candidate_title and candidate_url)
+        state = GroundingState(
+            post_id=prior_contract.state.post_id,
+            candidate_title=candidate_title,
+            candidate_url=candidate_url,
+            source="serializer_candidate_inventory_preserved",
+            official_title_exists=selected_pair,
+            row_discusses_work_as_work=False,
+            title_resolution_state=title_resolution_state,
+            work_resolution=work_resolution,
+            discussion_type=str(context.get("discussion_type") or ""),
+            candidate_inventory_count=len(records),
+            scope=(
+                ScopeState(
+                    scope_kind=(
+                        selected_scope_kind
+                        if selected_scope_kind in {"current_work", "context_only", "unknown"}
+                        else "context_only"
+                    ),
+                    confidence="medium",
+                    direct_bridge_sources=[],
+                    conflict_reason_codes=["serializer_candidate_inventory_hold"],
+                )
+                if selected_pair
+                else ScopeState(
+                    scope_kind="unknown",
+                    confidence="low",
+                    direct_bridge_sources=[],
+                    conflict_reason_codes=[
+                        "serializer_candidate_inventory_hold",
+                        "candidate_inventory_unselected",
+                    ],
+                )
+            ),
+        )
+        contract_evidence = list(records)
+        if selected_pair:
+            contract_evidence.append(
+                EvidenceRecord(
+                    kind="official_detail_url",
+                    strength="strong",
+                    source_path_or_snippet=candidate_url,
+                    supports_publish=False,
+                    reason_code="official_detail_url",
+                    candidate_title=candidate_title,
+                    candidate_url=candidate_url,
+                    title_url_match=None,
+                )
+            )
+        if normalized_resolution:
+            contract_evidence.append(
+                EvidenceRecord(
+                    kind="blocked_candidate_resolution_state_normalized",
+                    strength="strong",
+                    source_path_or_snippet="serializer_candidate_inventory_preserved",
+                    supports_publish=False,
+                    reason_code="blocked_candidate_resolution_state_normalized",
+                )
+            )
+        return evaluate_publish_contract(
+            state,
+            contract_evidence,
+            post_gate_context=context,
+        )
+
+    def _build_serializer_mismatch_publish_contract(
+        self,
+        *,
+        prior_contract: PublishContract,
+        boundary_candidate_title: Any,
+        boundary_candidate_url: Any,
+        inventory_evidence: Iterable[EvidenceRecord],
+        extended_identity: Optional[Dict[str, Any]] = None,
+    ) -> PublishContract:
+        """Fail closed while binding every retained late-mismatch candidate."""
+
+        if not isinstance(prior_contract, PublishContract):
+            raise TypeError("prior_contract must be a typed PublishContract")
+        context = extended_identity if isinstance(extended_identity, dict) else {}
+        candidate_title = str(boundary_candidate_title or "").strip()
+        candidate_url = str(boundary_candidate_url or "").strip()
+        records = tuple(
+            record for record in inventory_evidence if isinstance(record, EvidenceRecord)
+        )
+        title_resolution_state, work_resolution, normalized_resolution = (
+            normalize_blocked_resolution_state(
+                context.get("title_resolution_state") or "unresolved_matchable",
+                context.get("work_resolution") or "unresolved",
+            )
+        )
+        state = GroundingState(
+            post_id=prior_contract.state.post_id,
+            candidate_title="",
+            candidate_url="",
+            source="post_gate_candidate_mismatch",
+            official_title_exists=False,
+            row_discusses_work_as_work=False,
+            title_resolution_state=title_resolution_state,
+            work_resolution=work_resolution,
+            discussion_type=str(context.get("discussion_type") or ""),
+            candidate_inventory_count=len(records),
+            scope=ScopeState(
+                scope_kind="unknown",
+                confidence="low",
+                conflict_reason_codes=["post_gate_candidate_mismatch"],
+            ),
+        )
+        evidence = list(records)
+        evidence.append(
+            EvidenceRecord(
+                kind="post_gate_candidate_mismatch",
+                strength="strong",
+                source_path_or_snippet=candidate_title,
+                supports_publish=False,
+                reason_code="post_gate_candidate_mismatch",
+                candidate_title=candidate_title,
+                candidate_url=candidate_url,
+            )
+        )
+        if normalized_resolution:
+            evidence.append(
+                EvidenceRecord(
+                    kind="blocked_candidate_resolution_state_normalized",
+                    strength="strong",
+                    source_path_or_snippet=candidate_title or "post_gate_candidate_mismatch",
+                    supports_publish=False,
+                    reason_code="blocked_candidate_resolution_state_normalized",
+                    candidate_title=candidate_title,
+                    candidate_url=candidate_url,
+                )
+            )
+        return evaluate_publish_contract(
+            state,
+            evidence,
+            post_gate_context=context,
         )
 
     @staticmethod
@@ -15100,6 +16364,24 @@ class AgenticPipeline:
             return
         meta = meta if isinstance(meta, dict) else {}
         result_list = results if isinstance(results, list) else []
+        producer_plan_fingerprint = ""
+        try:
+            occurrence = ctx.next_candidate_producer_plan_occurrence("search")
+            plan = build_candidate_producer_plan(
+                [{"query": query, "purpose": purpose}],
+                producer="search",
+                occurrence=occurrence,
+                # This helper is called after an ad-hoc direct search. It can
+                # bind the observed operation but cannot prove a predeclared
+                # bounded plan, so it must fail closed at proof composition.
+                enumeration_finished=False,
+            )
+            ctx.record_candidate_producer_plan(plan)
+            producer_plan_fingerprint = plan.plan_fingerprint
+        except Exception:
+            errors = getattr(ctx, "_candidate_producer_integrity_errors", None)
+            if isinstance(errors, list) and "direct_search_plan_record_failed" not in errors:
+                errors.append("direct_search_plan_record_failed")
         try:
             if hasattr(ctx, "mark_executed_query"):
                 ctx.mark_executed_query(query)
@@ -15112,7 +16394,8 @@ class AgenticPipeline:
                 len(result_list),
                 raw_count=self._safe_int(meta.get("raw_total") or len(result_list)),
                 filtered_count=self._safe_int(meta.get("lang_filtered")),
-                degraded=bool(meta.get("degraded")) or bool(meta.get("possible_throttle")),
+                degraded=bool(meta.get("degraded"))
+                or bool(meta.get("possible_throttle")),
                 retries=self._safe_int(meta.get("retry_count")),
                 attempts=self._safe_int(meta.get("attempts")) or 1,
                 from_cache=bool(meta.get("from_cache")),
@@ -15123,15 +16406,65 @@ class AgenticPipeline:
                 headless_blocked=bool(meta.get("headless_blocked")),
                 fallback_recovered=bool(meta.get("fallback_recovered")),
                 degraded_recovered=bool(meta.get("degraded_recovered")),
-                degraded_zero_suppressed=bool(meta.get("suppressed_degraded_zero")),
+                degraded_zero_suppressed=bool(
+                    meta.get("suppressed_degraded_zero")
+                ),
                 direct_search_used=bool(meta.get("direct_search_used")),
                 direct_search_reason=str(meta.get("direct_search_reason") or ""),
                 direct_search_count=self._safe_int(meta.get("direct_search_count")),
-                direct_search_providers=list(meta.get("direct_search_providers") or []),
+                direct_search_providers=list(
+                    meta.get("direct_search_providers") or []
+                ),
                 direct_search_errors=list(meta.get("direct_search_errors") or []),
+                producer_query=query,
+                producer_results=result_list,
+                producer_meta=meta,
+                producer_plan_fingerprint=producer_plan_fingerprint,
             )
         except Exception:
-            pass
+            errors = getattr(ctx, "_candidate_producer_integrity_errors", None)
+            if (
+                isinstance(errors, list)
+                and "direct_search_receipt_record_failed" not in errors
+            ):
+                errors.append("direct_search_receipt_record_failed")
+
+    def _record_context_fetch_outcome_from_meta(
+        self,
+        ctx,
+        url: str,
+        purpose: str,
+        result: Any,
+        meta: Optional[Dict[str, Any]],
+    ) -> None:
+        """Append redacted fetch plan/receipt without changing the fetched payload."""
+
+        if ctx is None or not str(url or "").strip():
+            return
+        meta = meta if isinstance(meta, dict) else {}
+        try:
+            occurrence = ctx.next_candidate_producer_plan_occurrence("fetch")
+            plan = build_candidate_producer_plan(
+                [{"url": url, "purpose": purpose}],
+                producer="fetch",
+                occurrence=occurrence,
+                # Direct pipeline fetches reach this recorder after execution.
+                # Keep the plan unfinished until callers predeclare it.
+                enumeration_finished=False,
+            )
+            ctx.record_candidate_producer_plan(plan)
+            ctx.record_candidate_producer_outcome(
+                producer="fetch",
+                operation_input=url,
+                purpose=purpose,
+                plan_fingerprint=plan.plan_fingerprint,
+                results=[result] if isinstance(result, dict) else [],
+                meta=meta,
+            )
+        except Exception:
+            errors = getattr(ctx, "_candidate_producer_integrity_errors", None)
+            if isinstance(errors, list) and "fetch_receipt_record_failed" not in errors:
+                errors.append("fetch_receipt_record_failed")
 
     def _build_image_evidence_catalog(self, ctx) -> Optional[List[Dict[str, Any]]]:
         """Persist a compact public preview of VLM/OCR evidence used by the run."""
@@ -16968,7 +18301,7 @@ class AgenticPipeline:
             re.search(
                 r"(오늘|내일|새벽|오냐|오나|언제|몇\s*시|연재|연참|연중|휴재|지각|최신화|최신편|회차|몇\s*화|"
                 r"올라오|업로드|업뎃|완결|스포|작가의\s*말|작말|작가|공지|표지|웹툰|결말|노피아|노벨피아|"
-                r"문피아|시리즈|카카페|읽|봤|보는|볼만|보러\s*(?:간|감)|재밌|재밋|재미|좋(?:았|네|다|음|구나|아)|호평|애매|전생|주인공|이세계|정체|설정|표절|"
+                r"문피아|시리즈|카카페|읽|봤|보는|볼만|보러\s*(?:간|감)|재밌|재밋|재미|좋(?:았|네|다|음|구나|아)|호평|애매|전생|주인공|이세계|정체|설정|서사|장면|전개|세계관|배경|표절|"
                 r"영화|극장판|실사화|애니화|드라마화|원작|각색)",
                 cue_text,
                 flags=re.IGNORECASE,
@@ -25297,7 +26630,13 @@ OUTPUT JSON:
             return 2
         return None
 
-    def _summarize_url_page_state(self, ctx, url: str) -> Dict[str, Any]:
+    def _summarize_url_page_state(
+        self,
+        ctx,
+        url: str,
+        *,
+        exact_url: bool = False,
+    ) -> Dict[str, Any]:
         """동일 URL에 대한 fetched page 상태를 요약한다."""
         summary: Dict[str, Any] = {
             "has_fetched_entry": False,
@@ -25315,7 +26654,18 @@ OUTPUT JSON:
             summary["page_types"].add("community_post")
             summary["is_community_post"] = True
 
-        for fe in self._get_fetched_entries_for_url(ctx, url):
+        if exact_url:
+            target_norm = self._normalize_url_for_match(url)
+            fetched_entries = [
+                entry
+                for entry in (getattr(ctx, "fetched_page_info", None) or [])
+                if isinstance(entry, dict)
+                and self._normalize_url_for_match(entry.get("url") or "")
+                == target_norm
+            ]
+        else:
+            fetched_entries = self._get_fetched_entries_for_url(ctx, url)
+        for fe in fetched_entries:
             if not isinstance(fe, dict):
                 continue
             summary["has_fetched_entry"] = True
@@ -27001,6 +28351,7 @@ OUTPUT JSON:
                 title_candidates=title_candidates,
                 final_decision=final_decision,
                 verification_result=verification_result,
+                include_comments=False,
             )
             if not record:
                 continue
@@ -27848,8 +29199,12 @@ OUTPUT JSON:
             link_title = str(link.get("title") or link.get("work_title") or "").strip()
             if self._normalize_match_text(link_title) != title_norm:
                 continue
-            alias = str(link.get("character") or link.get("abbreviation") or "").strip()
-            if self._is_generic_character_parenthetical_anchor(alias):
+            # `abbreviation` is a work-alias provenance field in Decoder links,
+            # not a character name.  Treating it as a character made compact
+            # work aliases (for example four-syllable aliases) hit the generic
+            # person-name quarantine and erased an otherwise verified work.
+            character = str(link.get("character") or "").strip()
+            if character and self._is_generic_character_parenthetical_anchor(character):
                 return True
         return False
 
@@ -32165,6 +33520,463 @@ OUTPUT JSON:
             for alias in aliases
         )
 
+    def _has_strict_non_image_candidate_surface(
+        self,
+        ctx,
+        candidate: Optional[str],
+        *,
+        title_candidates: Optional[List[DetectedTitle]] = None,
+        final_decision: Optional[Dict[str, Any]] = None,
+    ) -> bool:
+        """Require a packet-local title/alias surface outside injected OCR/VLM blocks.
+
+        `_title_candidate_mentioned` intentionally sees injected `ocr_text` and
+        `image_summary` blocks.  It is useful for recall, but cannot prove that
+        the original non-image post text directly named a work.
+        """
+        title = str(candidate or "").strip()
+        title_norm = self._normalize_match_text(title)
+        if not ctx or not title_norm:
+            return False
+        try:
+            packet_text = self._collect_non_image_post_text(ctx, include_comments=True)
+        except Exception:
+            packet_text = ""
+        if not packet_text.strip():
+            return False
+
+        surfaces: List[str] = []
+
+        def _push_surface(raw: Any) -> None:
+            surface = str(raw or "").strip()
+            surface_norm = self._normalize_match_text(surface)
+            if not surface_norm:
+                return
+            if any(
+                self._normalize_match_text(existing) == surface_norm
+                for existing in surfaces
+            ):
+                return
+            surfaces.append(surface)
+
+        _push_surface(title)
+        candidate_records: List[Any] = list(title_candidates or [])
+        final = final_decision if isinstance(final_decision, dict) else {}
+        for key in ("title_candidates", "candidate_preservation_sources"):
+            values = final.get(key)
+            if isinstance(values, list):
+                candidate_records.extend(values)
+        for item in candidate_records:
+            if isinstance(item, DetectedTitle):
+                item_title = str(getattr(item, "official_title", "") or "").strip()
+                if self._normalize_match_text(item_title) != title_norm:
+                    continue
+                for surface in self._candidate_surface_forms(ctx, item):
+                    _push_surface(surface)
+                continue
+            if not isinstance(item, dict):
+                continue
+            item_title = str(
+                item.get("official_title") or item.get("title") or ""
+            ).strip()
+            if self._normalize_match_text(item_title) != title_norm:
+                continue
+            _push_surface(item_title)
+            _push_surface(item.get("alias_or_mention") or item.get("alias"))
+
+        for surface in surfaces:
+            surface_norm = self._normalize_match_text(surface)
+            if not surface_norm:
+                continue
+            if surface_norm != title_norm and (
+                self._is_low_information_alias_surface(surface)
+                or self._is_generic_alias_seed(surface, full_title=title)
+            ):
+                continue
+            if self._text_matches_title_strict(packet_text, surface):
+                return True
+        return False
+
+    def _has_candidate_bound_non_image_alias_official_detail_bridge(
+        self,
+        ctx,
+        candidate: Optional[str],
+        *,
+        title_candidates: Optional[List[DetectedTitle]] = None,
+        final_decision: Optional[Dict[str, Any]] = None,
+        verification_result: Optional[Dict[str, Any]] = None,
+    ) -> bool:
+        """Bind a raw packet alias to one exact official-detail work.
+
+        This bridge exists for cases where the canonical candidate record lost
+        its alias field, while the original (non OCR/VLM) packet and verifier
+        still bind that alias to an exact work detail.  LLM relation labels or
+        image catalogs alone cannot satisfy it.
+        """
+
+        title = str(candidate or "").strip()
+        title_norm = self._normalize_match_text(title)
+        if not ctx or not title_norm:
+            return False
+        try:
+            packet_text = self._collect_non_image_post_text(ctx, include_comments=True)
+        except Exception:
+            packet_text = ""
+        if not packet_text.strip():
+            return False
+        if self._has_memory_query_signal(packet_text):
+            return False
+        if self._has_recommendation_request_signal(packet_text) or self._has_recommendation_seeking_surface_signal(
+            packet_text
+        ):
+            return False
+
+        exact_urls = self._official_detail_exact_title_urls_for_no_work_anchor(ctx, title)
+        if not exact_urls:
+            near_candidate_url = self._near_title_official_detail_url_from_candidates(
+                ctx,
+                title,
+                title_candidates=title_candidates,
+            )
+            if near_candidate_url:
+                exact_urls = [near_candidate_url]
+        if not exact_urls:
+            return False
+        alias = self._verified_alias_bridge_for_official_detail_anchor(
+            ctx,
+            title,
+            verification_result=(
+                verification_result if isinstance(verification_result, dict) else None
+            ),
+        )
+        alias_norm = self._normalize_match_text(alias or "")
+        if (
+            not alias_norm
+            or alias_norm == title_norm
+            or self._is_low_information_alias_surface(alias)
+            or self._is_generic_alias_seed(alias, full_title=title)
+            or not self._text_matches_title_strict(packet_text, alias)
+        ):
+            return False
+        trusted_binding_source = self._trusted_non_llm_alias_official_detail_binding_source(
+            ctx,
+            title=title,
+            alias=alias,
+            exact_urls=exact_urls,
+        )
+        if not trusted_binding_source:
+            return False
+
+        work_marker = bool(
+            self._has_title_led_work_consumption_signal(ctx)
+            or self._known_title_abbreviation_update_question_anchor(ctx, title, alias)
+            or TITLE_LED_WORK_CONSUMPTION_RE.search(packet_text)
+            or re.search(
+                r"(주인공|캐릭터|이번\s*화|전개|설정|스포|작가|연재|연중|휴재|완결|소설|작품|회차|튜토리얼)",
+                packet_text,
+            )
+        )
+        if not work_marker:
+            return False
+        if not self._has_verified_alias_official_detail_anchor(
+            ctx,
+            title,
+            verification_result=(
+                verification_result if isinstance(verification_result, dict) else None
+            ),
+            final_decision=final_decision if isinstance(final_decision, dict) else None,
+            title_candidates=title_candidates,
+        ):
+            return False
+
+        try:
+            competing_titles, current_has_body_surface = self._body_verified_character_work_competition(
+                ctx,
+                title,
+                title_candidates=title_candidates,
+                current_alias=alias,
+                include_comments=True,
+            )
+        except Exception:
+            competing_titles, current_has_body_surface = [], False
+        if competing_titles and not current_has_body_surface:
+            return False
+        try:
+            setattr(ctx, "_candidate_bound_non_image_alias_bridge", True)
+            setattr(ctx, "_candidate_bound_non_image_alias_bridge_title", title)
+            setattr(ctx, "_candidate_bound_non_image_alias_bridge_alias", alias)
+            setattr(ctx, "_candidate_bound_non_image_alias_bridge_url", exact_urls[0])
+            setattr(
+                ctx,
+                "_candidate_bound_non_image_alias_bridge_binding_source",
+                trusted_binding_source,
+            )
+        except Exception:
+            pass
+        return True
+
+    def _trusted_non_llm_alias_official_detail_binding_source(
+        self,
+        ctx,
+        *,
+        title: Optional[str],
+        alias: Optional[str],
+        exact_urls: Iterable[str],
+    ) -> str:
+        """Return deterministic provenance for an alias -> official work binding.
+
+        Verifier relation labels are deliberately excluded.  A release bridge
+        needs either a curated registry mapping, a source-backed runtime ledger,
+        or alias metadata co-located with the canonical title on the exact
+        official-detail search row.
+        """
+
+        candidate = str(title or "").strip()
+        alias_text = str(alias or "").strip()
+        title_norm = self._normalize_match_text(candidate)
+        alias_norm = self._normalize_match_text(alias_text)
+        if not ctx or not title_norm or not alias_norm or alias_norm == title_norm:
+            return ""
+
+        for registry_name, registry in (
+            ("KNOWN_ABBREVIATIONS", KNOWN_ABBREVIATIONS or {}),
+            ("KNOWN_TITLE_ABBREVIATIONS", KNOWN_TITLE_ABBREVIATIONS or {}),
+        ):
+            for registered_alias, registered_title in registry.items():
+                if (
+                    self._normalize_match_text(registered_alias) == alias_norm
+                    and self._normalize_match_text(registered_title) == title_norm
+                ):
+                    return f"curated_registry:{registry_name}"
+
+        exact_url_norms = {
+            self._normalize_url_for_match(url)
+            for url in exact_urls or []
+            if self._normalize_url_for_match(url)
+        }
+        for binding in getattr(ctx, "source_backed_alias_bindings", []) or []:
+            if not isinstance(binding, dict) or binding.get("source_bound") is not True:
+                continue
+            source = str(binding.get("source") or "").strip().lower()
+            if source not in {
+                "source_native_alias_ledger",
+                "official_detail_alias_metadata",
+                "curated_registry",
+            }:
+                continue
+            binding_url_norm = self._normalize_url_for_match(binding.get("url") or "")
+            if (
+                self._normalize_match_text(binding.get("alias") or "") == alias_norm
+                and self._normalize_match_text(binding.get("title") or "") == title_norm
+                and (not exact_url_norms or binding_url_norm in exact_url_norms)
+            ):
+                return f"source_backed_alias_ledger:{source}"
+
+        alias_relation_patterns = (
+            rf"(?:약칭|줄임말|줄임|별칭|통칭|애칭)\s*(?:은|는|이|가|:|=|-)?\s*{re.escape(alias_text)}",
+            rf"{re.escape(alias_text)}\s*(?:은|는|이|가)?\s*(?:약칭|줄임말|줄임|별칭|통칭|애칭)",
+        )
+        for row in (getattr(ctx, "search_results", None) or [])[:100]:
+            if not isinstance(row, dict):
+                continue
+            row_url = str(row.get("url") or "").strip()
+            row_url_norm = self._normalize_url_for_match(row_url)
+            if not (
+                row_url_norm
+                and row_url_norm in exact_url_norms
+                and self._is_novel_platform_url(row_url)
+                and self._is_novel_detail_url(row_url)
+            ):
+                continue
+            row_title = str(row.get("page_title") or row.get("title") or "").strip()
+            if not (
+                self._source_title_matches_candidate(row_title, candidate)
+                or self._source_title_matches_candidate(candidate, row_title)
+            ):
+                continue
+            source_blob = " ".join(
+                str(row.get(key) or "")
+                for key in ("title", "page_title", "content", "snippet", "description")
+            )
+            if not self._text_matches_title_strict(source_blob, alias_text):
+                continue
+            if not any(
+                re.search(pattern, source_blob, flags=re.IGNORECASE)
+                for pattern in alias_relation_patterns
+            ):
+                continue
+            return "official_detail_alias_metadata"
+        return ""
+
+    def _has_packet_bound_official_detail_visual_release_candidate(
+        self,
+        ctx,
+        candidate: Optional[str],
+    ) -> bool:
+        """Recognize a deterministic visual/bracket candidate selected from this packet.
+
+        This intentionally consumes only the packet text, runtime search rows, and
+        the existing deterministic alias scorer.  It does not trust an LLM-owned
+        relation decision or image-evidence catalog as a release signal.
+        """
+        title = str(candidate or "").strip()
+        title_norm = self._normalize_match_text(title)
+        if not ctx or not title_norm:
+            return False
+
+        release_titles: List[str] = [title]
+
+        def _push(raw: Any) -> None:
+            value = str(raw or "").strip()
+            value_norm = self._normalize_match_text(value)
+            if not value_norm:
+                return
+            if any(self._normalize_match_text(existing) == value_norm for existing in release_titles):
+                return
+            release_titles.append(value)
+
+        search_rows = [
+            row
+            for row in (getattr(ctx, "search_results", None) or [])[:100]
+            if isinstance(row, dict)
+        ]
+        candidate_bound_urls: set[str] = set()
+        for row in search_rows:
+            row_url = str(row.get("url") or "").strip()
+            row_title = str(row.get("title") or row.get("page_title") or "").strip()
+            if not (
+                row_title
+                and row_url
+                and self._is_novel_platform_url(row_url)
+                and self._is_novel_detail_url(row_url)
+            ):
+                continue
+            if (
+                self._source_title_matches_candidate(row_title, title)
+                or self._source_title_matches_candidate(title, row_title)
+            ):
+                candidate_bound_urls.add(self._normalize_url_for_match(row_url))
+                _push(row_title)
+
+        post_data = getattr(ctx, "post_data", None) or {}
+        for surface in (
+            post_data.get("title") if isinstance(post_data, dict) else None,
+            post_data.get("normalized_title") if isinstance(post_data, dict) else None,
+        ):
+            if not str(surface or "").strip():
+                continue
+            try:
+                inferred = self._infer_alias_title_from_search_evidence(ctx, str(surface))
+            except Exception:
+                inferred = None
+            if not isinstance(inferred, dict):
+                continue
+            inferred_title = str(inferred.get("title") or "").strip()
+            inferred_url = str(inferred.get("matched_url") or "").strip()
+            if not (
+                inferred_title
+                and inferred_url
+                and self._is_novel_platform_url(inferred_url)
+                and self._is_novel_detail_url(inferred_url)
+            ):
+                continue
+            inferred_url_norm = self._normalize_url_for_match(inferred_url)
+            if not (
+                self._source_title_matches_candidate(inferred_title, title)
+                or self._source_title_matches_candidate(title, inferred_title)
+                or inferred_url_norm in candidate_bound_urls
+            ):
+                continue
+            _push(inferred_title)
+            for row in search_rows:
+                row_url = str(row.get("url") or "").strip()
+                if self._normalize_url_for_match(row_url) != inferred_url_norm:
+                    continue
+                _push(row.get("title") or row.get("page_title"))
+
+        return any(
+            self._has_official_detail_bracket_visual_release_context(ctx, release_title)
+            for release_title in release_titles
+        )
+
+    def _image_scene_only_candidate_lacks_publish_surface(
+        self,
+        ctx,
+        candidate: Optional[str],
+        *,
+        title_candidates: Optional[List[DetectedTitle]] = None,
+        final_decision: Optional[Dict[str, Any]] = None,
+        verification_result: Optional[Dict[str, Any]] = None,
+    ) -> bool:
+        """Fail closed when a non-promotable image scene is the only work bridge."""
+        title = str(candidate or "").strip()
+        title_norm = self._normalize_match_text(title)
+        if not ctx or not title_norm:
+            return False
+        if self._has_strict_non_image_candidate_surface(
+            ctx,
+            title,
+            title_candidates=title_candidates,
+            final_decision=final_decision,
+        ):
+            return False
+        try:
+            if self._post_direct_official_detail_url_for_title(ctx, title=title):
+                return False
+        except Exception:
+            pass
+        try:
+            if self._has_structured_direct_image_work_surface_evidence(ctx, title):
+                return False
+        except Exception:
+            pass
+        try:
+            if self._has_image_primary_promotion_signal(ctx, title):
+                return False
+        except Exception:
+            pass
+        try:
+            if self._has_packet_bound_official_detail_visual_release_candidate(ctx, title):
+                return False
+        except Exception:
+            pass
+        if self._has_candidate_bound_non_image_alias_official_detail_bridge(
+            ctx,
+            title,
+            title_candidates=title_candidates,
+            final_decision=final_decision,
+            verification_result=verification_result,
+        ):
+            return False
+
+        image_items: List[Dict[str, Any]] = []
+        post_data = getattr(ctx, "post_data", None) or {}
+        if isinstance(post_data, dict):
+            for key in ("image_enrichment", "image_evidence_catalog"):
+                values = post_data.get(key)
+                if isinstance(values, list):
+                    image_items.extend(item for item in values if isinstance(item, dict))
+        for container in (final_decision, verification_result):
+            if not isinstance(container, dict):
+                continue
+            values = container.get("image_evidence_catalog")
+            if isinstance(values, list):
+                image_items.extend(item for item in values if isinstance(item, dict))
+        if not image_items:
+            try:
+                built = self._build_image_evidence_catalog(ctx)
+            except Exception:
+                built = []
+            if isinstance(built, list):
+                image_items.extend(item for item in built if isinstance(item, dict))
+        if not image_items:
+            return False
+
+        # A direct promotable image title has already returned above through
+        # `_has_structured_direct_image_work_surface_evidence`.  Do not rebuild
+        # a weaker eligibility rule from LLM-owned catalog labels here.
+        return True
+
     def _post_discusses_work_as_work(
         self,
         ctx,
@@ -32200,6 +34012,184 @@ OUTPUT JSON:
         ):
             return False
 
+        if self._non_novel_media_blocks_work_bridge(
+            ctx,
+            candidate,
+            verification_result=verification,
+        ):
+            return False
+
+        if bridge_source == "source_native_official_detail_precedence":
+            return self._source_native_non_image_work_relation_bridge(ctx, candidate)
+
+        if self._image_scene_only_candidate_lacks_publish_surface(
+            ctx,
+            candidate,
+            title_candidates=title_candidates,
+            final_decision=final,
+            verification_result=verification,
+        ):
+            return False
+
+        if self._has_candidate_bound_non_image_alias_official_detail_bridge(
+            ctx,
+            candidate,
+            title_candidates=title_candidates,
+            final_decision=final,
+            verification_result=verification,
+        ):
+            return True
+
+        def _candidate_bound_alias_relation(*, require_official_detail: bool) -> bool:
+            try:
+                packet_text = self._collect_non_image_post_text(ctx, include_comments=True)
+            except Exception:
+                packet_text = ""
+            packet_norm = self._normalize_match_text(packet_text)
+            candidate_norm = self._normalize_match_text(candidate)
+            if not packet_norm or not candidate_norm:
+                return False
+            if self._has_memory_query_signal(packet_text):
+                return False
+            if self._has_recommendation_request_signal(packet_text):
+                return False
+
+            alias_values: List[str] = []
+
+            def _add_alias(raw: Any) -> None:
+                alias = str(raw or "").strip()
+                alias_norm = self._normalize_match_text(alias)
+                if (
+                    not alias_norm
+                    or alias_norm == candidate_norm
+                    or self._is_low_information_alias_surface(alias)
+                    or self._is_generic_topic_title(alias)
+                ):
+                    return
+                if alias not in alias_values:
+                    alias_values.append(alias)
+
+            vf_local = verification if isinstance(verification, dict) else {}
+            final_local = final if isinstance(final, dict) else {}
+            grounding = vf_local.get("grounding_check") or {}
+            if isinstance(grounding, dict) and (
+                grounding.get("title_abbrev_mentioned") is True
+                or grounding.get("body_abbrev_mentioned") is True
+            ):
+                _add_alias(grounding.get("matched_alias"))
+                _add_alias(grounding.get("anchor_text"))
+            explicit_mapping = False
+            for container in (vf_local, final_local):
+                slang = container.get("slang_insight") if isinstance(container, dict) else None
+                if not isinstance(slang, dict):
+                    continue
+                decoded = str(
+                    slang.get("decoded_term")
+                    or slang.get("official_title")
+                    or ""
+                ).strip()
+                if (
+                    slang.get("decode_verified") is True
+                    and self._normalize_match_text(decoded) == candidate_norm
+                ):
+                    explicit_mapping = True
+                    _add_alias(slang.get("detected_term"))
+                    _add_alias(slang.get("canonical_work_alias"))
+            candidate_record_bound = False
+            for title_candidate in title_candidates or []:
+                if not isinstance(title_candidate, DetectedTitle):
+                    continue
+                if self._normalize_match_text(
+                    getattr(title_candidate, "official_title", "") or ""
+                ) != candidate_norm:
+                    continue
+                candidate_record_bound = bool(
+                    getattr(title_candidate, "locked", False)
+                    or self._confidence_rank_value(
+                        getattr(title_candidate, "confidence", "None")
+                    ) >= 2
+                )
+                _add_alias(getattr(title_candidate, "alias_or_mention", ""))
+
+            alias_in_packet = any(
+                self._normalize_match_text(alias) in packet_norm
+                for alias in alias_values
+            )
+            if not alias_in_packet or not (explicit_mapping or candidate_record_bound):
+                return False
+            if require_official_detail and not (
+                self._near_title_official_detail_url_from_candidates(
+                    ctx,
+                    candidate,
+                    title_candidates=title_candidates,
+                )
+                or self._official_detail_exact_title_urls_for_no_work_anchor(ctx, candidate)
+            ):
+                return False
+
+            specific_work_marker = bool(
+                TITLE_LED_WORK_CONSUMPTION_RE.search(packet_text)
+                or re.search(
+                    r"(주인공|캐릭터|이번\s*화|전개|설정|스포|작가|연재|연중|휴재|완결|"
+                    r"소설|작품|패러디|마공|신공|검법|화경|현경|표지|삽화)",
+                    packet_text,
+                )
+                or self._has_official_detail_bracket_visual_release_context(ctx, candidate)
+            )
+            return specific_work_marker
+
+        if bridge_source == "preserved_title_candidate_bridge":
+            return _candidate_bound_alias_relation(require_official_detail=False)
+
+        if bridge_source == "official_detail_visual_alias_bridge":
+            candidate_urls = set(
+                self._official_detail_exact_title_urls_for_no_work_anchor(ctx, candidate)
+            )
+            candidate_integrity = parse_title_integrity_parts(candidate)
+            for search_result in (getattr(ctx, "search_results", None) or [])[:100]:
+                if not isinstance(search_result, dict):
+                    continue
+                search_url = str(search_result.get("url") or "").strip()
+                if not search_url or search_url not in candidate_urls:
+                    continue
+                source_title = str(
+                    search_result.get("title")
+                    or search_result.get("page_title")
+                    or ""
+                ).strip()
+                source_display = (
+                    self._normalize_authoritative_fetched_title_display(source_title)
+                    or source_title
+                )
+                source_integrity = parse_title_integrity_parts(source_display)
+                identity_compatible = bool(
+                    source_integrity.identity_components
+                    == candidate_integrity.identity_components
+                    or (
+                        not candidate_integrity.identity_components
+                        and bool(source_integrity.identity_components)
+                    )
+                )
+                suffix_identity_compatible = bool(
+                    source_integrity.suffix_identity_components
+                    == candidate_integrity.suffix_identity_components
+                    or (
+                        not candidate_integrity.suffix_identity_components
+                        and bool(source_integrity.suffix_identity_components)
+                    )
+                )
+                if not (
+                    candidate_integrity.base_normalized
+                    and candidate_integrity.base_normalized
+                    == source_integrity.base_normalized
+                    and identity_compatible
+                    and suffix_identity_compatible
+                ):
+                    continue
+                if self._has_official_detail_bracket_visual_release_context(ctx, source_title):
+                    return True
+            return False
+
         if bridge_source == "verified_contextual_alias_work_bridge":
             return self._has_verified_contextual_alias_work_bridge_evidence(
                 ctx,
@@ -32215,6 +34205,150 @@ OUTPUT JSON:
                 final_decision=final,
                 verification_result=verification,
             )
+
+        if bridge_source == "direct_image_work_surface_lock":
+            image_identity_is_verified = bool(
+                self._has_structured_direct_image_work_surface_evidence(ctx, candidate)
+                and (
+                    self._has_ocr_catalog_official_title_evidence(ctx, candidate)
+                    or self._official_detail_exact_title_urls_for_no_work_anchor(ctx, candidate)
+                )
+            )
+            if not image_identity_is_verified:
+                return False
+            if not self._image_only_author_meta_requires_hold(
+                ctx,
+                candidate,
+                final_decision=final,
+                verification_result=verification,
+            ):
+                return True
+
+            # Author/provenance meta may preserve the pictured identity, but
+            # needs a non-image specific-work relation before publication.  A
+            # bare exact title remains identity evidence, not a relation.
+            if self._non_image_specific_work_relation_bridge(
+                ctx,
+                candidate,
+                include_comments=True,
+                require_title_surface=True,
+            ):
+                try:
+                    setattr(
+                        ctx,
+                        "_image_identity_without_non_image_relation_bridge",
+                        False,
+                    )
+                except Exception:
+                    pass
+                return True
+            return False
+
+        if bridge_source in {
+            "resolved_public_title_scope",
+            "title_surface_primary_candidate_rescued",
+        }:
+            try:
+                non_image_text = self._collect_non_image_post_text(ctx, include_comments=True)
+            except Exception:
+                non_image_text = ""
+            text_norm = self._normalize_match_text(non_image_text)
+            candidate_norm = self._normalize_match_text(candidate)
+            direct_title_surface = bool(candidate_norm and candidate_norm in text_norm)
+            alias_surface = False
+            candidate_bound_urls: List[str] = []
+            for title_candidate in title_candidates or []:
+                if not isinstance(title_candidate, DetectedTitle):
+                    continue
+                title_candidate_text = str(
+                    getattr(title_candidate, "official_title", "") or ""
+                ).strip()
+                if self._normalize_match_text(title_candidate_text) != candidate_norm:
+                    continue
+                title_candidate_url = str(
+                    getattr(title_candidate, "heretic_url", "") or ""
+                ).strip()
+                if (
+                    title_candidate_url
+                    and self._is_novel_detail_url(title_candidate_url)
+                    and title_candidate_url not in candidate_bound_urls
+                ):
+                    candidate_bound_urls.append(title_candidate_url)
+                for surface in self._candidate_surface_forms(ctx, title_candidate):
+                    surface_norm = self._normalize_match_text(surface)
+                    if surface_norm and surface_norm != candidate_norm and surface_norm in text_norm:
+                        alias_surface = True
+                        break
+                if alias_surface:
+                    break
+            source_url_texts = [non_image_text]
+            post_data = getattr(ctx, "post_data", None) or {}
+            if isinstance(post_data, dict):
+                for key in ("url", "content", "content_html", "body"):
+                    value = post_data.get(key)
+                    if isinstance(value, str) and value.strip():
+                        source_url_texts.append(value)
+                for block in post_data.get("content_blocks") or []:
+                    if not isinstance(block, dict):
+                        continue
+                    for key in ("text", "url", "href", "src"):
+                        value = block.get(key)
+                        if isinstance(value, str) and value.strip():
+                            source_url_texts.append(value)
+            source_url_text = " ".join(source_url_texts)
+            direct_source_url_surface = any(
+                url in source_url_text for url in candidate_bound_urls
+            )
+            official_detail_anchor = bool(
+                self._near_title_official_detail_url_from_candidates(
+                    ctx,
+                    candidate,
+                    title_candidates=title_candidates,
+                )
+                or self._official_detail_exact_title_urls_for_no_work_anchor(ctx, candidate)
+            )
+            work_consumption_signal = bool(
+                self._has_title_led_work_consumption_signal(ctx)
+                or self._known_title_abbreviation_update_question_anchor(ctx, candidate)
+                or TITLE_LED_WORK_CONSUMPTION_RE.search(non_image_text)
+            )
+            if (
+                official_detail_anchor
+                and (
+                    (
+                        direct_source_url_surface
+                        and self._source_native_non_image_work_relation_bridge(
+                            ctx,
+                            candidate,
+                        )
+                    )
+                    or (
+                        work_consumption_signal
+                        and (direct_title_surface or alias_surface)
+                    )
+                )
+            ):
+                if direct_source_url_surface:
+                    try:
+                        setattr(
+                            ctx,
+                            "_direct_source_official_detail_url_bridge_title",
+                            candidate,
+                        )
+                        setattr(
+                            ctx,
+                            "_direct_source_official_detail_url_bridge_url",
+                            next(
+                                url
+                                for url in candidate_bound_urls
+                                if url in source_url_text
+                            ),
+                        )
+                    except Exception:
+                        pass
+                return True
+            if _candidate_bound_alias_relation(require_official_detail=True):
+                return True
 
         if self._has_strict_direct_work_anchor_for_no_work_rescue(
             ctx,
@@ -32805,6 +34939,52 @@ OUTPUT JSON:
                 return alias
         return None
 
+    def _source_native_title_form_intent_signals(
+        self,
+        *,
+        ctx,
+        business_or_food_terms: Sequence[str],
+    ) -> Tuple[bool, bool, bool]:
+        """Separate invented-title requests from past consumption/review language."""
+
+        source_text = self._collect_non_image_post_text(
+            ctx,
+            include_comments=False,
+        )
+        body_text = self._collect_body_comment_text(
+            ctx,
+            include_comments=False,
+        )
+        body_norm = self._normalize_match_text(body_text)
+        creation_or_future_desire = bool(
+            re.search(
+                r"(빨리\s*쓰|쓰셈|써라|써줘|누가\s*(?:좀\s*)?써|연재해|소재|"
+                r"월억킥\s*가능|가능할듯|읽고\s*싶|보고\s*싶|나오면\s*(?:읽|보))",
+                source_text,
+                flags=re.IGNORECASE,
+            )
+        )
+        body_realworld_surface = any(
+            self._normalize_match_text(term) in body_norm
+            for term in business_or_food_terms
+        )
+        past_consumption_or_review = bool(
+            re.search(
+                r"(읽었|읽어\s*봤|다\s*읽|정주행|봤(?:는데|음|다|더라|고)|"
+                r"보는\s*중|읽는\s*중|재밌(?:더라|었|음|다)|재미있|문체|필력|"
+                r"최신화|몇\s*화|회차|리뷰|감상)",
+                body_text,
+                flags=re.IGNORECASE,
+            )
+        )
+        if creation_or_future_desire:
+            past_consumption_or_review = False
+        return (
+            creation_or_future_desire,
+            body_realworld_surface,
+            past_consumption_or_review,
+        )
+
     def _verified_alias_title_form_parody_block_reason(
         self,
         *,
@@ -32830,30 +35010,12 @@ OUTPUT JSON:
         if not post_title_norm or alias_norm not in post_title_norm:
             return ""
 
-        main_text, full_text = self._collect_post_texts(ctx)
-        packet_text = " ".join(
-            str(part or "")
-            for part in (
-                post_title,
-                main_text,
-                full_text,
-                " ".join(str(c or "") for c in (getattr(ctx, "comments", None) or [])),
-            )
-            if str(part or "").strip()
-        )
+        packet_text = self._collect_non_image_post_text(
+            ctx,
+            include_comments=False,
+        ) or post_title
         packet_norm = self._normalize_match_text(packet_text)
         if self._text_matches_title_strict(packet_text, candidate):
-            return ""
-        verification = verification_result if isinstance(verification_result, dict) else {}
-        if self._has_strict_direct_work_anchor_for_no_work_rescue(
-            ctx,
-            candidate,
-            verification_result=verification,
-        ):
-            return ""
-        if self._has_batch_alias_verified_no_work_release_context(ctx, candidate):
-            return ""
-        if self._known_title_abbreviation_update_question_anchor(ctx, candidate, alias_text):
             return ""
 
         alias_pos = post_title_norm.find(alias_norm)
@@ -32915,37 +35077,15 @@ OUTPUT JSON:
         if not has_title_form:
             return ""
 
-        creation_prompt = bool(
-            re.search(
-                r"(빨리\s*쓰|쓰셈|써라|써줘|누가\s*써|연재해|소재|월억킥\s*가능|가능할듯)",
-                packet_text,
-                flags=re.IGNORECASE,
+        creation_prompt, realworld_food_surface, review_consumption = (
+            self._source_native_title_form_intent_signals(
+                ctx=ctx,
+                business_or_food_terms=business_or_food_terms,
             )
         )
-        realworld_food_surface = any(
-            self._normalize_match_text(term) in packet_norm
-            for term in business_or_food_terms
-        )
-        if not (creation_prompt or realworld_food_surface):
+        if review_consumption and not creation_prompt:
             return ""
-
-        direct_work_issue_terms = (
-            "최신화",
-            "몇화",
-            "몇 화",
-            "회차",
-            "연재",
-            "표지",
-            "삽화",
-            "작가",
-            "노피아",
-            "노벨피아",
-            "리뷰",
-            "감상",
-            "봤",
-            "읽",
-        )
-        if any(term in packet_text for term in direct_work_issue_terms):
+        if not (creation_prompt or realworld_food_surface):
             return ""
 
         return "title_form_parody_alias_without_work_issue_anchor"
@@ -33275,33 +35415,17 @@ OUTPUT JSON:
         if not post_title_norm:
             return ""
 
-        main_text, full_text = self._collect_post_texts(ctx)
-        packet_text = " ".join(
-            str(part or "")
-            for part in (
-                post_title,
-                main_text,
-                full_text,
-                " ".join(str(c or "") for c in (getattr(ctx, "comments", None) or [])),
-            )
-            if str(part or "").strip()
+        source_native_text = self._collect_non_image_post_text(
+            ctx,
+            include_comments=False,
         )
+        if not source_native_text:
+            source_native_text = post_title
+        packet_text = source_native_text
         packet_norm = self._normalize_match_text(packet_text)
         if not packet_norm:
             return ""
-        if self._text_matches_title_strict(packet_text, candidate):
-            return ""
-
-        verification = verification_result if isinstance(verification_result, dict) else {}
-        if self._has_strict_direct_work_anchor_for_no_work_rescue(
-            ctx,
-            candidate,
-            verification_result=verification,
-        ):
-            return ""
-        if self._has_batch_alias_verified_no_work_release_context(ctx, candidate):
-            return ""
-        if self._known_title_abbreviation_update_question_anchor(ctx, candidate):
+        if self._text_matches_title_strict(source_native_text, candidate):
             return ""
 
         title_form_terms = (
@@ -33360,39 +35484,6 @@ OUTPUT JSON:
             and any(self._normalize_match_text(term) in post_title_norm for term in transformation_terms)
         )
         if not has_title_form:
-            return ""
-
-        creation_prompt = bool(
-            re.search(
-                r"(빨리\s*쓰|쓰셈|써라|써줘|누가\s*써|연재해|소재|월억킥\s*가능|가능할듯)",
-                packet_text,
-                flags=re.IGNORECASE,
-            )
-        )
-        realworld_food_surface = any(
-            self._normalize_match_text(term) in packet_norm
-            for term in business_or_food_terms
-        )
-        if not (creation_prompt or realworld_food_surface):
-            return ""
-
-        direct_work_issue_terms = (
-            "최신화",
-            "몇화",
-            "몇 화",
-            "회차",
-            "연재",
-            "표지",
-            "삽화",
-            "작가",
-            "노피아",
-            "노벨피아",
-            "리뷰",
-            "감상",
-            "봤",
-            "읽",
-        )
-        if any(term in packet_text for term in direct_work_issue_terms):
             return ""
 
         candidate_norm = self._normalize_match_text(candidate)
@@ -34334,6 +36425,479 @@ OUTPUT JSON:
             return False
         return True
 
+    def _non_novel_media_blocks_work_bridge(
+        self,
+        ctx,
+        title: Optional[str],
+        *,
+        verification_result: Optional[Dict[str, Any]] = None,
+    ) -> bool:
+        """Fail closed when candidate evidence resolves only to external media."""
+        candidate = str(title or "").strip()
+        if not ctx or not candidate:
+            return False
+        if not self._has_non_novel_media_evidence_for_title(ctx, candidate):
+            return False
+        acceptance_value = getattr(ctx, "_title_acceptance", None)
+        acceptance = dict(acceptance_value) if isinstance(acceptance_value, dict) else {}
+        verification = verification_result if isinstance(verification_result, dict) else {}
+        relation = verification.get("relation_judgment") or {}
+        if isinstance(relation, dict):
+            acceptance.setdefault("relation_type", relation.get("relation_type"))
+            acceptance.setdefault("relation_target", relation.get("discussion_target"))
+            acceptance.setdefault("relation_promotion", relation.get("promotion_decision"))
+        return not self._has_specific_work_non_novel_media_exemption(
+            ctx,
+            candidate,
+            acceptance,
+        )
+
+    def _apply_title_body_subject_scope_contract(
+        self,
+        ctx,
+        state: GroundingState,
+        evidence: List[EvidenceRecord],
+        *,
+        final_decision: Optional[Dict[str, Any]] = None,
+        verification_result: Optional[Dict[str, Any]] = None,
+        title_candidates: Optional[List[DetectedTitle]] = None,
+    ) -> Tuple[GroundingState, List[EvidenceRecord]]:
+        """Resolve or fail-close a headline/body subject collision once.
+
+        A title-leading alias and a body character-specific official-detail
+        candidate can both be real works.  Existence is not subject priority:
+        if both remain primary-like and no explicit comparison/previous-work
+        scope selects one, preserve both and publish neither.
+        """
+
+        current_title = str(state.candidate_title or "").strip()
+        current_norm = self._normalize_match_text(current_title)
+        if not ctx or not current_norm or not title_candidates:
+            return state, list(evidence)
+
+        final = final_decision if isinstance(final_decision, dict) else {}
+        verification = verification_result if isinstance(verification_result, dict) else {}
+        records = self._candidate_records_for_body_verified_bridge(
+            title_candidates=title_candidates,
+            final_decision=final,
+        )
+
+        current_url_norm = self._normalize_url_for_match(state.candidate_url)
+        current_record: Optional[DetectedTitle] = None
+        for record in records:
+            record_title = str(getattr(record, "official_title", "") or "").strip()
+            if self._normalize_match_text(record_title) != current_norm:
+                continue
+            record_url_norm = self._normalize_url_for_match(
+                getattr(record, "heretic_url", "") or ""
+            )
+            if current_url_norm and record_url_norm == current_url_norm:
+                current_record = record
+                break
+            if current_record is None:
+                current_record = record
+        current_has_headline_surface = bool(
+            current_record is not None
+            and self._candidate_has_title_surface_in_post_title(ctx, current_record)
+        )
+        if current_record is not None and not current_has_headline_surface:
+            # Short aliases are intentionally restricted by the general title
+            # surface matcher.  Here the candidate is already an official-detail
+            # record and a distinct body-verified work exists, so accept only a
+            # non-generic standalone alias at the *leading* headline position.
+            # This keeps the subject-conflict HOLD lane available without
+            # weakening title matching for ordinary promotion paths.
+            post_data = getattr(ctx, "post_data", None) or {}
+            post_title = str(
+                post_data.get("title") or post_data.get("normalized_title") or ""
+            ).strip()
+            headline_alias = str(
+                getattr(current_record, "alias_or_mention", "") or ""
+            ).strip()
+            headline_alias_norm = self._normalize_match_text(headline_alias)
+            title_without_prefix = re.sub(
+                r"^\s*[\(\[\{<【「『《].*?[\)\]\}>】」』》]\s*",
+                "",
+                post_title,
+            ).strip()
+            current_has_headline_surface = bool(
+                len(headline_alias_norm) >= 3
+                and not self._is_generic_role_or_species_surface_title(headline_alias)
+                and not self._is_generic_topic_title(headline_alias)
+                and not self._is_low_information_alias_surface(headline_alias)
+                and re.match(
+                    rf"^\s*{re.escape(headline_alias)}(?![0-9A-Za-z가-힣])",
+                    title_without_prefix,
+                    flags=re.IGNORECASE,
+                )
+            )
+        if current_record is None or not current_has_headline_surface:
+            return state, list(evidence)
+
+        body_record = self._select_body_verified_work_candidate_for_title_led_alias(
+            ctx,
+            current_title,
+            title_candidates=title_candidates,
+            final_decision=final,
+            verification_result=verification,
+        )
+        body_title = str(body_record.get("title") or "").strip()
+        body_url = str(body_record.get("url") or "").strip()
+        body_norm = self._normalize_match_text(body_title)
+        if not body_norm or body_norm == current_norm:
+            return state, list(evidence)
+        body_url_norm = self._normalize_url_for_match(body_url)
+        if current_url_norm and body_url_norm and current_url_norm == body_url_norm:
+            return state, list(evidence)
+
+        def _candidate_roles(title_norm: str, url_norm: str) -> set[str]:
+            roles: set[str] = set()
+            for record in records:
+                record_title_norm = self._normalize_match_text(
+                    getattr(record, "official_title", "") or ""
+                )
+                record_url_norm = self._normalize_url_for_match(
+                    getattr(record, "heretic_url", "") or ""
+                )
+                if record_title_norm != title_norm:
+                    continue
+                if url_norm and record_url_norm and record_url_norm != url_norm:
+                    continue
+                role = str(getattr(record, "reference_role", "") or "").strip().lower()
+                if role:
+                    roles.add(role)
+            return roles
+
+        def _title_from_container(container: Dict[str, Any], key: str) -> str:
+            value = container.get(key)
+            if isinstance(value, DetectedTitle):
+                return str(getattr(value, "official_title", "") or "").strip()
+            if isinstance(value, dict):
+                return str(
+                    value.get("official_title")
+                    or value.get("title")
+                    or value.get("name")
+                    or ""
+                ).strip()
+            return ""
+
+        declared_primary_norms = {
+            self._normalize_match_text(_title_from_container(container, "primary_work"))
+            for container in (final, verification)
+            if isinstance(container, dict)
+        }
+        declared_primary_norms.discard("")
+        comparison_norms = {
+            self._normalize_match_text(_title_from_container(container, "comparison_target"))
+            for container in (final, verification)
+            if isinstance(container, dict)
+        }
+        comparison_norms.discard("")
+
+        current_roles = _candidate_roles(current_norm, current_url_norm)
+        body_roles = _candidate_roles(body_norm, body_url_norm)
+        current_role_primary = "primary" in current_roles
+        body_role_primary = "primary" in body_roles
+        body_explicit_noncurrent = bool(
+            body_norm in comparison_norms
+            or body_roles.intersection(
+                {"comparison", "comparison_target", "previous_work", "secondary_reference"}
+            )
+        )
+        current_explicit_noncurrent = bool(
+            not current_role_primary
+            and current_roles.intersection(
+                {"mentioned", "comparison", "previous_work", "secondary_reference", "context_only"}
+            )
+        )
+        declared_current_primary = current_norm in declared_primary_norms
+        declared_body_primary = body_norm in declared_primary_norms
+
+        # Explicit comparison/previous-work scope is decisive and must not turn
+        # ordinary comparative prose into a system-wide HOLD.
+        if body_explicit_noncurrent and (declared_current_primary or current_role_primary):
+            return state, list(evidence)
+
+        sources_by_pair: Dict[Tuple[str, str], Dict[str, Any]] = {}
+
+        def _preservation_source(record: DetectedTitle, role: str) -> Dict[str, Any]:
+            return {
+                "official_title": str(getattr(record, "official_title", "") or "").strip(),
+                "heretic_url": str(getattr(record, "heretic_url", "") or "").strip(),
+                "confidence": str(getattr(record, "confidence", "") or "High"),
+                "alias_or_mention": str(
+                    getattr(record, "alias_or_mention", "") or ""
+                ).strip(),
+                "source_tier": str(getattr(record, "source_tier", "") or "official_detail"),
+                "page_type": str(getattr(record, "page_type", "") or "").strip() or None,
+                "content_status": str(
+                    getattr(record, "content_status", "") or ""
+                ).strip()
+                or None,
+                "reference_role": str(
+                    getattr(record, "reference_role", "") or "candidate"
+                ),
+                "preservation_role": role,
+            }
+
+        body_candidate = body_record.get("candidate")
+        if not isinstance(body_candidate, DetectedTitle):
+            body_candidate = next(
+                (
+                    record
+                    for record in records
+                    if self._normalize_match_text(
+                        getattr(record, "official_title", "") or ""
+                    )
+                    == body_norm
+                    and (
+                        not body_url_norm
+                        or self._normalize_url_for_match(
+                            getattr(record, "heretic_url", "") or ""
+                        )
+                        == body_url_norm
+                    )
+                ),
+                None,
+            )
+        if not isinstance(body_candidate, DetectedTitle):
+            return state, list(evidence)
+
+        for record, role in (
+            (current_record, "title_body_subject_headline_candidate"),
+            (body_candidate, "title_body_subject_body_candidate"),
+        ):
+            source = _preservation_source(record, role)
+            pair = (
+                self._normalize_match_text(source["official_title"]),
+                self._normalize_url_for_match(source["heretic_url"]),
+            )
+            if pair[0]:
+                sources_by_pair[pair] = source
+
+        if len(sources_by_pair) < 2:
+            return state, list(evidence)
+
+        if isinstance(final_decision, dict):
+            preservation_sources = final_decision.setdefault(
+                "candidate_preservation_sources", []
+            )
+            if not isinstance(preservation_sources, list):
+                preservation_sources = []
+                final_decision["candidate_preservation_sources"] = preservation_sources
+            existing_pairs = {
+                (
+                    self._normalize_match_text(
+                        item.get("official_title") or item.get("title") or ""
+                    ),
+                    self._normalize_url_for_match(
+                        item.get("heretic_url") or item.get("url") or ""
+                    ),
+                )
+                for item in preservation_sources
+                if isinstance(item, dict)
+            }
+            for pair, source in sources_by_pair.items():
+                if pair not in existing_pairs:
+                    preservation_sources.append(source)
+                    existing_pairs.add(pair)
+
+        inventory_evidence = list(
+            candidate_inventory_evidence_from_sources(list(sources_by_pair.values()))
+        )
+        updated_evidence = list(evidence)
+        existing_inventory_pairs = {
+            (
+                self._normalize_match_text(record.candidate_title),
+                self._normalize_url_for_match(record.candidate_url),
+            )
+            for record in updated_evidence
+            if isinstance(record, EvidenceRecord)
+            and record.kind == "candidate_preservation"
+        }
+        for record in inventory_evidence:
+            pair = (
+                self._normalize_match_text(record.candidate_title),
+                self._normalize_url_for_match(record.candidate_url),
+            )
+            if pair not in existing_inventory_pairs:
+                updated_evidence.append(record)
+                existing_inventory_pairs.add(pair)
+
+        # A declared body primary is trusted only when the headline candidate
+        # is explicitly non-current.  This is the deterministic body-primary
+        # lane; dual-primary input remains ambiguous and fails closed below.
+        if (
+            declared_body_primary
+            and body_role_primary
+            and current_explicit_noncurrent
+            and self._post_discusses_work_as_work(
+                ctx,
+                body_title,
+                source="body_verified_work_candidate_bridge",
+                final_decision=final,
+                verification_result=verification,
+                title_candidates=title_candidates,
+            )
+        ):
+            direct_sources = list(
+                state.scope.direct_bridge_sources
+                if isinstance(state.scope, ScopeState)
+                else ()
+            )
+            for source_name in (
+                "title_body_subject_body_primary",
+                "body_verified_work_candidate_bridge",
+                "official_detail_url",
+            ):
+                if source_name not in direct_sources:
+                    direct_sources.append(source_name)
+            rewritten_evidence = [
+                replace(
+                    record,
+                    supports_publish=False,
+                    reason_code=(
+                        "title_body_subject_noncurrent_headline_candidate"
+                        if self._normalize_match_text(record.candidate_title) == current_norm
+                        else record.reason_code
+                    ),
+                )
+                if isinstance(record, EvidenceRecord)
+                and self._normalize_match_text(record.candidate_title) == current_norm
+                else record
+                for record in updated_evidence
+            ]
+            rewritten_evidence.extend(
+                [
+                    EvidenceRecord(
+                        kind="title_body_subject_body_primary",
+                        strength="strong",
+                        source_path_or_snippet=str(body_record.get("surface") or body_title),
+                        supports_publish=True,
+                        reason_code="title_body_subject_body_primary",
+                        candidate_title=body_title,
+                        candidate_url=body_url,
+                    ),
+                    EvidenceRecord(
+                        kind="official_detail_url",
+                        strength="strong",
+                        source_path_or_snippet=body_url,
+                        supports_publish=False,
+                        reason_code="official_detail_url",
+                        candidate_title=body_title,
+                        candidate_url=body_url,
+                        title_url_match=True,
+                    ),
+                ]
+            )
+            try:
+                setattr(ctx, "_title_body_subject_body_primary_selected", True)
+            except Exception:
+                pass
+            if isinstance(final_decision, dict):
+                flags = final_decision.setdefault("consistency_flags", [])
+                if isinstance(flags, list) and "title_body_subject_body_primary_selected" not in flags:
+                    flags.append("title_body_subject_body_primary_selected")
+            return (
+                GroundingState(
+                    post_id=state.post_id,
+                    candidate_title=body_title,
+                    candidate_url=body_url,
+                    source="title_body_subject_body_primary",
+                    official_title_exists=True,
+                    row_discusses_work_as_work=True,
+                    title_resolution_state="resolved",
+                    work_resolution="resolved",
+                    discussion_type=state.discussion_type or "review",
+                    candidate_inventory_count=len(inventory_evidence),
+                    scope=ScopeState(
+                        scope_kind="current_work",
+                        confidence="high",
+                        direct_bridge_sources=direct_sources,
+                        competing_candidates=(),
+                        conflict_reason_codes=(),
+                    ),
+                ),
+                rewritten_evidence,
+            )
+
+        conflict_codes = list(
+            state.scope.conflict_reason_codes
+            if isinstance(state.scope, ScopeState)
+            else ()
+        )
+        for reason_code in (
+            "title_body_subject_conflict_unresolved",
+            *(
+                ["multiple_primary_reference_roles"]
+                if current_role_primary and body_role_primary
+                else []
+            ),
+        ):
+            if reason_code not in conflict_codes:
+                conflict_codes.append(reason_code)
+        competing = list(
+            state.scope.competing_candidates
+            if isinstance(state.scope, ScopeState)
+            else ()
+        )
+        if body_title not in competing:
+            competing.append(body_title)
+        direct_sources = list(
+            state.scope.direct_bridge_sources
+            if isinstance(state.scope, ScopeState)
+            else ()
+        )
+        if "body_verified_work_candidate_bridge" not in direct_sources:
+            direct_sources.append("body_verified_work_candidate_bridge")
+        updated_evidence = [
+            replace(record, supports_publish=False)
+            if isinstance(record, EvidenceRecord)
+            else record
+            for record in updated_evidence
+        ]
+        updated_evidence.append(
+            EvidenceRecord(
+                kind="title_body_subject_conflict",
+                strength="strong",
+                source_path_or_snippet=(
+                    f"headline={current_title}; body={body_title}"
+                ),
+                supports_publish=False,
+                reason_code="title_body_subject_conflict_unresolved",
+                candidate_title=current_title,
+                candidate_url=str(state.candidate_url or ""),
+            )
+        )
+        if isinstance(final_decision, dict):
+            flags = final_decision.setdefault("consistency_flags", [])
+            if isinstance(flags, list):
+                for reason_code in conflict_codes:
+                    if reason_code not in flags:
+                        flags.append(reason_code)
+            blocked_competitors = final_decision.setdefault(
+                "blocked_official_title_competing_candidates", []
+            )
+            if isinstance(blocked_competitors, list) and body_title not in blocked_competitors:
+                blocked_competitors.append(body_title)
+        return (
+            replace(
+                state,
+                row_discusses_work_as_work=False,
+                title_resolution_state="unresolved_matchable",
+                work_resolution="unresolved",
+                candidate_inventory_count=len(inventory_evidence),
+                scope=ScopeState(
+                    scope_kind="context_only",
+                    confidence="high",
+                    direct_bridge_sources=direct_sources,
+                    competing_candidates=competing,
+                    conflict_reason_codes=conflict_codes,
+                ),
+            ),
+            updated_evidence,
+        )
+
     def _record_public_title_gate_decision(
         self,
         ctx,
@@ -34341,21 +36905,221 @@ OUTPUT JSON:
         evidence: List[EvidenceRecord],
         *,
         final_decision: Optional[Dict[str, Any]] = None,
+        verification_result: Optional[Dict[str, Any]] = None,
+        title_candidates: Optional[List[DetectedTitle]] = None,
     ) -> Dict[str, Any]:
-        decision = can_publish_title(state, evidence)
-        decision_payload = decision.to_dict()
-        state_payload = state.to_dict()
-        evidence_payload = [record.to_dict() for record in evidence]
+        state, evidence = self._apply_title_body_subject_scope_contract(
+            ctx,
+            state,
+            list(evidence),
+            final_decision=final_decision,
+            verification_result=verification_result,
+            title_candidates=title_candidates,
+        )
+        display_binding = self._official_detail_display_title_binding(
+            ctx,
+            state.candidate_title,
+            state.candidate_url,
+            fetch_if_missing=False,
+        )
+        binding_status = str(display_binding.get("status") or "unavailable")
+        canonical_title = str(display_binding.get("canonical_title") or "").strip()
+        original_title = str(state.candidate_title or "").strip()
+        candidate_url_norm = self._normalize_url_for_match(state.candidate_url)
+
+        if binding_status == "compatible" and canonical_title:
+            canonical_parts = parse_title_integrity_parts(canonical_title)
+
+            def _evidence_title_matches_canonical(record: EvidenceRecord) -> bool:
+                record_parts = parse_title_integrity_parts(record.candidate_title)
+                return bool(
+                    record_parts.base_normalized
+                    and record_parts.base_normalized
+                    == canonical_parts.base_normalized
+                    and (
+                        record_parts.identity_components
+                        == canonical_parts.identity_components
+                        or (
+                            not record_parts.identity_components
+                            and bool(canonical_parts.identity_components)
+                        )
+                    )
+                    and (
+                        record_parts.suffix_identity_components
+                        == canonical_parts.suffix_identity_components
+                        or (
+                            not record_parts.suffix_identity_components
+                            and bool(canonical_parts.suffix_identity_components)
+                        )
+                    )
+                )
+
+            state = replace(state, candidate_title=canonical_title)
+            rebound_evidence: List[EvidenceRecord] = []
+            for record in evidence:
+                record_url_norm = self._normalize_url_for_match(record.candidate_url)
+                same_url = bool(
+                    candidate_url_norm and record_url_norm == candidate_url_norm
+                )
+                if _evidence_title_matches_canonical(record):
+                    rebound_evidence.append(
+                        replace(
+                            record,
+                            candidate_title=canonical_title,
+                            title_url_match=True if same_url else record.title_url_match,
+                        )
+                    )
+                elif same_url:
+                    rebound_evidence.append(
+                        replace(
+                            record,
+                            supports_publish=False,
+                            title_url_match=False,
+                            reason_code="official_detail_display_evidence_candidate_mismatch",
+                        )
+                    )
+                else:
+                    rebound_evidence.append(record)
+            evidence = rebound_evidence
+            binding_reason = str(
+                display_binding.get("reason_code")
+                or "official_detail_display_title_exact"
+            )
+            evidence.append(
+                EvidenceRecord(
+                    kind=binding_reason,
+                    strength="strong",
+                    source_path_or_snippet=state.candidate_url,
+                    supports_publish=False,
+                    reason_code=binding_reason,
+                    candidate_title=canonical_title,
+                    candidate_url=state.candidate_url,
+                    title_url_match=True,
+                )
+            )
+        elif binding_status == "mismatch" and canonical_title:
+            prior_scope = state.scope if isinstance(state.scope, ScopeState) else ScopeState()
+            conflict_codes = list(prior_scope.conflict_reason_codes)
+            if "official_detail_display_title_mismatch" not in conflict_codes:
+                conflict_codes.append("official_detail_display_title_mismatch")
+            state = replace(
+                state,
+                row_discusses_work_as_work=False,
+                title_resolution_state="context_only",
+                scope=ScopeState(
+                    scope_kind="context_only",
+                    confidence="low",
+                    direct_bridge_sources=prior_scope.direct_bridge_sources,
+                    competing_candidates=tuple(
+                        dict.fromkeys(
+                            [
+                                *prior_scope.competing_candidates,
+                                canonical_title,
+                            ]
+                        )
+                    ),
+                    conflict_reason_codes=tuple(conflict_codes),
+                ),
+            )
+            rewritten_evidence: List[EvidenceRecord] = []
+            for record in evidence:
+                record_url_norm = self._normalize_url_for_match(record.candidate_url)
+                if candidate_url_norm and record_url_norm == candidate_url_norm:
+                    rewritten_evidence.append(
+                        replace(
+                            record,
+                            supports_publish=False,
+                            title_url_match=False,
+                            reason_code="official_detail_display_title_mismatch",
+                        )
+                    )
+                else:
+                    rewritten_evidence.append(record)
+            rewritten_evidence.append(
+                EvidenceRecord(
+                    kind="official_detail_display_title_mismatch",
+                    strength="strong",
+                    source_path_or_snippet=(
+                        f"candidate={original_title} canonical={canonical_title}"
+                    ),
+                    supports_publish=False,
+                    reason_code="official_detail_display_title_mismatch",
+                    candidate_title=original_title,
+                    candidate_url=state.candidate_url,
+                    title_url_match=False,
+                )
+            )
+            evidence = rewritten_evidence
+        elif (
+            binding_status == "unavailable"
+            and state.candidate_url
+            and self._is_novel_platform_url(state.candidate_url)
+            and self._is_novel_detail_url(state.candidate_url)
+        ):
+            # A detail-shaped URL is not proof that it belongs to this title.
+            # Keep independent relation evidence available for title-only
+            # publication, but never emit a verified title/URL pair without an
+            # exact active fetched canonical display binding.
+            neutralized_evidence: List[EvidenceRecord] = []
+            for record in evidence:
+                record_url_norm = self._normalize_url_for_match(record.candidate_url)
+                if (
+                    candidate_url_norm
+                    and record_url_norm == candidate_url_norm
+                    and record.title_url_match is True
+                ):
+                    neutralized_evidence.append(
+                        replace(
+                            record,
+                            title_url_match=None,
+                        )
+                    )
+                else:
+                    neutralized_evidence.append(record)
+            if any(
+                record.title_url_match is None
+                and self._normalize_url_for_match(record.candidate_url)
+                == candidate_url_norm
+                for record in neutralized_evidence
+            ):
+                neutralized_evidence.append(
+                    EvidenceRecord(
+                        kind="official_detail_display_binding_unavailable",
+                        strength="strong",
+                        source_path_or_snippet=state.candidate_url,
+                        supports_publish=False,
+                        reason_code="official_detail_display_binding_unavailable",
+                        candidate_title=state.candidate_title,
+                        candidate_url=state.candidate_url,
+                        title_url_match=None,
+                    )
+                )
+            evidence = neutralized_evidence
+
+        contract = evaluate_publish_contract(
+            state,
+            evidence,
+            post_gate_context=final_decision,
+        )
+        decision_payload = contract.decision.to_dict()
+        state_payload = contract.state.to_dict()
+        evidence_payload = [record.to_dict() for record in contract.evidence]
+        trace_payload = contract.trace.to_dict()
         try:
             setattr(ctx, "_last_promotion_gate_decision", decision_payload)
             setattr(ctx, "_last_promotion_gate_state", state_payload)
             setattr(ctx, "_last_promotion_gate_evidence", evidence_payload)
+            setattr(ctx, "_last_publish_contract", contract)
+            setattr(ctx, "_last_publish_contract_trace", trace_payload)
         except Exception:
             pass
         if isinstance(final_decision, dict):
+            final_decision["_official_detail_display_binding"] = display_binding
             final_decision["_promotion_gate_decision"] = decision_payload
             final_decision["_promotion_gate_state"] = state_payload
             final_decision["_promotion_gate_evidence"] = evidence_payload
+            final_decision["_publish_contract_trace"] = trace_payload
+            final_decision["_publish_contract_input_fingerprint"] = contract.input_fingerprint
         return decision_payload
 
     def _record_body_verified_work_candidate_selection_gate_decision(
@@ -34405,22 +37169,32 @@ OUTPUT JSON:
                 or selected_title_resolution_state
             )
 
+        row_discusses_work = self._post_discusses_work_as_work(
+            ctx,
+            selected_title,
+            source="body_verified_work_candidate_bridge",
+            final_decision=final_decision,
+            verification_result=verification_result,
+        )
+        selected_conflicts: List[str] = []
+        if not row_discusses_work:
+            selected_conflicts.append("shared_work_bridge_missing")
         state = GroundingState(
             post_id=getattr(ctx, "post_id", None),
             candidate_title=selected_title,
             candidate_url=selected_url,
             source=source or "body_verified_work_candidate_bridge",
             official_title_exists=bool(selected_url),
-            row_discusses_work_as_work=True,
+            row_discusses_work_as_work=row_discusses_work,
             title_resolution_state=selected_title_resolution_state,
             work_resolution=selected_work_resolution,
             discussion_type=selected_discussion_type or "review",
             scope=ScopeState(
-                scope_kind="current_work",
-                confidence="high",
+                scope_kind="current_work" if row_discusses_work else "unknown",
+                confidence="high" if row_discusses_work else "low",
                 direct_bridge_sources=selected_sources,
                 competing_candidates=[],
-                conflict_reason_codes=[],
+                conflict_reason_codes=selected_conflicts,
             ),
         )
         evidence = [
@@ -34428,8 +37202,9 @@ OUTPUT JSON:
                 kind=selected_reason,
                 strength="strong",
                 source_path_or_snippet=selected_surface,
-                supports_publish=True,
+                supports_publish=row_discusses_work,
                 reason_code=selected_reason,
+                candidate_title=selected_title,
             ),
         ]
         if selected_url:
@@ -34440,6 +37215,9 @@ OUTPUT JSON:
                     source_path_or_snippet=selected_url,
                     supports_publish=False,
                     reason_code="official_detail_url",
+                    candidate_title=selected_title,
+                    candidate_url=selected_url,
+                    title_url_match=True,
                 )
             )
         return self._record_public_title_gate_decision(
@@ -34557,22 +37335,31 @@ OUTPUT JSON:
                         str(container.get("title_resolution_state") or selected_title_resolution_state).strip()
                         or selected_title_resolution_state
                     )
+                selected_row_discusses_work = self._post_discusses_work_as_work(
+                    ctx,
+                    selected_title,
+                    source="body_verified_work_candidate_bridge",
+                    final_decision=final_decision,
+                    verification_result=verification_result,
+                    title_candidates=title_candidates,
+                )
+                selected_conflicts = [] if selected_row_discusses_work else ["shared_work_bridge_missing"]
                 state = GroundingState(
                     post_id=getattr(ctx, "post_id", None),
                     candidate_title=selected_title,
                     candidate_url=selected_url,
                     source=hit_source or source or "batch_alias_public_title",
                     official_title_exists=True,
-                    row_discusses_work_as_work=True,
+                    row_discusses_work_as_work=selected_row_discusses_work,
                     title_resolution_state=selected_title_resolution_state,
                     work_resolution=selected_work_resolution,
                     discussion_type=selected_discussion_type or "review",
                     scope=ScopeState(
-                        scope_kind="current_work",
-                        confidence="high",
+                        scope_kind="current_work" if selected_row_discusses_work else "unknown",
+                        confidence="high" if selected_row_discusses_work else "low",
                         direct_bridge_sources=selected_sources,
                         competing_candidates=[],
-                        conflict_reason_codes=[],
+                        conflict_reason_codes=selected_conflicts,
                     ),
                 )
                 evidence = [
@@ -34580,8 +37367,9 @@ OUTPUT JSON:
                         kind="body_verified_work_candidate_selected",
                         strength="strong",
                         source_path_or_snippet=selected_surface,
-                        supports_publish=True,
+                        supports_publish=selected_row_discusses_work,
                         reason_code="body_verified_work_candidate_selected",
+                        candidate_title=selected_title,
                     ),
                     EvidenceRecord(
                         kind="official_detail_url",
@@ -34589,6 +37377,9 @@ OUTPUT JSON:
                         source_path_or_snippet=selected_url,
                         supports_publish=False,
                         reason_code="official_detail_url",
+                        candidate_title=selected_title,
+                        candidate_url=selected_url,
+                        title_url_match=True,
                     ),
                 ]
                 return self._record_public_title_gate_decision(
@@ -34596,6 +37387,8 @@ OUTPUT JSON:
                     state,
                     evidence,
                     final_decision=final_decision,
+                    verification_result=verification_result,
+                    title_candidates=title_candidates,
                 )
             conflict_reason_codes = ["body_verified_character_work_competes_with_title_led_alias"]
             if blocked_competing_candidates:
@@ -34632,6 +37425,8 @@ OUTPUT JSON:
                 state,
                 evidence,
                 final_decision=final_decision,
+                verification_result=verification_result,
+                title_candidates=title_candidates,
             )
 
         discussion_type = ""
@@ -34646,21 +37441,30 @@ OUTPUT JSON:
                 str(container.get("title_resolution_state") or title_resolution_state).strip()
                 or title_resolution_state
             )
+        row_discusses_work = self._post_discusses_work_as_work(
+            ctx,
+            candidate_title,
+            source="batch_memory_exact_alias_rescued",
+            final_decision=final_decision,
+            verification_result=verification_result,
+            title_candidates=title_candidates,
+        )
+        batch_conflicts = [] if row_discusses_work else ["shared_work_bridge_missing"]
         state = GroundingState(
             post_id=getattr(ctx, "post_id", None),
             candidate_title=candidate_title,
             candidate_url=candidate_url,
             source=hit_source or source or "batch_alias_public_title",
             official_title_exists=True,
-            row_discusses_work_as_work=True,
+            row_discusses_work_as_work=row_discusses_work,
             title_resolution_state=title_resolution_state,
             work_resolution=work_resolution,
             discussion_type=discussion_type or "general",
             scope=ScopeState(
-                scope_kind="current_work",
-                confidence="high" if candidate_url else "medium",
+                scope_kind="current_work" if row_discusses_work else "unknown",
+                confidence=("high" if candidate_url else "medium") if row_discusses_work else "low",
                 direct_bridge_sources=direct_sources,
-                conflict_reason_codes=[],
+                conflict_reason_codes=batch_conflicts,
             ),
         )
         evidence = [
@@ -34668,8 +37472,9 @@ OUTPUT JSON:
                 kind="batch_alias_bridge",
                 strength="high" if candidate_url else "medium",
                 source_path_or_snippet=alias_text or hit_source,
-                supports_publish=True,
+                supports_publish=row_discusses_work,
                 reason_code="batch_alias_public_title_bridge",
+                candidate_title=candidate_title,
             )
         ]
         if candidate_url:
@@ -34680,8 +37485,91 @@ OUTPUT JSON:
                     source_path_or_snippet=candidate_url,
                     supports_publish=False,
                     reason_code="official_detail_url",
+                    candidate_title=candidate_title,
+                    candidate_url=candidate_url,
+                    title_url_match=True,
                 )
             )
+        return self._record_public_title_gate_decision(
+            ctx,
+            state,
+            evidence,
+            final_decision=final_decision,
+            verification_result=verification_result,
+            title_candidates=title_candidates,
+        )
+
+    def _record_source_native_official_detail_gate_decision(
+        self,
+        ctx,
+        candidate_title: Optional[str],
+        *,
+        candidate_url: Optional[str],
+        final_decision: Optional[Dict[str, Any]] = None,
+        verification_result: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """Bind one source-native canonical pair and gate only its relation."""
+
+        title = str(candidate_title or "").strip()
+        url = str(candidate_url or "").strip()
+        if not title or not url:
+            return {}
+        row_discusses_work = self._post_discusses_work_as_work(
+            ctx,
+            title,
+            source="source_native_official_detail_precedence",
+            final_decision=final_decision,
+            verification_result=verification_result,
+        )
+        relation_reason = (
+            "source_native_non_image_work_relation_bridge"
+            if row_discusses_work
+            else "source_native_identity_without_non_image_relation_bridge"
+        )
+        state = GroundingState(
+            post_id=getattr(ctx, "post_id", None),
+            candidate_title=title,
+            candidate_url=url,
+            source="source_native_official_detail_precedence",
+            official_title_exists=True,
+            row_discusses_work_as_work=row_discusses_work,
+            title_resolution_state=(
+                "resolved" if row_discusses_work else "unresolved_matchable"
+            ),
+            work_resolution="resolved" if row_discusses_work else "unresolved",
+            discussion_type="general",
+            scope=ScopeState(
+                scope_kind="current_work" if row_discusses_work else "context_only",
+                confidence="high",
+                direct_bridge_sources=(
+                    ["source_native_non_image_work_relation_bridge"]
+                    if row_discusses_work
+                    else []
+                ),
+                conflict_reason_codes=([] if row_discusses_work else [relation_reason]),
+            ),
+        )
+        evidence = [
+            EvidenceRecord(
+                kind="source_native_official_detail_identity",
+                strength="strong",
+                source_path_or_snippet=url,
+                supports_publish=False,
+                reason_code="source_native_official_detail_identity",
+                candidate_title=title,
+                candidate_url=url,
+                title_url_match=True,
+            ),
+            EvidenceRecord(
+                kind="source_native_non_image_work_relation",
+                strength="strong",
+                source_path_or_snippet=title,
+                supports_publish=row_discusses_work,
+                reason_code=relation_reason,
+                candidate_title=title,
+                candidate_url=url,
+            ),
+        ]
         return self._record_public_title_gate_decision(
             ctx,
             state,
@@ -34704,10 +37592,10 @@ OUTPUT JSON:
             return {}
         if not self._has_structured_direct_image_work_surface_evidence(ctx, title):
             return {}
-        resolved_url = str(candidate_url or "").strip()
-        if not resolved_url:
+        resolved_url_candidate = str(candidate_url or "").strip()
+        if not resolved_url_candidate:
             try:
-                resolved_url = str(
+                resolved_url_candidate = str(
                     self._find_title_matched_official_url(
                         title,
                         getattr(ctx, "search_results", []) or [],
@@ -34716,7 +37604,40 @@ OUTPUT JSON:
                     or ""
                 ).strip()
             except Exception:
-                resolved_url = ""
+                resolved_url_candidate = ""
+
+        resolved_url = ""
+        if resolved_url_candidate:
+            canonical_display_title = (
+                self._canonical_official_detail_display_title_for_candidate(
+                    ctx,
+                    title,
+                    resolved_url_candidate,
+                    fetch_if_missing=False,
+                )
+            )
+            if canonical_display_title:
+                title = canonical_display_title
+            fetched_canonical_title = self._canonical_fetched_title_for_url(
+                ctx,
+                resolved_url_candidate,
+                fetch_if_missing=False,
+            )
+            page_state = self._summarize_url_page_state(
+                ctx,
+                resolved_url_candidate,
+                exact_url=True,
+            )
+            if (
+                fetched_canonical_title
+                and self._normalize_match_text(fetched_canonical_title)
+                == self._normalize_match_text(title)
+                and page_state.get("has_active_detail_like")
+                and not page_state.get("is_deleted_or_unavailable")
+                and not page_state.get("is_community_post")
+                and not page_state.get("is_listing")
+            ):
+                resolved_url = resolved_url_candidate
 
         has_ocr_catalog = self._has_ocr_catalog_official_title_evidence(ctx, title)
         direct_sources = ["direct_image_work_surface_lock", "structured_direct_image_work_surface"]
@@ -34738,21 +37659,61 @@ OUTPUT JSON:
                 or title_resolution_state
             )
 
+        row_discusses_work = self._post_discusses_work_as_work(
+            ctx,
+            title,
+            source="direct_image_work_surface_lock",
+            final_decision=final_decision,
+            verification_result=verification_result,
+        )
+        non_novel_media_block = self._non_novel_media_blocks_work_bridge(
+            ctx,
+            title,
+            verification_result=verification_result,
+        )
+        author_meta_relation_hold = bool(
+            not row_discusses_work
+            and self._image_only_author_meta_requires_hold(
+                ctx,
+                title,
+                final_decision=final_decision,
+                verification_result=verification_result,
+            )
+        )
+        direct_image_conflicts = [] if row_discusses_work else ["shared_work_bridge_missing"]
+        if author_meta_relation_hold and not row_discusses_work:
+            direct_image_conflicts.append(
+                "image_identity_without_non_image_relation_bridge"
+            )
+        if non_novel_media_block:
+            direct_image_conflicts.append("non_novel_media_evidence")
         state = GroundingState(
             post_id=getattr(ctx, "post_id", None),
             candidate_title=title,
             candidate_url=resolved_url,
             source=source,
             official_title_exists=bool(has_ocr_catalog or resolved_url),
-            row_discusses_work_as_work=True,
+            row_discusses_work_as_work=row_discusses_work,
             title_resolution_state=title_resolution_state,
             work_resolution=work_resolution,
             discussion_type=discussion_type or "review",
             scope=ScopeState(
-                scope_kind="current_work",
-                confidence="high",
-                direct_bridge_sources=direct_sources,
-                conflict_reason_codes=[],
+                scope_kind=(
+                    "current_work"
+                    if row_discusses_work
+                    else "platform_meta_nonwork"
+                    if non_novel_media_block
+                    else "context_only"
+                    if author_meta_relation_hold
+                    else "unknown"
+                ),
+                confidence="high" if row_discusses_work else "low",
+                # Image/OCR/detail URL facts establish candidate identity, not
+                # a row-to-work relation.  Keep them in typed EvidenceRecord
+                # provenance and expose relation bridges only after the shared
+                # row-discussion predicate succeeds.
+                direct_bridge_sources=(direct_sources if row_discusses_work else []),
+                conflict_reason_codes=direct_image_conflicts,
             ),
         )
         evidence = [
@@ -34760,8 +37721,9 @@ OUTPUT JSON:
                 kind="direct_image_work_surface",
                 strength="strong",
                 source_path_or_snippet=title,
-                supports_publish=True,
+                supports_publish=row_discusses_work,
                 reason_code="direct_image_work_surface_bridge",
+                candidate_title=title,
             )
         ]
         if has_ocr_catalog:
@@ -34770,8 +37732,9 @@ OUTPUT JSON:
                     kind="ocr_catalog_official_title",
                     strength="strong",
                     source_path_or_snippet=title,
-                    supports_publish=True,
+                    supports_publish=row_discusses_work,
                     reason_code="ocr_catalog_official_title",
+                    candidate_title=title,
                 )
             )
         if resolved_url:
@@ -34782,6 +37745,32 @@ OUTPUT JSON:
                     source_path_or_snippet=resolved_url,
                     supports_publish=False,
                     reason_code="official_detail_url",
+                    candidate_title=title,
+                    candidate_url=resolved_url,
+                    title_url_match=True,
+                )
+            )
+        elif resolved_url_candidate:
+            evidence.append(
+                EvidenceRecord(
+                    kind="unverified_official_detail_url_candidate",
+                    strength="medium",
+                    source_path_or_snippet=resolved_url_candidate,
+                    supports_publish=False,
+                    reason_code="direct_image_official_url_pair_unverified",
+                    candidate_title=title,
+                    candidate_url=resolved_url_candidate,
+                    title_url_match=False,
+                )
+            )
+        if non_novel_media_block:
+            evidence.append(
+                EvidenceRecord(
+                    kind="negative_media_relation",
+                    strength="strong",
+                    supports_publish=False,
+                    reason_code="non_novel_media_evidence",
+                    candidate_title=title,
                 )
             )
         return self._record_public_title_gate_decision(
@@ -34892,6 +37881,90 @@ OUTPUT JSON:
             direct_sources.append("title_abbrev_mentioned")
         if resolved_url:
             direct_sources.append("official_detail_url")
+
+        def _has_exact_current_title_official_detail_lock() -> bool:
+            if not resolved_url or not title_norm:
+                return False
+            if alias_text and self._normalize_match_text(alias_text) != title_norm:
+                return False
+            try:
+                packet_text = self._collect_non_image_post_text(ctx, include_comments=False)
+            except Exception:
+                packet_text = ""
+            if not packet_text or not self._text_matches_title_strict(packet_text, title):
+                return False
+            exact_urls = {
+                self._normalize_url_for_match(url)
+                for url in self._official_detail_exact_title_urls_for_no_work_anchor(ctx, title)
+                if self._normalize_url_for_match(url)
+            }
+            if self._normalize_url_for_match(resolved_url) not in exact_urls:
+                return False
+            for cand in title_candidates or []:
+                if not isinstance(cand, DetectedTitle):
+                    continue
+                cand_title = str(getattr(cand, "official_title", "") or "").strip()
+                cand_url = str(getattr(cand, "heretic_url", "") or "").strip()
+                if self._normalize_match_text(cand_title) != title_norm:
+                    continue
+                if self._normalize_url_for_match(cand_url) != self._normalize_url_for_match(resolved_url):
+                    continue
+                role = str(getattr(cand, "reference_role", "") or "").strip().lower()
+                source_tier = str(getattr(cand, "source_tier", "") or "").strip().lower()
+                if role not in {"primary", "current_work"}:
+                    continue
+                if source_tier not in {"official_detail", "official", "novel_platform"}:
+                    continue
+                if getattr(cand, "locked", False) is not True:
+                    continue
+                if getattr(cand, "negative_evidence", None):
+                    continue
+                return True
+            return False
+
+        exact_current_title_official_detail_lock = (
+            _has_exact_current_title_official_detail_lock()
+        )
+        exact_lock_title_norm = title_norm if exact_current_title_official_detail_lock else ""
+        exact_lock_url_norm = (
+            self._normalize_url_for_match(resolved_url)
+            if exact_current_title_official_detail_lock
+            else ""
+        )
+        if exact_current_title_official_detail_lock:
+            direct_sources.append("exact_current_title_official_detail_lock")
+
+        def _competitor_is_packet_bound(
+            competitor_title: str,
+            competitor_url: str,
+            search_row: Optional[Dict[str, Any]] = None,
+        ) -> bool:
+            competitor_title = str(competitor_title or "").strip()
+            competitor_norm = self._normalize_match_text(competitor_title)
+            if not competitor_norm:
+                return False
+            try:
+                packet_text = self._collect_non_image_post_text(ctx, include_comments=True)
+            except Exception:
+                packet_text = ""
+            if packet_text and self._text_matches_title_strict(packet_text, competitor_title):
+                return True
+            for cand in title_candidates or []:
+                if not isinstance(cand, DetectedTitle):
+                    continue
+                cand_title = str(getattr(cand, "official_title", "") or "").strip()
+                if self._normalize_match_text(cand_title) != competitor_norm:
+                    continue
+                cand_url = str(getattr(cand, "heretic_url", "") or "").strip()
+                if competitor_url and cand_url and (
+                    self._normalize_url_for_match(cand_url)
+                    != self._normalize_url_for_match(competitor_url)
+                ):
+                    continue
+                alias = str(getattr(cand, "alias_or_mention", "") or "").strip()
+                if alias and packet_text and self._text_matches_title_strict(packet_text, alias):
+                    return True
+            return False
 
         alias_official_detail_canonicalized = False
         alias_official_detail_canonical_surface = ""
@@ -35021,6 +38094,17 @@ OUTPUT JSON:
             if alias_official_detail_canonicalized:
                 break
 
+        if exact_current_title_official_detail_lock and (
+            title_norm != exact_lock_title_norm
+            or self._normalize_url_for_match(resolved_url) != exact_lock_url_norm
+        ):
+            exact_current_title_official_detail_lock = False
+            direct_sources = [
+                source_name
+                for source_name in direct_sources
+                if source_name != "exact_current_title_official_detail_lock"
+            ]
+
         competing_verified_body_titles, current_candidate_has_body_surface = (
             self._body_verified_character_work_competition(
                 ctx,
@@ -35047,6 +38131,14 @@ OUTPUT JSON:
         if unresolved_body_compound_anchor and not current_candidate_has_body_surface:
             scope_block_flags.append("unresolved_body_character_work_anchor")
             scope_block_flags.append("missing_body_work_bridge")
+        if self._image_scene_only_candidate_lacks_publish_surface(
+            ctx,
+            title,
+            title_candidates=title_candidates,
+            final_decision=final_decision,
+            verification_result=verification_result,
+        ):
+            scope_block_flags.append("image_scope_missing_candidate_surface")
         selected_body_verified_competitor: Dict[str, Any] = {}
         if scope_block_flags and not current_candidate_has_body_surface:
             body_verified_record = self._select_body_verified_work_candidate_for_title_led_alias(
@@ -35076,6 +38168,7 @@ OUTPUT JSON:
                         }
                     ]
         contextual_alias_competitors: List[Dict[str, Any]] = []
+        ignored_search_only_contextual_competitors: List[Dict[str, Any]] = []
         selected_contextual_alias_competitor: Dict[str, Any] = {}
         if not selected_body_verified_competitor and not current_candidate_has_body_surface:
             try:
@@ -35200,6 +38293,38 @@ OUTPUT JSON:
                 )
                 if same_title:
                     continue
+                supporting_rows = []
+                inferred_url_norm = self._normalize_url_for_match(inferred_url)
+                for search_row in (getattr(ctx, "search_results", None) or [])[:80]:
+                    if not isinstance(search_row, dict):
+                        continue
+                    search_url = str(search_row.get("url") or "").strip()
+                    search_title = str(
+                        search_row.get("title") or search_row.get("page_title") or ""
+                    ).strip()
+                    if (
+                        inferred_url_norm
+                        and self._normalize_url_for_match(search_url) == inferred_url_norm
+                    ) or self._source_title_matches_candidate(search_title, inferred_title):
+                        supporting_rows.append(search_row)
+                supporting_packet_bound = any(
+                    _competitor_is_packet_bound(inferred_title, inferred_url, row)
+                    for row in supporting_rows or [None]
+                )
+                if supporting_rows and not supporting_packet_bound and all(
+                    self._is_non_novel_media_platform_detail_hit(row, inferred_title)
+                    or self._is_derivative_fanfic_novel_detail_hit(row, inferred_title)
+                    for row in supporting_rows
+                ):
+                    ignored_search_only_contextual_competitors.append(
+                        {"title": inferred_title, "url": inferred_url, "reason": "non_novel_or_derivative"}
+                    )
+                    continue
+                if exact_current_title_official_detail_lock and not supporting_packet_bound:
+                    ignored_search_only_contextual_competitors.append(
+                        {"title": inferred_title, "url": inferred_url, "reason": "search_only_not_packet_bound"}
+                    )
+                    continue
                 competitor_record = {
                     "title": inferred_title,
                     "url": inferred_url,
@@ -35225,12 +38350,17 @@ OUTPUT JSON:
                 except Exception:
                     cross_media_hold = False
                 if (
-                    not scope_block_flags
+                    set(scope_block_flags).issubset({"image_scope_missing_candidate_surface"})
                     and competitor_has_visual_release_context
                     and not current_title_visual_release_context
                     and not cross_media_hold
                 ):
                     selected_contextual_alias_competitor = competitor_record
+                    scope_block_flags = [
+                        flag
+                        for flag in scope_block_flags
+                        if flag != "image_scope_missing_candidate_surface"
+                    ]
                 elif (
                     not current_title_visual_release_context
                     and not (
@@ -35280,6 +38410,32 @@ OUTPUT JSON:
                         )
                         if same_title:
                             continue
+                        competitor_packet_bound = _competitor_is_packet_bound(
+                            inferred_title,
+                            sr_url,
+                            sr,
+                        )
+                        if not competitor_packet_bound and (
+                            self._is_non_novel_media_platform_detail_hit(sr, inferred_title)
+                            or self._is_derivative_fanfic_novel_detail_hit(sr, inferred_title)
+                        ):
+                            ignored_search_only_contextual_competitors.append(
+                                {
+                                    "title": inferred_title,
+                                    "url": sr_url,
+                                    "reason": "non_novel_or_derivative",
+                                }
+                            )
+                            continue
+                        if exact_current_title_official_detail_lock and not competitor_packet_bound:
+                            ignored_search_only_contextual_competitors.append(
+                                {
+                                    "title": inferred_title,
+                                    "url": sr_url,
+                                    "reason": "search_only_not_packet_bound",
+                                }
+                            )
+                            continue
                         competitor_record = {
                             "title": inferred_title,
                             "url": sr_url,
@@ -35305,12 +38461,17 @@ OUTPUT JSON:
                         except Exception:
                             cross_media_hold = False
                         if (
-                            not scope_block_flags
+                            set(scope_block_flags).issubset({"image_scope_missing_candidate_surface"})
                             and competitor_has_visual_release_context
                             and not current_title_visual_release_context
                             and not cross_media_hold
                         ):
                             selected_contextual_alias_competitor = competitor_record
+                            scope_block_flags = [
+                                flag
+                                for flag in scope_block_flags
+                                if flag != "image_scope_missing_candidate_surface"
+                            ]
                         elif (
                             not current_title_visual_release_context
                             and not (
@@ -35327,6 +38488,15 @@ OUTPUT JSON:
         except Exception:
             contextual_alias_competitors = []
             selected_contextual_alias_competitor = {}
+        if ignored_search_only_contextual_competitors:
+            try:
+                setattr(
+                    ctx,
+                    "_ignored_search_only_contextual_competitors",
+                    list(ignored_search_only_contextual_competitors),
+                )
+            except Exception:
+                pass
 
         selected_preserved_title_candidate: Dict[str, Any] = {}
         if not selected_body_verified_competitor and not selected_contextual_alias_competitor:
@@ -35356,6 +38526,16 @@ OUTPUT JSON:
             or selected_preserved_title_candidate.get("url")
             or resolved_url
         ).strip()
+        canonical_selected_title = (
+            self._canonical_official_detail_display_title_for_candidate(
+                ctx,
+                selected_title,
+                selected_url,
+                fetch_if_missing=False,
+            )
+        )
+        if canonical_selected_title:
+            selected_title = canonical_selected_title
         selected_body_verified_release = bool(selected_body_verified_competitor)
         selected_contextual_alias_release = bool(selected_contextual_alias_competitor)
         selected_preserved_title_release = bool(selected_preserved_title_candidate)
@@ -35405,13 +38585,40 @@ OUTPUT JSON:
                 self._has_official_title_evidence(ctx, selected_title)
                 or self._official_detail_exact_title_urls_for_no_work_anchor(ctx, selected_title)
             )
+        if selected_body_verified_release:
+            predicate_source = "body_verified_work_candidate_bridge"
+        elif selected_preserved_title_release:
+            predicate_source = "preserved_title_candidate_bridge"
+        elif selected_contextual_alias_release or current_title_visual_release_context:
+            predicate_source = "official_detail_visual_alias_bridge"
+        else:
+            predicate_source = "title_surface_primary_candidate_rescued"
+        row_discusses_work = self._post_discusses_work_as_work(
+            ctx,
+            selected_title,
+            source=predicate_source,
+            final_decision=final_decision,
+            verification_result=verification_result,
+            title_candidates=title_candidates,
+        )
+        direct_source_bridge_url = ""
+        if self._normalize_match_text(
+            getattr(ctx, "_direct_source_official_detail_url_bridge_title", "")
+        ) == self._normalize_match_text(selected_title):
+            direct_source_bridge_url = str(
+                getattr(ctx, "_direct_source_official_detail_url_bridge_url", "") or ""
+            ).strip()
+        if direct_source_bridge_url and "direct_source_official_detail_url" not in direct_sources:
+            direct_sources.append("direct_source_official_detail_url")
+        if not row_discusses_work and "shared_work_bridge_missing" not in scope_block_flags:
+            scope_block_flags.append("shared_work_bridge_missing")
         state = GroundingState(
             post_id=getattr(ctx, "post_id", None),
             candidate_title=selected_title,
             candidate_url=selected_url,
             source=source,
             official_title_exists=official_exists,
-            row_discusses_work_as_work=not scope_block_flags,
+            row_discusses_work_as_work=row_discusses_work and not scope_block_flags,
             title_resolution_state=title_resolution_state,
             work_resolution=work_resolution,
             discussion_type=discussion_type or "review",
@@ -35467,13 +38674,15 @@ OUTPUT JSON:
                         else "title_led_consumption_bridge"
                     )
                 ),
+                candidate_title=selected_title,
             ),
             EvidenceRecord(
                 kind="title_acceptance",
                 strength="strong",
                 source_path_or_snippet=str(acceptance.get("score") or ""),
-                supports_publish=True,
+                supports_publish=False,
                 reason_code="title_acceptance_accept",
+                candidate_title=selected_title,
             ),
         ]
         if alias_text:
@@ -35484,6 +38693,7 @@ OUTPUT JSON:
                     source_path_or_snippet=alias_text,
                     supports_publish=True,
                     reason_code="alias_bridge",
+                    candidate_title=selected_title,
                 )
             )
         if selected_url:
@@ -35494,6 +38704,22 @@ OUTPUT JSON:
                     source_path_or_snippet=selected_url,
                     supports_publish=False,
                     reason_code="official_detail_url",
+                    candidate_title=selected_title,
+                    candidate_url=selected_url,
+                    title_url_match=True,
+                )
+            )
+        if direct_source_bridge_url:
+            evidence.append(
+                EvidenceRecord(
+                    kind="direct_source_official_detail_url",
+                    strength="strong",
+                    source_path_or_snippet=direct_source_bridge_url,
+                    supports_publish=row_discusses_work,
+                    reason_code="direct_source_official_detail_url",
+                    candidate_title=selected_title,
+                    candidate_url=direct_source_bridge_url,
+                    title_url_match=True,
                 )
             )
         if alias_official_detail_canonicalized:
@@ -35504,6 +38730,7 @@ OUTPUT JSON:
                     source_path_or_snippet=alias_official_detail_canonical_surface or alias_text or selected_title,
                     supports_publish=True,
                     reason_code="title_led_alias_official_detail_canonicalized",
+                    candidate_title=selected_title,
                 )
             )
         for competitor in contextual_alias_competitors:
@@ -35538,6 +38765,9 @@ OUTPUT JSON:
                             else "title_led_alias_contextual_official_detail_competes"
                         )
                     ),
+                    candidate_title=competitor_title,
+                    candidate_url=competitor_url,
+                    title_url_match=(True if is_selected_competitor and competitor_url else None),
                 )
             )
         if selected_contextual_alias_release or current_title_visual_release_context:
@@ -35548,6 +38778,7 @@ OUTPUT JSON:
                     source_path_or_snippet=selected_title,
                     supports_publish=True,
                     reason_code="official_detail_bracket_visual_release_context",
+                    candidate_title=selected_title,
                 )
             )
         return self._record_public_title_gate_decision(
@@ -35555,6 +38786,8 @@ OUTPUT JSON:
             state,
             evidence,
             final_decision=final_decision,
+            verification_result=verification_result,
+            title_candidates=title_candidates,
         )
 
     def _record_resolved_public_title_gate_decision(
@@ -35746,31 +38979,19 @@ OUTPUT JSON:
             title_visible_in_non_image = self._title_mentioned_in_non_image_main_context(ctx, title)
         except Exception:
             title_visible_in_non_image = False
-        try:
-            non_image_text_norm_with_comments = self._normalize_match_text(
-                self._collect_non_image_post_text(ctx, include_comments=True)
-            )
-        except Exception:
-            non_image_text_norm_with_comments = ""
 
         def _candidate_direct_surface_mentioned(cand: DetectedTitle) -> bool:
             if not isinstance(cand, DetectedTitle):
                 return False
-            try:
-                if self._title_candidate_mentioned(ctx, cand, include_comments=True):
-                    return True
-            except Exception:
-                pass
-            if not non_image_text_norm_with_comments:
+            cand_title = str(getattr(cand, "official_title", "") or "").strip()
+            if not cand_title:
                 return False
-            for surface in (
-                getattr(cand, "official_title", None),
-                getattr(cand, "alias_or_mention", None),
-            ):
-                surface_norm = self._normalize_match_text(str(surface or "").strip())
-                if len(surface_norm) >= 3 and surface_norm in non_image_text_norm_with_comments:
-                    return True
-            return False
+            return self._has_strict_non_image_candidate_surface(
+                ctx,
+                cand_title,
+                title_candidates=[cand],
+                final_decision=final,
+            )
 
         current_candidate_direct_surface = bool(title_visible_in_non_image)
         for cand in title_candidates or []:
@@ -35823,7 +39044,14 @@ OUTPUT JSON:
                 scope_block_flags.append("image_title_not_promotion_eligible")
                 if platform_meta_scope_blocked:
                     scope_block_flags.append("platform_meta_multi_title_blocked")
-            if (
+            image_scene_scope_blocked = self._image_scene_only_candidate_lacks_publish_surface(
+                ctx,
+                title,
+                title_candidates=title_candidates,
+                final_decision=final,
+                verification_result=vf,
+            )
+            if image_scene_scope_blocked or (
                 not matching_image_items
                 and not has_structured_direct_image
                 and not current_candidate_direct_surface
@@ -36001,10 +39229,27 @@ OUTPUT JSON:
                 scope_block_flags.append("character_title_collision")
                 scope_block_flags.append("missing_direct_candidate_title")
 
+        shared_row_discusses_work = self._post_discusses_work_as_work(
+            ctx,
+            title,
+            source="resolved_public_title_scope",
+            final_decision=final,
+            verification_result=vf,
+            title_candidates=title_candidates,
+        )
+        resolved_direct_source_bridge_url = ""
+        if self._normalize_match_text(
+            getattr(ctx, "_direct_source_official_detail_url_bridge_title", "")
+        ) == self._normalize_match_text(title):
+            resolved_direct_source_bridge_url = str(
+                getattr(ctx, "_direct_source_official_detail_url_bridge_url", "") or ""
+            ).strip()
+        if not shared_row_discusses_work:
+            scope_block_flags.append("shared_work_bridge_missing")
         scope_block_flags = list(dict.fromkeys(scope_block_flags))
         scope_kind = "context_only" if scope_block_flags else "current_work"
         scope_confidence = "medium" if scope_block_flags else ("high" if resolved_url else "medium")
-        row_discusses_gate_work = bool(row_discusses_work and not scope_block_flags)
+        row_discusses_gate_work = bool(shared_row_discusses_work and not scope_block_flags)
 
         direct_sources: List[str] = ["resolved_public_title_scope"]
         if isinstance(context_sources, list):
@@ -36016,6 +39261,8 @@ OUTPUT JSON:
             direct_sources.append(f"anchor_type:{anchor_type}")
         if resolved_url:
             direct_sources.append("official_detail_url")
+        if resolved_direct_source_bridge_url:
+            direct_sources.append("direct_source_official_detail_url")
 
         competing: List[str] = []
         direct_body_competing_titles: List[str] = []
@@ -36127,8 +39374,9 @@ OUTPUT JSON:
                 kind="resolved_public_title_scope",
                 strength="strong",
                 source_path_or_snippet=title,
-                supports_publish=not scope_block_flags,
+                supports_publish=row_discusses_gate_work,
                 reason_code="resolved_public_title_scope",
+                candidate_title=title,
             )
         ]
         if resolved_url:
@@ -36139,6 +39387,22 @@ OUTPUT JSON:
                     source_path_or_snippet=resolved_url,
                     supports_publish=False,
                     reason_code="official_detail_url",
+                    candidate_title=title,
+                    candidate_url=resolved_url,
+                    title_url_match=True,
+                )
+            )
+        if resolved_direct_source_bridge_url:
+            evidence.append(
+                EvidenceRecord(
+                    kind="direct_source_official_detail_url",
+                    strength="strong",
+                    source_path_or_snippet=resolved_direct_source_bridge_url,
+                    supports_publish=row_discusses_gate_work,
+                    reason_code="direct_source_official_detail_url",
+                    candidate_title=title,
+                    candidate_url=resolved_direct_source_bridge_url,
+                    title_url_match=True,
                 )
             )
         return self._record_public_title_gate_decision(
@@ -36146,6 +39410,8 @@ OUTPUT JSON:
             state,
             evidence,
             final_decision=final_decision,
+            verification_result=verification_result,
+            title_candidates=title_candidates,
         )
 
     def _can_promote_title_after_semantic_no_work(
@@ -36172,6 +39438,8 @@ OUTPUT JSON:
                 state,
                 evidence,
                 final_decision=final_decision,
+                verification_result=verification_result,
+                title_candidates=title_candidates,
             )
 
         def _candidate_url_from_context() -> str:
@@ -36345,6 +39613,9 @@ OUTPUT JSON:
                         source_path_or_snippet=candidate_url,
                         supports_publish=False,
                         reason_code="official_detail_url",
+                        candidate_title=candidate,
+                        candidate_url=candidate_url,
+                        title_url_match=(True if candidate_url else None),
                     )
                 )
             if strict_anchor:
@@ -36352,8 +39623,10 @@ OUTPUT JSON:
                     EvidenceRecord(
                         kind="decoder_anchor",
                         strength="strong",
+                        source_path_or_snippet=candidate,
                         supports_publish=True,
                         reason_code="decoder_anchor",
+                        candidate_title=candidate,
                     )
                 )
             elif row_discusses_work:
@@ -36361,8 +39634,10 @@ OUTPUT JSON:
                     EvidenceRecord(
                         kind="work_bridge",
                         strength="medium",
+                        source_path_or_snippet=candidate,
                         supports_publish=True,
                         reason_code="work_consumption_marker",
+                        candidate_title=candidate,
                     )
                 )
             if (
@@ -36380,8 +39655,10 @@ OUTPUT JSON:
                     EvidenceRecord(
                         kind="alias_bridge",
                         strength="medium",
+                        source_path_or_snippet=candidate,
                         supports_publish=row_discusses_work,
                         reason_code="alias_bridge",
+                        candidate_title=candidate,
                     )
                 )
             relation_type = _relation_type()
@@ -36420,11 +39697,24 @@ OUTPUT JSON:
             and self._has_structured_direct_image_work_surface_evidence(ctx, candidate)
             and self._has_ocr_catalog_official_title_evidence(ctx, candidate)
         )
-        if (not direct_image_work_surface_source) and self._non_novel_discourse_blocks_title_promotion(
+        non_novel_media_block = self._non_novel_media_blocks_work_bridge(
             ctx,
             candidate,
-            verification_result=verification_result if isinstance(verification_result, dict) else None,
+            verification_result=(
+                verification_result if isinstance(verification_result, dict) else None
+            ),
+        )
+        non_novel_discourse_block = self._non_novel_discourse_blocks_title_promotion(
+            ctx,
+            candidate,
+            verification_result=(
+                verification_result if isinstance(verification_result, dict) else None
+            ),
             title_candidates=title_candidates,
+            heretic_url=candidate_url_for_gate,
+        )
+        if non_novel_media_block or (
+            (not direct_image_work_surface_source) and non_novel_discourse_block
         ):
             official_exists_for_gate = _official_title_exists(candidate_url_for_gate)
             state = GroundingState(
@@ -36439,20 +39729,36 @@ OUTPUT JSON:
                 discussion_type=_discussion_type() or "community_banter",
                 scope=_scope_state_for_gate(row_discusses_work=False, non_novel_block=True),
             )
-            _store_gate_decision(
-                state,
-                _gate_evidence(
-                    official_exists=official_exists_for_gate,
-                    candidate_url=candidate_url_for_gate,
-                    row_discusses_work=False,
-                    non_novel_block=True,
-                ),
+            blocked_evidence = _gate_evidence(
+                official_exists=official_exists_for_gate,
+                candidate_url=candidate_url_for_gate,
+                row_discusses_work=False,
+                non_novel_block=True,
             )
+            if non_novel_media_block:
+                blocked_evidence.append(
+                    EvidenceRecord(
+                        kind="negative_media_relation",
+                        strength="strong",
+                        supports_publish=False,
+                        reason_code="non_novel_media_evidence",
+                        candidate_title=candidate,
+                    )
+                )
+            _store_gate_decision(state, blocked_evidence)
             try:
                 setattr(ctx, "_non_novel_discourse_title_promotion_blocked", True)
                 setattr(ctx, "_non_novel_discourse_title_promotion_blocked_title", candidate)
                 setattr(ctx, "_non_novel_discourse_title_promotion_blocked_source", str(source or "title_promotion"))
-                setattr(ctx, "_non_novel_discourse_title_promotion_blocked_reason", "high_confidence_non_novel")
+                setattr(
+                    ctx,
+                    "_non_novel_discourse_title_promotion_blocked_reason",
+                    (
+                        "non_novel_media_evidence"
+                        if non_novel_media_block
+                        else "high_confidence_non_novel"
+                    ),
+                )
             except Exception:
                 pass
             if isinstance(final_decision, dict):
@@ -43658,6 +46964,19 @@ OUTPUT JSON:
                     != self._normalize_match_text(ack_candidate_title)
                 ):
                     ack_competing.append(current_title_before_ack_override)
+                ack_shared_work_bridge = self._post_discusses_work_as_work(
+                    ctx,
+                    ack_candidate_title,
+                    source="resolved_public_title_scope",
+                    final_decision=final_decision if isinstance(final_decision, dict) else None,
+                    verification_result=(
+                        verification_result if isinstance(verification_result, dict) else None
+                    ),
+                    title_candidates=title_candidates,
+                )
+                if ack_scope_kind == "current_work" and not ack_shared_work_bridge:
+                    ack_conflicts.append("shared_work_bridge_missing")
+                    ack_scope_kind = "unknown"
                 ack_scope = ScopeState(
                     scope_kind=ack_scope_kind,
                     confidence="high" if ack_scope_kind == "current_work" else "medium",
@@ -43672,7 +46991,9 @@ OUTPUT JSON:
                     competing_candidates=ack_competing,
                     conflict_reason_codes=ack_conflicts,
                 )
-                ack_row_discusses_work = ack_scope_kind == "current_work"
+                ack_row_discusses_work = bool(
+                    ack_scope_kind == "current_work" and ack_shared_work_bridge
+                )
                 ack_state = GroundingState(
                     post_id=getattr(ctx, "post_id", None),
                     candidate_title=ack_candidate_title,
@@ -43696,6 +47017,7 @@ OUTPUT JSON:
                         ).strip(),
                         supports_publish=ack_row_discusses_work,
                         reason_code="comment_previous_work_alias",
+                        candidate_title=ack_candidate_title,
                     )
                 ]
                 if ack_candidate_url:
@@ -43706,6 +47028,9 @@ OUTPUT JSON:
                             source_path_or_snippet=ack_candidate_url,
                             supports_publish=False,
                             reason_code="official_detail_url",
+                            candidate_title=ack_candidate_title,
+                            candidate_url=ack_candidate_url,
+                            title_url_match=True,
                         )
                     )
                 ack_gate_decision = self._record_public_title_gate_decision(
@@ -44326,6 +47651,10 @@ OUTPUT JSON:
                 ctx,
                 title_candidates=title_candidates,
                 primary_work=primary_work if isinstance(primary_work, DetectedTitle) else None,
+                final_decision=final_decision if isinstance(final_decision, dict) else None,
+                verification_result=(
+                    verification_result if isinstance(verification_result, dict) else None
+                ),
             )
         if isinstance(title_led_evaluation_candidate, DetectedTitle):
             official_title = str(getattr(title_led_evaluation_candidate, "official_title", "") or "").strip()
@@ -46443,13 +49772,16 @@ OUTPUT JSON:
         *,
         title_candidates: Optional[List[DetectedTitle]] = None,
         primary_work: Optional[DetectedTitle] = None,
+        final_decision: Optional[Dict[str, Any]] = None,
+        verification_result: Optional[Dict[str, Any]] = None,
     ) -> Optional[DetectedTitle]:
         """Return an official-detail candidate for title-led evaluation posts.
 
         This is intentionally narrower than general recommendation rescue: the
         post title itself must carry a consumption/evaluation marker and the
-        candidate must have a novel detail URL plus a title or alias surface in
-        the post title.
+        headline context and body-primary publication are evaluated separately.
+        A headline candidate may be preserved without a URL, while any returned
+        publication candidate still requires a novel detail URL.
         """
         if not self._has_title_led_work_consumption_signal(ctx):
             return None
@@ -46467,6 +49799,8 @@ OUTPUT JSON:
                 candidates.append(cand)
 
         seen: set[tuple[str, str]] = set()
+        headline_context_candidate: Optional[DetectedTitle] = None
+        headline_publish_candidate: Optional[DetectedTitle] = None
         for cand in candidates:
             cand_title = str(getattr(cand, "official_title", "") or "").strip()
             cand_url = str(getattr(cand, "heretic_url", "") or "").strip()
@@ -46475,12 +49809,6 @@ OUTPUT JSON:
             if not cand_norm or key in seen:
                 continue
             seen.add(key)
-            if not (
-                cand_url
-                and self._is_novel_platform_url(cand_url)
-                and self._is_novel_detail_url(cand_url)
-            ):
-                continue
             alias_norm = self._normalize_match_text(getattr(cand, "alias_or_mention", "") or "")
             title_surface_match = bool(
                 cand_norm in post_norm
@@ -46490,8 +49818,171 @@ OUTPUT JSON:
             )
             if not title_surface_match:
                 continue
-            return cand
-        return None
+            if not isinstance(headline_context_candidate, DetectedTitle):
+                headline_context_candidate = cand
+            if (
+                cand_url
+                and self._is_novel_platform_url(cand_url)
+                and self._is_novel_detail_url(cand_url)
+            ):
+                headline_publish_candidate = cand
+                break
+        if not isinstance(headline_context_candidate, DetectedTitle):
+            return None
+
+        headline_title = str(
+            getattr(headline_context_candidate, "official_title", "") or ""
+        ).strip()
+        headline_alias = str(
+            getattr(headline_context_candidate, "alias_or_mention", "") or ""
+        ).strip()
+        try:
+            _, headline_has_body_surface = self._body_verified_character_work_competition(
+                ctx,
+                headline_title,
+                title_candidates=title_candidates,
+                current_alias=headline_alias,
+                include_comments=False,
+            )
+        except Exception:
+            headline_has_body_surface = False
+        if headline_has_body_surface and isinstance(headline_publish_candidate, DetectedTitle):
+            return headline_publish_candidate
+
+        try:
+            body_record = self._select_body_verified_work_candidate_for_title_led_alias(
+                ctx,
+                headline_title,
+                title_candidates=title_candidates,
+                final_decision=final_decision,
+                verification_result=verification_result,
+            )
+        except Exception:
+            body_record = {}
+        body_title = str(body_record.get("title") or "").strip()
+        body_url = str(body_record.get("url") or "").strip()
+        body_norm = self._normalize_match_text(body_title)
+        headline_norm = self._normalize_match_text(headline_title)
+        if not body_norm or body_norm == headline_norm or not body_url:
+            return headline_publish_candidate
+
+        body_candidate: Optional[DetectedTitle] = None
+        for cand in candidates:
+            if not isinstance(cand, DetectedTitle):
+                continue
+            cand_title = str(getattr(cand, "official_title", "") or "").strip()
+            if self._normalize_match_text(cand_title) != body_norm:
+                continue
+            cand_url = str(getattr(cand, "heretic_url", "") or "").strip()
+            if not (
+                cand_url
+                and self._is_novel_platform_url(cand_url)
+                and self._is_novel_detail_url(cand_url)
+            ):
+                continue
+            if self._normalize_url_for_match(cand_url) != self._normalize_url_for_match(body_url):
+                continue
+            body_candidate = cand
+            break
+        if not isinstance(body_candidate, DetectedTitle):
+            return headline_publish_candidate
+
+        def _container_selects_body(container: Optional[Dict[str, Any]]) -> bool:
+            if not isinstance(container, dict):
+                return False
+            for key in ("official_title", "official_novel_title", "resolved_title"):
+                if self._normalize_match_text(container.get(key) or "") == body_norm:
+                    return True
+            novel_identity = container.get("novel_identity") or {}
+            if isinstance(novel_identity, dict):
+                for key in ("official_title", "official_novel_title", "title"):
+                    if self._normalize_match_text(novel_identity.get(key) or "") == body_norm:
+                        return True
+            primary = container.get("primary_work") or {}
+            if isinstance(primary, dict):
+                if self._normalize_match_text(
+                    primary.get("official_title") or primary.get("title") or ""
+                ) == body_norm:
+                    return True
+            return False
+
+        def _value_selects_body(value: Any) -> bool:
+            if isinstance(value, DetectedTitle):
+                raw_title = getattr(value, "official_title", "") or ""
+            elif isinstance(value, dict):
+                raw_title = value.get("official_title") or value.get("title") or ""
+            else:
+                raw_title = ""
+            return self._normalize_match_text(raw_title) == body_norm
+
+        def _container_marks_body_nonprimary(
+            container: Optional[Dict[str, Any]],
+        ) -> bool:
+            if not isinstance(container, dict):
+                return False
+            for key in ("comparison_target", "future_watch_target"):
+                if _value_selects_body(container.get(key)):
+                    return True
+            for key in ("recommendation_candidates", "secondary_reference_works"):
+                values = container.get(key)
+                if isinstance(values, list) and any(
+                    _value_selects_body(value) for value in values
+                ):
+                    return True
+            return False
+
+        body_role = str(
+            getattr(body_candidate, "reference_role", "") or ""
+        ).strip().lower()
+        if body_role in {
+            "comparison",
+            "comparison_target",
+            "future_watch_target",
+            "recommendation",
+            "recommendation_candidate",
+            "mentioned",
+            "secondary",
+            "secondary_reference",
+        }:
+            return headline_publish_candidate
+        if _container_marks_body_nonprimary(final_decision) or _container_marks_body_nonprimary(
+            verification_result
+        ):
+            return headline_publish_candidate
+
+        structured_primary = bool(
+            body_role in {"primary", "current_work"}
+            or (
+                isinstance(primary_work, DetectedTitle)
+                and self._normalize_match_text(
+                    getattr(primary_work, "official_title", "") or ""
+                )
+                == body_norm
+            )
+        )
+        selected_by_semantic_result = bool(
+            _container_selects_body(final_decision)
+            or _container_selects_body(verification_result)
+        )
+        if not (structured_primary and selected_by_semantic_result):
+            return headline_publish_candidate
+        if not self._post_discusses_work_as_work(
+            ctx,
+            body_title,
+            source="body_verified_work_candidate_bridge",
+            final_decision=final_decision,
+            verification_result=verification_result,
+            title_candidates=title_candidates,
+        ):
+            return headline_publish_candidate
+        try:
+            setattr(ctx, "_title_led_body_primary_candidate_selected", True)
+            setattr(ctx, "_title_led_body_primary_candidate_title", body_title)
+            setattr(ctx, "_title_led_body_primary_candidate_url", body_url)
+            setattr(ctx, "_title_led_headline_context_candidate_title", headline_title)
+        except Exception:
+            pass
+        return body_candidate
 
     def _has_unresolved_worklike_hold_signal(
         self,
@@ -47388,6 +50879,40 @@ OUTPUT JSON:
         value = re.sub(r"버두바(?=\s*가\s*하고\s*싶은데요)", "버튜버", value)
         value = re.sub(r"\s{2,}", " ", value).strip()
         return value
+
+    def _normalize_authoritative_fetched_title_display(self, raw: Any) -> str:
+        """Clean fetched title chrome without deleting a real bracketed title part.
+
+        ``_normalize_title_candidate`` is intentionally aggressive for noisy
+        community/search surfaces and strips every leading bracket token.  A
+        fetched official detail page is a different trust surface: bracketed
+        series/game markers can be part of the canonical work title.  Preserve
+        those display markers while still removing a small, explicit set of UI
+        badges.  Consensus keys are computed from the returned display value,
+        so conflicting bracket markers fail closed instead of collapsing.
+        """
+
+        raw_text = str(raw or "").strip()
+        if not raw_text:
+            return ""
+        integrity_parts = parse_title_integrity_parts(raw_text)
+        normalized = self._normalize_title_candidate(raw_text)
+        has_parsed_components = bool(
+            integrity_parts.identity_components
+            or integrity_parts.presentation_components
+            or integrity_parts.suffix_identity_components
+            or integrity_parts.suffix_presentation_components
+        )
+        if not has_parsed_components:
+            return normalized
+        body = self._normalize_title_candidate(integrity_parts.base_display)
+        if not body:
+            return normalized
+        identity_prefix = "".join(integrity_parts.identity_component_displays)
+        identity_suffix = "".join(
+            integrity_parts.suffix_identity_component_displays
+        )
+        return f"{identity_prefix}{body}{identity_suffix}".strip()
 
     def _canonicalize_official_title(
         self,
@@ -49515,7 +53040,14 @@ OUTPUT JSON:
             self._heretic_fetch_cache[norm_url] = None
             return None
 
-        raw = self._fetch(url)
+        raw, fetch_meta = self._fetch_with_meta(url)
+        self._record_context_fetch_outcome_from_meta(
+            ctx,
+            url,
+            "heretic_live_fetch",
+            raw,
+            fetch_meta,
+        )
         if not isinstance(raw, dict):
             self._heretic_fetch_cache[norm_url] = None
             return None
@@ -50207,6 +53739,337 @@ OUTPUT JSON:
                     return False
 
         return saw_unavailable
+
+    def _canonical_fetched_title_for_url(
+        self,
+        ctx,
+        url: str,
+        *,
+        fetch_if_missing: bool = False,
+    ) -> Optional[str]:
+        """Return one consensus canonical title from fetched page evidence.
+
+        Conflicting normalized titles fail closed.  Search-result titles and
+        LLM-identified guesses are intentionally excluded from this authority.
+        """
+
+        target_url_norm = self._normalize_url_for_match(url)
+        fetched_entries = [
+            entry
+            for entry in (getattr(ctx, "fetched_page_info", None) or [])
+            if isinstance(entry, dict)
+            and self._normalize_url_for_match(entry.get("url") or "")
+            == target_url_norm
+        ]
+        if not fetched_entries and fetch_if_missing:
+            fetched_one = self._fetch_and_attach_page_info(ctx, url)
+            if (
+                isinstance(fetched_one, dict)
+                and self._normalize_url_for_match(fetched_one.get("url") or url)
+                == target_url_norm
+            ):
+                fetched_entries = [fetched_one]
+
+        titles: Dict[str, str] = {}
+        for entry in fetched_entries or []:
+            if not isinstance(entry, dict):
+                continue
+            structured = entry.get("structured_info") or {}
+            if not isinstance(structured, dict):
+                structured = {}
+            for raw_title in (
+                structured.get("title"),
+                structured.get("page_title"),
+                entry.get("title"),
+                entry.get("page_title"),
+            ):
+                canonical = self._normalize_authoritative_fetched_title_display(raw_title)
+                canonical_parts = parse_title_integrity_parts(canonical)
+                canonical_norm = json.dumps(
+                    {
+                        "leading_identity": canonical_parts.identity_components,
+                        "base": canonical_parts.base_normalized,
+                        "trailing_identity": canonical_parts.suffix_identity_components,
+                    },
+                    ensure_ascii=False,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                )
+                if (
+                    not canonical_parts.base_normalized
+                    or len(canonical_parts.base_normalized) < 2
+                    or self._is_platform_branding_title(canonical)
+                    or self._looks_like_listing_title(canonical)
+                    or self._is_generic_topic_title(canonical)
+                    or self._is_structural_nonwork_title(canonical)
+                ):
+                    continue
+                titles[canonical_norm] = canonical
+        if len(titles) != 1:
+            return None
+        return next(iter(titles.values()))
+
+    def _official_detail_display_title_binding(
+        self,
+        ctx,
+        candidate_title: Any,
+        candidate_url: Any,
+        *,
+        fetch_if_missing: bool = False,
+    ) -> Dict[str, str]:
+        """Classify one candidate against the canonical display title of an exact URL.
+
+        A noisy alias/search path may identify the correct title body while
+        dropping a meaningful leading bracket component.  When the exact URL
+        has one active fetched canonical title, restore that display value.
+        A different bracket component or a different title body fails closed.
+        """
+
+        title = str(candidate_title or "").strip()
+        url = str(candidate_url or "").strip()
+        unavailable = {
+            "status": "unavailable",
+            "candidate_title": title,
+            "candidate_url": url,
+            "canonical_title": "",
+            "reason_code": "official_detail_display_binding_unavailable",
+        }
+        if not ctx or not title or not url:
+            return unavailable
+        if not (self._is_novel_platform_url(url) and self._is_novel_detail_url(url)):
+            return unavailable
+        page_state = self._summarize_url_page_state(ctx, url, exact_url=True)
+        explicit_active_detail = bool(
+            page_state.get("is_novel_page")
+            or set(page_state.get("content_statuses") or ()).intersection(
+                {
+                    "active",
+                    "ok",
+                    "available",
+                    "published",
+                    "ongoing",
+                    "completed",
+                }
+            )
+        )
+        if (
+            not page_state.get("has_fetched_entry")
+            or not page_state.get("has_active_detail_like")
+            or not explicit_active_detail
+            or page_state.get("is_deleted_or_unavailable")
+            or page_state.get("is_community_post")
+            or page_state.get("is_listing")
+        ):
+            return unavailable
+        canonical = self._canonical_fetched_title_for_url(
+            ctx,
+            url,
+            fetch_if_missing=fetch_if_missing,
+        )
+        if not canonical:
+            return unavailable
+
+        candidate_parts = parse_title_integrity_parts(title)
+        canonical_parts = parse_title_integrity_parts(canonical)
+        compatible = bool(
+            candidate_parts.base_normalized
+            and candidate_parts.base_normalized == canonical_parts.base_normalized
+            and (
+                candidate_parts.identity_components == canonical_parts.identity_components
+                or (
+                    not candidate_parts.identity_components
+                    and bool(canonical_parts.identity_components)
+                )
+            )
+            and (
+                candidate_parts.suffix_identity_components
+                == canonical_parts.suffix_identity_components
+                or (
+                    not candidate_parts.suffix_identity_components
+                    and bool(canonical_parts.suffix_identity_components)
+                )
+            )
+        )
+        if compatible:
+            return {
+                "status": "compatible",
+                "candidate_title": title,
+                "candidate_url": url,
+                "canonical_title": canonical,
+                "reason_code": (
+                    "official_detail_display_title_exact"
+                    if (
+                        candidate_parts.identity_components
+                        == canonical_parts.identity_components
+                        and candidate_parts.suffix_identity_components
+                        == canonical_parts.suffix_identity_components
+                    )
+                    else "official_detail_display_identity_component_restored"
+                ),
+            }
+        return {
+            "status": "mismatch",
+            "candidate_title": title,
+            "candidate_url": url,
+            "canonical_title": canonical,
+            "reason_code": "official_detail_display_title_mismatch",
+        }
+
+    def _canonical_official_detail_display_title_for_candidate(
+        self,
+        ctx,
+        candidate_title: Any,
+        candidate_url: Any,
+        *,
+        fetch_if_missing: bool = False,
+    ) -> Optional[str]:
+        binding = self._official_detail_display_title_binding(
+            ctx,
+            candidate_title,
+            candidate_url,
+            fetch_if_missing=fetch_if_missing,
+        )
+        if binding.get("status") == "compatible":
+            return str(binding.get("canonical_title") or "").strip() or None
+        return None
+
+    def _source_native_official_detail_identity(
+        self,
+        ctx,
+    ) -> Dict[str, str]:
+        """Return one canonical work identity named by a post-body detail URL.
+
+        Search candidates are intentionally excluded from URL discovery.  The
+        URL must be present in the post's own content, and its title must come
+        from the fetched official page.  Multiple distinct source identities
+        fail closed so a link bundle cannot silently select one work.
+        """
+
+        if not ctx:
+            return {}
+        if getattr(ctx, "_source_native_official_detail_identity_checked", False):
+            cached = getattr(ctx, "_source_native_official_detail_identity", {})
+            return dict(cached) if isinstance(cached, dict) else {}
+        try:
+            setattr(ctx, "_source_native_official_detail_identity_checked", True)
+            setattr(ctx, "_source_native_official_detail_identity", {})
+        except Exception:
+            pass
+
+        def _cache(value: Dict[str, str]) -> Dict[str, str]:
+            frozen = dict(value) if isinstance(value, dict) else {}
+            try:
+                setattr(ctx, "_source_native_official_detail_identity", frozen)
+            except Exception:
+                pass
+            return dict(frozen)
+
+        post_data = getattr(ctx, "post_data", None) or {}
+        if not isinstance(post_data, dict):
+            return _cache({})
+
+        source_parts: List[str] = []
+
+        def _append_source(value: Any) -> None:
+            if isinstance(value, str) and value.strip():
+                source_parts.append(value)
+            elif isinstance(value, (list, tuple)):
+                for item in value:
+                    if isinstance(item, str) and item.strip():
+                        source_parts.append(item)
+
+        for key in ("content", "body", "content_html"):
+            _append_source(post_data.get(key))
+        for block in post_data.get("content_blocks", []) or []:
+            if isinstance(block, dict):
+                for key in ("text", "url", "href"):
+                    _append_source(block.get(key))
+            elif isinstance(block, str):
+                _append_source(block)
+        source_text = " ".join(source_parts)
+        if not source_text:
+            return _cache({})
+
+        direct_urls: List[str] = []
+        seen_urls: set[str] = set()
+        novel_platform_urls: set[str] = set()
+        for match in re.finditer(r"https?://[^\s<>\]\[()'\"`]+", source_text):
+            url = match.group(0).rstrip(".,;:!?)]}>'\"")
+            normalized_url = self._normalize_url_for_match(url)
+            if normalized_url and self._is_novel_platform_url(url):
+                novel_platform_urls.add(normalized_url)
+            if (
+                not normalized_url
+                or normalized_url in seen_urls
+                or not self._is_novel_platform_url(url)
+                or not self._is_novel_detail_url(url)
+            ):
+                continue
+            seen_urls.add(normalized_url)
+            direct_urls.append(url)
+
+        # The packet-local source identity is valid only when the normalized
+        # direct detail-URL set itself is unique.  Invalid or conflicting links
+        # may not be silently discarded to manufacture uniqueness.
+        if len(novel_platform_urls) != 1 or len(direct_urls) != 1:
+            return _cache({})
+
+        url = direct_urls[0]
+        try:
+            page_state = self._summarize_url_page_state(ctx, url, exact_url=True)
+        except Exception:
+            return _cache({})
+        if (
+            page_state.get("is_deleted_or_unavailable")
+            or page_state.get("is_community_post")
+            or page_state.get("is_listing")
+        ):
+            return _cache({})
+        try:
+            canonical_title = self._canonical_fetched_title_for_url(
+                ctx,
+                url,
+                fetch_if_missing=True,
+            )
+        except Exception:
+            return _cache({})
+        try:
+            post_fetch_page_state = self._summarize_url_page_state(
+                ctx,
+                url,
+                exact_url=True,
+            )
+        except Exception:
+            return _cache({})
+        post_fetch_explicit_active = bool(
+            post_fetch_page_state.get("is_novel_page")
+            or set(post_fetch_page_state.get("content_statuses") or ()).intersection(
+                {
+                    "active",
+                    "ok",
+                    "available",
+                    "published",
+                    "ongoing",
+                    "completed",
+                }
+            )
+        )
+        if (
+            not canonical_title
+            or not post_fetch_page_state.get("has_fetched_entry")
+            or not post_fetch_page_state.get("has_active_detail_like")
+            or not post_fetch_explicit_active
+            or post_fetch_page_state.get("is_deleted_or_unavailable")
+            or post_fetch_page_state.get("is_community_post")
+            or post_fetch_page_state.get("is_listing")
+            or self._is_title_matched_non_novel_media_url(
+                canonical_title,
+                url,
+                getattr(ctx, "search_results", None) or [],
+            )
+        ):
+            return _cache({})
+        return _cache({"title": canonical_title, "url": url})
 
     def _post_direct_official_detail_url_for_title(
         self,
@@ -51289,7 +55152,25 @@ OUTPUT JSON:
         bucket.setdefault("post_spans", [])
         bucket.setdefault("search_snippets", [])
 
-    def _correct_title_final(self, title: str, ctx) -> str:
+    def _correct_title_final(
+        self,
+        title: str,
+        ctx,
+        *,
+        candidate_url: Any = None,
+    ) -> str:
+        def _restore_authoritative_display(candidate: Any) -> str:
+            candidate_text = str(candidate or "").strip()
+            if not candidate_text:
+                return ""
+            canonical = self._canonical_official_detail_display_title_for_candidate(
+                ctx,
+                candidate_text,
+                candidate_url,
+                fetch_if_missing=False,
+            )
+            return str(canonical or candidate_text).strip()
+
         title = self._normalize_title_candidate(title) or title
         title = self._strip_title_character_suffix(title, ctx)
 
@@ -51592,13 +55473,13 @@ OUTPUT JSON:
                             )
                         except Exception:
                             pass
-                        return _ack_title
+                        return _restore_authoritative_display(_ack_title)
                 print(
                     f"[{_ts()}] final title correction fast-path(verifier_official_lock): "
                     f"'{title}'",
                     file=sys.stderr,
                 )
-                return title
+                return _restore_authoritative_display(title)
 
         for st in getattr(ctx, "suspected_titles", []) or []:
             if not isinstance(st, dict):
@@ -51635,7 +55516,7 @@ OUTPUT JSON:
                     file=sys.stderr,
                 )
                 return ""
-            return title
+            return _restore_authoritative_display(title)
 
         uniq_candidates = {(c, s) for c, s in candidates}
         _char_norms_for_correction = {n for _, n in self._collect_short_character_tokens(ctx)}
@@ -52042,7 +55923,7 @@ OUTPUT JSON:
                     f"(score={current_score:.2f}->{best_evidence_score:.2f})",
                     file=sys.stderr,
                 )
-                return best_by_evidence
+                return _restore_authoritative_display(best_by_evidence)
 
         from difflib import SequenceMatcher
 
@@ -52115,7 +55996,7 @@ OUTPUT JSON:
                     f"(score={best_score:.2f}, source={best_source})",
                     file=sys.stderr,
                 )
-                return title
+                return _restore_authoritative_display(title)
             _sim_drift = self._detect_title_anchor_drift(
                 ctx,
                 official_title=best_candidate,
@@ -52133,7 +56014,7 @@ OUTPUT JSON:
                     f"(score={best_score:.2f}, source={best_source}, th={threshold:.2f})",
                     file=sys.stderr,
                 )
-                return best_candidate
+                return _restore_authoritative_display(best_candidate)
 
         def _looks_incomplete_phrase_local(t: str) -> bool:
             import re
@@ -52181,7 +56062,7 @@ OUTPUT JSON:
                         f"(overlap={best_off_overlap})",
                         file=sys.stderr,
                     )
-                    return best_off
+                    return _restore_authoritative_display(best_off)
 
         # 현재 title이 플랫폼 슬로건/리스트형이면 미확정으로 내려 오염 차단
         if title_is_branding:
@@ -52191,7 +56072,7 @@ OUTPUT JSON:
             )
             return ""
 
-        return title
+        return _restore_authoritative_display(title)
 
     @staticmethod
     def _collect_notes(ctx) -> Optional[str]:
@@ -52270,7 +56151,7 @@ OUTPUT JSON:
             return [], [], None, list(recommendation_candidates or [])
         return [], [], None, []
 
-    def _build_candidate_preservation_sources(
+    def _build_candidate_preservation_snapshot(
         self,
         *,
         title_candidates: Optional[List[DetectedTitle]],
@@ -52279,12 +56160,12 @@ OUTPUT JSON:
         recommendation_candidates: Optional[List[DetectedTitle]],
         secondary_reference_works: Any = None,
         max_items: int = 24,
-    ) -> List[Dict[str, Any]]:
-        """Snapshot reviewable candidates before final-output pruning.
+    ) -> CandidateGenerationSnapshot:
+        """Snapshot and count reviewable candidates before final-output pruning.
 
-        This field is audit-only. It does not promote a candidate to
-        official_title, but it lets candidate_audit distinguish "safe hold with
-        candidates" from "empty hold".
+        The complete local source sequence is scanned even when only ``max_items``
+        are retained.  This detects local truncation without claiming that
+        upstream candidate generation itself was complete.
         """
 
         out: List[Dict[str, Any]] = []
@@ -52356,9 +56237,190 @@ OUTPUT JSON:
                 payload = _payload(item, role)
                 if payload:
                     out.append(payload)
-                if len(out) >= max_items:
-                    return out
-        return out
+        return build_candidate_generation_snapshot(out, cap=max_items)
+
+    def _build_candidate_preservation_sources(
+        self,
+        *,
+        title_candidates: Optional[List[DetectedTitle]],
+        mentioned_works: Optional[List[DetectedTitle]],
+        comparison_target: Optional[DetectedTitle],
+        recommendation_candidates: Optional[List[DetectedTitle]],
+        secondary_reference_works: Any = None,
+        max_items: int = 24,
+    ) -> List[Dict[str, Any]]:
+        """Backward-compatible retained source list for existing callers."""
+
+        snapshot = self._build_candidate_preservation_snapshot(
+            title_candidates=title_candidates,
+            mentioned_works=mentioned_works,
+            comparison_target=comparison_target,
+            recommendation_candidates=recommendation_candidates,
+            secondary_reference_works=secondary_reference_works,
+            max_items=max_items,
+        )
+        return list(snapshot.retained_sources or ())
+
+    def _append_serializer_mismatch_candidate_preservation_candidates(
+        self,
+        *,
+        ctx: Any,
+        title_candidates: Optional[List[DetectedTitle]],
+        prior_contract: Optional[PublishContract],
+        boundary_title: Optional[str],
+        boundary_url: Optional[str],
+        max_added: int = 8,
+    ) -> Tuple[List[DetectedTitle], int]:
+        """Preserve reviewable candidates before a late serializer mismatch.
+
+        A mutable boundary title may diverge from the last typed contract after
+        the normal unresolved-only rescue window.  The mismatch must remain a
+        public HOLD, but the prior typed candidate, the boundary candidate, and
+        stable official-detail alias candidates still belong in the immutable
+        candidate inventory.  This helper is preservation-only and never
+        selects or publishes a title.
+        """
+
+        out = [item for item in (title_candidates or []) if isinstance(item, DetectedTitle)]
+        seen_pairs: set[Tuple[str, str]] = set()
+        seen_urls: set[str] = set()
+        for item in out:
+            title_norm = self._normalize_match_text(getattr(item, "official_title", "") or "")
+            url_norm = self._normalize_url_for_match(getattr(item, "heretic_url", "") or "")
+            if title_norm:
+                seen_pairs.add((title_norm, url_norm))
+            if url_norm:
+                seen_urls.add(url_norm)
+
+        added = 0
+
+        def _append_candidate(
+            *,
+            title: Any,
+            url: Any,
+            confidence: Any,
+            alias: Any = None,
+            source_tier: Any = None,
+            page_type: Any = None,
+            content_status: Any = None,
+            negative_evidence: Any = None,
+            reason_code: str,
+        ) -> None:
+            nonlocal added
+            if added >= max_added:
+                return
+            candidate_title = str(title or "").strip()
+            candidate_url = str(url or "").strip()
+            title_norm = self._normalize_match_text(candidate_title)
+            url_norm = self._normalize_url_for_match(candidate_url)
+            if not title_norm or (title_norm, url_norm) in seen_pairs:
+                return
+            reasons = [
+                str(value or "").strip()
+                for value in (negative_evidence or [])
+                if str(value or "").strip()
+            ]
+            if reason_code and reason_code not in reasons:
+                reasons.append(reason_code)
+            tier = str(source_tier or "").strip().lower()
+            if tier not in {"official_detail", "official_search", "community", "listing", "llm_only", "mixed"}:
+                tier = "official_detail" if candidate_url and self._is_novel_detail_url(candidate_url) else "mixed"
+            out.append(
+                DetectedTitle(
+                    official_title=candidate_title,
+                    heretic_url=candidate_url or None,
+                    confidence=(
+                        str(confidence or "Medium").strip()
+                        if str(confidence or "Medium").strip() in {"None", "Low", "Medium", "High", "Max"}
+                        else "Medium"
+                    ),
+                    alias_or_mention=str(alias or "").strip() or None,
+                    source_tier=tier,
+                    page_type=str(page_type or "").strip() or None,
+                    content_status=str(content_status or "").strip() or None,
+                    locked=False,
+                    negative_evidence=reasons or None,
+                    reference_role="candidate",
+                )
+            )
+            seen_pairs.add((title_norm, url_norm))
+            if url_norm:
+                seen_urls.add(url_norm)
+            added += 1
+
+        if isinstance(prior_contract, PublishContract):
+            _append_candidate(
+                title=prior_contract.state.candidate_title,
+                url=prior_contract.state.candidate_url,
+                confidence="High" if prior_contract.state.official_title_exists else "Medium",
+                source_tier=(
+                    "official_detail"
+                    if prior_contract.state.candidate_url
+                    and self._is_novel_detail_url(prior_contract.state.candidate_url)
+                    else "mixed"
+                ),
+                reason_code="prior_publish_contract_candidate_preservation_only",
+            )
+
+        _append_candidate(
+            title=boundary_title,
+            url=boundary_url,
+            confidence="High" if boundary_url and self._is_novel_detail_url(boundary_url) else "Medium",
+            source_tier=(
+                "official_detail"
+                if boundary_url and self._is_novel_detail_url(boundary_url)
+                else "mixed"
+            ),
+            reason_code="serializer_boundary_candidate_preservation_only",
+        )
+
+        snippet = getattr(ctx, "llm_snippet_analysis", None) if ctx else None
+        snippet_title_norm = self._normalize_match_text(
+            (snippet or {}).get("identified_title") if isinstance(snippet, dict) else ""
+        )
+        best_by_url: Dict[str, Tuple[Tuple[int, int, int], DetectedTitle]] = {}
+        for inferred in self._build_title_lead_alias_search_inferred_candidates(ctx):
+            if not isinstance(inferred, DetectedTitle):
+                continue
+            inferred_title = str(getattr(inferred, "official_title", "") or "").strip()
+            inferred_url = str(getattr(inferred, "heretic_url", "") or "").strip()
+            inferred_title_norm = self._normalize_match_text(inferred_title)
+            inferred_url_norm = self._normalize_url_for_match(inferred_url)
+            if (
+                not inferred_title_norm
+                or not inferred_url_norm
+                or inferred_url_norm in seen_urls
+                or str(getattr(inferred, "source_tier", "") or "").strip().lower() != "official_detail"
+                or not self._is_novel_platform_url(inferred_url)
+                or not self._is_novel_detail_url(inferred_url)
+            ):
+                continue
+            metric = (
+                1 if snippet_title_norm and inferred_title_norm == snippet_title_norm else 0,
+                1 if re.match(r"\s*\[[^\]]+\]", inferred_title) else 0,
+                len(inferred_title_norm),
+            )
+            current = best_by_url.get(inferred_url_norm)
+            if current is None or metric > current[0]:
+                best_by_url[inferred_url_norm] = (metric, inferred)
+
+        for _metric, inferred in sorted(
+            best_by_url.values(),
+            key=lambda value: value[0],
+            reverse=True,
+        ):
+            _append_candidate(
+                title=getattr(inferred, "official_title", None),
+                url=getattr(inferred, "heretic_url", None),
+                confidence=getattr(inferred, "confidence", None),
+                alias=getattr(inferred, "alias_or_mention", None),
+                source_tier=getattr(inferred, "source_tier", None),
+                page_type=getattr(inferred, "page_type", None),
+                content_status=getattr(inferred, "content_status", None),
+                negative_evidence=getattr(inferred, "negative_evidence", None),
+                reason_code="search_alias_candidate_preservation_only",
+            )
+        return out, added
 
     def _prune_rejected_alias_inference_candidates_for_hold(
         self,
@@ -55587,7 +59649,17 @@ OUTPUT JSON:
                 flags=re.IGNORECASE,
             ).strip()
             candidate_title = re.sub(r"\s*(?:나무위키[:：]대문|나무위키|웹소설|문피아|노벨피아)\s*$", "", candidate_title).strip()
-            candidate_title = self._normalize_title_candidate(candidate_title) or candidate_title
+            search_url = str(search_result.get("url") or "")
+            if (
+                self._is_novel_platform_url(search_url)
+                and self._is_novel_detail_url(search_url)
+            ):
+                candidate_title = (
+                    self._normalize_authoritative_fetched_title_display(candidate_title)
+                    or candidate_title
+                )
+            else:
+                candidate_title = self._normalize_title_candidate(candidate_title) or candidate_title
             parts = candidate_title.split()
             while parts and self._normalize_match_text(parts[-1]) == alias_norm:
                 parts.pop()
@@ -61632,10 +65704,37 @@ OUTPUT JSON:
         vf_result: Optional[Dict[str, Any]] = None,
         max_items: int = 6,
     ) -> List[DetectedTitle]:
+        """Backward-compatible list wrapper around the main stage snapshot."""
+
+        candidates, _snapshot = self._build_title_candidates_with_snapshot(
+            ctx=ctx,
+            is_relevant=is_relevant,
+            official_title=official_title,
+            heretic_url=heretic_url,
+            confidence=confidence,
+            vf_result=vf_result,
+            max_items=max_items,
+        )
+        return candidates
+
+    def _build_title_candidates_with_snapshot(
+        self,
+        *,
+        ctx: "ConversationContext",
+        is_relevant: bool,
+        official_title: Optional[str],
+        heretic_url: Optional[str],
+        confidence: Any,
+        vf_result: Optional[Dict[str, Any]] = None,
+        max_items: int = 6,
+    ) -> Tuple[List[DetectedTitle], CandidateGenerationSnapshot]:
         """
         결과 JSON 노출용 후보 제목군 구성.
         - 단일 official_title 외에도 후보를 함께 제공해 모니터링/후처리에서 활용.
+        - main caller는 cap 직전 ranked inventory의 UNKNOWN/TRUNCATED snapshot을 함께 받는다.
         """
+        if isinstance(max_items, bool) or not isinstance(max_items, int) or max_items <= 0:
+            raise ValueError("max_items must be a positive int")
         _vf_worklike_slang = self._extract_worklike_slang_term(
             ctx=ctx,
             vf_result=vf_result or {},
@@ -61714,7 +65813,11 @@ OUTPUT JSON:
                 if _lock_rescue.get("strong"):
                     _nonrelevant_candidate_exposure = True
         if not is_relevant and not _nonrelevant_slang_only and not _nonrelevant_candidate_exposure:
-            return []
+            return self._finalize_title_candidate_generation(
+                scored=[],
+                final_norm="",
+                max_items=max_items,
+            )
 
         from collections import OrderedDict
 
@@ -62183,25 +66286,60 @@ OUTPUT JSON:
             scored.append((score, is_primary, v))
         scored.sort(key=lambda x: (x[0], x[1], len(str(x[2].get("title", "")))), reverse=True)
 
-        out: List[DetectedTitle] = []
-        for _, _, v in scored[: max(1, max_items)]:
+        return self._finalize_title_candidate_generation(
+            scored=scored,
+            final_norm=final_norm,
+            max_items=max_items,
+        )
+
+    def _finalize_title_candidate_generation(
+        self,
+        *,
+        scored: Sequence[Tuple[Any, bool, Dict[str, Any]]],
+        final_norm: str,
+        max_items: int,
+    ) -> Tuple[List[DetectedTitle], CandidateGenerationSnapshot]:
+        """Freeze ranked title-stage metadata without changing retained order."""
+
+        if isinstance(max_items, bool) or not isinstance(max_items, int) or max_items <= 0:
+            raise ValueError("max_items must be a positive int")
+        def _candidate_payload(v: Mapping[str, Any]) -> Dict[str, Any]:
             cand_key = self._normalize_match_text(v.get("title", ""))
             cand_is_primary = bool(final_norm and cand_key == final_norm)
-            out.append(
-                DetectedTitle(
-                    official_title=v.get("title"),
-                    heretic_url=v.get("url"),
-                    confidence=v.get("confidence") or "None",
-                    alias_or_mention=v.get("alias"),
-                    source_tier=v.get("source_tier"),
-                    page_type=v.get("page_type"),
-                    content_status=v.get("content_status"),
-                    locked=v.get("locked"),
-                    negative_evidence=v.get("negative_evidence") or None,
-                    reference_role="primary" if cand_is_primary else "candidate",
-                )
+            payload = {
+                "official_title": v.get("title"),
+                "heretic_url": v.get("url"),
+                "confidence": v.get("confidence") or "None",
+                "alias_or_mention": v.get("alias"),
+                "source_tier": v.get("source_tier"),
+                "page_type": v.get("page_type"),
+                "content_status": v.get("content_status"),
+                "locked": v.get("locked"),
+                "negative_evidence": v.get("negative_evidence") or None,
+                "reference_role": "primary" if cand_is_primary else "candidate",
+            }
+            payload["preservation_role"] = "ranked_title_candidate"
+            return {key: value for key, value in payload.items() if value is not None}
+
+        # Count every ranked row, but preserve the legacy boundary that only the
+        # emitted top-cap rows are materialized as public DetectedTitle models.
+        # A malformed low-ranked row must not introduce a new exception path.
+        snapshot_sources = [_candidate_payload(v) for _, _, v in scored]
+        snapshot = build_title_candidate_generation_snapshot(
+            snapshot_sources,
+            cap=max_items,
+        )
+        emitted_candidates = [
+            DetectedTitle(
+                **{
+                    key: value
+                    for key, value in _candidate_payload(v).items()
+                    if key != "preservation_role"
+                }
             )
-        return out
+            for _, _, v in scored[:max_items]
+        ]
+        return emitted_candidates, snapshot
 
     @staticmethod
     def _extract_domain_keywords(text: str) -> set[str]:
@@ -64092,6 +68230,37 @@ OUTPUT JSON:
         if any(marker and marker in sr_title_norm for marker in page_media_markers):
             return True
 
+        structured_media_markers = {
+            self._normalize_match_text(marker)
+            for marker in (
+                "manga",
+                "comic",
+                "comics",
+                "webtoon",
+                "animation",
+                "anime",
+                "만화",
+                "웹툰",
+            )
+        }
+        structured_media_values = [
+            self._normalize_match_text(sr.get(key) or "")
+            for key in ("media_type", "content_type", "category", "page_type", "product_type")
+        ]
+        if any(
+            value
+            and any(
+                marker
+                and (
+                    value == marker
+                    or marker in value
+                )
+                for marker in structured_media_markers
+            )
+            for value in structured_media_values
+        ):
+            return True
+
         explicit_webnovel_markers = tuple(
             self._normalize_match_text(marker)
             for marker in (
@@ -64112,6 +68281,28 @@ OUTPUT JSON:
             return True
         if has_explicit_webnovel_marker:
             return False
+
+        pre_detail_blob_norm = self._normalize_match_text(
+            " ".join(
+                str(sr.get(key) or "")
+                for key in ("title", "page_title", "content", "snippet", "description")
+            )
+        )
+        # These compound labels are strong enough to inspect before the shared
+        # platform-detail shortcut.  Avoid broad markers such as bare `웹툰`,
+        # which may occur in novel-platform boilerplate (`웹툰코인`).
+        if any(
+            marker and marker in pre_detail_blob_norm
+            for marker in (
+                self._normalize_match_text("만화 e북"),
+                self._normalize_match_text("만화 ebook"),
+                self._normalize_match_text("manga ebook"),
+                self._normalize_match_text("comic ebook"),
+                self._normalize_match_text("#COMIC"),
+                self._normalize_match_text("#COMICS"),
+            )
+        ):
+            return True
 
         if (
             url

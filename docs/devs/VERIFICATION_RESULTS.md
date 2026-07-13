@@ -1,4 +1,439 @@
-# Verification Results
+# 검증 결과 (Verification Results)
+
+## 2026-07-13 Architecture V2 typed confidence contract
+
+- Goal 종료 판정: `019f4f3f-4f46-78d1-8418-50834da44924 / COMPLETE_SAFE_TERMINAL / ARCHITECTURE_V2_INTEGRATED / ACTUAL_EFFECT_WAITING_EXTERNAL_INPUT`.
+- 명령: `./.venv312/Scripts/python.exe -m unittest -q tests.test_confidence_report tests.test_candidate_set_shadow_contract tests.test_candidate_set_calibration_shadow_contract tests.test_calibration_actual_readback`
+- 결과: `71 tests PASS`.
+- 별도 no-write reader: `./.venv312/Scripts/python.exe tools/read_typed_confidence_metrics.py --input tests/fixtures/typed_confidence_source_less_contract_v1.jsonl`는 `NOT_ESTIMABLE_NOT_FROZEN_ACTUAL`, `runtime_started=false`, `writes_performed=false`, `public_result_interference=false`를 출력했다.
+- 확장 로컬 회귀: confidence/candidate/stage `187`, ledger/publication `113`, stage foundation `53`, launch/paired/selective `197` tests가 모두 PASS했다.
+- staged-tree clean export 1차는 미추적 `src/llm_batch/title_integrity.py` 누락을 검출해 2개 모듈 import가 실패했다. closure/allowlist 보정 후 exact 137-path index의 두 번째 export에서 `compileall`, 핵심 import, `181 tests PASS`를 확인했다. 상태 문서 반영 전 코드·테스트 검증 tree는 `571fabb3bc93580ee486d869378750bb48e3606d`이며 실제 성능 수치가 아니다.
+- gate: fixture는 합성 reader 계약이다. actual accuracy/cost/E2E 개선은 `null/NOT_ESTIMABLE`, `REVIEW-LOCKED / full_scan_approval=false`이며 source-backed DEV/CAL/FROZEN과 fresh paired runtime 전에는 승격하지 않는다.
+
+## 2026-07-12 M1 foundation focused verification
+
+- launch actual-readback wrapper/writer: `tests.test_launch_readiness_manifest` focused `16 tests PASS` (`1.596s`). writer 직접 호출의 packet-root 밖/중첩 output 거부, staging write→rename, staging directory swap 뒤 외부 sentinel 비삭제를 확인했다. canonical source-less packet은 `NO_GO_LAUNCH_PACKET_ACTUAL_READBACK`으로 receipt·engine 전에 종료한다.
+- M1 selection 재확인: 같은 명령을 exit code까지 재실행해 `120 tests PASS` (`30.088s`)를 확인했다. active production·fresh runtime·source-backed packet은 사용하지 않았다.
+- 2026-07-13 이관 완료 교차검증: 동일 M1 selection을 이 대화에서 다시 실행해 `120 tests PASS` (`35.662s`, exit `0`)를 확인했다. canonical manifest reader는 `NOT_READY / GO_LAUNCH_MANIFEST_BOUND`, no-write preflight는 native exit `2 / NO_GO_LAUNCH_PACKET_PREFLIGHT`, `runtime_started=false`, `writes_to_production=false`를 재현했다. `goal.md`의 남아 있던 current `ACTIVE` 표기는 `BLOCKED / ACTUAL_BLOCKED_HANDOFF / NOT_COMPLETE`로 정합화했다.
+- historical parent replay 보정: P1 v8→P2 v8→P3 v20→P4 v21은 stored RunSpec/비교표/라벨/Golden18·artifact bytes/self-hash를 재생하고 implementation record 구조·SHA aggregate를 fail-close한다. 이 경로는 과거 SHA를 current working-tree bytes와 동일하다고 주장하지 않으며 direct validator의 기본 current implementation 검증은 유지한다.
+  - `tests.test_candidate_set_nil_shadow_harness`: `6 tests PASS` (`0.775s`), current SHA drift가 있는 v8은 frozen parent로만 읽히고 malformed rehash record는 거부한다.
+  - `tests.test_candidate_set_calibration_shadow_harness`: `19 tests PASS` (`42.884s`).
+  - `tests.test_selective_compute_shadow_harness tests.test_selective_compute_shadow_contract tests.test_paired_measurement_readback`: `59 tests PASS` (`395.194s`).
+  - 이는 lineage readback 회귀이며 source-backed actual packet, fresh runtime, 실제 효과 또는 운영 승인의 증거가 아니다.
+- DecisionLedgerV2 framed WAL v2 shadow foundation: `tests.test_framed_wal tests.test_decision_ledger_v2 tests.test_decision_ledger_v2_legacy_replay tests.test_decision_ledger_v2_mirror tests.test_decision_ledger_v2_mirror_canary tests.test_decision_ledger_binding`; `22 tests PASS` (`20.052s`, `EXITCODE:0`). torn/orphan/corruption/concurrent/replay/compaction/104,502 acceptance와 binding readback을 재확인했다. active `DecisionCallLedgerRegistry` writer 교체, production wiring, actual effect는 이 검증 범위 밖이다.
+- M1 acceptance 판정: 위 shadow/off-by-default evidence, P1→P4 lineage replay, launch wrapper/readback과 한국어 runbook으로 `ARCHITECTURE_INTEGRATION_COMPLETE`를 확인했다. `READY_FOR_NO_WRITE_PREFLIGHT` positive packet, policy v3, source-backed DEV/CAL/FROZEN, fresh BEFORE/AFTER, paired CI와 crash/restart는 M2에서 아직 증명되지 않았고 동일 외부 blocker가 `3/3`이므로 전체 Goal은 `BLOCKED / ACTUAL_BLOCKED_HANDOFF / NOT_COMPLETE`, `REVIEW-LOCKED / full_scan_approval=false`다.
+- M2 first pending no-write audit: `tools/read_launch_readiness_manifest.py --manifest out/launch_packet_20260712_architecture_foundation/launch_readiness_manifest.json`은 `NOT_READY / GO_LAUNCH_MANIFEST_BOUND`, runtime/write false를 반환했다. 이어 `tools/run_launch_packet_preflight.py --manifest ... --artifact-root out/launch_packet_20260712_architecture_foundation`은 `NO_GO_LAUNCH_PACKET_PREFLIGHT`, exit `2`, engine/runtime/write false로 종료했다. policy는 `DECISION_REQUIRED`, readiness는 `ready_rows=0/18`·producer COMPLETE `0/18`이다. 이는 M2 actual 입력 부재의 첫 재확인이지 GO, 운영 승인 또는 `ACTUAL_BLOCKED_HANDOFF`가 아니다.
+- M2 second pending no-write audit: policy decision/readiness/manifest file SHA는 `650a41da...7fc3`/`77f96e51...d3466`/`62616f49...cc8b`이다. reader `NOT_READY / GO_LAUNCH_MANIFEST_BOUND`, preflight `NO_GO_LAUNCH_PACKET_PREFLIGHT`, exit `2`, engine/runtime/write false가 동일했다. external blocker streak는 `2/3`이며 Goal을 blocked로 전환하지 않았다.
+- M2 third pending no-write audit: 같은 SHA·reader `NOT_READY / GO_LAUNCH_MANIFEST_BOUND`·preflight `NO_GO_LAUNCH_PACKET_PREFLIGHT` exit `2`·engine/runtime/write false를 재현했다. M1 완료 뒤 안전한 내부 작업이 없고 같은 external blocker가 `3/3`이므로 Goal API status `blocked`와 strict terminal 상태 `BLOCKED / ARCHITECTURE_INTEGRATION_COMPLETE / ACTUAL_BLOCKED_HANDOFF / NOT_COMPLETE`를 확인했다. source-backed packet/policy/fresh runtime이 재개 조건이며 M2 GO·운영 승인은 아니다.
+
+- bounded temp sidecar + StageBudget binding 재검증: `.\.venv312\Scripts\python.exe -m unittest -q tests.test_slang_transaction tests.test_slang_governance tests.test_stage_foundations tests.test_build_stage_budget_receipt tests.test_stage_budget_shadow_canary`; 결과 `38 tests PASS` (`2.357s`). StageBudget의 mixed RunSpec/scope/attempt, ledger bytes, count/NaN/direct snapshot self-hash 위조를 fail-close했고, slang apply/reconcile/rollback은 명시적 `sidecar_root`가 system temporary root 아래 DB·journal을 감싸며 DB가 2 MB 이하일 때만 허용함을 확인했다. active production·`SlangDBManager.flush`·runtime은 사용하지 않았으며 이 bounded subset은 M1 shadow foundation에 포함되지만 M2 actual effect나 운영 승인 증거는 아니다.
+- actual-readback 보강 전 M1 selected 재회귀: `.\.venv312\Scripts\python.exe -m unittest -q tests.test_framed_wal tests.test_decision_ledger_v2 tests.test_decision_ledger_v2_legacy_replay tests.test_decision_ledger_v2_mirror tests.test_decision_ledger_v2_mirror_canary tests.test_decision_ledger_binding tests.test_stage_foundations tests.test_shared_cache_contract tests.test_shared_result_singleflight tests.test_pipeline_stage_shadow tests.test_pipeline_stage_shadow_canary tests.test_stage_budget_shadow_canary tests.test_build_stage_budget_receipt tests.test_slang_governance tests.test_slang_transaction tests.test_launch_readiness_manifest tests.test_decision_call_tracing tests.test_decision_call_readback tests.test_agentic_pipeline_search_evidence`; 당시 결과 `116 tests PASS` (`28.566s`)였고, 후속 wrapper/writer 회귀가 추가된 최신 동일 selection은 위 `120 tests PASS`다. 모두 shadow/no-write이며 source-backed packet, fresh runtime, 실제 효과를 증명하지 않는다.
+- launch reader CLI: `.\.venv312\Scripts\python.exe -m unittest -q tests.test_launch_readiness_manifest`; 초기 CLI readback은 `NOT_READY / GO_LAUNCH_MANIFEST_BOUND`, `runtime_started=false`, `writes_to_production=false`를 재생했다. 이 CLI는 builder와 verifier 구현을 공유하는 별도 process readback이지 독립 validator 구현은 아니다.
+- launch preflight wrapper: module focused `12 tests PASS` (`1.227s`), 당시 전체 M1 selection은 `116 tests PASS`였고 후속 actual-readback 보강 뒤 최신 selection은 `120 tests PASS`다. absolute manifest ref를 root-relative로 재결속해 실제 하위 preflight synthetic positive path `GO_ACTUAL_BOUND_READBACK_ATTEMPT_ALLOWED`를 확인했고, manifest/artifact bytes 전후 변경·root escape·runtime/actual metrics/approval 위조는 fail-close한다. reader malformed input은 `NO_GO_LAUNCH_MANIFEST_READBACK`/exit 2로 닫는다. canonical no-input packet은 계속 `NO_GO_LAUNCH_PACKET_PREFLIGHT`, runtime/write false로 engine 호출 전 종료한다. synthetic fixture는 source-backed actual packet이 아니다.
+- captured preflight receipt reader: 같은 launch module `12 tests PASS` (`1.585s`)에서 self-hash 변조와 manifest/artifact binding을 다시 읽고 standalone receipt CLI가 `GO_LAUNCH_PACKET_PREFLIGHT_RECEIPT_BOUND`를 반환하는지 확인했다. capture fixture는 synthetic이며 source-backed actual packet이 아니다.
+
+- 명령: `.\.venv312\Scripts\python.exe -m unittest tests.test_framed_wal tests.test_decision_ledger_v2 tests.test_slang_governance tests.test_stage_foundations`
+- 결과: `16 tests PASS`.
+- 범위: framed WAL lock/torn/corruption, DecisionLedgerV2 shadow segment/index/checkpoint, slang work proposal/path binding, stage schema/local gate/cache clone·poison 기초.
+- 이 초기 `16/16` 범위의 제외: production wiring, actual DEV/CAL/FROZEN, fresh pair, slang crash transaction, provenance self-hash, existing ledger replay equivalence, 104,502 scale. 후속 결과는 아래에 별도로 기록한다. 전체 판정은 계속 `FOUNDATION_PARTIAL`, `REVIEW-LOCKED`, `full_scan_approval=false`다.
+- 초기 focused 재실행은 Windows `msvcrt` lock offset과 `FramedWalError` test import 누락으로 실패했다. lock acquire/release가 같은 sentinel byte 0을 사용하도록 수정하고 import를 보정한 뒤 위 `16/16`을 얻었다.
+- 확장 명령: `.\.venv312\Scripts\python.exe -m unittest tests.test_framed_wal tests.test_decision_ledger_v2 tests.test_slang_governance tests.test_stage_foundations tests.test_publication_decision_commit tests.test_decision_call_readback`; 결과 `60 tests PASS`. 이어서 변경 module `py_compile`, `git diff --check`를 통과했다.
+- 독립 영향 범위 검증: `.venv312\Scripts\python.exe -m unittest tests.test_framed_wal tests.test_stage_foundations tests.test_decision_ledger_v2 tests.test_slang_governance tests.test_decision_call_tracing tests.test_decision_call_readback -q`; 결과 `31 tests OK` (`3.600s`). 새 foundation 16개와 기존 decision writer/readback 영향 범위를 함께 본 별도 selection이며, 위 `60 tests PASS`와 합산하지 않는다.
+- StageBudget v2 후속 명령: `.\.venv312\Scripts\python.exe -m unittest tests.test_stage_foundations tests.test_framed_wal tests.test_decision_ledger_v2 tests.test_slang_governance -q`; 결과 `18 tests PASS` (`2.367s`). ArtifactRef binding, mixed artifact/count/NaN/self-hash/bytes tamper fail-close를 추가했으며 runtime/client wiring은 여전히 없다.
+- slang transaction 명령: `.\.venv312\Scripts\python.exe -m unittest tests.test_slang_transaction tests.test_slang_governance tests.test_stage_foundations -q`; 결과 `13 tests PASS` (`0.379s`). temp DB intent/DB replace crash injection과 startup reconciliation만 검증했으며 concurrent apply/rollback, terminal receipt 뒤 crash, production wiring은 제외했다.
+- launch packet 명령: `.\.venv312\Scripts\python.exe -m unittest tests.test_launch_readiness_manifest tests.test_slang_transaction tests.test_stage_foundations -q`; 결과 `11 tests PASS` (`0.240s`). manifest builder는 no-runtime preflight readiness만 판정한다.
+- DecisionLedger cached append 명령: `.\.venv312\Scripts\python.exe -m unittest tests.test_decision_ledger_v2 tests.test_framed_wal -q`; 결과 `10 tests PASS` (`5.530s`). 64-frame segment 4개/256 frame cached append와 replay를 확인했으며 104,502 acceptance는 아니다.
+- 104,502 acceptance: temp `DecisionCallLedgerV2`에 `append_many` 후 index/replay를 재생했다. 결과 `frames=104502`, `segments=409`, `indexed=104502`, `replayed=104502`, write `5.518s`, total `10.317s`. production/legacy writer는 사용하지 않았다.
+- legacy replay equivalence: `.\.venv312\Scripts\python.exe -m unittest -q tests.test_decision_ledger_v2_legacy_replay tests.test_decision_ledger_v2 tests.test_decision_call_events`; 결과 `19 tests PASS` (`14.125s`). real legacy registry 4 immutable frames, scope/frame tamper, scope mismatch, non-empty shadow destination을 확인했다.
+- V2 orphan/compaction: `.\.venv312\Scripts\python.exe -m unittest -q tests.test_decision_ledger_v2 tests.test_decision_ledger_v2_legacy_replay`; 결과 `11 tests PASS` (`18.047s`). orphan/index mismatch fail-close, torn-tail-only recovery, checkpoint+receipt compaction, explicit reconciliation을 확인했다.
+- stage-control audit: bound receipt builder `6 tests PASS`는 schema/artifact readback 범위다. limiter/singleflight/cache의 provider-wide/process-shared 보장은 현재 없으며 M1 완료 근거가 아니다.
+- cache/limiter hardening: `.\.venv312\Scripts\python.exe -m unittest -q tests.test_shared_cache_contract tests.test_stage_foundations`; 결과 `13 tests PASS` (`0.102s`). object-local cache strict namespace/TTL/provenance와 stage/provider registry 기초만 검증했으며 runtime wiring/cross-process shared는 제외했다.
+- singleflight stale-leader: `.\.venv312\Scripts\python.exe -m unittest -q tests.test_stage_foundations`; 결과 `7 tests PASS` (`0.127s`). deadline 뒤 replacement leader와 late leader cleanup을 확인했으며 cross-process dedupe는 제외했다.
+- process-shared cache: `.\.venv312\Scripts\python.exe -m unittest -q tests.test_shared_cache_contract`; 결과 `8 tests PASS` (`0.007s`). 동일 process instance 간 HIT만 검증했으며 cross-process backend는 제외했다.
+- launch manifest 실제 무입력 실행: `out/launch_packet_20260712_architecture_foundation/launch_readiness_manifest.json`은 `NOT_READY`, `runtime_started=false`, `writes_to_production=false`, `REVIEW-LOCKED`, `full_scan_approval=false`를 기록했다. required 10종이 모두 누락돼 actual preflight를 실행하지 않았다.
+- slang concurrent apply 명령: `.\.venv312\Scripts\python.exe -m unittest tests.test_slang_transaction -q`; 결과 `5 tests PASS` (`0.141s`). 같은 base bytes의 두 apply 중 하나만 `COMMITTED`, 하나는 stale-base `SlangTransactionError`이며 rollback/terminal-receipt crash는 제외했다.
+- StageBudget atomic writer: `.\.venv312\Scripts\python.exe -m unittest -q tests.test_build_stage_budget_receipt`; 결과 `1 test PASS` (`0.033s`). temp residue 없이 atomic receipt publish와 independent reader를 확인했다. 이는 shadow-only artifact writer이며 dedicated canary runtime은 시작하지 않았다.
+- slang rollback transaction: `.\.venv312\Scripts\python.exe -m unittest -q tests.test_slang_transaction tests.test_slang_governance tests.test_build_stage_budget_receipt tests.test_stage_foundations`; 결과 `22 tests PASS` (`0.846s`). bounded temp DB에서 apply/rollback intent·DB replace·terminal receipt crash reconciliation, 재시도, concurrent rollback single restore와 terminal receipt self-hash를 확인했다. proposal/approval/source-work artifact의 governance-to-apply exact binding과 production wiring은 제외했다.
+- slang governance-to-sidecar exact binding: `.\.venv312\Scripts\python.exe -m unittest -q tests.test_slang_transaction tests.test_slang_governance`; 결과 `19 tests PASS` (`1.113s`). 분리된 owner approval manifest의 proposal-file SHA, expert_main manifest complete/ready/delayed-writeback/path/hash/run, source pending entry SHA, authorization self-hash, transaction→external receipt gap recovery와 rollback terminal-gap 재시도를 확인했다. active production 및 `SlangDBManager.flush`는 사용하지 않았다.
+- 확장 비간섭 명령: `.\.venv312\Scripts\python.exe -m unittest -q tests.test_slang_transaction tests.test_slang_governance tests.test_build_stage_budget_receipt tests.test_stage_foundations`; 결과 `27 tests PASS` (`1.281s`). slang exact-binding과 StageBudget shadow receipt/local-control 범위를 함께 재확인했으며 production runtime은 시작하지 않았다.
+- StageBudget dedicated canary: `.\.venv312\Scripts\python.exe -m unittest -q tests.test_stage_budget_shadow_canary tests.test_build_stage_budget_receipt tests.test_stage_foundations`; 결과 `11 tests PASS` (`0.312s`). 이어서 `tools/run_stage_budget_shadow_canary.py` → `tools/read_stage_budget_shadow_canary.py`를 실행해 `out/stage_budget_shadow_canary_20260712/stage_budget_shadow_canary.json`의 `GO_STAGE_BUDGET_SHADOW_CANARY_ONLY`, `runtime_started=false`, `writes_to_production=false`, events `2`를 독립 재생했다. synthetic/no-runtime artifact이며 runtime wiring 근거가 아니다.
+- StageBudget provenance fail-close: 같은 selection을 확장한 결과 `12 tests PASS` (`0.335s`). logical-call SHA, limiter config SHA/deadline, cache namespace/response SHA 규칙, singleflight role, `PROCESS_LOCAL_THREADS_ONLY` scope가 없는 canary event를 거부하며 regenerated output의 independent reader도 events `2`를 재생했다.
+- StageBudget+slang 확장 비간섭: `.\.venv312\Scripts\python.exe -m unittest -q tests.test_stage_budget_shadow_canary tests.test_build_stage_budget_receipt tests.test_stage_foundations tests.test_slang_transaction tests.test_slang_governance`; 결과 `31 tests PASS` (`1.487s`). canary independent reader는 `GO_STAGE_BUDGET_SHADOW_CANARY`, events `2`, `runtime_started=false`, `writes_to_production=false`를 다시 확인했다.
+- stage-control absolute-deadline/receipt: `.\.venv312\Scripts\python.exe -m unittest -q tests.test_stage_foundations`; 결과 `9 tests PASS` (`0.162s`). actual/required wait와 deadline exhaustion, configured deny/disabled, leader failure fanout cleanup, follower timeout receipt, stale leader replacement을 same-process harness에서 확인했다. cross-process/global control과 runtime wiring은 제외했다.
+- StageBudget+slang+stage-control 확장: `.\.venv312\Scripts\python.exe -m unittest -q tests.test_stage_budget_shadow_canary tests.test_build_stage_budget_receipt tests.test_stage_foundations tests.test_slang_transaction tests.test_slang_governance`; 결과 `33 tests PASS` (`1.507s`). P0/P1 foundation의 no-runtime receipt·governance sidecar·same-process control 범위를 함께 재확인했으며 production runtime은 시작하지 않았다.
+- filesystem-local cross-process cache: `.\.venv312\Scripts\python.exe -m unittest -q tests.test_shared_cache_contract tests.test_stage_foundations`; 결과 `19 tests PASS` (`0.414s`). 별도 Python process HIT, read-only default, TTL expiry, degraded exclusion, self-hash poison fail-close를 `CROSS_PROCESS_FILE_SHADOW_ONLY` scope에서 확인했다. network/global cache와 runtime wiring은 제외했다.
+- cache+stage+slang 확장 비간섭: `.\.venv312\Scripts\python.exe -m unittest -q tests.test_shared_cache_contract tests.test_stage_budget_shadow_canary tests.test_build_stage_budget_receipt tests.test_stage_foundations tests.test_slang_transaction tests.test_slang_governance`; 결과 `43 tests PASS` (`1.680s`). filesystem-local cache, no-runtime StageBudget canary, same-process control, bounded slang sidecar를 함께 확인했으며 production runtime은 시작하지 않았다.
+- canonical StageSingleflightKey: `.\.venv312\Scripts\python.exe -m unittest -q tests.test_stage_foundations`; 결과 `10 tests PASS` (`0.173s`). mixed scope가 서로 다른 canonical key를 만들고, incomplete/uppercase hash를 fail-close하며 scoped receipt가 canonical key SHA를 기록하는지 확인했다. cross-process dedupe와 runtime wiring은 제외했다.
+- cache+StageBudget+canonical singleflight+slang 확장: `.\.venv312\Scripts\python.exe -m unittest -q tests.test_shared_cache_contract tests.test_stage_budget_shadow_canary tests.test_build_stage_budget_receipt tests.test_stage_foundations tests.test_slang_transaction tests.test_slang_governance`; 결과 `44 tests PASS` (`1.737s`). cross-process filesystem cache와 same-process canonical control을 함께 확인했으며 production runtime은 시작하지 않았다.
+- DecisionLedgerV2 cross-run/arm/scope binding: `.\.venv312\Scripts\python.exe -m unittest -q tests.test_decision_ledger_binding tests.test_decision_ledger_v2 tests.test_decision_ledger_v2_legacy_replay`; 결과 `13 tests PASS` (`19.535s`). run/pair/arm, RunSpec/scope/attempt ArtifactRef, index/checkpoint/replay digest의 independent readback과 arm self-hash/artifact/ledger mutation fail-close를 확인했다. P2 publication WAL과 active runtime은 변경하지 않았다.
+- DecisionLedgerV2+FramedWAL 확장: `.\.venv312\Scripts\python.exe -m unittest -q tests.test_decision_ledger_binding tests.test_decision_ledger_v2 tests.test_decision_ledger_v2_legacy_replay tests.test_framed_wal`; 결과 `18 tests PASS` (`20.833s`). binding sidecar와 legacy replay, torn/corruption/lock 회귀를 함께 확인했으며 P2 publication WAL과 active runtime은 변경하지 않았다.
+- launch manifest v2: `.\.venv312\Scripts\python.exe -m unittest -q tests.test_launch_readiness_manifest`; 결과 `3 tests PASS` (`0.118s`). required/replay name gap, duplicate path collision, self-hash tamper를 fail-close했다. 이어서 무입력 canonical manifest를 v2로 재생성했으며 `NOT_READY`, `source_backed_required=true`, `runtime_started=false`, `writes_to_production=false`, independent readback `GO_LAUNCH_MANIFEST_BOUND`다.
+- filesystem-local cross-process singleflight lease: `.\.venv312\Scripts\python.exe -m unittest -q tests.test_stage_foundations`; 결과 `12 tests PASS` (`0.686s`). child Python process follower timeout, stale lease takeover, old leader late release 차단과 poisoned lease self-hash fail-close를 확인했다. 결과 공유/network/global coordinator/runtime wiring은 제외했다.
+- stage-control/cache/launch 확장: `.\.venv312\Scripts\python.exe -m unittest -q tests.test_stage_foundations tests.test_shared_cache_contract tests.test_launch_readiness_manifest`; 결과 `25 tests PASS` (`1.090s`). filesystem lease/cache, same-process control, launch packet no-write boundary를 함께 확인했으며 production runtime은 시작하지 않았다.
+- M1 foundation acceptance selection: `.\.venv312\Scripts\python.exe -m unittest -q tests.test_framed_wal tests.test_decision_ledger_v2 tests.test_decision_ledger_v2_legacy_replay tests.test_decision_ledger_binding tests.test_stage_foundations tests.test_shared_cache_contract tests.test_stage_budget_shadow_canary tests.test_build_stage_budget_receipt tests.test_slang_governance tests.test_slang_transaction tests.test_launch_readiness_manifest tests.test_decision_call_tracing tests.test_decision_call_readback`; 결과 `82 tests PASS` (`24.578s`). full evidence/잔여는 `M1_FOUNDATION_ACCEPTANCE_AUDIT_KO_20260712.md`를 따른다. 이는 actual effect, runtime integration 또는 운영 승인의 증거가 아니다.
+- 독립 재감사 보정: launch reader exact-set/rehash bypass, file lease stale-delete, file cache expired-delete 경쟁 조건을 수정했다. 같은 명령을 재실행해 `85 tests PASS` (`24.247s`)를 확인했다. 추가 회귀는 rehash 후 required/replay ref 제거 `READY` 거부, stale follower가 replacement lease를 삭제하지 않음, expired reader가 fresh cache replacement를 삭제하지 않음이다. 범위는 shadow/no-write이며 `FOUNDATION_PARTIAL / REVIEW-LOCKED / full_scan_approval=false`를 유지한다.
+- shared-result singleflight: `.\.venv312\Scripts\python.exe -m unittest -q tests.test_shared_result_singleflight tests.test_stage_foundations tests.test_shared_cache_contract`; 결과 `29 tests PASS` (`1.637s`). child-process leader→parent follower cache re-read, duplicate leader 1회, follower timeout, late leader result discard, producer failure cleanup, disabled no-op, namespace/key mixed binding 거부를 확인했다. filesystem-local/`OFF-by-default` shadow contract이며 network/global coordinator, active runtime, actual effect 증거가 아니다.
+- 최신 M1 selection: `.\.venv312\Scripts\python.exe -m unittest -q tests.test_framed_wal tests.test_decision_ledger_v2 tests.test_decision_ledger_v2_legacy_replay tests.test_decision_ledger_binding tests.test_stage_foundations tests.test_shared_cache_contract tests.test_shared_result_singleflight tests.test_stage_budget_shadow_canary tests.test_build_stage_budget_receipt tests.test_slang_governance tests.test_slang_transaction tests.test_launch_readiness_manifest tests.test_decision_call_tracing tests.test_decision_call_readback`; 결과 `90 tests PASS` (`24.722s`). synthetic/bounded/no-write M1 foundation 범위만 재검증했으며 active runtime integration, source-backed actual packet, M2 effect evidence 및 운영 승인은 포함하지 않는다.
+- pipeline shadow observer: `.\.venv312\Scripts\python.exe -m unittest -q tests.test_pipeline_stage_shadow tests.test_agentic_pipeline_search_evidence tests.test_stage_foundations`; 결과 `23 tests PASS` (`1.799s`). explicit observer injection의 bound receipt, query/result hash-only 기록, observer failure/mutation/MCP error 비간섭, scope ArtifactRef SHA 결속을 확인했다. 독립 재감사는 초기 live-object mutation·scope-label 불결속 P1을 지적했고 deep copy·scope artifact SHA 보정 뒤 PASS였다.
+- 최신 M1 selection: `.\.venv312\Scripts\python.exe -m unittest -q tests.test_framed_wal tests.test_decision_ledger_v2 tests.test_decision_ledger_v2_legacy_replay tests.test_decision_ledger_binding tests.test_stage_foundations tests.test_shared_cache_contract tests.test_shared_result_singleflight tests.test_pipeline_stage_shadow tests.test_stage_budget_shadow_canary tests.test_build_stage_budget_receipt tests.test_slang_governance tests.test_slang_transaction tests.test_launch_readiness_manifest tests.test_decision_call_tracing tests.test_decision_call_readback tests.test_agentic_pipeline_search_evidence`; 결과 `100 tests PASS` (`26.297s`). synthetic/bounded/no-write M1 foundation 범위만 재검증했으며 fresh runtime, source-backed actual packet, M2 effect evidence 및 운영 승인은 포함하지 않는다.
+- 확장 비간섭 확인으로 `tests.test_agentic_pipeline_rework`를 실행했으나 `492` 중 `8 failures, 1 error`였다. 실패는 batch alias/title recovery와 `_correct_title_final(candidate_url=...)` monkeypatch signature이며 observer-focused selection에는 포함하지 않았다. 이 실행만으로 원인을 이번 변경으로 단정하지 않으며 M1 통과 근거로 사용하지 않는다.
+- replay-only pipeline canary: `tests.test_pipeline_stage_shadow_canary tests.test_pipeline_stage_shadow tests.test_stage_budget_shadow_canary`는 `12 tests PASS` (`2.445s`)다. canonical 실행 `tools/run_pipeline_stage_shadow_canary.py` → `tools/read_pipeline_stage_shadow_canary.py`는 `out/pipeline_stage_shadow_canary_20260712/pipeline_stage_shadow_canary.json`에서 `GO_PIPELINE_STAGE_SHADOW_REPLAY`, events `1`, `runtime_started=false`, `writes_to_production=false`를 독립 재생했다. 독립 감사 P1(CWD `out/` 접촉)은 temporary sandbox 보정 뒤 PASS다.
+- 최신 M1 selection: `.\.venv312\Scripts\python.exe -m unittest -q tests.test_framed_wal tests.test_decision_ledger_v2 tests.test_decision_ledger_v2_legacy_replay tests.test_decision_ledger_binding tests.test_stage_foundations tests.test_shared_cache_contract tests.test_shared_result_singleflight tests.test_pipeline_stage_shadow tests.test_pipeline_stage_shadow_canary tests.test_stage_budget_shadow_canary tests.test_build_stage_budget_receipt tests.test_slang_governance tests.test_slang_transaction tests.test_launch_readiness_manifest tests.test_decision_call_tracing tests.test_decision_call_readback tests.test_agentic_pipeline_search_evidence`; 결과 `103 tests PASS` (`27.518s`). synthetic/bounded/no-write M1 foundation 범위만 재검증했으며 fresh runtime, source-backed actual packet, M2 effect evidence 및 운영 승인은 포함하지 않는다.
+- DecisionLedgerV2 post-run mirror: `tests.test_decision_ledger_v2_mirror tests.test_decision_ledger_v2_mirror_canary tests.test_decision_ledger_v2_legacy_replay tests.test_decision_ledger_binding tests.test_decision_call_tracing` 결과 `12 tests PASS` (`1.651s`). canonical `tools/run_decision_ledger_v2_mirror_canary.py` → `tools/read_decision_ledger_v2_mirror.py`는 synthetic legacy 4 frame을 isolated V2 mirror로 `GO_DECISION_LEDGER_V2_POSTRUN_MIRROR` 재생했다. 독립 감사 P1(source lock, output overlap, binding cross-check, malformed ref)은 temporary clone/disjoint root/strict cross-binding/typed error 보정 뒤 PASS다.
+- 최신 M1 selection: `.\.venv312\Scripts\python.exe -m unittest -q tests.test_framed_wal tests.test_decision_ledger_v2 tests.test_decision_ledger_v2_legacy_replay tests.test_decision_ledger_v2_mirror tests.test_decision_ledger_v2_mirror_canary tests.test_decision_ledger_binding tests.test_stage_foundations tests.test_shared_cache_contract tests.test_shared_result_singleflight tests.test_pipeline_stage_shadow tests.test_pipeline_stage_shadow_canary tests.test_stage_budget_shadow_canary tests.test_build_stage_budget_receipt tests.test_slang_governance tests.test_slang_transaction tests.test_launch_readiness_manifest tests.test_decision_call_tracing tests.test_decision_call_readback tests.test_agentic_pipeline_search_evidence`; 결과 `107 tests PASS` (`27.803s`). synthetic/bounded/no-write M1 foundation 범위만 재검증했으며 fresh runtime, source-backed actual packet, M2 effect evidence 및 운영 승인은 포함하지 않는다.
+
+## 2026-07-12 P3 v20 분모 정책·P4 v21 execution envelope 정적 계약 검증
+
+- P3 v20 RunSpec self hash: `0c6f96ec37a591356589a339699066f0d412e07322d6e8b2b5e6f0749ff36f21`; P3 v18 legacy v2는 호환 readback을 유지한다.
+- actual policy v3는 `top_label_accuracy_denominator`를 명시하고 policy payload·`policy_sha256`에 결속한다. actual pre-registered policy에 v2 우회는 허용하지 않는다.
+- P4 v21 RunSpec self hash: `ebbdec02f9db4c8801f403a39515a589847ede2c7683e0fbd76e3c0a5bd4e406`; validator와 comparison readback이 `GO_P4_SHADOW_CONTRACT_FOUNDATION_ONLY`를 확인했다.
+- P4 reader는 RunSpec·arm·scope/run/index/post ID와 `DecisionCostTrace`를 대조해 batch envelope를 재생하고 full-expert comparable 행의 per-post p50/p95 paired bootstrap CI만 계산한다. `REFERENCE_COPY_COST_ONLY` 행은 production savings·latency 개선 수치에서 제외한다.
+- 집중 unittest `82/82 PASS`, 변경 Python `py_compile PASS`, `git diff --check PASS`다. 이는 계약 회귀이며 actual 성능 수치가 아니다.
+- actual DEV/CAL/FROZEN·fresh BEFORE/AFTER가 없으므로 metrics는 `null/NOT_ESTIMABLE`, `runtime_validation=NOT_RUN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, Goal `ACTIVE / NOT_COMPLETE`다.
+
+## 2026-07-12 P2 v8 / P3 v18 / P4 v19 exact recovered-arm witness 검증
+
+- 정본 RunSpec self hash:
+  - P2 v8: `f6a74648054a8ae0216746501280223f6bcb4a6875d6c81225ef2d4e4d563381`
+  - P3 v18: `ca26d8d39485171e5d8a0673fabbf6353aca91389413a834eea4d4827f48e64b`
+  - P4 v19: `3161c96d49b1c9889c6aebc76c6068ad9e44321accbf9633219c8ac2d870ead3`
+- recovered arm은 self-hashed witness가 source manifest/result/checkpoint/pending·summary·recovered output·attempt claim·WAL·single-attempt ledger·AFTER route를 독립 재생할 때만 `GO_EXACT_BOUND_WITNESS_REPLAY`로 수용된다.
+- witness 부재, partial checkpoint, self-rehash source 변경, multi-attempt ledger, WAL/result/pending/summary/output/claim 변경은 모두 fail-close한다.
+- 복구 도구는 exact GO에서만 witness-first / recovered-manifest-pointer-last로 원자 게시하고, NO-GO·예외에서는 stale target을 제거한다. 기존 비측정 복구 호출은 유지된다.
+- unittest: recovery/paired `71/71 PASS` (`27.044s` 재검증), P2/P3 `58/58 PASS` (`56.941s`), P4 `33/33 PASS` (`428.649s`), 서로 다른 묶음 합계 `162/162 PASS`.
+- P2 v8 status `GO`, P3 v18 `GO_P3_CONTRACT_FOUNDATION_ONLY`, P4 v19 `GO_P4_SHADOW_CONTRACT_FOUNDATION_ONLY`; 관련 `py_compile` PASS다.
+- actual DEV/CAL/FROZEN·fresh paired runtime·실제 강제 중단 witness는 아직 없다. 실제 정확도·비용은 `null/NOT_ESTIMABLE`, `runtime_validation=NOT_RUN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`다.
+- 전체 Goal은 사용자 재개 뒤 `ACTIVE / NOT_COMPLETE`다. active production 자원 대기는 runtime 하위 게이트만 막는다.
+- 정본: `out/publication_exact_once_harness_20260711/v8/`, `out/candidate_set_calibration_shadow_harness_20260711/v18/`, `out/selective_compute_shadow_harness_20260712/v19/`.
+
+## 2026-07-12 이전 P2 v7 / P3 v16 / P4 v16 actual preflight·replay bound runner 검증
+
+- 불변 계보와 RunSpec self hash:
+  - P2 v7: `4d20c27e4d198759a4d88b5a64e3770950fba35ae6055cf0b85ad5cfff8ed393`
+  - P3 v16: `d60c8f805ca4d5429f2e26a9c63fa44a1e63cc5d6100a89d33ab09397bb6381f`
+  - P4 v16: `4903d7844c0a34e863d3ee2ef1116d04188236294017ca4ac85cc4e852098837`
+- readiness v2 manifest self hash: `540472ba9c93b8c066a18520835c7b50570a7be19259e68cf3b32548bb4da61f`; 현재 ready `0/18`, actual policy 미등록, `NO_GO_ACTUAL_DATASET_NOT_READY`다.
+- actual 정책 파일 path·raw SHA·bytes와 의미 policy SHA가 함께 source replay되며, self-rehash한 다른 정책 참조는 거부한다.
+- `actual-readback` CLI에서 수동 RunSpec/source/metric SHA 인자를 제거했다. 정책·P1·라벨 원장·split/source manifest·네 JSONL에서 결속값을 유도한다.
+- split은 post ID 외에도 truth/candidate ID/content/source/label provenance 전체를 readiness와 대조하고, producer source digest는 필수 source manifest raw SHA와 같아야 한다.
+- 각 frozen source payload는 최상위 `ArtifactRef`로 최종 재판독하고 내부 `schema_version/source_run_id/example_id/post_id`를 manifest 행과 대조한다. payload 행 바꿔치기와 평가 중 바이트 변경을 거부한다.
+- `actual-preflight` missing-packet은 exit `2`, `NO_GO_ACTUAL_PREFLIGHT`, `writes_performed=false`, `runtime_started=false`로 확인했다. 성공 경로도 무쓰기이며 동적 source payload SHA/bytes를 보고한다.
+- replay 6종은 역할별 확장자와 실제 parser, frozen coverage·post identity·split/policy 결속을 통과해야 readback RunSpec을 만들 수 있다. `{}` calibration artifact 공격을 거부했다.
+- 실제 policy 숫자는 저장소 baseline으로 정당화되지 않아 JSON을 만들지 않았다. 안전 우선 A·제한적 비열화 B와 alpha 0.05 CP 최소 표본 산식을 `P3_ACTUAL_POLICY_DECISION_KO_20260712.md`에 남겼다.
+- `11663521`, `11685994`, `11700470`은 작품 사건이지만 단일 작품 ID 미확정이므로 NIL/CANDIDATE 승격 없이 `UNJUDGED/ABSTAIN`을 유지했다.
+- 집중 시험: P3 `54/54 PASS` (`48.439s`), P4 `33/33 PASS`, 합계 `87/87 PASS`.
+- P3/P4 v16 정본 writer·validator와 변경 Python 파일 `py_compile`을 통과했다. 실제 DEV/CAL/FROZEN과 fresh pair가 없어 실제 정확도·비용은 `null/NOT_ESTIMABLE`이다.
+- 판정: `runtime_validation=NOT_RUN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE_NOT_COMPLETE`.
+- 후속 Goal 상태: 과거 `BLOCKED_HANDOFF / NOT_COMPLETE` 뒤 사용자가 재개했다. 현재 전체 Goal은 `ACTIVE / NOT_COMPLETE`이고 정책·자료·fresh runtime 대기는 해당 하위 게이트만 막는다. 완료·성능 GO·운영 승인이 아니다.
+- 정본: `out/publication_exact_once_harness_20260711/v7/`, `out/candidate_set_calibration_shadow_harness_20260711/v16/`, `out/selective_compute_shadow_harness_20260712/v16/`.
+
+## 2026-07-12 이전 P2 v7 / P3 v12 / P4 v12 기반 검증
+
+- 불변 계보와 RunSpec self hash:
+  - P2 v7: `4d20c27e4d198759a4d88b5a64e3770950fba35ae6055cf0b85ad5cfff8ed393`
+  - P3 v12: `f7f8cb5934988e722c5b1fff8a961e8184b109956f5fc78fac0f7cdabb6cc041`
+  - P4 v12: `c212e6757f56083c77e353b9bb219e9f8ea047c0a7ee17ce7085cf8e0d0029f8`
+- P3 actual-readback v2는 외부 예상 행 목록·producer·AFTER·baseline을 독립 재판독하고 중복 JSON key, source digest, 행 coverage·순서, 확률 질량, 의미 영수증 공격을 거부했다.
+- 준비도 validator는 P1 RunSpec·비교표·P1 결속 라벨 원장에서 18행을 다시 만들어 blocker 삭제·다른 라벨 원장 삽입·재해시 READY를 거부했다. 현재 ready `0/18`, gate `NO_GO_ACTUAL_DATASET_NOT_READY`다.
+- actual GO는 같은 행의 accuracy 하한과 Brier·log loss·ECE·선택 위험·AURC 상한이 사전 정책 경계를 모두 통과해야 한다. 정책 판정 코드는 구현됐지만 실제 CI 출력은 없다.
+- P4는 P3/P4 P1·P2 부모와 P1/P3 라벨 원장을 exact path/bytes/SHA로 교차 검증해 서로 다른 유효 산출물 혼합을 거부했다.
+- 현재 변경 집중 시험: P3 `42/42 PASS` (`47.117s`), P4 `33/33 PASS` (`425.827s`), 합계 `75/75 PASS`.
+- P3/P4 v12 저장 RunSpec·comparison JSON·Markdown 정본 validator와 변경 Python 파일 `py_compile`을 통과했다.
+- 실제 DEV/CAL/FROZEN 자료와 fresh BEFORE/AFTER가 없으므로 정확도·비용 수치는 `null/NOT_ESTIMABLE`이다. `runtime_validation=NOT_RUN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE_NOT_COMPLETE`다.
+- 정본: `out/publication_exact_once_harness_20260711/v7/`, `out/candidate_set_calibration_shadow_harness_20260711/v12/`, `out/selective_compute_shadow_harness_20260712/v12/`.
+
+## 2026-07-12 이전 P2 v7 / P3 v10 / P4 v10 기반 검증
+
+- 불변 계보와 RunSpec self hash:
+  - P2 v7: `4d20c27e4d198759a4d88b5a64e3770950fba35ae6055cf0b85ad5cfff8ed393`
+  - P3 v10: `77e62836f9c115b2eed9031ba59cbdc9279232abb596aa095d1f08075be77105`
+  - P4 v10: `34e9331ff071f3fbde2a0b6e49faaee1ef0f67ced59e4c3089bfae0bdaa6151d`
+- 원장 readback·paired·fresh/기존 recovery: `113/113 PASS`.
+- P3 actual reader·계약·하네스·early route/runtime: `60/60 PASS`.
+- instrumentation·publication·input/comment: `243/243 PASS`.
+- P4 계약·하네스: `30/30 PASS` (`167.505s`).
+- 최종 관련 시험 합계: `446/446 PASS`.
+- P2/P3/P4 validator, 변경 Python 파일 `py_compile`, 현재 문서 경로·Markdown fence, `git diff --check`를 통과했다. 줄바꿈 형식 경고만 있었고 공백 오류는 없었다.
+- P4 actual source readback 상태는 `IMPLEMENTED_FOUNDATION_NO_ACTUAL_PAIR`, instrumentation은 `IMPLEMENTED_READER_ROUTER_PAIRED_HARNESS_NOT_RUNTIME_EXECUTED`다.
+- reference-copy 0-call은 `REFERENCE_COPY_COST_ONLY`이며 `production_savings_kpi_eligible=false`다.
+- actual 정확도·호출 감소·처리시간·금액은 모두 `null/NOT_ESTIMABLE`이다. 합성 수치와 저장 분포를 실측값으로 승격하지 않았다.
+- 실제 fresh BEFORE/AFTER와 강제 중단·재시작은 실행하지 않았다. `runtime_validation=NOT_RUN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE_NOT_COMPLETE`다.
+- 정본: `out/publication_exact_once_harness_20260711/v7/`, `out/candidate_set_calibration_shadow_harness_20260711/v10/`, `out/selective_compute_shadow_harness_20260712/v10/`.
+
+## 2026-07-12 P4 v6 physical-call ledger foundation 검증
+
+- 구현·측정 집중 묶음: `142/142 PASS`.
+  - measurement env 비간섭, fresh WAL preflight, REQUIRED manifest gate
+  - ledger scope/row/retry/terminal/seal/abort/link 및 동시성
+  - empty fallback와 reason-review known fallback 차단
+  - usage/model provenance, stream timeout, publication noninterference
+- P4 계약·하네스 최신 v6 재검증: `30/30 PASS` (`183.093s`).
+- 최신 영향 범위 전체 회귀 묶음: `224/224 PASS` (`45.211s`).
+- 독립 Sol/Terra 재감사: 병렬 초기 manifest gate 누락과 reason-review non-empty fallback 성공 세탁을 수정한 뒤 확정 P0/P1 `0`.
+- 불변 계보:
+  - P2 v6 RunSpec self hash `05a4b9073a6d361dc2f1e2b59aa55aaefdd44327df39b51609f7a6285aab3ecc`
+  - P3 v7 RunSpec self hash `5cfb3a3fc266856ed0a035d838452ffd4dd0ac33395fe1e9753110f4af20c0c6`
+  - P4 v6 RunSpec self hash `aa8c641a684baaec8e513daa1fd75a23d0d88bcabe0f3a68f5508e0e7ccfaf26`
+- P4 v6 저장본/합성 결과: Golden18 full-expert `18`, cheap 후보 `0`, public/CandidateSet 불변 `18/18`, 적대 공격 false cheap `0`, actual cost delta `null/NOT_ESTIMABLE`.
+- 새 provider/MCP runtime은 실행하지 않았다. `runtime_validation=NOT_RUN`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`다.
+- fresh 중단 복구는 현재 `NOT_IMPLEMENTED_FAIL_CLOSED`; 복구가 거짓 GO를 만들지는 않지만 실제 paired run의 재시작 지원 증거도 아니다.
+- active production 읽기 전용 스냅샷 (`2026-07-12 04:39:06 KST`): run `20260711_113712_379597`, input/completed/flushed/pending/failed `104502/1825/1823/2/0`, next save `1824`, requested/effective `16/16`, dashboard ON, search 포함 non-light, `ordered_flush_blocked=true`, `partial_flush_gap=true`, `large_run_complete=false`; runner PID `59844/92124`는 살아 있다. search shard `16/0`과 VLM/OCR ready는 `04:33:23`에 마지막 별도 확인했다. 이동 수치이며 승인 근거가 아니다.
+- 정본: `out/selective_compute_shadow_harness_20260712/v6/`.
+
+## 이전 P4 선택적 비용 라우팅 그림자 v3 검증
+
+- 부모 정본: P2 v4 self SHA `9b4fc8f2168d2d6939bf00cecd980e6ad722d19deb350485fbaa2ea4bc45fc7d`; P3 v4 self SHA `43ff02e6495122c86a2a9deeff91db487277d66a0fea69fea2d9a44b87e1fd51`.
+- P4 RunSpec/비교: `out/selective_compute_shadow_harness_20260712/v3/run_spec.json`, `comparison.json/.md`.
+- P4 self SHA `956f63e8baf826b4e1100ced4da65396a312988918e90af1c8a49e6b599ffc0d`; RunSpec file SHA `83ebf08409d82783c8805266d0d391c963b41a771c9dc4c445c36ead3a152a64`.
+- 비교 JSON SHA `fc5a34b3b0a87711bae161783893324f50450bca6a833bb733a6b1f875c113b3`; Markdown SHA `3211ec98868b70fec9dd23f6e378b326190d6a356389857f7d9755128a6e3708`.
+- Golden18: `FULL_EXPERT_REQUIRED 18 / CHEAP_RULE_ELIGIBLE 0`, public/CandidateSet unchanged `18/18`.
+- actual 지표: safe auto coverage `null`, expert calls/post `null`, call avoidance `null`, after wall time `null`; actual cost delta `NOT_ESTIMABLE`.
+- actual escalation `1.0`은 `OBSERVED_SHADOW_ROUTE_DISTRIBUTION`; 비용 절감이나 품질 승인이 아니다.
+- partial sidecar 진단: expert prompt `191`, VLM `14`, token `2,269,227`, wall p50 `683,200ms`, p95 `1,326,100ms`; canonical 비용 receipt가 아니므로 headline 수치 제외.
+- 합성 4행: before `16`, after `8`, avoided `8`, avoidance `0.5`; `SYNTHETIC_CONTRACT_ONLY_NOT_ACTUAL_SAVINGS`. 합성 escalation `0.5` 상태도 `SYNTHETIC_CONTRACT_ONLY`다.
+- 적대 계약: `20/20 PASS`, false cheap `0`; actual source readback `NOT_IMPLEMENTED_FAIL_CLOSED`.
+- focused: `python -m unittest tests.test_selective_compute_shadow_contract tests.test_selective_compute_shadow_harness -v` → `30/30 OK`.
+- publication: `python -m unittest tests.test_publication_decision_commit -v` → `33/33 OK`.
+- 영향 회귀 1: publication/P2/P3/input/recovery/independent-plan 7개 모듈 → `168/168 OK`.
+- 영향 회귀 2: P1 CandidateSet/NIL·generation snapshot/harness·stage receipt·producer completion 6개 모듈 → `94/94 OK`.
+- `py_compile`: expert_main/publication/P3/P4 harness·contract·tests → `PASS`.
+- implementation-set adversarial: `future_runtime_instrumentation` ref를 제거하고 implementation/self hash를 모두 다시 계산한 RunSpec도 `P4 implementation contract mismatch`로 거부.
+- artifact readback: P4 v3 정식 `validate_run_spec` + `validate_comparison` → `PASS`; parent P3 self SHA `43ff02e6...fd51`, overall gate 일치.
+- 문서 무결성: 지정 경로 존재, 주요 Markdown fence 짝수, 지정 변경 `git diff --check` → `PASS`; 독립 문서 재감사 blocker `0`.
+- active production 읽기 전용 스냅샷 (`2026-07-12 02:36:19 KST`): run `20260711_113712_379597`, input/completed/flushed/pending/failed `104502/1623/1612/11/0`, next save `1613`, requested/effective `16/16`, dashboard `ok=true` pid `25044`, search healthy/failure `16/0` non-light, VLM/OCR ready, `ordered_flush_blocked=true`, `large_run_complete=false`. 이동 중인 수치이며 P4 runtime·비용·정확도·승인 근거가 아니다.
+- gate: `GO_P4_SHADOW_CONTRACT_FOUNDATION_ONLY`; runtime `NOT_RUN`; semantic `REVIEW-LOCKED`; `full_scan_approval=false`; goal `ACTIVE / NOT_COMPLETE`.
+
+## 2026-07-11 P3 정확도 퍼센트 계약 기반 v1 검증
+
+- RunSpec/비교: `out/candidate_set_calibration_shadow_harness_20260711/v1/run_spec.json`, `comparison.json/.md`.
+- 기능: `Y={candidate_id,NIL}`, ABSTAIN 행동 분리, DEV/CAL/FROZEN 분할 누수 차단, 보정 학습 영수증, score/artifact/policy/assignment/base 재생, 확률 정수 질량, 검색 차단 무수치, Clopper–Pearson 경계, 보고서 승인 경계 검증.
+- Golden18: row `18`, generation `UNKNOWN`, candidate-set recall `NOT_EVALUABLE`, 실제 headline metric 전부 `null`, public result `18/18` 불변.
+- 개선 전·후: 기존 무결속 `CALIBRATED_SHADOW` 숫자 claim `1`; P3 권위 sidecar 수용 `0`.
+- 합성 계산식 4행: top-label accuracy `0.5→1.0`, Brier `0.6067765→0.0044985`, 자연로그 손실 `0.8132622→0.0485875`, ECE `0.231059→0.047426`; 실제 성능 증거가 아니며 `conversion_allowed=false`.
+- 합성 공격: `20/20 PASS`, false GO `0`.
+- focused tests: `python -m unittest tests.test_candidate_set_calibration_shadow_contract tests.test_candidate_set_calibration_shadow_harness -v` → contract `15` + harness `5` = `20/20 OK`.
+- 영향 범위 회귀: P1 검색·후보·공개 14개 모듈 `532/532 OK`; P2 publication/recovery/input 핵심 4개 모듈 `126/126 OK`; P3 변경 파일 `py_compile PASS`.
+- 수치 경계: Clopper–Pearson `(0/10) upper=0.3084971078187607`, `(5/10)=(0.18708602844739863,0.8129139715526013)`, one-sided `(10/10) lower=0.7411344491069476`; `0/0=(null,null)`.
+- Sol 재공격: time-varying Mapping의 metric 세탁은 원본 accuracy `0.0` 유지, retrieval blocker 세탁은 `NOT_EVALUABLE_RETRIEVAL_BLOCKED`와 metric 전부 null, 승인 위조 writer는 `ValueError`와 파일 미생성으로 차단.
+- actual 경계: 합성 정책 actual 주장 `NO_GO_POLICY_SCOPE_MISMATCH`; 영수증 부재 `NO_GO_ACTUAL_EVIDENCE_RECEIPT_MISSING`; 영수증이 있어도 file bytes/coverage/payload readback 전 `NO_GO_ACTUAL_ARTIFACT_READBACK_NOT_IMPLEMENTED`와 지표 전부 null.
+- RunSpec self SHA `21c57f34d5dd71f75a84b37ff5f10c92fb5f53ac966fa9a940e6ef8ed6c2d650`; file SHA `5d359c2ba5c6e613c3b3d0483517abc5557d8f3fa0d68fa2b2b07736d56d4059`.
+- 비교 JSON SHA `68379afe0a7289dcfcde0d02031a4aa3968eef6f6ac9a85192c8dcf2bb7a4ae3`; Markdown SHA `05ac6bad98432cfac6d859dc3b2541a427250b85104b2b86d052d90a5dbc5f11`.
+- 오케스트레이션: Sol/Terra/Luna의 코드 근거를 본 에이전트가 테스트로 재검증했다. Fable/Opus는 고정 ACK 전달 시험에도 일반 응답을 반환해 근거에서 제외했다.
+- active production 읽기 전용 스냅샷 (`2026-07-12 00:55 KST`): input/completed/flushed/pending/failed `104502/1445/1431/14/0`, next save `1432`, requested/effective `16/16`, search healthy/failure `16/0`, VLM/OCR ready, dashboard health `ok=true` pid `25044`, `ordered_flush_blocked=true`, `large_run_complete=false`. 이동 중인 수치이며 P3 runtime·정확도·승인 근거가 아니다.
+- gate: `GO_P3_CONTRACT_FOUNDATION_ONLY`; actual dataset `NOT_AVAILABLE`; artifact readback `NOT_IMPLEMENTED_FAIL_CLOSED`; full interval protocol `INCOMPLETE`; runtime `NOT_RUN`; semantic `REVIEW-LOCKED`; `full_scan_approval=false`; goal `ACTIVE / NOT_COMPLETE`.
+
+## 2026-07-11 P2 최종 공개 판정 exact-once v2 검증
+
+- RunSpec/비교: `out/publication_exact_once_harness_20260711/v2/run_spec.json`, `comparison.json/.md`.
+- 기능: scope/input/order/config/release 결속, 최초 기록자 우선 WAL, 같은 재시도 무쓰기 재생, 상충 판정 거부, 미완료 꼬리 감사 복구, 엄격한 terminal/provenance 복구 판정.
+- Golden18: 개선 전 유효 commit `0`, 개선 후 `18`, 신규 `18`, journal line `18`, restart replay no-op `18`.
+- 비간섭: 공개 작품명·주소 `18/18`, 전체 결과 행 `18/18` 불변; 결과 `HOLD 15 / PUBLISH 3`.
+- 합성 공격: 직접·중첩 공개 누출, scope/index/post membership, 위조 receipt, ERROR_HOLD 분리 신호, duplicate/missing/mixed scope, 16-way 경쟁, 미완료 tail 등 `21/21 PASS`, false GO `0`.
+- tests: P2 집중 묶음 `169/169 OK`; publication commit `33/33`; recovery `36/36`; P1 검색·후보·공개 영향 범위 14개 모듈 `532/532 OK`.
+- 개발 성능 probe: 증분 WAL 800행 `16.042초`; 이전 구조는 800행에서 60초 초과. 정식 운영 성능 시험 수치가 아니라 `O(n²)` 병목 제거 확인용이다.
+- RunSpec self SHA `391bfea522b8a5dce263e34322916f556762b7d052e9d0c025123ea11ff14c78`; file SHA `944513d1cdd8ff1768ddf9937750888799f6b6f9512ddc9c1214eae6c00cc908`.
+- 저장본·합성 gate `GO`; 실제 production runtime `NOT_RUN`; semantic `REVIEW-LOCKED`; `full_scan_approval=false`; goal `ACTIVE / NOT_COMPLETE`.
+- active production 읽기 전용 스냅샷 (`2026-07-11 23:18 KST`): input/completed/flushed/pending/failed `104502/1313/1302/11/0`, next save `1303`, requested/effective parallel `16/16`, dashboard health `ok=true`, VLM/OCR ready, `ordered_flush_blocked=true`, `large_run_complete=false`. 이동 중인 상태이며 P2 runtime·정확도·승인 근거가 아니다.
+- 현재 진행 중 production은 변경 전 코드로 시작했으며 중지·재시작·주입하지 않았다.
+
+## 2026-07-11 P1 검색·fetch 완료 증명 v6 검증
+
+- P1 v8 RunSpec/비교: `out/candidate_set_nil_shadow_harness_20260711/v8/run_spec.json`, `comparison.json/.md`.
+- Producer v6 RunSpec/비교: `out/candidate_generation_completeness_harness_20260711/v6/run_spec.json`, `comparison.json/.md`.
+- 구현: `CandidateProducerPlan/Receipt/GenerationProof` exact-field·SHA·canonical search+fetch·plan/receipt multiset 검증, central search/fetch predeclare, explicit completion, CandidateSet canonical replay.
+- 합성 정상: 사전 고정 정상 search+fetch `COMPLETE 1`.
+- 합성 fail-close: cache origin 미결합·missing fetch receipt·degraded/오류·unfinished plan `UNKNOWN 4`; raw `11→10` 손실 `TRUNCATED 1`; false COMPLETE `0`.
+- 공격 경계: explicit completion 누락, partial engine/generic error/blocked/malformed search, non-object MCP 응답, snippet/restricted fetch fallback·nested fallback source, posthoc direct plan, 빈 required producer·required set 축소, raw count underreport를 `UNKNOWN/TRUNCATED`로 닫았다.
+- 의미 경계: `COMPLETE`는 bounded plan 완료이며 웹 전체 열거·정확도·실제 runtime 완료가 아니다.
+- Golden18: 새 producer receipt가 없어 실제 `UNKNOWN`, candidate-set recall `NOT_EVALUABLE`; public title/URL/decision `18/18` 불변; probability 전부 `null`.
+- tests: producer/contract/CandidateSet/harness 집중 `62/62`; 아래 14개 모듈의 최종 영향 범위 묶음 `529/529 OK`; 변경 구현·시험·하네스 py_compile `PASS`.
+- 재현 명령: `.\.venv312\Scripts\python.exe -m unittest tests.test_candidate_producer_completion tests.test_candidate_generation_snapshot tests.test_candidate_stage_receipts tests.test_candidate_set_shadow_contract tests.test_candidate_set_nil_shadow_harness tests.test_candidate_generation_completeness_harness tests.test_completed_source_candidate_audit tests.test_final_semantic_reread_gate tests.test_search_recovery_contract tests.test_build_search_recovery_composite_gate tests.test_audit_search_recovery_overlay tests.test_publication_contract_convergence_audit tests.test_expert_main_comment_metadata tests.test_title_lead_search_inferred_guard`.
+- artifact integrity: P1 v8 자체 SHA `5b36fe5de439eb37d358b5a0e8185cdd61f610760676623086d92207abac16a9`; producer v6 자체 SHA `db83ee7fa01964141cb00376a032940efafeb728630c49023dd69cda4286c02b`.
+- active production read-only snapshot (`2026-07-11 20:24:31 KST`): input/completed/flushed/pending/failed `104502/979/964/15/0`, parallel `16/16`, search healthy/failure `16/0` non-light, VLM/OCR ready, dashboard root HTTP `200`, `/api/health ok=true`, `large_run_complete=false`, `ordered_flush_blocked=true`. 이동 중인 상태이며 P1 runtime·정확도·승인 근거가 아니다. process/result/checkpoint/pending/dashboard/endpoint/slang DB는 수정·중지·재시작하지 않았다.
+- runtime `NOT_RUN`; wiring `IMPLEMENTED_NOT_RUNTIME_VALIDATED`; semantic `REVIEW-LOCKED`; production `full_scan_approval=false`; goal `ACTIVE / NOT_COMPLETE`.
+- 독립 오케스트레이션: Sol은 반복 공격 감사에서 completion 추정·cache·posthoc plan·부분 검색 실패·fetch fallback·generic error·required set 축소를 찾아 HOLD했고, 각 수정 후 최종 `GO / 62/62 PASS`로 전환했다. Terra는 최종 허위 COMPLETE를 찾지 못했고 TRUNCATED 우선순위가 CandidateSet UNKNOWN으로 닫히는 진단 caveat를 남겼다. Luna는 P3 보정·분할·신뢰구간 설계를 검토했다. Fable·Opus는 명시적 재호출에도 과제별 결과 대신 일반 안내를 반환해 근거에서 제외했다.
+
+## 2026-07-11 P1 후보 생성 잘림·전문가 단계 영수증 v4 검증 (이전 단계)
+
+- P1 v6 RunSpec: `out/candidate_set_nil_shadow_harness_20260711/v6/run_spec.json`.
+- P1 v6 비교: `out/candidate_set_nil_shadow_harness_20260711/v6/comparison.json/.md`.
+- completeness v4 RunSpec: `out/candidate_generation_completeness_harness_20260711/v4/run_spec.json`.
+- completeness v4 비교: `out/candidate_generation_completeness_harness_20260711/v4/comparison.json/.md`.
+- parent chain: P0 v5 `GO` → P1 v6 `GO` → completeness v4 `GO`, baseline row/order/set `18/18 GO`.
+- P1 structure: candidate integrity/public noninterference `18/18`, candidate truth observation `9/9`, NIL ledger rows with common NIL `6/6`, UNJUDGED `3`; 정확도·재현율 검사가 아님.
+- local completeness actual: Golden18 `COMPLETE` claim `0`, public contract `18/18` 불변, candidate-set recall `NOT_EVALUABLE`.
+- title-stage synthetic: unique7 `TRUNCATED 7→6`, exact6 `UNKNOWN`, raw7/unique6 `UNKNOWN`, same normalized title/different URL-role `UNKNOWN unique1`.
+- serializer synthetic: unique25 `TRUNCATED 25→24`, exact24 `UNKNOWN`, raw25/unique24 `UNKNOWN`.
+- compatibility: 일곱 합성 사례 모두 개선 전과 같은 retained items/order, `7/7`.
+- stage-local synthetic: Gatekeeper 1·Decoder 1·Verifier 2·Arbiter 3개 cap+1 `7/7 TRUNCATED`; 정확히 cap·cap 밖 중복은 `UNKNOWN`; 경계 오탐 `0`; 유지 출력 `9/9`; CandidateSet 상태 영향 `NONE_DIAGNOSTIC_ONLY`.
+- strict contract: stage/producer/cap/occurrence exact enum, `COMPLETE`·임의 필드·잘못된 수·metadata hash 변조를 거부하고 후보 원문은 새 영수증에 노출하지 않는다.
+- tests: 집중 계약·하네스 `71 tests OK`; 영향 모듈 묶음 `518 tests OK`.
+- broader test: `554 tests` 중 `552 pass + red 2`. `test_gallery_homage_title_abbreviation_is_preserved_as_candidate`, `test_registry_anchor_only_medium_is_serialized_in_final_output_alias_sources`는 `tmp07/arch_i8_full_unittest_20260711.log`의 06:00:46 KST 변경 전 로그에 동일 이름·동일 단언으로 존재하며 recorder no-op 재실행에서도 그대로 실패했다. 이번 변경 비인과 baseline debt로 남기고 전체 초록으로 간주하지 않는다.
+- 기존 full red cluster: 동일 `8F+1E`도 이번 변경 전 로그와 title finalizer 호출 0회로 분리된 baseline debt다.
+- orchestration: Sol ultra의 실제 후보 손실 경계 감사, Terra high의 정확한 cap wiring, Luna medium의 diagnostic-only/non-composition 판정을 반영했다. Fable high와 Opus ultra는 모델 override가 정상 적용됐지만 반복 전달에도 과제 본문 대신 일반 메타 안내만 반환해 근거에서 제외했다.
+- active production read-only snapshot (`2026-07-11 19:02:04 KST`): `104502/790/779/11/0`, parallel `16/16`, search `16/0` non-light, VLM/OCR ready, dashboard root 및 `/api/health` HTTP `200`/health `ok=true`, `large_run_complete=false`, `ordered_flush_blocked=true`; 이동 중인 상태이며 승인 근거가 아님.
+- runtime `NOT_RUN`; candidate-set recall `NOT_EVALUABLE`; probability `NOT_AVAILABLE_UNCALIBRATED`; semantic `REVIEW-LOCKED`; production `full_scan_approval=false`; goal `ACTIVE / NOT_COMPLETE`.
+- Git durability: 신규 module/harness/tests/v6/v4 artifacts는 아직 untracked이므로 clean-clone/CI 재현성은 커밋 전까지 미확정.
+
+## 2026-07-11 P1 여러 후보·작품 없음 그림자 하네스 v3 검증
+
+- 정본 RunSpec: `out/candidate_set_nil_shadow_harness_20260711/v3/run_spec.json`.
+- 정본 비교: `out/candidate_set_nil_shadow_harness_20260711/v3/before_after_comparison.json/.md`.
+- parent: P0 v5 full validator `GO`, baseline row `18`, runtime `false`.
+- source binding: P0 parent·Golden18 결과·expected audit·label ledger·현재 P1 harness/candidate shadow/candidate audit SHA 결속.
+- post contract: row/order/set `18/18 GO`, missing/extra/duplicate `0/0/0`.
+- labels: `CANDIDATE 9 / NIL 6 / UNJUDGED 3`; audit 의미·source SHA·count 일치.
+- candidate integrity: `18/18 GO`; work event `34`, unlinked surface `13`, observed late surface `6`.
+- label observation: exact candidate title in event space `9/9`, NIL 원장 행 공통 선택지 `6/6`; 둘 다 사건 공간 구조 검사이며 generation `UNKNOWN`이라 recall `NOT_EVALUABLE`.
+- probability: all null `18/18`, selected label null `18/18`, ABSTAIN probability label `0`, action `NOT_EVALUATED 18`.
+- public noninterference: title/URL/decision/gate state/evidence/trace/fingerprint/version/bypass `18/18` 불변.
+- special rows: `11694035=work1+unlinked alias1`, `11698880=work2+unlinked alias1`, `11663521=event2+UNJUDGED`.
+- focused tests: candidate contract + saved-artifact harness `36 tests OK`.
+- affected regression: candidate/P1 harness/completed-source/promotion/retrieval/P0 harness/publication `199 tests OK`; py_compile `PASS`.
+- independent final audit: Sol xhigh가 v3 status `GO(18)`, current 구현/입력 SHA·bytes 결속, generated_at 제외 메모리 재생성 동등성, 실제 candidate-audit 부착 뒤 public snapshot 무영향을 재실행해 blocker `0 / PASS`로 판정했다.
+- Git durability: 신규 module/harness/tests/v3 artifacts는 현재 untracked, `candidate_audit.py`는 modified다. 커밋 전 clean-clone 내구성은 아직 주장하지 않는다.
+- active production noninterference snapshot (`2026-07-11 16:52:52 KST`): `104502/553/542/11/0`, parallel `16/16`, complete `false`, dashboard `ok=true`; 이동 중인 진행 수치이며 승인 근거가 아님.
+- runtime: `NOT_RUN`; semantic `REVIEW-LOCKED`; production `full_scan_approval=false`; goal `ACTIVE / NOT_COMPLETE`.
+
+## 2026-07-11 P0 검색 미복구 공개 차단 하네스 v5 검증
+
+- 정본 RunSpec: `out/pipeline_improvement_harness_20260711/retrieval_failclose_v5/run_spec.json`.
+- 정본 비교: `out/pipeline_improvement_harness_20260711/retrieval_failclose_v5/before_after_comparison.json/.md`.
+- source integrity: input/result `18/18`, missing/extra/duplicate `0/0/0`; baseline manifest `18/18/0/0`; integrity gate `GO`.
+- runtime binding: run `20260711_062543_156139`, fingerprint `d732342f...00f`, model/prompt/config, parallel `16/16`, dashboard ON, search non-light `16/16`, VLM/OCR READY, slang off 결속.
+- implementation binding: current `tools/run_pipeline_improvement_harness.py`와 `src/llm_batch/promotion_gate.py` SHA 결속.
+- causal replay: 대상 5건의 current gate + retrieval 없음이 저장된 baseline decision과 `5/5` 정확히 일치.
+- static after: 같은 state/evidence에 typed retrieval만 추가해 unsafe publish `1→0`, target public `1→0`, decision status change `1`, candidate missing `0`.
+- unresolved: required search hard blocker `5→5`, `retrieval_evidence=NO-GO`.
+- probability: `NOT_AVAILABLE_UNCALIBRATED`; ECE/Brier/risk-coverage null.
+- runtime: `NOT_RUN_STATIC_PROJECTION / BLOCKED_ACTIVE_PRODUCTION_RUN`; 새 LLM/MCP run 없음.
+- synthetic probe: 7행 unsafe `5→0`, correct publish `2→2`, lost correct `0`, deterministic result SHA `e4c876...1106`.
+- tests: py_compile PASS, focused/promotion `119 tests OK`, composite/candidate/publication `156 tests OK`, 합계 `275 tests OK`.
+- independent audits: Sol Ultra가 v4 HIGH `0` 후 provenance·mixed-run MEDIUM 2건을 제기했고 v5에서 둘 다 fail-close 및 음성 테스트로 보강. Terra/Luna는 실제 행·수치·문서 경계를 독립 확인.
+- probability design audit: Opus가 `NOT_AVAILABLE_UNCALIBRATED` 경계는 PASS로 확인했고, 후보/NIL 정답 사건·ABSTAIN 행동 분리와 candidate-set recall 및 독립 calibration/최종 동결 gate를 필수 보강으로 제시해 보고서·목표 프롬프트에 반영.
+- gate: artifact/post_id/baseline replay/static fail-close `GO`; search `NO-GO`; semantic `REVIEW-LOCKED`; production `full_scan_approval=false`; goal `ACTIVE / NOT_COMPLETE`.
+
+## 2026-07-11 아키텍처 보고서 한국어 가독성 검증
+
+- 대상: `docs/devs/LLM_PIPELINE_ARCHITECTURE_RESEARCH_20260711.md`.
+- 구조: 처음 읽는 사람용 0~5장, 코드·실행 근거 A-1~A-11 부록 분리. 기능 이해만 필요하면 기술 부록 전에 읽기를 멈춰도 된다고 표시.
+- 기능 설명: 현재 처리 8단계와 전문가 역할 7개의 기능·실패 영향을 확인. 독자용 개선 기능 9개는 각각 `실제 하는 일 / 예시 / 기대 효과`, 기술 부품 10개는 담당 단계와 차단하려는 오류를 설명한다.
+- 처리 예시: 제목의 작품 A, 본문의 작품 B, 필수 검색 실패가 겹친 가상 글에서 현재의 잘못된 공개 가능성과 개선 구조의 후보 보존·정보 부족 보류·공개값 비우기를 순서대로 확인.
+- 독립 가독성 감사: 읽기 경로 혼동, 영어 식별자 우선 노출, 단계별 결과 모호성, 결론 반복, 보정 전 확률 오해 위험의 상위 5개를 확인하고 본문에 반영.
+- 정확도 퍼센트: 후보별 정답/`NIL` 확률의 합 1, 별도 `p(error | chosen_action)`, `ABSTAIN` 행동 분리, candidate-set recall 선행, 자동 처리 범위-오류 관계와 그림자 시험 경계를 확인.
+- 독립 확률 설계 감사: `NOT_AVAILABLE_UNCALIBRATED`는 PASS. 개발·보정·최종 동결 표본 분리, 위험 계층별 최소 표본, 사전 고정 ECE 구간·classwise Brier/log loss·NIL PR·risk-coverage 신뢰구간과 fail-close 위반 0 전환 게이트를 반영.
+- 용어: 한국어 설명 우선, 실제 코드명·상태값은 괄호로 보존.
+- 승인 경계: `REVIEW-LOCKED`, `RUNNING_NOT_APPROVAL`, `full_scan_approval=false` 유지.
+- Markdown 구조 확인: 기술 부록 전 독자용 본문 162줄, 코드 울타리 4개로 짝수, 표 열 수 불일치 0, 뒤 공백 0, 오래된 `0~4장` 안내 0.
+- `git diff --check`: 공백 오류 없음. Windows CRLF 변환 경고만 존재.
+- 가독성 검증 자체의 코드/런 변경: 없음. 같은 날 후속 P0 코드는 위 별도 검증 항목에 기록.
+
+## 2026-07-11 LLM 처리 파이프라인 아키텍처 연구 검증
+
+- 산출물: `docs/devs/LLM_PIPELINE_ARCHITECTURE_RESEARCH_20260711.md`.
+- Claude provenance: commit `7ba58a454`의 `Co-Authored-By: Claude Opus 4.8 (1M context)`, 연구 문서 2개 확인.
+- Fable provenance: Loop643 static audit의 `read_only_claude-fable-5_ultra`, `PASS_HARD_UNSAFE_0`, direct `5/5 PASS`, provider 400 transport note 확인. 설계 originator 근거는 없음.
+- Current contract: frozen `GroundingState/EvidenceRecord/PromotionDecision/PublishContract`, typed-only `apply_publish_contract`, v2 shadow reapply 확인.
+- Open semantic structure: `ScopeState.confidence`와 `EvidenceRecord.strength`는 gate 판정에서 미사용, `GateReport` runtime constructor 없음, first-class NIL/calibration/selective compute 없음.
+- Contract test durability: `.gitignore` allowlist는 worktree에 있지만 `git ls-files tests/test_promotion_gate_contract.py`는 비어 있고 file은 untracked다.
+- Live run snapshot `2026-07-11T12:51:08+09:00`: run `20260711_113712_379597`, input/completed/flushed/pending/failed `104502/138/129/9/0`, parallel `16/16`, ordered flush blocked, image `55259`, VLM/OCR ready, search health `16/0`, complete `false`.
+- Live process/log: argv `--slang-db on`, `SlangDBManager` dirty observation whole-file replace와 반복 flush 확인. Process/config는 변경하지 않음.
+- Runtime storage: checkpoint append와 pending snapshot 존재, ordered flush 때 growing result JSON 전체 rewrite 확인. O(N²) write amplification은 코드 구조 기반 위험 추론이며 profile 실측은 아직 없음.
+- Gate: research `COMPLETE_EVIDENCE_BACKED`, active runtime `RUNNING_NOT_APPROVAL`, semantic `REVIEW-LOCKED`, production `full_scan_approval=false`.
+
+## 2026-07-11 Loop643 architecture / Golden18 검증
+
+- Code fingerprint: `d732342f432730842ade446783cbb8639334f9f9278b51a3e2a593fdbe62000f`, runtime files `58`.
+- Static/contract tests: subject `5/5`, promotion `96/96`, title-lead `250/250`, cross-contract `47/47`, body selection `2/2`, integrated `585 PASS / skip 1`, search builder/validator `26/26`, py_compile PASS.
+- Exact-once: run `20260711_062543_156139`, bound manifest `1`, input/result/checkpoint/pending/failed `18/18/18/0/0`; N=5/fresh375 `0/0`.
+- Runtime contract: parallel `16/16`, dashboard HTTP `200`/batch stopped, expert process `0`, search pre/post `16/16`, VLM/OCR READY, slang off.
+- Integrity: missing/extra/duplicate `0/0/0`, result original order PASS, checkpoint global_idx order PASS, fingerprint row echo `18/18`.
+- Semantic: Golden `18/18 PASS`, positive `11/11`, negative `7/7`, wrong-work `0`, candidate loss `0`.
+- Publication: `GO / rows 18 / violation 0 / bypass 0`.
+- Search post-consensus: required hard blocker `5`, terminal `4`, unreviewed `0`, VLM/OCR blocker `0`; overall hard gate `NO-GO`.
+- Final: `LIMIT_REACHED_HANDOFF`, `REVIEW-LOCKED`, production `full_scan_approval=false`.
+
+## 2026-07-11 Loop642 strict blocked 3/3 검증
+
+- Current state: HEAD `b3db7b4...fd9b`, runtime fingerprint `b035ffcd...aa06`, files `58`, exact match.
+- Golden readback: run `20260711_012016_205267`, `18/18/0/0`, result/manifest/checkpoint/pending SHA unchanged.
+- Process: expert `0`; dashboard health `true`, `batch_running=false`, `18/18`이며 승인 근거 아님.
+- Follow-up budget: i7 N=5/fresh375 artifact `0/0`; 새 architecture/model authorization `0`.
+- Semantic blocker: `11698880`, unsafe/wrong-work/true regression/actionable `1/1/1/1`, safe terminal 불가.
+- Streak: handoff `1` → prior continuation `2` → current continuation `3`, reset 없음.
+- Gate: `BLOCKED_HANDOFF_STRICT_3_OF_3`, `REVIEW-LOCKED`, production `full_scan_approval=false`.
+- Goal status tool: `active -> blocked` 전환 성공, thread `019f4850-7a35-7263-8347-362d7e553966`.
+
+## 2026-07-11 Loop642 LIMIT_REACHED continuation 재검증
+
+- Git/프로세스: HEAD `b3db7b4...fd9b`, expert process `0`, dashboard HTTP `200`.
+- Runtime projection: `58` files, fingerprint `b035ffcd...aa06` exact match; core SHA도 i7 release artifact와 일치.
+- Exact-once: fingerprint-bound manifest `1`, run `20260711_012016_205267`; i7 N=5/fresh375 artifact `0/0`.
+- Artifact readback: result `1a1c7a85...14febfb`, manifest `4daf44e6...bfd0da`, checkpoint `2e9b1afc...5ec1`, pending `a5338d95...f932f` 일치.
+- Immutability caveat: 네 Golden 파일 모두 Windows `ReadOnly=false`; SHA/exact-once/no-rerun 계약 봉인이며 OS-level write protection은 아니다.
+- Semantic: `11698880`은 `publish_allowed=true`, public wrong-work, `safe_terminal_now=false`; adjudication-only 종결 불가.
+- Authority: 새 resolution goal 미승인, 동일 blocker streak `2/3`, `update_goal(blocked)` 미호출.
+- Gate: `LIMIT_REACHED_HANDOFF / REVIEW-LOCKED / full_scan_approval=false`; docs-only sync는 progress 아님.
+
+## 2026-07-11 Loop642 i7 exact-once Golden18 및 plateau 검증
+
+- 정적 fingerprint: `b035ffcd2317e8706a03dddb646e5dee1ab258054d63f84707e3e9155882aa06`, runtime tree `58` files.
+- Tests: 관련 계약 발견 `542` 중 `541 PASS / 조건부 skip 1 / 실패·오류 0` (`374.927s`), safe-loss `53/53 PASS`, 독립 감사 `105/105 PASS`, N5 builder policy `13/13 PASS`, py_compile PASS.
+- Search pre/post: shard/query `16/16`, degraded `0`, forbidden engine `0`; row search `ok 16 / SEARCH_DEGRADED_RECOVERED 2`, unrecovered degraded `0`, required blocker `0`.
+- Runtime: run `20260711_012016_205267`, input/completed/flushed/pending/failed `18/18/18/0/0`, result/checkpoint/pending `18/18/0`, missing/extra/duplicate `0/0/0`, fingerprint manifest/18 rows exact echo.
+- Hashes: result `1a1c7a85...14febfb`, manifest `4daf44e6...bfd0da`, checkpoint `2e9b1afc...5ec1`, pending `a5338d95...f932f`.
+- Publication convergence: `GO`, violation rows `0`, bypassed gate `0`; VLM/OCR semantic review `READY`.
+- Exact Golden: `17/18`, failed `11698880`, status `wrong_or_unexpected_title`; expected `가챠 중독자의 퓨전펑크 생활`, actual public `아카데미 생존 갤러리`.
+- i7 target `11698897`: public title/URL null, candidate `[림월드]변방계에서 회귀자로 살아남기` 보존, `publish_allowed=false`, `bypassed_gate=false`, Golden `expected_work_evidence_preserved_unresolved` PASS.
+- Plateau: residual `1/1` reviewed, generalizable fix `1`, safe terminal `0`, external blocker `0`, true regression/actionable unfixed `1/1`.
+- 최종 gate: `LIMIT_REACHED_HANDOFF`; N=5/fresh375 `NOT_RUN_NOT_AUTHORIZED`, production `full_scan_approval=false`.
+
+## 2026-07-10 Loop641 recovery/dispatch 및 deterministic gate 검증
+
+- Loop640 actual: input/completed/flushed/pending/failed `375/75/68/7/0`; result/checkpoint/pending unique `68/75/7`; failed/duplicate/extra/missing-not-pending `0`.
+- Recovery: `recoverable_pending_flush_gap`, recovered `75`, safe subset `true`, SHA-256 `e0ff0823180211569a1f08ece0ac5702fda63fac0fd0eae5e108dc133990bb76`, read-only `true`.
+- Residual input: source/recovered/residual `375/75/300`, original order `true`, overlap/missing/extra/duplicate `0`, SHA-256 `3f6094b1...edfb60`.
+- Runtime equivalence: `expert_main.py/src` committed+worktree diff `0`, prompt `2026-03-30-semantic-contract-v1`, Gemma model, search non-light healthy16, VLM/OCR READY, slang off 동일. Raw config hash는 full375 `24a3b4877bab`, residual300 `f57cbf55a7b3`; input count 포함 hash라 row/manifest/argv/env/runtime stable signature로 동형성을 검증한다.
+- Query audit: Loop640 post-interruption와 Loop641 preflight 모두 shard/query `16/16`, degraded/forbidden `0/0`.
+- Loop641 launch: run `20260710_043316_869117`, requested/effective parallel `16/16`, dashboard standalone, manifest search included/non-light, healthy `16`, VLM/OCR READY.
+- 최초 44 tests 뒤 independent negative control이 fail-open을 발견했다. 보강 후 recovery/residual/runner/adjudication/merge/search/always-on/flip `86 tests PASS`, py_compile PASS다.
+- Partial recovered75 canary의 shared `75`, drift union `22`, legacy adjusted regression `18`은 diagnostic으로만 남긴다. Hardened validator는 actual production 375 scope가 아니면 GO를 거부한다.
+- Blind packet은 source allow-list만 사용하고 packet/map canonical hash와 option origin을 actual before/after에서 재생성한다. N=5는 `drift_id`로 동일 post multi-variant를 보존한다.
+- Direct script import canary에서 adjudication/search/flip entrypoint 결함을 재현·수리하고 `--help` 직접 실행을 테스트로 고정했다.
+- Self-authored GO guard: empty compare, handcrafted receipt, packet/map tamper, public leak, golden mismatch, invalid terminal, incomplete search manifest, shard override, stale postflight를 모두 fail-closed로 확인했다.
+- Gate: `GO_TOOL_CONTRACT_ONLY`, runtime/semantic approval `NOT_YET`; `semantic_quality=REVIEW-LOCKED`, production `full_scan_approval=false`.
+
+## 2026-07-10 현재 LLM 개선 아키텍처 감사 검증
+
+- 산출물:
+  - `docs/devs/LLM_IMPROVEMENT_ARCHITECTURE_REVIEW_20260710.md`
+- Claude provenance:
+  - commit `7ba58a45435127750cf62414d7a11d36fb9bdb41`의 `Co-Authored-By: Claude Opus 4.8 (1M context)` 확인.
+  - additive shared gate 최초안과 Claude calibrated/NIL 후속안을 분리 기록.
+- 코드 구조 감사:
+  - runtime `can_publish_title()` 공통 호출 wrapper는 `agentic_pipeline.py` 한 곳이지만 candidate audit/expert main 후단 decision 재작성 경로가 남아 있음을 확인.
+  - `GateReport`는 선언 외 runtime 사용처가 없음을 확인.
+  - `bypassed_gate=false`가 provenance 검증값이 아니라 여러 경로의 직접 할당값임을 확인.
+- Gate behavior read-only probe:
+  - low confidence/competing candidate가 high/clean과 동일 `publish`.
+  - weak/strong `supports_publish=true`가 동일 `publish`.
+  - confident nonwork와 unknown uncertainty가 모두 `candidate_only`로 수렴.
+- Contract test:
+  - `.venv312\Scripts\python.exe -m unittest tests.test_promotion_gate_contract -v`: `24 tests OK`.
+  - `git check-ignore -v tests/test_promotion_gate_contract.py`: `.gitignore:42:/tests/*`; `git ls-files` 결과 없음. Local PASS는 durable CI 증거가 아님.
+- 문서 hygiene:
+  - architecture report Markdown fence `6`, 짝수/closed 확인.
+  - evidence map reference `11/11` 경로 존재 확인.
+  - `git diff --check`: PASS, CRLF 전환 경고만 있음.
+- Loop640 partial read-only collateral compare:
+  - Loop638 adjudicated baseline vs flushed `68`: shared `68`, changed `16`, adjusted drift 후보 `13`.
+  - Loop638 adjudicated baseline vs checkpoint `75`: shared `75`, changed `22`, adjusted drift 후보 `18`.
+  - adjudication ledger overlap `4`행은 모두 baseline과 runtime 결과 불일치.
+  - 기존 `compare_collateral` 함수를 stdout-only로 호출했으며 새 compare artifact는 쓰지 않음.
+- Runtime 상태:
+  - latest manifest `75/68/7/0`, `large_run_complete=false`; 관련 runner/dashboard 종료. 원인은 확정하지 않음.
+- Gate:
+  - architecture ownership `NO-GO`, projection/runtime conformance `NO-GO`, runtime `STOPPED_INCOMPLETE`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
 
 ## 2026-07-10 Loop640 runtime 계약 보강 검증
 
@@ -319,6 +754,28 @@
   - adjusted-drift gate wiring: `GO_UNIT`
   - re-baseline: `NOT_APPLIED`
   - runtime/full375: `NOT_RUN_THIS_LOOP`
+  - `semantic_quality=REVIEW-LOCKED`
+  - `full_scan_approval=false`
+  - goal `ACTIVE / NOT_COMPLETE`
+
+## 2026-07-11 P0 typed 검색 fail-close (RetrievalState) 개선 검증
+
+- Scope: `LLM_PIPELINE_ARCHITECTURE_RESEARCH_20260711.md` 1단계 테스트구동 개선. 게이트 opt-in만, 라이브 배선/실행 없음.
+- Harness (`tools/search_fail_close_probe.py`, frozen 7행):
+  - before: unsafe publish `5`, correct publish `2`, lost correct `0`
+  - after: unsafe publish `0`, correct publish `2`, lost correct `0`
+  - improvement: unsafe publish 감소 `5`, recall 보존, fingerprint 안정(none==default `true`, populated!=none `true`)
+  - 산출물: `docs/devs/loop_reports/search_fail_close_probe_20260711.json`, `PROBE_RESULT=PASS`
+- Tests:
+  - `tests.test_retrieval_state_fail_close` -> PASS / `10`
+  - `tests.test_pipeline_improvement_harness` -> PASS / `13`
+  - `tests.test_promotion_gate_contract` -> PASS / `96`
+  - `tests.test_build_search_recovery_composite_gate tests.test_candidate_audit tests.test_publication_contract_convergence_audit` -> PASS / `156`
+  - total deterministic regression -> PASS / `275`
+- Runtime 비침습: 진행 중 대형 런/`slang_db`/result 디렉터리 미변경, 게이트는 기본 no-op(opt-in).
+- Gate:
+  - P0 typed 검색 fail-close `GO(gate-only)`
+  - 라이브 파이프라인 배선 `NOT_WIRED`
   - `semantic_quality=REVIEW-LOCKED`
   - `full_scan_approval=false`
   - goal `ACTIVE / NOT_COMPLETE`
