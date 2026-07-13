@@ -3,7 +3,7 @@
 ## 2026-07-13 - Architecture V2 active 재개와 confidence 의미 분리
 
 - Architecture V2 137경로를 `5caf9596d`로 커밋하고, 로컬 `main`을 별도 clean worktree에서 `--ff-only`로 통합했다. `main` 검증은 compile/import, 핵심 `181 tests PASS`, README 상대 링크 누락 `0`, worktree clean이다. 원본 dirty worktree의 미커밋 파일은 포함하거나 수정하지 않았다.
-- 원격 `origin/main` push는 보류했다. 로컬 `main`은 원격보다 누적 `409`커밋 앞이므로 별도 승격 의도 확인 없이 공개하지 않는다.
+- 원격 `origin/main` push는 보류했다. 로컬 `main`은 원격보다 누적 400개 이상의 전체 계보가 앞서므로 별도 승격 의도 확인 없이 공개하지 않는다.
 - 원 Goal `019f4f3f-4f46-78d1-8418-50834da44924`을 `active`로 재개하고, 외부 packet 부재는 C만 `WAITING_EXTERNAL_INPUT`으로 기록하며 내부 Architecture V2 작업을 blocked 처리하지 않는 objective를 고정했다.
 - `typed_confidence_report_v1`과 무쓰기 metrics reader를 추가했다. source-less fixture `typed_confidence_source_less_contract_v1.jsonl`은 `NOT_ESTIMABLE_NOT_FROZEN_ACTUAL`이며 실제 정확도 자료가 아니다.
 - Stage runtime adapter, DecisionLedger V2 dual-write/one-way rollback, packet intake를 로컬 통합했고 네 회귀 묶음 `187 + 113 + 53 + 197 PASS`를 확인했다.

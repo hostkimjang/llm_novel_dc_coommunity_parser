@@ -4,7 +4,7 @@
 
 - Git 통합: Architecture V2 137경로 커밋 `5caf9596d334f6498d6f9855b639c65295d0eaa1`; 로컬 `main`을 `f7e18e98f`에서 해당 커밋으로 `--ff-only`했다.
 - `main` clean worktree 검증: `compileall PASS`, 핵심 import PASS, `181 tests PASS` (`28.577s`), README 상대 링크 누락 `0`, status clean.
-- 원격 상태: fetch 기준 `origin/main=f59d9f642`, 로컬 `main`은 원격보다 `409`커밋 앞이다. push는 수행하지 않았다.
+- 원격 상태: fetch 기준 `origin/main=f59d9f642`, 로컬 `main`은 원격보다 누적 400개 이상의 전체 계보가 앞선다. push는 수행하지 않았다.
 - Goal 종료 판정: `019f4f3f-4f46-78d1-8418-50834da44924 / COMPLETE_SAFE_TERMINAL / ARCHITECTURE_V2_INTEGRATED / ACTUAL_EFFECT_WAITING_EXTERNAL_INPUT`.
 - 명령: `./.venv312/Scripts/python.exe -m unittest -q tests.test_confidence_report tests.test_candidate_set_shadow_contract tests.test_candidate_set_calibration_shadow_contract tests.test_calibration_actual_readback`
 - 결과: `71 tests PASS`.
