@@ -9,9 +9,9 @@ import sys
 import tempfile
 import unittest
 
-from src.llm_batch.calibration_actual_readback import snapshot_artifact
-from src.llm_batch.candidate_set_shadow import LabelProbability, build_candidate_set
-from src.llm_batch.confidence_report import (
+from src.llm_batch.grounding.calibration_actual_readback import snapshot_artifact
+from src.llm_batch.grounding.candidate_set_shadow import LabelProbability, build_candidate_set
+from src.llm_batch.grounding.confidence_report import (
     ConfidenceEvaluationRow,
     TypedConfidenceReport,
     read_jsonl_rows,

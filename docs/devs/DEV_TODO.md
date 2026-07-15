@@ -132,7 +132,7 @@
   - 검증 방법: 장시간 샘플 런에서 snapshot 파일 또는 monitor event 생성 확인
 - [ ] post별 search health flag 저장
   - 상태: proposed
-  - 관련 파일 후보: `src/llm_batch/agentic_pipeline.py`, `src/llm_batch/models.py`
+  - 관련 파일 후보: `src/llm_batch/agentic_pipeline.py`, `src/llm_batch/domain/models.py`
   - 완료 기준: 검색 빈 결과/저하/timeout이 결과 JSON에서 후처리 대상으로 식별됨
 - [ ] 대형 병렬 validation 실행 스크립트 정리
   - 상태: proposed

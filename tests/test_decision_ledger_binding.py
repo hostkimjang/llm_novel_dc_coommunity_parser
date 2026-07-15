@@ -6,8 +6,8 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from src.llm_batch.decision_ledger_binding import DecisionLedgerBindingError, build_shadow_binding, read_shadow_binding
-from src.llm_batch.decision_ledger_v2 import DecisionCallLedgerV2
+from src.llm_batch.ledger.decision_ledger_binding import DecisionLedgerBindingError, build_shadow_binding, read_shadow_binding
+from src.llm_batch.ledger.decision_ledger_v2 import DecisionCallLedgerV2
 
 
 class DecisionLedgerBindingTests(unittest.TestCase):

@@ -737,33 +737,34 @@ AgenticPipeline._search(query)
 ### 10.2 expert_prompts.py 내부 구조
 
 ```
-L11-421     LINGUISTIC_FRAMEWORK (원본, 참조용)
-L422-446    PLATFORM_ABBREVIATION_MAP (공유 상수)
-L447-474    LF_GATEKEEPER (슬림)
-L475-498    LF_DECODER (슬림)
-L499-521    LF_VERIFIER (슬림)
-L522-537    LF_ARBITER (슬림)
-L538-688    GATEKEEPER_SYSTEM
-L689-1391   GATEKEEPER_PROMPT
-L1392-1776  DECODER_SYSTEM
-L1777-2383  DECODER_PROMPT
-L2384-3024  VERIFIER_SYSTEM
-L3025-3270  VERIFIER_PROMPT
-L3271-3298  CRITIC_SYSTEM
-L3299-3450  CRITIC_PROMPT
-L3451-3505  assemble_final_output() 함수
+PLATFORM_ABBREVIATION_MAP       공유 플랫폼 약칭 지식
+LF_GATEKEEPER / LF_DECODER      역할별 최소 언어 프레임
+LF_VERIFIER / LF_ARBITER
+GATEKEEPER_SYSTEM / PROMPT      역할별 실제 LLM 입력
+DECODER_SYSTEM / PROMPT
+VERIFIER_SYSTEM / PROMPT
+CRITIC_SYSTEM / PROMPT
 ```
+
+참조되지 않던 대형 `LINGUISTIC_FRAMEWORK` 상수는 2026-07-15에 제거했다. 프롬프트 구획은 줄 번호가 아니라 상수명으로 참조하며, 실제 입력의 장식용 Unicode는 사용하지 않는다.
 
 ### 10.3 지원 파일
 
 | 파일 | 역할 |
 |------|------|
-| `src/llm_batch/models.py` | Pydantic 데이터 모델 (PostInput, PickvelOutputItemV2 등) |
-| `src/llm_batch/rules.py` | 정적 규칙 세트 (NOISE_TERMS, NOVEL_SITES 등) |
+| `src/llm_batch/domain/models.py` | Pydantic 데이터 모델 (PostInput, PickvelOutputItemV2 등) |
+| `src/llm_batch/domain/rules.py` | 정적 규칙 세트 (NOISE_TERMS, NOVEL_SITES 등) |
 | `src/llm_batch/llm/client.py` | LLM API 클라이언트 (OpenAI 호환) |
 | `src/llm_batch/search/client.py` | MCP 검색 클라이언트 |
 | `src/llm_batch/cli.py` | CLI 진입점 |
-| `src/llm_batch/pipeline.py` | 기존 비-Agentic 파이프라인 (레거시) |
+| `src/llm_batch/pipelines/legacy.py` | 기존 비-Agentic 파이프라인 (레거시) |
+| `src/llm_batch/grounding/` | 후보 생성·감사·보정·confidence 계약 |
+| `src/llm_batch/ledger/` | decision event·WAL·원장·publication commit |
+| `src/llm_batch/runtime/` | stage budget·cache·singleflight·shadow adapter |
+| `src/llm_batch/measurement/` | early route·paired readback·selective compute |
+| `src/llm_batch/slang/` | slang DB·governance·transaction |
+
+현재 전체 패키지 책임과 import 이동 표는 [`src/llm_batch` 소스 구조](devs/SOURCE_LAYOUT_KO.md)를 따른다. 과거 loop 보고서의 옛 경로는 당시 증거 위치로 보존한다.
 
 ### 10.4 세션 지식 베이스
 

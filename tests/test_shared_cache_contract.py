@@ -11,7 +11,7 @@ import threading
 import unittest
 from unittest.mock import patch
 
-from llm_batch.shared_cache_contract import (
+from llm_batch.runtime.shared_cache_contract import (
     CacheNamespace,
     ProcessSharedCacheAdapter,
     FileSharedCacheAdapter,
@@ -56,7 +56,7 @@ class SharedCacheContractTests(unittest.TestCase):
     def test_expired_entry_is_deleted_and_receipt_records_eviction(self) -> None:
         cache = ReadOnlySharedCacheAdapter(allow_write=True)
         namespace = self._namespace()
-        with patch("llm_batch.shared_cache_contract.time.monotonic", side_effect=[10.0, 12.0]):
+        with patch("llm_batch.runtime.shared_cache_contract.time.monotonic", side_effect=[10.0, 12.0]):
             stored = cache.put(namespace, value={"x": 1}, ttl_seconds=1, degraded=False)
             missed = cache.get(namespace)
         self.assertEqual(missed["status"], "MISS")
@@ -126,7 +126,7 @@ class SharedCacheContractTests(unittest.TestCase):
             self.assertEqual(readonly.get(namespace, response_sha256=stored["response_sha256"])["value"], {"cross_process": True})
             source_root = str(Path(__file__).resolve().parents[1] / "src")
             env = dict(os.environ); env["PYTHONPATH"] = source_root + os.pathsep + env.get("PYTHONPATH", "")
-            code = "import json,sys; from llm_batch.shared_cache_contract import CacheNamespace,FileSharedCacheAdapter; n=CacheNamespace('a'*64,'publication-scope','b'*64,'provider','model','c'*64); print(json.dumps(FileSharedCacheAdapter(__import__('pathlib').Path(sys.argv[1])).get(n, response_sha256=sys.argv[2])))"
+            code = "import json,sys; from llm_batch.runtime.shared_cache_contract import CacheNamespace,FileSharedCacheAdapter; n=CacheNamespace('a'*64,'publication-scope','b'*64,'provider','model','c'*64); print(json.dumps(FileSharedCacheAdapter(__import__('pathlib').Path(sys.argv[1])).get(n, response_sha256=sys.argv[2])))"
             child = subprocess.run([sys.executable, "-c", code, str(root), stored["response_sha256"]], capture_output=True, text=True, check=True, env=env)
             value = json.loads(child.stdout)
             self.assertEqual((value["status"], value["adapter_scope"], value["cache_source"]), ("HIT", "CROSS_PROCESS_FILE_SHADOW_ONLY", "CROSS_PROCESS_FILE_SHADOW"))

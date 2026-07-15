@@ -5,7 +5,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from src.llm_batch.stage_budget_canary import StageBudgetCanaryError, read_shadow_canary
+from src.llm_batch.runtime.stage_budget_canary import StageBudgetCanaryError, read_shadow_canary
 from tools.read_stage_budget_shadow_canary import read
 from tools.run_stage_budget_shadow_canary import run
 

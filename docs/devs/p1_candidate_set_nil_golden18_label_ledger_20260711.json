@@ -1,0 +1,161 @@
+{
+  "schema_version": "candidate-set-nil-label-ledger-v1",
+  "generated_at": "2026-07-11",
+  "source_expected_audit": {
+    "path": "docs/devs/loop643_arch_subject_conflict_golden18_r2_expected_audit.json",
+    "sha256": "8d1c16b113938ec07b23fa381cb370916170c7b8967f06a76034649d3de713b4"
+  },
+  "source_baseline_result": {
+    "path": "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop643_arch_subject_conflict_golden18_r2_result.json",
+    "sha256": "e279023256dca92d54854183ebd667d1a10e26b569d320a416b1ddcb211b1812"
+  },
+  "label_policy": {
+    "CANDIDATE": "expected audit가 단일 작품명을 명시한 경우의 작품 정답 사건",
+    "NIL": "golden_role=negative_no_public_work이며 특정 작품 논의가 아닌 경우",
+    "UNJUDGED": "복합 작품, 미상 가설, 이미지 단서 HOLD처럼 단일 candidate_id/NIL 정답을 만들 수 없는 경우",
+    "abstain_is_not_truth_label": true,
+    "candidate_set_recall_requires_complete_generation_status": true
+  },
+  "counts": {
+    "rows": 18,
+    "candidate_truth": 9,
+    "nil_truth": 6,
+    "unjudged": 3
+  },
+  "rows": [
+    {
+      "post_id": 11684371,
+      "truth_kind": "NIL",
+      "expected_title": null,
+      "nil_subtype": "NON_REFERENTIAL",
+      "source_status": "expected_null_respected"
+    },
+    {
+      "post_id": 11694035,
+      "truth_kind": "CANDIDATE",
+      "expected_title": "아카데미 생존 갤러리",
+      "nil_subtype": null,
+      "source_status": "expected_work_evidence_preserved_unresolved"
+    },
+    {
+      "post_id": 11698897,
+      "truth_kind": "CANDIDATE",
+      "expected_title": "[림월드]변방계에서 회귀자로 살아남기",
+      "nil_subtype": null,
+      "source_status": "expected_work_evidence_preserved_unresolved"
+    },
+    {
+      "post_id": 11705245,
+      "truth_kind": "NIL",
+      "expected_title": null,
+      "nil_subtype": "NON_REFERENTIAL",
+      "source_status": "expected_null_respected"
+    },
+    {
+      "post_id": 11661857,
+      "truth_kind": "NIL",
+      "expected_title": null,
+      "nil_subtype": "NON_REFERENTIAL",
+      "source_status": "expected_null_respected"
+    },
+    {
+      "post_id": 11663521,
+      "truth_kind": "UNJUDGED",
+      "expected_title": null,
+      "nil_subtype": null,
+      "expected_action": "ABSTAIN",
+      "unjudged_reason": "composite_two_work_label_and_partial_candidate_coverage",
+      "source_status": "expected_work_evidence_preserved_unresolved"
+    },
+    {
+      "post_id": 11663540,
+      "truth_kind": "CANDIDATE",
+      "expected_title": "전 버튜버가 하고 싶은데요",
+      "nil_subtype": null,
+      "source_status": "expected_title_resolved"
+    },
+    {
+      "post_id": 11668307,
+      "truth_kind": "CANDIDATE",
+      "expected_title": "빚을 져서라도 세상은 구해야 할 거 아니야",
+      "nil_subtype": null,
+      "source_status": "expected_work_evidence_preserved_unresolved"
+    },
+    {
+      "post_id": 11669930,
+      "truth_kind": "NIL",
+      "expected_title": null,
+      "nil_subtype": "NON_REFERENTIAL",
+      "source_status": "expected_null_respected"
+    },
+    {
+      "post_id": 11673082,
+      "truth_kind": "NIL",
+      "expected_title": null,
+      "nil_subtype": "NON_REFERENTIAL",
+      "source_status": "expected_null_respected"
+    },
+    {
+      "post_id": 11685994,
+      "truth_kind": "UNJUDGED",
+      "expected_title": null,
+      "nil_subtype": null,
+      "expected_action": "ABSTAIN",
+      "unjudged_reason": "unknown_cover_work_hypothesis_without_exact_title",
+      "source_status": "expected_hypothesis_preserved_unresolved"
+    },
+    {
+      "post_id": 11694019,
+      "truth_kind": "CANDIDATE",
+      "expected_title": "이세계에서 사이비로 살아남기",
+      "nil_subtype": null,
+      "source_status": "expected_title_resolved"
+    },
+    {
+      "post_id": 11700470,
+      "truth_kind": "UNJUDGED",
+      "expected_title": null,
+      "nil_subtype": null,
+      "expected_action": "ABSTAIN",
+      "unjudged_reason": "image_scene_clue_public_title_hold_without_exact_work_label",
+      "source_status": "expected_null_respected"
+    },
+    {
+      "post_id": 11705231,
+      "truth_kind": "CANDIDATE",
+      "expected_title": "탐식의 재림",
+      "nil_subtype": null,
+      "source_status": "expected_work_evidence_preserved_unresolved"
+    },
+    {
+      "post_id": 11713212,
+      "truth_kind": "NIL",
+      "expected_title": null,
+      "nil_subtype": "NON_REFERENTIAL",
+      "source_status": "expected_null_respected"
+    },
+    {
+      "post_id": 11713222,
+      "truth_kind": "CANDIDATE",
+      "expected_title": "잘생기면 편해지는 인방 생활",
+      "nil_subtype": null,
+      "source_status": "expected_work_evidence_preserved_unresolved"
+    },
+    {
+      "post_id": 11660237,
+      "truth_kind": "CANDIDATE",
+      "expected_title": "테라포밍",
+      "nil_subtype": null,
+      "source_status": "expected_title_resolved"
+    },
+    {
+      "post_id": 11698880,
+      "truth_kind": "CANDIDATE",
+      "expected_title": "가챠 중독자의 퓨전펑크 생활",
+      "nil_subtype": null,
+      "source_status": "expected_work_evidence_preserved_unresolved"
+    }
+  ],
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false
+}

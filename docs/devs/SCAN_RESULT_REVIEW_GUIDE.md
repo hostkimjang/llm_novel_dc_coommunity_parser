@@ -2,6 +2,15 @@
 
 스캔 결과 디렉터리를 받았을 때 런타임 안정성, 검색 품질, 최종 판단 품질, `slang_db` 품질을 분리해서 리뷰하기 위한 운영 지침이다. 이 문서는 특정 런 하나를 잘 읽는 것보다, 반복 가능한 리뷰 절차와 이슈 전환 기준을 고정하는 데 목적이 있다.
 
+## 2026-07-10 bounded full375 adjudication 규칙
+
+- `adjusted_drift_count`와 raw105는 변화 diagnostic이며 semantic GO 숫자가 아니다.
+- 판결 대상은 `is_regression=true`만이 아니라 compare의 changed drift union 전체다. Source-only anonymous candidate packet에는 before/after/status/golden/`_judge_seed`를 넣지 않는다.
+- Judge는 atomic candidate preference, same-work 여부, evidence와 rationale만 기록하고 5분류와 gate/count는 validator가 재계산한다.
+- `adjusted_full375_collateral=GO`는 validator가 `unreviewed_adjusted_rows=0`, `true_semantic_regression_count=0`, `actionable_unfixed_count=0`을 확인할 때만 가능하다.
+- Public title/URL publish 의존 search miss는 hard blocker다. 기타 no-public miss는 완전한 row-level terminal ledger가 있어야 닫힌다.
+- Recovery/merge/runtime/dashboard GO는 semantic approval과 분리한다.
+
 ## 2026-07-09 adjudicated re-baseline 규칙
 
 - `true triage 57`과 intended recovery 전 행이 판결되기 전에는 re-baseline을 적용하지 않는다.
@@ -197,6 +206,10 @@
 - 이미지나 OCR에 보이는 플랫폼 cue와 final title이 같은 작품을 지지하면 해당 플랫폼 official detail URL을 우선 검토한다. 플랫폼 URL이 다른 official URL보다 낮게 선택된 경우 `image_platform_url_preference` bucket으로 본다.
 - 검색 결과나 커뮤니티 링크 제목에 붙은 `스포)`, `질문)`, `소신발언))`, `후기`, `리뷰` 말머리/꼬리가 final title에 섞였는지 확인한다. VLM/OCR direct title 또는 공식 상세 URL title이 말머리 없는 작품명을 지지하면 `title_prefix_contamination`으로 기록한다.
 - exact-title surface는 title evidence이지 slang alias evidence가 아니다. distinct clean alias가 없는데 `slang_insight.alias_scope=pure_work_alias`처럼 보이거나 public UI가 confirmed alias처럼 표시하면 `exact_title_slang_surface_overexposed`로 기록한다.
+- `abbreviation_match_score`, title substring, High/Medium confidence, official-detail tier는 alias 후보 신호이지 Slang DB write/seed 자격이 아니다. strict `slang_insight`, verified `confirmed_alias`와 동일 official title, 실제 registry mapping과 일치하는 exact pair 중 하나가 없으면 `slang/pending` mutation을 차단한다.
+- `mentioned_work`, `secondary_reference`, `recommendation_candidate`, `comparison_target`는 CandidateLedger 보존 대상이다. 이 역할만으로 Slang DB `pending`에 들어가면 `slang_db_reference_role_pollution`으로 분류한다.
+- `store_in_slang_db`가 실제 boolean이 아닌 문자열·숫자·배열·객체이면 fail-close한다. incomplete `store=true`, registry enum 교차, 미등록 pair, 다른 final official title용 registry pair도 `slang_db_alias_contract_invalid`로 기록한다.
+- 중앙 seed는 write와 같은 exact-pair predicate를 사용해야 한다. write에서 차단된 reference-only·invalid contract가 다음 런 BatchContext seed로 재등장하면 `slang_db_write_seed_asymmetry`로 보고 hard blocker로 올린다.
 - 작가명 surface가 `slang_db` confirmed/pending alias 또는 BatchMem abbreviation으로 승격된 경우 `author_surface_as_alias`로 분류한다. author mapping 자체는 허용하되 작품 약칭 저장과 분리한다.
 - 단독 `원작` 문자열은 파생/팬픽 marker로 단정하지 않는다. `원작 주인공`, `원작 세계`는 웹소설 소개문 안의 서사 표현일 수 있고, `원작 소설 기반 웹툰`, `패러디`, `팬픽`, `2차 창작`, `크로스오버`처럼 강한 파생 문맥과 분리한다.
 - VLM/OCR이 결론에 쓰였으면 `identity.image_evidence_catalog` 또는 review packet의 동등 필드에 `source_url`, `ocr_text`, `visual_summary`, `explicit_work_title`, `explicit_author_name`, `work_cues`가 남아야 한다. 이미지 근거가 reason/worker log에만 있으면 `image_evidence_catalog_missing`으로 기록한다.
@@ -895,3 +908,19 @@ Priority 기준:
 - post-side work anchor는 후보 검토 허용 조건이다. `High` final rescue에는 official/detail URL, fetched official title, strict full-title evidence, VLM/OCR direct work title, verified character-work link 같은 독립 hard support가 필요하다.
 - registry+anchor만 있는 packet은 전체 승인 증거가 아니라 `Medium/HOLD/re_judge` 후보로 남긴다.
 - 이 targeted guard가 통과해도 hardcoded alias positive path review, completed source, random 1000, P0/P1 expansion 전까지 10만 semantic approval은 `REVIEW-LOCKED`다.
+
+## 2026-07-10 Full375 blind adjudication과 search terminal 검토 규칙
+
+- `adjusted_drift_count`는 변화 diagnostic이다. Drift union은 actual source/baseline/after/golden 375 scope에서 재계산하고 동일 post의 N=5 variant는 `drift_id`로 각각 보존한다.
+- Blind packet은 source allow-list만 사용한다. `_judge_seed`, `reason_lines`, runtime status, before/after origin, candidate ledger status를 judge payload에 넣지 않는다.
+- Builder가 낸 GO/count/classification을 validator가 신뢰하지 않는다. Packet/map canonical hash, option origin, serialized publication, golden hard safety, terminal contract를 독립 재계산한다.
+- Safe no-public terminal은 source/input hash, before/after, `publish_allowed=false`, `bypassed_gate=false`, candidate 보존, source-only blind verdict, 독립 reviewer, 실제 evidence/replay artifact SHA, unblock condition이 모두 있어야 한다.
+- Public title/URL 또는 golden positive release에 search issue가 있으면 terminal로 면제하지 않는다. `required_search_hard_blocker=0`, 기타 issue의 `unreviewed_search_rows=0` 전에는 search gate가 열리지 않는다.
+
+## 2026-07-14 입력 JSONL 동일 중복 처리 규칙
+
+- 같은 정규화 `post_id`의 post 행이 반복되면 payload 전체를 비교한다. `post_id`의 숫자/문자열 표현만 정규화한 뒤 dict가 동일한 경우에만 크롤링 재시도·페이지 겹침으로 보고 첫 행을 유지한다.
+- 동일 중복은 로더가 `duplicate_rows`, `duplicate_post_ids`, line sample을 stderr에 남긴다. 물리 post 행 수와 실제 처리 post 수는 분리해 검토한다.
+- 제목, 본문, URL, 이미지, 댓글 포함 필드 중 하나라도 다른 동일 `post_id`는 임의 병합하거나 last-write-wins로 덮지 않고 `first_line`, `duplicate_line`과 함께 fail-closed 한다.
+- comment 행은 기존처럼 `comment_id` 우선 중복 제거 계약을 따른다. post 중복 정책과 comment 중복 정책을 혼동하지 않는다.
+- 입력 preflight 통과는 runtime 또는 semantic 승인 근거가 아니다. 대형 런을 실제 완주·검토하기 전에는 `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 유지한다.

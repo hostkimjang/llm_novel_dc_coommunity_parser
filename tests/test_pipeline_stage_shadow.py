@@ -6,8 +6,8 @@ import tempfile
 import unittest
 
 from llm_batch.agentic_pipeline import AgenticPipeline
-from llm_batch.pipeline_stage_shadow import PipelineSearchStageShadow
-from llm_batch.stage_budget import ArtifactRef, StageBudgetBinding, read_stage_budget_receipt
+from llm_batch.runtime.pipeline_stage_shadow import PipelineSearchStageShadow
+from llm_batch.runtime.stage_budget import ArtifactRef, StageBudgetBinding, read_stage_budget_receipt
 
 
 class DummyLLM:

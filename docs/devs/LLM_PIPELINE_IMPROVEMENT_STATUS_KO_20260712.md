@@ -118,10 +118,10 @@ flowchart LR
   - 현재 `run_spec.json`, `comparison.json`, `comparison.md`만 있다.
   - fresh BEFORE/AFTER manifest·physical-call ledger는 없다.
 - 주요 구현:
-  - `src/llm_batch/calibration_actual_readback.py`
-  - `src/llm_batch/decision_call_readback.py`
-  - `src/llm_batch/early_route_measurement.py`
-  - `src/llm_batch/paired_measurement_readback.py`
+  - `src/llm_batch/grounding/calibration_actual_readback.py`
+  - `src/llm_batch/ledger/decision_call_readback.py`
+  - `src/llm_batch/measurement/early_route_measurement.py`
+  - `src/llm_batch/measurement/paired_measurement_readback.py`
   - `tools/recover_expert_run_from_checkpoint.py`
 
 이번 오케스트레이션에서 Fable·Opus는 모델 선택 자체는 적용됐지만 재전송에도 과제별 결과 대신 일반 안내를 반환했다. 따라서 둘의 응답은 최신 구현 근거에서 제외했다. Sol·Terra·Luna 결과도 로컬 코드와 테스트로 다시 확인된 내용만 반영했다.

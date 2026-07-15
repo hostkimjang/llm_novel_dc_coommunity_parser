@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from src.llm_batch.paired_measurement_readback import (  # noqa: E402
+from src.llm_batch.measurement.paired_measurement_readback import (  # noqa: E402
     build_paired_measurement_run_spec,
     build_paired_measurement_readback,
     validate_paired_measurement_run_spec,

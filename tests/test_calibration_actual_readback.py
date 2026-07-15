@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from src.llm_batch.calibration_actual_readback import (
+from src.llm_batch.grounding.calibration_actual_readback import (
     PROBABILITY_SCALE,
     build_readback_manifest,
     canonical_bytes,
@@ -207,7 +207,7 @@ class CalibrationActualReadbackTests(unittest.TestCase):
             manifest["producer_coverage"]["complete_count"] = 1
             manifest["manifest_sha256"] = h("0")
             with self.assertRaises(ValueError):
-                from src.llm_batch.calibration_actual_readback import validate_readback_manifest
+                from src.llm_batch.grounding.calibration_actual_readback import validate_readback_manifest
                 validate_readback_manifest(manifest)
 
     def test_semantic_artifact_receipts_reject_self_rehashed_divergence(self):
@@ -245,7 +245,7 @@ class CalibrationActualReadbackTests(unittest.TestCase):
             forged["manifest_sha256"] = hashlib.sha256(
                 canonical_bytes({key: value for key, value in forged.items() if key != "manifest_sha256"})
             ).hexdigest()
-            from src.llm_batch.calibration_actual_readback import validate_readback_manifest
+            from src.llm_batch.grounding.calibration_actual_readback import validate_readback_manifest
             with self.assertRaisesRegex(ValueError, "evaluation plan hash mismatch"):
                 validate_readback_manifest(forged)
             self.assertEqual(

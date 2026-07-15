@@ -15,7 +15,7 @@ from typing import Any, Dict, List, Optional
 from .decoder import KNOWN_ABBREVIATIONS
 from .utils import parse_json_with_think_removal, _ts, KNOWN_TITLE_ABBREVIATIONS
 from ..prompts.prompt_router import build_discourse_system_prompt
-from ..rules import surface_expression_reread_notes, surface_expression_reread_public_notes
+from ..domain.rules import surface_expression_reread_notes, surface_expression_reread_public_notes
 
 
 DISCOURSE_SYSTEM = """\

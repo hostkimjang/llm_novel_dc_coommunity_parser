@@ -12,7 +12,7 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from llm_batch.confidence_report import read_jsonl_rows, read_policy_independent_metrics
+from llm_batch.grounding.confidence_report import read_jsonl_rows, read_policy_independent_metrics
 
 
 def main() -> int:

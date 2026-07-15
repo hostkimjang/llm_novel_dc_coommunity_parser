@@ -6,6 +6,13 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
+from src.llm_batch.promotion_gate import (
+    GroundingState,
+    ScopeState,
+    apply_publish_contract,
+    evaluate_publish_contract,
+)
+
 
 def load_module():
     path = Path(__file__).resolve().parents[1] / "tools" / "build_completed_source_candidate_audit.py"
@@ -23,12 +30,28 @@ def write_json(path: Path, payload) -> None:
 
 
 def neutral_identity_row(post_id: int) -> dict:
+    contract = evaluate_publish_contract(
+        GroundingState(
+            post_id=post_id,
+            candidate_title=f"검토 후보 {post_id}",
+            official_title_exists=True,
+            row_discusses_work_as_work=False,
+            title_resolution_state="unresolved_matchable",
+            work_resolution="unresolved",
+            scope=ScopeState(
+                scope_kind="context_only",
+                confidence="low",
+                conflict_reason_codes=["fixture_candidate_not_for_publication"],
+            ),
+        ),
+        [],
+    )
+    identity = {"novel_identity": {"official_title": None, "heretic_url": None}}
+    apply_publish_contract(identity, contract)
     return {
         "post_id": post_id,
         "analysis_result": {
-            "identity": {
-                "candidate_ledger_status": "promotion_blocked",
-            }
+            "identity": identity,
         },
     }
 

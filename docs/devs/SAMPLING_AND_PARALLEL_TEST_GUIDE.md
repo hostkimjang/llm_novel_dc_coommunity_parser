@@ -1,5 +1,13 @@
 # Sampling And Parallel Test Guide
 
+## 2026-07-10 bounded adjudication override
+
+- 아래 Loop639의 `adjusted_drift_count=0` 문구는 historical tool behavior이며 현재 완료 gate가 아니다.
+- Full375 runtime 변화는 `compare.rows` 전체 drift union을 source-only blind packet으로 전수 판결하고 validator가 5분류를 유도한다.
+- 완료 조건은 numeric drift 0이 아니라 `unreviewed_adjusted_rows=0`, `true_semantic_regression_count=0`, `actionable_unfixed_count=0`이다.
+- Interrupted full375는 동일 output을 반복하지 않고 immutable checkpoint recovery + original-order residual + homogeneous merge로 완성한다.
+- Runtime은 계속 `--parallel 16`, dashboard ON, search non-light healthy16, reuse-only, slang off, VLM/OCR READY를 사용한다.
+
 ## 2026-07-09 Loop639 adjudicated baseline full375 replay 계약
 
 - Re-baseline 적용 뒤 collateral 완료 gate는 `adjusted_drift_count` 기준이다. 2026-06-26 bootstrap 대비 raw `105`는 historical diagnostic이며 완료 blocker가 아니다.
@@ -850,3 +858,11 @@ Canary가 timeout wrapper 안에서 실행될 때는 CLI progress 출력 오류�
 - 교훈:
   - 36병렬 자체는 안정성 `GO`였지만, `11689276` adjacent 경계와 `11702067/11576520` alias long-tail이 남아 품질은 `REVIEW`.
   - 이후 1,000건 risk discovery도 같은 matrix를 유지하며 positive/negative 이웃 케이스를 포함해야 한다.
+
+## 2026-07-10 interrupted full375 component hash와 post-run gate 규칙
+
+- `expert_main.py`의 raw `config_hash`는 `input_post_count`와 run post count를 포함한다. 따라서 동일 코드·prompt·CLI·env인 full375와 residual300도 raw hash가 다를 수 있다.
+- Interrupted recovery 병합은 raw hash 차이를 숨기거나 임의로 같다고 만들지 않는다. 각 component 내부 homogeneous hash를 보존하고 row/manifest/normalized argv/required env/runtime contract의 stable fingerprint를 별도 검증한다.
+- Checkpoint `global_idx`는 recovered source는 원본 panel 위치, residual은 original-order residual 위치와 exact bind해야 한다.
+- Full375 search gate는 `375/16` scope, complete manifest, result/post-id/run composition hash, shard 1..16 상세, runtime 완료 뒤 postflight, golden18을 요구한다.
+- No-public search terminal은 source-only blind packet과 packet row hash, 별도 reviewer, 실제 evidence/replay artifact SHA를 검증한다. Dashboard와 top-level shard count만으로 승인하지 않는다.

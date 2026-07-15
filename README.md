@@ -204,18 +204,23 @@ python expert_main.py tests/inputs/sample.jsonl --parallel 2 --no-auto-up-shards
 expert_main.py                    주력 실행 엔트리포인트
 src/llm_batch/
   agentic_pipeline.py             게시글 단위 파이프라인
-  experts/                        Gatekeeper, Decoder, Verifier, Arbiter 등
   promotion_gate.py               공개 제목과 URL의 공통 판정 경계
-  candidate_set_shadow.py         CandidateSet과 NIL shadow 계약
-  confidence_report.py            행별 confidence와 무쓰기 metrics 계약
-  pipeline_stage_runtime_adapter.py
-                                  search stage의 선택적 limiter/cache/singleflight
-  decision_ledger_v2.py           분할 원장과 replay 기반
-  decision_ledger_dual_write.py   legacy-first dual-write shadow
+  domain/                         모델, 규칙, BatchContext, 제목 무결성
+  grounding/                      후보·감사·보정·confidence 계약
+  ledger/                         decision event, WAL, 원장, publication commit
+  runtime/                        stage budget, cache, singleflight, shadow adapter
+  measurement/                    early route, paired readback, selective compute
+  slang/                          slang DB, governance, transaction
+  pipelines/                      legacy·staged 실행기
+  experts/, prompts/              전문가 구현과 실제 LLM 프롬프트
 tools/                            실행, preflight, audit, readback 도구
 tests/                            계약·회귀·공격 시나리오
 docs/                             아키텍처와 운영 문서
 ```
+
+Goal 전용 smoke·builder는 `scratch/` 또는 `out/`에서만 만들고, 반복 사용되는 계약만 `tools/`와 `tests/`의 Git allowlist로 승격합니다. 수명주기와 2026-07-15 정리 결과는 [Goal 코드 산출물 정리 정책](docs/devs/CODE_ARTIFACT_CLEANUP_POLICY_KO.md)을 따릅니다.
+
+기능별 패키지 경계, 이전 import에서 새 import로 옮기는 표, 한국어 주석·프롬프트 규칙은 [`src/llm_batch` 소스 구조](docs/devs/SOURCE_LAYOUT_KO.md)를 참고하세요.
 
 ## 문서 안내
 

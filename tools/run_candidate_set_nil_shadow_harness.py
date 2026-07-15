@@ -21,14 +21,14 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from src.llm_batch.candidate_set_shadow import (
+from src.llm_batch.grounding.candidate_set_shadow import (
     NIL_LABEL,
     PROBABILITY_STATUS,
     selective_shadow_from_identity,
     selective_shadow_from_dict,
 )
-from src.llm_batch.candidate_audit import apply_candidate_audit_fields
-from src.llm_batch.candidate_generation import build_candidate_generation_snapshot
+from src.llm_batch.grounding.candidate_audit import apply_candidate_audit_fields
+from src.llm_batch.grounding.candidate_generation import build_candidate_generation_snapshot
 
 
 RUN_SPEC_SCHEMA = "candidate-set-nil-shadow-runspec-v1"

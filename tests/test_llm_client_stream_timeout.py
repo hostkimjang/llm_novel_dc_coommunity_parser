@@ -33,8 +33,8 @@ class LLMClientStreamTimeoutTest(unittest.TestCase):
                 return None
 
             def iter_text(self):
-                yield 'data: {"choices":[{"delta":{"content":"{\\"ok\\":true}"},"finish_reason":null}]}\n'
-                yield 'data: {"choices":[{"delta":{},"finish_reason":"stop"}]}\n'
+                yield 'data: {"model":"Qwen-resolved","choices":[{"delta":{"content":"{\\"ok\\":true}"},"finish_reason":null}]}\n'
+                yield 'data: {"model":"Qwen-resolved","usage":{"prompt_tokens":2,"completion_tokens":1,"total_tokens":3},"choices":[{"delta":{},"finish_reason":"stop"}]}\n'
                 yield "data: [DONE]\n"
 
         seen = {}
@@ -68,6 +68,9 @@ class LLMClientStreamTimeoutTest(unittest.TestCase):
         self.assertIsInstance(seen["timeout"], httpx.Timeout)
         self.assertEqual(seen["timeout"].read, 7.0)
         self.assertEqual(seen["timeout"].connect, 99.0)
+        self.assertEqual(client.last_model, "Qwen-resolved")
+        self.assertEqual(client.last_usage_provenance, "PROVIDER_REPORTED")
+        self.assertEqual(client.last_usage["total_tokens"], 3)
 
     def test_stream_chat_http_first_token_timeout_returns_failure_json(self):
         class _SlowHeartbeatStreamResponse:

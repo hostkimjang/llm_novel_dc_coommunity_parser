@@ -21,9 +21,9 @@ V2 목표: input -> AgenticPipeline -> [기본 OFF shadow adapter]
 
 ## 이번 구현과 검증
 
-- `src/llm_batch/pipeline_stage_runtime_adapter.py`: search stage에만 명시 주입되는 기본 OFF limiter/cache/singleflight adapter다. 구형 checkpoint의 미주입 상태는 legacy 경로로 유지한다.
-- `src/llm_batch/decision_ledger_dual_write.py`: legacy 우선 dual-write, V2-root coordination lock, restart reconcile, one-way rollback latch, cross-adapter rollback, receipt identity coverage를 제공한다. 자동 production enable은 금지한다.
-- `src/llm_batch/confidence_report.py`: `typed_confidence_report_v1`은 producer completion, CandidateSet recall readiness, NIL 포함 확률 공간, percentage 의미와 source/label/calibration/prediction artifact 결속을 validation한다.
+- `src/llm_batch/runtime/pipeline_stage_runtime_adapter.py`: search stage에만 명시 주입되는 기본 OFF limiter/cache/singleflight adapter다. 구형 checkpoint의 미주입 상태는 legacy 경로로 유지한다.
+- `src/llm_batch/ledger/decision_ledger_dual_write.py`: legacy 우선 dual-write, V2-root coordination lock, restart reconcile, one-way rollback latch, cross-adapter rollback, receipt identity coverage를 제공한다. 자동 production enable은 금지한다.
+- `src/llm_batch/grounding/confidence_report.py`: `typed_confidence_report_v1`은 producer completion, CandidateSet recall readiness, NIL 포함 확률 공간, percentage 의미와 source/label/calibration/prediction artifact 결속을 validation한다.
 - `tools/read_typed_confidence_metrics.py`: JSONL을 무쓰기 재독해 policy threshold 없이 지표를 계산한다. non-actual/synthetic/uncalibrated input은 `NOT_ESTIMABLE`로 닫는다.
 - `tests/fixtures/typed_confidence_source_less_contract_v1.jsonl`: source-less reader 계약 fixture다. 결과는 `NOT_ESTIMABLE_NOT_FROZEN_ACTUAL`이며 실제 개선 효과가 아니다.
 - `tools/validate_launch_packet_intake.py`: 실제 실행 없이 packet·manifest·정책·동일 frozen input의 BEFORE/AFTER 명령을 점검하고 미입력은 `WAITING_EXTERNAL_INPUT`으로 닫는다.

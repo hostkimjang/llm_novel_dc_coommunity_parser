@@ -4,7 +4,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from src.llm_batch.decision_ledger_v2_mirror import read
+from src.llm_batch.ledger.decision_ledger_v2_mirror import read
 from tools.run_decision_ledger_v2_mirror_canary import run
 
 

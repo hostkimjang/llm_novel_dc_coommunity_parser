@@ -1,3 +1,9 @@
+"""레거시 batch/staged 실행을 노출하는 얇은 CLI 어댑터.
+
+실제 처리 로직은 ``pipelines`` 패키지에 두고 이 모듈은 인자 해석과 입출력
+경로 선택만 담당한다.
+"""
+
 from __future__ import annotations
 
 import argparse
@@ -7,9 +13,9 @@ import sys
 from pathlib import Path
 from typing import Any, List
 
-from .models import OutputItem
+from .domain.models import OutputItem
 from .llm.client import LLMClient
-from .pipeline import load_batch_from_file, load_batch_from_text, run_batch
+from .pipelines.legacy import load_batch_from_file, load_batch_from_text, run_batch
 
 
 def _serialize(outputs: List[Any]) -> str:
@@ -121,8 +127,8 @@ def main() -> None:
 
     # Staged pipeline mode (multi-expert)
     if args.staged:
-        from .staged_pipeline import run_staged_pipeline, StagedPipeline, _ts
-        from .pipeline import _load_json_items, _partition_items
+        from .pipelines.staged import run_staged_pipeline, StagedPipeline, _ts
+        from .pipelines.legacy import _load_json_items, _partition_items
         
         if not args.input:
             print("Error: --staged requires --input file", file=sys.stderr)
@@ -183,4 +189,3 @@ def main() -> None:
         Path(args.output).write_text(payload, encoding="utf-8")
     else:
         print(payload)
-

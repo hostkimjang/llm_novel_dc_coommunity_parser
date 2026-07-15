@@ -4,7 +4,7 @@ from pathlib import Path
 import tempfile
 import unittest
 from tools.build_stage_budget_receipt import build
-from src.llm_batch.stage_budget import read_stage_budget_receipt
+from src.llm_batch.runtime.stage_budget import read_stage_budget_receipt
 
 class StageBudgetReceiptToolTests(unittest.TestCase):
  def test_writes_independently_readable_shadow_receipt(self):

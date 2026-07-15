@@ -9,7 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from llm_batch.agentic_pipeline import AgenticPipeline  # noqa: E402
 from llm_batch.experts.discourse import DiscourseAnalyzer  # noqa: E402
 from llm_batch.experts.orchestrator import ConversationContext, ExpertType, Orchestrator  # noqa: E402
-from llm_batch.models import DetectedTitle  # noqa: E402
+from llm_batch.domain.models import DetectedTitle  # noqa: E402
 
 
 class DummyMCP:

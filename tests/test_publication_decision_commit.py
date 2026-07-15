@@ -3,6 +3,7 @@ from __future__ import annotations
 from concurrent.futures import ThreadPoolExecutor
 from copy import deepcopy
 from dataclasses import FrozenInstanceError
+import inspect
 import json
 import os
 from pathlib import Path
@@ -10,7 +11,18 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from types import SimpleNamespace
 from unittest.mock import patch
+
+import expert_main
+from src.llm_batch.agentic_pipeline import AgenticPipeline
+from src.llm_batch.domain.batch_context import (
+    BATCH_CONTEXT_LEARNING_ENVELOPE_SCHEMA,
+    BATCH_CONTEXT_LEARNING_MAX_CHARACTERS,
+    BatchContextMemory,
+)
+from src.llm_batch.experts.orchestrator import ExpertType
+from src.llm_batch.domain.models import PickvelOutputItemV2
 
 from src.llm_batch.promotion_gate import (
     EvidenceRecord,
@@ -19,7 +31,7 @@ from src.llm_batch.promotion_gate import (
     apply_publish_contract,
     evaluate_publish_contract,
 )
-from src.llm_batch.publication_commit import (
+from src.llm_batch.ledger.publication_commit import (
     PUBLICATION_COMMIT_OWNER,
     PUBLICATION_COMMIT_SCHEMA,
     PublicationCommitError,
@@ -32,6 +44,73 @@ from src.llm_batch.publication_commit import (
     compute_publication_decision_commit,
     validate_publication_result_commit,
 )
+
+
+class _DummyLLM:
+    pass
+
+
+class _DummyMCP:
+    pass
+
+
+class _RecordingBatchContext:
+    def __init__(self, *, enabled: bool = True) -> None:
+        self.enabled = enabled
+        self.learned: list[dict] = []
+        self.learning_kwargs: list[dict] = []
+
+    def learn_from_result(self, result: dict, **kwargs) -> None:
+        self.learned.append(result)
+        self.learning_kwargs.append(kwargs)
+
+
+class _EnvelopeContext:
+    def __init__(self) -> None:
+        self.snippet_hints = {
+            "author_hints": [
+                {
+                    "name": "테스트 작가",
+                    "source": "url_fetch_platform",
+                    "raw_prompt": "DO_NOT_PERSIST_AUTHOR_PROMPT",
+                }
+            ]
+        }
+        self.fetched_page_info = [
+            {
+                "url": "https://namu.wiki/w/test",
+                "page_title": "테스트",
+                "content": "DO_NOT_PERSIST_RAW_PAGE",
+            }
+        ]
+
+    def get_expert_output(self, expert_type):
+        if expert_type == ExpertType.DECODER:
+            return {
+                "decoded_terms": [
+                    {
+                        "original": "작품약칭",
+                        "best_match": {
+                            "title": "정식 작품",
+                            "raw_snippet": "DO_NOT_PERSIST_MATCH_SNIPPET",
+                        },
+                        "source_role": "work_alias",
+                        "raw_prompt": "DO_NOT_PERSIST_DECODER_PROMPT",
+                    }
+                ]
+            }
+        if expert_type == ExpertType.VERIFIER:
+            return {
+                "verification_result": {
+                    "confirmed_characters": [
+                        "주인공",
+                        "주인공",
+                        *[f"인물{i}" for i in range(40)],
+                    ],
+                    "raw_snippet": "DO_NOT_PERSIST_VERIFIER_SNIPPET",
+                }
+            }
+        return {}
 
 
 def _scope_descriptor(post_ids=(101, 102)):
@@ -719,7 +798,7 @@ class PublicationDecisionCommitTest(unittest.TestCase):
         )
         worker = (
             "import json,sys; "
-            "from src.llm_batch.publication_commit import "
+            "from src.llm_batch.ledger.publication_commit import "
             "PublicationCommitRegistry,PublicationScopeDescriptor,commit_publication_result; "
             "descriptor=PublicationScopeDescriptor.from_dict(json.loads(sys.argv[2])); "
             "registry=PublicationCommitRegistry(sys.argv[1],scope_descriptor=descriptor,create_new=False); "
@@ -994,6 +1073,279 @@ class PublicationDecisionCommitTest(unittest.TestCase):
     def test_scope_rejects_duplicate_post_ids(self) -> None:
         with self.assertRaisesRegex(PublicationCommitError, "must be unique"):
             _scope_id((101, 101))
+
+    def test_canonical_publish_envelope_learns_alias_author_character_after_commit_and_replay(
+        self,
+    ) -> None:
+        pipeline = AgenticPipeline(llm=_DummyLLM(), mcp=_DummyMCP())
+        envelope = pipeline._build_batch_context_learning_envelope(_EnvelopeContext())
+        serialized_model = PickvelOutputItemV2(
+            post_id=101,
+            identity={"is_relevant": True},
+            batch_context_learning_envelope=envelope,
+        ).model_dump()
+        canonical_result = _valid_result(
+            post_id=101,
+            publish=True,
+            candidate_title="정식 작품",
+        )
+        canonical_result["analysis_result"]["batch_context_learning_envelope"] = (
+            serialized_model["batch_context_learning_envelope"]
+        )
+        registry = self.registry()
+        receipt, created = commit_publication_result(
+            canonical_result,
+            registry=registry,
+            attempt_run_id="attempt-1",
+            input_index=1,
+            post_id=101,
+        )
+        stored_result = registry.result(101)
+
+        memory = BatchContextMemory(enabled=True)
+        learned = expert_main._learn_batch_context_from_canonical_publication(
+            memory,
+            stored_result,
+            receipt,
+            created=created,
+        )
+
+        self.assertTrue(learned)
+        self.assertEqual(memory.get_abbreviation("작품약칭"), "정식 작품")
+        self.assertEqual(memory.get_author_works("테스트 작가")["title"], "정식 작품")
+        self.assertEqual(memory.get_character_work("주인공"), "정식 작품")
+
+        reloaded = self.registry(create_new=False)
+        replay_result = reloaded.result(101)
+        replay_receipt = reloaded.receipts()[0]
+        replay_memory = BatchContextMemory(enabled=True)
+        replay_learned = expert_main._learn_batch_context_from_canonical_publication(
+            replay_memory,
+            replay_result,
+            replay_receipt,
+            created=True,
+        )
+
+        self.assertTrue(replay_learned)
+        self.assertEqual(replay_memory.get_abbreviation("작품약칭"), "정식 작품")
+        self.assertEqual(
+            replay_memory.get_author_works("테스트 작가")["title"],
+            "정식 작품",
+        )
+        self.assertEqual(replay_memory.get_character_work("주인공"), "정식 작품")
+
+    def test_learning_envelope_is_bounded_allowlisted_json_safe_and_omits_namu_raw(self) -> None:
+        pipeline = AgenticPipeline(llm=_DummyLLM(), mcp=_DummyMCP())
+        envelope = pipeline._build_batch_context_learning_envelope(_EnvelopeContext())
+        serialized = json.dumps(envelope, ensure_ascii=False, sort_keys=True)
+
+        self.assertEqual(
+            envelope["schema_version"],
+            BATCH_CONTEXT_LEARNING_ENVELOPE_SCHEMA,
+        )
+        self.assertEqual(
+            set(envelope),
+            {
+                "schema_version",
+                "decoded_terms",
+                "identified_author",
+                "identified_characters",
+            },
+        )
+        self.assertEqual(
+            envelope["decoded_terms"],
+            [
+                {
+                    "original": "작품약칭",
+                    "source_role": "work_alias",
+                    "best_match": {"title": "정식 작품"},
+                }
+            ],
+        )
+        self.assertEqual(envelope["identified_author"], "테스트 작가")
+        self.assertEqual(
+            len(envelope["identified_characters"]),
+            BATCH_CONTEXT_LEARNING_MAX_CHARACTERS,
+        )
+        self.assertEqual(envelope["identified_characters"].count("주인공"), 1)
+        for forbidden in (
+            "DO_NOT_PERSIST",
+            "raw_prompt",
+            "raw_snippet",
+            "fetched_page_info",
+            "namu.wiki",
+        ):
+            self.assertNotIn(forbidden, serialized)
+
+    def test_learning_envelope_assignment_is_validated_and_bounded(self) -> None:
+        result = PickvelOutputItemV2(
+            post_id=101,
+            identity={"is_relevant": True},
+        )
+        with self.assertRaises(ValueError):
+            result.batch_context_learning_envelope = {
+                "schema_version": "untrusted_schema",
+                "raw_prompt": "DO_NOT_PERSIST",
+            }
+
+        result.batch_context_learning_envelope = {
+            "schema_version": BATCH_CONTEXT_LEARNING_ENVELOPE_SCHEMA,
+            "decoded_terms": [],
+            "identified_author": "가" * 1000,
+            "identified_characters": [],
+            "raw_prompt": "DO_NOT_PERSIST",
+        }
+        envelope = result.model_dump()["batch_context_learning_envelope"]
+        self.assertIsNotNone(envelope)
+        self.assertNotIn("raw_prompt", envelope)
+        self.assertLess(len(envelope["identified_author"]), 1000)
+
+    def test_non_publish_candidate_and_duplicate_results_do_not_learn_batch_context(self) -> None:
+        cases = [
+            (
+                "hold",
+                _valid_result(post_id=101, publish=False),
+                SimpleNamespace(outcome="HOLD", publish_allowed=False),
+                True,
+            ),
+            (
+                "error_hold",
+                {"post_id": 101, "error": "provider failed"},
+                SimpleNamespace(outcome="ERROR_HOLD", publish_allowed=False),
+                True,
+            ),
+            (
+                "candidate_only",
+                {
+                    "post_id": 101,
+                    "analysis_result": {
+                        "identity": {
+                            "is_relevant": True,
+                            "candidate_title": "검증 전 후보",
+                            "promotion_decision": {"publish_allowed": False},
+                        }
+                    },
+                },
+                SimpleNamespace(outcome="HOLD", publish_allowed=False),
+                True,
+            ),
+            (
+                "duplicate_same_run",
+                _valid_result(post_id=101, publish=True),
+                SimpleNamespace(outcome="PUBLISH", publish_allowed=True),
+                False,
+            ),
+        ]
+
+        for label, result, receipt, created in cases:
+            with self.subTest(label=label):
+                analysis_result = result.setdefault("analysis_result", {})
+                analysis_result["batch_context_learning_envelope"] = {
+                    "schema_version": BATCH_CONTEXT_LEARNING_ENVELOPE_SCHEMA,
+                    "decoded_terms": [
+                        {
+                            "original": "차단약칭",
+                            "best_match": {"title": "차단 작품"},
+                        }
+                    ],
+                    "identified_author": "차단 작가",
+                    "identified_characters": ["차단 인물"],
+                }
+                memory = _RecordingBatchContext()
+                learned = expert_main._learn_batch_context_from_canonical_publication(
+                    memory,
+                    result,
+                    receipt,
+                    created=created,
+                )
+                self.assertFalse(learned)
+                self.assertEqual(memory.learned, [])
+                self.assertEqual(memory.learning_kwargs, [])
+
+    def test_pipeline_inline_batch_context_learning_requires_explicit_opt_in(self) -> None:
+        memory = _RecordingBatchContext()
+        pipeline = AgenticPipeline(
+            llm=_DummyLLM(),
+            mcp=_DummyMCP(),
+            parallel_count=2,
+            batch_context=memory,
+            batch_context_learning_enabled=False,
+        )
+        self.assertFalse(pipeline.batch_context_learning_enabled)
+        default_pipeline = AgenticPipeline(llm=_DummyLLM(), mcp=_DummyMCP())
+        self.assertFalse(default_pipeline.batch_context_learning_enabled)
+
+        ctx = SimpleNamespace()
+        result = SimpleNamespace(identity=SimpleNamespace(is_relevant=True))
+        post = SimpleNamespace(post_id=301, title="테스트")
+        with patch.object(pipeline.orchestrator, "process", return_value=ctx), patch.object(
+            pipeline, "_post_to_dict", return_value={}
+        ), patch.object(pipeline, "_extract_comments", return_value=[]), patch.object(
+            pipeline, "_maybe_enrich_post_images", return_value={}
+        ), patch.object(pipeline, "_context_to_output", return_value=result), patch.object(
+            pipeline, "_learn_batch_context"
+        ) as learn, patch.object(pipeline, "_log_result"), patch.object(
+            pipeline, "_append_active_learning_queue"
+        ):
+            pipeline.process_post(post)
+            learn.assert_not_called()
+
+            pipeline.batch_context_learning_enabled = True
+            pipeline.process_post(post)
+            learn.assert_called_once_with(ctx, result)
+
+    def test_post_commit_batch_context_learning_drains_in_input_order(self) -> None:
+        memory = _RecordingBatchContext()
+        pending = {}
+        publish = SimpleNamespace(outcome="PUBLISH", publish_allowed=True)
+        hold = SimpleNamespace(outcome="HOLD", publish_allowed=False)
+        second = _valid_result(post_id=102, publish=True, candidate_title="두 번째")
+        first = _valid_result(post_id=101, publish=False, candidate_title="첫 번째")
+
+        pending[2] = (second, publish, True)
+        next_index = expert_main._drain_ordered_batch_context_learning(
+            memory,
+            pending,
+            next_input_index=1,
+        )
+        self.assertEqual(next_index, 1)
+        self.assertEqual(memory.learned, [])
+
+        pending[1] = (first, hold, True)
+        next_index = expert_main._drain_ordered_batch_context_learning(
+            memory,
+            pending,
+            next_input_index=next_index,
+        )
+        self.assertEqual(next_index, 3)
+        self.assertEqual(
+            [row["post_id"] for row in memory.learned],
+            [102],
+        )
+        self.assertEqual(pending, {})
+
+    def test_expert_main_factory_and_restart_replay_use_post_commit_learning(self) -> None:
+        source = inspect.getsource(expert_main.main)
+        factory_source = source[
+            source.index("def _create_pipeline") : source.index(
+                "def _decision_call_row_attempt_id"
+            )
+        ]
+        replay_source = source[
+            source.index("for _replay_index, (_replay_result, _replay_receipt) in sorted") :
+            source.index("def _finalize_slang_db")
+        ]
+        commit_source = source[
+            source.index("def _commit_final_result") : source.index("# 📊 대시보드: batch_start")
+        ]
+
+        self.assertIn("batch_context=_batch_context", factory_source)
+        self.assertIn("batch_context_learning_enabled=False", factory_source)
+        self.assertIn("_queue_batch_context_publication_learning", replay_source)
+        self.assertIn("created=True", replay_source)
+        self.assertNotIn("_batch_context.learn_from_result", replay_source)
+        self.assertIn("_queue_batch_context_publication_learning", commit_source)
+        self.assertIn("created=created", commit_source)
 
 
 if __name__ == "__main__":

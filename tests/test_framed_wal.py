@@ -4,7 +4,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from llm_batch.framed_wal import FramedWAL, FramedWalError, MAGIC, _exclusive_file_lock
+from llm_batch.ledger.framed_wal import FramedWAL, FramedWalError, MAGIC, _exclusive_file_lock
 
 
 class FramedWalTests(unittest.TestCase):

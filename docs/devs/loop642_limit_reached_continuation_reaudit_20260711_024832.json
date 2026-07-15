@@ -1,0 +1,108 @@
+{
+  "report_type": "limit_reached_continuation_reaudit",
+  "generated_at": "2026-07-11T02:48:32+09:00",
+  "language": "ko",
+  "gate": "LIMIT_REACHED_HANDOFF_RECONFIRMED",
+  "outcome": "LIMIT_REACHED_HANDOFF",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "production_scan_approval": false,
+  "git": {
+    "head": "b3db7b4cb70fcd362738a23c561a4696e711fd9b",
+    "branch": "goal/3202-slice-rank1-3",
+    "worktree_dirty_preserved": true
+  },
+  "live_state": {
+    "expert_main_process_count": 0,
+    "dashboard_http_status": 200,
+    "dashboard_process_chain_count": 2,
+    "dashboard_batch_running": false,
+    "dashboard_done": "18/18",
+    "dashboard_is_approval_evidence": false
+  },
+  "runtime_fingerprint": {
+    "expected": "b035ffcd2317e8706a03dddb646e5dee1ab258054d63f84707e3e9155882aa06",
+    "observed": "b035ffcd2317e8706a03dddb646e5dee1ab258054d63f84707e3e9155882aa06",
+    "file_count": 58,
+    "match": true,
+    "fingerprint_bound_manifest_count": 1
+  },
+  "immutable_golden": {
+    "run_id": "20260711_012016_205267",
+    "runtime": "18/18/0/0",
+    "result_sha256": "1a1c7a85bfdaf759692c410fec04037b12df98280f97336c7bd9eae7014febfb",
+    "manifest_sha256": "4daf44e6f0415aeba0ff034b849ca633fc492803dd83f5a18a624ab7c2bfd0da",
+    "checkpoint_sha256": "2e9b1afcb38d51d8aafe25e80240313efa14bd05d93defc522ad3dc709bd5ec1",
+    "pending_sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+    "exact_once_manifest_count": 1,
+    "n5_i7_artifact_count": 0,
+    "fresh375_i7_artifact_count": 0
+  },
+  "artifact_immutability": {
+    "sha256_readback_match": true,
+    "exact_once_no_rerun_policy": true,
+    "filesystem_readonly": false,
+    "interpretation": "SHA와 exact-once/no-rerun 계약으로 봉인됐지만 Windows ReadOnly 속성으로 강제된 OS-level immutable artifact는 아니다.",
+    "attributes_changed_in_this_reaudit": false
+  },
+  "hard_residual": {
+    "post_id": 11698880,
+    "expected_title": "가챠 중독자의 퓨전펑크 생활",
+    "expected_url": "https://novelpia.com/novel/387014",
+    "published_title": "아카데미 생존 갤러리",
+    "published_url": "https://novelpia.com/novel/380218",
+    "publish_allowed": true,
+    "candidate_preserved": false,
+    "bypassed_gate": false,
+    "publication_contract_violation": false,
+    "unsafe_publish": true,
+    "wrong_work": true,
+    "true_semantic_regression": true,
+    "actionable_unfixed": true,
+    "safe_terminal_now": false,
+    "safe_terminalization_without_new_intervention": false,
+    "reason": "immutable runtime row가 wrong-work public identity를 실제 게시했다. 문서 또는 adjudication만으로 public identity를 null, publish_allowed=false 상태로 바꾸는 것은 runtime 증거를 변경하지 못하며 self-authored semantic GO가 된다."
+  },
+  "bounded_authority_audit": {
+    "automatic_i8_allowed": false,
+    "same_fingerprint_rerun_allowed": false,
+    "n5_allowed": false,
+    "fresh375_allowed": false,
+    "new_resolution_intervention_requires_explicit_goal": true,
+    "current_user_steering_only_changes_subagent_usage": true,
+    "same_user_authority_blocker_goal_turn_streak": 2,
+    "blocked_threshold": 3,
+    "update_goal_blocked_called": false,
+    "next_state": "WAIT_EXPLICIT_ARCHITECTURE_MODEL_GOAL"
+  },
+  "progress_vector": {
+    "integrity_defect": 0,
+    "missing_extra_duplicate": 0,
+    "publication_contract_violation": 0,
+    "bypassed_gate": 0,
+    "required_search_vlm_blocker": 0,
+    "unreviewed_search_rows": 0,
+    "unreviewed_adjusted_rows": 0,
+    "unsafe_publish": 1,
+    "wrong_work": 1,
+    "true_semantic_regression": 1,
+    "actionable_unfixed": 1,
+    "material_progress": false,
+    "docs_only_changes_count_as_progress": false
+  },
+  "documentation_consistency": {
+    "stale_current_markers_found": [
+      "docs/devs/OPERATION_QUALITY_CHECKLIST.md Loop641 Current Gate",
+      "docs/devs/IMPROVEMENT_REGISTER.md Loop641 Current gate",
+      "README.md 2026-07-01 operating status"
+    ],
+    "action": "historical marker 또는 최신 Loop642 handoff로 동기화"
+  },
+  "evidence": [
+    "docs/devs/loop642_promotion_contract_golden18_r8_i7_integrity_20260711_015147.json",
+    "docs/devs/loop642_promotion_contract_golden18_r8_i7_failure_report_20260711_015147.json",
+    "docs/devs/loop642_promotion_contract_golden18_r8_i7_plateau_audit_20260711_015147.json",
+    "docs/devs/loop642_limit_reached_handoff_20260711_015147.json",
+    "out/regression_safe_grounding_20260626_000008_928006_loop01/canary/loop642_promotion_contract_golden18_r8_i7_result.json"
+  ]
+}

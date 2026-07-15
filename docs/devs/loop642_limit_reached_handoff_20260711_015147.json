@@ -1,0 +1,53 @@
+{
+  "report_type": "bounded_convergence_limit_reached_handoff",
+  "generated_at": "2026-07-11T01:51:47+09:00",
+  "outcome": "LIMIT_REACHED_HANDOFF",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "production_scan_approval": false,
+  "reason": "마지막 정상 개입 i7의 exact-once Golden18에서 high-severity wrong-work unsafe publish 1건 재발",
+  "completed_evidence": {
+    "i7_static_and_independent_audit": "GO_HARD_UNSAFE_0",
+    "fingerprint": "b035ffcd2317e8706a03dddb646e5dee1ab258054d63f84707e3e9155882aa06",
+    "golden_exact_once_run": "20260711_012016_205267",
+    "runtime_integrity": "18/18/0/0_GO",
+    "publication_contract": "GO_0_VIOLATIONS",
+    "search": "GO_REQUIRED_BLOCKER_0",
+    "golden": "NO-GO_17_OF_18",
+    "plateau_audit": "COMPLETE_1_OF_1_CLASSIFIED"
+  },
+  "not_executed_by_contract": {
+    "n5": "Golden hard GO 미충족",
+    "fresh375": "N5 미승인",
+    "production_100k_scan": "별도 goal"
+  },
+  "backlog": [
+    {
+      "id": "ARCH-MULTIWORK-TITLE-BODY-SUBJECT-CONFLICT",
+      "priority": "P0",
+      "type": "generalizable_fix",
+      "description": "title alias와 body character-specific exact official-detail 후보의 subject 충돌을 독립 판정하고 불확실 시 candidate-preserving public-null HOLD로 fail-close",
+      "seed_post_id": 11698880,
+      "hardcoding_forbidden": true,
+      "required_invariants": [
+        "publish_allowed=false on unresolved subject conflict",
+        "candidate_preserved=true",
+        "bypassed_gate=false",
+        "publication_violation=false",
+        "shared _post_discusses_work_as_work and PromotionDecision only"
+      ]
+    }
+  ],
+  "resume_conditions": [
+    "사용자가 i7 이후 새 resolution-enhancing architecture/model goal을 명시적으로 승인한다.",
+    "11698880을 seed로 하되 post_id/title literal 없이 positive/negative/adversarial tests를 먼저 추가한다.",
+    "새 runtime code tree fingerprint를 동결하고 i7 fingerprint를 재사용하지 않는다.",
+    "새 fingerprint Golden18을 정확히 1회 실행하며 expected/matcher를 결과에 맞춰 완화하지 않는다.",
+    "Golden hard GO 뒤에만 N=5 1회, N=5 GO 뒤에만 fresh375 1회를 실행한다."
+  ],
+  "resume_command": "/goal 새 architecture/model goal로 ARCH-MULTIWORK-TITLE-BODY-SUBJECT-CONFLICT를 일반화 구현하고, loop642_limit_reached_handoff_20260711_015147.json의 resume_conditions를 exact-once로 수행하라.",
+  "goal_status_tool": {
+    "update_goal_blocked_called": false,
+    "reason": "strict 3 consecutive external blocker 조건이 아니며 intervention budget limit handoff다."
+  }
+}

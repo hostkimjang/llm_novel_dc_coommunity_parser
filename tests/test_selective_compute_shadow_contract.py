@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import replace
 import unittest
 
-from src.llm_batch.selective_compute_shadow import (
+from src.llm_batch.measurement.selective_compute_shadow import (
     ACTION_ASSERT_NIL,
     ACTION_NONE,
     COST_STATUS_PARTIAL_LOG,

@@ -8,7 +8,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from src.llm_batch.candidate_set_calibration_shadow import (
+from src.llm_batch.grounding.candidate_set_calibration_shadow import (
     CALIBRATED_BOUND_STATUS,
     CALIBRATION_SHADOW_SCHEMA,
     CALIBRATION_UNAVAILABLE_SCHEMA,
@@ -25,7 +25,7 @@ from src.llm_batch.candidate_set_calibration_shadow import (
     calibration_shadow_from_dict,
     evaluate_frozen_holdout,
 )
-from src.llm_batch.candidate_set_shadow import (
+from src.llm_batch.grounding.candidate_set_shadow import (
     NIL_LABEL,
     PROBABILITY_STATUS,
     build_uncalibrated_selective_shadow,
@@ -36,7 +36,7 @@ from src.llm_batch.promotion_gate import (
     RetrievalState,
     can_publish_title,
 )
-from src.llm_batch.calibration_actual_readback import build_readback_manifest, canonical_bytes, expected_universe_readback, prediction_payload_readback, producer_coverage_receipt, sha256_bytes, snapshot_artifact
+from src.llm_batch.grounding.calibration_actual_readback import build_readback_manifest, canonical_bytes, expected_universe_readback, prediction_payload_readback, producer_coverage_receipt, sha256_bytes, snapshot_artifact
 
 
 SHA_A = "a" * 64

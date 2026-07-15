@@ -9,13 +9,13 @@ from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from llm_batch.agentic_pipeline import AgenticPipeline  # noqa: E402
-from llm_batch.candidate_audit import (  # noqa: E402
+from llm_batch.grounding.candidate_audit import (  # noqa: E402
     apply_candidate_audit_fields,
     build_candidate_audit_fields,
     has_authoritative_publish_contract,
 )
 from llm_batch.experts.orchestrator import ConversationContext, ExpertType  # noqa: E402
-from llm_batch.models import DetectedTitle  # noqa: E402
+from llm_batch.domain.models import DetectedTitle  # noqa: E402
 from llm_batch.promotion_gate import (  # noqa: E402
     candidate_inventory_evidence_from_sources,
     candidate_inventory_pairs,
@@ -783,7 +783,7 @@ class PromotionGateContractTest(unittest.TestCase):
         self.assertFalse(decision.bypassed_gate)
         self.assertIn("official_title_looks_like_search_snippet", decision.reason_codes)
 
-    def test_current_work_scope_normalizes_stale_context_only_reason(self):
+    def test_current_work_scope_cannot_override_explicit_context_only_resolution(self):
         state = GroundingState(
             post_id=11679547,
             candidate_title="테스트 작품",
@@ -815,12 +815,234 @@ class PromotionGateContractTest(unittest.TestCase):
             ],
         )
 
-        self.assertEqual(decision.status, "publish")
+        self.assertEqual(decision.status, "candidate_only")
+        self.assertFalse(decision.publish_allowed)
+        self.assertTrue(decision.candidate_preserved)
         self.assertIn("row_discusses_work_as_work", decision.reason_codes)
         self.assertIn("scope_current_work", decision.reason_codes)
+        self.assertIn("title_resolution_state_not_publishable", decision.reason_codes)
+        self.assertIn("work_resolution_not_publishable", decision.reason_codes)
         self.assertNotIn("context_only", decision.reason_codes)
         self.assertNotIn("community_banter", decision.reason_codes)
         self.assertNotIn("scope_not_current_work", decision.reason_codes)
+
+    def test_current_work_scope_cannot_publish_unresolved_work_state(self):
+        state = GroundingState(
+            post_id=11716475,
+            candidate_title="일편독심[一片毒心]",
+            candidate_url="https://novelpia.com/novel/84",
+            source="official_url_recall_gate",
+            official_title_exists=True,
+            row_discusses_work_as_work=True,
+            title_resolution_state="resolved",
+            work_resolution="unresolved",
+            discussion_type="review",
+            scope=ScopeState(
+                scope_kind="current_work",
+                confidence="high",
+                direct_bridge_sources=["row_discusses_work_as_work"],
+            ),
+        )
+
+        decision = can_publish_title(
+            state,
+            [
+                EvidenceRecord(
+                    kind="work_bridge",
+                    strength="strong",
+                    source_path_or_snippet=state.candidate_title,
+                    supports_publish=True,
+                    reason_code="row_discusses_work_as_work",
+                    candidate_title=state.candidate_title,
+                )
+            ],
+        )
+
+        self.assertEqual(decision.status, "candidate_only")
+        self.assertFalse(decision.publish_allowed)
+        self.assertTrue(decision.candidate_preserved)
+        self.assertIn("work_resolution_not_publishable", decision.reason_codes)
+        self.assertNotIn("title_resolution_state_not_publishable", decision.reason_codes)
+
+    def test_canonical_contract_normalizes_blocked_resolution_and_mirrors_both_reasons(self):
+        state = GroundingState(
+            post_id=11716475,
+            candidate_title="일편독심[一片毒心]",
+            candidate_url="https://novelpia.com/novel/84",
+            source="official_url_recall_gate",
+            official_title_exists=True,
+            row_discusses_work_as_work=True,
+            title_resolution_state="resolved",
+            work_resolution="unresolved",
+            discussion_type="review",
+            scope=ScopeState(
+                scope_kind="current_work",
+                confidence="high",
+                direct_bridge_sources=["row_discusses_work_as_work"],
+            ),
+        )
+        evidence = [
+            EvidenceRecord(
+                kind="work_bridge",
+                strength="strong",
+                source_path_or_snippet=state.candidate_title,
+                supports_publish=True,
+                reason_code="row_discusses_work_as_work",
+                candidate_title=state.candidate_title,
+            )
+        ]
+
+        contract = evaluate_publish_contract(state, evidence)
+        identity = {"novel_identity": {"official_title": state.candidate_title}}
+        apply_publish_contract(identity, contract)
+
+        self.assertEqual(contract.state.title_resolution_state, "unresolved_matchable")
+        self.assertFalse(contract.decision.publish_allowed)
+        self.assertIn(
+            "blocked_candidate_resolution_state_normalized",
+            contract.decision.reason_codes,
+        )
+        self.assertIn(
+            "title_resolution_state_not_publishable",
+            contract.decision.reason_codes,
+        )
+        self.assertIn("work_resolution_not_publishable", contract.decision.reason_codes)
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertEqual(identity["candidate_ledger_status"], "promotion_blocked")
+        self.assertEqual(
+            identity["candidate_ledger"]["promotion_decision"],
+            identity["promotion_decision"],
+        )
+
+    def test_current_work_scope_still_publishes_resolved_state(self):
+        state = GroundingState(
+            post_id=11714907,
+            candidate_title="아카데미 생존 갤러리",
+            candidate_url="https://novelpia.com/novel/380218",
+            source="resolved_state_control",
+            official_title_exists=True,
+            row_discusses_work_as_work=True,
+            title_resolution_state="resolved",
+            work_resolution="resolved",
+            discussion_type="review",
+            scope=ScopeState(
+                scope_kind="current_work",
+                confidence="high",
+                direct_bridge_sources=["row_discusses_work_as_work"],
+            ),
+        )
+
+        decision = can_publish_title(
+            state,
+            [
+                EvidenceRecord(
+                    kind="work_bridge",
+                    strength="strong",
+                    source_path_or_snippet=state.candidate_title,
+                    supports_publish=True,
+                    reason_code="row_discusses_work_as_work",
+                    candidate_title=state.candidate_title,
+                )
+            ],
+        )
+
+        self.assertEqual(decision.status, "publish")
+        self.assertTrue(decision.publish_allowed)
+        self.assertNotIn("title_resolution_state_not_publishable", decision.reason_codes)
+        self.assertNotIn("work_resolution_not_publishable", decision.reason_codes)
+
+    def test_current_work_scope_blocks_every_explicit_hold_title_state(self):
+        for title_state in (
+            "unresolved_matchable",
+            "unresolvable_memory_query",
+            "context_only",
+            "author_new_work_context",
+            "ocr_explicit_title_unresolved",
+            "multi_work",
+            "adjacent",
+            "nonwork",
+            "technical_missing",
+            "future_hold_state",
+        ):
+            with self.subTest(title_resolution_state=title_state):
+                state = GroundingState(
+                    post_id=11714907,
+                    candidate_title="아카데미 생존 갤러리",
+                    official_title_exists=True,
+                    row_discusses_work_as_work=True,
+                    title_resolution_state=title_state,
+                    work_resolution="resolved",
+                    discussion_type="review",
+                    scope=ScopeState(
+                        scope_kind="current_work",
+                        confidence="high",
+                        direct_bridge_sources=["row_discusses_work_as_work"],
+                    ),
+                )
+                decision = can_publish_title(
+                    state,
+                    [
+                        EvidenceRecord(
+                            kind="work_bridge",
+                            strength="strong",
+                            source_path_or_snippet=state.candidate_title,
+                            supports_publish=True,
+                            reason_code="row_discusses_work_as_work",
+                            candidate_title=state.candidate_title,
+                        )
+                    ],
+                )
+
+                self.assertEqual(decision.status, "candidate_only")
+                self.assertFalse(decision.publish_allowed)
+                self.assertTrue(decision.candidate_preserved)
+                self.assertIn(
+                    "title_resolution_state_not_publishable",
+                    decision.reason_codes,
+                )
+
+    def test_current_work_scope_blocks_every_explicit_nonresolved_work_state(self):
+        for work_state in (
+            "unresolved",
+            "multi_work",
+            "none",
+            "hold",
+            "hold_unresolved",
+            "future_hold_state",
+        ):
+            with self.subTest(work_resolution=work_state):
+                state = GroundingState(
+                    post_id=11714907,
+                    candidate_title="아카데미 생존 갤러리",
+                    official_title_exists=True,
+                    row_discusses_work_as_work=True,
+                    title_resolution_state="resolved",
+                    work_resolution=work_state,
+                    discussion_type="review",
+                    scope=ScopeState(
+                        scope_kind="current_work",
+                        confidence="high",
+                        direct_bridge_sources=["row_discusses_work_as_work"],
+                    ),
+                )
+                decision = can_publish_title(
+                    state,
+                    [
+                        EvidenceRecord(
+                            kind="work_bridge",
+                            strength="strong",
+                            source_path_or_snippet=state.candidate_title,
+                            supports_publish=True,
+                            reason_code="row_discusses_work_as_work",
+                            candidate_title=state.candidate_title,
+                        )
+                    ],
+                )
+
+                self.assertEqual(decision.status, "candidate_only")
+                self.assertFalse(decision.publish_allowed)
+                self.assertTrue(decision.candidate_preserved)
+                self.assertIn("work_resolution_not_publishable", decision.reason_codes)
 
     def test_noncurrent_scope_normalizes_row_discussion_marker(self):
         state = GroundingState(

@@ -10,9 +10,9 @@ import threading
 import time
 import unittest
 
-from llm_batch.local_stage_gate import FileSingleflightLease, StageGateTimeout, StageSingleflightKey
-from llm_batch.shared_cache_contract import CacheNamespace, FileSharedCacheAdapter
-from llm_batch.shared_result_singleflight import FileSharedResultSingleflight
+from llm_batch.runtime.local_stage_gate import FileSingleflightLease, StageGateTimeout, StageSingleflightKey
+from llm_batch.runtime.shared_cache_contract import CacheNamespace, FileSharedCacheAdapter
+from llm_batch.runtime.shared_result_singleflight import FileSharedResultSingleflight
 
 
 class SharedResultSingleflightTests(unittest.TestCase):
@@ -49,7 +49,7 @@ class SharedResultSingleflightTests(unittest.TestCase):
     def test_child_leader_result_is_reused_by_parent_follower(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory); source_root = str(Path(__file__).resolve().parents[1] / "src"); env = dict(os.environ); env["PYTHONPATH"] = source_root + os.pathsep + env.get("PYTHONPATH", "")
-            code = "import json,sys,time; from pathlib import Path; from llm_batch.local_stage_gate import FileSingleflightLease,StageSingleflightKey; from llm_batch.shared_cache_contract import CacheNamespace,FileSharedCacheAdapter; from llm_batch.shared_result_singleflight import FileSharedResultSingleflight; r=Path(sys.argv[1]); n=CacheNamespace('a'*64,'scope','b'*64,'provider','model','c'*64); k=StageSingleflightKey('a'*64,'scope','b'*64,'stage','provider','model','c'*64); c=FileSharedResultSingleflight(FileSharedCacheAdapter(r/'cache',allow_write=True),FileSingleflightLease(r/'lease'),enabled=True); v,x=c.run(n,k,lambda:(time.sleep(.15),{'producer':'child'})[1],ttl_seconds=5,follower_timeout_ms=500,lease_timeout_ms=1000); print(json.dumps({'value':v,'outcome':x.outcome}))"
+            code = "import json,sys,time; from pathlib import Path; from llm_batch.runtime.local_stage_gate import FileSingleflightLease,StageSingleflightKey; from llm_batch.runtime.shared_cache_contract import CacheNamespace,FileSharedCacheAdapter; from llm_batch.runtime.shared_result_singleflight import FileSharedResultSingleflight; r=Path(sys.argv[1]); n=CacheNamespace('a'*64,'scope','b'*64,'provider','model','c'*64); k=StageSingleflightKey('a'*64,'scope','b'*64,'stage','provider','model','c'*64); c=FileSharedResultSingleflight(FileSharedCacheAdapter(r/'cache',allow_write=True),FileSingleflightLease(r/'lease'),enabled=True); v,x=c.run(n,k,lambda:(time.sleep(.15),{'producer':'child'})[1],ttl_seconds=5,follower_timeout_ms=500,lease_timeout_ms=1000); print(json.dumps({'value':v,'outcome':x.outcome}))"
             child = subprocess.Popen([sys.executable, "-c", code, str(root)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=env)
             lease_path = root / "lease" / f"{self._key().key()}.lease.json"; deadline = time.monotonic() + 2
             while not lease_path.is_file() and time.monotonic() < deadline: time.sleep(.01)

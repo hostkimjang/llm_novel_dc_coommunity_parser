@@ -1,0 +1,52 @@
+{
+  "report_type": "loop641_gate_tool_independent_audit",
+  "generated_at": "2026-07-10T05:48:00+09:00",
+  "gate": "GO_TOOL_CONTRACT_ONLY",
+  "semantic_quality": "REVIEW-LOCKED",
+  "full_scan_approval": false,
+  "runtime_pipeline_changed": false,
+  "relevant_runtime_fingerprint_changed": false,
+  "initial_independent_findings": {
+    "merge": [
+      "source/residual checkpoint global_idx 미결박",
+      "row model과 manifest model 불일치 허용",
+      "입력 수를 포함하는 raw config_hash의 잘못된 cross-run exact 비교"
+    ],
+    "adjudication": [
+      "self-authored empty compare로 375 GO 가능",
+      "blind packet/map tamper 미탐지",
+      "actual public leak와 golden positive loss 미검증",
+      "post_id 단일 key로 N=5 multi-variant union 불가",
+      "handcrafted validator receipt를 always-on이 신뢰"
+    ],
+    "search": [
+      "incomplete manifest와 shard count override 허용",
+      "status/counter schema와 row/run composition 미결박",
+      "summary 16 아래 detail shard 1개 허용",
+      "runtime 완료 전 postflight 허용",
+      "self-review terminal과 허위 artifact ref 허용",
+      "golden positive loss terminal 면제 가능"
+    ],
+    "flip": [
+      "safe_loss_flip_rate_probe.py 직접 실행 시 tools import 실패"
+    ]
+  },
+  "hardened_contract": {
+    "merge": "original panel/residual position exact binding, row-manifest-plan stable signature binding, component raw config hash separate accounting",
+    "adjudication": "actual source/baseline/after/golden recomputation, drift_id union, allow-list blind packet, packet/map rehash, actual publication and terminal validation, validator receipt readback",
+    "search": "375/16 fixed scope, complete manifest field presence, result/post-id/run composition hash binding, full per-shard detail, completion-after postflight, golden18 hard block, source-only terminal packet plus independent artifact hash",
+    "flip": "direct script repo-root bootstrap and entrypoint regression test"
+  },
+  "tests": {
+    "focused_passed": 86,
+    "command": ".venv312/Scripts/python.exe -m unittest tests.test_build_interrupted_run_residual tests.test_recover_expert_run_from_checkpoint tests.test_run_independent_plan tests.test_adjusted_collateral_adjudication tests.test_merge_interrupted_run_results tests.test_full375_search_adjudication_gate tests.test_always_on_regression_gates tests.test_safe_loss_flip_rate_probe -q",
+    "py_compile": "PASS"
+  },
+  "approval_boundary": {
+    "tool_contract_go_is_not_runtime_semantic_approval": true,
+    "loop641_must_reach_300_300_0_0": true,
+    "merged375_and_postrun_gates_required": true,
+    "runtime_code_change_waits_until_old_fingerprint_artifacts_are_frozen": true,
+    "production_full_scan_approval": false
+  }
+}

@@ -166,7 +166,7 @@ class Rank3DisplaceProtectionTest(unittest.TestCase):
     """fix1: rank3 unlock(locked=False) 후보가 다운스트림 final-semantic-reread demotion 으로 displace 되지
     않도록 resolved_recall_anchor 가 has_official_candidate 를 보존하는지 직접 검증."""
 
-    from llm_batch.models import DetectedTitle as _DT  # noqa
+    from llm_batch.domain.models import DetectedTitle as _DT  # noqa
 
     def _ctx(self):
         return _Ctx(
@@ -186,7 +186,7 @@ class Rank3DisplaceProtectionTest(unittest.TestCase):
         return p
 
     def _cand(self, *, recall_anchor):
-        from llm_batch.models import DetectedTitle
+        from llm_batch.domain.models import DetectedTitle
         return DetectedTitle(
             official_title="아카데미에서 살아남기",
             alias_or_mention="아생",

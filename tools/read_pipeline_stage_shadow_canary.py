@@ -8,7 +8,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path: sys.path.insert(0, str(ROOT))
 
-from src.llm_batch.pipeline_stage_shadow_canary import read as _read
+from src.llm_batch.runtime.pipeline_stage_shadow_canary import read as _read
 
 
 def read(path: Path) -> dict:

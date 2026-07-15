@@ -174,14 +174,27 @@ class AgenticPipelineSearchEvidenceTest(unittest.TestCase):
         pipeline = AgenticPipeline(llm=DummyLLM(), mcp=DummyMCP(), max_iterations=1)
         pipeline.heretic_url_fast_exact_official = False
         pipeline.heretic_url_eval_max = 2
-        ctx = DummyContext(search_results=[])
-
         expert_urls = [
             f"https://novelpia.com/novel/{300000 + idx}"
             for idx in range(5)
         ]
+        input_url = "https://novelpia.com/novel/299999"
+        # 현재 구현은 선택 작품과 연결되는 검색 근거가 있어야만 실제 페이지를 fetch한다.
+        # 이 테스트는 prefetch 게이트가 아니라 URL 평가 cap을 검증하므로 후보별 제목 근거를 제공한다.
+        selected_title = "괴담에 떨어져도 출근을 해야 하는구나"
+        ctx = DummyContext(
+            search_results=[
+                {
+                    "url": candidate_url,
+                    "title": selected_title,
+                    "content": f"{selected_title} 작품 상세",
+                }
+                for candidate_url in [input_url, *expert_urls]
+            ]
+        )
 
-        def fake_collect(_ctx):
+        # 실제 구현이 제목 범위를 전달해도 URL cap 계약만 검증하도록 받는다.
+        def fake_collect(_ctx, **_kwargs):
             return expert_urls
 
         fetched_urls: list[str] = []
@@ -193,7 +206,8 @@ class AgenticPipelineSearchEvidenceTest(unittest.TestCase):
                 "structured_info": {
                     "title": "다른 작품",
                     "page_title": "다른 작품",
-                    "content_status": "active",
+                    # 평가 cap 뒤에도 최종 URL은 채택되지 않도록 명시적인 삭제 상태를 사용한다.
+                    "content_status": "deleted",
                 },
                 "text_preview": "다른 작품",
             }
@@ -203,9 +217,9 @@ class AgenticPipelineSearchEvidenceTest(unittest.TestCase):
 
         self.assertIsNone(
             pipeline._validate_heretic_url(
-                "https://novelpia.com/novel/299999",
+                input_url,
                 ctx,
-                identified_title="괴담에 떨어져도 출근을 해야 하는구나",
+                identified_title=selected_title,
             )
         )
         self.assertEqual(len(fetched_urls), 2)

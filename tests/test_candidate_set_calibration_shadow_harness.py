@@ -8,12 +8,12 @@ from tempfile import TemporaryDirectory
 import unittest
 from unittest.mock import patch
 
-from src.llm_batch.calibration_actual_readback import snapshot_artifact
-from src.llm_batch.calibration_dataset_readiness import (
+from src.llm_batch.grounding.calibration_actual_readback import snapshot_artifact
+from src.llm_batch.grounding.calibration_dataset_readiness import (
     sha256_payload,
     validate_dataset_readiness_manifest,
 )
-from src.llm_batch.candidate_set_calibration_shadow import CalibrationEvaluationPolicy
+from src.llm_batch.grounding.candidate_set_calibration_shadow import CalibrationEvaluationPolicy
 from tools.run_candidate_set_calibration_shadow_harness import (
     ACTUAL_SOURCE_PAYLOAD_SCHEMA,
     ACTUAL_SOURCE_MANIFEST_SCHEMA,

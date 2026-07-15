@@ -1,5 +1,7 @@
 # Loop608 full_scan 실행 경로 계획
 
+> 2026-07-10 scope clarification: 이 문서의 `full_scan path`는 current-head homogeneous regression panel375 runtime과 post-run integrity/search/publication/golden/collateral/always-on gate 체인이다. Loop609는 이 경로의 이전 실행이었고 gate가 실패했다. 이후 성공한 panel375를 별도 full_scan으로 중복 실행하지 않는다. 779/1933/full 10만 production scan과 production `full_scan_approval`은 별도 goal이다. 반복/plateau/terminal 규칙은 `docs/devs/REGRESSION_SAFE_GROUNDING_BOUNDED_CONVERGENCE_PROTOCOL.md`를 따른다.
+
 Loop608 기준 residual 회계는 ordinary residual `0`까지 내려왔지만, full375 runtime count가 아직 없어서 goal은 완료가 아니다. 이 문서는 다음 full_scan 성격의 runtime 검증을 어떤 조건에서 실행하고, 어떤 게이트로 판정할지 고정한다.
 
 ## Loop609 실행 결과

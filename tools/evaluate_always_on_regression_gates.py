@@ -1,10 +1,45 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import re
+import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from tools.build_adjusted_collateral_adjudication import DERIVATION_VERSION
+from tools.build_adjusted_collateral_blind_packet import (
+    PRODUCTION_GOLDEN_ROWS,
+    PRODUCTION_PANEL_ROWS,
+)
+from tools.validate_adjusted_collateral_adjudication import (
+    VALIDATION_REPORT_TYPE,
+    VALIDATOR_VERSION,
+    current_validator_code_sha256,
+    validate_adjudication,
+    validation_receipt_payload,
+    validation_receipt_digest,
+)
+from tools.compare_completed779_improvement import load_json_or_jsonl
+
+
+PRODUCTION_GATE_CODE_PINS = {
+    "tools/build_adjusted_collateral_adjudication.py": (
+        "18aa9fa79243e0d73ff4348e15f5be5c8023ecfebef02fac1d1c3d0bb52afff2"
+    ),
+    "tools/build_adjusted_collateral_blind_packet.py": (
+        "22ffb968a56c2dc442e299562f01e579b74d48f6b670901ce8c2c8ea80a3d199"
+    ),
+    "tools/validate_adjusted_collateral_adjudication.py": (
+        "905c23802c3c2089c4cce0f1c4079cacc84fe7b5419a2d5c47c076548ca3d48c"
+    ),
+}
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -16,7 +51,9 @@ def load_json(path: Path) -> dict[str, Any]:
 
 def write_json(path: Path, payload: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    with path.open("x", encoding="utf-8", newline="\n") as handle:
+        json.dump(payload, handle, ensure_ascii=False, indent=2)
+        handle.write("\n")
 
 
 def _safe_int(value: Any) -> int | None:
@@ -28,6 +65,295 @@ def _safe_int(value: Any) -> int | None:
         return int(value)
     except (TypeError, ValueError):
         return None
+
+
+def _canonical_digest(value: Any) -> str:
+    return hashlib.sha256(
+        json.dumps(
+            value,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()
+
+
+def _is_sha256(value: Any) -> bool:
+    return bool(re.fullmatch(r"[0-9a-f]{64}", str(value or "")))
+
+
+def _file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _adjudication_binding_issues(
+    *,
+    adjudication: dict[str, Any],
+    collateral: dict[str, Any],
+    golden_audit: dict[str, Any],
+    expected_scope_rows: int,
+    expected_golden_rows: int,
+) -> list[str]:
+    issues: list[str] = []
+    for relative_path, expected_sha256 in PRODUCTION_GATE_CODE_PINS.items():
+        source_path = (ROOT / relative_path).resolve()
+        if not source_path.is_file() or _file_sha256(source_path) != expected_sha256:
+            issues.append(f"production_gate_code_pin_mismatch:{relative_path}")
+    collateral_digest = _canonical_digest(collateral)
+    changed_count = _safe_int(collateral.get("changed_post_count"))
+    if adjudication.get("report_type") != VALIDATION_REPORT_TYPE:
+        issues.append("validation_report_type_mismatch")
+    if adjudication.get("validator_version") != VALIDATOR_VERSION:
+        issues.append("validator_version_mismatch")
+    if adjudication.get("derivation_version") != DERIVATION_VERSION:
+        issues.append("derivation_version_mismatch")
+    if adjudication.get("validator_code_sha256") != current_validator_code_sha256():
+        issues.append("validator_code_sha256_mismatch")
+    if adjudication.get("source_compare_digest") != collateral_digest:
+        issues.append("source_compare_digest_mismatch")
+    if adjudication.get("authoritative_trust_gate") != "GO":
+        issues.append("authoritative_trust_gate_not_go")
+    for field in (
+        "trust_root_digest",
+        "bound_after_payload_sha256",
+        "raw_judge_receipt_sha256",
+    ):
+        if not _is_sha256(adjudication.get(field)):
+            issues.append(f"{field}_missing")
+    if _safe_int(adjudication.get("source_changed_count")) != changed_count:
+        issues.append("source_changed_count_mismatch")
+    if _safe_int(adjudication.get("drift_union_count")) != changed_count:
+        issues.append("drift_union_count_mismatch")
+    if _safe_int(adjudication.get("expected_scope_rows")) != expected_scope_rows:
+        issues.append("expected_scope_rows_mismatch")
+    if _safe_int(adjudication.get("expected_golden_rows")) != expected_golden_rows:
+        issues.append("expected_golden_rows_mismatch")
+    if not _is_sha256(adjudication.get("validated_payload_digest")):
+        issues.append("validated_payload_digest_missing")
+    if not _is_sha256(adjudication.get("collateral_binding_digest")):
+        issues.append("collateral_binding_digest_missing")
+    source_digests = adjudication.get("source_value_digests")
+    if not isinstance(source_digests, dict):
+        issues.append("source_value_digests_missing")
+    elif source_digests.get("collateral_compare") != collateral_digest:
+        issues.append("source_value_compare_digest_mismatch")
+    if isinstance(source_digests, dict) and source_digests.get("golden_audit") != _canonical_digest(
+        golden_audit
+    ):
+        issues.append("source_value_golden_audit_digest_mismatch")
+    if isinstance(source_digests, dict) and adjudication.get(
+        "bound_after_payload_sha256"
+    ) != source_digests.get("after_result"):
+        issues.append("bound_after_payload_digest_mismatch")
+    artifact_hashes = adjudication.get("source_artifact_hashes")
+    artifact_paths = adjudication.get("source_artifact_paths")
+    path_to_hash_field = {
+        "collateral_compare": "collateral_compare_sha256",
+        "baseline_result": "baseline_result_sha256",
+        "source_input": "source_input_sha256",
+        "after_result": "after_result_sha256",
+        "golden_manifest": "golden_manifest_sha256",
+        "blind_packet_jsonl": "blind_packet_jsonl_sha256",
+        "blind_map_json": "blind_map_json_sha256",
+        "verdicts_jsonl": "verdicts_jsonl_sha256",
+        "baseline_manifest": "baseline_manifest_sha256",
+        "merged_manifest": "merged_manifest_sha256",
+        "merged_checkpoint": "merged_checkpoint_sha256",
+        "merged_pending": "merged_pending_sha256",
+        "merge_binding_receipt": "merge_binding_receipt_sha256",
+        "runtime_trust_anchor": "runtime_trust_anchor_sha256",
+        "golden_audit": "golden_audit_sha256",
+        "raw_judge_receipt": "raw_judge_receipt_sha256",
+        "adjudication_report": "adjudication_report_sha256",
+    }
+    if isinstance(artifact_paths, dict) and artifact_paths.get("merge_integrity"):
+        path_to_hash_field["merge_integrity"] = "merge_integrity_sha256"
+    if isinstance(artifact_paths, dict) and artifact_paths.get("thread_readback_receipt"):
+        path_to_hash_field["thread_readback_receipt"] = (
+            "thread_readback_receipt_sha256"
+        )
+    elif changed_count:
+        issues.append("thread_readback_receipt_missing_for_nonzero_drift")
+    if not isinstance(artifact_hashes, dict) or not artifact_hashes:
+        issues.append("source_artifact_hashes_missing")
+    elif any(not _is_sha256(value) for value in artifact_hashes.values()):
+        issues.append("source_artifact_hash_invalid")
+    if not isinstance(artifact_paths, dict) or set(artifact_paths) != set(path_to_hash_field):
+        issues.append("source_artifact_paths_incomplete")
+    elif isinstance(artifact_hashes, dict):
+        trust_anchors = adjudication.get("trust_anchors")
+        if not isinstance(trust_anchors, dict):
+            issues.append("trust_anchors_missing")
+        else:
+            if trust_anchors.get("runtime_trust_anchor_sha256") != artifact_hashes.get(
+                "runtime_trust_anchor_sha256"
+            ):
+                issues.append("runtime_trust_anchor_receipt_hash_mismatch")
+            if adjudication.get("raw_judge_receipt_sha256") != artifact_hashes.get(
+                "raw_judge_receipt_sha256"
+            ):
+                issues.append("raw_judge_receipt_receipt_hash_mismatch")
+        for path_field, hash_field in path_to_hash_field.items():
+            path = Path(str(artifact_paths[path_field]))
+            if not path.is_file():
+                issues.append(f"source_artifact_missing:{path_field}")
+                continue
+            try:
+                actual_hash = _file_sha256(path)
+            except OSError:
+                issues.append(f"source_artifact_unreadable:{path_field}")
+                continue
+            if actual_hash != artifact_hashes.get(hash_field):
+                issues.append(f"source_artifact_hash_mismatch:{path_field}")
+        compare_path = Path(str(artifact_paths["collateral_compare"]))
+        if compare_path.is_file():
+            try:
+                compare_payload = json.loads(compare_path.read_text(encoding="utf-8-sig"))
+            except (OSError, json.JSONDecodeError):
+                issues.append("source_compare_artifact_unreadable")
+            else:
+                if _canonical_digest(compare_payload) != collateral_digest:
+                    issues.append("source_compare_artifact_payload_mismatch")
+        value_digest_fields = {
+            "baseline_result": "baseline_result",
+            "source_input": "source_input",
+            "after_result": "after_result",
+            "golden_manifest": "golden_manifest",
+            "blind_packet_jsonl": "blind_packet",
+            "blind_map_json": "blind_private_map",
+            "verdicts_jsonl": "verdict_rows",
+            "baseline_manifest": "baseline_manifest",
+            "merged_manifest": "merged_manifest",
+            "merged_checkpoint": "merged_checkpoint",
+            "merged_pending": "merged_pending",
+            "merge_binding_receipt": "merge_binding_receipt",
+            "runtime_trust_anchor": "runtime_trust_anchor",
+            "golden_audit": "golden_audit",
+            "raw_judge_receipt": "raw_judge_receipt",
+        }
+        if "merge_integrity" in path_to_hash_field:
+            value_digest_fields["merge_integrity"] = "merge_integrity"
+        if "thread_readback_receipt" in path_to_hash_field:
+            value_digest_fields["thread_readback_receipt"] = (
+                "thread_readback_receipt"
+            )
+        row_artifacts = {
+            "baseline_result",
+            "source_input",
+            "after_result",
+            "blind_packet_jsonl",
+            "verdicts_jsonl",
+            "merged_checkpoint",
+        }
+        if isinstance(source_digests, dict):
+            for path_field, digest_field in value_digest_fields.items():
+                path = Path(str(artifact_paths[path_field]))
+                if not path.is_file():
+                    continue
+                try:
+                    value = (
+                        load_json_or_jsonl(path)
+                        if path_field in row_artifacts
+                        else json.loads(path.read_text(encoding="utf-8-sig"))
+                    )
+                except (OSError, ValueError, json.JSONDecodeError):
+                    issues.append(f"source_artifact_payload_unreadable:{path_field}")
+                    continue
+                if _canonical_digest(value) != source_digests.get(digest_field):
+                    issues.append(f"source_artifact_value_digest_mismatch:{path_field}")
+        if all(Path(str(artifact_paths[key])).is_file() for key in path_to_hash_field):
+            try:
+                source_hashes = {
+                    hash_field: _file_sha256(Path(str(artifact_paths[path_field])))
+                    for path_field, hash_field in path_to_hash_field.items()
+                    if path_field != "adjudication_report"
+                }
+                recomputed_validation = validate_adjudication(
+                    report=json.loads(
+                        Path(str(artifact_paths["adjudication_report"])).read_text(
+                            encoding="utf-8-sig"
+                        )
+                    ),
+                    compare=json.loads(
+                        Path(str(artifact_paths["collateral_compare"])).read_text(
+                            encoding="utf-8-sig"
+                        )
+                    ),
+                    verdict_rows=load_json_or_jsonl(Path(str(artifact_paths["verdicts_jsonl"]))),
+                    baseline_rows=load_json_or_jsonl(Path(str(artifact_paths["baseline_result"]))),
+                    source_rows=load_json_or_jsonl(Path(str(artifact_paths["source_input"]))),
+                    after_rows=load_json_or_jsonl(Path(str(artifact_paths["after_result"]))),
+                    golden_manifest=json.loads(
+                        Path(str(artifact_paths["golden_manifest"])).read_text(
+                            encoding="utf-8-sig"
+                        )
+                    ),
+                    blind_packet_rows=load_json_or_jsonl(
+                        Path(str(artifact_paths["blind_packet_jsonl"]))
+                    ),
+                    blind_map=json.loads(
+                        Path(str(artifact_paths["blind_map_json"])).read_text(
+                            encoding="utf-8-sig"
+                        )
+                    ),
+                    expected_scope_rows=expected_scope_rows,
+                    expected_golden_rows=expected_golden_rows,
+                    trust_bundle={
+                        "artifact_paths": {
+                            key: Path(str(artifact_paths[key]))
+                            for key in (
+                                "baseline_result",
+                                "baseline_manifest",
+                                "source_input",
+                                "after_result",
+                                "merged_manifest",
+                                "merged_checkpoint",
+                                "merged_pending",
+                                "merge_binding_receipt",
+                                "merge_integrity",
+                                "runtime_trust_anchor",
+                                "golden_manifest",
+                                "golden_audit",
+                                "raw_judge_receipt",
+                                "thread_readback_receipt",
+                                "blind_packet_jsonl",
+                                "verdicts_jsonl",
+                            )
+                            if key in artifact_paths
+                        },
+                        "anchors": adjudication.get("trust_anchors") or {},
+                    },
+                    artifact_hashes=source_hashes,
+                    adjudication_report_path=Path(str(artifact_paths["adjudication_report"])),
+                )
+            except (OSError, ValueError, TypeError, KeyError, json.JSONDecodeError):
+                issues.append("validator_source_recompute_failed")
+            else:
+                if validation_receipt_payload(recomputed_validation) != validation_receipt_payload(
+                    adjudication
+                ):
+                    issues.append("validator_source_recompute_mismatch")
+    if adjudication.get("mismatched_fields") not in ([], None):
+        issues.append("validator_mismatched_fields_nonempty")
+    if adjudication.get("artifact_hash_mismatches") not in ([], None):
+        issues.append("validator_artifact_hash_mismatches_nonempty")
+    if adjudication.get("independent_source_validation_issues") not in ([], None):
+        issues.append("independent_source_validation_issues_nonempty")
+    if adjudication.get("validation_issues") not in ([], None):
+        issues.append("validator_validation_issues_nonempty")
+    boundary = adjudication.get("approval_boundary")
+    if not isinstance(boundary, dict) or boundary.get("validator_recomputed_from_source_artifacts") is not True:
+        issues.append("validator_source_recompute_boundary_missing")
+    if not isinstance(boundary, dict) or boundary.get("validator_rebuilt_blind_packet_and_private_map") is not True:
+        issues.append("validator_blind_material_boundary_missing")
+    supplied_receipt = adjudication.get("validation_receipt_digest")
+    if not _is_sha256(supplied_receipt) or supplied_receipt != validation_receipt_digest(adjudication):
+        issues.append("validation_receipt_digest_mismatch")
+    return issues
 
 
 def _raw_regression_post_ids(collateral: dict[str, Any]) -> set[int] | None:
@@ -95,23 +421,25 @@ def golden_gate(golden: dict[str, Any], expected_rows: int) -> dict[str, Any]:
     semantic_gate = str(golden.get("canary_semantic_gate") or "").strip()
     runtime = golden.get("runtime") if isinstance(golden.get("runtime"), dict) else {}
     runtime_completed = _safe_int(runtime.get("completed_count"))
+    runtime_pending = _safe_int(runtime.get("pending_count"))
+    runtime_failed = _safe_int(runtime.get("failed_count"))
     runtime_complete = (
         runtime_completed is not None
         and runtime_completed >= expected_rows
-        and (_safe_int(runtime.get("pending_count")) or 0) == 0
-        and (_safe_int(runtime.get("failed_count")) or 0) == 0
+        and runtime_pending == 0
+        and runtime_failed == 0
     )
     passed = (
         row_count == expected_rows
         and passed_count == expected_rows
-        and (failed_count or 0) == 0
+        and failed_count == 0
         and semantic_gate in {"PASS", "GO"}
         and runtime_complete
     )
     blockers: list[str] = []
     if row_count != expected_rows:
         blockers.append("golden_row_count_mismatch")
-    if passed_count != expected_rows or (failed_count or 0) != 0:
+    if passed_count != expected_rows or failed_count != 0:
         blockers.append("golden_expected_answer_failures")
     if semantic_gate not in {"PASS", "GO"}:
         blockers.append("golden_semantic_gate_not_pass")
@@ -322,6 +650,8 @@ def collateral_gate(
     expected_shared_posts: int,
     collateral_review: dict[str, Any] | None = None,
     contract_accounting: dict[str, Any] | None = None,
+    adjudication_validation: dict[str, Any] | None = None,
+    golden_audit: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     shared = _safe_int(collateral.get("shared_post_count"))
     changed = _safe_int(collateral.get("changed_post_count"))
@@ -334,12 +664,14 @@ def collateral_gate(
         or collateral_measure == "adjusted_drift"
     )
     runtime_completed = _safe_int(collateral.get("runtime_completed_count"))
+    runtime_flushed = _safe_int(collateral.get("runtime_flushed_count"))
     runtime_pending = _safe_int(collateral.get("runtime_pending_count"))
     runtime_failed = _safe_int(collateral.get("runtime_failed_count"))
     runtime_complete = (
         runtime_completed == expected_shared_posts
-        and (runtime_pending or 0) == 0
-        and (runtime_failed or 0) == 0
+        and runtime_flushed == expected_shared_posts
+        and runtime_pending == 0
+        and runtime_failed == 0
     )
     review_adjustment = _collateral_review_adjustment(
         collateral_review=collateral_review,
@@ -348,25 +680,67 @@ def collateral_gate(
         raw_regression_post_ids=_raw_regression_post_ids(collateral),
     )
     adjusted_regression_count = review_adjustment.get("review_adjusted_regression_count")
+    adjudication = adjudication_validation if isinstance(adjudication_validation, dict) else None
+    adjudication_validator_gate = str((adjudication or {}).get("validator_gate") or "").strip()
+    adjudication_semantic_gate = str((adjudication or {}).get("semantic_gate") or "").strip()
+    unreviewed_adjusted_rows = _safe_int((adjudication or {}).get("unreviewed_adjusted_rows"))
+    true_semantic_regression_count = _safe_int(
+        (adjudication or {}).get("true_semantic_regression_count")
+    )
+    actionable_unfixed_count = _safe_int((adjudication or {}).get("actionable_unfixed_count"))
+    adjudication_binding_issues = (
+        _adjudication_binding_issues(
+            adjudication=adjudication,
+            collateral=collateral,
+            golden_audit=golden_audit or {},
+            expected_scope_rows=expected_shared_posts,
+            expected_golden_rows=PRODUCTION_GOLDEN_ROWS,
+        )
+        if adjudication is not None
+        else []
+    )
+    adjudication_ok = (
+        adjudication is not None
+        and adjudication_validator_gate == "GO"
+        and adjudication_semantic_gate == "GO"
+        and unreviewed_adjusted_rows == 0
+        and true_semantic_regression_count == 0
+        and actionable_unfixed_count == 0
+        and not adjudication_binding_issues
+    )
     gate_regression_count = (
-        adjusted_drift_count
-        if uses_adjudicated_drift and adjusted_drift_count is not None
+        true_semantic_regression_count
+        if uses_adjudicated_drift
         else adjusted_regression_count
     )
     gate_metric = (
-        "adjusted_drift_count"
+        "adjudicated_semantic_gate"
         if uses_adjudicated_drift
         else "review_adjusted_regression_count"
         if review_adjustment.get("applied")
         else "collateral_regression_count"
     )
     metric_blockers: list[str] = []
-    if uses_adjudicated_drift and adjusted_drift_count is None:
-        metric_blockers.append("collateral_adjusted_drift_count_missing")
+    if uses_adjudicated_drift:
+        if adjudication is None:
+            metric_blockers.append("collateral_adjudication_validation_missing")
+        else:
+            if adjudication_binding_issues:
+                metric_blockers.append("collateral_adjudication_validation_unbound")
+            if adjudication_validator_gate != "GO":
+                metric_blockers.append("collateral_adjudication_validator_not_go")
+            if adjudication_semantic_gate != "GO":
+                metric_blockers.append("collateral_adjudication_semantic_not_go")
+            if unreviewed_adjusted_rows != 0:
+                metric_blockers.append("collateral_unreviewed_adjusted_rows_nonzero")
+            if true_semantic_regression_count != 0:
+                metric_blockers.append("collateral_true_semantic_regression_nonzero")
+            if actionable_unfixed_count != 0:
+                metric_blockers.append("collateral_actionable_unfixed_nonzero")
     passed = (
         shared == expected_shared_posts
-        and (gate_regression_count or 0) == 0
-        and not review_adjustment.get("blockers")
+        and (adjudication_ok if uses_adjudicated_drift else (gate_regression_count or 0) == 0)
+        and (uses_adjudicated_drift or not review_adjustment.get("blockers"))
         and not metric_blockers
         and runtime_complete
     )
@@ -374,12 +748,11 @@ def collateral_gate(
     if shared != expected_shared_posts:
         blockers.append("collateral_shared_post_count_mismatch")
     blockers.extend(metric_blockers)
-    blockers.extend(review_adjustment.get("blockers") or [])
-    if (gate_regression_count or 0) != 0:
+    if not uses_adjudicated_drift:
+        blockers.extend(review_adjustment.get("blockers") or [])
+    if not uses_adjudicated_drift and (gate_regression_count or 0) != 0:
         blockers.append(
-            "collateral_adjusted_drift_count_nonzero"
-            if uses_adjudicated_drift
-            else "collateral_review_adjusted_regression_count_nonzero"
+            "collateral_review_adjusted_regression_count_nonzero"
             if review_adjustment.get("applied")
             else "collateral_regression_count_nonzero"
         )
@@ -388,7 +761,7 @@ def collateral_gate(
         and (review_adjustment.get("unreviewed_regression_rows") or 0) != 0
     ):
         blockers.append("collateral_review_unreviewed_regression_rows_nonzero")
-    if runtime_completed is None:
+    if any(value is None for value in (runtime_completed, runtime_flushed, runtime_pending, runtime_failed)):
         blockers.append("collateral_runtime_counts_missing")
     elif not runtime_complete:
         blockers.append("collateral_runtime_not_complete")
@@ -406,11 +779,23 @@ def collateral_gate(
             collateral.get("historical_raw_collateral_regression_count")
         ),
         "adjusted_drift_count": adjusted_drift_count,
+        "diagnostic_adjusted_drift_count": adjusted_drift_count,
+        "adjudication_validation": adjudication,
+        "adjudication_validator_gate": adjudication_validator_gate or None,
+        "adjudication_semantic_gate": adjudication_semantic_gate or None,
+        "adjudication_binding_issues": adjudication_binding_issues,
+        "unreviewed_adjusted_rows": unreviewed_adjusted_rows,
+        "true_semantic_regression_count": true_semantic_regression_count,
+        "actionable_unfixed_count": actionable_unfixed_count,
         "review_adjusted_regression_count": adjusted_regression_count,
         "gate_metric": gate_metric,
         "gate_regression_count": gate_regression_count,
         "review_adjustment": review_adjustment,
         "runtime_complete": runtime_complete,
+        "runtime_completed_count": runtime_completed,
+        "runtime_flushed_count": runtime_flushed,
+        "runtime_pending_count": runtime_pending,
+        "runtime_failed_count": runtime_failed,
         "blockers": blockers,
     }
 
@@ -421,6 +806,7 @@ def evaluate_gates(
     collateral: dict[str, Any],
     collateral_review: dict[str, Any] | None = None,
     contract_accounting: dict[str, Any] | None = None,
+    adjudication_validation: dict[str, Any] | None = None,
     expected_golden_rows: int = 18,
     expected_collateral_shared_posts: int = 375,
 ) -> dict[str, Any]:
@@ -430,14 +816,19 @@ def evaluate_gates(
         expected_collateral_shared_posts,
         collateral_review=collateral_review,
         contract_accounting=contract_accounting,
+        adjudication_validation=adjudication_validation,
+        golden_audit=golden,
     )
-    gate = "GO" if golden_result["gate"] == "GO" and collateral_result["gate"] == "GO" else "NO-GO"
     uses_adjudicated_rebaseline = (
         collateral_result.get("baseline_mode") == "adjudicated_rebaseline"
         or collateral_result.get("collateral_measure") == "adjusted_drift"
     )
+    component_gate = (
+        "GO" if golden_result["gate"] == "GO" and collateral_result["gate"] == "GO" else "NO-GO"
+    )
+    gate = "GO" if component_gate == "GO" and uses_adjudicated_rebaseline else "NO-GO"
     completion_gate_metric = (
-        "adjusted_drift_count"
+        "adjudicated_semantic_gate"
         if uses_adjudicated_rebaseline
         else "not_open_until_adjudicated_rebaseline"
     )
@@ -445,6 +836,7 @@ def evaluate_gates(
         "report_type": "always_on_regression_gates",
         "generated_at": datetime.now().replace(microsecond=0).isoformat(),
         "gate": gate,
+        "component_gate": component_gate,
         "semantic_quality": "REVIEW-LOCKED",
         "full_scan_approval": False,
         "completion_gate": "adjusted full375 collateral GO + full_scan path",
@@ -461,6 +853,11 @@ def evaluate_gates(
             "collateral_source_native_exclusion_requires_clean_review_summary": True,
             "collateral_contract_accounting_is_not_full_scan_approval": True,
             "completion_gate_uses_adjusted_metric_after_adjudication": True,
+            "adjusted_drift_count_is_diagnostic": True,
+            "adjudicated_gate_requires_validator_go": True,
+            "adjudicated_gate_requires_source_bound_validator_receipt": True,
+            "adjudicated_gate_requires_unreviewed_and_true_regression_zero": True,
+            "collateral_runtime_requires_completed_flushed_pending_failed_375_375_0_0": True,
             "historical_raw_vs_20260626_is_not_completion_gate": True,
         },
         "golden": golden_result,
@@ -468,6 +865,11 @@ def evaluate_gates(
         "blockers": [
             *[f"golden:{code}" for code in golden_result["blockers"]],
             *[f"collateral:{code}" for code in collateral_result["blockers"]],
+            *(
+                ["collateral:adjudicated_rebaseline_required_for_completion"]
+                if not uses_adjudicated_rebaseline
+                else []
+            ),
         ],
     }
 
@@ -516,6 +918,11 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
             f"`{display(report['collateral'].get('historical_raw_collateral_regression_count'))}`"
         ),
         f"- adjusted_drift_count: `{display(report['collateral'].get('adjusted_drift_count'))}`",
+        f"- adjudication_validator_gate: `{display(report['collateral'].get('adjudication_validator_gate'))}`",
+        f"- adjudication_semantic_gate: `{display(report['collateral'].get('adjudication_semantic_gate'))}`",
+        f"- unreviewed_adjusted_rows: `{display(report['collateral'].get('unreviewed_adjusted_rows'))}`",
+        f"- true_semantic_regression_count: `{display(report['collateral'].get('true_semantic_regression_count'))}`",
+        f"- actionable_unfixed_count: `{display(report['collateral'].get('actionable_unfixed_count'))}`",
         (
             "- review exclusion candidates: "
             f"`{report['collateral']['review_adjustment'].get('exclusion_candidate_rows')}`"
@@ -563,10 +970,11 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
         "## 완료 Gate 해석",
         "",
     ]
-    if report.get("completion_gate_metric") == "adjusted_drift_count":
+    if report.get("completion_gate_metric") == "adjudicated_semantic_gate":
         lines.append(
-            "판결 baseline이 적용된 상태이므로 완료 gate는 `adjusted_drift_count`를 본다. "
-            "2026-06-26 raw diff는 historical compare로만 남긴다."
+            "판결 baseline이 적용된 상태이므로 완료 gate는 validator가 재계산한 "
+            "`unreviewed_adjusted_rows=0`, `true_semantic_regression_count=0`, "
+            "`actionable_unfixed_count=0`을 본다. adjusted drift와 2026-06-26 raw diff는 diagnostic이다."
         )
     else:
         lines.append(
@@ -608,7 +1016,8 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
     else:
         lines.append("- 없음")
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
+    with path.open("x", encoding="utf-8", newline="\n") as handle:
+        handle.write("\n".join(lines) + "\n")
 
 
 def parse_args() -> argparse.Namespace:
@@ -617,6 +1026,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--collateral-compare", required=True, type=Path)
     parser.add_argument("--collateral-review-summary", type=Path, default=None)
     parser.add_argument("--contract-accounting", type=Path, default=None)
+    parser.add_argument("--collateral-adjudication-validation", type=Path, default=None)
     parser.add_argument("--expected-golden-rows", type=int, default=18)
     parser.add_argument("--expected-collateral-shared-posts", type=int, default=375)
     parser.add_argument("--output-json", required=True, type=Path)
@@ -627,6 +1037,16 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
+    if args.expected_golden_rows != PRODUCTION_GOLDEN_ROWS:
+        raise SystemExit(
+            f"production golden scope is fixed at {PRODUCTION_GOLDEN_ROWS}; "
+            f"got {args.expected_golden_rows}"
+        )
+    if args.expected_collateral_shared_posts != PRODUCTION_PANEL_ROWS:
+        raise SystemExit(
+            f"production collateral scope is fixed at {PRODUCTION_PANEL_ROWS}; "
+            f"got {args.expected_collateral_shared_posts}"
+        )
     report = evaluate_gates(
         golden=load_json(args.golden_audit),
         collateral=load_json(args.collateral_compare),
@@ -638,6 +1058,11 @@ def main() -> int:
         contract_accounting=(
             load_json(args.contract_accounting)
             if args.contract_accounting
+            else None
+        ),
+        adjudication_validation=(
+            load_json(args.collateral_adjudication_validation)
+            if args.collateral_adjudication_validation
             else None
         ),
         expected_golden_rows=args.expected_golden_rows,

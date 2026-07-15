@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from src.llm_batch.early_route_measurement import (
+from src.llm_batch.measurement.early_route_measurement import (
     ACCURACY_NOT_ESTIMABLE,
     ARM_AFTER,
     FROZEN_TRUTH_VERIFIED,

@@ -25,7 +25,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from src.llm_batch.selective_compute_shadow import (  # noqa: E402
+from src.llm_batch.measurement.selective_compute_shadow import (  # noqa: E402
     ACTION_ASSERT_NIL,
     ACTION_NONE,
     ACTION_RESOLVE,

@@ -18,13 +18,13 @@ from .prompts import (
     build_verifier_system_prompt,
 )
 from .decoder import abbreviation_match_score
-from ..candidate_generation import record_candidate_stage_receipt
+from ..grounding.candidate_generation import record_candidate_stage_receipt
 from .utils import (
     parse_json_with_think_removal,
     build_search_aggregation_summary,
     _ts,
 )
-from ..rules import OFFICIAL_PLATFORMS, GENRE_ARCHETYPE_TERMS, GENRE_KEYWORDS, is_novel_domain
+from ..domain.rules import OFFICIAL_PLATFORMS, GENRE_ARCHETYPE_TERMS, GENRE_KEYWORDS, is_novel_domain
 
 
 class VerifierExpert:
@@ -1095,7 +1095,7 @@ class VerifierExpert:
             joined_text = str(gk_clues.get("title_body_joined_text") or "").strip()
             if title_body_continuation and joined_text:
                 user_prompt += (
-                    "\n\n=== 🧩 TITLE-BODY CONTINUATION HINT ===\n"
+                    "\n\n===  TITLE-BODY CONTINUATION HINT ===\n"
                     "이 포스트는 제목이 본문 첫 문장의 일부일 수 있습니다.\n"
                     "제목과 본문 첫 줄을 하나의 연속 발화로 먼저 읽고 근거를 평가하세요.\n"
                     f"- joined_text: {self._clip_text(joined_text, 220 if compact_mode else 360, marker=' ... ')}\n"
@@ -1107,16 +1107,16 @@ class VerifierExpert:
             hints_section = "\n\n=== CODE-LEVEL ABBREVIATION ANALYSIS (코드 레벨 약어 분석 결과) ===\n"
             hints_section += "아래는 코드 레벨 음절 매칭 알고리즘이 발견한 결과입니다.\n"
             hints_section += "이 분석은 약어의 각 음절이 후보 제목의 단어 첫 글자와 순서대로 매칭되는지를 검증합니다.\n"
-            hints_section += "LLM 추론과 독립적인 객관적 분석이므로, 높은 score(≥0.8)는 강한 증거입니다.\n\n"
+            hints_section += "LLM 추론과 독립적인 객관적 분석이므로, 높은 score(>=0.8)는 강한 증거입니다.\n\n"
             for i, hint in enumerate(ctx.code_level_hints[:hint_cap], 1):
                 hints_section += (
-                    f"  [{i}] 약어: '{hint.get('effective_keyword', '?')}' → "
+                    f"  [{i}] 약어: '{hint.get('effective_keyword', '?')}' : "
                     f"후보: '{hint.get('corrected_title', '?')}' "
                     f"(score={hint.get('abbreviation_score', 0):.2f}, "
                     f"source={hint.get('source', '?')})\n"
                     f"      근거: {self._clip_text(hint.get('reasoning', ''), 180 if compact_mode else 260, marker=' ... ')}\n"
                 )
-            hints_section += "\n⚠️ 위 코드 분석 결과를 우선 고려하되, 검색 증거·본문 맥락과 교차 검증하세요.\n"
+            hints_section += "\n 위 코드 분석 결과를 우선 고려하되, 검색 증거·본문 맥락과 교차 검증하세요.\n"
             hints_section += "코드 분석과 다른 제목을 선택하려면 명확한 반증을 제시하세요.\n"
             user_prompt += hints_section
 
@@ -1128,10 +1128,10 @@ class VerifierExpert:
             if len(getattr(ctx, "searched_queries", []) or []) > len(searched_list):
                 omitted = len((getattr(ctx, "searched_queries", []) or [])) - len(searched_list)
                 user_prompt += f"  - ... {omitted}개 추가 쿼리는 생략됨\n"
-            user_prompt += "\n⚠️ verification_search 요청 시 위 쿼리는 이미 실행되었으므로 중복 요청하지 마세요.\n"
+            user_prompt += "\n verification_search 요청 시 위 쿼리는 이미 실행되었으므로 중복 요청하지 마세요.\n"
             user_prompt += "다른 관점/키워드로 새로운 쿼리를 작성하세요.\n"
 
-        user_prompt += "\n⚠️ '웹소설로 꿈꾸는 세상!'은 노벨피아 플랫폼 슬로건입니다. 이 표현만 확인되면 official_novel_title로 채택하지 마세요.\n"
+        user_prompt += "\n '웹소설로 꿈꾸는 세상!'은 노벨피아 플랫폼 슬로건입니다. 이 표현만 확인되면 official_novel_title로 채택하지 마세요.\n"
         return user_prompt
 
     def _resolve_verifier_max_tokens(self, prompt_chars: int, *, compact_mode: bool = False) -> int:

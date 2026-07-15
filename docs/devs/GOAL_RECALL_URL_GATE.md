@@ -27,9 +27,9 @@ semantic quality는 `REVIEW-LOCKED`, full scan approval은 `false`로 유지한�
 - `docs/devs/FULL_POST_JUDGE_RUNBOOK.md` (§0.1a 검색 클라이언트, §4/§5/§5b 프롬프트, §4.3b 스키마, §6)
 - `docs/devs/VERIFICATION_RESULTS.md` (2026-06-18 정정 섹션), `docs/devs/IMPROVEMENT_REGISTER.md` (IMP-20260618-278), `docs/devs/SCAN_RESULT_REVIEW_GUIDE.md` (§4 증거정책·§13 게이트)
 - `src/llm_batch/agentic_pipeline.py`: `_derive_resolution_scope_fields`(:11341), `_build_search_evidence_catalog`/`_source_tier`(:11095/:11121), `_build_image_evidence_catalog`(:11189), `has_official_candidate`(:15780), official_detail→community 강등(~:19759), negative 신호 `missing_official_url_for_official_detail`/`url_is_community_post`(~:23507)
-- `src/llm_batch/candidate_audit.py`: `OFFICIAL_TITLE_SOURCE_TIERS`(:61), `WEAK_PRIMARY_SOURCE_TIERS`(:60), `official_search_supports_title`(:202), `_explicit_image_work_titles`(:230), `_titles_match`/`_compact_title`(:162/:157, fuzzy: compact 동일 or prefix len≥8 & ratio≥0.65), `apply_official_title_promotion_guard`(:514), `classify_candidate_audit`(:741)
+- `src/llm_batch/grounding/candidate_audit.py`: `OFFICIAL_TITLE_SOURCE_TIERS`(:61), `WEAK_PRIMARY_SOURCE_TIERS`(:60), `official_search_supports_title`(:202), `_explicit_image_work_titles`(:230), `_titles_match`/`_compact_title`(:162/:157, fuzzy: compact 동일 or prefix len≥8 & ratio≥0.65), `apply_official_title_promotion_guard`(:514), `classify_candidate_audit`(:741)
 - `src/llm_batch/search/client.py`: `MCPClient.search/fetch` (라이브 `http://127.0.0.1:3333`, `health_check(include_search=True)`)
-- `src/llm_batch/models.py` (식별 스키마), `tests/test_candidate_audit.py`
+- `src/llm_batch/domain/models.py` (식별 스키마), `tests/test_candidate_audit.py`
 
 ## Operating Rules (양면 가드레일)
 
@@ -84,7 +84,7 @@ semantic quality는 `REVIEW-LOCKED`, full scan approval은 `false`로 유지한�
 
 ### A3. 검증 명령
 ```powershell
-.venv312\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py src\llm_batch\candidate_audit.py tests\test_candidate_audit.py
+.venv312\Scripts\python.exe -m py_compile src\llm_batch\agentic_pipeline.py src\llm_batch\grounding\candidate_audit.py tests\test_candidate_audit.py
 .venv312\Scripts\python.exe -m unittest tests.test_candidate_audit tests.test_judge_seed_registry -v
 git diff --check
 ```

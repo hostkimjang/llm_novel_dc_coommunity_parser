@@ -19,8 +19,8 @@ from .prompts import (
     build_decoder_system_prompt,
 )
 from ..prompts.expert_prompts import PLATFORM_ABBREVIATION_MAP
-from ..candidate_generation import record_candidate_stage_receipt
-from ..rules import (
+from ..grounding.candidate_generation import record_candidate_stage_receipt
+from ..domain.rules import (
     OFFICIAL_PLATFORMS, GENRE_KEYWORDS, GENRE_ARCHETYPE_TERMS,
     PLATFORM_ABBREVIATIONS, PLATFORM_FEATURE_TERMS, ASSOCIATION_PATTERNS,
     is_genre_물_pattern,
@@ -852,8 +852,8 @@ class DecoderExpert:
             session_section = f"\n\n=== SESSION KNOWLEDGE (이미 학습된 용어) ===\n"
             session_section += "이번 배치에서 이미 확인된 약칭들:\n"
             for slang, info in session_knowledge["resolved_slang"].items():
-                session_section += f"  - '{slang}' → '{info['official_title']}' (confidence: {info['confidence']})\n"
-            session_section += "\n⚠️ 위 약칭이 나오면 즉시 매칭하세요. 다시 검색할 필요 없습니다.\n"
+                session_section += f"  - '{slang}' : '{info['official_title']}' (confidence: {info['confidence']})\n"
+            session_section += "\n 위 약칭이 나오면 즉시 매칭하세요. 다시 검색할 필요 없습니다.\n"
         
         user_prompt = DECODER_PROMPT.format(
             gatekeeper_json=_gk_json,
@@ -861,28 +861,28 @@ class DecoderExpert:
             slang_dictionary=_dict_json,
         ) + context_section + session_section
         
-        # 🔥 Discourse 역방향 경고: non-novel 도메인 판정 시 Decoder에게 경고
+        #  Discourse 역방향 경고: non-novel 도메인 판정 시 Decoder에게 경고
         if ctx and getattr(ctx, 'discourse_warning', None):
             _dw = getattr(ctx, 'discourse_warning', '')
             _is_genre_disc = 'genre_discussion' in _dw or 'discuss_genre' in _dw
-            user_prompt += f"\n\n=== ⚠️ DISCOURSE DOMAIN WARNING ===\n"
+            user_prompt += f"\n\n===  DISCOURSE DOMAIN WARNING ===\n"
             user_prompt += f"DiscourseAnalyzer 판정: {_dw}\n"
             user_prompt += f"의도(intent): {getattr(ctx, 'discourse_intent', 'unknown')}\n\n"
             if _is_genre_disc:
-                # 장르/트로프 일반론 경고 — 특화 메시지
-                user_prompt += "🚨 이 포스트는 특정 소설이 아니라 '장르/트로프/클리셰'에 대한 일반적 토론일 가능성이 높습니다.\n"
-                user_prompt += "🔑 '[한글1~5자]물' 패턴(일상물, 힐링물, 좀비물, 먹방물, 집착물 등)은 모두 장르 카테고리이며 소설 제목이 아닙니다.\n"
+                # 장르/트로프 일반론 경고 - 특화 메시지
+                user_prompt += " 이 포스트는 특정 소설이 아니라 '장르/트로프/클리셰'에 대한 일반적 토론일 가능성이 높습니다.\n"
+                user_prompt += " '[한글1~5자]물' 패턴(일상물, 힐링물, 좀비물, 먹방물, 집착물 등)은 모두 장르 카테고리이며 소설 제목이 아닙니다.\n"
                 user_prompt += "제목이나 본문의 주제어가 장르·트로프 관련 일반 개념어인 경우,\n"
                 user_prompt += "검색에서 우연히 비슷한 키워드의 소설이 발견되더라도 그것이 이 포스트의 실제 주제인지 엄격히 확인하세요.\n"
                 user_prompt += "판단 기준: 본문/댓글에 해당 소설의 고유 정보(작가명, 플랫폼, 회차, 캐릭터 고유명, 줄거리)가 있는가?\n"
-                user_prompt += "고유 정보가 없으면 → best_match.title=null, confidence=none으로 판정하세요.\n"
+                user_prompt += "고유 정보가 없으면 : best_match.title=null, confidence=none으로 판정하세요.\n"
             else:
-                user_prompt += "🚨 이 포스트는 소설/웹소설과 무관한 밈/유머/일상 포스트일 가능성이 높습니다.\n"
+                user_prompt += " 이 포스트는 소설/웹소설과 무관한 밈/유머/일상 포스트일 가능성이 높습니다.\n"
                 user_prompt += "핵심 키워드가 커뮤니티 자체 은어(예: 장붕=장르소설갤 유저, 겜붕=게임갤 유저, 완장=갤러리 관리자)일 수 있습니다.\n"
                 user_prompt += "검색 결과에서 해당 단어가 소설 '캐릭터 이름'으로 나오더라도, 그것이 이 포스트의 맥락과 일치하는지 엄격히 확인하세요.\n"
-                user_prompt += "본문/댓글에 작품 줄거리·작가명·플랫폼 URL이 전혀 없으면 → best_match.title=null, confidence=none으로 판정하세요.\n"
+                user_prompt += "본문/댓글에 작품 줄거리·작가명·플랫폼 URL이 전혀 없으면 : best_match.title=null, confidence=none으로 판정하세요.\n"
         
-        # 🆕 Phase 11j: Gatekeeper 장르토론 감지 플래그 → Decoder 경고 주입
+        #  Phase 11j: Gatekeeper 장르토론 감지 플래그 : Decoder 경고 주입
         # Discourse Warning이 없더라도, Gatekeeper가 장르 토론 패턴을 감지했으면 경고
         _gk_ctx_clues = (
             gatekeeper_result.get("context_clues") or {}
@@ -891,7 +891,7 @@ class DecoderExpert:
         )
         if ctx:
             try:
-                from ..models import ExpertType
+                from ..domain.models import ExpertType
                 _gk_out = ctx.get_expert_output(ExpertType.GATEKEEPER) if hasattr(ctx, 'get_expert_output') else {}
             except Exception:
                 _gk_out = {}
@@ -917,29 +917,29 @@ class DecoderExpert:
         _gk_flags = _gk_ctx_clues.get("genre_discussion_flags", [])
         if _gk_flags and not getattr(ctx, 'discourse_warning', None):
             # Discourse Warning 없이도 Gatekeeper가 장르 토론을 감지한 경우
-            user_prompt += "\n\n=== ⚠️ GATEKEEPER 장르 토론 감지 ===\n"
+            user_prompt += "\n\n===  GATEKEEPER 장르 토론 감지 ===\n"
             user_prompt += f"감지된 패턴: {', '.join(_gk_flags)}\n"
             if _gk_genre_detected:
-                user_prompt += "🚨 제목에 장르 아키타입 용어 + 장르 토론 지시어가 함께 감지됨.\n"
+                user_prompt += " 제목에 장르 아키타입 용어 + 장르 토론 지시어가 함께 감지됨.\n"
                 user_prompt += "이 게시글은 장르/트로프 일반론일 가능성이 매우 높습니다.\n"
             if _gk_opinion_prefix:
-                user_prompt += f"🚨 '{_gk_opinion_prefix}))'은 DC 의견 접두사이지 작품명이 아닙니다.\n"
+                user_prompt += f" '{_gk_opinion_prefix}))'은 DC 의견 접두사이지 작품명이 아닙니다.\n"
                 user_prompt += f"'{_gk_opinion_prefix}'을 작품 약칭으로 매칭하지 마세요.\n"
             if _gk_recommendation:
-                user_prompt += "🚨 추천 요청 게시글입니다. 댓글의 URL/추천은 주제가 아닙니다.\n"
+                user_prompt += " 추천 요청 게시글입니다. 댓글의 URL/추천은 주제가 아닙니다.\n"
             if _gk_comparison:
                 _comp_target = _gk_ctx_clues.get('comparison_target', '')
                 _comp_type = _gk_ctx_clues.get('comparison_type', '')
-                user_prompt += f"🚨 비교 패턴 감지: '{_comp_target} {_comp_type}'\n"
+                user_prompt += f" 비교 패턴 감지: '{_comp_target} {_comp_type}'\n"
                 user_prompt += "비교 대상(예: 'X 느낌이라', 'X 하위호환')의 X는 주제가 아닙니다.\n"
                 user_prompt += "비교 대상 작품을 official_title로 올리지 마세요.\n"
-                user_prompt += "주제 작품을 해독할 수 없으면 → best_match.title=null, confidence=none\n"
+                user_prompt += "주제 작품을 해독할 수 없으면 : best_match.title=null, confidence=none\n"
             if _gk_negation:
-                user_prompt += "🚨 본문에 '본적없다/못봤다' 표현 감지. 소재 토론이지 작품 리뷰가 아닙니다.\n"
-            user_prompt += "고유 정보가 없으면 → best_match.title=null, confidence=none으로 판정하세요.\n"
+                user_prompt += " 본문에 '본적없다/못봤다' 표현 감지. 소재 토론이지 작품 리뷰가 아닙니다.\n"
+            user_prompt += "고유 정보가 없으면 : best_match.title=null, confidence=none으로 판정하세요.\n"
 
         if _gk_comment_secondary:
-            user_prompt += "\n\n=== 🧭 COMMENT SECONDARY EXAMPLES ===\n"
+            user_prompt += "\n\n===  COMMENT SECONDARY EXAMPLES ===\n"
             user_prompt += f"댓글의 작품 예시 후보: {', '.join(_gk_comment_secondary[:5])}\n"
             user_prompt += (
                 "이 제목들은 장르 일반론/추천/비교 문맥의 보조 예시일 수 있습니다. "
@@ -947,64 +947,64 @@ class DecoderExpert:
                 "secondary example/reference로만 취급하세요.\n"
             )
 
-        # 🆕 숫자 작가 닉네임 경고
+        #  숫자 작가 닉네임 경고
         _gk_numeric_author = _gk_ctx_clues.get("is_numeric_author_post", False)
         if _gk_numeric_author:
             _num_id = _gk_ctx_clues.get("numeric_author_id", "")
             _num_suffix = _gk_ctx_clues.get("numeric_author_suffix", "")
-            user_prompt += f"\n\n=== 🔢 NUMERIC AUTHOR NICKNAME ===\n"
+            user_prompt += f"\n\n===  NUMERIC AUTHOR NICKNAME ===\n"
             user_prompt += f"제목의 '{_num_id}{_num_suffix}'에서 '{_num_id}'는 작가 닉네임입니다.\n"
             user_prompt += f"DC 장르소설 갤러리에서는 작가를 숫자로 부르는 관행이 있습니다.\n"
             user_prompt += f"'{_num_id}{_num_suffix}' = '{_num_id}' 작가의 {_num_suffix}\n"
             user_prompt += "본문에 비교 참조(예: 'X 느낌이라')가 있으면, X는 비교 대상이지 주제 작품이 아닙니다.\n"
             user_prompt += "주제는 '{0}' 작가의 작품이며, 작품 제목을 특정할 수 없으면 title=null로 두세요.\n".format(_num_id)
 
-        # 🆕 제목+본문 연속문 힌트: 커뮤니티 문체에서 제목이 본문 1행 역할을 하는 경우
+        #  제목+본문 연속문 힌트: 커뮤니티 문체에서 제목이 본문 1행 역할을 하는 경우
         if _gk_title_body_cont and _gk_title_body_joined:
-            user_prompt += "\n\n=== 🧩 TITLE-BODY CONTINUATION HINT ===\n"
+            user_prompt += "\n\n===  TITLE-BODY CONTINUATION HINT ===\n"
             user_prompt += "이 포스트는 제목이 본문 첫 문장의 일부(리드 문장)일 가능성이 높습니다.\n"
             user_prompt += "제목과 본문 첫 줄을 분리 해석하지 말고, 하나의 연속 발화로 먼저 해석하세요.\n"
             user_prompt += f"- joined_text: {_gk_title_body_joined}\n"
             user_prompt += "규칙: 작품 앵커/감상 문맥 판단 시 joined_text를 우선 증거로 사용하세요.\n"
         
-        # 🆕 다작/순서 질문 경고: 단일 제목 강제 고정 방지
+        #  다작/순서 질문 경고: 단일 제목 강제 고정 방지
         if _gk_multi_order:
-            user_prompt += "\n\n=== ⚠️ GATEKEEPER 다작/순서질문 감지 ===\n"
+            user_prompt += "\n\n===  GATEKEEPER 다작/순서질문 감지 ===\n"
             user_prompt += f"order_keywords={_gk_order_hits}, arrow_chain={_gk_arrow_chain}, author_focus={_gk_author_focus}\n"
-            user_prompt += "🚨 이 포스트는 작가 전작/작품군 소비 순서를 묻는 담화일 수 있습니다.\n"
+            user_prompt += " 이 포스트는 작가 전작/작품군 소비 순서를 묻는 담화일 수 있습니다.\n"
             user_prompt += "단일 작품명으로 강제 확정하지 말고, 후보가 복수면 unresolved_terms에 순서질문 맥락을 기록하세요.\n"
             user_prompt += "원문이 특정 작품 리뷰가 아니라면 best_match.title=null, overall_confidence=low/none을 우선 검토하세요.\n"
 
-        # 🆕 BUG-4: 복합 축약어 분리 힌트
-        # "작품약어캐릭터명" = 작품약어+캐릭터명 결합 — LLM에게 분리 시도 안내
+        #  BUG-4: 복합 축약어 분리 힌트
+        # "작품약어캐릭터명" = 작품약어+캐릭터명 결합 - LLM에게 분리 시도 안내
         user_prompt += "\n\n=== COMPOUND TERM HINT ===\n"
         user_prompt += "키워드가 4음절 이상이고 공백이 없으면, [작품 약어 + 캐릭터/작가명]이 결합된 형태일 수 있습니다.\n"
-        user_prompt += "예: '작품약어캐릭터명' → '작품약어'(작품 약어) + '캐릭터명'(캐릭터명)\n"
-        user_prompt += "예: '짧은약칭주인공이름' → '짧은약칭'(작품 약어) + '주인공이름'(캐릭터명)\n"
+        user_prompt += "예: '작품약어캐릭터명' : '작품약어'(작품 약어) + '캐릭터명'(캐릭터명)\n"
+        user_prompt += "예: '짧은약칭주인공이름' : '짧은약칭'(작품 약어) + '주인공이름'(캐릭터명)\n"
         user_prompt += "이 경우 morphemes를 ['작품약어', '캐릭터명'] 형태로 분리하여 보고하세요.\n"
-        user_prompt += "'갤' 접미사는 DC인사이드 갤러리 약어일 수 있습니다 (예: 판타지갤 → 판타지 갤러리).\n"
+        user_prompt += "'갤' 접미사는 DC인사이드 갤러리 약어일 수 있습니다 (예: 판타지갤 : 판타지 갤러리).\n"
         user_prompt += "단, 일부 작품은 제목 자체에 '갤러리'가 포함될 수 있으므로 커뮤니티 용어로 단정하지 마세요.\n"
         user_prompt += "커뮤니티 문장형 헤드라인(예: 지시어+연도+평가문, '...장갤픽임' 같은 표현)은 작품명이 아닙니다.\n"
         user_prompt += "그런 문장만 근거일 때는 best_match.title=null로 두고 verification_search를 요청하세요.\n"
-        user_prompt += "⚠️ '웹소설로 꿈꾸는 세상!' 같은 플랫폼 슬로건은 작품명이 아닙니다. 해당 표현만 검색 증거로 있으면 title=null로 두세요.\n"
+        user_prompt += " '웹소설로 꿈꾸는 세상!' 같은 플랫폼 슬로건은 작품명이 아닙니다. 해당 표현만 검색 증거로 있으면 title=null로 두세요.\n"
 
-        # 🆕 밈 합성 약어 분해 힌트
-        user_prompt += "\n=== 🏷️ MIM COMPOUND ABBREVIATION HINT (밈 합성 약어) ===\n"
+        #  밈 합성 약어 분해 힌트
+        user_prompt += "\n===  MIM COMPOUND ABBREVIATION HINT (밈 합성 약어) ===\n"
         user_prompt += "장르소설 갤러리에서는 여러 작품의 약칭 첫 글자를 합쳐서 밈으로 부릅니다.\n"
         user_prompt += "예: '모리엘루깐' = 모닝글로리 + 리버스 + 엘루깐 + 루깐 (각각 다른 작품)\n"
         user_prompt += "\n"
-        user_prompt += "🚨 핵심 규칙: 합성 밈 약어 전체(모리엘루깐)는 작품 묶음이지만,\n"
+        user_prompt += " 핵심 규칙: 합성 밈 약어 전체(모리엘루깐)는 작품 묶음이지만,\n"
         user_prompt += "   각 구성 요소(예: '엘루깐')는 실제 존재하는 개별 작품의 커뮤니티 통용 약칭입니다.\n"
-        user_prompt += "   게시글 제목에 구성 요소 중 하나가 사용되면 → 해당 개별 작품에 대한 논의입니다.\n"
+        user_prompt += "   게시글 제목에 구성 요소 중 하나가 사용되면 : 해당 개별 작품에 대한 논의입니다.\n"
         user_prompt += "\n"
         user_prompt += "판별 방법:\n"
         user_prompt += "1. 포스트 제목의 키워드가 밈 합성어의 일부 구성 요소와 일치하는지 확인\n"
-        user_prompt += "2. 일치하면 → 그 구성 요소가 가리키는 개별 작품을 best_match.title에 기록\n"
-        user_prompt += "3. 본문에 캐릭터 고유명(예: '엘황')이 언급되면 → 작품 토론이 맞음\n"
+        user_prompt += "2. 일치하면 : 그 구성 요소가 가리키는 개별 작품을 best_match.title에 기록\n"
+        user_prompt += "3. 본문에 캐릭터 고유명(예: '엘황')이 언급되면 : 작품 토론이 맞음\n"
         user_prompt += "4. 검색 결과에서 '~를 일컫는 약어이자 밈', '~를 묶어 부르는 약칭' 등이 발견되면\n"
         user_prompt += "   각 구성 요소를 abbreviation_mappings에 개별적으로 기록하세요\n"
         user_prompt += "\n"
-        user_prompt += "⚠️ 커뮤니티 약칭 → 공식 제목 매핑을 못 찾더라도:\n"
+        user_prompt += " 커뮤니티 약칭 : 공식 제목 매핑을 못 찾더라도:\n"
         user_prompt += "   - 커뮤니티 통용 약칭 자체를 best_match.title로 보고하세요 (confidence=low)\n"
         user_prompt += "   - '밈이라 작품이 아님' 또는 '공식 제목 확인 불가'라고 단정하지 마세요\n"
         user_prompt += "   - 커뮤니티에서 독립적으로 작품을 가리키는 약칭은 유효한 작품 식별자입니다\n"
@@ -1015,20 +1015,20 @@ class DecoderExpert:
             user_prompt += f"\n\n=== PREVIOUS SEARCHES (이미 실행된 검색 쿼리) ===\n"
             for q in searched_list:
                 user_prompt += f"  - {q}\n"
-            user_prompt += "\n⚠️ verification_search 요청 시 위 쿼리는 이미 실행되었으므로 중복 요청하지 마세요.\n"
+            user_prompt += "\n verification_search 요청 시 위 쿼리는 이미 실행되었으므로 중복 요청하지 마세요.\n"
             user_prompt += "다른 관점/키워드로 새로운 쿼리를 작성하세요.\n"
         
-        # 🔬 Deep Search Hints: snippet/URL 페칭에서 추출한 제목/작가/약칭 정보 제공
+        #  Deep Search Hints: snippet/URL 페칭에서 추출한 제목/작가/약칭 정보 제공
         if ctx and hasattr(ctx, 'snippet_hints') and ctx.snippet_hints:
             hints = ctx.snippet_hints
             has_hints = hints.get("title_hints") or hints.get("author_hints") or hints.get("abbreviation_hints")
             if has_hints:
-                user_prompt += "\n\n=== 🔬 DEEP SEARCH HINTS (검색 결과 코드 분석) ===\n"
+                user_prompt += "\n\n===  DEEP SEARCH HINTS (검색 결과 코드 분석) ===\n"
                 user_prompt += "아래는 검색 결과의 snippet/페이지에서 코드가 자동 추출한 정보입니다.\n"
                 user_prompt += "이 정보를 참고하여 약칭 해석 정확도를 높이세요.\n\n"
                 
                 if hints.get("title_hints"):
-                    user_prompt += "📖 발견된 소설 제목 후보:\n"
+                    user_prompt += " 발견된 소설 제목 후보:\n"
                     seen = set()
                     for h in hints["title_hints"][:8]:
                         t = h.get("title", "")
@@ -1039,7 +1039,7 @@ class DecoderExpert:
                     user_prompt += "\n"
                 
                 if hints.get("author_hints"):
-                    user_prompt += "✍️ 발견된 작가명 후보:\n"
+                    user_prompt += " 발견된 작가명 후보:\n"
                     seen = set()
                     for h in hints["author_hints"][:5]:
                         n = h.get("name", "")
@@ -1049,32 +1049,32 @@ class DecoderExpert:
                     user_prompt += "\n"
                 
                 if hints.get("abbreviation_hints"):
-                    user_prompt += "📌 발견된 약칭 매핑:\n"
+                    user_prompt += " 발견된 약칭 매핑:\n"
                     for h in hints["abbreviation_hints"][:5]:
                         src = h.get("source", "")
                         conf = h.get("confidence", "")
                         extra = ""
                         if src == "author_bridge":
-                            extra = f" [🌉 작가 브릿지, 신뢰도: {conf}]"
+                            extra = f" [ 작가 브릿지, 신뢰도: {conf}]"
                         elif conf:
                             extra = f" (신뢰도: {conf})"
-                        user_prompt += f"  - '{h.get('abbrev', '')}' → '{h.get('full', '')}'{extra}\n"
+                        user_prompt += f"  - '{h.get('abbrev', '')}' : '{h.get('full', '')}'{extra}\n"
                     user_prompt += "\n"
                 
-                # 🌉 작가 브릿지 정보 (삼단논법으로 추론된 작가 연결)
+                #  작가 브릿지 정보 (삼단논법으로 추론된 작가 연결)
                 _bridge_hints = hints.get("author_bridge_evidence") or []
                 if not _bridge_hints and ctx and hasattr(ctx, 'snippet_hints'):
                     _bridge_hints = (ctx.snippet_hints or {}).get("author_bridge_evidence", [])
                 if _bridge_hints:
-                    user_prompt += "🌉 작가 브릿지 (삼단논법 추론):\n"
+                    user_prompt += " 작가 브릿지 (삼단논법 추론):\n"
                     for bh in _bridge_hints[:3]:
                         user_prompt += f"  - {bh.get('evidence', '')}\n"
-                    user_prompt += "⚠️ 위 브릿지는 검색 결과 자동 추론이므로, 원문 맥락과 교차 확인하세요.\n\n"
+                    user_prompt += " 위 브릿지는 검색 결과 자동 추론이므로, 원문 맥락과 교차 확인하세요.\n\n"
                 
-                user_prompt += "⚠️ 위 힌트는 코드 자동 추출이므로 오류가 있을 수 있습니다. 검색 결과 원문과 교차 확인하세요.\n"
+                user_prompt += " 위 힌트는 코드 자동 추출이므로 오류가 있을 수 있습니다. 검색 결과 원문과 교차 확인하세요.\n"
         
-        # 🔄 증거 기반 맥락 추론 (Evidence-Based Context Reasoning)
-        # 검색으로 발견한 사실(약칭→제목, 인물=캐릭터/작가)을 토대로
+        #  증거 기반 맥락 추론 (Evidence-Based Context Reasoning)
+        # 검색으로 발견한 사실(약칭:제목, 인물=캐릭터/작가)을 토대로
         # 본문/댓글을 다시 읽고, 글의 실제 맥락을 LLM이 자유롭게 추론하도록 유도
         _do_reasoning = False
         _resolved_mappings = []
@@ -1095,7 +1095,7 @@ class DecoderExpert:
             _gk_authors = _gk_entities.get('possible_authors', []) or []
             
             # 약칭 매핑 수집
-            # 🔥 KNOWN_ABBREVIATIONS를 최우선으로 추가 (가장 신뢰할 수 있는 매핑)
+            #  KNOWN_ABBREVIATIONS를 최우선으로 추가 (가장 신뢰할 수 있는 매핑)
             import re as _re_reinterpret
             _norm_local = lambda s: _re_reinterpret.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', str(s or '')).lower()
             _known_abbrev_norm_map = {
@@ -1149,8 +1149,8 @@ class DecoderExpert:
                         continue
                     if is_snippet_artifact_title_expansion(abbrev, full):
                         print(
-                            f"[{_ts()}][{self.emoji}] ⏭️ resolved_mapping 스킵(표지/fanart 산출물): "
-                            f"'{abbrev}' → '{full}' (source={str(ah.get('source', '') or 'unknown')})",
+                            f"[{_ts()}][{self.emoji}]  resolved_mapping 스킵(표지/fanart 산출물): "
+                            f"'{abbrev}' : '{full}' (source={str(ah.get('source', '') or 'unknown')})",
                             file=sys.stderr,
                         )
                         continue
@@ -1164,20 +1164,20 @@ class DecoderExpert:
                     _allow_low_score = (_source_official or _official_match) and _abbr_score >= 0.25
                     if not (_known_match or _abbr_score >= 0.45 or _allow_low_score):
                         print(
-                            f"[{_ts()}][{self.emoji}] ⏭️ resolved_mapping 스킵(약칭 정합성 낮음): "
-                            f"'{abbrev}' → '{full}' (score={_abbr_score:.2f}, source={_source or 'unknown'})",
+                            f"[{_ts()}][{self.emoji}]  resolved_mapping 스킵(약칭 정합성 낮음): "
+                            f"'{abbrev}' : '{full}' (score={_abbr_score:.2f}, source={_source or 'unknown'})",
                             file=sys.stderr,
                         )
                         continue
-                    # 🛡️ 짧은 약칭 가드: 2자 이하 약칭은 일반명사일 확률이 높으므로
+                    #  짧은 약칭 가드: 2자 이하 약칭은 일반명사일 확률이 높으므로
                     # KNOWN_ABBREVIATIONS 확정쌍이 아니면 정합성 기준을 대폭 강화한다.
-                    # (예: '초식' → '5000살 먹은 초식 드래곤' 같은 우연 매칭 방지)
+                    # (예: '초식' : '5000살 먹은 초식 드래곤' 같은 우연 매칭 방지)
                     if len(_a_norm) <= 2 and not _known_match:
                         _short_min = 0.70 if not _official_match else 0.55
                         if _abbr_score < _short_min:
                             print(
-                                f"[{_ts()}][{self.emoji}] ⏭️ resolved_mapping 스킵(짧은약칭 가드): "
-                                f"'{abbrev}' → '{full}' (len={len(_a_norm)}, "
+                                f"[{_ts()}][{self.emoji}]  resolved_mapping 스킵(짧은약칭 가드): "
+                                f"'{abbrev}' : '{full}' (len={len(_a_norm)}, "
                                 f"score={_abbr_score:.2f} < {_short_min:.2f})",
                                 file=sys.stderr,
                             )
@@ -1197,7 +1197,7 @@ class DecoderExpert:
                     _resolved_mappings = self._refine_resolved_mappings(ctx, _resolved_mapping_entries)
                 except Exception as _mapping_refine_err:
                     print(
-                        f"[{_ts()}][{self.emoji}] ⚠️ resolved_mapping refinement 실패: "
+                        f"[{_ts()}][{self.emoji}]  resolved_mapping refinement 실패: "
                         f"{_mapping_refine_err}",
                         file=sys.stderr,
                     )
@@ -1211,7 +1211,7 @@ class DecoderExpert:
             
             _do_reasoning = True  # 상시 활성화: 매핑 없어도 LLM이 자체 추론
         
-        # 🆕 _resolved_mappings를 ctx에 저장 (suspected_titles 폴백용)
+        #  _resolved_mappings를 ctx에 저장 (suspected_titles 폴백용)
         if ctx:
             ctx._resolved_mappings = _resolved_mappings
             ctx._resolved_authors = _gk_authors
@@ -1243,27 +1243,27 @@ class DecoderExpert:
             if _gk_authors:
                 _entities_info.append(f"작가={_gk_authors[:3]}")
             _mappings_str = str(_resolved_mappings[:3]) if _resolved_mappings else "없음"
-            print(f"[{_ts()}][{self.emoji}] 🔄 증거 기반 맥락 추론 주입: 매핑={_mappings_str}, {', '.join(_entities_info) if _entities_info else '엔티티 없음'}", file=sys.stderr)
+            print(f"[{_ts()}][{self.emoji}]  증거 기반 맥락 추론 주입: 매핑={_mappings_str}, {', '.join(_entities_info) if _entities_info else '엔티티 없음'}", file=sys.stderr)
             
             # --- 프롬프트 구성: 자유 추론 방식 ---
-            user_prompt += "\n\n=== 🔄 증거 기반 맥락 추론 (Evidence-Based Context Reasoning) ===\n"
+            user_prompt += "\n\n===  증거 기반 맥락 추론 (Evidence-Based Context Reasoning) ===\n"
             user_prompt += "검색을 통해 아래 사실들이 발견되었습니다.\n"
             user_prompt += "이 사실들을 원문에 대입하여, 글의 실제 의미와 맥락을 추론하세요.\n\n"
             
             # 발견된 사실 정리
-            user_prompt += "📌 발견된 사실:\n"
+            user_prompt += " 발견된 사실:\n"
             if _resolved_mappings:
                 for abbrev, full in _resolved_mappings[:3]:
-                    user_prompt += f"  • '{abbrev}' = '{full}' (약칭 → 정식 제목)\n"
+                    user_prompt += f"  - '{abbrev}' = '{full}' (약칭 : 정식 제목)\n"
             if _gk_characters:
-                user_prompt += f"  • 본문/제목에서 감지된 인물명: {_gk_characters}\n"
+                user_prompt += f"  - 본문/제목에서 감지된 인물명: {_gk_characters}\n"
             if _gk_authors:
-                user_prompt += f"  • 본문/제목에서 감지된 작가명 후보: {_gk_authors}\n"
+                user_prompt += f"  - 본문/제목에서 감지된 작가명 후보: {_gk_authors}\n"
             if not _resolved_mappings and not _gk_characters and not _gk_authors:
-                user_prompt += "  • (사전 발견된 매핑/인물 없음 — 검색 결과와 본문을 직접 대조하여 스스로 추론하세요)\n"
+                user_prompt += "  - (사전 발견된 매핑/인물 없음 - 검색 결과와 본문을 직접 대조하여 스스로 추론하세요)\n"
             
             # 원문 텍스트 다시 제시
-            user_prompt += f"\n📝 원문 다시 읽기:\n"
+            user_prompt += f"\n 원문 다시 읽기:\n"
             user_prompt += f"  제목: {_post_title_r}\n"
             if _body_text:
                 user_prompt += f"  본문: {_body_text[:300]}\n"
@@ -1283,24 +1283,24 @@ class DecoderExpert:
                 )
             
             # 자유 추론 지시
-            user_prompt += "\n🧠 **추론 과제 (매우 중요!):**\n"
+            user_prompt += "\n **추론 과제 (매우 중요!):**\n"
             user_prompt += "위 사실들을 원문에 대입하여 다음을 단계별로 추론하세요:\n\n"
-            user_prompt += "**Pre-Step — 제목+본문 연결 읽기 (MANDATORY):**\n"
+            user_prompt += "**Pre-Step - 제목+본문 연결 읽기 (MANDATORY):**\n"
             user_prompt += "커뮤니티 게시글의 제목과 본문은 하나의 연속된 발화입니다.\n"
             user_prompt += "제목에는 핵심 주제(작품명/캐릭터명/작가명), 본문에는 관련 감정/의견/내용이 담깁니다.\n"
             user_prompt += "예시: 제목='작품약어 주인공이 너무 불쌍해' + 본문='겨우 찾은 가족을 위해 죽는다니'\n"
-            user_prompt += "→ '작품약어'라는 작품의 '주인공' 캐릭터에 대한 감상으로 읽을 수 있습니다.\n"
+            user_prompt += ": '작품약어'라는 작품의 '주인공' 캐릭터에 대한 감상으로 읽을 수 있습니다.\n"
             user_prompt += "제목만 보고 판단하지 말고, 제목+본문을 하나로 이어서 읽으세요.\n\n"
-            user_prompt += "**Step 0 — 다중 해석 열거 (MANDATORY):**\n"
+            user_prompt += "**Step 0 - 다중 해석 열거 (MANDATORY):**\n"
             user_prompt += "각 key_term에 대해, 검색 결과에서 발견된 **모든 가능한 해석**을 열거하세요.\n"
             user_prompt += "한 가지 해석에 고착하지 마세요!\n"
             user_prompt += "같은 용어가 작가명이자 일반 명사일 수 있고, 작품 약칭이자 장르 용어일 수 있습니다.\n"
             user_prompt += "각 해석별로 본문 맥락과의 적합도(context_fit)를 평가하세요.\n"
-            user_prompt += "→ interpretations 배열에 모든 해석을 기록하세요.\n\n"
-            user_prompt += "**Step 1 — 용어 치환 읽기:**\n"
+            user_prompt += ": interpretations 배열에 모든 해석을 기록하세요.\n\n"
+            user_prompt += "**Step 1 - 용어 치환 읽기:**\n"
             user_prompt += "약칭/인물명을 실제 의미로 치환하면 이 글이 무슨 뜻인가?\n"
-            user_prompt += "발견된 사실(약칭→정식제목, 인물→작가/캐릭터)을 원문에 대입하여 읽으세요.\n\n"
-            user_prompt += "**Step 2 — 맥락 추론:**\n"
+            user_prompt += "발견된 사실(약칭:정식제목, 인물:작가/캐릭터)을 원문에 대입하여 읽으세요.\n\n"
+            user_prompt += "**Step 2 - 맥락 추론:**\n"
             user_prompt += "치환 후 글 전체를 다시 읽고, 글쓴이의 **의도**를 추론하라.\n"
             user_prompt += "- 작품의 줄거리/캐릭터에 대한 논의인가?\n"
             user_prompt += "- 작가에 대한 팬 반응(응원, 연재 기원, 불만 등)인가?\n"
@@ -1308,40 +1308,40 @@ class DecoderExpert:
             user_prompt += "- 작품과 무관한 밈/은어인가?\n"
             user_prompt += "- **팬 요청/창작 요구인가?** (\"~같은거 써주셈\", \"X풍 써줘\"는 비교 참조용 언급이지, 해당 작품이 본문 주제인 것이 아님)\n"
             user_prompt += "- **비교 참조인가?** (\"A처럼 재밌는 거\", \"A랑 비슷한 느낌\", \"A 느낌이라\"는 A가 비교 대상이지, 글의 주제가 아님)\n"
-            user_prompt += "  → 비교 대상 작품을 best_match.title에 올리지 마세요. 주제 작품이 불명이면 title=null\n"
+            user_prompt += "  : 비교 대상 작품을 best_match.title에 올리지 마세요. 주제 작품이 불명이면 title=null\n"
             user_prompt += "- 본문+댓글의 전체 분위기에서 어떤 해석이 가장 자연스러운가?\n\n"
-            user_prompt += "**Step 3 — 인물 역할 판정:**\n"
+            user_prompt += "**Step 3 - 인물 역할 판정:**\n"
             user_prompt += "검색 결과를 참고하여 인물명의 역할을 확인하라.\n"
-            user_prompt += "- 등장인물로 확인 → anchor_type='character_mention', is_grounded=true\n"
-            user_prompt += "- 작가로 확인 → is_author_name=true, author_info 기록\n"
-            user_prompt += "- 작가명이 본문에 있고 + 해당 작품 약칭도 있으면 → is_grounded=true (작품 식별 증거)\n\n"
-            user_prompt += "**Step 4 — 결론:**\n"
-            user_prompt += "추론 결과를 notes 필드에 '치환 읽기 → 맥락 추론 → 결론' 형태로 간결하게 기록하세요.\n"
+            user_prompt += "- 등장인물로 확인 : anchor_type='character_mention', is_grounded=true\n"
+            user_prompt += "- 작가로 확인 : is_author_name=true, author_info 기록\n"
+            user_prompt += "- 작가명이 본문에 있고 + 해당 작품 약칭도 있으면 : is_grounded=true (작품 식별 증거)\n\n"
+            user_prompt += "**Step 4 - 결론:**\n"
+            user_prompt += "추론 결과를 notes 필드에 '치환 읽기 : 맥락 추론 : 결론' 형태로 간결하게 기록하세요.\n"
         
-        # 🌐 Fetched Page Info: URL 페칭으로 얻은 구조적 정보
+        #  Fetched Page Info: URL 페칭으로 얻은 구조적 정보
         if ctx and hasattr(ctx, 'fetched_page_info') and ctx.fetched_page_info:
             # Phase 34: 삭제된 소설 제목 경고
             _dead_titles_list = getattr(ctx, '_deleted_titles_list', []) if ctx else []
-            user_prompt += "\n\n=== 🌐 FETCHED PAGE INFO (crawl4ai 크롤링 결과) ===\n"
+            user_prompt += "\n\n===  FETCHED PAGE INFO (crawl4ai 크롤링 결과) ===\n"
             user_prompt += (
                 "아래는 crawl4ai로 실제 웹 페이지를 크롤링하여 얻은 본문 정보입니다.\n"
                 "각 페이지의 전체 내용을 읽고, 이 페이지가 무엇인지(소설 작품 페이지인지, "
                 "독자 커뮤니티 게시글인지, 위키 문서인지) 직접 판단하세요.\n\n"
-                "📌 핵심 판단 규칙:\n"
-                "1. page_type='community_post' → 독자들이 쓴 커뮤니티 게시글. "
+                " 핵심 판단 규칙:\n"
+                "1. page_type='community_post' : 독자들이 쓴 커뮤니티 게시글. "
                 "이 페이지의 제목(page_title)은 게시글 제목이지 소설 제목이 아닙니다.\n"
                 "   본문 내용을 읽고 실제로 어떤 소설을 논하고 있는지 파악하세요.\n"
-                "2. page_type='novel_page' → 소설 플랫폼의 작품 페이지. "
+                "2. page_type='novel_page' : 소설 플랫폼의 작품 페이지. "
                 "title이 정식 소설 제목이며 가장 신뢰할 수 있습니다.\n"
-                "3. page_type='wiki' → 위키 문서. 약칭, 등장인물, 줄거리 등 참고 가능.\n"
-                "4. page_type='unknown'/'blog' → 본문 내용을 직접 읽어 맥락을 판단하세요.\n\n"
+                "3. page_type='wiki' : 위키 문서. 약칭, 등장인물, 줄거리 등 참고 가능.\n"
+                "4. page_type='unknown'/'blog' : 본문 내용을 직접 읽어 맥락을 판단하세요.\n\n"
             )
             if _dead_titles_list:
                 user_prompt += (
-                    "⛔ 삭제/미존재 확인된 작품 목록 (실제 크롤링 결과 사라진 작품):\n"
+                    " 삭제/미존재 확인된 작품 목록 (실제 크롤링 결과 사라진 작품):\n"
                 )
                 for _dt in _dead_titles_list:
-                    user_prompt += f"  - '{_dt}' (삭제됨 — 이 제목을 정답으로 선택하지 마세요)\n"
+                    user_prompt += f"  - '{_dt}' (삭제됨 - 이 제목을 정답으로 선택하지 마세요)\n"
                 user_prompt += (
                     "위 삭제된 작품과 유사한 제목의 다른 활성 작품을 우선 선택하세요.\n\n"
                 )
@@ -1357,13 +1357,13 @@ class DecoderExpert:
                 _cs = structured.get("content_status", "active")
                 if _cs in ("deleted", "unavailable"):
                     user_prompt += (
-                        f"  ⛔ content_status: {_cs} — 이 페이지의 작품은 삭제/비공개/미존재 상태입니다.\n"
-                        f"  ⚠️ 이 페이지에서 추출한 소설 제목을 정답으로 사용하지 마세요!\n"
+                        f"   content_status: {_cs} - 이 페이지의 작품은 삭제/비공개/미존재 상태입니다.\n"
+                        f"   이 페이지에서 추출한 소설 제목을 정답으로 사용하지 마세요!\n"
                         f"  삭제된 작품과 유사한 제목의 다른 활성 작품을 우선 고려하세요.\n"
                     )
                 if _pt == "community_post":
                     user_prompt += (
-                        "  ⚠️ 커뮤니티 게시글: 이 페이지 제목은 독자가 쓴 글 제목입니다.\n"
+                        "   커뮤니티 게시글: 이 페이지 제목은 독자가 쓴 글 제목입니다.\n"
                         "  본문을 읽고 실제 논의 대상 소설이 무엇인지 파악하세요.\n"
                     )
                 if structured:
@@ -1371,12 +1371,12 @@ class DecoderExpert:
                         if v and k not in ("text_preview", "page_type", "fetch_method"):
                             user_prompt += f"  {k}: {v}\n"
                 if preview:
-                    user_prompt += f"  📄 크롤링 본문:\n{preview[:1500]}\n"
+                    user_prompt += f"   크롤링 본문:\n{preview[:1500]}\n"
                 user_prompt += "\n"
         
         print(f"[{_ts()}][{self.emoji}] {self.name} 분석 시작: terms={key_terms}", file=sys.stderr)
         
-        # 프롬프트 크기 로그 (제한 없음 — vLLM 서버가 최종 안전장치)
+        # 프롬프트 크기 로그 (제한 없음 - vLLM 서버가 최종 안전장치)
         print(f"[{_ts()}][{self.emoji}] 최종 user_prompt={len(user_prompt):,}자 (제한 없음)", file=sys.stderr)
         
         try:
@@ -8846,7 +8846,7 @@ class DecoderExpert:
                     continue
             
             # 원본 키워드가 장르 키워드 패턴인지 확인
-            from ..rules import GENRE_KEYWORDS, GENRE_ARCHETYPE_TERMS
+            from ..domain.rules import GENRE_KEYWORDS, GENRE_ARCHETYPE_TERMS
             is_genre_keyword = (
                 original_term in {g.lower().replace(" ", "") for g in GENRE_KEYWORDS}
                 or original_term in {g.lower().replace(" ", "") for g in GENRE_ARCHETYPE_TERMS}

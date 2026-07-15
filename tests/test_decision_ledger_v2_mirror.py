@@ -5,9 +5,9 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from src.llm_batch.decision_call_events import DecisionCallLedgerRegistry
-from src.llm_batch.decision_ledger_v2_mirror import DecisionLedgerV2MirrorError, mirror, read
-from src.llm_batch.publication_commit import build_publication_scope_descriptor
+from src.llm_batch.ledger.decision_call_events import DecisionCallLedgerRegistry
+from src.llm_batch.ledger.decision_ledger_v2_mirror import DecisionLedgerV2MirrorError, mirror, read
+from src.llm_batch.ledger.publication_commit import build_publication_scope_descriptor
 
 
 class DecisionLedgerV2MirrorTests(unittest.TestCase):
@@ -43,7 +43,7 @@ class DecisionLedgerV2MirrorTests(unittest.TestCase):
             with self.assertRaisesRegex(DecisionLedgerV2MirrorError, "outside legacy"):
                 mirror(legacy_root=legacy, output_root=legacy / "mirror", run_id="mirror-run", run_spec_path=run_spec, publication_scope_path=scope, attempt_path=attempt)
             value = mirror(legacy_root=legacy, output_root=root / "mirror", run_id="mirror-run", run_spec_path=run_spec, publication_scope_path=scope, attempt_path=attempt)
-            bad = dict(value); bad["legacy_scope"] = {}; material = {key: item for key, item in bad.items() if key != "mirror_sha256"}; from src.llm_batch.decision_ledger_v2_mirror import _sha; bad["mirror_sha256"] = _sha(material)
+            bad = dict(value); bad["legacy_scope"] = {}; material = {key: item for key, item in bad.items() if key != "mirror_sha256"}; from src.llm_batch.ledger.decision_ledger_v2_mirror import _sha; bad["mirror_sha256"] = _sha(material)
             with self.assertRaises(DecisionLedgerV2MirrorError): read(bad)
             bad = dict(value); bad["pair_id"] = "other"; material = {key: item for key, item in bad.items() if key != "mirror_sha256"}; bad["mirror_sha256"] = _sha(material)
             with self.assertRaises(DecisionLedgerV2MirrorError): read(bad)

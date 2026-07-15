@@ -5,8 +5,8 @@ import tempfile
 import threading
 import unittest
 
-from llm_batch.decision_ledger_v2 import DecisionCallLedgerV2, DecisionLedgerV2Error
-from llm_batch.framed_wal import FramedWAL, FramedWalError
+from llm_batch.ledger.decision_ledger_v2 import DecisionCallLedgerV2, DecisionLedgerV2Error
+from llm_batch.ledger.framed_wal import FramedWAL, FramedWalError
 
 
 class DecisionLedgerV2Tests(unittest.TestCase):

@@ -1,23 +1,32 @@
+import io
 import json
+import hashlib
 import os
 import tempfile
 import unittest
 from argparse import Namespace
+from contextlib import redirect_stderr
 from pathlib import Path
 from unittest.mock import patch
 
 import expert_main as expert_main_module
+PublicationCommitError = expert_main_module.PublicationCommitError
 from expert_main import (
     _allow_local_shard_auto_up,
     _allow_local_shard_recreate,
     _allow_missing_shard_auto_scale_up,
     _apply_reuse_only_healthy_endpoint_filter,
+    _assert_fresh_output_attempt,
+    _build_decision_call_measurement_gate,
+    _build_runtime_completion_gate,
     _build_completed_subset_rows,
     _can_auto_manage_local_shards,
     _configure_mcp_endpoints,
     _count_image_posts,
     _count_nonempty_jsonl_lines,
+    _create_output_attempt_claim,
     _default_mcp_health_include_search,
+    _decision_env_key_is_secret,
     _effective_parallel_for_post_count,
     _env_toggle_enabled,
     _env_shard_lifecycle_blocked_by_context,
@@ -25,16 +34,394 @@ from expert_main import (
     _mcp_goal_run_light_health_mode,
     _mcp_health_probe_batch_size,
     _mcp_health_required_ok_count,
+    _fresh_execution_authoritative_reference_for_row,
+    _large_run_complete_from_gates,
+    _publication_decision_environment,
     _post_has_image_block,
     _public_comment_context_lines,
     _public_comment_dialogue_context_lines,
     _public_comment_metadata,
+    _runtime_binding_echo_fields,
+    _require_fresh_execution_authoritative_references,
     _small_run_shard_lifecycle_blocked,
     load_jsonl_posts,
 )
 
 
 class ExpertMainInputLoaderTest(unittest.TestCase):
+    def test_loader_and_line_count_use_one_immutable_input_snapshot(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "input.jsonl"
+            original = (
+                json.dumps(
+                    {
+                        "post_id": 101,
+                        "title": "snapshot title",
+                        "content": ["snapshot body"],
+                    },
+                    ensure_ascii=False,
+                )
+                + "\n"
+            ).encode("utf-8")
+            path.write_bytes(original)
+            snapshot = path.read_bytes()
+            path.write_text(
+                json.dumps(
+                    {"post_id": 999, "title": "changed", "content": ["changed"]},
+                    ensure_ascii=False,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            posts = load_jsonl_posts(path, snapshot_bytes=snapshot)
+            count = _count_nonempty_jsonl_lines(path, snapshot_bytes=snapshot)
+
+            self.assertEqual(count, 1)
+            self.assertEqual([post.post_id for post in posts], [101])
+            self.assertEqual(posts[0].title, "snapshot title")
+
+    def test_decision_env_secret_filter_keeps_token_budgets_in_scope(self):
+        self.assertFalse(_decision_env_key_is_secret("LLM_MAX_TOKENS"))
+        self.assertFalse(_decision_env_key_is_secret("LLM_CONTEXT_LIMIT_TOKENS"))
+        self.assertFalse(
+            _decision_env_key_is_secret("LLM_STREAM_FIRST_TOKEN_TIMEOUT_SECONDS")
+        )
+        self.assertTrue(_decision_env_key_is_secret("LLM_API_KEY"))
+        self.assertTrue(_decision_env_key_is_secret("LLM_ACCESS_TOKEN"))
+        self.assertTrue(_decision_env_key_is_secret("PIPELINE_PASSWORD"))
+
+    def test_existing_output_attempt_is_refused_without_truncation(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output = Path(tmpdir) / "result.json"
+            checkpoint = Path(tmpdir) / "result_checkpoint.jsonl"
+            checkpoint.write_text("durable evidence\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(FileExistsError, "덮어쓰지 않습니다"):
+                _assert_fresh_output_attempt([output, checkpoint])
+
+            self.assertFalse(output.exists())
+            self.assertEqual(
+                checkpoint.read_text(encoding="utf-8"),
+                "durable evidence\n",
+            )
+
+    def test_output_attempt_claim_is_exclusive_and_immutable(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            claim = Path(tmpdir) / "result_attempt_claim.json"
+            first_hash = _create_output_attempt_claim(
+                claim,
+                {"schema_version": "expert_output_attempt_claim_v1", "run_id": "first"},
+            )
+            first_bytes = claim.read_bytes()
+
+            with self.assertRaises(FileExistsError):
+                _create_output_attempt_claim(
+                    claim,
+                    {"schema_version": "expert_output_attempt_claim_v1", "run_id": "second"},
+                )
+
+            self.assertEqual(claim.read_bytes(), first_bytes)
+            import hashlib
+
+            self.assertEqual(first_hash, hashlib.sha256(first_bytes).hexdigest())
+
+    def test_p2_attempt_sidecars_use_durable_write_helpers(self):
+        source = Path(expert_main_module.__file__).read_text(encoding="utf-8")
+        for name in (
+            "checkpoint_jsonl_path",
+            "pending_snapshot_path",
+            "completed_subset_path",
+            "completed_subset_manifest_path",
+            "result_manifest_path",
+            "out_result_path",
+        ):
+            self.assertNotIn(f"{name}.write_text(", source)
+        self.assertNotIn('checkpoint_jsonl_path.open("a"', source)
+        self.assertIn("_append_jsonl_fsync(checkpoint_jsonl_path", source)
+        self.assertIn("_atomic_write_json(result_manifest_path", source)
+        self.assertIn("_atomic_write_json(out_result_path", source)
+
+    def test_publication_scope_binds_decision_environment_and_full_config_hash(self):
+        source = Path(expert_main_module.__file__).read_text(encoding="utf-8")
+        for fragment in (
+            '"vlm_enabled": vlm_enabled',
+            '"ocr_enabled": ocr_enabled',
+            '"slang_db_path": str(_scope_slang_db_path)',
+            '"slang_db_input_sha256": _scope_slang_db_sha256',
+            '"decision_environment_sha256": _decision_environment_sha256',
+            "publication_scope_descriptor = build_publication_scope_descriptor(",
+            "config_hash=_publication_config_hash",
+            '"publication_input_snapshot_sha256": _input_snapshot_sha256',
+            '"schema_version": "publication_scope_config_v1"',
+            '"decision_environment": _decision_environment',
+            '"publication_scope_config_sha256"',
+            '"publication_release_attestation_status"',
+            '"publication_commit_tail_repair_ledger_sha256"',
+        ):
+            self.assertIn(fragment, source)
+        self.assertLess(
+            source.index("_run_config_payload.update("),
+            source.index("_publication_config_hash = hashlib.sha256("),
+        )
+
+    def test_actual_environment_path_excludes_measurement_keys_from_publication_scope(self):
+        base = {
+            "LLM_MODEL": "decision-model-a",
+            "PIPELINE_REASON_FULL_MODE": "1",
+            "PIPELINE_DECISION_CALL_LEDGER_MODE": "REQUIRED",
+            "PIPELINE_DECISION_CALL_PAIR_ID": "pair-before",
+            "PIPELINE_DECISION_CALL_ARM": "BEFORE",
+            "PIPELINE_DECISION_CALL_RUN_SPEC_SHA256": "a" * 64,
+            "PIPELINE_DECISION_CALL_EXECUTION_SOURCE": "FRESH_EXECUTION_NO_PUBLIC_WRITE",
+            "PIPELINE_MEASUREMENT_RUN_SPEC_SHA256": "a" * 64,
+            "PIPELINE_MEASUREMENT_PAIR_ID": "pair-before",
+            "PIPELINE_MEASUREMENT_ARM": "BEFORE",
+            "PIPELINE_MEASUREMENT_EXECUTION_MODE": "FRESH_EXECUTION_REQUIRED",
+        }
+        changed_measurement = {
+            **base,
+            "PIPELINE_DECISION_CALL_PAIR_ID": "pair-after",
+            "PIPELINE_DECISION_CALL_ARM": "AFTER",
+            "PIPELINE_DECISION_CALL_RUN_SPEC_SHA256": "b" * 64,
+            "PIPELINE_MEASUREMENT_RUN_SPEC_SHA256": "b" * 64,
+            "PIPELINE_MEASUREMENT_PAIR_ID": "pair-after",
+            "PIPELINE_MEASUREMENT_ARM": "AFTER",
+        }
+        with patch.dict(os.environ, base, clear=True):
+            before = _publication_decision_environment()
+        with patch.dict(os.environ, changed_measurement, clear=True):
+            after = _publication_decision_environment()
+
+        def digest(value):
+            return hashlib.sha256(
+                json.dumps(value, sort_keys=True, separators=(",", ":")).encode("utf-8")
+            ).hexdigest()
+
+        self.assertEqual(before, after)
+        self.assertEqual(digest(before), digest(after))
+        self.assertEqual(before["LLM_MODEL"], "decision-model-a")
+        self.assertEqual(before["PIPELINE_REASON_FULL_MODE"], "1")
+        self.assertFalse(
+            any(key.startswith("PIPELINE_DECISION_CALL_") for key in before)
+        )
+        self.assertFalse(any(key.startswith("PIPELINE_MEASUREMENT_") for key in before))
+        with patch.dict(
+            os.environ,
+            {**changed_measurement, "LLM_MODEL": "decision-model-b"},
+            clear=True,
+        ):
+            changed_decision = _publication_decision_environment()
+        self.assertNotEqual(digest(before), digest(changed_decision))
+
+    def test_fresh_execution_rejects_empty_and_partial_wal_reference_sets(self):
+        source = Path(expert_main_module.__file__).read_text(encoding="utf-8")
+        fresh_mode = source.index('if _decision_call_measurement["fresh_execution_required"]:')
+        preflight = source.index(
+            "_require_fresh_execution_authoritative_references(",
+            fresh_mode,
+        )
+        disable_replay = source.index("_publication_replay_by_index = {}", preflight)
+        self.assertLess(preflight, disable_replay)
+        self.assertLess(disable_replay, source.index("def _process_one(", fresh_mode))
+        with self.assertRaisesRegex(
+            PublicationCommitError,
+            "FRESH_EXECUTION_NO_PUBLIC_WRITE requires an authoritative WAL",
+        ):
+            _require_fresh_execution_authoritative_references(
+                {},
+                post_ids=[101, 102],
+            )
+
+        authoritative_receipt = object()
+        references = {1: ({"post_id": 101}, authoritative_receipt)}
+        self.assertIs(
+            _fresh_execution_authoritative_reference_for_row(
+                references,
+                input_index=1,
+                post_id=101,
+            )[1],
+            authoritative_receipt,
+        )
+        with self.assertRaisesRegex(PublicationCommitError, "missing=2:102"):
+            _require_fresh_execution_authoritative_references(
+                references,
+                post_ids=[101, 102],
+            )
+
+    def test_required_measurement_failures_block_large_run_completion(self):
+        source = Path(expert_main_module.__file__).read_text(encoding="utf-8")
+        self.assertIn('"writer_complete": writer_complete', source)
+        self.assertIn('"NOT_LINKABLE_WRITER_INCOMPLETE"', source)
+        required = {"mode": "REQUIRED", "actual_kpi_eligible": True}
+        complete_summary = {
+            "instrumentation_status": "ENABLED",
+            "ledger_status": "COMPLETE",
+            "actual_kpi_status": "PENDING_INDEPENDENT_READBACK",
+            "reason_codes": [],
+        }
+        linked_entry = {
+            "ledger_ref": {"closure_kind": "ROW_SEAL"},
+            "row_summary": {
+                "writer_complete": True,
+                "actual_kpi_status": "PENDING_INDEPENDENT_READBACK",
+            },
+            "attempt_receipt": {
+                "publication_link_status": "LINKED_EXTERNAL_LEDGER",
+            },
+        }
+        runtime_complete = _build_runtime_completion_gate(
+            input_post_count=1,
+            completed_count=1,
+            pending_count=0,
+            failed_count=0,
+            terminal_artifacts_finalized=True,
+        )
+        valid_gate = _build_decision_call_measurement_gate(
+            measurement_config=required,
+            ledger_summary=complete_summary,
+            row_attempts={1: linked_entry},
+            expected_input_count=1,
+        )
+        self.assertTrue(_large_run_complete_from_gates(runtime_complete, valid_gate))
+
+        cases = {
+            "external_link_failed": (
+                complete_summary,
+                {
+                    **linked_entry,
+                    "attempt_receipt": {
+                        "publication_link_status": "LINK_FAILED_NOT_ESTIMABLE",
+                    },
+                },
+                "ROW_EXTERNAL_LEDGER_UNLINKED",
+            ),
+            "row_not_estimable": (
+                complete_summary,
+                {
+                    **linked_entry,
+                    "row_summary": {
+                        "writer_complete": False,
+                        "actual_kpi_status": "NOT_ESTIMABLE",
+                    },
+                },
+                "ROW_NOT_ESTIMABLE",
+            ),
+            "ambiguous_or_unlinked_ledger": (
+                {
+                    **complete_summary,
+                    "ledger_status": "PARTIAL",
+                    "actual_kpi_status": "NOT_ESTIMABLE",
+                    "reason_codes": [
+                        "AMBIGUOUS_MULTIPLE_ATTEMPT_RUNS",
+                        "UNLINKED_ROW_ATTEMPT",
+                    ],
+                },
+                linked_entry,
+                "LEDGER_AMBIGUOUS_MULTIPLE_ATTEMPT_RUNS",
+            ),
+        }
+        for name, (summary, row_entry, expected_reason) in cases.items():
+            with self.subTest(name=name):
+                gate = _build_decision_call_measurement_gate(
+                    measurement_config=required,
+                    ledger_summary=summary,
+                    row_attempts={1: row_entry},
+                    expected_input_count=1,
+                )
+                self.assertEqual(gate["status"], "NO_GO")
+                self.assertTrue(gate["blocks_large_run_complete"])
+                self.assertIn(expected_reason, gate["reason_codes"])
+                self.assertFalse(_large_run_complete_from_gates(runtime_complete, gate))
+
+    def test_parallel_initial_manifest_contains_all_three_completion_gates(self):
+        source = Path(expert_main_module.__file__).read_text(encoding="utf-8")
+        parallel_start = source.index("# ===== 병렬 모드 =====")
+        initial_manifest = source.index(
+            "_atomic_write_json(\n                    result_manifest_path,",
+            parallel_start,
+        )
+        worker_start = source.index("# 워커별 로그 파일 생성", initial_manifest)
+        initial_block = source[initial_manifest:worker_start]
+        self.assertIn("**_completion_manifest_gate_fields(", initial_block)
+        self.assertIn('"next_save_idx": 1', initial_block)
+        self.assertIn('"partial_flush_gap": False', initial_block)
+        self.assertIn('"ordered_flush_blocked": False', initial_block)
+
+    def test_existing_wal_rows_are_replayed_without_worker_resubmission(self):
+        source = Path(expert_main_module.__file__).read_text(encoding="utf-8")
+        self.assertIn("_publication_replay_by_index", source)
+        self.assertIn('else "durable_replay"', source)
+        self.assertIn('status="durable_replay"', source)
+        self.assertIn("if i in _publication_replay_by_index:\n                            continue", source)
+        self.assertIn("publication_commit_registry.result(_replay_receipt.post_id)", source)
+        self.assertIn(
+            "_queue_batch_context_publication_learning(\n"
+            "                    input_index=_replay_index,\n"
+            "                    canonical_result=_replay_result,\n"
+            "                    publication_receipt=_replay_receipt,\n"
+            "                    created=True,",
+            source,
+        )
+        self.assertNotIn("_batch_context.learn_from_result(_replay_result)", source)
+        self.assertIn("_slang_db_manager.record_result(_replay_result)", source)
+        self.assertIn('"batch_context_learning": {', source)
+        self.assertIn('"pending_count": len(_batch_context_learning_pending)', source)
+        self.assertIn('"same_wave_observation_deterministic": False', source)
+
+    def test_slang_db_uses_one_snapshot_and_defers_source_promotion(self):
+        source = Path(expert_main_module.__file__).read_text(encoding="utf-8")
+        self.assertIn("_slang_db_manager_path = slang_db_work_path", source)
+        self.assertIn("_scope_slang_db_snapshot_bytes", source)
+        self.assertIn("_scope_slang_db_snapshot_text", source)
+        self.assertIn("def _finalize_slang_db(*, publish: bool)", source)
+        self.assertIn("_finalize_slang_db(publish=False)", source)
+        self.assertIn("_finalize_slang_db(publish=_slang_publish_ready)", source)
+        self.assertIn('"publication_slang_db_writeback_complete"', source)
+        self.assertIn('"explicit_post_run_only"', source)
+        self.assertIn('"publication_slang_db_promotion_ready"', source)
+        self.assertNotIn("_atomic_write_text(\n                    _slang_db_path,", source)
+        self.assertNotIn("\n            _slang_db_manager.finalize()\n            if _PARALLEL", source)
+
+    def test_runtime_binding_echo_fields_are_absent_without_environment(self):
+        keys = ["FRESH375_RUN_BINDING_TOKEN", "RUNTIME_RELEASE_FINGERPRINT_SHA256"]
+        with patch.dict(os.environ, {}, clear=False):
+            for key in keys:
+                os.environ.pop(key, None)
+            self.assertEqual(_runtime_binding_echo_fields(), {})
+
+    def test_runtime_binding_echo_fields_preserve_exact_values(self):
+        token = "  fresh-binding-token-exact  "
+        fingerprint = "a" * 64
+        with patch.dict(
+            os.environ,
+            {
+                "FRESH375_RUN_BINDING_TOKEN": token,
+                "RUNTIME_RELEASE_FINGERPRINT_SHA256": fingerprint,
+            },
+            clear=False,
+        ):
+            self.assertEqual(
+                _runtime_binding_echo_fields(),
+                {
+                    "fresh375_run_binding_token": token,
+                    "runtime_release_fingerprint_sha256": fingerprint,
+                },
+            )
+
+    def test_runtime_binding_echo_is_wired_to_rows_and_manifests(self):
+        source = Path(expert_main_module.__file__).read_text(encoding="utf-8")
+        self.assertEqual(source.count("**_runtime_binding_echo_fields()"), 2)
+        self.assertIn('"run_meta": {\n                        **_runtime_binding_echo_fields(),', source)
+        manifest_function = source.index(
+            "def _parallel_manifest_fields() -> Dict[str, Any]:"
+        )
+        manifest_return = source.index(
+            "**_runtime_binding_echo_fields()",
+            manifest_function,
+        )
+        self.assertGreater(manifest_return, manifest_function)
+
     def test_build_completed_subset_rows_keeps_flushed_prefix_and_pending_order(self):
         flushed = [
             {"post_id": 101, "title": "flushed-1"},
@@ -68,7 +455,10 @@ class ExpertMainInputLoaderTest(unittest.TestCase):
                 encoding="utf-8-sig",
             )
 
-            posts = load_jsonl_posts(input_path)
+            posts = load_jsonl_posts(
+                input_path,
+                snapshot_bytes=input_path.read_bytes(),
+            )
 
         self.assertEqual(len(posts), 1)
         self.assertEqual(posts[0].post_id, 10426463)
@@ -77,6 +467,48 @@ class ExpertMainInputLoaderTest(unittest.TestCase):
             "작가가 프문을 좀 많이 좋아하나",
         ])
         self.assertEqual(posts[0].comments[0]["content"], "림버스에서 가져온 소설 하나 있긴 하던데")
+
+    def test_load_jsonl_posts_collapses_identical_duplicate_post_id(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            input_path = Path(tmpdir) / "duplicate.jsonl"
+            row = {"post_id": 10426463, "title": "동일 행", "content": ["본문 A"]}
+            rows = [row, {**row, "post_id": "10426463"}]
+            input_path.write_text(
+                "\n".join(json.dumps(item, ensure_ascii=False) for item in rows) + "\n",
+                encoding="utf-8",
+            )
+
+            stderr = io.StringIO()
+            with redirect_stderr(stderr):
+                posts = load_jsonl_posts(
+                    input_path,
+                    snapshot_bytes=input_path.read_bytes(),
+                )
+
+        self.assertEqual(len(posts), 1)
+        self.assertEqual(posts[0].post_id, 10426463)
+        self.assertEqual(posts[0].title, "동일 행")
+        self.assertIn("duplicate_rows=1", stderr.getvalue())
+        self.assertIn("duplicate_post_ids=1", stderr.getvalue())
+        self.assertIn("10426463(1,2)", stderr.getvalue())
+
+    def test_load_jsonl_posts_rejects_conflicting_duplicate_post_id_before_runtime(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            input_path = Path(tmpdir) / "duplicate.jsonl"
+            rows = [
+                {"post_id": 10426463, "title": "첫 행", "content": ["본문 A"]},
+                {"post_id": 10426463, "title": "덮어쓰기 행", "content": ["본문 B"]},
+            ]
+            input_path.write_text(
+                "\n".join(json.dumps(row, ensure_ascii=False) for row in rows) + "\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(
+                ValueError,
+                r"내용이 다른 중복 post_id.*post_id=10426463.*first_line=1.*duplicate_line=2",
+            ):
+                load_jsonl_posts(input_path)
 
     def test_load_jsonl_posts_preserves_image_blocks_for_vlm_gate(self):
         with tempfile.TemporaryDirectory() as tmpdir:

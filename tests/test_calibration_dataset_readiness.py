@@ -6,14 +6,14 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
 
-from src.llm_batch.calibration_dataset_readiness import (
+from src.llm_batch.grounding.calibration_dataset_readiness import (
     GATE_NOT_READY,
     GATE_READY,
     sha256_payload,
     validate_dataset_readiness_against_sources,
     validate_dataset_readiness_manifest,
 )
-from src.llm_batch.candidate_set_calibration_shadow import CalibrationEvaluationPolicy
+from src.llm_batch.grounding.candidate_set_calibration_shadow import CalibrationEvaluationPolicy
 from tools.run_calibration_dataset_readiness import (
     build_current_readiness,
     render_markdown,

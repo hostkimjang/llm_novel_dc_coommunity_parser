@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import ast
 import os
+import re
 import sys
 import unittest
 from pathlib import Path
@@ -10,15 +11,15 @@ from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from llm_batch.agentic_pipeline import AgenticPipeline  # noqa: E402
-from llm_batch.batch_context import BatchContextMemory  # noqa: E402
-from llm_batch.candidate_audit import apply_weak_public_title_bridge_guard  # noqa: E402
+from llm_batch.domain.batch_context import BatchContextMemory  # noqa: E402
+from llm_batch.grounding.candidate_audit import apply_weak_public_title_bridge_guard  # noqa: E402
 from llm_batch.experts.decoder import (  # noqa: E402
     DecoderExpert,
     is_snippet_artifact_title_expansion,
 )
 from llm_batch.experts.orchestrator import ConversationContext, ExpertType, Orchestrator  # noqa: E402
 from llm_batch.experts.verifier import VerifierExpert  # noqa: E402
-from llm_batch.models import (  # noqa: E402
+from llm_batch.domain.models import (  # noqa: E402
     ContentBlock,
     DetectedTitle,
     NovelIdentity,
@@ -26,6 +27,10 @@ from llm_batch.models import (  # noqa: E402
     PickvelOutputItemV2,
     PostInput,
     SlangInsight,
+)
+from llm_batch.promotion_gate import (  # noqa: E402
+    GroundingState,
+    evaluate_publish_contract,
 )
 
 
@@ -92,6 +97,531 @@ def mark_no_work_seed(ctx: ConversationContext) -> None:
 
 
 class TitleLeadSearchInferredGuardTest(unittest.TestCase):
+    def test_direct_image_work_title_search_injection_is_exact_and_bounded(self):
+        orchestrator = Orchestrator(experts={})
+        ctx = ConversationContext(
+            post_id=11716480,
+            post_data={
+                "post_id": 11716480,
+                "image_enrichment": [
+                    {
+                        "evidence_type": "explicit_text",
+                        "title_role": "work_title",
+                        "screen_type": "work_surface",
+                        "explicit_work_title": "재벌가 차녀의 2회차 걸그룹",
+                        "explicit_author_name": "유은우",
+                        "ocr_text": "#로맨스 UI 홈 추천 작품 재벌가 차녀의 2회차 걸그룹",
+                        "work_cues": ["재벌가 차녀", "2회차", "걸그룹", "#로맨스"],
+                    }
+                ],
+            },
+            comments=[],
+        )
+
+        requests = orchestrator._inject_image_work_cue_search_requests(ctx, [])
+
+        self.assertEqual(
+            [request["query"] for request in requests],
+            [
+                '"재벌가 차녀의 2회차 걸그룹" "유은우"',
+                '"재벌가 차녀의 2회차 걸그룹" 노벨피아',
+            ],
+        )
+        self.assertTrue(all(request["purpose"] == "image_work_cue_search" for request in requests))
+        self.assertFalse(any('"재벌가" "걸그룹"' in request["query"] for request in requests))
+        self.assertFalse(any("#로맨스" in request["query"] for request in requests))
+
+        existing = [
+            {
+                "query": "재벌가 차녀의 2회차 걸그룹 유은우",
+                "purpose": "official_title_verify",
+                "priority": 0,
+            }
+        ]
+        deduped = orchestrator._inject_image_work_cue_search_requests(ctx, existing)
+        self.assertEqual(len(deduped), 2)
+        self.assertEqual(
+            [request["query"] for request in deduped],
+            [
+                '"재벌가 차녀의 2회차 걸그룹" "유은우"',
+                '"재벌가 차녀의 2회차 걸그룹" 노벨피아',
+            ],
+        )
+
+        clamped = orchestrator._clamp_typed_image_work_title_initial_search_requests(
+            ctx,
+            [
+                *existing,
+                {
+                    "query": "재벌가 차녀의 2회차 걸그룹 review",
+                    "purpose": "title_search_community",
+                    "priority": 1,
+                },
+            ],
+            phase="test",
+        )
+        self.assertEqual(
+            [request["query"] for request in clamped],
+            [
+                '"재벌가 차녀의 2회차 걸그룹" "유은우"',
+                '"재벌가 차녀의 2회차 걸그룹" 노벨피아',
+            ],
+        )
+
+        ctx.post_data["image_enrichment"][0]["title_role"] = "unknown"
+        unknown_role_requests = orchestrator._inject_image_work_cue_search_requests(
+            ctx,
+            [],
+        )
+        self.assertEqual(
+            [request["query"] for request in unknown_role_requests],
+            [
+                '"재벌가 차녀의 2회차 걸그룹" "유은우"',
+                '"재벌가 차녀의 2회차 걸그룹" 노벨피아',
+            ],
+        )
+        mark_no_work_seed(ctx)
+        kept_unknown_role_requests = orchestrator._prune_title_search_requests_for_intent_permit(
+            ctx,
+            unknown_role_requests,
+            phase="test_unknown_typed_title",
+        )
+        self.assertEqual(
+            [request["query"] for request in kept_unknown_role_requests],
+            [
+                '"재벌가 차녀의 2회차 걸그룹" "유은우"',
+                '"재벌가 차녀의 2회차 걸그룹" 노벨피아',
+            ],
+        )
+        noncanonical_kept = orchestrator._prune_title_search_requests_for_intent_permit(
+            ctx,
+            [
+                {
+                    "query": '"재벌가 차녀의 2회차 걸그룹" review novelpia',
+                    "purpose": "image_work_cue_search",
+                    "priority": 0,
+                },
+                {
+                    "query": 'site:novelpia.com/novel "재벌가 차녀의 2회차 걸그룹" review',
+                    "purpose": "image_work_cue_search",
+                    "priority": 0,
+                },
+                {
+                    "query": '"재벌가 차녀의 2회차 걸그룹" "유은우" review',
+                    "purpose": "image_work_cue_search",
+                    "priority": 0,
+                },
+            ],
+            phase="test_unknown_noncanonical",
+        )
+        self.assertEqual(noncanonical_kept, [])
+
+    def test_typed_image_initial_execute_searches_remains_exactly_two(self):
+        calls = []
+
+        def search_fn(query, purpose=""):
+            calls.append((query, purpose))
+            return []
+
+        orchestrator = Orchestrator(experts={}, search_fn=search_fn)
+        ctx = ConversationContext(
+            post_id=11716480,
+            post_data={
+                "post_id": 11716480,
+                "title": "아생갤 볼만함?",
+                "content_blocks": [{"type": "image", "url": "https://dcimg.example/11716480.jpg"}],
+                "image_enrichment": [
+                    {
+                        "evidence_type": "explicit_text",
+                        "title_role": "work_title",
+                        "screen_type": "work_surface",
+                        "surface_type": "official_detail_page",
+                        "explicit_work_title": "아카데미 생존 갤러리",
+                        "explicit_author_name": "테스트작가",
+                    }
+                ],
+            },
+            comments=[],
+        )
+        gatekeeper = {
+            "post_type": "work_discussion",
+            "detected_entities": {"possible_titles": ["아생갤"]},
+            "context_clues": {"title_as_body_continuation": True},
+        }
+        ctx.set_expert_output(ExpertType.GATEKEEPER, gatekeeper)
+        requests = orchestrator._clamp_typed_image_work_title_initial_search_requests(
+            ctx,
+            [
+                {"query": "아생갤 노벨피아", "purpose": "platform_title_search", "priority": 1},
+                {"query": "시리즈 아생갤 작가", "purpose": "platform_title_search", "priority": 2},
+            ],
+            phase="test_pre_execute",
+        )
+
+        orchestrator._execute_searches(
+            requests,
+            ctx.post_id,
+            ctx=ctx,
+            initial_typed_title_only=True,
+        )
+
+        self.assertEqual(
+            {query for query, _purpose in calls},
+            {
+                '"아카데미 생존 갤러리" "테스트작가"',
+                '"아카데미 생존 갤러리" 노벨피아',
+            },
+        )
+        self.assertEqual(len(calls), 2)
+
+    def test_late_image_ocr_recall_uses_only_typed_explicit_work_title(self):
+        mcp = CountingSearchMCP()
+        pipeline = AgenticPipeline(llm=DummyLLM(), mcp=mcp, max_iterations=2)
+        typed_title = "재벌가 차녀의 2회차 걸그룹"
+        raw_ocr = "#로맨스 UI 홈 추천 독점 신작 지금 무료보기"
+        ctx = ConversationContext(
+            post_id=11716480,
+            post_data={
+                "post_id": 11716480,
+                "title": "이거 무슨 작품임 이미지 봐줘",
+                "content_blocks": [{"type": "image", "url": "https://dcimg.example/11716480.jpg"}],
+                "image_enrichment": [
+                    {
+                        "evidence_type": "explicit_text",
+                        "title_role": "work_title",
+                        "explicit_work_title": typed_title,
+                        "ocr_text": raw_ocr,
+                    }
+                ],
+            },
+            comments=[],
+        )
+        search_calls = []
+
+        def empty_search_with_meta(query, *, purpose):
+            search_calls.append((query, purpose))
+            return [], {"provider": "unit_test"}
+
+        with patch.object(pipeline, "_search_with_meta", side_effect=empty_search_with_meta):
+            pipeline._title_body_listing_official_url_recall_promotion(
+                ctx,
+                extended_identity={},
+                final_decision={},
+                verification_result={},
+            )
+
+        ocr_calls = [query for query, purpose in search_calls if purpose == "ocr_phrase_official_url_recall"]
+        self.assertEqual(
+            ocr_calls,
+            [
+                f'site:novelpia.com/novel "{typed_title}"',
+                f'"{typed_title}" 노벨피아',
+            ],
+        )
+        self.assertFalse(any(raw_ocr in query or "#로맨스" in query or "무료보기" in query for query in ocr_calls))
+
+        ctx.executed_queries = [f'"{typed_title}" review']
+        search_calls.clear()
+        with patch.object(pipeline, "_search_with_meta", side_effect=empty_search_with_meta):
+            pipeline._title_body_listing_official_url_recall_promotion(
+                ctx,
+                extended_identity={},
+                final_decision={},
+                verification_result={},
+            )
+        self.assertEqual(
+            [query for query, purpose in search_calls if purpose == "ocr_phrase_official_url_recall"],
+            [
+                f'site:novelpia.com/novel "{typed_title}"',
+                f'"{typed_title}" 노벨피아',
+            ],
+        )
+
+        ctx.executed_queries = [f'"{typed_title}"']
+        search_calls.clear()
+        with patch.object(pipeline, "_search_with_meta", side_effect=empty_search_with_meta):
+            pipeline._title_body_listing_official_url_recall_promotion(
+                ctx,
+                extended_identity={},
+                final_decision={},
+                verification_result={},
+            )
+        self.assertFalse(
+            any(
+                purpose == "ocr_phrase_official_url_recall"
+                for _query, purpose in search_calls
+            )
+        )
+
+        ctx.executed_queries = [
+            f'"{typed_title}" "유은우"',
+            f'"{typed_title}" 노벨피아',
+        ]
+        search_calls.clear()
+        with patch.object(pipeline, "_search_with_meta", side_effect=empty_search_with_meta):
+            pipeline._title_body_listing_official_url_recall_promotion(
+                ctx,
+                extended_identity={},
+                final_decision={},
+                verification_result={},
+            )
+        self.assertFalse(
+            any(
+                purpose == "ocr_phrase_official_url_recall"
+                for _query, purpose in search_calls
+            )
+        )
+
+    def test_expert_url_prefilter_keeps_selected_and_direct_official_urls(self):
+        pipeline = build_pipeline()
+        selected_title = "재벌가 차녀의 2회차 걸그룹"
+        direct_url = "https://novelpia.com/novel/100003"
+        related_url = "https://novelpia.com/novel/100001"
+        snippet_related_url = "https://novelpia.com/novel/100004"
+        unrelated_url = "https://novelpia.com/novel/100002"
+        ctx = ConversationContext(
+            post_id=11716480,
+            post_data={
+                "post_id": 11716480,
+                "title": "작품 URL 확인",
+                "content_blocks": [{"type": "text", "text": f"직접 링크 {direct_url}"}],
+            },
+            comments=[],
+        )
+        ctx.set_expert_output(
+            ExpertType.DECODER,
+            {
+                "decoded_terms": [
+                    {
+                        "candidates": [
+                            {"title": selected_title, "url": related_url},
+                            {"title": "무관한 공식 작품", "url": unrelated_url},
+                            {"url": direct_url},
+                            {"url": snippet_related_url},
+                        ]
+                    }
+                ]
+            },
+        )
+        ctx.set_expert_output(
+            ExpertType.VERIFIER,
+            {
+                "verification_result": {
+                    "novel_identity": {
+                        "official_title": "무관한 공식 작품",
+                        "heretic_url": unrelated_url,
+                    }
+                }
+            },
+        )
+        search_results = [
+            {
+                "title": f"{selected_title} - 노벨피아",
+                "url": snippet_related_url,
+                "content": "작가 유은우의 공식 작품 상세",
+            }
+        ]
+
+        urls = pipeline._collect_expert_urls(
+            ctx,
+            selected_title=selected_title,
+            selected_author="유은우",
+            search_results=search_results,
+        )
+
+        self.assertEqual(set(urls), {related_url, direct_url, snippet_related_url})
+        self.assertNotIn(unrelated_url, urls)
+
+    def test_heretic_url_prefetch_blocks_unrelated_candidate_before_live_fetch(self):
+        pipeline = build_pipeline()
+        selected_title = "재벌가 차녀의 2회차 걸그룹"
+        unrelated_url = "https://novelpia.com/novel/100002"
+        ctx = ConversationContext(
+            post_id=11716480,
+            post_data={
+                "post_id": 11716480,
+                "title": "작품 URL 확인",
+                "content_blocks": [{"type": "text", "text": "링크 없음"}],
+            },
+            comments=[],
+        )
+        ctx.search_results = [
+            {
+                "title": "무관한 공식 작품",
+                "url": unrelated_url,
+                "content": "노벨피아 작품 상세",
+            }
+        ]
+
+        with patch.object(
+            pipeline,
+            "_fetch_and_attach_page_info",
+            side_effect=AssertionError("unrelated URL must be filtered before live fetch"),
+        ) as fetch:
+            validated = pipeline._validate_heretic_url(
+                unrelated_url,
+                ctx,
+                identified_title=selected_title,
+            )
+
+        self.assertIsNone(validated)
+        fetch.assert_not_called()
+
+    def test_heretic_url_prefetch_blocks_generic_candidate_without_selected_identity(self):
+        pipeline = build_pipeline()
+        unrelated_url = "https://novelpia.com/novel/210295"
+        ctx = ConversationContext(
+            post_id=11716480,
+            post_data={
+                "post_id": 11716480,
+                "title": "아오 포티햄",
+                "content_blocks": [{"type": "text", "text": "나만 볼 수 없지"}],
+            },
+            comments=[],
+        )
+        ctx.search_results = [
+            {
+                "title": "보빔 깔개는 레즈 순애 조교를 당하고 싶다",
+                "url": unrelated_url,
+                "content": "레즈비언 웹소설 노벨피아",
+                "query": "레즈비언 웹소설 노벨피아",
+            }
+        ]
+
+        with patch.object(
+            pipeline,
+            "_fetch_and_attach_page_info",
+            side_effect=AssertionError("identity-less generic URL must not be live-fetched"),
+        ) as fetch:
+            validated = pipeline._validate_heretic_url(unrelated_url, ctx)
+
+        self.assertIsNone(validated)
+        fetch.assert_not_called()
+
+    def test_heretic_url_prefetch_keeps_direct_packet_official_url(self):
+        pipeline = build_pipeline()
+        selected_title = "재벌가 차녀의 2회차 걸그룹"
+        direct_url = "https://novelpia.com/novel/100003"
+        ctx = ConversationContext(
+            post_id=11716480,
+            post_data={
+                "post_id": 11716480,
+                "title": selected_title,
+                "content_blocks": [
+                    {"type": "text", "text": f"직접 링크 {direct_url}"}
+                ],
+            },
+            comments=[],
+        )
+        ctx.search_results = []
+        fetched = {
+            "url": direct_url,
+            "text_preview": selected_title,
+            "structured_info": {
+                "title": selected_title,
+                "page_title": selected_title,
+                "content_status": "active",
+            },
+        }
+
+        with patch.object(
+            pipeline,
+            "_fetch_and_attach_page_info",
+            return_value=fetched,
+        ) as fetch:
+            validated = pipeline._validate_heretic_url(
+                direct_url,
+                ctx,
+                identified_title=selected_title,
+            )
+
+        self.assertEqual(validated, direct_url)
+        fetch.assert_called_once_with(ctx, direct_url)
+
+    def test_heretic_url_prefetch_keeps_direct_comment_official_url(self):
+        pipeline = build_pipeline()
+        selected_title = "재벌가 차녀의 2회차 걸그룹"
+        direct_url = "https://novelpia.com/novel/100005"
+        ctx = ConversationContext(
+            post_id=11716480,
+            post_data={
+                "post_id": 11716480,
+                "title": "댓글 링크 확인",
+                "content_blocks": [{"type": "text", "text": "본문 링크 없음"}],
+            },
+            comments=[f"작품 링크 {direct_url}"],
+        )
+        ctx.search_results = []
+        fetched = {
+            "url": direct_url,
+            "text_preview": selected_title,
+            "structured_info": {
+                "title": selected_title,
+                "page_title": selected_title,
+                "content_status": "active",
+            },
+        }
+
+        with patch.object(
+            pipeline,
+            "_fetch_and_attach_page_info",
+            return_value=fetched,
+        ) as fetch:
+            validated = pipeline._validate_heretic_url(
+                direct_url,
+                ctx,
+                identified_title=selected_title,
+            )
+
+        self.assertEqual(validated, direct_url)
+        fetch.assert_called_once_with(ctx, direct_url)
+
+    def test_heretic_url_prefetch_keeps_exact_selected_title_search_evidence(self):
+        pipeline = build_pipeline()
+        selected_title = "재벌가 차녀의 2회차 걸그룹"
+        candidate_url = "https://novelpia.com/novel/100006"
+        ctx = ConversationContext(
+            post_id=11716480,
+            post_data={
+                "post_id": 11716480,
+                "title": "작품 URL 확인",
+                "content_blocks": [{"type": "text", "text": "본문 링크 없음"}],
+            },
+            comments=[],
+        )
+        ctx.search_results = [
+            {
+                "title": f"{selected_title} - 노벨피아",
+                "url": candidate_url,
+                "content": "작가 유은우의 공식 작품 상세",
+                "query": f'"{selected_title}" 노벨피아',
+                "from_query": f'"{selected_title}" 노벨피아',
+            }
+        ]
+        fetched = {
+            "url": candidate_url,
+            "text_preview": selected_title,
+            "structured_info": {
+                "title": selected_title,
+                "page_title": selected_title,
+                "content_status": "active",
+            },
+        }
+
+        with patch.object(
+            pipeline,
+            "_fetch_and_attach_page_info",
+            return_value=fetched,
+        ) as fetch:
+            validated = pipeline._validate_heretic_url(
+                candidate_url,
+                ctx,
+                identified_title=selected_title,
+            )
+
+        self.assertEqual(validated, candidate_url)
+        fetch.assert_called_once_with(ctx, candidate_url)
+
     def test_search_alias_inference_filters_munpia_brand_tail(self):
         pipeline = build_pipeline()
 
@@ -1901,10 +2431,23 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             "batch_memory_exact_alias_rescued",
         ]
         for source_label in expected_sources:
-            idx = source.find(f'source="{source_label}"')
-            self.assertGreaterEqual(idx, 0, msg=f"missing semantic no-work gate source={source_label}")
-            block = source[max(0, idx - 240): idx + 360]
-            self.assertIn("_can_promote_title_after_semantic_no_work", block)
+            matches = list(re.finditer(rf'source="{re.escape(source_label)}"', source))
+            self.assertTrue(matches, msg=f"missing semantic no-work gate source={source_label}")
+            blocks = [
+                source[max(0, match.start() - 320): match.end() + 420]
+                for match in matches
+            ]
+            self.assertTrue(
+                any(
+                    "_can_promote_title_after_semantic_no_work" in block
+                    or "_post_discusses_work_as_work" in block
+                    for block in blocks
+                ),
+                msg=f"source={source_label} bypasses the shared work predicate",
+            )
+        semantic_gate_start = source.index("def _can_promote_title_after_semantic_no_work")
+        semantic_gate = source[semantic_gate_start: semantic_gate_start + 50000]
+        self.assertIn("_post_discusses_work_as_work", semantic_gate)
 
     def test_positive_work_seed_still_allows_title_lead_search_inferred_candidate(self):
         pipeline = build_pipeline()
@@ -1943,6 +2486,110 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         self.assertTrue(pipeline._has_snippet_canonical_alias_lock_support(ctx, "망겜의 힐러"))
         self.assertEqual([candidate.official_title for candidate in candidates], ["망겜의 힐러"])
         self.assertEqual(candidates[0].alias_or_mention, "망겜힐")
+
+    def test_serializer_mismatch_preserves_contextual_official_alias_candidate_without_publish(self):
+        pipeline = build_pipeline()
+        alias = "랫테스트"
+        contextual_title = "[행성건설]원조 생존 패러디"
+        boundary_title = "후속 생쥐 작품"
+        post = PostInput(
+            post_id=20018097,
+            title=f"{alias} 행성건설 요소가 좋음",
+            author="ㅇㅇ",
+            content_blocks=[
+                ContentBlock(type="text", text="제작과 생존 장면을 읽고 감상함"),
+                ContentBlock(type="ocr_text", text="행성건설 방어 건물 제작 도구"),
+            ],
+            comments=[],
+        )
+        ctx = ConversationContext(
+            post_id=post.post_id,
+            post_data=pipeline._post_to_dict(post),
+            comments=[f"{alias} 원조 패러디가 잘 썼음"],
+        )
+        ctx.set_expert_output(
+            ExpertType.DISCOURSE,
+            {
+                "discourse_analysis": {
+                    "intent": "discuss_work",
+                    "target_kind": "work",
+                    "primary_domain": "novel_literature",
+                    "title_novel_terms": [alias],
+                }
+            },
+        )
+        ctx.llm_snippet_analysis = {
+            "identified_title": contextual_title,
+            "abbreviation_mappings": [{"abbrev": alias, "full": contextual_title}],
+        }
+        ctx.search_results = [
+            {
+                "title": f"웹소설로 꿈꾸는 세상! - {contextual_title}",
+                "url": "https://novelpia.com/novel/910001",
+                "content": f"#패러디 #행성건설 #{alias} 웹소설 작품 작가 완결",
+                "query": f"{alias} 노벨피아",
+            },
+            {
+                "title": f"웹소설로 꿈꾸는 세상! - {boundary_title} - 노벨피아",
+                "url": "https://novelpia.com/novel/910002",
+                "content": f"#전생 #제작 #갤러리 #{alias} 웹소설 작품",
+                "query": f"{alias} 노벨피아",
+            },
+            {
+                "title": f"(리뷰) [{alias}]원조 생존 패러디 완결 리뷰 - 갤러리",
+                "url": "https://gall.dcinside.com/mgallery/board/view/?id=example&no=1",
+                "content": f"{alias} 원조 생존 패러디 완결 리뷰 웹소설 작품",
+                "query": f"{alias} 노벨피아",
+            },
+        ]
+        prior = evaluate_publish_contract(
+            GroundingState(
+                post_id=post.post_id,
+                candidate_title="이전 typed 후보",
+                candidate_url="https://novelpia.com/novel/910000",
+                official_title_exists=True,
+                row_discusses_work_as_work=False,
+            ),
+            [],
+        )
+        existing = [
+            DetectedTitle(
+                official_title=boundary_title,
+                heretic_url="https://novelpia.com/novel/910002",
+                confidence="High",
+                source_tier="official_detail",
+                reference_role="primary",
+            )
+        ]
+
+        preserved, added = pipeline._append_serializer_mismatch_candidate_preservation_candidates(
+            ctx=ctx,
+            title_candidates=existing,
+            prior_contract=prior,
+            boundary_title=boundary_title,
+            boundary_url="https://novelpia.com/novel/910002",
+        )
+
+        by_url = {
+            candidate.heretic_url: candidate
+            for candidate in preserved
+            if candidate.heretic_url
+        }
+        self.assertEqual(added, 2)
+        self.assertIn("https://novelpia.com/novel/910000", by_url)
+        self.assertIn("https://novelpia.com/novel/910001", by_url)
+        self.assertIn("https://novelpia.com/novel/910002", by_url)
+        self.assertEqual(by_url["https://novelpia.com/novel/910001"].official_title, contextual_title)
+        self.assertEqual(by_url["https://novelpia.com/novel/910001"].reference_role, "candidate")
+        self.assertFalse(by_url["https://novelpia.com/novel/910001"].locked)
+        self.assertIn(
+            "search_alias_candidate_preservation_only",
+            by_url["https://novelpia.com/novel/910001"].negative_evidence or [],
+        )
+        self.assertNotIn(
+            "갤러리",
+            [candidate.official_title for candidate in preserved],
+        )
 
     def test_non_official_title_lead_search_inferred_candidate_is_capped_at_medium(self):
         pipeline = build_pipeline()
@@ -3273,7 +3920,7 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         self.assertTrue(acceptance["semantic_no_work_block"])
         self.assertIn("semantic_no_work_without_direct_anchor", acceptance["notes"])
 
-    def test_no_work_official_url_gate_allows_verified_alias_detail_anchor_only(self):
+    def test_no_work_official_url_gate_preserves_verified_alias_detail_as_candidate_only(self):
         pipeline = build_pipeline()
         title = "망겜의 힐러"
         post = PostInput(
@@ -3336,7 +3983,7 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
                 title_candidates=[],
             )
         )
-        self.assertTrue(
+        self.assertFalse(
             pipeline._can_promote_title_after_semantic_no_work(
                 ctx,
                 title,
@@ -3609,10 +4256,12 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
                 ContentBlock(type="text", text="[이미지 OCR] 高校 保健体育"),
                 ContentBlock(type="text", text="와 진지하게 월억킥 가능할듯"),
                 ContentBlock(type="text", text="빨리 쓰셈 ㄱㄱ"),
+                ContentBlock(type="text", text="누가 빨리 연재해"),
             ],
             comments=[
                 "중간에 소면 카다이프 써서 사형당하고 완",
                 "피스타치오 선물 옵션으로 재벌되기",
+                "두바이의 쫀득한 여초딩 재벌 9세 읽었음",
             ],
         )
         ctx = ConversationContext(post_id=post.post_id, post_data=pipeline._post_to_dict(post), comments=post.comments)
@@ -3653,7 +4302,13 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
                 "url": "https://novelpia.com/novel/347986",
                 "content": "노벨피아 자유연재작품 - 로판 속 2인자가 되었다.",
                 "query": "로판속 되었다",
-            }
+            },
+            {
+                "title": "로판속 아카데미에서 하렘을?",
+                "url": "https://novelpia.com/novel/407819",
+                "content": "자유연재작품 - 로판속 아카데미에서 하렘을?",
+                "query": "로판속 아카데미 웹소설",
+            },
         ]
         verification_result = {
             "is_relevant": True,
@@ -3713,6 +4368,16 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         self.assertFalse(
             pipeline._has_title_body_official_detail_anchor(
                 ctx,
+                "로판속 아카데미에서 하렘을?",
+            )
+        )
+        self.assertEqual(
+            getattr(ctx, "_title_body_title_form_parody_blocked_title", ""),
+            "로판속 아카데미에서 하렘을?",
+        )
+        self.assertFalse(
+            pipeline._has_title_body_official_detail_anchor(
+                ctx,
                 "로판 속 2인자가 되었다.",
             )
         )
@@ -3734,7 +4399,57 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             )
         )
 
-    def test_verified_alias_detail_anchor_allows_meta_platform_when_verifier_specific(self):
+    def test_title_form_parody_intent_is_directional_and_comment_independent(self):
+        pipeline = build_pipeline()
+        candidate = "두바이의 쫀득한 여초딩 재벌 9세"
+        alias = "두쫀쿠"
+
+        def _ctx(body: str, comments=None):
+            post = PostInput(
+                post_id=20010067,
+                title="로판속 아카데미 앞 두쫀쿠 가게 사장이 되었다",
+                author="ㅇㅇ",
+                content_blocks=[ContentBlock(type="text", text=body)],
+                comments=list(comments or []),
+            )
+            return ConversationContext(
+                post_id=post.post_id,
+                post_data=pipeline._post_to_dict(post),
+                comments=post.comments,
+            )
+
+        reviewed = _ctx(
+            "이 작품 진짜 재밌더라 문체도 좋음",
+            comments=["누가 써줘", f"{candidate} 읽고 싶다"],
+        )
+        future_desire = _ctx("이런 거 읽고 싶다 누가 써줘")
+
+        self.assertEqual(
+            pipeline._verified_alias_title_form_parody_block_reason(
+                ctx=reviewed,
+                title=candidate,
+                alias=alias,
+            ),
+            "",
+        )
+        self.assertEqual(
+            pipeline._verified_alias_title_form_parody_block_reason(
+                ctx=future_desire,
+                title=candidate,
+                alias=alias,
+            ),
+            "title_form_parody_alias_without_work_issue_anchor",
+        )
+        for ctx in (reviewed, future_desire):
+            self.assertEqual(
+                pipeline._title_body_title_form_parody_block_reason(
+                    ctx=ctx,
+                    title="로판속 아카데미에서 하렘을?",
+                ),
+                "title_body_generic_title_form_parody_without_work_issue_anchor",
+            )
+
+    def test_verified_alias_detail_anchor_does_not_override_meta_platform_no_work_state(self):
         pipeline = build_pipeline()
         title = "괴담 호텔 탈출기"
         post = PostInput(
@@ -3785,7 +4500,7 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             "novel_identity": {"official_title": title},
         }
 
-        self.assertTrue(
+        self.assertFalse(
             pipeline._can_promote_title_after_semantic_no_work(
                 ctx,
                 title,
@@ -5532,7 +6247,7 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         hit = pipeline._infer_alias_title_from_search_evidence(ctx, post_data["title"])
 
         self.assertIsNotNone(hit)
-        self.assertEqual(hit["title"], "변방계에서 회귀자로 살아남기")
+        self.assertEqual(hit["title"], "[림월드]변방계에서 회귀자로 살아남기")
         self.assertEqual(hit["matched_url"], "https://novelpia.com/novel/382324")
 
     def test_title_led_gate_selects_visual_bracket_competitor_when_search_context_prefers_other_official_detail(self):
@@ -5617,7 +6332,7 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
 
         self.assertEqual(decision["status"], "publish")
         self.assertTrue(decision["publish_allowed"])
-        self.assertEqual(decision["official_title"], "변방계에서 회귀자로 살아남기")
+        self.assertEqual(decision["official_title"], correct_title)
         self.assertEqual(decision["official_url"], correct_url)
         self.assertIn("scope_current_work", decision["reason_codes"])
         self.assertIn(
@@ -5629,7 +6344,7 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             decision["reason_codes"],
         )
         state = ctx._last_promotion_gate_state
-        self.assertEqual(state["candidate_title"], "변방계에서 회귀자로 살아남기")
+        self.assertEqual(state["candidate_title"], correct_title)
         self.assertTrue(state["row_discusses_work_as_work"])
         self.assertEqual(state["scope"]["scope_kind"], "current_work")
         self.assertIn(
@@ -5846,6 +6561,7 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
     def test_title_led_gate_keeps_current_visual_bracket_candidate_when_shared_alias_competitor_exists(self):
         pipeline = build_pipeline()
         correct_title = "변방계에서 회귀자로 살아남기"
+        canonical_title = "[림월드]변방계에서 회귀자로 살아남기"
         correct_url = "https://novelpia.com/novel/382324"
         wrong_title = "쳇바퀴의 생쥐 사도가 되었다"
         wrong_url = "https://novelpia.com/novel/406113"
@@ -5870,7 +6586,7 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         ctx = ConversationContext(post_id=post.post_id, post_data=post_data, comments=post.comments)
         ctx.search_results = [
             {
-                "title": "[림월드]변방계에서 회귀자로 살아남기",
+                "title": canonical_title,
                 "url": correct_url,
                 "content": "단, 죽어서만. #패러디 #림월드 #랫따싶.",
                 "query": "랫따싶 노벨피아",
@@ -5932,9 +6648,10 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
 
         self.assertEqual(decision["status"], "publish")
         self.assertTrue(decision["publish_allowed"])
-        self.assertEqual(decision["official_title"], correct_title)
+        self.assertEqual(decision["official_title"], canonical_title)
         self.assertEqual(decision["official_url"], correct_url)
         state = ctx._last_promotion_gate_state
+        self.assertEqual(state["candidate_title"], canonical_title)
         self.assertTrue(state["row_discusses_work_as_work"])
         self.assertEqual(state["scope"]["scope_kind"], "current_work")
         self.assertEqual(state["scope"]["conflict_reason_codes"], [])
@@ -5949,6 +6666,55 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         )
         self.assertTrue(
             any(item["kind"] == "official_detail_bracket_visual_release_context" for item in evidence)
+        )
+
+    def test_packet_bound_visual_release_does_not_let_wrong_candidate_piggyback(self):
+        pipeline = build_pipeline()
+        wrong_title = "쳇바퀴의 생쥐 사도가 되었다"
+        correct_title = "변방계에서 회귀자로 살아남기"
+        bracket_title = "[림월드]변방계에서 회귀자로 살아남기"
+        post = PostInput(
+            post_id=21698897,
+            title="랫따싶 림월드 요소 생각나게 하는거 좋네에...",
+            author="ㅇㅇ",
+            content_blocks=[
+                ContentBlock(type="image", url="https://example.test/rimworld.png"),
+                ContentBlock(type="text", text="게임적 요소 있는거 아주 굿"),
+            ],
+            comments=["랫따싶 이거 참 잘쓴 패러디야"],
+        )
+        post_data = pipeline._post_to_dict(post)
+        post_data["image_enrichment"] = [
+            {
+                "ocr_text": "림월드 최대의 적폐 건물. 목발 제작 스킬이 늘었으려나.",
+                "visual_summary": "웹소설 본문 텍스트 화면. 게임 림월드 요소와 제작 장면을 묘사.",
+                "work_cues": ["림월드", "방어건물", "제작 스킬"],
+            }
+        ]
+        ctx = ConversationContext(post_id=post.post_id, post_data=post_data, comments=post.comments)
+        ctx.search_results = [
+            {
+                "title": wrong_title,
+                "url": "https://novelpia.com/novel/406113",
+                "content": "랫따싶. #판타지 #전생 #성장.",
+                "query": "랫따싶 노벨피아",
+            },
+            {
+                "title": bracket_title,
+                "url": "https://novelpia.com/novel/382324",
+                "content": "단, 죽어서만. #패러디 #림월드 #랫따싶.",
+                "query": "랫따싶 노벨피아",
+            },
+        ]
+
+        self.assertFalse(
+            pipeline._has_packet_bound_official_detail_visual_release_candidate(ctx, wrong_title)
+        )
+        self.assertTrue(
+            pipeline._has_packet_bound_official_detail_visual_release_candidate(ctx, correct_title)
+        )
+        self.assertTrue(
+            pipeline._has_packet_bound_official_detail_visual_release_candidate(ctx, bracket_title)
         )
 
     def test_official_url_recall_verified_alias_can_override_final_noise_and_competing_candidate(self):
@@ -6220,6 +6986,63 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         self.assertEqual(recovered_candidates[0].alias_or_mention, "담텔기")
         self.assertIn("known_title_abbreviation_official_detail_anchor", recovered_identity["consistency_flags"])
         self.assertIn("confirmed_alias:담텔기", recovered_identity["consistency_flags"])
+        recover.assert_called_once()
+
+    def test_known_title_abbreviation_official_url_recall_allows_scene_narrative_bridge(self):
+        pipeline = build_pipeline()
+        title = "아카데미 생존 갤러리"
+        post = PostInput(
+            post_id=20010038,
+            title="아생갤) 가장 무서웠던 순간이",
+            author="ㅇㅇ",
+            content_blocks=[
+                ContentBlock(
+                    type="text",
+                    text="폐허가 된 도심지 장면과 현생 서사가 대체 어떻게 되길래",
+                )
+            ],
+            comments=[],
+        )
+        ctx = ConversationContext(
+            post_id=post.post_id,
+            post_data=pipeline._post_to_dict(post),
+            comments=[],
+        )
+        ctx.set_expert_output(
+            ExpertType.DISCOURSE,
+            {
+                "discourse_analysis": {
+                    "intent": "discuss_work",
+                    "primary_domain": "novel_literature",
+                }
+            },
+        )
+
+        with patch.object(
+            pipeline,
+            "_recover_corrected_title_official_url",
+            return_value="https://novelpia.com/novel/380218",
+        ) as recover:
+            promotion = pipeline._known_title_abbreviation_official_url_recall_promotion(
+                ctx,
+                extended_identity={},
+                final_decision={"discussion_type": "character_talk"},
+                verification_result={},
+            )
+
+        self.assertTrue(
+            pipeline._known_title_abbreviation_post_work_bridge(
+                ctx,
+                title,
+                "아생갤",
+            )
+        )
+        self.assertIsNotNone(promotion)
+        self.assertEqual(promotion["official_title"], title)
+        self.assertEqual(
+            promotion["heretic_url"],
+            "https://novelpia.com/novel/380218",
+        )
         recover.assert_called_once()
 
     def test_title_anchor_recovers_known_abbreviation_official_from_bridge_filtered_preview(self):
@@ -6718,14 +7541,14 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         self.assertIsNone(promotion)
         self.assertFalse(getattr(ctx, "_title_body_official_detail_anchor", False))
 
-    def test_ocr_phrase_platform_search_recovers_official_detail_title(self):
+    def test_typed_image_title_platform_search_recovers_official_detail_title(self):
         class OcrPhraseSearchMCP:
             def __init__(self):
                 self.calls = []
 
             def search(self, query, purpose=""):
                 self.calls.append({"query": query, "purpose": purpose})
-                if "림월드 최대의 적폐 건물" in query:
+                if '"[림월드]변방계에서 회귀자로 살아남기"' in query:
                     return {
                         "results": [
                             {
@@ -6752,6 +7575,7 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         post_data = pipeline._post_to_dict(post)
         post_data["image_enrichment"] = [
             {
+                "explicit_work_title": title,
                 "ocr_text": (
                     "림월드 최대의 적폐 건물, 기지 가치 대비 살상력 GOAT, "
                     "초반 생존의 150%는 먹고 들어가는 방어물계의 대협."
@@ -6759,7 +7583,7 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
                 "visual_summary": "소설 본문을 캡처한 이미지",
                 "work_cues": ["림월드", "방어건물", "제작 스킬"],
                 "evidence_type": "explicit_text",
-                "title_role": "unknown",
+                "title_role": "work_title",
             }
         ]
         ctx = ConversationContext(post_id=post.post_id, post_data=post_data, comments=[])
@@ -6804,10 +7628,13 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         self.assertEqual(recovered_identity["official_title"], title)
         self.assertEqual(recovered_identity["heretic_url"], "https://novelpia.com/novel/382324")
         self.assertEqual(primary_work.official_title, title)
-        self.assertEqual(recovered_candidates[0].alias_or_mention, "림월드")
+        self.assertIn("림월드", recovered_candidates[0].alias_or_mention)
         self.assertIn("title_body_official_detail_anchor", recovered_identity["consistency_flags"])
         self.assertTrue(
             any(call["purpose"] == "ocr_phrase_official_url_recall" for call in pipeline.mcp.calls)
+        )
+        self.assertFalse(
+            any("림월드 최대의 적폐 건물" in call["query"] for call in pipeline.mcp.calls)
         )
 
     def test_official_url_recall_prefers_image_ocr_platform_url(self):
@@ -7149,7 +7976,7 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             pipeline.mcp.calls,
         )
 
-    def test_title_lead_alias_release_accepts_visual_cue_official_detail_bridge(self):
+    def test_title_lead_alias_release_keeps_visual_cue_no_work_candidate_only(self):
         pipeline = build_pipeline()
         title = "[림월드]변방계에서 회귀자로 살아남기"
         url = "https://novelpia.com/novel/382324"
@@ -7251,7 +8078,7 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
                 }
             },
         )
-        self.assertTrue(
+        self.assertFalse(
             pipeline._can_promote_title_after_semantic_no_work(
                 ctx,
                 title,
@@ -7297,7 +8124,7 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         self.assertIsNone(candidate)
         self.assertIsNone(hit)
 
-    def test_batch_alias_verified_official_detail_allows_no_work_promotion(self):
+    def test_batch_alias_verified_official_detail_does_not_override_no_work_state(self):
         pipeline = build_pipeline()
         title = "잘생기면 편해지는 인방 생활"
         post = PostInput(
@@ -7329,12 +8156,12 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         ctx.search_results = [
             {
                 "title": f"웹소설로 꿈꾸는 세상! - {title} - 노벨피아",
-                "url": "https://novelpia.com/novel/300042",
+                "url": "https://novelpia.com/novel/384016",
                 "content": f"{title} 작품 페이지.",
             }
         ]
 
-        self.assertTrue(
+        self.assertFalse(
             pipeline._can_promote_title_after_semantic_no_work(
                 ctx,
                 title,
@@ -7879,7 +8706,7 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         self.assertTrue(acceptance["title_led_consumption_bridge"])
         self.assertIn("title_led_consumption_bridge", acceptance["notes"])
 
-    def test_title_led_gate_can_replace_prior_context_only_decision(self):
+    def test_title_led_gate_cannot_replace_prior_context_only_with_unresolved_state(self):
         pipeline = build_pipeline()
         title = "테라포밍"
         url = "https://novelpia.com/novel/61947"
@@ -7978,14 +8805,14 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             acceptance=acceptance,
         )
 
-        self.assertTrue(decision["publish_allowed"])
-        self.assertEqual(ctx._last_promotion_gate_decision["official_title"], title)
+        self.assertFalse(decision["publish_allowed"])
+        self.assertIsNone(ctx._last_promotion_gate_decision["official_title"])
         self.assertEqual(ctx._last_promotion_gate_state["scope"]["scope_kind"], "current_work")
         self.assertIn(
             "title_led_consumption_bridge",
             ctx._last_promotion_gate_state["scope"]["direct_bridge_sources"],
         )
-        self.assertEqual(final_decision["_promotion_gate_decision"]["official_url"], url)
+        self.assertIsNone(final_decision["_promotion_gate_decision"]["official_url"])
 
     def test_title_led_gate_blocks_unpreserved_body_compound_character_anchor(self):
         pipeline = build_pipeline()
@@ -8459,7 +9286,7 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             state["scope"]["conflict_reason_codes"],
         )
 
-    def test_batch_alias_gate_selects_preserved_body_verified_work_candidate(self):
+    def test_batch_alias_gate_preserves_unresolved_body_verified_work_candidate_only(self):
         pipeline = build_pipeline()
         body_title = "가챠 중독자의 퓨전펑크 생활"
         body_url = "https://novelpia.com/novel/387014"
@@ -8546,10 +9373,10 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             ],
         )
 
-        self.assertEqual(decision["status"], "publish")
-        self.assertTrue(decision["publish_allowed"])
-        self.assertEqual(decision["official_title"], body_title)
-        self.assertEqual(decision["official_url"], body_url)
+        self.assertEqual(decision["status"], "candidate_only")
+        self.assertFalse(decision["publish_allowed"])
+        self.assertIsNone(decision["official_title"])
+        self.assertIsNone(decision["official_url"])
         self.assertIn("body_verified_work_candidate_selected", decision["reason_codes"])
         state = ctx._last_promotion_gate_state
         self.assertEqual(state["candidate_title"], body_title)
@@ -9122,6 +9949,331 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         self.assertIsNotNone(candidate)
         self.assertEqual(candidate.official_title, title)
         self.assertEqual(candidate.heretic_url, "https://novelpia.com/novel/61947")
+
+    def test_title_led_evaluation_prefers_structured_body_primary_over_headline_context(self):
+        pipeline = build_pipeline()
+        headline_title = "아카데미 생존 갤러리"
+        headline_url = "https://novelpia.com/novel/380218"
+        body_title = "가챠 중독자의 퓨전펑크 생활"
+        body_url = "https://novelpia.com/novel/387014"
+        post = PostInput(
+            post_id=11698880,
+            title="아생갤 개 존나게 재밌군 ㅇㅇ",
+            author="ㅇㅇ",
+            content_blocks=[
+                ContentBlock(type="text", text="가챠펑크 세드릭도 그렇고"),
+                ContentBlock(type="text", text="시원시원한 상남자라서 너무 좋구나"),
+            ],
+            comments=[],
+        )
+        ctx = ConversationContext(
+            post_id=post.post_id,
+            post_data=pipeline._post_to_dict(post),
+            comments=[],
+        )
+        ctx.verified_character_work_links = [
+            {
+                "title": body_title,
+                "url": body_url,
+                "character": "세드릭",
+                "alias": "가챠펑크",
+                "matched_alias": "가챠펑크",
+            }
+        ]
+        ctx.search_results = [
+            {"title": headline_title, "url": headline_url, "content": "작품 상세"},
+            {"title": body_title, "url": body_url, "content": "가챠펑크 세드릭 등장"},
+        ]
+        ctx.set_expert_output(
+            ExpertType.GATEKEEPER,
+            {
+                "post_type": "work_discussion",
+                "detected_entities": {"possible_titles": ["아생갤", "가챠펑크"]},
+            },
+        )
+        ctx.set_expert_output(
+            ExpertType.DISCOURSE,
+            {
+                "discourse_analysis": {
+                    "intent": "discuss_work",
+                    "target_kind": "work",
+                    "primary_domain": "novel_literature",
+                    "title_novel_terms": ["아생갤", "가챠펑크"],
+                }
+            },
+        )
+        candidates = [
+            DetectedTitle(
+                official_title=headline_title,
+                heretic_url=headline_url,
+                confidence="High",
+                alias_or_mention="아생갤",
+                source_tier="official_detail",
+                page_type="novel_page",
+                reference_role="mentioned",
+            ),
+            DetectedTitle(
+                official_title=body_title,
+                heretic_url=body_url,
+                confidence="High",
+                alias_or_mention="가챠펑크",
+                source_tier="official_detail",
+                page_type="novel_page",
+                reference_role="primary",
+            ),
+        ]
+        final_decision = {
+            "official_title": body_title,
+            "primary_work": {"official_title": body_title},
+            "discussion_type": "general",
+            "work_resolution": "resolved",
+            "title_resolution_state": "resolved",
+        }
+        verification_result = {
+            "novel_identity": {
+                "official_novel_title": body_title,
+                "heretic_url": body_url,
+            }
+        }
+
+        candidate = pipeline._pick_title_led_evaluation_official_candidate(
+            ctx,
+            title_candidates=candidates,
+            final_decision=final_decision,
+            verification_result=verification_result,
+        )
+
+        self.assertIsNotNone(candidate)
+        self.assertEqual(candidate.official_title, body_title)
+        self.assertEqual(candidate.heretic_url, body_url)
+        self.assertTrue(ctx._title_led_body_primary_candidate_selected)
+        self.assertEqual(ctx._title_led_headline_context_candidate_title, headline_title)
+
+        validated = pipeline._apply_output_consistency_validator(
+            ctx=ctx,
+            is_relevant=False,
+            discussion_type="undecodable_reference",
+            official_title=None,
+            confidence="Low",
+            reason="작품 후보를 확정하지 못했습니다.",
+            notes="작품 후보를 확정하지 못했습니다.",
+            title_candidates=candidates,
+            primary_work=None,
+            mentioned_works=[],
+            comparison_target=None,
+            recommendation_candidates=[],
+            metadata={},
+            verification_result=verification_result,
+            final_decision=final_decision,
+        )
+
+        self.assertEqual(validated["official_title"], body_title)
+        self.assertEqual(validated["heretic_url"], body_url)
+        self.assertEqual(validated["primary_work"].official_title, body_title)
+        self.assertIn(
+            "title_led_evaluation_official_candidate_rescued",
+            validated["consistency_flags"],
+        )
+
+    def test_title_led_evaluation_does_not_select_weak_body_character_link(self):
+        pipeline = build_pipeline()
+        headline_title = "아카데미 생존 갤러리"
+        headline_url = "https://novelpia.com/novel/380218"
+        body_title = "가챠 중독자의 퓨전펑크 생활"
+        body_url = "https://novelpia.com/novel/387014"
+        post = PostInput(
+            post_id=21698880,
+            title="아생갤 개 존나게 재밌군 ㅇㅇ",
+            author="ㅇㅇ",
+            content_blocks=[ContentBlock(type="text", text="가챠펑크 세드릭도 그렇고")],
+            comments=[],
+        )
+        ctx = ConversationContext(
+            post_id=post.post_id,
+            post_data=pipeline._post_to_dict(post),
+            comments=[],
+        )
+        ctx.verified_character_work_links = [
+            {
+                "title": body_title,
+                "url": body_url,
+                "character": "세드릭",
+                "alias": "가챠펑크",
+                "_weak_match": True,
+            }
+        ]
+        ctx.search_results = [
+            {"title": headline_title, "url": headline_url, "content": "작품 상세"},
+            {"title": body_title, "url": body_url, "content": "작품 상세"},
+        ]
+        ctx.set_expert_output(ExpertType.GATEKEEPER, {"post_type": "work_discussion"})
+        ctx.set_expert_output(
+            ExpertType.DISCOURSE,
+            {"discourse_analysis": {"intent": "discuss_work", "primary_domain": "novel_literature"}},
+        )
+        candidates = [
+            DetectedTitle(
+                official_title=headline_title,
+                heretic_url=headline_url,
+                confidence="High",
+                alias_or_mention="아생갤",
+                source_tier="official_detail",
+                page_type="novel_page",
+                reference_role="mentioned",
+            ),
+            DetectedTitle(
+                official_title=body_title,
+                heretic_url=body_url,
+                confidence="High",
+                alias_or_mention="가챠펑크",
+                source_tier="official_detail",
+                page_type="novel_page",
+                reference_role="primary",
+            ),
+        ]
+
+        candidate = pipeline._pick_title_led_evaluation_official_candidate(
+            ctx,
+            title_candidates=candidates,
+        )
+
+        self.assertIsNotNone(candidate)
+        self.assertEqual(candidate.official_title, headline_title)
+        self.assertFalse(getattr(ctx, "_title_led_body_primary_candidate_selected", False))
+
+    def test_title_led_evaluation_keeps_headline_when_it_has_body_surface(self):
+        pipeline = build_pipeline()
+        headline_title = "아카데미 생존 갤러리"
+        headline_url = "https://novelpia.com/novel/380218"
+        body_title = "가챠 중독자의 퓨전펑크 생활"
+        body_url = "https://novelpia.com/novel/387014"
+        post = PostInput(
+            post_id=21698881,
+            title="아생갤 개 존나게 재밌군 ㅇㅇ",
+            author="ㅇㅇ",
+            content_blocks=[
+                ContentBlock(type="text", text="아생갤 아레스도 좋고 가챠펑크 세드릭도 좋음")
+            ],
+            comments=[],
+        )
+        ctx = ConversationContext(
+            post_id=post.post_id,
+            post_data=pipeline._post_to_dict(post),
+            comments=[],
+        )
+        ctx.verified_character_work_links = [
+            {
+                "title": body_title,
+                "url": body_url,
+                "character": "세드릭",
+                "alias": "가챠펑크",
+            }
+        ]
+        ctx.search_results = [
+            {"title": headline_title, "url": headline_url, "content": "작품 상세"},
+            {"title": body_title, "url": body_url, "content": "작품 상세"},
+        ]
+        ctx.set_expert_output(ExpertType.GATEKEEPER, {"post_type": "work_discussion"})
+        ctx.set_expert_output(
+            ExpertType.DISCOURSE,
+            {"discourse_analysis": {"intent": "discuss_work", "primary_domain": "novel_literature"}},
+        )
+        candidates = [
+            DetectedTitle(
+                official_title=headline_title,
+                heretic_url=headline_url,
+                confidence="High",
+                alias_or_mention="아생갤",
+                source_tier="official_detail",
+                page_type="novel_page",
+                reference_role="primary",
+            ),
+            DetectedTitle(
+                official_title=body_title,
+                heretic_url=body_url,
+                confidence="High",
+                alias_or_mention="가챠펑크",
+                source_tier="official_detail",
+                page_type="novel_page",
+                reference_role="mentioned",
+            ),
+        ]
+
+        candidate = pipeline._pick_title_led_evaluation_official_candidate(
+            ctx,
+            title_candidates=candidates,
+        )
+
+        self.assertIsNotNone(candidate)
+        self.assertEqual(candidate.official_title, headline_title)
+
+    def test_title_led_evaluation_does_not_promote_explicit_comparison_target(self):
+        pipeline = build_pipeline()
+        headline_title = "아카데미 생존 갤러리"
+        headline_url = "https://novelpia.com/novel/380218"
+        body_title = "가챠 중독자의 퓨전펑크 생활"
+        body_url = "https://novelpia.com/novel/387014"
+        post = PostInput(
+            post_id=21698882,
+            title="아생갤 개 존나게 재밌군 ㅇㅇ",
+            author="ㅇㅇ",
+            content_blocks=[ContentBlock(type="text", text="가챠펑크 세드릭도 그렇고")],
+            comments=[],
+        )
+        ctx = ConversationContext(
+            post_id=post.post_id,
+            post_data=pipeline._post_to_dict(post),
+            comments=[],
+        )
+        ctx.verified_character_work_links = [
+            {
+                "title": body_title,
+                "url": body_url,
+                "character": "세드릭",
+                "alias": "가챠펑크",
+            }
+        ]
+        ctx.search_results = [
+            {"title": headline_title, "url": headline_url, "content": "작품 상세"},
+            {"title": body_title, "url": body_url, "content": "작품 상세"},
+        ]
+        ctx.set_expert_output(ExpertType.GATEKEEPER, {"post_type": "work_discussion"})
+        ctx.set_expert_output(
+            ExpertType.DISCOURSE,
+            {"discourse_analysis": {"intent": "discuss_work", "primary_domain": "novel_literature"}},
+        )
+        headline_candidate = DetectedTitle(
+            official_title=headline_title,
+            heretic_url=headline_url,
+            confidence="High",
+            alias_or_mention="아생갤",
+            source_tier="official_detail",
+            page_type="novel_page",
+            reference_role="primary",
+        )
+        body_candidate = DetectedTitle(
+            official_title=body_title,
+            heretic_url=body_url,
+            confidence="High",
+            alias_or_mention="가챠펑크",
+            source_tier="official_detail",
+            page_type="novel_page",
+            reference_role="primary",
+        )
+
+        candidate = pipeline._pick_title_led_evaluation_official_candidate(
+            ctx,
+            title_candidates=[headline_candidate, body_candidate],
+            primary_work=headline_candidate,
+            final_decision={
+                "primary_work": {"official_title": headline_title},
+                "comparison_target": {"official_title": body_title},
+            },
+        )
+
+        self.assertIsNotNone(candidate)
+        self.assertEqual(candidate.official_title, headline_title)
+        self.assertFalse(getattr(ctx, "_title_led_body_primary_candidate_selected", False))
 
     def test_secondary_reference_official_alias_overrides_author_meta_block(self):
         pipeline = build_pipeline()
@@ -9804,7 +10956,7 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         self.assertEqual(hit["source"], "search_official_detail_alias")
         self.assertEqual(getattr(ctx, "_post_alias_official_detail_bridge_alias", ""), "잘생인방")
 
-    def test_title_surface_rescue_uses_near_title_official_detail_for_title_body(self):
+    def test_title_surface_rescue_preserves_near_title_url_without_no_work_publish(self):
         pipeline = build_pipeline()
         title = "두바이의 쫀득한 여초딩 재벌 9세"
         post = PostInput(
@@ -9849,7 +11001,7 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             ),
             "https://novelpia.com/novel/419119",
         )
-        self.assertTrue(
+        self.assertFalse(
             pipeline._can_promote_title_after_semantic_no_work(
                 ctx,
                 title,
@@ -9907,7 +11059,7 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             )
         )
 
-    def test_known_abbreviation_update_question_allows_batch_alias_url_recovery(self):
+    def test_known_abbreviation_update_question_recovers_url_but_does_not_publish_no_work(self):
         pipeline = build_pipeline()
         title = "괴담 호텔 탈출기"
         post = PostInput(
@@ -9932,7 +11084,7 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             },
         )
 
-        self.assertTrue(
+        self.assertFalse(
             pipeline._can_promote_title_after_semantic_no_work(
                 ctx,
                 title,
@@ -9965,7 +11117,7 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
 
         self.assertEqual(recovered_url, "https://novelpia.com/novel/102155")
 
-    def test_title_lead_alias_official_detail_release_prefers_issue_alias(self):
+    def test_title_lead_alias_official_detail_resolves_issue_alias_but_holds_rejected_no_work(self):
         pipeline = build_pipeline()
         title = "잘생기면 편해지는 인방 생활"
         post = PostInput(
@@ -10037,7 +11189,7 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
                 verification_result=verification_result,
             )
         )
-        self.assertTrue(
+        self.assertFalse(
             pipeline._can_promote_title_after_semantic_no_work(
                 ctx,
                 title,
@@ -10269,7 +11421,7 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             [item["query"] for item in low_specific_kept],
         )
 
-    def test_title_lead_alias_official_detail_release_survives_semantic_no_work(self):
+    def test_title_lead_alias_official_detail_release_preserves_candidate_under_semantic_no_work(self):
         pipeline = build_pipeline()
         title = "가챠 중독자의 퓨전펑크 생활"
         url = "https://novelpia.com/novel/387014"
@@ -10362,7 +11514,7 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             ),
             [],
         )
-        self.assertTrue(
+        self.assertFalse(
             pipeline._can_promote_title_after_semantic_no_work(
                 ctx,
                 title,
@@ -10376,7 +11528,7 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             )
         )
 
-    def test_consumption_title_lead_alias_release_survives_semantic_no_work(self):
+    def test_consumption_title_lead_alias_release_preserves_candidate_under_semantic_no_work(self):
         pipeline = build_pipeline()
         title = "심해의 마법사"
         url = "https://m.munpia.com/novel/detail/483667"
@@ -10428,7 +11580,7 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             )
         )
         self.assertTrue(pipeline._has_batch_alias_verified_no_work_release_context(ctx, title))
-        self.assertTrue(
+        self.assertFalse(
             pipeline._can_promote_title_after_semantic_no_work(
                 ctx,
                 title,
@@ -12094,6 +13246,269 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         )
         self.assertFalse(ctx._last_promotion_gate_state["row_discusses_work_as_work"])
 
+    def test_injected_ocr_scene_cannot_be_reused_as_non_image_candidate_surface(self):
+        pipeline = build_pipeline()
+        title = "미소녀 마개조 부서"
+        url = "https://novelpia.com/novel/89714"
+        post = PostInput(
+            post_id=11700470,
+            title="어케 주인공 죄목이",
+            author="ㅇㅇ",
+            content_blocks=[
+                ContentBlock(type="image", url="https://dcimg.example/11700470.jpg"),
+                ContentBlock(type="text", text="납치담금세뇌테러불법투기셍태계교란희롱준강간"),
+            ],
+            comments=["교수형"],
+        )
+        ctx = ConversationContext(
+            post_id=post.post_id,
+            post_data=pipeline._post_to_dict(post),
+            comments=post.comments,
+        )
+        ctx.post_data["image_enrichment"] = [
+            {
+                "block_index": 0,
+                "ocr_text": (
+                    "참고인의 모든 변론이 끝났다. 얼굴도 모르는 미소녀를 납치 후, "
+                    "가스라이팅을 반복하고 B급 모험가 밤도깨비 에이브가 되었다."
+                ),
+                "visual_summary": "웹소설 본문 스크랩 이미지",
+                "evidence_type": "explicit_text",
+                "title_role": "unknown",
+                "focus_role": "supporting_text",
+                "surface_type": "quoted_text_screenshot",
+                "promotion_eligible": False,
+                "work_cues": ["미소녀 납치", "밤도깨비 에이브"],
+            }
+        ]
+        pipeline._inject_image_enrichment_blocks(ctx.post_data)
+        candidate = DetectedTitle(
+            official_title=title,
+            heretic_url=url,
+            confidence="High",
+            alias_or_mention="미소녀 납치",
+            source_tier="official_detail",
+            page_type="novel_page",
+            locked=True,
+            reference_role="primary",
+        )
+        ctx.search_results = [
+            {
+                "title": title,
+                "url": url,
+                "content": "#세뇌 #납치 작품 상세",
+                "source_tier": "novel_platform",
+            }
+        ]
+        verification_result = {
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "grounding_check": {"anchor_found": "character_mention"},
+            "relation_judgment": {
+                "relation_type": "work_specific_nickname",
+                "discussion_target": "specific_work",
+                "promotion_decision": "hold",
+                "explicit_alias_bridge_count": 0,
+                "post_direct_grounding": False,
+            },
+        }
+        final_decision = {
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "character_talk",
+            "context_sources": ["title", "body", "comments", "search", "image"],
+            "anchor_type": "title_exact",
+            "consistency_flags": [
+                "locked_official_candidate_rescued",
+                "weak_public_title_bridge_locked_official_exempt",
+            ],
+        }
+
+        self.assertTrue(pipeline._title_candidate_mentioned(ctx, candidate, include_comments=True))
+        self.assertFalse(
+            pipeline._has_strict_non_image_candidate_surface(
+                ctx,
+                title,
+                title_candidates=[candidate],
+                final_decision=final_decision,
+            )
+        )
+        self.assertTrue(
+            pipeline._image_scene_only_candidate_lacks_publish_surface(
+                ctx,
+                title,
+                title_candidates=[candidate],
+                final_decision=final_decision,
+                verification_result=verification_result,
+            )
+        )
+
+        decision = pipeline._record_resolved_public_title_gate_decision(
+            ctx,
+            title,
+            candidate_url=url,
+            final_decision=final_decision,
+            verification_result=verification_result,
+            title_candidates=[candidate],
+            resolution_scope_fields={
+                "is_resolved_work_discussion": True,
+                "title_resolution_allowed": True,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved",
+                "discussion_type": "character_talk",
+                "anchor_type": "title_exact",
+                "context_sources": ["title", "body", "comments", "search", "image"],
+            },
+        )
+
+        self.assertEqual(decision["status"], "candidate_only")
+        self.assertFalse(decision["publish_allowed"])
+        self.assertTrue(decision["candidate_preserved"])
+        self.assertFalse(decision["bypassed_gate"])
+        self.assertIsNone(decision["official_title"])
+        self.assertIsNone(decision["official_url"])
+        self.assertIn("image_scope_missing_candidate_surface", decision["reason_codes"])
+        self.assertEqual(decision["scope"]["scope_kind"], "context_only")
+
+    def test_image_scene_hold_allows_real_non_image_candidate_alias_surface(self):
+        pipeline = build_pipeline()
+        title = "미소녀 마개조 부서"
+        post = PostInput(
+            post_id=21700470,
+            title="미소녀 납치 이번화 죄목이 너무 많음",
+            author="ㅇㅇ",
+            content_blocks=[ContentBlock(type="image", url="https://dcimg.example/positive.jpg")],
+            comments=[],
+        )
+        ctx = ConversationContext(
+            post_id=post.post_id,
+            post_data=pipeline._post_to_dict(post),
+            comments=[],
+        )
+        ctx.post_data["image_enrichment"] = [
+            {
+                "block_index": 0,
+                "ocr_text": "작품 속 장면 문장",
+                "evidence_type": "explicit_text",
+                "title_role": "unknown",
+                "promotion_eligible": False,
+            }
+        ]
+        pipeline._inject_image_enrichment_blocks(ctx.post_data)
+        candidate = DetectedTitle(
+            official_title=title,
+            heretic_url="https://novelpia.com/novel/89714",
+            confidence="High",
+            alias_or_mention="미소녀 납치",
+            source_tier="official_detail",
+            page_type="novel_page",
+        )
+        verification_result = {
+            "relation_judgment": {
+                "promotion_decision": "hold",
+                "explicit_alias_bridge_count": 0,
+                "post_direct_grounding": False,
+            }
+        }
+
+        self.assertTrue(
+            pipeline._has_strict_non_image_candidate_surface(
+                ctx,
+                title,
+                title_candidates=[candidate],
+            )
+        )
+        self.assertFalse(
+            pipeline._image_scene_only_candidate_lacks_publish_surface(
+                ctx,
+                title,
+                title_candidates=[candidate],
+                verification_result=verification_result,
+            )
+        )
+
+    def test_image_scene_llm_promote_and_forged_catalog_cannot_override_provenance(self):
+        pipeline = build_pipeline()
+        title = "미소녀 마개조 부서"
+        post = PostInput(
+            post_id=21700471,
+            title="어케 주인공 죄목이",
+            author="ㅇㅇ",
+            content_blocks=[ContentBlock(type="image", url="https://dcimg.example/scene.jpg")],
+            comments=[],
+        )
+        ctx = ConversationContext(
+            post_id=post.post_id,
+            post_data=pipeline._post_to_dict(post),
+            comments=[],
+        )
+        ctx.post_data["image_enrichment"] = [
+            {
+                "block_index": 0,
+                "ocr_text": "미소녀를 납치 후 세뇌하는 장면",
+                "explicit_work_title": title,
+                "evidence_type": "cover_title",
+                "title_role": "work_title",
+                "focus_role": "work_anchor",
+                "screen_type": "text_surface",
+                "surface_type": "quoted_text_screenshot",
+                "promotion_eligible": False,
+            }
+        ]
+        pipeline._inject_image_enrichment_blocks(ctx.post_data)
+        candidate = DetectedTitle(
+            official_title=title,
+            heretic_url="https://novelpia.com/novel/89714",
+            confidence="High",
+            alias_or_mention="미소녀 납치",
+            source_tier="official_detail",
+            page_type="novel_page",
+        )
+        forged_final = {
+            "image_evidence_catalog": [
+                {
+                    "explicit_work_title": title,
+                    "evidence_type": "explicit_text",
+                    "title_role": "work_title",
+                    "focus_role": "work_anchor",
+                    "promotion_eligible": True,
+                }
+            ]
+        }
+        verifier_promote = {
+            "relation_judgment": {
+                "promotion_decision": "promote",
+                "explicit_alias_bridge_count": 1,
+                "post_direct_grounding": True,
+            }
+        }
+
+        self.assertFalse(
+            pipeline._has_structured_direct_image_work_surface_evidence(ctx, title)
+        )
+        self.assertTrue(
+            pipeline._image_scene_only_candidate_lacks_publish_surface(
+                ctx,
+                title,
+                title_candidates=[candidate],
+                final_decision=forged_final,
+                verification_result=verifier_promote,
+            )
+        )
+        self.assertFalse(
+            pipeline._post_discusses_work_as_work(
+                ctx,
+                title,
+                source="resolved_public_title_scope",
+                final_decision=forged_final,
+                verification_result=verifier_promote,
+                title_candidates=[candidate],
+            )
+        )
+
     def test_late_canonical_rescue_skips_image_scene_hold_without_candidate_surface(self):
         pipeline = build_pipeline()
         image_evidence = {
@@ -12201,6 +13616,75 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             )
         )
 
+    def test_late_canonical_rescue_ignores_llm_convergence_without_local_publish_surface(self):
+        pipeline = build_pipeline()
+        title = "미소녀 마개조 부서"
+        post = PostInput(
+            post_id=11700470,
+            title="어케 주인공 죄목이",
+            author="ㅇㅇ",
+            content_blocks=[
+                ContentBlock(type="image", url="https://dcimg.example/11700470.jpg"),
+                ContentBlock(type="text", text="납치담금세뇌테러불법투기생태계교란희롱준강간"),
+            ],
+            comments=["교수형"],
+        )
+        ctx = ConversationContext(
+            post_id=post.post_id,
+            post_data=pipeline._post_to_dict(post),
+            comments=post.comments,
+        )
+        ctx.post_data["image_enrichment"] = [
+            {
+                "ocr_text": "얼굴도 모르는 미소녀를 납치 후 B급 모험가 에이브가 되어 있었다.",
+                "explicit_work_title": title,
+                "evidence_type": "explicit_text",
+                "title_role": "work_title",
+                "focus_role": "supporting_text",
+                "promotion_eligible": False,
+                "work_cues": ["미소녀", "에이브"],
+            }
+        ]
+        ctx.discourse_warning = "decoder_forced_match(3rd_attempt)"
+        final_decision = {
+            "official_title": title,
+            "_title_deliberately_null": True,
+            "_title_null_block_reasons": ["image_scope_missing_candidate_surface"],
+        }
+        verification_result = {
+            "novel_identity": {"official_title": title},
+            "relation_judgment": {
+                "relation_type": "thematic_overlap_only",
+                "promotion_decision": "hold",
+            },
+        }
+
+        with (
+            patch.object(
+                pipeline,
+                "_has_strong_verified_character_work_links",
+                return_value=True,
+            ),
+            patch.object(
+                pipeline,
+                "_has_deliberated_character_setting_work_convergence",
+                return_value=True,
+            ),
+        ):
+            self.assertTrue(
+                pipeline._should_skip_late_canonical_rescue_for_image_scene_hold(
+                    ctx,
+                    strong_suspected_title=title,
+                    title_deliberately_null=True,
+                    title_null_block_reasons={"image_scope_missing_candidate_surface"},
+                    # Reproduces the old caller path where LLM convergence made
+                    # this broad diagnostic boolean true.
+                    direct_strong_suspected_title_support=True,
+                    final_decision=final_decision,
+                    verification_result=verification_result,
+                )
+            )
+
     def test_late_canonical_rescue_keeps_promotable_direct_image_title(self):
         pipeline = build_pipeline()
         title = "전 버튜버가 하고 싶은데요"
@@ -12241,6 +13725,40 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
                 verification_result={"relation_judgment": {"promotion_decision": "hold"}},
             )
         )
+
+    def test_image_primary_promotion_rejects_non_boolean_eligibility_values(self):
+        pipeline = build_pipeline()
+        title = "재벌가 차녀의 2회차 걸그룹"
+        for invalid_value in ("false", 0, 1):
+            with self.subTest(promotion_eligible=invalid_value):
+                post = PostInput(
+                    post_id=21718082,
+                    title="이게 백합 소설이 아니라니...",
+                    author="ㅇㅇ",
+                    content_blocks=[ContentBlock(type="text", text="두렵구나")],
+                    comments=[],
+                )
+                post_data = pipeline._post_to_dict(post)
+                post_data["image_enrichment"] = [
+                    {
+                        "evidence_type": "explicit_text",
+                        "title_role": "work_title",
+                        "focus_role": "work_anchor",
+                        "promotion_eligible": invalid_value,
+                        "explicit_work_title": title,
+                        "explicit_author_name": "유은우",
+                    }
+                ]
+                ctx = ConversationContext(
+                    post_id=post.post_id,
+                    post_data=post_data,
+                    comments=[],
+                )
+
+                self.assertFalse(pipeline._has_image_primary_promotion_signal(ctx, title))
+                self.assertTrue(
+                    pipeline._image_scene_only_candidate_lacks_publish_surface(ctx, title)
+                )
 
     def test_physical_classic_book_cover_without_warning_does_not_rescue_public_title(self):
         pipeline = build_pipeline()
@@ -12924,7 +14442,7 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         self.assertIn("캐릭터·나이·외형 반응", taxonomy["reason"])
         self.assertNotIn("핵심 결론: 표현 오타/축약 패턴", taxonomy["reason"])
 
-    def test_no_work_direct_image_anchor_allows_late_title_promotion_gate(self):
+    def test_no_work_direct_image_candidate_requires_canonical_resolved_state(self):
         pipeline = build_pipeline()
         title = "재벌가 차녀의 2회차 걸그룹"
         post = PostInput(
@@ -12948,7 +14466,7 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         ctx = ConversationContext(post_id=11718082, post_data=post_dict, comments=[])
         mark_no_work_seed(ctx)
 
-        self.assertTrue(
+        self.assertFalse(
             pipeline._can_promote_title_after_semantic_no_work(
                 ctx,
                 title,
@@ -14348,6 +15866,685 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         self.assertEqual(taxonomy["official_title"], title)
         self.assertEqual(taxonomy["work_resolution"], "resolved")
         self.assertNotIn("promoted_image_work_title_conflicts_with_public_title", taxonomy["consistency_flags"])
+
+
+    def test_work_abbreviation_is_not_generic_character_parenthetical_provenance(self):
+        pipeline = build_pipeline()
+        title = "가챠 중독자의 퓨전펑크 생활"
+        ctx = ConversationContext(
+            post_id=11698880,
+            post_data={"post_id": 11698880, "title": "아생갤 개 존나게 재밌군"},
+            comments=[],
+        )
+        ctx.verified_character_work_links = [
+            {"title": title, "abbreviation": "가챠펑크"}
+        ]
+
+        self.assertFalse(
+            pipeline._has_generic_character_parenthetical_bridge(ctx, title)
+        )
+
+        ctx.verified_character_work_links = [
+            {"title": title, "character": "세드릭", "abbreviation": "가챠펑크"}
+        ]
+        self.assertTrue(
+            pipeline._has_generic_character_parenthetical_bridge(ctx, title)
+        )
+
+    def test_title_led_body_primary_does_not_require_headline_official_url(self):
+        pipeline = build_pipeline()
+        headline_title = "아카데미 생존 갤러리"
+        body_title = "가챠 중독자의 퓨전펑크 생활"
+        body_url = "https://novelpia.com/novel/387014"
+        post = PostInput(
+            post_id=11698880,
+            title="아생갤 개 존나게 재밌군 ㅇㅇ",
+            author="ㅇㅇ",
+            content_blocks=[
+                ContentBlock(type="text", text="가챠펑크 세드릭도 그렇고"),
+                ContentBlock(type="text", text="시원시원한 상남자라서 너무 좋구나"),
+            ],
+            comments=[],
+        )
+        ctx = ConversationContext(
+            post_id=post.post_id,
+            post_data=pipeline._post_to_dict(post),
+            comments=[],
+        )
+        ctx.verified_character_work_links = [
+            {
+                "title": body_title,
+                "url": body_url,
+                "character": "세드릭",
+                "abbreviation": "가챠펑크",
+                "alias": "가챠펑크",
+                "matched_alias": "가챠펑크",
+            }
+        ]
+        ctx.search_results = [
+            {"title": body_title, "url": body_url, "content": "가챠펑크 세드릭 등장"},
+        ]
+        ctx.set_expert_output(
+            ExpertType.GATEKEEPER,
+            {
+                "post_type": "work_discussion",
+                "detected_entities": {"possible_titles": ["아생갤", "가챠펑크"]},
+            },
+        )
+        ctx.set_expert_output(
+            ExpertType.DISCOURSE,
+            {
+                "discourse_analysis": {
+                    "intent": "discuss_work",
+                    "target_kind": "work",
+                    "primary_domain": "novel_literature",
+                    "title_novel_terms": ["아생갤", "가챠펑크"],
+                }
+            },
+        )
+        candidates = [
+            DetectedTitle(
+                official_title=headline_title,
+                confidence="Medium",
+                alias_or_mention="아생갤",
+                source_tier="mixed",
+                reference_role="candidate",
+            ),
+            DetectedTitle(
+                official_title=body_title,
+                heretic_url=body_url,
+                confidence="High",
+                alias_or_mention="가챠펑크",
+                source_tier="official_detail",
+                page_type="novel_page",
+                reference_role="primary",
+            ),
+        ]
+        final_decision = {
+            "official_title": body_title,
+            "primary_work": {"official_title": body_title},
+            "discussion_type": "general",
+            "work_resolution": "resolved",
+            "title_resolution_state": "resolved",
+        }
+        verification_result = {
+            "novel_identity": {
+                "official_novel_title": body_title,
+                "heretic_url": body_url,
+            },
+            "primary_work": {"official_title": body_title},
+        }
+
+        candidate = pipeline._pick_title_led_evaluation_official_candidate(
+            ctx,
+            title_candidates=candidates,
+            final_decision=final_decision,
+            verification_result=verification_result,
+        )
+
+        self.assertIsNotNone(candidate)
+        self.assertEqual(candidate.official_title, body_title)
+        self.assertEqual(candidate.heretic_url, body_url)
+        self.assertTrue(ctx._title_led_body_primary_candidate_selected)
+        self.assertEqual(ctx._title_led_headline_context_candidate_title, headline_title)
+
+    def test_title_led_body_primary_ignores_comment_only_other_work_alias(self):
+        pipeline = build_pipeline()
+        headline_title = "아카데미 생존 갤러리"
+        headline_url = "https://novelpia.com/novel/380218"
+        body_title = "가챠 중독자의 퓨전펑크 생활"
+        body_url = "https://novelpia.com/novel/387014"
+        post = PostInput(
+            post_id=21698883,
+            title="아생갤 개 존나게 재밌군 ㅇㅇ",
+            author="ㅇㅇ",
+            content_blocks=[ContentBlock(type="text", text="시원시원해서 좋음")],
+            comments=["가챠펑크 세드릭도 괜찮더라"],
+        )
+        ctx = ConversationContext(
+            post_id=post.post_id,
+            post_data=pipeline._post_to_dict(post),
+            comments=post.comments,
+        )
+        ctx.verified_character_work_links = [
+            {
+                "title": body_title,
+                "url": body_url,
+                "character": "세드릭",
+                "abbreviation": "가챠펑크",
+                "alias": "가챠펑크",
+            }
+        ]
+        ctx.search_results = [
+            {"title": headline_title, "url": headline_url, "content": "작품 상세"},
+            {"title": body_title, "url": body_url, "content": "가챠펑크 작품 상세"},
+        ]
+        ctx.set_expert_output(
+            ExpertType.GATEKEEPER,
+            {
+                "post_type": "work_discussion",
+                "detected_entities": {"possible_titles": ["아생갤"]},
+            },
+        )
+        ctx.set_expert_output(
+            ExpertType.DISCOURSE,
+            {
+                "discourse_analysis": {
+                    "intent": "discuss_work",
+                    "primary_domain": "novel_literature",
+                    "title_novel_terms": ["아생갤"],
+                }
+            },
+        )
+        headline = DetectedTitle(
+            official_title=headline_title,
+            heretic_url=headline_url,
+            confidence="High",
+            alias_or_mention="아생갤",
+            source_tier="official_detail",
+            page_type="novel_page",
+            reference_role="primary",
+        )
+        other = DetectedTitle(
+            official_title=body_title,
+            heretic_url=body_url,
+            confidence="High",
+            alias_or_mention="가챠펑크",
+            source_tier="official_detail",
+            page_type="novel_page",
+            reference_role="primary",
+        )
+
+        candidate = pipeline._pick_title_led_evaluation_official_candidate(
+            ctx,
+            title_candidates=[headline, other],
+            primary_work=other,
+            final_decision={"official_title": body_title, "primary_work": {"official_title": body_title}},
+            verification_result={"novel_identity": {"official_novel_title": body_title}},
+        )
+
+        self.assertIsNotNone(candidate)
+        self.assertEqual(candidate.official_title, headline_title)
+        self.assertFalse(getattr(ctx, "_title_led_body_primary_candidate_selected", False))
+
+    def test_exact_current_title_lock_ignores_unrelated_manga_search_competitor(self):
+        pipeline = build_pipeline()
+        title = "테라포밍"
+        url = "https://novelpia.com/novel/61947"
+        post = PostInput(
+            post_id=11660237,
+            title="테라포밍 볼만함?",
+            author="ㅇㅇ",
+            content_blocks=[ContentBlock(type="text", text="주인공 멍청하다는 말 많던데")],
+            comments=[],
+        )
+        ctx = ConversationContext(
+            post_id=post.post_id,
+            post_data=pipeline._post_to_dict(post),
+            comments=[],
+        )
+        ctx.search_results = [
+            {
+                "title": title,
+                "url": url,
+                "content": "노벨피아 웹소설 작품 상세",
+                "query": "테라포밍 노벨피아",
+            },
+            {
+                "title": "테라포마스 - 만화 e북 - 리디",
+                "url": "https://ridibooks.com/books/1019005884",
+                "content": "화성 테라포밍이 진행되는 만화 e북",
+                "query": "시리즈 테라포밍 작가",
+            },
+        ]
+        candidate = DetectedTitle(
+            official_title=title,
+            heretic_url=url,
+            confidence="High",
+            alias_or_mention=title,
+            source_tier="official_detail",
+            page_type="novel_page",
+            locked=True,
+            reference_role="primary",
+        )
+        verification_result = {
+            "is_relevant": True,
+            "is_novel_discussion": True,
+            "novel_identity": {"official_novel_title": title, "heretic_url": url},
+            "grounding_check": {
+                "anchor_found": "title_exact",
+                "title_abbrev_mentioned": True,
+                "matched_alias": title,
+            },
+            "relation_judgment": {
+                "relation_type": "explicit_alias",
+                "discussion_target": "specific_work",
+                "promotion_decision": "allow",
+            },
+        }
+
+        decision = pipeline._record_title_led_alias_public_title_gate_decision(
+            ctx,
+            title,
+            candidate_url=url,
+            final_decision={
+                "discussion_type": "review",
+                "work_resolution": "resolved",
+                "title_resolution_state": "resolved",
+            },
+            verification_result=verification_result,
+            title_candidates=[candidate],
+            acceptance={"decision": "accept", "title_led_consumption_bridge": True, "score": 30},
+        )
+
+        self.assertEqual(decision["status"], "publish")
+        self.assertTrue(decision["publish_allowed"])
+        self.assertEqual(decision["official_title"], title)
+        self.assertFalse(decision["bypassed_gate"])
+        self.assertNotIn(
+            "title_led_alias_contextual_official_detail_competes",
+            decision["reason_codes"],
+        )
+        self.assertIn(
+            "exact_current_title_official_detail_lock",
+            ctx._last_promotion_gate_state["scope"]["direct_bridge_sources"],
+        )
+        self.assertEqual(ctx._last_promotion_gate_state["scope"]["competing_candidates"], [])
+        self.assertTrue(
+            any(
+                item.get("reason") == "non_novel_or_derivative"
+                for item in ctx._ignored_search_only_contextual_competitors
+            )
+        )
+
+    def test_exact_current_title_lock_keeps_candidate_role_packet_alias_competitor(self):
+        pipeline = build_pipeline()
+        title = "정확한 작품명"
+        url = "https://novelpia.com/novel/61001"
+        other_title = "실제로 함께 비교한 작품"
+        other_url = "https://novelpia.com/novel/61002"
+        post = PostInput(
+            post_id=21660237,
+            title="정확한 작품명 볼만함?",
+            author="ㅇㅇ",
+            content_blocks=[
+                ContentBlock(type="text", text="비교작이랑 비교하면 어느 쪽이 나음?")
+            ],
+            comments=[],
+        )
+        ctx = ConversationContext(
+            post_id=post.post_id,
+            post_data=pipeline._post_to_dict(post),
+            comments=[],
+        )
+        ctx.search_results = [
+            {
+                "title": title,
+                "url": url,
+                "content": "노벨피아 웹소설 작품 상세",
+                "query": "정확한 작품명 노벨피아",
+            },
+            {
+                "title": other_title,
+                "url": other_url,
+                "content": f"{title}과 독자가 비교하는 다른 웹소설",
+                "query": "정확한 작품명 비교 작품",
+            },
+        ]
+        current = DetectedTitle(
+            official_title=title,
+            heretic_url=url,
+            confidence="High",
+            alias_or_mention=title,
+            source_tier="official_detail",
+            page_type="novel_page",
+            locked=True,
+            reference_role="primary",
+        )
+        competitor = DetectedTitle(
+            official_title=other_title,
+            heretic_url=other_url,
+            confidence="High",
+            alias_or_mention="비교작",
+            source_tier="official_detail",
+            page_type="novel_page",
+            locked=True,
+            reference_role="candidate",
+        )
+        verification_result = {
+            "is_relevant": True,
+            "is_novel_discussion": True,
+            "novel_identity": {"official_novel_title": title, "heretic_url": url},
+            "grounding_check": {
+                "anchor_found": "title_exact",
+                "title_abbrev_mentioned": True,
+                "matched_alias": title,
+            },
+        }
+
+        decision = pipeline._record_title_led_alias_public_title_gate_decision(
+            ctx,
+            title,
+            candidate_url=url,
+            final_decision={
+                "discussion_type": "comparison",
+                "work_resolution": "resolved",
+                "title_resolution_state": "resolved",
+                "comparison_target": {"official_title": other_title},
+            },
+            verification_result=verification_result,
+            title_candidates=[current, competitor],
+            acceptance={"decision": "accept", "title_led_consumption_bridge": True, "score": 30},
+        )
+
+        self.assertEqual(decision["status"], "candidate_only")
+        self.assertFalse(decision["publish_allowed"])
+        self.assertIn(
+            "title_led_alias_contextual_official_detail_competes",
+            decision["reason_codes"],
+        )
+        self.assertIn(
+            other_title,
+            ctx._last_promotion_gate_state["scope"]["competing_candidates"],
+        )
+
+    def test_exact_current_title_lock_is_not_inherited_after_canonical_title_change(self):
+        pipeline = build_pipeline()
+        title = "Alpha"
+        canonical_title = "Alpha Novel"
+        url = "https://novelpia.com/novel/61003"
+        post = PostInput(
+            post_id=21660238,
+            title="Alpha 볼만함?",
+            author="ㅇㅇ",
+            content_blocks=[ContentBlock(type="text", text="주인공 전개가 궁금함")],
+            comments=[],
+        )
+        ctx = ConversationContext(
+            post_id=post.post_id,
+            post_data=pipeline._post_to_dict(post),
+            comments=[],
+        )
+        ctx.search_results = [
+            {"title": title, "url": url, "content": "노벨피아 웹소설 작품 상세"}
+        ]
+        candidate = DetectedTitle(
+            official_title=title,
+            heretic_url=url,
+            confidence="High",
+            alias_or_mention=title,
+            source_tier="official_detail",
+            page_type="novel_page",
+            locked=True,
+            reference_role="primary",
+        )
+
+        with patch.object(
+            pipeline,
+            "_infer_alias_title_from_search_evidence",
+            return_value={"title": canonical_title, "matched_url": url, "confidence": 3},
+        ), patch.object(
+            pipeline,
+            "_safe_official_detail_url_for_title",
+            return_value=url,
+        ), patch.object(
+            pipeline,
+            "_source_title_matches_candidate",
+            return_value=True,
+        ):
+            decision = pipeline._record_title_led_alias_public_title_gate_decision(
+                ctx,
+                title,
+                candidate_url=url,
+                final_decision={
+                    "discussion_type": "review",
+                    "work_resolution": "resolved",
+                    "title_resolution_state": "resolved",
+                },
+                verification_result={
+                    "novel_identity": {"official_novel_title": title, "heretic_url": url},
+                    "grounding_check": {"anchor_found": "title_exact", "matched_alias": title},
+                },
+                title_candidates=[candidate],
+                acceptance={"decision": "accept", "title_led_consumption_bridge": True},
+            )
+
+        self.assertFalse(decision["publish_allowed"])
+        self.assertIn(
+            "title_led_alias_official_detail_canonicalized",
+            ctx._last_promotion_gate_state["scope"]["direct_bridge_sources"],
+        )
+        self.assertNotIn(
+            "exact_current_title_official_detail_lock",
+            ctx._last_promotion_gate_state["scope"]["direct_bridge_sources"],
+        )
+
+    def test_normalized_platform_title_still_detects_strong_manga_ebook_payload(self):
+        pipeline = build_pipeline()
+        self.assertTrue(
+            pipeline._is_non_novel_media_platform_detail_hit(
+                {
+                    "title": "테라포마스",
+                    "url": "https://ridibooks.com/books/1019005884",
+                    "content": "테라포마스 - 만화 e북 - 리디. 화성 테라포밍 이야기.",
+                },
+                "테라포마스",
+            )
+        )
+
+    def test_structured_manga_type_dominates_page_type_and_novel_title_marker(self):
+        pipeline = build_pipeline()
+        for row in (
+            {
+                "title": "테라포마스",
+                "url": "https://ridibooks.com/books/1019005884",
+                "media_type": "manga",
+                "page_type": "product_detail",
+            },
+            {
+                "title": "테라포마스 #NOVEL",
+                "url": "https://ridibooks.com/books/1019005884",
+                "media_type": "manga",
+            },
+        ):
+            with self.subTest(row=row):
+                self.assertTrue(
+                    pipeline._is_non_novel_media_platform_detail_hit(
+                        row,
+                        "테라포마스",
+                    )
+                )
+
+    def test_candidate_bound_non_image_alias_survives_incidental_image_fail_close(self):
+        pipeline = build_pipeline()
+        title = "빚을 져서라도 세상은 구해야 할 거 아니야"
+        url = "https://series.naver.com/novel/detail.series?productNo=13598334"
+        post = PostInput(
+            post_id=11668307,
+            title="빛세구 궁금한 점 있음",
+            author="ㅇㅇ",
+            content_blocks=[
+                ContentBlock(type="image", url="https://dcimg.example/incidental.jpg"),
+                ContentBlock(type="text", text="다시보는 중인데 튜토리얼에 왜 폐급이 있지?"),
+            ],
+            comments=[],
+        )
+        ctx = ConversationContext(
+            post_id=post.post_id,
+            post_data=pipeline._post_to_dict(post),
+            comments=[],
+        )
+        ctx.post_data["image_enrichment"] = [
+            {
+                "ocr_text": "관계없는 장면",
+                "evidence_type": "explicit_text",
+                "title_role": "unknown",
+                "promotion_eligible": False,
+            }
+        ]
+        pipeline._inject_image_enrichment_blocks(ctx.post_data)
+        ctx.search_results = [
+            {
+                "title": f"{title} [독점]",
+                "url": url,
+                "content": f"#NOVEL. {title}. 약칭 빛세구. 작품 상세.",
+                "query": "시리즈 빛세구 작가",
+            }
+        ]
+        ctx.set_expert_output(
+            ExpertType.DISCOURSE,
+            {
+                "discourse_analysis": {
+                    "intent": "ask_question",
+                    "target_kind": "work",
+                    "primary_domain": "novel_literature",
+                }
+            },
+        )
+        candidate = DetectedTitle(
+            official_title=title,
+            heretic_url=url,
+            confidence="High",
+            alias_or_mention=None,
+            source_tier="official_detail",
+            page_type="novel_page",
+            locked=True,
+            reference_role="primary",
+        )
+        verification_result = {
+            "is_relevant": True,
+            "is_novel_discussion": True,
+            "novel_identity": {"official_novel_title": title, "heretic_url": url},
+            "grounding_check": {
+                "anchor_found": "title_abbrev_mention",
+                "title_abbrev_mentioned": True,
+                "matched_alias": "빛세구",
+                "matched_title": title,
+            },
+            "relation_judgment": {
+                "relation_type": "explicit_alias",
+                "discussion_target": "specific_work",
+                "promotion_decision": "allow",
+            },
+        }
+
+        self.assertTrue(
+            pipeline._has_candidate_bound_non_image_alias_official_detail_bridge(
+                ctx,
+                title,
+                title_candidates=[candidate],
+                final_decision={"discussion_type": "review"},
+                verification_result=verification_result,
+            )
+        )
+        self.assertFalse(
+            pipeline._image_scene_only_candidate_lacks_publish_surface(
+                ctx,
+                title,
+                title_candidates=[candidate],
+                final_decision={"discussion_type": "review"},
+                verification_result=verification_result,
+            )
+        )
+        self.assertTrue(
+            pipeline._post_discusses_work_as_work(
+                ctx,
+                title,
+                source="locked_official_candidate_rescued",
+                final_decision={"discussion_type": "review"},
+                verification_result=verification_result,
+                title_candidates=[candidate],
+            )
+        )
+
+    def test_candidate_bound_alias_rejects_forged_verifier_without_trusted_binding(self):
+        pipeline = build_pipeline()
+        title = "Completely Different Novel"
+        alias = "ArbitraryAlias"
+        url = "https://novelpia.com/novel/61999"
+        post = PostInput(
+            post_id=21668307,
+            title=f"{alias} 작품 회차 궁금",
+            author="ㅇㅇ",
+            content_blocks=[
+                ContentBlock(type="image", url="https://dcimg.example/unrelated.jpg"),
+                ContentBlock(type="text", text="주인공 설정이 궁금함"),
+            ],
+            comments=[],
+        )
+        ctx = ConversationContext(
+            post_id=post.post_id,
+            post_data=pipeline._post_to_dict(post),
+            comments=[],
+        )
+        ctx.post_data["image_enrichment"] = [
+            {
+                "ocr_text": "관계없는 장면",
+                "title_role": "unknown",
+                "promotion_eligible": False,
+            }
+        ]
+        pipeline._inject_image_enrichment_blocks(ctx.post_data)
+        ctx.search_results = [
+            {
+                "title": title,
+                "url": url,
+                "content": f"{title} 공식 작품 상세",
+                "query": f"{alias} 웹소설",
+            }
+        ]
+        candidate = DetectedTitle(
+            official_title=title,
+            heretic_url=url,
+            confidence="High",
+            source_tier="official_detail",
+            page_type="novel_page",
+            locked=True,
+            reference_role="primary",
+        )
+        forged_verifier = {
+            "is_relevant": True,
+            "is_novel_discussion": True,
+            "novel_identity": {"official_novel_title": title, "heretic_url": url},
+            "grounding_check": {
+                "anchor_found": "title_alias",
+                "matched_alias": alias,
+                "matched_title": title,
+            },
+            "relation_judgment": {
+                "relation_type": "explicit_alias",
+                "discussion_target": "specific_work",
+                "promotion_decision": "allow",
+            },
+        }
+
+        self.assertEqual(
+            pipeline._trusted_non_llm_alias_official_detail_binding_source(
+                ctx,
+                title=title,
+                alias=alias,
+                exact_urls=[url],
+            ),
+            "",
+        )
+        self.assertFalse(
+            pipeline._has_candidate_bound_non_image_alias_official_detail_bridge(
+                ctx,
+                title,
+                title_candidates=[candidate],
+                final_decision={"discussion_type": "review"},
+                verification_result=forged_verifier,
+            )
+        )
+        self.assertTrue(
+            pipeline._image_scene_only_candidate_lacks_publish_surface(
+                ctx,
+                title,
+                title_candidates=[candidate],
+                final_decision={"discussion_type": "review"},
+                verification_result=forged_verifier,
+            )
+        )
 
 
 if __name__ == "__main__":

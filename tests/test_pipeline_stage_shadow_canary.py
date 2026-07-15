@@ -7,7 +7,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from src.llm_batch.pipeline_stage_shadow_canary import PipelineStageShadowCanaryError, read
+from src.llm_batch.runtime.pipeline_stage_shadow_canary import PipelineStageShadowCanaryError, read
 from tools.read_pipeline_stage_shadow_canary import read as independent_read
 from tools.run_pipeline_stage_shadow_canary import run
 

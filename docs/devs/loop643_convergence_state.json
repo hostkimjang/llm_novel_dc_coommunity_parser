@@ -1,0 +1,38 @@
+{
+  "report_type": "bounded_convergence_state",
+  "updated_at": "2026-07-11T07:18:12+09:00",
+  "loop": 643,
+  "goal_id": "ARCH-MULTIWORK-TITLE-BODY-SUBJECT-CONFLICT",
+  "state": "PLATEAU_AUDIT_COMPLETE_LIMIT_REACHED_HANDOFF",
+  "runtime_release_fingerprint_sha256": "d732342f432730842ade446783cbb8639334f9f9278b51a3e2a593fdbe62000f",
+  "blocker_signature_sha256": "f6218b5a2bf7fda8775186b1168790d330d6bfd64e0f7254bfb66afc575e5564",
+  "progress_vector": {
+    "golden_passed": 18,
+    "golden_failed": 0,
+    "wrong_work": 0,
+    "publication_violation": 0,
+    "required_search_vlm_blocker": 5,
+    "terminal_adjudicated_search_rows": 4,
+    "unreviewed_search_rows": 0,
+    "golden_true_semantic_regression": 0,
+    "full375_true_semantic_regression": null,
+    "actionable_unfixed": 5
+  },
+  "runtime_budget": {
+    "golden18_exact_once": "1/1 consumed",
+    "n5": "0/1 not authorized after Golden hard fail",
+    "fresh375": "0/1 not authorized after Golden hard fail",
+    "same_fingerprint_rerun": "forbidden"
+  },
+  "process_state": {
+    "expert_process_count": 0,
+    "dashboard_http": 200,
+    "dashboard_batch_running": false,
+    "dashboard_is_approval": false
+  },
+  "outcome": "LIMIT_REACHED_HANDOFF",
+  "semantic_quality": "REVIEW-LOCKED",
+  "production_full_scan_approval": false,
+  "next_action_in_current_goal": null,
+  "handoff": "docs/devs/loop643_limit_reached_handoff_20260711_071812.json"
+}

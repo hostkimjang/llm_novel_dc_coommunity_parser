@@ -11,8 +11,8 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from src.llm_batch.stage_budget import ArtifactRef, StageBudgetBinding
-from src.llm_batch.stage_budget_canary import build_shadow_canary
+from src.llm_batch.runtime.stage_budget import ArtifactRef, StageBudgetBinding
+from src.llm_batch.runtime.stage_budget_canary import build_shadow_canary
 from tools.build_stage_budget_receipt import _atomic_write
 
 

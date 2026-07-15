@@ -1,0 +1,118 @@
+{
+  "report_type": "regression_safe_grounding_convergence_state",
+  "generated_at": "2026-07-10T05:49:00+09:00",
+  "goal_turn_id": "019f4850-7a35-7263-8347-362d7e553966:loop641-recovery-dispatch",
+  "current_decision": "CONTINUE",
+  "relevant_fingerprint": "9d73f0ea63032a0c7a211041df82e4047133cf8e325b4fcc1a38d788ea84f4c1",
+  "relevant_fingerprint_components": {
+    "runtime_contract_commit": "1aa89c0f370b059ecd1376711e130954726ff370",
+    "prompt_version": "2026-03-30-semantic-contract-v1",
+    "component_raw_config_hashes": {
+      "loop640_full375": "24a3b4877bab",
+      "loop641_residual300": "f57cbf55a7b3"
+    },
+    "config_hash_note": "raw hash includes input_post_count; cross-run equivalence uses stable row/manifest/argv/env/runtime contract",
+    "input_sha256": "746c89217f8ab7d3dd44b3733ad8ab13801ebe9d995c125cc952806d7aed0cbe",
+    "adjudicated_baseline_sha256": "958b5c547e03df3931d25606b4e8204fcb85a58a6642d70443478adad91c74cb",
+    "runtime_model": "bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4",
+    "runtime_endpoint": "http://10.20.0.101:8000",
+    "search_contract": "include_search=true;light=false;healthy=16;reuse_shards_only=true",
+    "vlm_ocr_contract": "vlm=on;ocr=on;require_for_images=true",
+    "slang_db": "off",
+    "excluded_from_fingerprint": [
+      "docs-only HEAD drift",
+      "loop/run id",
+      "timestamp",
+      "off-path recovery/adjudication/merge tooling"
+    ]
+  },
+  "blocker_signature": "f6c8fe57c0f5a9e4364db8853572be9ac4934fad90e4d7019dbd68ee9bc77a69",
+  "blockers": [
+    "architecture_shared_gate_not_single_writer",
+    "flip_probe_not_run",
+    "panel375_residual300_running",
+    "postrun_gates_missing",
+    "semantic_drift_union_unreviewed"
+  ],
+  "progress_vector_before": {
+    "integrity_defect_count": 1,
+    "terminal_evidence_missing_count": 0,
+    "actionable_unfixed_count": 1,
+    "publication_golden_test_flip_failure_count": 3,
+    "required_search_vlm_blocker_count": 0,
+    "true_semantic_regression_count": 0,
+    "unreviewed_adjusted_rows": 375,
+    "panel375_proof_debt": 375
+  },
+  "progress_vector_after": {
+    "integrity_defect_count": 0,
+    "terminal_evidence_missing_count": 0,
+    "actionable_unfixed_count": 1,
+    "publication_golden_test_flip_failure_count": 3,
+    "required_search_vlm_blocker_count": 0,
+    "true_semantic_regression_count": 0,
+    "unreviewed_adjusted_rows": 375,
+    "panel375_proof_debt": 240
+  },
+  "unknown_or_conservative_components": {
+    "unreviewed_adjusted_rows": "merged375 compare 전이므로 full panel 375를 proof debt로 보수 계상",
+    "true_semantic_regression_count": "미판정이며 0 확정이 아님; unreviewed proof debt가 이를 가림",
+    "terminal_evidence_missing_count": "search/drift issue row가 아직 확정되지 않아 0 provisional"
+  },
+  "material_progress": true,
+  "material_progress_reason": "Loop640 flush gap을 immutable recovered75로 닫고 residual checkpoint가 60행까지 전진해 panel proof debt 375->240. 독립 공격 감사에서 발견한 gate fail-open도 actual artifact/hash/readback 계약으로 닫았다.",
+  "expected_information_gain": "동일 runtime fingerprint의 미관측 300행 결과, row search health, publication/golden/collateral drift union",
+  "selected_action": "Loop640 recovered75를 보존하고 Loop641 residual300을 새 output으로 실행",
+  "changed_files": {
+    "runtime_pipeline": [],
+    "off_path_tools": [
+      "tools/build_interrupted_run_residual.py",
+      "tools/merge_interrupted_run_results.py",
+      "tools/build_adjusted_collateral_blind_packet.py",
+      "tools/build_adjusted_collateral_adjudication.py",
+      "tools/validate_adjusted_collateral_adjudication.py",
+      "tools/build_full375_search_adjudication_gate.py",
+      "tools/evaluate_always_on_regression_gates.py"
+    ],
+    "docs_and_plans": [
+      "docs/devs/loop641_residual300_after_loop640_recovered75_runtime_plan.json",
+      "docs/devs/loop641_residual300_after_loop640_recovered75_runtime_plan.md"
+    ]
+  },
+  "tests": {
+    "focused_passed": 86,
+    "suites": [
+      "tests.test_build_interrupted_run_residual",
+      "tests.test_recover_expert_run_from_checkpoint",
+      "tests.test_run_independent_plan",
+      "tests.test_adjusted_collateral_adjudication",
+      "tests.test_merge_interrupted_run_results",
+      "tests.test_full375_search_adjudication_gate",
+      "tests.test_always_on_regression_gates",
+      "tests.test_safe_loss_flip_rate_probe"
+    ]
+  },
+  "execution_budget": {
+    "identical_replay": false,
+    "same_output_restarted": false,
+    "release_fingerprint_full375_attempt": "interrupted Loop640 continued by one residual completion lane",
+    "flip_probe_used": 0,
+    "flip_probe_budget": 1
+  },
+  "plateau": {
+    "same_blocker_goal_turn_streak": 0,
+    "last_counted_goal_turn_id": "019f4850-7a35-7263-8347-362d7e553966:loop641-recovery-dispatch",
+    "streak_reset_reason": "immutable recovery와 residual dispatch가 material progress를 만들었다",
+    "plateau_audit_required": false
+  },
+  "runtime_state": {
+    "loop640_recovery": "GO / recoverable_pending_flush_gap / recovered75 immutable",
+    "loop641_run_id": "20260710_043316_869117",
+    "loop641_status": "RUNNING_NOT_APPROVAL / 60 completed / 46 flushed / 14 pending / 0 failed",
+    "dashboard_url": "http://127.0.0.1:8080",
+    "semantic_quality": "REVIEW-LOCKED",
+    "harness_panel375_gate": "IN_PROGRESS",
+    "production_full_scan_approval": false
+  },
+  "next_unblock_condition": "Loop641 300/300/0/0 완료 후 homogeneous original-order unique375 병합과 전 post-run gate 생성"
+}

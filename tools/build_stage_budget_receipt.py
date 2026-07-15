@@ -8,7 +8,7 @@ import sys
 
 ROOT=Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path: sys.path.insert(0,str(ROOT))
-from src.llm_batch.stage_budget import ArtifactRef, StageBudgetBinding, build_shadow_stage_budget_receipt
+from src.llm_batch.runtime.stage_budget import ArtifactRef, StageBudgetBinding, build_shadow_stage_budget_receipt
 
 def _atomic_write(path: Path, value: dict) -> None:
     path.parent.mkdir(parents=True,exist_ok=True); tmp=path.with_name(f".{path.name}.{uuid.uuid4().hex}.tmp")

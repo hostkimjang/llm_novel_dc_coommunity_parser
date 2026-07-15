@@ -5,13 +5,13 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from src.llm_batch.decision_call_events import DecisionCallLedgerRegistry
-from src.llm_batch.decision_ledger_v2 import (
+from src.llm_batch.ledger.decision_call_events import DecisionCallLedgerRegistry
+from src.llm_batch.ledger.decision_ledger_v2 import (
     DecisionCallLedgerV2,
     DecisionLedgerV2Error,
     replay_legacy_readback_to_v2,
 )
-from src.llm_batch.publication_commit import build_publication_scope_descriptor
+from src.llm_batch.ledger.publication_commit import build_publication_scope_descriptor
 
 
 class DecisionLedgerV2LegacyReplayTests(unittest.TestCase):

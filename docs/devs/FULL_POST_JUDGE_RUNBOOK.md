@@ -105,7 +105,7 @@ native-web verdict는 issue index/action queue/seed packet의 기준선이다. �
 
 2.1 **대상 결과 파일**: `out/expert_result_<run_id>.json` (list of `PickvelOutputItemV2`).
 각 원소: `gallery_id, post_id, title, content/content_blocks, image_urls, comments, comment_metadata, analysis_result{post_id, identity, analysis}, run_meta`.
-판정자가 보는 핵심은 `analysis_result.identity`(=`PickvelIdentity`, `src/llm_batch/models.py:96-267`).
+판정자가 보는 핵심은 `analysis_result.identity`(=`PickvelIdentity`, `src/llm_batch/domain/models.py`).
 manifest(`*_manifest.json`)에서 `flushed_count/pending_count/large_run_complete/vlm_enabled/ocr_enabled`를 먼저 확인한다.
 `large_run_complete=false`면 partial이므로 `completed_subset.json`은 부분 승인용일 뿐 1차 결과로 쓰지 않는다.
 
@@ -189,7 +189,7 @@ OpenAI 호환 `/v1/chat/completions`. 두 가지 방법:
 이 라우팅은 이 런 기준 **~94/2246 행만** LLM에 보낸다(`store_in_slang_db=true` 또는 결정적 pollution-suspect). 나머지는 `deterministic_slang_verdict`(보통 na)로 결정적 확정하고 LLM 토큰을 쓰지 않는다.
 
 2.4 **재사용 자산(재발명 금지)**:
-- `src/llm_batch/candidate_audit.py` — judge-grade 결정적 헬퍼: `classify_candidate_audit(identity, judge_seed)`(8 라벨),
+- `src/llm_batch/grounding/candidate_audit.py` — judge-grade 결정적 헬퍼: `classify_candidate_audit(identity, judge_seed)`(8 라벨),
   `official_search_supports_title(identity, title)`, `_explicit_image_work_titles`, `official_title_lint_reasons`/`identity_consistency_lint_reasons`/`output_consistency_lint_reasons`,
   `seed_group(disagreement_type)`(recall/precision/hygiene/unseeded), `build_candidate_ledger`.
   → judge 전/후 **결정적 재버킷**(LLM 없이)에 사용.

@@ -1,8 +1,8 @@
-"""Shared title-promotion gate contracts.
+"""공개 제목과 URL의 최종 승격을 단일화하는 공통 계약.
 
-This module keeps the publish decision separate from source existence. A title
-can be a real official work and still be unsafe to publish for a specific post
-when the post does not discuss that work as work.
+공식 작품이 실제로 존재한다는 사실과 현재 게시글에 공개해도 안전하다는 판단은
+서로 다르다. 후보가 실재하더라도 게시글이 그 작품을 작품으로 다루지 않으면
+candidate-only로 보존하고 공개 필드는 fail-close한다.
 """
 
 from __future__ import annotations
@@ -77,6 +77,8 @@ CONTRACT_BLOCKING_REASON_CODES = {
     "official_title_looks_like_listing_description",
     "official_detail_display_title_mismatch",
     "title_body_subject_conflict_unresolved",
+    "title_resolution_state_not_publishable",
+    "work_resolution_not_publishable",
 }
 
 SCOPE_CURRENT_WORK = "current_work"
@@ -404,10 +406,18 @@ def _state_reason_codes(state: GroundingState) -> List[str]:
         codes.append("row_discussion_missing")
 
     resolution_state = str(state.title_resolution_state or "").strip().lower()
+    # Empty legacy state remains backward-compatible, but an explicit state is
+    # authoritative: only resolved/direct_resolved may reach the public title
+    # surface.  This deliberately fail-closes future HOLD-like enum additions
+    # instead of requiring every new non-publishable state to be blocklisted.
+    if resolution_state and resolution_state not in {"resolved", "direct_resolved"}:
+        codes.append("title_resolution_state_not_publishable")
     if not row_discusses_current_work and resolution_state in {"context_only", "nonwork"}:
         codes.append(resolution_state)
 
     work_resolution = str(state.work_resolution or "").strip().lower()
+    if work_resolution and work_resolution != "resolved":
+        codes.append("work_resolution_not_publishable")
     if not row_discusses_current_work and work_resolution in {"context_only", "nonwork"}:
         codes.append(work_resolution)
 

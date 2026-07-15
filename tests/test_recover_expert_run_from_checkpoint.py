@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from src.llm_batch.publication_commit import (
+from src.llm_batch.ledger.publication_commit import (
     PUBLICATION_COMMIT_JOURNAL_SCHEMA,
     PUBLICATION_COMMIT_SCHEMA,
     PublicationCommitRegistry,

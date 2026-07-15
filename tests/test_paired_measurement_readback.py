@@ -8,10 +8,10 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-import src.llm_batch.paired_measurement_readback as paired_readback_module
-from src.llm_batch.decision_call_events import DecisionCallLedgerRegistry
-from src.llm_batch.decision_call_readback import read_decision_call_ledger
-from src.llm_batch.early_route_measurement import (
+import src.llm_batch.measurement.paired_measurement_readback as paired_readback_module
+from src.llm_batch.ledger.decision_call_events import DecisionCallLedgerRegistry
+from src.llm_batch.ledger.decision_call_readback import read_decision_call_ledger
+from src.llm_batch.measurement.early_route_measurement import (
     ACCURACY_NOT_ESTIMABLE,
     ARM_AFTER,
     LANE_CHEAP_NIL,
@@ -21,11 +21,11 @@ from src.llm_batch.early_route_measurement import (
     compare_early_route,
     decide_early_route,
 )
-from src.llm_batch.selective_compute_shadow import (
+from src.llm_batch.measurement.selective_compute_shadow import (
     COST_STATUS_PARTIAL_RUNTIME,
     DecisionCostTrace,
 )
-from src.llm_batch.paired_measurement_readback import (
+from src.llm_batch.measurement.paired_measurement_readback import (
     REFERENCE_COPY_COST_ONLY,
     RUN_SPEC_SCHEMA_VERSION,
     build_paired_measurement_run_spec,
@@ -34,7 +34,7 @@ from src.llm_batch.paired_measurement_readback import (
     validate_paired_measurement_readback,
     verify_paired_report_sha256,
 )
-from src.llm_batch.publication_commit import (
+from src.llm_batch.ledger.publication_commit import (
     PublicationCommitRegistry,
     build_publication_scope_descriptor,
     commit_publication_result,

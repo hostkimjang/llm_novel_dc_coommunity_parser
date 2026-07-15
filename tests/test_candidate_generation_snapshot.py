@@ -4,14 +4,14 @@ import copy
 import unittest
 
 from src.llm_batch.agentic_pipeline import AgenticPipeline
-from src.llm_batch.candidate_generation import (
+from src.llm_batch.grounding.candidate_generation import (
     CANDIDATE_GENERATION_VERSION,
     TITLE_CANDIDATE_GENERATION_VERSION,
     build_candidate_generation_snapshot,
     build_title_candidate_generation_snapshot,
     candidate_generation_snapshot_from_dict,
 )
-from src.llm_batch.models import DetectedTitle
+from src.llm_batch.domain.models import DetectedTitle
 
 
 class DummyLLM:

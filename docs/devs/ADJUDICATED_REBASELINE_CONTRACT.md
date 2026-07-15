@@ -1,5 +1,9 @@
 # Adjudicated Re-baseline Contract
 
+> 2026-07-10 semantic convergence override: `adjusted_drift_count`는 판결 baseline 대비 runtime 변화 감지 diagnostic으로 보존한다. Stochastic 변화 자체를 exact-output 실패로 만들지 않는다. `adjusted_full375_collateral=GO`는 drift union을 전수 판결하는 deterministic builder+validator가 통과하고 `unreviewed_adjusted_rows=0`, `true_semantic_regression_count=0`일 때와 동치다. Unsafe publish, wrong-work, golden positive loss는 면제하지 않는다. Builder/validator, always-on 연동, unit tests가 구현되기 전에는 자가 작성 JSON으로 새 metric을 선언하지 않고 gate를 `NOT_IMPLEMENTED / NO-GO`로 둔다. 아래 기존 `adjusted_drift_count=0` 문구는 이 semantic adjudication gate로 supersede하며 historical tool behavior 설명으로만 읽는다. 상세는 `docs/devs/REGRESSION_SAFE_GROUNDING_BOUNDED_CONVERGENCE_PROTOCOL.md`를 따른다.
+
+> 2026-07-10 implementation audit: 초기 구현의 compare/packet/map/receipt 신뢰 경계를 독립 negative control로 깨고 보강했다. 현재 validator는 actual source/baseline/after/golden 375 scope, `drift_id` multi-variant union, source allow-list packet, packet/map canonical hash와 option origin, actual serialized publication, golden hard safety, terminal 필수 필드, validator code/artifact receipt를 재계산한다. Always-on은 이 receipt를 readback하고 runtime `375/375/0/0`을 요구한다. 관련 검증은 `loop641_gate_tool_independent_audit.json/.md`, focused `86 tests PASS`다.
+
 ## 목적
 
 Loop620/Loop621 계열 full375 결과의 raw diff는 2026-06-26 bootstrap baseline 대비 변화이므로, 정당한 FP 제거와 의도된 recall/wrong-work 복구가 모두 판결된 뒤에도 raw가 0이 될 필요가 없다. 전 행 판결이 끝나면 판결된 결과를 새 baseline으로 재동결해 이후 collateral을 "옛 버그 대비 변화"가 아니라 "올바른 행동 대비 drift"로 측정한다.
@@ -30,10 +34,16 @@ Loop620/Loop621 계열 full375 결과의 raw diff는 2026-06-26 bootstrap baseli
 
 ## 도구 필드 계약
 
+- `tools/build_adjusted_collateral_blind_packet.py`는 before/after/status/golden/`_judge_seed`를 숨긴 source-only anonymous A/B packet과 private option map을 분리 생성한다.
+- `tools/build_adjusted_collateral_adjudication.py`는 judge의 atomic blind choice를 before/after와 재결합해 5분류를 결정적으로 유도하며, 입력의 자가 작성 gate/count/class는 승인값으로 신뢰하지 않는다.
+- `tools/validate_adjusted_collateral_adjudication.py`는 compare/verdict/result/golden/packet/map을 다시 열고 hash, union, 분류, terminal contract를 재계산한다.
+- `tools/evaluate_always_on_regression_gates.py`는 adjudicated mode에서 validator artifact가 없으면 fail-closed한다. Completion metric은 `adjudicated_semantic_gate`이며 `adjusted_drift_count`는 diagnostic이다.
+- `adjusted_full375_collateral=GO`는 validator/semantic `GO`, `unreviewed_adjusted_rows=0`, `true_semantic_regression_count=0`, `actionable_unfixed_count=0`일 때만 가능하다.
+
 - 판결 baseline을 비교 기준으로 쓸 때 `tools/compare_projection_collateral.py`는 `--baseline-mode adjudicated_rebaseline`로 실행한다.
 - 이 모드의 산출물은 `baseline_mode=adjudicated_rebaseline`, `collateral_measure=adjusted_drift`, `adjusted_drift_count=<판결 baseline 대비 drift>`를 남긴다.
 - 2026-06-26 bootstrap 대비 raw 수치는 `historical_raw_collateral_regression_count` 또는 `historical_raw_compare`에만 둔다. 이 값은 설명용이며 완료 gate metric이 아니다.
-- `tools/evaluate_always_on_regression_gates.py`는 `baseline_mode=adjudicated_rebaseline` 또는 `collateral_measure=adjusted_drift`를 보면 `gate_metric=adjusted_drift_count`로 평가한다. 이때 `historical_raw_collateral_regression_count > 0`이어도 `adjusted_drift_count=0`, runtime complete, search/publication gate clean이면 collateral blocker로 보지 않는다.
+- 과거 always-on의 `gate_metric=adjusted_drift_count` 동작은 superseded다. 현재는 validated semantic adjudication을 gate로 쓰고 historical raw와 adjusted drift 모두 diagnostic으로만 보존한다.
 
 ## 이후 Collateral 판정
 

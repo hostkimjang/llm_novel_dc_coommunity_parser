@@ -1,5 +1,92 @@
 # Developer TODO Index
 
+## 2026-07-15 소스 구조 정리 후속
+
+- [x] `src/llm_batch`를 `domain/grounding/ledger/runtime/measurement/slang/pipelines` 책임 경계로 재배치한다.
+- [x] import·test patch target·현재 독자용 문서를 새 경로로 동기화한다.
+- [x] 실제 prompt 장식 Unicode와 참조되지 않는 `LINGUISTIC_FRAMEWORK`를 제거한다.
+- [x] 삭제된 도구만 import하는 dangling 테스트 2개를 폐기한다.
+- [ ] `agentic_pipeline.py`를 기능별 service로 분해하기 전에 monkeypatch/public API 계약 목록을 먼저 고정한다.
+- [ ] `tests/test_agentic_pipeline_rework.py` 482개 회귀를 책임별 파일로 나누고 공통 fixture를 추출한다.
+- [ ] `tests.test_known_title_abbreviation_support`의 잔여 3 failure를 source-backed 의미 회귀로 별도 수정한다.
+- [ ] 실제 provider 기준 prompt token BEFORE/AFTER는 fresh paired artifact가 있을 때 측정한다. 현재는 `NOT_MEASURED`다.
+
+## 2026-07-15 코드 산출물 수명주기
+
+- [x] 참조 없는 과거 completed779/JUDGE3905 builder·테스트와 ignored smoke/driver를 제거한다.
+- [x] `tests/`·`tools/` allowlist 승격 기준과 goal 종료 후 폐기 규칙을 고정한다.
+- [x] terminal-ledger v1 쌍을 제거하고 hash/unsafe-state 결속이 있는 v2를 남긴다.
+- [ ] 현재 always-on gate가 사용하는 나머지 untracked adjudication/trust-anchor 체인은 goal 종료 때 canonical 모듈을 기준으로 재평가한다.
+- [ ] Architecture V2 M2 종료 후 harness/readback runner의 공통 I/O만 추출할지 비용 대비 효과를 재감사한다.
+- [ ] 대형 회귀 monolith는 smoke 삭제와 섞지 말고 별도 테스트 분할 작업으로 진행한다.
+
+## 2026-07-14 검색 폭주 P1 최종 런 후속
+
+- [x] typed `explicit_work_title` 초기 검색을 exact title(+author) / exact title+노벨피아 2개로 canonicalize한다.
+- [x] pre-execute와 `_execute_searches` 내부 title-led 재주입 뒤 initial-only clamp를 적용한다.
+- [x] `title_role=unknown`의 canonical exact 검색은 no-work prune에서 보존하되 promotion gate는 완화하지 않는다.
+- [x] late OCR 중복 판정을 substring이 아닌 bare/title+author/platform exact query equality로 고친다.
+- [x] unrelated/identity-less official URL prefetch 차단과 post/comment direct URL·exact-title evidence 예외를 회귀로 고정한다.
+- [x] 최종 6행 런 `20260714_222518_895497`에서 `6/6/0/0`, dashboard ON, VLM/OCR READY, W2 actual query log `2`, URL fetch `0`, slang 신규 term `0`을 확인한다.
+- [x] generic title-led 재주입 통합 회귀에서 요청 `5→2`, 실제 `search_fn` 호출 `2`를 확인한다.
+- [ ] VLM typed title과 raw OCR이 `꿇은/끓은`처럼 충돌할 때 두 표면을 candidate ledger에 보존하고 exact-only recall을 오타 하나에 고정하지 않는 보수적 변형 정책을 설계한다.
+- [ ] `11716475`의 resolved→HOLD recall loss와 `11718099`의 HOLD/PUBLISH variance를 source-backed canary로 줄인다.
+- [ ] RetrievalState live wiring과 durable publication receipt를 실제 런에서 증명한다.
+- [ ] 위 항목 전에는 200행 canary를 시작하지 않는다. 상태 `NOT_RUN / BLOCKED_BY_SEMANTIC_VARIANCE`.
+
+## 2026-07-14 BatchContext post-commit ordered learning TODO
+
+- [x] `expert_main` worker의 publication 전 inline 학습을 끄고, 신규 canonical WAL `PUBLISH + publish_allowed=true`만 학습하도록 단일 helper로 고정했다.
+- [x] `HOLD`, `ERROR_HOLD`, candidate-only, duplicate commit이 alias·author·character memory를 변경하지 않는 회귀를 추가했다.
+- [x] bounded `batch_context_learning_envelope_v1`로 decoder alias·author·character recall을 commit/restart replay에 보존하고 raw prompt/snippet/page/namu 본문을 제외했다.
+- [x] envelope 개수·문자 길이 allowlist와 post-construction assignment validation을 적용했다.
+- [x] startup sparse replay와 신규 commit을 같은 input-index 연속 buffer로 drain해 final 학습 순서를 맞췄다.
+- [x] manifest에 next index·pending count/index·same-wave nondeterminism을 남겨 partial run의 보류 학습을 가시화했다.
+- [x] `AgenticPipeline`의 pre-publication inline learning은 기본 OFF, 명시적 opt-in으로 변경했다.
+- [x] focused `111 PASS`, publication/retrieval adjacent `54 PASS`, 관련 `py_compile` PASS를 확인했다.
+- [ ] 같은 parallel wave에서 실행 중 worker가 관측하는 mutable context를 deterministic epoch/snapshot으로 고정할지 P2에서 결정한다.
+- [ ] raw namu page cache는 WAL에 넣지 않는다. 필요하면 별도 source-bound cache 계약으로만 재도입한다.
+- [ ] search-thrash P1과 targeted 재실행 전에는 200행 canary를 시작하지 않는다.
+
+## 2026-07-14 explicit resolution-state publication fail-close TODO
+
+- [x] run `20260714_160355_054970`의 publish row `76`건을 전수 대조해 `context_only/unresolved`인데 `publish_allowed=true`인 모순 `5`건을 확정했다.
+- [x] shared promotion gate를 빈 legacy 값만 호환하고 명시적 title state는 `resolved/direct_resolved`, work state는 `resolved`만 게시하도록 fail-close했다.
+- [x] 모든 현재 HOLD enum과 미래 HOLD state가 candidate-only로 보존되고 resolved 양성은 유지되는 계약 테스트를 추가했다.
+- [x] frozen checkpoint 무기록 투영에서 모순 `5/5` 차단, resolved 양성 `10/10` 게시 유지를 확인했다.
+- [x] 집중 `101 PASS`, publication/retrieval 인접 `108 PASS`, 독립 gate+convergence `143 PASS`, `py_compile`과 `git diff --check`를 확인했다.
+- [x] canonical contract의 blocked-state 정규화와 identity/candidate ledger blocker 미러링을 회귀로 고정했다.
+- [x] fresh targeted run `20260714_204406_840036`은 `6/6/0/0`, runtime `GO`; wrong-work 1건 교정, unsafe 3건 candidate-only, positive 2건 publish 유지, Slang 신규 term `0`을 확인했다.
+- [ ] `11716480`의 `26 queries / 25 degraded / 15 unrecovered` official URL 직렬 검증 thrash를 bounded P1 queue로 분리한다.
+- [ ] targeted 통과 뒤 200행 canary를 실행하기 전 `NO-GO / REVIEW-LOCKED / full_scan_approval=false`를 유지한다.
+- [ ] 기존 partial run은 patch 전 `promotion_contract_v2`와 의미가 달라 동일 attempt resume하지 않는다.
+- 보고서: `docs/devs/LIVE_PIPELINE_RUN_REVIEW_KO_20260714.md`.
+
+## 2026-07-14 Slang DB 오염 차단 TODO
+
+- [x] 중앙 DB와 run `20260714_160355_054970` work artifact를 전수 대조해 신규 term `14`개 중 명확한 오염 `8`개(`57.1%`)를 확인했다.
+- [x] `store=false` 상관 경로 우회와 `confidence/source_tier`만으로 비별칭을 허용한 쓰기 결함을 수정했다.
+- [x] 구조 점수-only 허용을 제거하고 strict `slang_insight`, verified `confirmed_alias`, trusted registry exact pair만 신규 저장하도록 fail-close했다. incomplete `store=true`도 거부한다.
+- [x] reference 역할은 CandidateLedger에만 보존하고 Slang DB mutation으로 번역하지 않도록 분리했다.
+- [x] 기존 중앙 slang을 재판독해 `87`개 중 `45`개만 seed 허용, exact-pair 근거 부족 `42`개는 삭제 없이 격리했다.
+- [x] 고정 checkpoint prefix `419`행 actual-manager replay에서 `36 observation / slang 32 / pending 4 / error 0`, 중앙 대비 신규 term `6`, 확인된 오염 표면 `0`을 확인했다.
+- [x] 독립 adversarial 재검토에서 registry 위조·reference seed·invalid true·malformed boolean 음성 `17/17` 차단, 정상 `6/6` 허용, write/seed 불일치 `0`을 확인했다.
+- [x] patch 전 full run 종료 뒤 work artifact 최종 `279/96/186/26`, 중앙 `261/87/173/28`과 SHA를 고정하고 중앙 미변경·artifact quarantine을 확인했다.
+- [ ] 기존 중앙 seed 격리 42개를 source row 기반으로 수동 검토한다.
+- [x] patched targeted 6건에서 중앙 대비 Slang 신규 term `0`, 기존 `즉사무림`·`아생갤`만 관측, 일반어 `고능아 store=false`를 확인했다.
+- [ ] `--parallel 16`, dashboard ON, VLM/OCR required 200행 canary의 일반명사 신규 유입 `0`을 확인한다.
+- [ ] fresh canary 전에는 `NO-GO / REVIEW-LOCKED / full_scan_approval=false`를 유지한다.
+- 보고서: `docs/devs/SLANG_DB_POLLUTION_AUDIT_KO_20260714.md`.
+
+## 2026-07-14 RetrievalState live wiring 설계 TODO
+
+- [x] live 격차(약 19곳 `GroundingState(` 생성 지점 무배선, `search_health` 직렬화 전용)와 정적 계약 근거를 재확인하고 설계 문서를 작성했다: `docs/devs/RETRIEVAL_LIVE_WIRING_DESIGN_KO_20260714.md`.
+- [ ] D1 `required` 술어(옵션 A 권장)와 D2 `hard_blocked` 신호를 구현 pass에서 확정한다.
+- [ ] `_build_retrieval_state(ctx)` 단일 빌더와 계약 평가 주입 헬퍼를 구현하고 identity에 `retrieval_state`를 `search_health`와 나란히 직렬화한다.
+- [ ] `tools/audit_expert_run_health.py`에 `search_health`/`retrieval` 정합 모순 카운트를 추가한다.
+- [ ] known-bad `11716475`, `11718099`, `11716480`, `11716448` + positive `11718077`, `11714907` targeted rerun → 200행 canary → random baseline `1,000+` 순서로 검증한다.
+- [ ] 설계·구현 단계는 `NO-GO / REVIEW-LOCKED / full_scan_approval=false`를 바꾸지 않는다.
+
 ## 2026-07-13 Architecture V2 active 재감사 — 내부 작업을 외부 blocker와 분리
 
 상태: Goal `019f4f3f-4f46-78d1-8418-50834da44924` `COMPLETE_SAFE_TERMINAL / ARCHITECTURE_V2_INTEGRATED / ACTUAL_EFFECT_WAITING_EXTERNAL_INPUT`. 기존 `ACTUAL_BLOCKED_HANDOFF`는 역사 기록이다. production `20260711_113712_379597`은 읽기 전용이다.
@@ -8,7 +95,7 @@
 - [x] `P1_RUNTIME_SAFE_SHADOW_ADAPTERS` 로컬 구현: `AgenticPipeline` search 경로에 명시 주입·기본 OFF인 StageBudget/limiter/cache/singleflight adapter를 접목하고 fail-close receipt, 구형 checkpoint 기본-OFF 호환, raw-query 비저장, legacy 결과 동등성을 회귀했다. clean export는 P0에서 별도 확인한다.
 - [x] `P1_DECISION_LEDGER_MIGRATION` 로컬 구현: legacy registry 우선 dual-write, V2-root coordination lock, crash/restart reconcile, one-way rollback latch, cross-adapter rollback, receipt identity coverage, OFF 무-import를 구현·회귀했다. production 자동 enable은 금지한다.
 - [x] `P2_TYPED_CONFIDENCE`: CandidateSet/NIL/producer completion/행별 confidence percentage를 분리한 `typed_confidence_report_v1`과 policy-free ECE/Brier/log loss/selective risk/AURC reader를 추가했다. `FROZEN_ACTUAL`이 아닌 입력은 `NOT_ESTIMABLE`이고 public 적용은 항상 false다.
-  - 근거: `src/llm_batch/confidence_report.py`, `tools/read_typed_confidence_metrics.py`, `tests/test_confidence_report.py`, `tests/fixtures/typed_confidence_source_less_contract_v1.jsonl` (`NOT_ESTIMABLE_NOT_FROZEN_ACTUAL`).
+  - 근거: `src/llm_batch/grounding/confidence_report.py`, `tools/read_typed_confidence_metrics.py`, `tests/test_confidence_report.py`, `tests/fixtures/typed_confidence_source_less_contract_v1.jsonl` (`NOT_ESTIMABLE_NOT_FROZEN_ACTUAL`).
 - [x] `P3_PACKET_OPERATIONS` 로컬 구현: packet intake validator와 operator template, no-write 상태, 동일 frozen input의 BEFORE/AFTER, `--parallel 16`, dashboard ON 전제, recovery 명령을 versioned artifact로 고정했다. 실제 packet은 `WAITING_EXTERNAL_INPUT`이다.
 - [x] `INTERNAL_A_CLOSURE`: P0~P3, public 비간섭, crash/restart/rollback, confidence 근거 결속, packet operator contract와 문서 정합성을 닫아 `ARCHITECTURE_V2_INTEGRATED`로 판정했다.
 - [ ] `C_ACTUAL_EFFECT`: source-backed DEV/CAL/FROZEN·policy v3·10+6 packet과 fresh BEFORE/AFTER가 도착한 뒤에만 실제 정확도/recall/NIL/CI/cost/E2E를 산출한다. 그 전 숫자는 `null/NOT_ESTIMABLE`이다.
@@ -24,13 +111,13 @@
 - [x] P0~P4 최신 계보를 P2 v8 → P3 v20 → P4 v21로 고정했다.
   - 근거: `out/publication_exact_once_harness_20260711/v8/`, `out/candidate_set_calibration_shadow_harness_20260711/v20/`, `out/selective_compute_shadow_harness_20260712/v21/`.
 - [x] StageBudget read-only metrics schema와 local limiter/singleflight·RunSpec namespace cache 계약을 분리했다.
-  - 근거: `src/llm_batch/stage_budget.py`, `src/llm_batch/local_stage_gate.py`, `src/llm_batch/shared_cache_contract.py`, `tests/test_stage_foundations.py`.
+  - 근거: `src/llm_batch/runtime/stage_budget.py`, `src/llm_batch/runtime/local_stage_gate.py`, `src/llm_batch/runtime/shared_cache_contract.py`, `tests/test_stage_foundations.py`.
 - [x] existing `*_slang_db_work.json`의 no-write proposal 변환을 추가했다.
-  - 근거: `src/llm_batch/slang_governance.py`, `tests/test_slang_governance.py`.
+  - 근거: `src/llm_batch/slang/slang_governance.py`, `tests/test_slang_governance.py`.
 - [x] generic framed WAL의 incomplete-tail vs complete-corruption 구분 단위 시험을 추가했다.
-  - 근거: `src/llm_batch/framed_wal.py`, `tests/test_framed_wal.py`.
+  - 근거: `src/llm_batch/ledger/framed_wal.py`, `tests/test_framed_wal.py`.
 - [x] StageBudget v2 shadow-only receipt가 RunSpec/scope/attempt/decision-ledger ArtifactRef와 self-hash, stage/provider calls·retry·cache source·wait ms·dedupe·limiter aggregate를 결속하고 independent reader가 재생한다.
-  - 근거: `src/llm_batch/stage_budget.py`, `tests/test_stage_foundations.py`; mixed RunSpec/scope/attempt, decision-ledger bytes, count mismatch, NaN, 직접 self-hash 위조를 fail-close한다.
+  - 근거: `src/llm_batch/runtime/stage_budget.py`, `tests/test_stage_foundations.py`; mixed RunSpec/scope/attempt, decision-ledger bytes, count mismatch, NaN, 직접 self-hash 위조를 fail-close한다.
 - [x] StageBudget v2 receipt를 dedicated shadow canary output에 연결하고 external writer/reader artifact를 생성했다. active production wiring은 금지한다.
   - `out/stage_budget_shadow_canary_20260712/`은 manifest·receipt·events ArtifactRef를 atomic publish하고 independent reader가 교차 재생한다. `runtime_started=false`, `writes_to_production=false`이며 dedicated canary runtime 연결은 아직 없다.
   - event provenance는 stage/provider, logical-call SHA, limiter config SHA/deadline, cache namespace/response SHA, singleflight role, `PROCESS_LOCAL_THREADS_ONLY` scope를 요구하고 누락 시 fail-close한다. runtime wiring/cross-process 보장은 아직 없다.
@@ -46,13 +133,13 @@
   - `FileSharedCacheAdapter`는 atomic file replace와 entry OS-file guard를 쓰는 `CROSS_PROCESS_FILE_SHADOW_ONLY` filesystem-local backend다. expired reader는 lock 안에서 observed entry SHA/expiry를 재검증해 fresh replacement를 삭제하지 않는다. 별도 Python process HIT, TTL expiry, degraded exclusion과 poison fail-close를 확인했지만 network/global cache 또는 runtime wiring은 아니다.
   - `ProcessSharedCacheAdapter`는 동일 Python process의 thread worker 간만 공유하며 receipt에 `PROCESS_SHARED_THREADS_ONLY`를 기록한다.
 - [x] OFF-by-default filesystem-local shared-result singleflight가 cache namespace와 lease key의 RunSpec/scope/input/provider/model/prompt exact binding, leader-only publish, follower cache re-read, wait/role/cache-source receipt를 제공한다.
-  - leader의 lease가 만료되거나 대체되면 late result는 discard하고 follower는 producer memory를 직접 받지 않는다. child-process reuse, follower timeout, producer failure cleanup, disabled no-op, namespace mismatch를 회귀했다. `src/llm_batch/shared_result_singleflight.py`, `tests/test_shared_result_singleflight.py`이며 network/global coordinator 또는 active runtime wiring은 아니다.
+  - leader의 lease가 만료되거나 대체되면 late result는 discard하고 follower는 producer memory를 직접 받지 않는다. child-process reuse, follower timeout, producer failure cleanup, disabled no-op, namespace mismatch를 회귀했다. `src/llm_batch/runtime/shared_result_singleflight.py`, `tests/test_shared_result_singleflight.py`이며 network/global coordinator 또는 active runtime wiring은 아니다.
 - [x] `AgenticPipeline._search_with_meta()`에 explicit-injection `PipelineSearchStageShadow` observer를 접목했다.
-  - 기본값 `None`이고 환경변수 자동 활성화가 없다. observer에는 deep copy만 전달하며 오류/변조가 기존 MCP 검색·in-memory cache·반환 meta를 바꾸지 않는다. scope namespace는 raw label이 아니라 exact publication-scope ArtifactRef SHA에서만 유도한다. `src/llm_batch/pipeline_stage_shadow.py`, `tests/test_pipeline_stage_shadow.py`; fresh runtime 실행·파일 write·rate/cache/singleflight control은 수행하지 않는다.
+  - 기본값 `None`이고 환경변수 자동 활성화가 없다. observer에는 deep copy만 전달하며 오류/변조가 기존 MCP 검색·in-memory cache·반환 meta를 바꾸지 않는다. scope namespace는 raw label이 아니라 exact publication-scope ArtifactRef SHA에서만 유도한다. `src/llm_batch/runtime/pipeline_stage_shadow.py`, `tests/test_pipeline_stage_shadow.py`; fresh runtime 실행·파일 write·rate/cache/singleflight control은 수행하지 않는다.
 - [x] replay-only `AgenticPipeline` stage-shadow canonical canary와 independent reader를 추가했다.
   - `out/pipeline_stage_shadow_canary_20260712/`은 local replay MCP로 pipeline observer event를 재생하고, reader가 동일 replay를 temporary output sandbox에서 다시 실행해 event artifact를 비교한다. `GO_PIPELINE_STAGE_SHADOW_REPLAY_ONLY`, `runtime_started=false`, `writes_to_production=false`, active production interaction `NONE`이다. CWD `out/` 생성/접촉은 금지하며 raw query는 manifest/event에 저장하지 않는다. synthetic/no-network라 source-backed actual packet 또는 M2 증거가 아니다.
 - [x] bounded temp DB용 slang transaction sidecar가 DB별 OS lock, fsync intent/backup/DB replace/terminal journal, receipt self-hash, apply/rollback의 intent·DB replace·terminal receipt crash injection과 reconciliation을 제공한다.
-  - 근거: `src/llm_batch/slang_transaction.py`, `tests/test_slang_transaction.py`; `sidecar_root`가 시스템 temporary root 아래이고 DB·journal을 감싸며 DB가 2 MB 이하일 때만 저수준 apply/reconcile/rollback을 허용한다. active production 및 `SlangDBManager.flush`에 연결하지 않았다.
+  - 근거: `src/llm_batch/slang/slang_transaction.py`, `tests/test_slang_transaction.py`; `sidecar_root`가 시스템 temporary root 아래이고 DB·journal을 감싸며 DB가 2 MB 이하일 때만 저수준 apply/reconcile/rollback을 허용한다. active production 및 `SlangDBManager.flush`에 연결하지 않았다.
 - [x] slang proposal self-hash·별도 owner approval manifest·source work artifact/run manifest 재검증을 transaction sidecar의 apply/rollback에 exact 결속했다.
   - proposal/approval file SHA, source work entry SHA, expert_main `work_artifact_complete`/`promotion_ready`/delayed-writeback policy와 base DB bytes를 authorization·journal·application receipt에서 재생한다. receipt-gap recovery와 rollback terminal-gap도 bounded temp DB에서 검증했다. in-run `SlangDBManager.flush`는 수정하지 않았다.
 - [x] `DecisionCallLedgerRegistry` 전용 framed WAL v2 shadow adapter가 length+hash segment/index/checkpoint, legacy frame replay equivalence, compaction과 104,502 acceptance를 제공한다. P2 `PublicationCommitRegistry v3` journal은 변경하지 않았다.
@@ -60,7 +147,7 @@
 - [x] DecisionLedgerV2 torn/orphan/corruption/concurrent/replay equivalence/104,502 scale acceptance를 shadow adapter에서 실행했다.
   - 104,502 acceptance는 `409` segments, index/replay `104502/104502`, total `10.317s`로 통과했다. legacy registry frame replay equivalence, orphan fail-close, checkpoint+receipt compaction/reconciliation도 shadow adapter에서 통과했다. active runtime wiring은 아직 없다.
 - [x] legacy DecisionCallLedger의 post-run readback을 isolated V2 mirror로 replay하고 independent reader가 binding/equivalence를 검증한다.
-  - source registry scope/frame에는 write하지 않고 temporary clone에서 legacy validator를 실행한다. output은 legacy root 내부를 거부하며 run/pair/arm, scope SHA, V2 root/index/checkpoint를 교차 결속한다. canonical synthetic artifact `out/decision_ledger_v2_mirror_canary_20260712/`은 4 frame `GO_DECISION_LEDGER_V2_POSTRUN_MIRROR`다. `src/llm_batch/decision_ledger_v2_mirror.py`; fresh runtime/production wiring은 아니다.
+  - source registry scope/frame에는 write하지 않고 temporary clone에서 legacy validator를 실행한다. output은 legacy root 내부를 거부하며 run/pair/arm, scope SHA, V2 root/index/checkpoint를 교차 결속한다. canonical synthetic artifact `out/decision_ledger_v2_mirror_canary_20260712/`은 4 frame `GO_DECISION_LEDGER_V2_POSTRUN_MIRROR`다. `src/llm_batch/ledger/decision_ledger_v2_mirror.py`; fresh runtime/production wiring은 아니다.
 - [x] launch-readiness manifest builder가 required/replay ArtifactRef를 읽어 `NOT_READY` 또는 `READY_FOR_NO_WRITE_PREFLIGHT`만 기록한다.
   - v2 reader는 required 10/replay 6 exact set과 missing list/path collision을 재계산한다. rehash된 manifest가 ref를 지우고 `READY`를 주장하면 fail-close한다. 근거: `tools/build_launch_readiness_manifest.py`, `tests/test_launch_readiness_manifest.py`; runtime/production write/승인은 수행하지 않는다.
 - [x] actual packet 생성 → no-write preflight → fresh pair → recovery readback의 경로·출력을 결속하는 한국어 runbook과 launch-readiness manifest/wrapper를 완성했다.
@@ -12086,3 +12173,11 @@ M1 완료 후 M2 외부 조건만 남은 최초 2회 audit까지는 `ACTIVE / AC
 - [ ] Full375 collateral을 `--parallel 16`, dashboard ON, search 포함 non-light, VLM/OCR ON으로 실행한다.
 - [ ] Full375 결과가 조용하면 수렴 이정표로 기록하고 full_scan 경로를 열며, 시끄러우면 회귀패널을 확대한다.
 - [x] Keep `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`, goal `ACTIVE / NOT_COMPLETE`.
+
+## 2026-07-14 입력 JSONL 동일 중복 후속
+
+- [x] 동일 payload의 중복 post 행은 first-row-wins 멱등 처리하고 상충 payload는 fail-closed 하는 loader 계약을 복구했다.
+- [x] 기본 입력 전체에서 동일 중복 행/ID `15/14`, 상충 중복 `0`, effective post `104502`를 확인했다.
+- [x] loader focused regression test와 검증 문서/checklist를 동기화했다.
+- [ ] 입력 생성기에서 페이지 경계 중복이 생기는 경로를 추적하고 source manifest에 `physical_post_rows`, `unique_post_ids`, `identical_duplicate_rows`, `conflicting_duplicate_rows`를 기록한다.
+- [ ] 104,502건 실제 런을 재개할 때 manifest의 requested/effective parallel과 dashboard attach 상태를 확인한다.

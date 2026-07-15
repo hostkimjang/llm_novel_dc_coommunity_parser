@@ -25,7 +25,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from src.llm_batch.candidate_set_calibration_shadow import (  # noqa: E402
+from src.llm_batch.grounding.candidate_set_calibration_shadow import (  # noqa: E402
     CALIBRATION_SHADOW_SCHEMA,
     CALIBRATION_UNAVAILABLE_SCHEMA,
     CalibrationArtifact,
@@ -39,14 +39,14 @@ from src.llm_batch.candidate_set_calibration_shadow import (  # noqa: E402
     calibration_shadow_from_dict,
     evaluate_frozen_holdout,
 )
-from src.llm_batch.candidate_set_shadow import (  # noqa: E402
+from src.llm_batch.grounding.candidate_set_shadow import (  # noqa: E402
     CALIBRATED_SHADOW_STATUS,
     NIL_LABEL,
     PROBABILITY_STATUS,
     build_uncalibrated_selective_shadow,
     selective_shadow_from_dict,
 )
-from src.llm_batch.calibration_actual_readback import (  # noqa: E402
+from src.llm_batch.grounding.calibration_actual_readback import (  # noqa: E402
     ArtifactRef,
     build_readback_manifest,
     expected_universe_readback,
@@ -364,7 +364,7 @@ def create_run_spec(
     p1_label_ref = p1_spec.get("artifacts", {}).get("label_ledger")
     if not isinstance(p1_label_ref, Mapping) or dict(p1_label_ref) != artifacts["label_ledger"]:
         raise ValueError("P3 label ledger is not the exact P1-bound artifact")
-    from src.llm_batch.calibration_dataset_readiness import (
+    from src.llm_batch.grounding.calibration_dataset_readiness import (
         validate_dataset_readiness_against_sources,
     )
 
@@ -507,7 +507,7 @@ def validate_run_spec(
     )
     ledger = _read_json(paths["label_ledger"])
     readiness = _read_json(paths["dataset_readiness"])
-    from src.llm_batch.calibration_dataset_readiness import (
+    from src.llm_batch.grounding.calibration_dataset_readiness import (
         validate_dataset_readiness_against_sources,
     )
 
@@ -2620,7 +2620,7 @@ def evaluate_bound_actual_readback_bundle(
 ) -> tuple[Path, dict[str, Any], FrozenActualEvidenceReceipt, dict[str, Any]]:
     """Replay a bound readback bundle into the existing FROZEN_ACTUAL evaluator."""
 
-    from src.llm_batch.calibration_dataset_readiness import (
+    from src.llm_batch.grounding.calibration_dataset_readiness import (
         validate_dataset_readiness_manifest,
     )
     from tools.run_calibration_dataset_readiness import build_current_readiness

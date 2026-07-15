@@ -1,5 +1,81 @@
 # 개발 이력 (Development History)
 
+## 2026-07-15 `src/llm_batch` 책임별 패키지 정리
+
+- 루트의 Python 파일 40개 중 주력 `agentic_pipeline.py`, 공통 `promotion_gate.py`, `cli.py`, `__init__.py`만 남기고 36개를 7개 기능 패키지로 이동했다.
+- `domain`, `grounding`, `ledger`, `runtime`, `measurement`, `slang`, `pipelines`의 한국어 package docstring에 책임과 의존 방향을 기록했다.
+- 저장소 내부 import와 unittest patch target을 새 경로로 갱신했고 `llm_batch.*`, `src.llm_batch.*` import smoke와 `compileall`을 통과했다.
+- 참조되지 않던 대형 `LINGUISTIC_FRAMEWORK` 15,780자와 실제 LLM prompt의 장식 Unicode를 제거했다. 전송 token의 provider 실측치는 아직 `NOT_MEASURED`다.
+- 이미 삭제된 도구만 import하던 dangling test 2개, 2,661줄을 추가 제거했다. 정리 누계는 Python `339→297`, JavaScript `1→0`, 코드 43개·약 18,707줄이다.
+- 구조/runtime 핵심 160개와 M1 foundation 120개는 PASS다. 별도 약어/작품명 회귀 묶음은 181개 중 178 PASS, 3 FAIL로 남겨 구조 정리 성공과 분리한다.
+- 이 리팩터링은 actual 효과나 운영 승인 근거가 아니다. `REVIEW-LOCKED / full_scan_approval=false`, actual metric `null/NOT_ESTIMABLE`을 유지한다.
+
+## 2026-07-15 goal 코드 산출물 1차 정리
+
+- 코드 인벤토리는 Python 339개(`tests` 184, `tools` 154, `scratch` 1)와 ignored workflow JavaScript 1개에서 시작했다.
+- 현재 정식 acceptance와 주력 source는 유지하고, 참조가 끊긴 tracked 역사 builder/test 8개와 ignored 일회성 코드 31개를 제거했다.
+- terminal-ledger v1은 자기 테스트 외 역참조가 없고 Loop642/643 산출물은 v2 builder version만 사용하므로 v1 도구·테스트를 추가 제거했다.
+- 결과는 Python 299개, workflow JavaScript 0개이며 약 16,046줄을 정리했다. Git history와 기존 보고서·JSON 증거는 보존한다.
+- 정리 자체는 runtime·semantic·운영 승인 상태를 바꾸지 않는다. `REVIEW-LOCKED / full_scan_approval=false`, actual metric `null/NOT_ESTIMABLE`을 유지한다.
+- 향후 goal 전용 probe/smoke는 `scratch/goal_<id>/` 또는 `out/<run_id>/`에서 시작하고, 영구 보존 기준을 통과한 코드만 allowlist로 승격한다.
+
+## 2026-07-14 검색 폭주 P1 canonical clamp와 최종 6행 런
+
+- `orchestrator.py`에 typed image title canonical plan과 initial pre-execute clamp를 추가했다. 정확 작품명(+작가), 정확 작품명+노벨피아 2개 외 initial 분할/일반 검색은 제거된다.
+- `_execute_searches` 내부 title-led 재주입 뒤에도 initial call에 한해 다시 clamp한다. 통합 회귀에서 5개가 2개로 줄고 실제 호출도 2개였다.
+- `title_role=unknown` typed title은 no-work search prune에서도 canonical 2개만 보존한다. 이 예외는 검색에만 적용하고 promotion fail-close는 유지했다.
+- `agentic_pipeline.py` late OCR recall 중복 판정을 title substring에서 bare/title+author/platform canonical exact query equality로 변경했다.
+- URL prefetch 양성 회귀에 comment direct official URL과 exact selected-title search evidence를 추가했다.
+- `tests.test_title_lead_search_inferred_guard` `259 PASS`, BatchContext/publication `111 PASS`, publication/retrieval `54 PASS`, 관련 `py_compile` PASS다.
+- 최종 run `20260714_222518_895497`은 `6/6/0/0`, requested/effective `16/6`, dashboard ON, VLM/OCR READY, runtime GO로 완료됐다.
+- `11716480`은 inject `4→2`, pre-execute `12→2`, 실제 query log `2`, URL fetch `0`이다. manifest query는 retry/degraded 포함 `26→4`, wall time은 `679,426ms→432,840ms`다.
+- 실런 뒤 감사로 발견한 generic execute-search 재주입 edge는 추가 통합 회귀로 닫았다. 실런 W2에서는 이 edge가 발생하지 않아 실제 호출은 이미 2개였다.
+- VLM typed title의 `꿇은→끓은` 오독과 세 행의 런 간 PUBLISH/HOLD 변동을 확인했다. 따라서 의미 gate는 `NO-GO / REVIEW-LOCKED`다.
+- 최종 slang work DB는 중앙과 같은 `261/87/173/28`, 신규 term `0`; 중앙 SHA는 불변이고 writeback하지 않았다.
+
+## 2026-07-14 - BatchContext canonical post-commit 학습 보강
+
+- `expert_main`의 pre-final worker 학습을 제거하고 신규 canonical WAL의 `PUBLISH + publish_allowed=true` 행만 BatchContext에 반영했다. HOLD/ERROR_HOLD/candidate-only/duplicate commit은 no-op이다.
+- decoder alias, 검증된 author hint, confirmed character를 bounded `batch_context_learning_envelope_v1`으로 직렬화해 신규 commit과 restart replay의 recall을 맞췄다. raw prompt/snippet/fetched page/namu 본문은 저장하지 않는다.
+- envelope validator는 allowlist·개수·문자 길이를 제한하고 Pydantic assignment validation으로 post-construction 우회도 닫는다.
+- sparse replay와 병렬 완료를 input-index 연속 buffer로 drain해 final memory 적용 순서를 동일하게 했다. 기본 AgenticPipeline inline 학습은 명시적 opt-in으로 변경했다.
+- focused `111 PASS`, publication/retrieval adjacent `54 PASS`, 관련 `py_compile`을 통과했다. exact-once frozen harness의 `promotion_gate` SHA mismatch는 수정 전 parent RunSpec 고정 경계라 기능 PASS로 합산하지 않았다.
+- 같은 parallel wave에서 이미 실행 중인 worker의 context 관측 시점과 namu raw cache replay는 P2로 남는다. `REVIEW-LOCKED / full_scan_approval=false`는 유지한다.
+
+## 2026-07-14 - resolution-state publication 모순 P0 차단
+
+- run `20260714_160355_054970`의 publish row `76`건 중 `title_resolution_state=context_only`, `work_resolution=unresolved`인데도 공개된 행 `5`건을 확인했다. 대표 `11716475` 외에 `11711635`, `11708450`, `11706839`, `11705259`도 같은 shared-contract 결함이다.
+- `src/llm_batch/promotion_gate.py`는 빈 legacy 값만 호환하고 명시적 title state `resolved/direct_resolved`, work state `resolved` 외에는 `candidate_only`로 fail-close한다. current-work scope와 medium bridge가 이 invariant를 덮을 수 없다.
+- 현재 enum의 모든 HOLD title/work state와 미래 HOLD 값을 음성 회귀했고, canonical contract의 blocked-state 정규화·candidate ledger 미러링도 고정했다.
+- frozen checkpoint projection에서 모순 `5/5` 차단, resolved 양성 대조 `10/10` 게시 유지를 확인했다.
+- `tests.test_promotion_gate_contract 101 PASS`, publication/retrieval 인접 `108 PASS`, 독립 gate+convergence `143 PASS`, `py_compile`, `git diff --check`를 통과했다.
+- always-on regression의 `5 ERROR`는 native Codex executable SHA가 pinned trust anchor와 달라 발생한 환경 게이트 오류이며, 이번 기능 통과 수에 포함하지 않았다.
+- 원 full run은 20:23:54 KST에 `474 completed / 466 flushed / 8 pending / 0 failed`, `large_run_complete=false`로 partial 종료됐다. 종료 원인은 직접 기록되지 않아 `CAUSE_NOT_RECORDED`로 남기고 patch 전/후 의미 혼합을 피하려 동일 attempt resume하지 않는다.
+- fresh targeted 6건 run `20260714_204406_840036`은 requested `--parallel 16`(effective 6), dashboard ON, VLM/OCR required, attempt-local Slang DB로 `6/6/0/0`, runtime `GO`, exit `0`으로 완주했다.
+- `11716475`는 `지력 99 고능아인 척하기`로 wrong-work가 교정됐고, `11718099`·`11716480`·`11716448`은 candidate-only, `11718077`·`11714907`은 positive publish를 유지했다. convergence audit는 `GO / violation 0`이다.
+- Slang work DB 신규 term은 `0`; 기존 검증 alias `즉사무림`·`아생갤`만 관측됐고 일반어 `고능아`는 `store=false`였다.
+- 총 `680.8초`, 검색 요청 `80`(실검색 `73`)이며 `11716480`은 `26 queries / 25 degraded / 15 unrecovered`로 검색 thrash를 보였다. P0 공개 누수와 별개 P1로 남긴다. targeted 통과 뒤에도 `REVIEW-LOCKED / full_scan_approval=false`다.
+
+## 2026-07-14 - Slang DB 일반명사 오염 감사와 fail-close
+
+- Run `20260714_160355_054970`의 중앙/work Slang DB를 전수 대조해 신규 term `14`개 중 `지력`, `네이버`, `보내`, `세상`, `있었`, `연참`, `쿠크루`, `비처녀노` 8개를 명확한 오염으로 판정했다.
+- 작품 후보 confidence/source tier와 구조 점수를 alias relation 근거로 사용하던 경로, `store_in_slang_db=false`의 상관 필드 우회를 수정했다.
+- strict `slang_insight`, verified `confirmed_alias`, trusted registry exact pair만 저장하고 reference 역할은 CandidateLedger에만 보존하도록 계약을 강화했다.
+- 기존 중앙 DB는 자동 삭제하지 않고, slang `87`개 중 exact-pair 근거가 있는 `45`개만 다음 런 seed로 허용하며 `42`개를 재검증 격리했다.
+- 고정 checkpoint prefix `419`행 actual-manager replay에서 strict observation `36`, 중앙 대비 신규 term `6`, 확인된 오염 표면 `0`을 확인했다.
+- 독립 adversarial 재검토가 registry enum 교차·미등록 pair·다른 official title 결속·reference seed·invalid/malformed store를 음성 `17/17` 차단하고 정상 `6/6`을 허용했으며 write/seed 불일치 `0`을 확인했다.
+- `tests.test_slang_db 31 PASS`, tracked `tests.test_arbiter_curated_alias_guard 34 PASS`, health audit `18 PASS`, governance/transaction `20 PASS`, 관련 `py_compile`을 통과했다.
+- patch 전 process의 종료 work artifact는 `279 title / 96 slang / 186 pending / 26 conflict`, SHA-256 `2a7c43a1...7333b`다. 중앙은 `261/87/173/28`, `a8c3fb9b...cf10a`로 미변경이며 work artifact는 `NO-GO / QUARANTINE`, 중앙 승격은 `BLOCKED`다.
+- 보고서: `docs/devs/SLANG_DB_POLLUTION_AUDIT_KO_20260714.md`.
+
+## 2026-07-14 - RetrievalState live wiring 설계
+
+- typed `RetrievalState` 정적 계약과 live row 미배선 격차를 코드 근거로 재확인하고 배선 설계를 문서로 고정했다.
+- 단일 빌더(`search_health` 동일 소스 파생), `required`/`hard_blocked` 결정 지점(D1/D2), publish 개방 경로 전면 주입 원칙, `retrieval_state` 직렬화와 감사 정합 검사를 설계에 포함했다.
+- 검증 순서를 known-bad 4건 + positive 2건 targeted rerun → 200행 canary → random baseline `1,000+`로 고정하고 단계 통과와 승인의 분리를 명시했다.
+- 이 단계는 설계만 수행했다. 구현/런타임은 `NOT_IMPLEMENTED / NOT_RUN`이고 `NO-GO / REVIEW-LOCKED / full_scan_approval=false`는 유지된다.
+- 설계 문서: `docs/devs/RETRIEVAL_LIVE_WIRING_DESIGN_KO_20260714.md`.
+
 ## 2026-07-13 - GitHub README와 아키텍처 문서 재구성
 
 - 루트 `README.md`를 1,362줄의 장문 기능 사전에서 253줄의 사용자 중심 안내로 재구성했다. 장식용 이모지, 오래된 `NEW` 표기, 코드 줄 수, 중복 전문가 설명과 P0~P4 장문 계보를 제거하고 상세 문서로 연결했다.
@@ -13034,3 +13110,11 @@
 - 라이브 배선(`GroundingState.retrieval` 채우기)은 `NOT_WIRED`로 두었고, 진행 중 대형 런/`slang_db`/result는 비침습이다.
 - 진행 계약: `GOAL_PIPELINE_IMPROVEMENT_TESTDRIVEN_20260711.md`에 P1~P5 백로그를 남겼다.
 - Gate는 P0 typed 검색 fail-close `GO(gate-only)`, 라이브 배선 `NOT_WIRED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`다.
+
+## 2026-07-14 기본 입력 JSONL 동일 중복 호환성 회귀 수정
+
+- `expert_main.py`의 2026-07-13 중복 post fail-fast가 기존 `test01.jsonl`의 페이지 겹침형 동일 행까지 차단하던 회귀를 수정했다.
+- 동일 `post_id`의 정규화 payload가 dict-equal이면 첫 행을 유지하고, 다른 payload면 `first_line`/`duplicate_line`과 함께 계속 fail-closed 한다.
+- 기본 입력 전수 감사 결과 post `104517`, unique `104502`, 동일 중복 행/ID `15/14`, 상충 중복 `0`이다.
+- focused unit `2 tests PASS`, loader 모듈 `58 tests PASS`, comment metadata 인접 회귀 포함 `159 tests PASS`, `py_compile PASS`, 실제 기본 입력 loader `104502`건 통과를 확인했다.
+- 이 검증은 입력 preflight 복구이며 104,502건 runtime/semantic/full-scan 승인이 아니다. `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 유지한다.

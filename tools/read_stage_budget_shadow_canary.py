@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from src.llm_batch.stage_budget_canary import read_shadow_canary
+from src.llm_batch.runtime.stage_budget_canary import read_shadow_canary
 
 
 def read(path: Path) -> dict:

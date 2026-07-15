@@ -5,7 +5,7 @@ import json
 from types import SimpleNamespace
 import unittest
 
-from src.llm_batch.candidate_generation import (
+from src.llm_batch.grounding.candidate_generation import (
     CANDIDATE_STAGE_RECEIPT_VERSION,
     CANDIDATE_STAGE_RULES,
     build_candidate_stage_receipt,

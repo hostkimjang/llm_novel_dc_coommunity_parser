@@ -3,6 +3,13 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from llm_batch.promotion_gate import (
+    EvidenceRecord,
+    GroundingState,
+    ScopeState,
+    apply_publish_contract,
+    evaluate_publish_contract,
+)
 from tools.audit_expert_run_health import (
     _build_flush_integrity,
     _build_publication_contract_convergence_gate,
@@ -449,54 +456,50 @@ class AuditExpertRunHealthTest(unittest.TestCase):
         self.assertEqual(trace["observed_elapsed_seconds"], 60.0)
 
     def test_publication_contract_convergence_gate_reports_go_for_converged_result(self):
-        decision = {
-            "status": "publish",
-            "publish_allowed": True,
-            "official_title": "테라포밍",
-            "official_url": "https://novel.munpia.com/416826",
-            "candidate_preserved": False,
-            "reason_codes": ["scope_current_work"],
-            "bypassed_gate": False,
-        }
-        trace = {
-            "pre_gate_candidate": {
-                "official_title": "테라포밍",
-                "official_url": "https://novel.munpia.com/416826",
-            },
-            "gate_decision": decision,
-            "post_gate_identity": {
-                "official_title": "테라포밍",
-                "official_url": "https://novel.munpia.com/416826",
-            },
-        }
-        publish_ledger = {
-            "candidate_preservation": trace["pre_gate_candidate"],
-            "public_publish": trace["post_gate_identity"],
-            "gate_decision": decision,
-        }
+        title = "테라포밍"
+        url = "https://novel.munpia.com/416826"
+        state = GroundingState(
+            post_id=11660237,
+            candidate_title=title,
+            candidate_url=url,
+            source="publication_contract_test",
+            official_title_exists=True,
+            row_discusses_work_as_work=True,
+            title_resolution_state="resolved",
+            work_resolution="resolved",
+            scope=ScopeState(
+                scope_kind="current_work",
+                confidence="high",
+                direct_bridge_sources=["explicit_alias_relation", "official_detail_url"],
+            ),
+        )
+        evidence = [
+            EvidenceRecord(
+                kind="alias_bridge",
+                source_path_or_snippet=title,
+                supports_publish=True,
+                reason_code="explicit_alias_relation",
+                candidate_title=title,
+            ),
+            EvidenceRecord(
+                kind="official_detail_url",
+                source_path_or_snippet=url,
+                reason_code="official_detail_url",
+                candidate_title=title,
+                candidate_url=url,
+                title_url_match=True,
+            ),
+        ]
+        identity = {"novel_identity": {"confidence": "High"}}
+        apply_publish_contract(identity, evaluate_publish_contract(state, evidence))
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "result.json"
             path.write_text(
                 json.dumps(
                     [
                         {
-                            "post_id": 11660237,
-                            "analysis_result": {
-                                "identity": {
-                                    "novel_identity": {
-                                        "official_title": "테라포밍",
-                                        "heretic_url": "https://novel.munpia.com/416826",
-                                    },
-                                    "promotion_decision": decision,
-                                    "publish_contract_trace": trace,
-                                    "publish_ledger": publish_ledger,
-                                    "candidate_ledger": {
-                                        "promotion_decision": decision,
-                                        "publish_contract_trace": trace,
-                                        "publish_ledger": publish_ledger,
-                                    },
-                                }
-                            },
+                            "post_id": state.post_id,
+                            "analysis_result": {"identity": identity},
                         }
                     ],
                     ensure_ascii=False,

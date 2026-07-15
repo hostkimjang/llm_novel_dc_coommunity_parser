@@ -9,7 +9,11 @@ from tools.audit_regression_safe_golden import (
     expected_hypothesis_resolved_by_direct_image,
     positive_image_boundary_preserved_unresolved,
 )
-from tools.bootstrap_regression_safe_grounding import bootstrap, compare_collateral
+from tools.bootstrap_regression_safe_grounding import (
+    bootstrap,
+    compare_collateral,
+    expected_title_matches,
+)
 from tools.compare_projection_collateral import build_compare, write_markdown
 
 
@@ -39,6 +43,19 @@ def result_row(post_id: int, title: str, official_title=None, url=None) -> dict:
 
 
 class RegressionSafeGroundingBootstrapTest(unittest.TestCase):
+    def test_collateral_expected_title_keeps_leading_bracket_component(self):
+        expected = "[림월드]변방계에서 회귀자로 살아남기"
+
+        self.assertTrue(expected_title_matches(expected, expected))
+        self.assertFalse(
+            expected_title_matches(expected, "변방계에서 회귀자로 살아남기")
+        )
+        self.assertFalse(expected_title_matches(expected, f"{expected} 외전"))
+        self.assertFalse(
+            expected_title_matches("[TS][림월드]작품명", "[TS]작품명")
+        )
+        self.assertTrue(expected_title_matches("작품명", "[완결]작품명"))
+
     def test_bootstrap_freezes_panel_and_clean_golden_rows(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -126,7 +143,7 @@ class RegressionSafeGroundingBootstrapTest(unittest.TestCase):
         ]
         after = [
             result_row(1, "resolved changed", "B"),
-            result_row(2, "recall improved", "주서연(정답작)"),
+            result_row(2, "recall improved", "정답작"),
             result_row(3, "resolved dropped", None),
         ]
         report = compare_collateral(

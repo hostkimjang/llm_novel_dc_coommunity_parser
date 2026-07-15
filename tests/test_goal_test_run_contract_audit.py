@@ -58,6 +58,21 @@ class GoalTestRunContractAuditTest(unittest.TestCase):
         self.assertIsNone(uncapped["model_parallel_max"])
         self.assertEqual(uncapped["requested_parallel"], 64)
 
+    def test_default_vllm_parallel_policy_model_matches_runtime_default(self):
+        mod = load_expert_main_module()
+        expected = "bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4"
+
+        with (
+            mock.patch.object(mod._CLI_ARGS, "server_type", "vllm"),
+            mock.patch.object(mod._CLI_ARGS, "llm_model", None),
+            mock.patch.dict(mod.os.environ, {}, clear=True),
+        ):
+            resolved = mod._resolve_model_for_parallel_policy()
+
+        self.assertEqual(mod._default_llm_model_for_server_type("vllm"), expected)
+        self.assertEqual(resolved, expected)
+        self.assertIsNone(mod._model_parallel_max(resolved))
+
     def test_default_process_patterns_do_not_match_codex_openai_processes(self):
         mod = load_audit_module()
         self.assertNotIn("openai", mod.DEFAULT_PROCESS_PATTERNS)

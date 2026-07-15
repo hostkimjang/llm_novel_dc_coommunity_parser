@@ -24,7 +24,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from src.llm_batch.publication_commit import (  # noqa: E402
+from src.llm_batch.ledger.publication_commit import (  # noqa: E402
     PUBLICATION_COMMIT_JOURNAL_SCHEMA,
     PUBLICATION_COMMIT_OWNER,
     PUBLICATION_COMMIT_SCHEMA,

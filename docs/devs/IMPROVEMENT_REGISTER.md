@@ -1,5 +1,102 @@
 # 개선 등록부 (Improvement Register)
 
+## IMP-20260715-SOURCE-LAYOUT - 기능별 패키지·프롬프트 정리
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| 루트 파일 폭증 | `DONE` | `src/llm_batch` 루트 Python `40→4`, 36개 모듈을 7개 기능 패키지로 이동 |
+| import 정합성 | `PASS` | 저장소 import·patch target 갱신, dual namespace smoke와 `compileall` PASS |
+| 한국어 설명 | `PASS` | 신규 package와 핵심 진입 모듈에 책임·의존·fail-close docstring 추가 |
+| prompt 정리 | `STATIC_PASS` | dead source 상수 15,780자 제거, 실제 입력 장식 Unicode `So=0`; provider token `NOT_MEASURED` |
+| dangling tests | `DONE` | 제거된 도구만 참조한 2개 테스트·2,661줄과 allowlist 예외 제거 |
+| 핵심 회귀 | `PASS` | 구조/runtime 160, M1 foundation 120 PASS |
+| 의미 회귀 | `OPEN / 3 FAIL` | known-title abbreviation 3건; 구조 정리와 분리해 source-backed 수정 필요 |
+| 대형 monolith | `OPEN` | `agentic_pipeline.py`와 482-test rework suite를 별도 책임 분할 |
+| 승인 경계 | `UNCHANGED` | `REVIEW-LOCKED / full_scan_approval=false`, actual `null/NOT_ESTIMABLE` |
+
+## IMP-20260715-CODE-ARTIFACT-LIFECYCLE - goal 코드 폭증 억제
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| 1차 물리 정리 | `DONE` | 코드 41개·약 16,046줄 제거, Python `339→299`, JS `1→0` |
+| 메인/acceptance 보존 | `PASS` | `expert_main.py`, `src/llm_batch/**`, Architecture V2와 현재 gate 의존 체인 유지 |
+| 재발 방지 | `POLICY_FIXED` | scratch/out 선행, 4개 영구 보존 기준, allowlist 승격 규칙 문서화 |
+| terminal ledger 중복 | `DONE` | 자기 테스트 외 참조 없는 v1 제거, Loop642/643 정본 v2 보존 |
+| 활성 untracked 체인 | `DEFERRED` | Loop641~643 goal 종료 후 나머지 trust-anchor/adjudication 체인 재감사 |
+| 대형 회귀 monolith | `OPEN` | `test_agentic_pipeline_rework.py`를 삭제하지 않고 별도 분할 |
+| 승인 경계 | `UNCHANGED` | `REVIEW-LOCKED / full_scan_approval=false`, actual `null/NOT_ESTIMABLE` |
+
+## 2026-07-14 검색 폭주 P1 최종 상태
+
+| ID | 항목 | 상태 | 근거 / 다음 조치 |
+|---|---|---|---|
+| SEARCH-P1-EXACT-CLAMP | typed image title initial query를 canonical 2개로 고정 | `TARGETED_PASS` | 실런 inject `4→2`, pre-execute `12→2`, actual log 2; generic execute 내부 재주입 통합 회귀 `5→2` |
+| SEARCH-P1-UNKNOWN-PERMIT | unknown role exact 검색과 promotion 자격 분리 | `TARGETED_PASS` | canonical 2개만 no-work 예외, review 변형 3개 차단, promotion fail-close 유지 |
+| SEARCH-P1-PREFETCH | unrelated/identity-less official URL의 prefetch 차단 | `TARGETED_PASS` | `11716480` heretic fetch 0, 전체 URL fetch 0; direct/comment/exact-title 양성 회귀 PASS |
+| SEARCH-P2-TYPED-OCR-VARIANT | typed title 오독 변형 보존 | `OPEN` | `꿇은→끓은`으로 exact query가 오타에 고정됨. raw OCR와 충돌 시 candidate-only 다중 표면 정책 필요 |
+| SEMANTIC-P1-RUN-VARIANCE | 같은 6행의 PUBLISH/HOLD 변동 | `OPEN / REVIEW-LOCKED` | `11718099`, `11716475`, `11716448` 변동. source-backed 재현성 개선 전 승인 금지 |
+| SLANG-P0-STRICT-PAIR | 일반명사/비-pair slang 저장 차단 | `TARGETED_PASS / PROMOTION_HOLD` | 최종 work DB 신규 term 0, 중앙 SHA 불변. semantic approval 전 writeback 금지 |
+| CANARY-200 | 200행 통합 canary | `NOT_RUN` | RetrievalState live wiring, durable receipt, OCR variant, semantic variance가 선행 조건 |
+
+## IMP-20260714-BATCH-CONTEXT-POST-COMMIT - canonical PUBLISH-only ordered learning
+
+| 항목 | 확인 상태 | 영향 | 다음 증거 |
+| --- | --- | --- | --- |
+| 학습 소유권 | expert_main worker inline OFF, 신규 canonical PUBLISH만 반영 | HOLD/REJECT alias 전파 차단 | targeted runtime memory trace |
+| semantic envelope | decoder alias·author·character allowlist, raw prompt/snippet/page/namu 제외 | replay recall과 정보 경계 동시 보존 | WAL readback canary |
+| validator | 개수·길이 제한, assignment validation | post-construction raw payload 우회 차단 | malformed envelope regression |
+| 순서 | sparse replay·신규 commit을 input-index 연속 drain | final memory/restart 순서 정합 | forced out-of-order runtime |
+| 기본값 | AgenticPipeline inline learning 명시적 opt-in | publication 없는 호출자의 선행 mutation 방지 | caller inventory 유지 |
+| 회귀 | focused `111`, adjacent `54`, compile PASS | 코드·계약 범위 `GO` | search-thrash 수정 후 exact targeted rerun |
+| 잔여 | same-wave worker 관측 시점, namu raw cache replay | 완전한 병렬 결정성은 미증명 | deterministic epoch/snapshot P2 |
+| 승인 | `POST_COMMIT_ORDERED_PASS / P2_REMAINS` | `REVIEW-LOCKED`, `full_scan_approval=false` | 200행 canary 전 blocker 해소 |
+
+## IMP-20260714-RESOLUTION-STATE-PUBLISH-FAIL-CLOSE - explicit HOLD 상태 공개 모순 차단
+
+| 항목 | 확인 상태 | 영향 | 다음 증거 |
+| --- | --- | --- | --- |
+| 실데이터 결함 | publish `76`건 중 `context_only/unresolved + publish` `5`건 | wrong-work/문장형 후보가 public title로 승격 | fresh targeted exact row |
+| shared gate | 명시적 title은 `resolved/direct_resolved`, work는 `resolved`만 publish; 빈 legacy만 호환 | current-work scope/bridge가 HOLD state를 덮지 못함 | 200행 canary |
+| 후보 보존 | 차단 시 `candidate_only`, canonical state normalization, identity/ledger blocker mirror | precision 보호, 후보 recall은 review queue로 유지 | blocked candidate review |
+| frozen projection | bad `5/5` 차단, resolved positive `10/10` 유지 | code-slice 방향 `GO` | fresh runtime equivalence |
+| 회귀 | focused `101`, adjacent `108`, independent `143` PASS | 정적/계약 범위 `GO` | targeted semantic audit |
+| 환경 게이트 | always-on `5 ERROR / 1 SKIP`: native Codex SHA와 pinned anchor 불일치 | 이번 patch 실패와 분리, 전체 suite GO 아님 | trust anchor 의도적 갱신 여부 별도 결정 |
+| 이전 full run | `474/466/8/0`, stopped partial, cause not recorded | 동일 attempt resume 시 구/신 의미 혼합 위험 | immutable evidence only |
+| fresh targeted | `6/6/0/0 GO`; wrong-work 교정 1, unsafe 차단 3, positive 유지 2 | 코드·소규모 runtime 범위 `GO` | 200행 canary |
+| 검색 비용 | 총 80 request/73 actual; `11716480` 26 queries·25 degraded·15 unrecovered | P0 leak는 차단됐지만 비용 thrash 잔존 | bounded query/official-fetch cap |
+| 승인 | targeted 통과, semantic convergence `GO/0` | `REVIEW-LOCKED`, `full_scan_approval=false` 유지 | 200행 canary |
+
+## IMP-20260714-SLANG-DB-POLLUTION-FAIL-CLOSE - 일반명사·비별칭 저장 및 seed 격리
+
+| 항목 | 확인 상태 | 영향 | 다음 증거 |
+| --- | --- | --- | --- |
+| work artifact 증분 | 신규 term `14`, 오염 `8`(`57.1%`), 모호 `2` | current work DB 중앙 승격 `NO-GO` | patched fresh targeted diff |
+| 쓰기 원인 | High/Medium·official-detail 후보를 alias relation으로 오인, `store=false` 상관 경로 우회 가능 | 일반명사도 `slang/pending` 유입 | strict write contract regression |
+| 신규 write guard | strict contract·verified flag·실제 registry mapping exact pair만 허용, reference 역할 mutation 금지 | 고정 prefix `419`행 observation `36`, 신규 term `6`, 확인된 오염 `0` | 200행 canary 신규 오염 `0` |
+| 기존 seed guard | 중앙 slang `87` 중 `45` 허용·`42` 격리, 자동 삭제 없음 | 구조 점수-only legacy entry의 BatchContext 재주입 차단 | source row 수동 review proposal |
+| 정상 약칭 | 검증 근거가 있는 `아생갤`, `즉사무림`, `망겜성`, `케문제`, `주술초월` 보존 | unverified 형태 후보는 CandidateLedger HOLD | targeted positive rerun |
+| 독립 공격 재검토 | 음성 `17/17` 차단, 정상 `6/6`, write/seed mismatch `0`, focused `40/40 PASS` | exact-pair gate 코드 범위 `GO` | fresh targeted/canary는 별도 |
+| 런타임 적용 | patch 전 process는 partial 종료; work `279/96/186/26` 격리 | 중앙 DB 미변경, 기존 artifact 오염 확정 | fresh targeted process |
+| 승인 | `UNIT_VERIFIED / PREFIX_REPLAY_PASS`, targeted 신규 term `0` | `REVIEW-LOCKED`, `full_scan_approval=false` | 200행 canary |
+
+상세 보고서: [2026-07-14 Slang DB 오염 감사와 fail-close 보강](SLANG_DB_POLLUTION_AUDIT_KO_20260714.md)
+
+## IMP-20260714-LIVE-RUN-APPLICATION-REALITY - 104,502행 실행의 개선 적용·운영 현실 감사
+
+| 항목 | 확인 상태 | 영향 | 다음 증거 |
+| --- | --- | --- | --- |
+| 런타임/저장 무결성 | `STOPPED_PARTIAL`, `474/466/8/0`, failure `0`, cause not recorded | 증거 보존; 동일 attempt resume 금지 | fresh bounded run |
+| 검색 품질 | `SEARCH_DEGRADED 115/162`, gate `REVIEW` | 의미 품질·공개 승인 blocker | upstream 복구 뒤 degraded row 재처리 |
+| 실제 처리량 | 17:50 KST `209/104,502`, ETA `36.6일`, token `22.8M` | 현 full run 계속은 낮은 정보 이득 | bounded canary와 비용 trace 비교 |
+| P0 의미 gate | 같은 모순 `5/76`; frozen projection `5/5` 차단 | 기존 result는 unsafe candidate 포함 | fresh targeted 6건 판독 |
+| RetrievalState | 정적 계약만 존재, live row 미연결 | degraded retrieval 자동 차단 불가 | live wiring trace와 regression |
+| BatchContextMemory | PUBLISH-only post-commit·input-order drain 구현; same-wave 관측 P2 잔존 | pre-final alias 오염 차단, 완전한 병렬 결정성 미증명 | forced out-of-order targeted trace |
+| model/cap lineage | actual 26B-A4B, cap metadata E4B | config hash/audit 계보 오염 | default CLI binding test |
+| Architecture V2 effect | ledger/measurement/early route OFF | 개선률 `NOT_ESTIMABLE` | source-backed fresh pair |
+| 운영 승인 | `NO-GO / REVIEW-LOCKED` | `full_scan_approval=false` 유지 | targeted→200→random 1,000+→high-risk |
+
+상세 보고서: [2026-07-14 LLM 파이프라인 라이브 런 종료 스냅샷과 보강 검토](LIVE_PIPELINE_RUN_REVIEW_KO_20260714.md)
+
 ## IMP-20260712-P3V3-P4V20-EXECUTION-ENVELOPE - 분모 정책과 E2E 지연 재판독
 
 | 항목 | 구현 | 실측 | 운영 적용 | 다음 증거 |
@@ -220,7 +317,7 @@ P3 분모 hash-binding과 P4 execution envelope은 더 이상 구조 부채가 �
 | --- | --- | --- | --- |
 | Promotion Contract v2 | IMPLEMENTED_PARTIAL | typed/frozen contract, single apply boundary, Loop643 Golden `18/18` | legacy mutation 정적 강제와 terminal envelope 보강 |
 | Candidate selection | NO-GO_SINGLE_CANDIDATE | gate는 선택된 한 후보를 판정 | CandidateSet + candidate-conditioned global Select |
-| Search decision binding | PARTIAL_GATE_ONLY | typed gate + baseline replay `5/5` + static unsafe `1→0`; search blocker `5→5` | live retrieval 배선과 실제 after runtime |
+| Search decision binding | PARTIAL_GATE_ONLY | typed gate + baseline replay `5/5` + static unsafe `1→0`; search blocker `5→5` | live retrieval 배선과 실제 after runtime — 배선 설계: `RETRIEVAL_LIVE_WIRING_DESIGN_KO_20260714.md` |
 | Claude calibrated/NIL | PROPOSED_NEEDS_EVENT_CONTRACT | commit `7ba58a454`, shadow-first 합의; Opus 감사에서 후보/NIL 정답 사건과 ABSTAIN 행동 분리 필요 확인 | candidate-set recall 선행, `Y={candidate_id,NIL}` 및 독립 calibration/최종 동결 gate 고정 |
 | Fable provenance | AUDIT_ONLY_CONFIRMED | Loop643 `HARD_UNSAFE 0`, `5/5 PASS`, provider 400 note | 설계 originator로 과대표현 금지 |
 | Active 104k runtime | RUNNING_NOT_APPROVAL | 12:51 snapshot `138/129/9/0`, parallel `16/16`, naive linear `38.9d` | mid-run 개입 금지, 완료 후 독립 gate |

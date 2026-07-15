@@ -8,6 +8,10 @@
 4. [검증 결과](VERIFICATION_RESULTS.md): 실행한 테스트와 증거 경계
 5. [실제 입력 준비와 출시 판정 런북](LAUNCH_READINESS_RUNBOOK_KO.md): packet, preflight, fresh pair 순서
 6. [LLM 파이프라인 개선 현황](LLM_PIPELINE_IMPROVEMENT_STATUS_KO_20260712.md): P2/P3/P4 계보와 정확도·비용 지표 설명
+7. [2026-07-14 라이브 런 중간 감사](LIVE_PIPELINE_RUN_REVIEW_KO_20260714.md): 현재 104,502행 실행의 적용 경로, 검색 저하, 의미 blocker, bounded stop/repair 판정
+8. [2026-07-14 Slang DB 오염 감사](SLANG_DB_POLLUTION_AUDIT_KO_20260714.md): 일반명사·비별칭 work delta, exact alias-pair write/seed fail-close, 중앙 승격 gate
+9. [Goal 코드 산출물 정리 정책](CODE_ARTIFACT_CLEANUP_POLICY_KO.md): 일회성 smoke/builder 수명주기, Git allowlist 승격 기준, 2026-07-15 정리 결과
+10. [`src/llm_batch` 소스 구조](SOURCE_LAYOUT_KO.md): 기능별 패키지 경계, import 이동 표, 한국어 주석·프롬프트 규칙
 
 현재 상태는 범위별로 다르다.
 
@@ -17,6 +21,8 @@
 | 실제 효과·M2 | `ACTUAL_BLOCKED_HANDOFF / NOT_COMPLETE` | policy v3, source-backed DEV/CAL/FROZEN, 10+6 packet, fresh pair가 없어 동일 external blocker가 3회 확인됐다. |
 | 실제 지표 | `null / NOT_ESTIMABLE` | 정확도·비용·지연 개선률을 주장할 actual artifact가 없다. |
 | 운영 승인 | `REVIEW-LOCKED / full_scan_approval=false` | cheap routing과 전체 스캔은 열지 않는다. |
+| 2026-07-14 라이브 런 | `RUNNING_DEGRADED / NO-GO` | 저장 무결성은 진행 중 정합이지만 검색 저하와 의미·비용 blocker 때문에 현재 full run 계속은 권고하지 않는다. |
+| current Slang work artifact | `NO-GO / QUARANTINE` | 중앙 DB는 미변경이며 patched fresh canary 전에는 work artifact를 승격하지 않는다. |
 
 ### 현재 계약을 읽을 때의 구분
 
@@ -26,7 +32,7 @@
 - `FULL_EXPERT_REQUIRED`/`CHEAP_RULE_ELIGIBLE`: shadow 관측 값이며 운영 라우팅 허가가 아니다.
 - 실제 run은 `--parallel 16`, dashboard ON을 기본으로 하고 manifest의 requested/effective parallel을 함께 확인한다.
 
-이 디렉터리는 개발 TODO, 기능 개선, 런 리뷰, 체크리스트, 검증 결과를 추적하는 문서 허브다. 최신 독자용 정본은 위 1~6번이며, `LLM_PIPELINE_IMPROVEMENT_READER_GUIDE_KO_20260711.md`는 P3/P4 v14 시점의 역사적 설명으로만 사용한다.
+이 디렉터리는 개발 TODO, 기능 개선, 런 리뷰, 체크리스트, 검증 결과를 추적하는 문서 허브다. 최신 독자용 정본은 위 1~10번이며, `LLM_PIPELINE_IMPROVEMENT_READER_GUIDE_KO_20260711.md`는 P3/P4 v14 시점의 역사적 설명으로만 사용한다.
 
 ## 이전 개선 상태 — 2026-07-12 P4 선택적 비용 라우팅 그림자 v3
 

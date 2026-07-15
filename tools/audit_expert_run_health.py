@@ -688,15 +688,49 @@ def _audit_slang(
 
     sys.path.insert(0, str(repo / "src"))
     from llm_batch.agentic_pipeline import AgenticPipeline  # noqa: WPS433
-    from llm_batch.slang_db import _is_exact_title_alias, _looks_sentence_like_term  # noqa: WPS433
+    from llm_batch.slang.slang_db import (  # noqa: WPS433
+        SlangDBManager,
+        _is_exact_title_alias,
+        _looks_sentence_like_term,
+        slang_db_alias_seed_is_safe,
+    )
 
     pipe = object.__new__(AgenticPipeline)
+    strict_manager = SlangDBManager(
+        path=repo / "__audit_no_write_slang_db__.json",
+        run_id="health-audit",
+        enabled=False,
+    )
     slang_all: List[Dict[str, Any]] = []
     old_store: List[Dict[str, Any]] = []
     new_store: List[Dict[str, Any]] = []
     blocked: List[Dict[str, Any]] = []
+    strict_observations: List[Dict[str, Any]] = []
+    strict_observation_errors: List[Dict[str, Any]] = []
 
     for row in rows:
+        result = _result_from_row(row)
+        try:
+            manager_observations = strict_manager._extract_observations(result)
+        except Exception as exc:
+            strict_observation_errors.append(
+                {
+                    "post_id": row.get("post_id"),
+                    "error": f"{type(exc).__name__}: {str(exc)[:300]}",
+                }
+            )
+            manager_observations = []
+        for observation in manager_observations:
+            strict_observations.append(
+                {
+                    "post_id": row.get("post_id"),
+                    "official_title": observation.get("official_title"),
+                    "term": observation.get("term"),
+                    "bucket": observation.get("bucket"),
+                    "sources": observation.get("sources"),
+                }
+            )
+
         identity = _identity_from_row(row)
         slang = identity.get("slang_insight")
         if not isinstance(slang, dict):
@@ -704,7 +738,6 @@ def _audit_slang(
         novel_identity = identity.get("novel_identity")
         if not isinstance(novel_identity, dict):
             novel_identity = {}
-        result = _result_from_row(row)
         contract = pipe._infer_slang_alias_contract(
             official_title=novel_identity.get("official_title"),
             vf_slang=slang,
@@ -741,6 +774,7 @@ def _audit_slang(
 
     slang_db_path = repo / "slang_db" / "slang_db.json"
     db_bad: List[Dict[str, Any]] = []
+    db_seed_quarantined: List[Dict[str, Any]] = []
     db_term_count = 0
     db_title_count = 0
     if slang_db_path.exists():
@@ -765,20 +799,53 @@ def _audit_slang(
                                 "count": slang_row.get("count"),
                             }
                         )
+                    seed_audit_error = None
+                    try:
+                        seed_safe = slang_db_alias_seed_is_safe(str(title), slang_row, entry)
+                    except Exception as exc:
+                        seed_safe = False
+                        seed_audit_error = f"{type(exc).__name__}: {str(exc)[:300]}"
+                    if not seed_safe:
+                        db_seed_quarantined.append(
+                            {
+                                "title": title,
+                                "term": term,
+                                "sources": slang_row.get("sources"),
+                                "count": slang_row.get("count"),
+                                "audit_error": seed_audit_error,
+                            }
+                        )
 
     return {
         "slang_insight_count": len(slang_all),
         "old_store_true_count": len(old_store),
+        "inferred_contract_store_true_count": len(new_store),
+        "inferred_contract_metric_scope": "agentic_pipeline_reinfer_not_manager_write",
         "new_store_true_after_patch_count": len(new_store),
         "old_store_true_blocked_by_patch_count": len(blocked),
         "blocked_reason_counts": dict(Counter(x["new_store_reason"] for x in blocked).most_common()),
         "blocked_samples": blocked[:80],
         "kept_samples": new_store[:80],
+        "strict_manager": {
+            "observation_count": len(strict_observations),
+            "post_count": len({str(item.get("post_id")) for item in strict_observations}),
+            "slang_observation_count": sum(item.get("bucket") == "slang" for item in strict_observations),
+            "pending_observation_count": sum(item.get("bucket") == "pending" for item in strict_observations),
+            "family_alias_observation_count": sum(
+                item.get("bucket") == "family_alias" for item in strict_observations
+            ),
+            "samples": strict_observations[:80],
+            "error_count": len(strict_observation_errors),
+            "error_samples": strict_observation_errors[:20],
+        },
         "slang_db": {
             "title_count": db_title_count,
             "slang_term_count": db_term_count,
             "sentence_or_exact_bad_remaining": len(db_bad),
             "bad_remaining_samples": db_bad[:80],
+            "seed_safe_count": db_term_count - len(db_seed_quarantined),
+            "seed_quarantined_count": len(db_seed_quarantined),
+            "seed_quarantine_samples": db_seed_quarantined[:80],
         },
     }
 
@@ -1412,7 +1479,21 @@ def main() -> None:
         f"{audit['slang']['new_store_true_after_patch_count']}/"
         f"{audit['slang']['old_store_true_blocked_by_patch_count']}"
     )
+    _strict_slang = audit["slang"]["strict_manager"]
+    print(
+        "slang_strict_manager observations/posts/slang/pending/errors="
+        f"{_strict_slang['observation_count']}/"
+        f"{_strict_slang['post_count']}/"
+        f"{_strict_slang['slang_observation_count']}/"
+        f"{_strict_slang['pending_observation_count']}/"
+        f"{_strict_slang['error_count']}"
+    )
     print(f"slang_db_bad_remaining={audit['slang']['slang_db']['sentence_or_exact_bad_remaining']}")
+    print(
+        "slang_db_seed_safe/quarantined="
+        f"{audit['slang']['slang_db']['seed_safe_count']}/"
+        f"{audit['slang']['slang_db']['seed_quarantined_count']}"
+    )
     print(f"search_evidence={audit['search_evidence']['gate']} blockers={audit['search_evidence']['blockers']}")
     print(
         "publication_contract_convergence="

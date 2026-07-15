@@ -9,18 +9,18 @@ import time
 import unittest
 
 from llm_batch.agentic_pipeline import AgenticPipeline
-from llm_batch.framed_wal import FramedWAL
-from llm_batch.local_stage_gate import FileSingleflightLease, StageLimiterConfig
-from llm_batch.pipeline_stage_runtime_adapter import (
+from llm_batch.ledger.framed_wal import FramedWAL
+from llm_batch.runtime.local_stage_gate import FileSingleflightLease, StageLimiterConfig
+from llm_batch.runtime.pipeline_stage_runtime_adapter import (
     PipelineSearchRuntimeShadowAdapter,
     PipelineSearchRuntimeShadowConfig,
     PipelineStageRuntimeAdapterError,
     PipelineStageRuntimeMeasurementError,
     read_pipeline_search_runtime_measurement,
 )
-from llm_batch.shared_cache_contract import FileSharedCacheAdapter
-from llm_batch.shared_result_singleflight import FileSharedResultSingleflight
-from llm_batch.stage_budget import ArtifactRef, StageBudgetBinding
+from llm_batch.runtime.shared_cache_contract import FileSharedCacheAdapter
+from llm_batch.runtime.shared_result_singleflight import FileSharedResultSingleflight
+from llm_batch.runtime.stage_budget import ArtifactRef, StageBudgetBinding
 
 
 class DummyLLM:

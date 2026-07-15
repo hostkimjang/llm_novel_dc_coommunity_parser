@@ -1,6 +1,8 @@
 # Loop640 full375 live run health latest
 
-이 문서는 Loop640 background full375 run `20260710_005902_590310`의 최신 live health snapshot이다. 완료 보고서가 아니라 진행 중 감사 기록이다.
+> Continuation override: 이 문서는 `2026-07-10T02:49:59`의 historical live snapshot이다. 이후 manifest는 `75/68/7/0`, checkpoint completed `75`, result `68`, pending `7`, `large_run_complete=false`까지 전진했고 현재 관련 process/dashboard는 종료 상태다. 기존 Loop640 output 재실행은 금지하며, 별도 checkpoint 복구와 새 residual output을 사용한다. 실행 prompt는 `docs/devs/LOOP640_RECOVERY_GPT56_CONTINUOUS_GOAL_PROMPT.md`다.
+
+이 문서는 Loop640 background full375 run `20260710_005902_590310`의 당시 live health snapshot이다. 완료 보고서가 아니라 진행 중 감사 기록이다.
 
 ## 요약
 

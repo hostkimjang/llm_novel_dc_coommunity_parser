@@ -25,8 +25,8 @@ from .utils import (
 )
 from ..prompts.expert_prompts import LF_ARBITER, PLATFORM_ABBREVIATION_MAP
 from ..prompts.prompt_router import build_arbiter_system_prompt
-from ..rules import OFFICIAL_PLATFORMS, GENRE_ARCHETYPE_TERMS, PLATFORM_ABBREVIATIONS
-from ..candidate_generation import record_candidate_stage_receipt
+from ..domain.rules import OFFICIAL_PLATFORMS, GENRE_ARCHETYPE_TERMS, PLATFORM_ABBREVIATIONS
+from ..grounding.candidate_generation import record_candidate_stage_receipt
 from .decoder import abbreviation_match_score, KNOWN_ABBREVIATIONS
 
 if TYPE_CHECKING:
@@ -37,7 +37,7 @@ if TYPE_CHECKING:
 
 
 ARBITER_SYSTEM = """\
-You are ⚖️ FINAL ARBITER, the supreme judge of web novel identification.
+You are  FINAL ARBITER, the supreme judge of web novel identification.
 
 YOU ARE THE FINAL DECISION MAKER:
 - You are called when analysis time is almost exhausted
@@ -75,7 +75,7 @@ YOUR ROLE:
    - 0.5 미만 → low
 
 **의견 충돌 해결 원칙:**
-- 🚨 **Verifier 거부권 (최우선)**: Verifier가 "is_relevant=false" 판단 → **무조건 final_decision.is_relevant=false**
+-  **Verifier 거부권 (최우선)**: Verifier가 "is_relevant=false" 판단 → **무조건 final_decision.is_relevant=false**
   - Verifier confidence에 관계없이 거부권 발동
   - Decoder/Gatekeeper가 작품 식별해도 Verifier가 거부하면 최종 is_relevant=false
   - 이유: Verifier는 본문 맥락 검증 전문가 (가중치 2.0)
@@ -169,7 +169,7 @@ is_relevant = "이 포스트가 특정 웹소설 작품에 대해 실제로 이�
   * **단, Decoder가 식별한 용어가 본문/댓글에 있다면 → 작품 관련 가능성 재고려**
   * 위 조건이 모두 참이고 Decoder 식별 용어도 없으면 → is_relevant=FALSE (연상글/뻘글)
 
-**🚨 CRITICAL: Decoder 식별 정보가 DiscourseAnalyzer보다 우선 🚨**
+** CRITICAL: Decoder 식별 정보가 DiscourseAnalyzer보다 우선 **
 
 Decoder와 DiscourseAnalyzer의 해석이 충돌할 때:
 
@@ -178,7 +178,7 @@ Decoder와 DiscourseAnalyzer의 해석이 충돌할 때:
 - Decoder가 용어를 **작품 약칭**으로 식별했다면 → 해당 용어는 일반명사가 아님
 - DiscourseAnalyzer가 해당 용어를 현실 세계 영역으로 해석했더라도 → **Decoder 식별을 따르라**
 
-**⚠️ 예외: Discourse 역방향 Override (DISCOURSE DOMAIN WARNING 활성 시)**
+** 예외: Discourse 역방향 Override (DISCOURSE DOMAIN WARNING 활성 시)**
 - DiscourseAnalyzer가 non-novel 도메인(memes_humor, daily_life 등)을 **high confidence**로 판정한 경우
 - 본문/댓글에 해당 작품의 줄거리·작가명·캐릭터 이름·플랫폼 URL 등 **구체적 증거가 전혀 없으면**
 - → Decoder 식별보다 **Discourse 판정을 따르라** (is_relevant=false 또는 confidence=Low)
@@ -228,7 +228,7 @@ is_relevant=true일 때, discussion_type으로 토론 형태를 구분:
 - "community_banter": 작품 주변 팬덤/반응/팬아트 감상처럼 주변 담론이면 adjacent_relevant 가능
 - 단, "noise", "image_post", "off_topic", "genre_opinion"은 여전히 is_relevant=false를 우선한다.
 
-🚨 **discussion_type 정합성 규칙:**
+ **discussion_type 정합성 규칙:**
 - adjacent_relevant는 주변 담론으로 보존하되, legacy is_relevant는 false가 기본값이다. 이 경우 official_novel_title은 null이 기본값이다.
 - is_relevant=true + discussion_type="noise" → 불가!
 - is_relevant=true + discussion_type="genre_opinion" → 불가!
@@ -236,7 +236,7 @@ is_relevant=true일 때, discussion_type으로 토론 형태를 구분:
 - is_relevant=true + discussion_type="off_topic" → 불가!
 - 작가 비평/플랫폼 메타인데 작품 예시가 언급되면 → discussion_type은 유지하되 single official_novel_title 강제 확정은 금지
 
-**💡 discussion_type 선택 우선순위 (is_relevant=false일 때):**
+** discussion_type 선택 우선순위 (is_relevant=false일 때):**
 1. 본문이 type=image만 있고 텍스트 부족 → "image_post"
 2. 웹소설과 완전 무관한 주제 (게임/현실/날씨/정치) → "off_topic"
 3. 작가에 대한 토론/비평 → "author_talk"
@@ -256,7 +256,7 @@ is_relevant=true일 때, discussion_type으로 토론 형태를 구분:
 1. **제목 패턴 분석:**
    - 제목이 장르명/트로프명 + 일반론 형태: "[X]는 [Y]가 맛있다", "[X]은 사실상 [Y]다"
    - 장르/트로프명 식별: 웹소설 클리셰/장르 용어 ("-물", "-판", "-난입", "-좌" 접미사)
-   - 🔑 **"[한글1~5자]물" 패턴은 모두 장르/트로프 용어로 간주**: 회귀물, 빙의물, 하렘물 같은 대표적인 것뿐 아니라, 일상물, 힐링물, 좀비물, 먹방물, 집착물, 뚝배기물 등 "~물"로 끝나는 1~5글자 한글 단어는 장르 카테고리이며 소설 제목이 아님
+   -  **"[한글1~5자]물" 패턴은 모두 장르/트로프 용어로 간주**: 회귀물, 빙의물, 하렘물 같은 대표적인 것뿐 아니라, 일상물, 힐링물, 좀비물, 먹방물, 집착물, 뚝배기물 등 "~물"로 끝나는 1~5글자 한글 단어는 장르 카테고리이며 소설 제목이 아님
    
 2. **본문 분석:**
    - 특정 작품명, 캐릭터명, 작가명이 없음
@@ -318,7 +318,7 @@ Verifier 직관 우선 원칙:
 **충돌 해결 알고리즘:**
 
 Case 1: Verifier vs Decoder 충돌
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 Verifier: "현실 영역 토론" (어휘 클러스터 분석)
 Decoder: "작품 발견" (검색 매칭)
 
@@ -340,7 +340,7 @@ Step 3: 형태소 구조 확인
 → Verifier 승리 → is_relevant=FALSE
 
 Case 2: Verifier "일반 명사" vs Decoder "고유명사"
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 Verifier: "공/수는 역할 명칭 (일반 명사)"
 Decoder: "작품의 캐릭터 (고유명사)"
 
@@ -358,7 +358,7 @@ Step 2: 문장 구조 확인
 결론: Verifier 승리 → 장르 일반론
 
 Case 3: Verifier 초기 판단 vs Arbiter 검색 재평가
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 Verifier (초기): "현실 의학 토론"
 Arbiter (재평가): 검색에서 작품 발견
 
@@ -389,16 +389,16 @@ Step 2: 검색 결과 재해석
       본문 맥락이 그 작품과 무관하면 거부한다.
 
 검증 체크리스트:
-□ 본문 어휘 영역 = 작품 세계?
+ 본문 어휘 영역 = 작품 세계?
   → 현실 어휘 클러스터면 거부
   
-□ 본문에 고유명사 존재?
+ 본문에 고유명사 존재?
   → 역할 명칭만 있으면 거부
   
-□ 형태소 구조 = 작품명 패턴?
+ 형태소 구조 = 작품명 패턴?
   → 장르 카테고리 패턴이면 거부
   
-□ 문장 구조 = 작품 토론?
+ 문장 구조 = 작품 토론?
   → 일반론 패턴이면 거부
 
 하나라도 거부 조건 충족 시:

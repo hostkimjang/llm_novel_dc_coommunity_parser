@@ -1,5 +1,20 @@
 # Slang DB Improvement TODO
 
+## 2026-07-14 exact alias-pair write/seed fail-close
+
+- [x] Run `20260714_160355_054970` work artifact의 신규 term `14`개 중 일반명사·동사 조각·플랫폼명 등 명확한 오염 `8`개를 source row와 결속했다.
+- [x] 구조 점수, High/Medium confidence, official-detail tier만으로 Slang DB `slang/pending`을 만들던 경로를 제거했다.
+- [x] strict `slang_insight`, verified `confirmed_alias`, 실제 registry mapping과 일치하는 exact pair만 write/seed를 허용한다.
+- [x] `mentioned_work`, `secondary_reference`, `recommendation_candidate`, `comparison_target`는 CandidateLedger에 보존하되 Slang DB mutation으로 번역하지 않는다.
+- [x] malformed `store_in_slang_db`(`"false"`, `"true"`, `0`, `1`, list, dict), 불완전 `store=true`, registry enum 교차·미등록 pair·다른 official title 결속을 fail-close했다.
+- [x] 중앙 slang `87`개는 자동 삭제하지 않고 `45 seed 허용 / 42 재검증 격리`로 분리했다.
+- [x] 고정 checkpoint prefix `419`행 actual-manager replay에서 `36 observation / slang 32 / pending 4 / error 0`, 중앙 대비 신규 term `6`, 확인된 오염 표면 `0`을 확인했다.
+- [x] 독립 adversarial 재검토는 음성 `17/17` 차단, 정상 `6/6` 허용, write/seed 불일치 `0`, focused `40/40 PASS`다.
+- [ ] 격리 42개를 `true pollution / verified provenance backfill / remain held`로 수동 분류한다. 구조 점수만으로 자동 복구하지 않는다.
+- [ ] patched fresh targeted와 `--parallel 16`, dashboard ON, VLM/OCR required 200행 canary에서 신규 오염 `0`과 정상 alias recall을 함께 확인한다.
+- Gate: current process `PATCH_NOT_APPLIED`, work artifact `NO-GO / QUARANTINE`, central promotion `BLOCKED`, fresh canary `NOT_RUN`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`.
+- 상세: `docs/devs/SLANG_DB_POLLUTION_AUDIT_KO_20260714.md`.
+
 ## 2026-07-08 Loop610 아카메디 image/OCR title-only publication 주의사항
 
 - [x] `11660277`은 `아카메디` 표면을 slang DB write-back으로 확장하지 않았다.

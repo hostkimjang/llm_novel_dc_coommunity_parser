@@ -9,10 +9,10 @@ from unittest import mock
 
 import httpx
 
-from src.llm_batch.decision_call_events import DecisionCallLedgerRegistry
-from src.llm_batch.decision_tracing_llm import DecisionTracingLLMClient
+from src.llm_batch.ledger.decision_call_events import DecisionCallLedgerRegistry
+from src.llm_batch.ledger.decision_tracing_llm import DecisionTracingLLMClient
 from src.llm_batch.llm.client import LLMClient, retry_with_backoff
-from src.llm_batch.publication_commit import build_publication_scope_descriptor
+from src.llm_batch.ledger.publication_commit import build_publication_scope_descriptor
 
 
 class _Response:

@@ -1,3 +1,4 @@
+import copy
 import json
 import unittest
 from pathlib import Path
@@ -14,6 +15,8 @@ from expert_main import (
     _public_comment_dialogue_context_lines,
     _public_comment_metadata,
     _require_vlm_ocr_for_image_posts,
+    _runtime_candidate_audit_seed,
+    _reapply_authoritative_publish_contract,
     _enforce_publish_contract_trace_convergence,
     _apply_projection_followup_promotion_seed,
     _sync_final_publication_ledger_contract,
@@ -21,9 +24,535 @@ from expert_main import (
     _vlm_ocr_semantic_review_gate_lines,
     _vlm_ocr_semantic_review_skip_reasons,
 )
+from llm_batch.grounding.candidate_audit import apply_candidate_audit_fields
+from llm_batch.promotion_gate import (
+    candidate_inventory_evidence_from_sources,
+    EvidenceRecord,
+    GroundingState,
+    ScopeState,
+    apply_publish_contract,
+    evaluate_publish_contract,
+)
+from tools.audit_publication_contract_convergence import audit_rows
 
 
 class ExpertMainCommentMetadataTest(unittest.TestCase):
+    def test_authoritative_reapply_bootstraps_legacy_inventory_once(self):
+        sources = [
+            {"official_title": "후보 A", "heretic_url": "https://novelpia.com/novel/1001"},
+            {"official_title": "후보 B"},
+        ]
+        identity = {
+            "title_candidates": list(sources),
+            "novel_identity": {"official_title": None, "heretic_url": None},
+            "candidate_ledger": {
+                "candidate_preservation_sources": list(sources),
+            },
+        }
+        result = {"identity": identity}
+
+        self.assertTrue(_reapply_authoritative_publish_contract(result))
+        updated = result["identity"]
+        self.assertEqual(updated["promotion_decision"]["status"], "candidate_only")
+        self.assertTrue(updated["promotion_decision"]["candidate_preserved"])
+        self.assertFalse(updated["promotion_decision"]["publish_allowed"])
+        self.assertFalse(updated["promotion_decision"]["bypassed_gate"])
+        self.assertEqual(updated["candidate_ledger_status"], "promotion_blocked")
+        self.assertEqual(updated["promotion_gate_state"]["candidate_inventory_count"], 2)
+        self.assertEqual(len(updated["promotion_gate_evidence"]), 2)
+        self.assertEqual(updated["title_candidates"], sources)
+        self.assertFalse(_reapply_authoritative_publish_contract(result))
+
+    def test_authoritative_reapply_rejects_truncated_inventory_without_rebaselining(self):
+        sources = [
+            {"official_title": "후보 A", "heretic_url": "https://novelpia.com/novel/1001"},
+            {"official_title": "후보 B"},
+        ]
+        typed_evidence = candidate_inventory_evidence_from_sources(sources)
+        contract = evaluate_publish_contract(
+            GroundingState(
+                post_id=11700470,
+                candidate_title="",
+                source="serializer_candidate_inventory_preserved",
+                candidate_inventory_count=len(typed_evidence),
+            ),
+            typed_evidence,
+        )
+        identity = {
+            "title_candidates": list(sources),
+            "candidate_ledger": {
+                "candidate_preservation_sources": list(sources),
+            },
+        }
+        apply_publish_contract(identity, contract)
+        identity["title_candidates"] = [sources[0]]
+        identity["candidate_ledger"]["candidate_preservation_sources"] = [sources[0]]
+        result = {"identity": identity}
+
+        self.assertTrue(_reapply_authoritative_publish_contract(result))
+        updated = result["identity"]
+        self.assertEqual(updated["promotion_gate_state"]["candidate_inventory_count"], 2)
+        self.assertEqual(
+            len(
+                [
+                    item
+                    for item in updated["promotion_gate_evidence"]
+                    if item.get("kind") == "candidate_preservation"
+                ]
+            ),
+            2,
+        )
+        self.assertFalse(updated["promotion_decision"]["publish_allowed"])
+        self.assertFalse(updated["promotion_decision"]["bypassed_gate"])
+        self.assertEqual(
+            updated["publish_contract_integrity_error"]["code"],
+            "post_serializer_authoritative_contract_mismatch",
+        )
+
+        audit = audit_rows([{"post_id": 11700470, "analysis_result": {"identity": updated}}])
+        codes = {
+            violation["code"]
+            for row_report in audit["violations"]
+            for violation in row_report["violations"]
+        }
+        self.assertEqual(audit["gate"], "NO-GO")
+        self.assertIn("candidate_inventory_payload_mismatch", codes)
+        self.assertIn("publish_contract_integrity_error", codes)
+
+    def test_authoritative_reapply_rejects_each_truncated_inventory_mirror(self):
+        sources = [
+            {"official_title": "후보 A", "heretic_url": "https://novelpia.com/novel/1001"},
+            {"official_title": "후보 B", "heretic_url": "https://novelpia.com/novel/1002"},
+        ]
+        typed_evidence = candidate_inventory_evidence_from_sources(sources)
+
+        for mirror_name in (
+            "identity",
+            "candidate_ledger",
+        ):
+            with self.subTest(mirror_name=mirror_name):
+                contract = evaluate_publish_contract(
+                    GroundingState(
+                        post_id=20010067,
+                        candidate_title="",
+                        source="serializer_candidate_inventory_preserved",
+                        candidate_inventory_count=len(typed_evidence),
+                    ),
+                    typed_evidence,
+                )
+                identity = {
+                    "title_candidates": list(sources),
+                    "candidate_preservation_sources": list(sources),
+                    "candidate_ledger": {
+                        "title_candidates": list(sources),
+                        "candidate_preservation_sources": list(sources),
+                    },
+                }
+                apply_publish_contract(identity, contract)
+                if mirror_name == "identity":
+                    identity["title_candidates"] = [sources[0]]
+                    identity["candidate_preservation_sources"] = [sources[0]]
+                else:
+                    identity["candidate_ledger"]["title_candidates"] = [sources[0]]
+                    identity["candidate_ledger"]["candidate_preservation_sources"] = [
+                        sources[0]
+                    ]
+
+                result = {"identity": identity}
+                self.assertTrue(_sync_final_publication_ledger_contract(result))
+                error = identity["publish_contract_integrity_error"]
+                self.assertEqual(
+                    error["code"],
+                    "post_serializer_authoritative_contract_mismatch",
+                )
+                self.assertFalse(error["candidate_inventory_match"])
+                self.assertFalse(
+                    error["candidate_inventory_mirror_matches"][mirror_name]
+                )
+                self.assertFalse(identity["promotion_decision"]["publish_allowed"])
+                self.assertFalse(identity["promotion_decision"]["bypassed_gate"])
+
+                audit = audit_rows(
+                    [{"post_id": 20010067, "analysis_result": {"identity": identity}}]
+                )
+                codes = {
+                    violation["code"]
+                    for row_report in audit["violations"]
+                    for violation in row_report["violations"]
+                }
+                self.assertEqual(audit["gate"], "NO-GO")
+                self.assertIn("candidate_inventory_mirror_payload_mismatch", codes)
+                self.assertIn("publish_contract_integrity_error", codes)
+
+    def test_authoritative_reapply_allows_grouped_inventory_positive_boundaries(self):
+        sources = [
+            {"official_title": "후보 A", "heretic_url": "https://novelpia.com/novel/1001"},
+            {"official_title": "후보 B", "heretic_url": "https://novelpia.com/novel/1002"},
+        ]
+        evidence = candidate_inventory_evidence_from_sources(sources)
+        identity_fields_by_case = {
+            "title_subset_with_complete_snapshot": {
+                "title_candidates": [sources[0]],
+                "candidate_preservation_sources": list(sources),
+            },
+            "identity_group_absent_ledger_complete": {
+                "candidate_ledger": {
+                    "candidate_preservation_sources": list(sources),
+                },
+            },
+        }
+
+        for case_name, identity_fields in identity_fields_by_case.items():
+            with self.subTest(case_name=case_name):
+                contract = evaluate_publish_contract(
+                    GroundingState(
+                        post_id=20010071,
+                        candidate_title="",
+                        candidate_inventory_count=len(evidence),
+                    ),
+                    evidence,
+                )
+                identity = copy.deepcopy(identity_fields)
+                apply_publish_contract(identity, contract)
+                result = {"identity": identity}
+
+                _sync_final_publication_ledger_contract(result)
+
+                self.assertNotIn("publish_contract_integrity_error", identity)
+                self.assertFalse(identity["promotion_decision"]["publish_allowed"])
+                self.assertFalse(identity["promotion_decision"]["bypassed_gate"])
+                audit = audit_rows(
+                    [{"post_id": 20010071, "analysis_result": {"identity": identity}}]
+                )
+                self.assertEqual(audit["gate"], "GO")
+
+    def test_authoritative_reapply_rejects_forged_trace_and_publish_ledger(self):
+        sources = [{"official_title": "후보 A"}]
+        evidence = candidate_inventory_evidence_from_sources(sources)
+        contract = evaluate_publish_contract(
+            GroundingState(
+                post_id=20010068,
+                candidate_title="",
+                candidate_inventory_count=1,
+            ),
+            evidence,
+        )
+        identity = {
+            "title_candidates": list(sources),
+            "candidate_preservation_sources": list(sources),
+            "candidate_ledger": {
+                "candidate_preservation_sources": list(sources),
+            },
+        }
+        apply_publish_contract(identity, contract)
+        forged_trace = copy.deepcopy(identity["publish_contract_trace"])
+        forged_trace["bypassed_gate"] = True
+        forged_trace["pre_gate_candidate"] = {
+            "official_title": "위조 후보",
+            "official_url": "https://novelpia.com/novel/999999",
+        }
+        forged_ledger = copy.deepcopy(identity["publish_ledger"])
+        forged_ledger["candidate_preservation"] = dict(
+            forged_trace["pre_gate_candidate"]
+        )
+        identity["publish_contract_trace"] = copy.deepcopy(forged_trace)
+        identity["publish_ledger"] = copy.deepcopy(forged_ledger)
+        identity["candidate_ledger"]["publish_contract_trace"] = copy.deepcopy(
+            forged_trace
+        )
+        identity["candidate_ledger"]["publish_ledger"] = copy.deepcopy(
+            forged_ledger
+        )
+
+        result = {"identity": identity}
+        self.assertTrue(_sync_final_publication_ledger_contract(result))
+        self.assertEqual(
+            identity["publish_contract_integrity_error"]["code"],
+            "post_serializer_authoritative_contract_mismatch",
+        )
+        self.assertFalse(identity["promotion_decision"]["publish_allowed"])
+        self.assertFalse(identity["publish_contract_trace"]["bypassed_gate"])
+        self.assertFalse(identity["promotion_decision"]["bypassed_gate"])
+
+        audit = audit_rows(
+            [{"post_id": 20010068, "analysis_result": {"identity": identity}}]
+        )
+        self.assertEqual(audit["gate"], "NO-GO")
+        codes = {
+            violation["code"]
+            for row_report in audit["violations"]
+            for violation in row_report["violations"]
+        }
+        self.assertIn("publish_contract_integrity_error", codes)
+
+    def test_v2_candidate_audit_then_final_sync_keeps_authoritative_inventory(self):
+        sources = [
+            {
+                "official_title": "후보 A",
+                "heretic_url": "https://novelpia.com/novel/1001",
+                "source_tier": "official_detail",
+            }
+        ]
+        typed_evidence = candidate_inventory_evidence_from_sources(sources)
+        contract = evaluate_publish_contract(
+            GroundingState(
+                post_id=20010063,
+                candidate_title="",
+                source="serializer_candidate_inventory_preserved",
+                candidate_inventory_count=len(typed_evidence),
+            ),
+            typed_evidence,
+        )
+        identity = {
+            "title_candidates": list(sources),
+            "candidate_preservation_sources": list(sources),
+            "secondary_reference_works": [
+                {"official_title": "관측 전용 보조 후보", "reference_role": "secondary"}
+            ],
+            "candidate_ledger": {
+                "candidate_preservation_sources": list(sources),
+            },
+        }
+        apply_publish_contract(identity, contract)
+        expected_ledger_inventory = {
+            field: identity["candidate_ledger"].get(field)
+            for field in (
+                "title_candidates",
+                "candidate_count",
+                "candidate_preservation_sources",
+            )
+        }
+
+        apply_candidate_audit_fields(identity, None)
+        for field, expected in expected_ledger_inventory.items():
+            self.assertEqual(identity["candidate_ledger"].get(field), expected)
+
+        result = {"identity": identity}
+        _sync_final_publication_ledger_contract(result)
+
+        self.assertNotIn("publish_contract_integrity_error", identity)
+        self.assertEqual(identity["promotion_decision"]["status"], "candidate_only")
+        self.assertFalse(identity["promotion_decision"]["publish_allowed"])
+        self.assertTrue(identity["promotion_decision"]["candidate_preserved"])
+        self.assertFalse(identity["promotion_decision"]["bypassed_gate"])
+        audit = audit_rows(
+            [{"post_id": 20010063, "analysis_result": {"identity": identity}}]
+        )
+        self.assertEqual(audit["gate"], "GO")
+
+    def test_authoritative_reapply_fail_closes_malformed_inventory_count(self):
+        sources = [{"official_title": "후보 A"}]
+        typed_evidence = candidate_inventory_evidence_from_sources(sources)
+        contract = evaluate_publish_contract(
+            GroundingState(
+                post_id=11700470,
+                candidate_title="",
+                candidate_inventory_count=1,
+            ),
+            typed_evidence,
+        )
+        identity = {
+            "title_candidates": list(sources),
+            "candidate_ledger": {
+                "candidate_preservation_sources": list(sources),
+            },
+        }
+        apply_publish_contract(identity, contract)
+        identity["promotion_gate_state"]["candidate_inventory_count"] = "01"
+        identity["candidate_ledger"]["promotion_gate_state"][
+            "candidate_inventory_count"
+        ] = "01"
+        result = {"identity": identity}
+
+        self.assertTrue(_reapply_authoritative_publish_contract(result))
+        updated = result["identity"]
+        self.assertIsNone(updated["novel_identity"]["official_title"])
+        self.assertFalse(updated["promotion_decision"]["publish_allowed"])
+        self.assertFalse(updated["promotion_decision"]["bypassed_gate"])
+        self.assertEqual(updated["promotion_gate_state"]["candidate_inventory_count"], 1)
+        self.assertIn(
+            "candidate_inventory_count",
+            updated["publish_contract_integrity_error"]["typed_input_error"],
+        )
+        audit = audit_rows([{"post_id": 11700470, "analysis_result": {"identity": updated}}])
+        self.assertEqual(audit["gate"], "NO-GO")
+
+    @staticmethod
+    def _typed_publish_result():
+        title = "계약 테스트 작품"
+        url = "https://novelpia.com/novel/123456"
+        state = GroundingState(
+            post_id=123,
+            candidate_title=title,
+            candidate_url=url,
+            source="expert_serializer_test",
+            official_title_exists=True,
+            row_discusses_work_as_work=True,
+            title_resolution_state="resolved",
+            work_resolution="resolved",
+            discussion_type="review",
+            scope=ScopeState(
+                scope_kind="current_work",
+                confidence="high",
+                direct_bridge_sources=["explicit_alias_relation", "official_detail_url"],
+            ),
+        )
+        contract = evaluate_publish_contract(
+            state,
+            [
+                EvidenceRecord(
+                    kind="alias_bridge",
+                    source_path_or_snippet=title,
+                    supports_publish=True,
+                    candidate_title=title,
+                ),
+                EvidenceRecord(
+                    kind="official_detail_url",
+                    source_path_or_snippet=url,
+                    candidate_title=title,
+                    candidate_url=url,
+                    title_url_match=True,
+                ),
+            ],
+        )
+        identity = {
+            "is_relevant": True,
+            "is_resolved_work_discussion": True,
+            "title_resolution_allowed": True,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved",
+            "discussion_type": "review",
+            "novel_identity": {"confidence": "High"},
+        }
+        apply_publish_contract(identity, contract)
+        return {"identity": identity}, title, url
+
+    def test_typed_v2_final_sync_reapplies_unchanged_authoritative_contract(self):
+        result, title, url = self._typed_publish_result()
+
+        _sync_final_publication_ledger_contract(result)
+
+        identity = result["identity"]
+        self.assertEqual(identity["novel_identity"]["official_title"], title)
+        self.assertEqual(identity["novel_identity"]["heretic_url"], url)
+        self.assertTrue(identity["promotion_decision"]["publish_allowed"])
+        self.assertFalse(identity["promotion_decision"]["bypassed_gate"])
+        self.assertEqual(identity["publish_contract_version"], "promotion_contract_v2")
+
+    def test_typed_v2_final_sync_fail_closes_post_gate_public_writer_mismatch(self):
+        result, _title, _url = self._typed_publish_result()
+        identity = result["identity"]
+        identity["novel_identity"]["official_title"] = "후처리 임의 교체"
+
+        _sync_final_publication_ledger_contract(result)
+
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertFalse(identity["promotion_decision"]["publish_allowed"])
+        self.assertTrue(identity["promotion_decision"]["candidate_preserved"])
+        self.assertFalse(identity["promotion_decision"]["bypassed_gate"])
+        self.assertIn(
+            "post_serializer_contract_mismatch",
+            identity["promotion_decision"]["reason_codes"],
+        )
+        self.assertEqual(identity["blocked_official_title"], "계약 테스트 작품")
+        self.assertEqual(
+            identity["publish_contract_integrity_error"]["code"],
+            "post_serializer_authoritative_contract_mismatch",
+        )
+
+    def test_typed_v2_marker_with_missing_root_versions_never_downgrades_to_legacy(self):
+        result, _title, _url = self._typed_publish_result()
+        identity = result["identity"]
+        identity.pop("publish_contract_version")
+        identity["candidate_ledger"].pop("publish_contract_version")
+
+        _sync_final_publication_ledger_contract(result)
+
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertFalse(identity["promotion_decision"]["publish_allowed"])
+        self.assertFalse(identity["promotion_decision"]["bypassed_gate"])
+        self.assertEqual(
+            identity["promotion_gate_state"]["source"],
+            "post_serializer_contract_mismatch",
+        )
+        self.assertEqual(
+            identity["publish_contract_integrity_error"]["code"],
+            "post_serializer_authoritative_contract_mismatch",
+        )
+
+    def test_typed_v2_final_sync_fail_closes_forged_resolution_trace_and_ledger(self):
+        result, title, _url = self._typed_publish_result()
+        identity = result["identity"]
+        forged_fields = {
+            "title_resolution_allowed": False,
+            "title_resolution_state": "context_only",
+            "work_resolution": "unresolved",
+        }
+        identity.update(forged_fields)
+        identity["publish_contract_trace"]["post_gate_identity"].update(forged_fields)
+        identity["publish_ledger"]["public_publish"].update(forged_fields)
+        identity["candidate_ledger"].update(forged_fields)
+
+        _sync_final_publication_ledger_contract(result)
+
+        self.assertIsNone(identity["novel_identity"]["official_title"])
+        self.assertIsNone(identity["novel_identity"]["heretic_url"])
+        self.assertFalse(identity["promotion_decision"]["publish_allowed"])
+        self.assertFalse(identity["promotion_decision"]["bypassed_gate"])
+        self.assertFalse(identity["publish_contract_trace"]["bypassed_gate"])
+        self.assertEqual(identity["blocked_official_title"], title)
+        self.assertEqual(
+            identity["publish_contract_integrity_error"]["code"],
+            "post_serializer_authoritative_contract_mismatch",
+        )
+
+    def test_typed_v2_no_candidate_final_sync_keeps_normal_null_status(self):
+        contract = evaluate_publish_contract(
+            GroundingState(
+                post_id=124,
+                candidate_title="",
+                source="no_candidate_serializer_test",
+                official_title_exists=False,
+                row_discusses_work_as_work=False,
+                scope=ScopeState(scope_kind="unknown", confidence="low"),
+            ),
+            [],
+        )
+        identity = {"novel_identity": None}
+        apply_publish_contract(identity, contract)
+        result = {"identity": identity}
+
+        _sync_final_publication_ledger_contract(result)
+
+        self.assertEqual(identity["candidate_ledger_status"], "hold_without_candidates")
+        self.assertFalse(identity["promotion_decision"]["publish_allowed"])
+        self.assertFalse(identity["promotion_decision"]["candidate_preserved"])
+        self.assertEqual(identity["publish_contract_version"], "promotion_contract_v2")
+
+    def test_typed_v2_adversarial_judge_seed_cannot_change_public_or_candidate_contract(self):
+        result, title, url = self._typed_publish_result()
+        identity = result["identity"]
+        fingerprint = identity["publish_contract_input_fingerprint"]
+        adversarial_seed = {
+            "disagreement_type": "expected_candidate_missing",
+            "expected_title": "판정 seed 주입 제목",
+            "expected_url": "https://example.invalid/judge-seed",
+            "label": "ACCEPT",
+        }
+
+        runtime_seed = _runtime_candidate_audit_seed(identity, adversarial_seed)
+        apply_candidate_audit_fields(identity, runtime_seed)
+        _sync_final_publication_ledger_contract(result)
+
+        self.assertIsNone(runtime_seed)
+        self.assertEqual(identity["novel_identity"]["official_title"], title)
+        self.assertEqual(identity["novel_identity"]["heretic_url"], url)
+        self.assertEqual(identity["publish_contract_input_fingerprint"], fingerprint)
+        self.assertNotIn(
+            "판정 seed 주입 제목",
+            json.dumps(identity["candidate_ledger"], ensure_ascii=False),
+        )
+
     def test_projection_followup_seed_restores_prior_runtime_promotion_block_for_replay(self):
         result = {
             "title": "마줍 얘기",

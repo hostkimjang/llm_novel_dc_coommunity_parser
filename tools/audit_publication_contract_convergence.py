@@ -1,11 +1,35 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from collections import Counter
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+
+try:
+    from llm_batch.promotion_gate import (
+        PUBLISH_CONTRACT_VERSION,
+        candidate_inventory_evidence_from_sources,
+        candidate_inventory_pairs,
+        candidate_inventory_records,
+        build_publish_ledger,
+        evaluate_publish_contract,
+        evidence_records_from_payload,
+        grounding_state_from_dict,
+    )
+except ModuleNotFoundError:
+    from src.llm_batch.promotion_gate import (
+        PUBLISH_CONTRACT_VERSION,
+        candidate_inventory_evidence_from_sources,
+        candidate_inventory_pairs,
+        candidate_inventory_records,
+        build_publish_ledger,
+        evaluate_publish_contract,
+        evidence_records_from_payload,
+        grounding_state_from_dict,
+    )
 
 
 PUBLIC_TITLE_KEYS = ("official_title", "official_novel_title", "resolved_title")
@@ -86,6 +110,23 @@ def load_rows(path: Path) -> list[dict[str, Any]]:
             if isinstance(rows, list):
                 return [row for row in rows if isinstance(row, dict)]
     raise ValueError(f"Unsupported row payload: {path}")
+
+
+def build_result_artifact_binding(
+    path: Path,
+    *,
+    row_count: int,
+) -> dict[str, Any]:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return {
+        "path": str(path),
+        "sha256": digest.hexdigest(),
+        "size_bytes": path.stat().st_size,
+        "row_count": row_count,
+    }
 
 
 def write_json(path: Path, payload: Any) -> None:
@@ -267,20 +308,122 @@ def audit_row(row: dict[str, Any], *, index: int) -> dict[str, Any]:
         }
 
     ledger = _dict_or_empty(identity.get("candidate_ledger"))
-    decision = identity.get("promotion_decision")
+    identity_integrity_error = identity.get("publish_contract_integrity_error")
+    ledger_integrity_error = ledger.get("publish_contract_integrity_error")
+    if identity_integrity_error is not None or ledger_integrity_error is not None:
+        _append_violation(
+            violations,
+            "publish_contract_integrity_error",
+            "serializer recorded an authoritative typed-contract integrity failure",
+        )
+        if identity_integrity_error != ledger_integrity_error:
+            _append_violation(
+                violations,
+                "candidate_ledger_publish_contract_integrity_error_mismatch",
+                "candidate_ledger integrity error differs from identity integrity error",
+            )
+    identity_decision = identity.get("promotion_decision")
+    decision = identity_decision
     if not isinstance(decision, dict):
         decision = ledger.get("promotion_decision")
-    trace = identity.get("publish_contract_trace")
+    identity_trace = identity.get("publish_contract_trace")
+    trace = identity_trace
     if not isinstance(trace, dict):
         trace = ledger.get("publish_contract_trace")
-    publish_ledger = identity.get("publish_ledger")
+    identity_publish_ledger = identity.get("publish_ledger")
+    publish_ledger = identity_publish_ledger
     if not isinstance(publish_ledger, dict):
         publish_ledger = ledger.get("publish_ledger")
-    promotion_gate_state = identity.get("promotion_gate_state")
-    if not isinstance(promotion_gate_state, dict):
-        promotion_gate_state = ledger.get("promotion_gate_state")
-    if not isinstance(promotion_gate_state, dict):
-        promotion_gate_state = {}
+    identity_gate_state = identity.get("promotion_gate_state")
+    ledger_gate_state = ledger.get("promotion_gate_state")
+    promotion_gate_state = (
+        identity_gate_state
+        if isinstance(identity_gate_state, dict)
+        else ledger_gate_state if isinstance(ledger_gate_state, dict) else {}
+    )
+    # The serialized row identity is the outer contract key.  When typed
+    # state carries a post_id, it must agree with that key; otherwise a
+    # converged-looking row could be attributed to the wrong post.
+    typed_state_post_id = _string_or_none(promotion_gate_state.get("post_id"))
+    if typed_state_post_id and post_id and typed_state_post_id != post_id:
+        _append_violation(
+            violations,
+            "typed_state_post_id_mismatch",
+            f"typed promotion_gate_state.post_id={typed_state_post_id} differs from row post_id={post_id}",
+        )
+    identity_gate_evidence = identity.get("promotion_gate_evidence")
+    ledger_gate_evidence = ledger.get("promotion_gate_evidence")
+    promotion_gate_evidence = (
+        identity_gate_evidence
+        if isinstance(identity_gate_evidence, list)
+        else ledger_gate_evidence if isinstance(ledger_gate_evidence, list) else []
+    )
+    candidate_decision = ledger.get("promotion_decision")
+    identity_contract_version = str(identity.get("publish_contract_version") or "").strip()
+    ledger_contract_version = str(ledger.get("publish_contract_version") or "").strip()
+    identity_fingerprint = str(
+        identity.get("publish_contract_input_fingerprint") or ""
+    ).strip()
+    ledger_fingerprint_marker = str(
+        ledger.get("publish_contract_input_fingerprint") or ""
+    ).strip()
+    decision_contract_version = str(
+        decision.get("contract_version") if isinstance(decision, dict) else ""
+    ).strip()
+    identity_ledger_gate_decision = _dict_or_empty(
+        identity_publish_ledger.get("gate_decision")
+        if isinstance(identity_publish_ledger, dict)
+        else None
+    )
+    candidate_ledger_publish_ledger = ledger.get("publish_ledger")
+    candidate_ledger_gate_decision = _dict_or_empty(
+        candidate_ledger_publish_ledger.get("gate_decision")
+        if isinstance(candidate_ledger_publish_ledger, dict)
+        else None
+    )
+    v2_marker = bool(
+        identity_contract_version == PUBLISH_CONTRACT_VERSION
+        or ledger_contract_version == PUBLISH_CONTRACT_VERSION
+        or decision_contract_version == PUBLISH_CONTRACT_VERSION
+        or (
+            isinstance(identity_gate_state, dict)
+            and isinstance(identity_gate_evidence, list)
+        )
+        or (
+            isinstance(ledger_gate_state, dict)
+            and isinstance(ledger_gate_evidence, list)
+        )
+        or bool(identity_fingerprint)
+        or bool(ledger_fingerprint_marker)
+        or str(identity_ledger_gate_decision.get("contract_version") or "").strip()
+        == PUBLISH_CONTRACT_VERSION
+        or str(candidate_ledger_gate_decision.get("contract_version") or "").strip()
+        == PUBLISH_CONTRACT_VERSION
+    )
+    if v2_marker and not isinstance(identity_decision, dict):
+        _append_violation(
+            violations,
+            "identity_promotion_decision_missing",
+            "v2 authoritative identity must contain promotion_decision; candidate_ledger is mirror-only",
+        )
+    if v2_marker and not isinstance(candidate_decision, dict):
+        _append_violation(
+            violations,
+            "candidate_ledger_promotion_decision_missing",
+            "v2 candidate_ledger must mirror the authoritative promotion_decision",
+        )
+    if v2_marker and not isinstance(identity_trace, dict):
+        _append_violation(
+            violations,
+            "identity_publish_contract_trace_missing",
+            "v2 authoritative identity must contain publish_contract_trace; candidate_ledger is mirror-only",
+        )
+    if v2_marker and not isinstance(identity_publish_ledger, dict):
+        _append_violation(
+            violations,
+            "identity_publish_ledger_missing",
+            "v2 authoritative identity must contain publish_ledger; candidate_ledger is mirror-only",
+        )
 
     has_public_title = bool(public_identity["official_title"])
     if has_public_title and not isinstance(decision, dict):
@@ -295,10 +438,15 @@ def audit_row(row: dict[str, Any], *, index: int) -> dict[str, Any]:
         _append_violation(violations, "missing_publish_ledger", "PromotionDecision exists without publish ledger")
 
     if not isinstance(decision, dict):
+        _append_violation(
+            violations,
+            "missing_authoritative_promotion_decision",
+            "publication contract convergence requires a typed PromotionDecision for every row",
+        )
         return {
             "index": index,
             "post_id": post_id,
-            "gate": "NO-GO" if violations else "GO",
+            "gate": "NO-GO",
             "public_identity": public_identity,
             "violations": violations,
         }
@@ -309,9 +457,134 @@ def audit_row(row: dict[str, Any], *, index: int) -> dict[str, Any]:
     ledger_candidate_preservation = (
         publish_ledger.get("candidate_preservation") if isinstance(publish_ledger, dict) else {}
     )
-    candidate_decision = ledger.get("promotion_decision")
     candidate_trace = ledger.get("publish_contract_trace")
     candidate_publish_ledger = ledger.get("publish_ledger")
+
+    serialized_fingerprint = identity_fingerprint
+    ledger_fingerprint = str(ledger.get("publish_contract_input_fingerprint") or "").strip()
+    if identity_contract_version != PUBLISH_CONTRACT_VERSION:
+        _append_violation(
+            violations,
+            "authoritative_publish_contract_missing",
+            f"expected {PUBLISH_CONTRACT_VERSION}, got {identity_contract_version or 'missing'}",
+        )
+    if ledger_contract_version != identity_contract_version:
+        _append_violation(
+            violations,
+            "candidate_ledger_publish_contract_version_mismatch",
+            "candidate_ledger contract version differs from identity contract version",
+        )
+    if decision_contract_version != identity_contract_version:
+        _append_violation(
+            violations,
+            "promotion_decision_publish_contract_version_mismatch",
+            "PromotionDecision contract version differs from identity contract version",
+        )
+    if not isinstance(identity_gate_state, dict):
+        _append_violation(
+            violations,
+            "promotion_gate_state_missing_for_shadow_recompute",
+            "typed state is required for fail-closed shadow recompute",
+        )
+    if not isinstance(ledger_gate_state, dict):
+        _append_violation(
+            violations,
+            "candidate_ledger_promotion_gate_state_missing",
+            "candidate_ledger must mirror the authoritative typed state",
+        )
+    elif isinstance(identity_gate_state, dict) and ledger_gate_state != identity_gate_state:
+        _append_violation(
+            violations,
+            "candidate_ledger_promotion_gate_state_mismatch",
+            "candidate_ledger typed state differs from identity typed state",
+        )
+    if not isinstance(identity_gate_evidence, list):
+        _append_violation(
+            violations,
+            "promotion_gate_evidence_missing_for_shadow_recompute",
+            "typed evidence is required for fail-closed shadow recompute",
+        )
+    if not isinstance(ledger_gate_evidence, list):
+        _append_violation(
+            violations,
+            "candidate_ledger_promotion_gate_evidence_missing",
+            "candidate_ledger must mirror the authoritative typed evidence",
+        )
+    elif isinstance(identity_gate_evidence, list) and ledger_gate_evidence != identity_gate_evidence:
+        _append_violation(
+            violations,
+            "candidate_ledger_promotion_gate_evidence_mismatch",
+            "candidate_ledger typed evidence differs from identity typed evidence",
+        )
+    if ledger_fingerprint != serialized_fingerprint:
+        _append_violation(
+            violations,
+            "candidate_ledger_publish_contract_input_fingerprint_mismatch",
+            "candidate_ledger input fingerprint differs from identity input fingerprint",
+        )
+    shadow_post_gate: dict[str, Any] = {}
+    if promotion_gate_state:
+        try:
+            shadow_state = grounding_state_from_dict(promotion_gate_state)
+            shadow_evidence = evidence_records_from_payload(promotion_gate_evidence)
+            # Trace and ledger are serialized outputs, never shadow-recompute
+            # inputs.  Using them here would let a forged trace validate itself.
+            shadow_contract = evaluate_publish_contract(shadow_state, shadow_evidence)
+        except (TypeError, ValueError) as exc:
+            detail = str(exc)
+            _append_violation(
+                violations,
+                (
+                    "candidate_inventory_count_invalid_type"
+                    if "candidate_inventory_count" in detail
+                    else "promotion_gate_state_invalid_for_shadow_recompute"
+                ),
+                detail,
+            )
+        else:
+            shadow_post_gate = _dict_or_empty(
+                shadow_contract.trace.to_dict().get("post_gate_identity")
+            )
+            shadow_decision = shadow_contract.decision.to_dict()
+            shadow_trace = shadow_contract.trace.to_dict()
+            shadow_publish_ledger = build_publish_ledger(shadow_trace)
+            if shadow_decision != decision:
+                _append_violation(
+                    violations,
+                    "promotion_decision_shadow_recompute_mismatch",
+                    "serialized PromotionDecision differs from state/evidence recomputation",
+                )
+            if not serialized_fingerprint:
+                _append_violation(
+                    violations,
+                    "publish_contract_input_fingerprint_missing",
+                    "authoritative contract lacks an input fingerprint",
+                )
+            elif serialized_fingerprint != shadow_contract.input_fingerprint:
+                _append_violation(
+                    violations,
+                    "publish_contract_input_fingerprint_mismatch",
+                    "serialized input fingerprint differs from state/evidence recomputation",
+                )
+            trace_fingerprint = str(_dict_or_empty(trace).get("input_fingerprint") or "").strip()
+            if trace_fingerprint != shadow_contract.input_fingerprint:
+                _append_violation(
+                    violations,
+                    "publish_contract_trace_input_fingerprint_mismatch",
+                    "trace fingerprint differs from state/evidence recomputation",
+                )
+            if trace != shadow_trace:
+                _append_violation(
+                    violations,
+                    "publish_contract_trace_shadow_recompute_mismatch",
+                    "serialized publish_contract_trace differs from state/evidence recomputation",
+                )
+            if publish_ledger != shadow_publish_ledger:
+                _append_violation(
+                    violations,
+                    "publish_ledger_shadow_recompute_mismatch",
+                    "serialized publish_ledger differs from deterministic shadow trace",
+                )
 
     if decision.get("bypassed_gate") is True:
         _append_violation(violations, "promotion_decision_bypassed_gate", "PromotionDecision bypassed_gate=true")
@@ -465,6 +738,39 @@ def audit_row(row: dict[str, Any], *, index: int) -> dict[str, Any]:
 
     post_gate = _dict_or_empty(trace.get("post_gate_identity")) if isinstance(trace, dict) else {}
     public_publish = _dict_or_empty(publish_ledger.get("public_publish")) if isinstance(publish_ledger, dict) else {}
+    if shadow_post_gate:
+        resolution_fields = (
+            "title_resolution_allowed",
+            "title_resolution_state",
+            "work_resolution",
+            "candidate_ledger_status",
+        )
+        for field in resolution_fields:
+            expected_value = shadow_post_gate.get(field)
+            if post_gate.get(field) != expected_value:
+                _append_violation(
+                    violations,
+                    f"post_gate_identity_{field}_shadow_mismatch",
+                    f"post_gate_identity.{field} differs from deterministic state/evidence recomputation",
+                )
+            if public_publish.get(field) != expected_value:
+                _append_violation(
+                    violations,
+                    f"publish_ledger_{field}_shadow_mismatch",
+                    f"publish_ledger.public_publish.{field} differs from deterministic state/evidence recomputation",
+                )
+            if identity.get(field) != expected_value:
+                _append_violation(
+                    violations,
+                    f"serialized_identity_{field}_shadow_mismatch",
+                    f"identity.{field} differs from deterministic state/evidence recomputation",
+                )
+            if ledger.get(field) != expected_value:
+                _append_violation(
+                    violations,
+                    f"candidate_ledger_{field}_shadow_mismatch",
+                    f"candidate_ledger.{field} differs from deterministic state/evidence recomputation",
+                )
     expected_title = _string_or_none(decision.get("official_title"))
     expected_url = _string_or_none(decision.get("official_url"))
     gate_scope = _dict_or_empty(promotion_gate_state.get("scope"))
@@ -622,9 +928,101 @@ def audit_row(row: dict[str, Any], *, index: int) -> dict[str, Any]:
                 "official_url": ledger.get("blocked_official_title_url"),
             },
         ]
+        inventory_mirrors = {}
+        if "title_candidates" in identity or "candidate_preservation_sources" in identity:
+            inventory_mirrors["identity"] = (
+                identity.get("title_candidates"),
+                identity.get("candidate_preservation_sources"),
+            )
+        if "title_candidates" in ledger or "candidate_preservation_sources" in ledger:
+            inventory_mirrors["candidate_ledger"] = (
+                ledger.get("title_candidates"),
+                ledger.get("candidate_preservation_sources"),
+            )
+        actual_inventory = candidate_inventory_evidence_from_sources(
+            *(
+                payload
+                for mirror_payloads in inventory_mirrors.values()
+                for payload in mirror_payloads
+            )
+        )
+        typed_inventory = candidate_inventory_records(
+            evidence_records_from_payload(promotion_gate_evidence)
+        )
+        raw_inventory_count = promotion_gate_state.get("candidate_inventory_count", 0)
+        typed_inventory_count = (
+            raw_inventory_count
+            if isinstance(raw_inventory_count, int)
+            and not isinstance(raw_inventory_count, bool)
+            and raw_inventory_count >= 0
+            else -1
+        )
+        actual_inventory_pairs = candidate_inventory_pairs(actual_inventory)
+        typed_inventory_pairs = candidate_inventory_pairs(typed_inventory)
+        # A URL-only pre-gate payload is still an unselected inventory when
+        # typed state has no candidate title.  Treating the URL as a selected
+        # candidate skipped payload validation and undercounted mismatches.
+        inventory_only_contract = bool(
+            not str(promotion_gate_state.get("candidate_title") or "").strip()
+            and (
+                typed_inventory_count > 0
+                or bool(typed_inventory)
+                or bool(actual_inventory)
+                or bool(str(promotion_gate_state.get("candidate_url") or "").strip())
+            )
+        )
+        if inventory_only_contract and typed_inventory_count != len(typed_inventory):
+            _append_violation(
+                violations,
+                "candidate_inventory_count_evidence_mismatch",
+                "typed candidate_inventory_count differs from preservation evidence count",
+            )
+        if inventory_only_contract and actual_inventory_pairs != typed_inventory_pairs:
+            _append_violation(
+                violations,
+                "candidate_inventory_payload_mismatch",
+                "typed preservation evidence differs from identity/candidate-ledger inventory",
+            )
+        if inventory_only_contract:
+            for mirror_name, mirror_payloads in inventory_mirrors.items():
+                mirror_pairs = candidate_inventory_pairs(
+                    candidate_inventory_evidence_from_sources(*mirror_payloads)
+                )
+                if mirror_pairs != typed_inventory_pairs:
+                    _append_violation(
+                        violations,
+                        "candidate_inventory_mirror_payload_mismatch",
+                        f"{mirror_name} differs from typed preservation evidence",
+                    )
+        titleless_payload_present = bool(
+            actual_inventory
+            or str(promotion_gate_state.get("candidate_url") or "").strip()
+        )
+        if inventory_only_contract and titleless_payload_present and decision.get("candidate_preserved") is not True:
+            _append_violation(
+                violations,
+                "candidate_inventory_not_marked_preserved",
+                "candidate inventory exists but PromotionDecision.candidate_preserved is not true",
+            )
+        if inventory_only_contract and titleless_payload_present and status != "candidate_only":
+            _append_violation(
+                violations,
+                "candidate_inventory_status_mismatch",
+                "unselected candidate inventory must use status=candidate_only",
+            )
+        if (
+            inventory_only_contract
+            and titleless_payload_present
+            and post_gate.get("candidate_ledger_status") != "promotion_blocked"
+        ):
+            _append_violation(
+                violations,
+                "candidate_inventory_ledger_status_mismatch",
+                "unselected candidate inventory must serialize candidate_ledger_status=promotion_blocked",
+            )
         candidate_preserved_payload_present = any(
             _has_candidate_payload(source) for source in candidate_preservation_sources
-        )
+        ) or bool(inventory_only_contract and actual_inventory)
         if (
             "serialized_public_identity_scrubbed" in reason_codes
             and not no_candidate_hold
@@ -689,8 +1087,65 @@ def audit_row(row: dict[str, Any], *, index: int) -> dict[str, Any]:
     }
 
 
-def audit_rows(rows: list[dict[str, Any]]) -> dict[str, Any]:
+def _input_post_ids(values: Any) -> list[str]:
+    """Extract post ids from legacy scalar/list/object panel inputs."""
+    if isinstance(values, dict):
+        for key in ("post_ids", "expected_post_ids", "rows", "items", "data", "results"):
+            if key in values:
+                return _input_post_ids(values[key])
+        value = values.get("post_id")
+        return [str(value).strip()] if value not in (None, "") else []
+    if isinstance(values, (list, tuple, set)):
+        result: list[str] = []
+        for item in values:
+            result.extend(_input_post_ids(item))
+        return result
+    if values not in (None, ""):
+        return [str(values).strip()]
+    return []
+
+
+def audit_rows(
+    rows: list[dict[str, Any]],
+    *,
+    expected_post_ids: Any = None,
+    panel_rows: Any = None,
+) -> dict[str, Any]:
     row_reports = [audit_row(row, index=index) for index, row in enumerate(rows, start=1)]
+    # Exact-once is fail-closed from the result rows alone.  Duplicate
+    # non-empty ids are always a publication-contract violation (never GO).
+    seen: dict[str, int] = {}
+    duplicate_post_ids: list[str] = []
+    for index, row in enumerate(rows, start=1):
+        post_id = row_post_id(row)
+        if not post_id:
+            continue
+        if post_id in seen:
+            duplicate_post_ids.append(post_id)
+            row_reports[index - 1]["violations"].append(
+                {"code": "duplicate_post_id", "detail": f"post_id {post_id} also appears at row {seen[post_id]}"}
+            )
+        else:
+            seen[post_id] = index
+
+    expected_ids = _input_post_ids(expected_post_ids)
+    panel_ids = _input_post_ids(panel_rows) if panel_rows is not None else []
+    coverage_violations: list[dict[str, Any]] = []
+    if expected_ids or panel_rows is not None:
+        expected_set = set(expected_ids or panel_ids)
+        actual_set = set(seen)
+        missing = sorted(expected_set - actual_set)
+        orphan = sorted(actual_set - expected_set)
+        expected_dupes = sorted({pid for pid in expected_ids if expected_ids.count(pid) > 1})
+        panel_dupes = sorted({pid for pid in panel_ids if panel_ids.count(pid) > 1})
+        if missing:
+            coverage_violations.append({"code": "expected_post_id_missing", "detail": f"missing post_ids: {missing}"})
+        if orphan:
+            coverage_violations.append({"code": "orphan_post_id", "detail": f"rows outside expected/panel scope: {orphan}"})
+        if expected_dupes or panel_dupes:
+            coverage_violations.append({"code": "expected_post_id_duplicate", "detail": f"duplicate expected/panel ids: {sorted(set(expected_dupes + panel_dupes))}"})
+    if coverage_violations:
+        row_reports.append({"index": 0, "post_id": "", "gate": "NO-GO", "public_identity": {}, "violations": coverage_violations})
     violations = [item for item in row_reports if item["violations"]]
     counts = Counter(
         violation["code"]
@@ -703,8 +1158,16 @@ def audit_rows(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "gate": "GO" if not violations else "NO-GO",
         "semantic_quality": "REVIEW-LOCKED",
         "full_scan_approval": False,
+        "exact_once": {
+            "status": "NOT_PROVABLE",
+            "reason": "no verified durable receipt/sidecar audit supplied; semantic convergence is not exact-once proof",
+            "duplicate_post_ids": sorted(set(duplicate_post_ids)),
+        },
         "policy": {
+            "typed_promotion_decision_required_for_every_row": True,
             "promotion_decision_trace_ledger_serialized_identity_must_converge": True,
+            "trace_and_publish_ledger_must_equal_state_evidence_shadow": True,
+            "each_present_candidate_inventory_mirror_group_must_equal_typed_inventory": True,
             "blocked_decision_must_not_publish_serialized_public_identity": True,
             "allowed_decision_must_match_serialized_public_identity": True,
             "scrubbed_candidate_must_be_preserved_or_marked_no_candidate": True,
@@ -714,6 +1177,9 @@ def audit_rows(rows: list[dict[str, Any]]) -> dict[str, Any]:
             "official_url_withheld_reason_must_not_publish_url": True,
             "verified_image_ocr_work_title_current_work_candidate_must_not_remain_precision_blocked": True,
             "mixed_current_and_noncurrent_scope_reason_codes_must_be_normalized": True,
+            "non_empty_post_ids_must_be_unique": True,
+            "typed_state_post_id_must_match_row_post_id_when_present": True,
+            "exact_once_requires_verified_sidecar_audit": True,
         },
         "summary": {
             "row_count": len(row_reports),
@@ -732,6 +1198,8 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
         f"- semantic_quality: `{report['semantic_quality']}`",
         f"- full_scan_approval: `{str(report['full_scan_approval']).lower()}`",
         "- 정책: `PromotionDecision`, `publish_contract_trace`, `publish_ledger`, serialized public identity는 같은 publish/block 결론으로 수렴해야 한다.",
+        "- 정책: 모든 행에 typed `PromotionDecision`이 있어야 하며, trace/ledger는 state+evidence shadow와 정확히 일치해야 한다.",
+        "- 정책: 존재하는 top-level/candidate-ledger 후보 inventory 묶음은 각각 typed inventory와 같아야 한다.",
         "- 정책: `serialized_public_identity_scrubbed`는 후보가 있으면 candidate ledger/trace에 보존하고, 후보가 없으면 `hold_without_candidates` 같은 no-candidate reason을 남겨야 한다.",
         "- 정책: `PromotionDecision.scope`는 `publish_contract_trace.scope_state`와 일치해야 하며, scope reason code와 publish/block reason code가 충돌하면 안 된다.",
         "- 정책: current-work marker와 non-current/context marker가 reason source 안이나 source 사이에 함께 남으면 mixed trace로 보고 정규화해야 한다.",
@@ -746,6 +1214,19 @@ def write_markdown(report: dict[str, Any], path: Path) -> None:
         f"- violation_counts: `{report['summary']['violation_counts']}`",
         "",
     ]
+    result_artifacts = report.get("result_artifacts")
+    if isinstance(result_artifacts, list) and result_artifacts:
+        lines.extend(["## 입력 artifact binding", ""])
+        for artifact in result_artifacts:
+            lines.extend(
+                [
+                    f"- path: `{artifact.get('path')}`",
+                    f"  - sha256: `{artifact.get('sha256')}`",
+                    f"  - size_bytes: `{artifact.get('size_bytes')}`",
+                    f"  - row_count: `{artifact.get('row_count')}`",
+                ]
+            )
+        lines.append("")
     if report["violations"]:
         lines.extend(["## 위반 샘플", ""])
         for item in report["violations"][:20]:
@@ -771,14 +1252,28 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output-json", required=True, type=Path)
     parser.add_argument("--output-md", required=True, type=Path)
     parser.add_argument("--fail-on-no-go", action="store_true")
+    # Optional legacy-compatible scope inputs.  They are only coverage
+    # references; they do not claim durable receipt/exact-once proof.
+    parser.add_argument("--expected-post-ids", type=Path)
+    parser.add_argument("--panel-input", type=Path)
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
-    rows = [row for result_path in args.result for row in load_rows(result_path)]
-    report = audit_rows(rows)
+    loaded_results = [
+        (result_path, load_rows(result_path))
+        for result_path in args.result
+    ]
+    rows = [row for _, result_rows in loaded_results for row in result_rows]
+    expected_post_ids = load_json(args.expected_post_ids) if args.expected_post_ids else None
+    panel_rows = load_rows(args.panel_input) if args.panel_input else None
+    report = audit_rows(rows, expected_post_ids=expected_post_ids, panel_rows=panel_rows)
     report["result_paths"] = [str(path) for path in args.result]
+    report["result_artifacts"] = [
+        build_result_artifact_binding(result_path, row_count=len(result_rows))
+        for result_path, result_rows in loaded_results
+    ]
     write_json(args.output_json, report)
     write_markdown(report, args.output_md)
     print(json.dumps(report, ensure_ascii=False, indent=2))

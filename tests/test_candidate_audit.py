@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from llm_batch.candidate_audit import (
+from llm_batch.grounding.candidate_audit import (
     apply_author_angle_official_detail_canonicalization,
     apply_candidate_audit_fields,
     apply_comment_surface_candidate_hints,

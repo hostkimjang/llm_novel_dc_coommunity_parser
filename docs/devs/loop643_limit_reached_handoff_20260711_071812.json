@@ -1,0 +1,72 @@
+{
+  "report_type": "loop643_limit_reached_handoff",
+  "generated_at": "2026-07-11T07:18:12+09:00",
+  "goal_id": "ARCH-MULTIWORK-TITLE-BODY-SUBJECT-CONFLICT",
+  "outcome": "LIMIT_REACHED_HANDOFF",
+  "goal_complete_under_current_budget": true,
+  "semantic_quality": "REVIEW-LOCKED",
+  "production_full_scan_approval": false,
+  "runtime_release_fingerprint_sha256": "d732342f432730842ade446783cbb8639334f9f9278b51a3e2a593fdbe62000f",
+  "completed_scope": [
+    "production-literal-free title/body subject-conflict contract and tests",
+    "shared promotion gate fail-closed candidate preservation",
+    "static, integrated, and independent adversarial audit",
+    "new fingerprint freeze",
+    "Golden18 exact-once runtime and post-run gates",
+    "search terminal consensus for all non-required misses",
+    "PLATEAU_AUDIT_ONLY full residual classification"
+  ],
+  "not_run_by_contract": {
+    "n5": true,
+    "fresh375": true,
+    "production_100k": true,
+    "reason": "Golden hard gate required_search_hard_blocker=5"
+  },
+  "remaining_hard_blockers": {
+    "count": 5,
+    "post_ids": [11668307, 11685994, 11694019, 11705231, 11713222],
+    "required_search_vlm_blocker": 5,
+    "unsafe_publish": 1,
+    "actionable_unfixed": 5,
+    "unreviewed_search_rows": 0,
+    "golden_true_semantic_regression": 0,
+    "full375_true_semantic_regression": null
+  },
+  "backlog": [
+    {
+      "id": "ARCH-REQUIRED-SEARCH-PUBLISH-FAIL-CLOSED",
+      "type": "architecture",
+      "priority": "P0",
+      "scope": "required search issue가 남은 publish-dependent candidate를 shared promotion gate에서 public-null candidate-preserved HOLD로 강제한다.",
+      "constraints": [
+        "post_id/title literal 금지",
+        "reason_codes/publish_allowed/candidate_preserved/bypassed_gate=false 고정",
+        "search health가 publication contract보다 먼저 또는 동일 shared decision에서 fail-close",
+        "Golden expected/matcher 완화 금지"
+      ]
+    },
+    {
+      "id": "INFRA-ROW-SEARCH-RECOVERY",
+      "type": "capability",
+      "priority": "P0",
+      "scope": "pre/post shard health가 정상이더라도 row-level upstream-zero/bridge-after-filter-zero가 unrecovered로 남는 원인을 복구한다.",
+      "success": "모든 publish-dependent Golden row의 unrecovered_degraded=0"
+    }
+  ],
+  "resume_conditions": [
+    "사용자가 별도 architecture/search-capability goal을 명시적으로 승인한다.",
+    "현재 fingerprint를 재실행하지 않고 새 runtime code-tree fingerprint를 동결한다.",
+    "generalized required-search fail-closed 계약을 production literal 없이 test-first로 검증한다.",
+    "search non-light shard16 pre/post와 row-level unrecovered=0을 함께 요구한다.",
+    "새 fingerprint Golden18을 정확히 1회 실행하고 expected/matcher를 완화하지 않는다.",
+    "그 Golden hard GO 뒤에만 새 budget의 N=5, N=5 GO 뒤에만 fresh375를 실행한다."
+  ],
+  "resume_command": "/goal 새 goal ARCH-REQUIRED-SEARCH-PUBLISH-FAIL-CLOSED + INFRA-ROW-SEARCH-RECOVERY로 loop643_limit_reached_handoff_20260711_071812.json의 resume_conditions를 exact-once 수행하라.",
+  "evidence": [
+    "docs/devs/loop643_arch_multiwork_title_body_subject_conflict_release_fingerprint_20260711_060457.json",
+    "docs/devs/loop643_arch_subject_conflict_golden18_r2_integrity_20260711_071812.json",
+    "docs/devs/loop643_arch_subject_conflict_golden18_r2_expected_audit.json",
+    "docs/devs/loop643_arch_subject_conflict_golden18_r2_search_post_consensus_gate.json",
+    "docs/devs/loop643_arch_subject_conflict_golden18_r2_plateau_audit_20260711_071812.json"
+  ]
+}

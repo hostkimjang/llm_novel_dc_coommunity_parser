@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from src.llm_batch.candidate_set_shadow import NIL_LABEL
+from src.llm_batch.grounding.candidate_set_shadow import NIL_LABEL
 from src.llm_batch.promotion_gate import (
     can_publish_title,
     evidence_records_from_payload,

@@ -17,7 +17,7 @@ from .prompts import (
     build_gatekeeper_system_prompt,
 )
 from .utils import parse_json_with_think_removal, _ts, get_kiwi
-from ..candidate_generation import record_candidate_stage_receipt
+from ..grounding.candidate_generation import record_candidate_stage_receipt
 
 
 class GatekeeperExpert:
@@ -403,7 +403,7 @@ class GatekeeperExpert:
                 combined.append(entity)
         
         # 🆕 커뮤니티 접두어 패턴 정제: "소신발언)", "스포)" 등 제거
-        from ..rules import COMMUNITY_PREFIX_PATTERNS
+        from ..domain.rules import COMMUNITY_PREFIX_PATTERNS
         cleaned = []
         for title in combined:
             if not isinstance(title, str):
@@ -1276,7 +1276,7 @@ class GatekeeperExpert:
         3. 장르 힌트를 context_clues에 저장
         """
         import re
-        from ..rules import GENRE_PREFIX_TAGS, DC_OPINION_KEYWORDS
+        from ..domain.rules import GENRE_PREFIX_TAGS, DC_OPINION_KEYWORDS
         
         title = post.get("title", "").strip()
         if not title:
@@ -1394,7 +1394,7 @@ class GatekeeperExpert:
         
         결과에 has_episode_reference=True, episode_info={} 를 context_clues에 추가.
         """
-        from ..rules import EPISODE_NUMBER_PATTERN
+        from ..domain.rules import EPISODE_NUMBER_PATTERN
         
         title = post.get("title", "").strip()
         content_texts = []
@@ -1497,7 +1497,7 @@ class GatekeeperExpert:
         결과에 has_title_masking=True를 context_clues에 추가.
         작품 논의가 확실하지만 제목 특정은 불가능함을 후속 Expert에 알림.
         """
-        from ..rules import TITLE_MASKING_PATTERNS
+        from ..domain.rules import TITLE_MASKING_PATTERNS
         
         title = post.get("title", "").strip()
         if not title:
@@ -1543,7 +1543,7 @@ class GatekeeperExpert:
         4. 본문 부정 표현: "본적없음", "못봤음" → 장르 소재 토론
         """
         import re
-        from ..rules import (
+        from ..domain.rules import (
             DC_OPINION_KEYWORDS,
             GENRE_DISCUSSION_TITLE_INDICATORS,
             GENRE_ARCHETYPE_TERMS,

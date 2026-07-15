@@ -39,6 +39,9 @@ venv/
 Thumbs.db
 /tmp
 tests/inputs/test01.jsonl
+# Goal 전용 test/tool 코드는 기본 ignore한다. 현재 재사용 가능한 계약만 아래
+# allowlist로 승격하며, 종료된 smoke/builder는 다시 unignore하지 않는다.
+# 기준: docs/devs/CODE_ARTIFACT_CLEANUP_POLICY_KO.md
 /tests/*
 !/tests/test_pipeline_stage_runtime_adapter.py
 !/tests/test_decision_call_readback.py
@@ -71,7 +74,6 @@ tests/inputs/test01.jsonl
 !/tests/test_final_semantic_reread_gate.py
 !/tests/test_expert_main_input_loader.py
 !/tests/test_expert_main_comment_metadata.py
-!/tests/test_qualitative_review_packet_tools.py
 !/tests/test_recover_expert_run_from_checkpoint.py
 !/tests/test_goal_test_run_contract_audit.py
 !/tests/test_goal_current_state_map.py
@@ -87,7 +89,6 @@ tests/inputs/test01.jsonl
 !/tests/test_qualitative_round3_after_review.py
 !/tests/test_targeted_followup_remaining_queue.py
 !/tests/test_goal_next_seed_package.py
-!/tests/test_browser_visual_targets_from_result.py
 !/tests/test_vlm_browser_review_cli.py
 !/tests/test_dashboard_standalone.py
 !/tests/test_judge_seed_registry.py
@@ -121,7 +122,6 @@ tests/inputs/test01.jsonl
 !/tests/test_build_interrupted_merge_trust_anchor.py
 !/tests/test_build_codex_cli_trust_anchor.py
 !/tests/test_verify_codex_blind_judge_thread.py
-!/tests/test_build_search_terminal_consensus_ledger.py
 !/tests/test_build_search_terminal_consensus_ledger_v2.py
 !/tests/test_build_search_recovery_composite_gate.py
 !/tests/test_build_promotion_contract_n5_blind_judge.py
@@ -212,7 +212,6 @@ tests/inputs/test01.jsonl
 !/tools/build_interrupted_merge_trust_anchor.py
 !/tools/build_codex_cli_trust_anchor.py
 !/tools/verify_codex_blind_judge_thread.py
-!/tools/build_search_terminal_consensus_ledger.py
 !/tools/build_search_terminal_consensus_ledger_v2.py
 !/tools/build_search_recovery_composite_gate.py
 !/tools/build_promotion_contract_n5_blind_judge.py
@@ -247,6 +246,7 @@ tests/inputs/test01.jsonl
 !/out/regression_safe_grounding_20260626_000008_928006_loop01/golden/
 !/out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_manifest.json
 !/out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_set.jsonl
+
 !/out/pipeline_improvement_harness_20260711/
 /out/pipeline_improvement_harness_20260711/*
 !/out/pipeline_improvement_harness_20260711/retrieval_failclose_v5/
@@ -434,3 +434,34 @@ tests/inputs/test01.jsonl
 /out/regression_safe_grounding_20260626_000008_928006_loop01/golden/*
 !/out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_manifest.json
 !/out/regression_safe_grounding_20260626_000008_928006_loop01/golden/golden_set.jsonl
+
+# 2026-07 publish hygiene
+# Runtime/harness 결과는 로컬 증거로 보존하되 GitHub 변경 목록에는 올리지 않는다.
+/out/**
+/CON
+**/.independent_plan_execution/
+**/plan.active.lock
+**/plan.claim.json
+/docs/devs/loop_reports/search_fail_close_probe_*.json
+
+# Loop640~643 중간 산출물은 반복 생성되므로 기본 제외한다.
+/docs/devs/loop64[0-3]_*.json
+/docs/devs/loop64[0-3]_*.md
+
+# 현재 문서 허브가 직접 가리키는 terminal state만 reader-facing 증거로 유지한다.
+!/docs/devs/loop641_convergence_state.json
+!/docs/devs/loop641_convergence_state.md
+!/docs/devs/loop641_gate_tool_independent_audit.json
+!/docs/devs/loop641_gate_tool_independent_audit.md
+!/docs/devs/loop642_convergence_state.json
+!/docs/devs/loop642_convergence_state.md
+!/docs/devs/loop642_blocked_handoff_20260711_025714.json
+!/docs/devs/loop642_blocked_handoff_20260711_025714.md
+!/docs/devs/loop642_limit_reached_continuation_reaudit_20260711_024832.json
+!/docs/devs/loop642_limit_reached_continuation_reaudit_20260711_024832.md
+!/docs/devs/loop642_limit_reached_handoff_20260711_015147.json
+!/docs/devs/loop642_limit_reached_handoff_20260711_015147.md
+!/docs/devs/loop643_convergence_state.json
+!/docs/devs/loop643_convergence_state.md
+!/docs/devs/loop643_limit_reached_handoff_20260711_071812.json
+!/docs/devs/loop643_limit_reached_handoff_20260711_071812.md

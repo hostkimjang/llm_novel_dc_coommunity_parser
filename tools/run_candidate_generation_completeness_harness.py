@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from src.llm_batch.candidate_generation import (  # noqa: E402
+from src.llm_batch.grounding.candidate_generation import (  # noqa: E402
     CANDIDATE_STAGE_RULES,
     build_candidate_generation_proof,
     build_candidate_generation_snapshot,
@@ -27,7 +27,7 @@ from src.llm_batch.candidate_generation import (  # noqa: E402
     candidate_generation_snapshot_from_dict,
     candidate_stage_receipt_from_dict,
 )
-from src.llm_batch.candidate_set_shadow import selective_shadow_from_identity  # noqa: E402
+from src.llm_batch.grounding.candidate_set_shadow import selective_shadow_from_identity  # noqa: E402
 from src.llm_batch.promotion_gate import _canonical_url, _title_key  # noqa: E402
 
 

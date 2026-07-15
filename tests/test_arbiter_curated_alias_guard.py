@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -11,6 +12,7 @@ import llm_batch.experts.arbiter as arbiter_module  # noqa: E402
 from llm_batch.experts.arbiter import ArbiterExpert  # noqa: E402
 from llm_batch.experts.deliberation import DeliberationOrchestrator  # noqa: E402
 from llm_batch.experts.orchestrator import ConversationContext, ExpertType  # noqa: E402
+from llm_batch.slang.slang_db import SlangDBManager, slang_db_alias_seed_is_safe  # noqa: E402
 
 
 class DummyLLM:
@@ -1428,6 +1430,561 @@ class ArbiterCuratedAliasGuardTest(unittest.TestCase):
         self.assertIn(
             "curated_alias_missing_contextual_work_anchor",
             decision.get("_title_null_block_reasons", []),
+        )
+
+
+class SlangDBWriteGuardTest(unittest.TestCase):
+    @staticmethod
+    def _result(
+        post_id: int,
+        official_title: str,
+        alias: str,
+        *,
+        slang_insight: dict | None = None,
+        consistency_flags: list[str] | None = None,
+    ) -> dict:
+        candidate = {
+            "official_title": official_title,
+            "alias_or_mention": alias,
+            "confidence": "High",
+            "source_tier": "official_detail",
+        }
+        return {
+            "post_id": post_id,
+            "title": f"post-{post_id}",
+            "created_at": "2026-07-14 18:00:00",
+            "analysis_result": {
+                "identity": {
+                    "is_relevant": True,
+                    "discussion_type": "general",
+                    "topicality": "core_relevant",
+                    "subtype": "resolved_work",
+                    "work_resolution": "resolved",
+                    "anchor_type": "title_alias",
+                    "anchor_strength": "high",
+                    "reason": "official_title_evidence: true",
+                    "novel_identity": {
+                        "official_title": official_title,
+                        "heretic_url": f"https://example.com/{post_id}",
+                        "confidence": "High",
+                    },
+                    "primary_work": dict(candidate),
+                    "title_candidates": [dict(candidate)],
+                    "mentioned_works": [],
+                    "secondary_reference_works": [],
+                    "slang_insight": slang_insight or {},
+                    "consistency_flags": consistency_flags or [],
+                    "entity_mentions": [],
+                },
+                "analysis": {},
+            },
+        }
+
+    def test_high_confidence_unaligned_surfaces_do_not_enter_slang_db(self):
+        cases = (
+            (11713219, "옥수수", "지력"),
+            (11716500, "조선에서 태종이 나를 픽함", "네이버"),
+            (11713185, "[메이플스토리] 두 명의 대적자", "보내"),
+            (11711592, "[프문]부족한 예술일수록 더욱 아름답게 피어나리라", "세상"),
+            (11710055, "호랑이 새끼", "있었"),
+        )
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "slang_db.json"
+            manager = SlangDBManager(path=path, run_id="guard-negative", enabled=True, flush_posts=20)
+            for post_id, official_title, alias in cases:
+                manager.record_result(self._result(post_id, official_title, alias))
+            manager.finalize()
+            payload = json.loads(path.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["titles"], {})
+        self.assertEqual(payload["family_aliases"], {})
+
+    def test_store_false_blocks_surface_and_reference_bypass_but_preserves_independently_verified_alias(self):
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "slang_db.json"
+            manager = SlangDBManager(path=path, run_id="guard-veto", enabled=True, flush_posts=10)
+            result = self._result(
+                11718101,
+                "망겜의 성기사",
+                "망겜성",
+                slang_insight={
+                    "detected_term": "망겜성후기",
+                    "decoded_term": "망겜의 성기사 + 후기",
+                    "decode_verified": True,
+                    "canonical_work_alias": "망겜성",
+                    "alias_scope": "work_plus_other",
+                    "store_in_slang_db": False,
+                    "store_reason": "non_pure_work_alias",
+                },
+                consistency_flags=[
+                    "confirmed_alias:망겜성",
+                    "verified_alias_official_detail_anchor",
+                ],
+            )
+            identity = result["analysis_result"]["identity"]
+            identity["mentioned_works"] = [
+                {
+                    "official_title": "망겜성 외전",
+                    "alias_or_mention": "망겜성",
+                    "confidence": "High",
+                    "source_tier": "official_detail",
+                }
+            ]
+            identity["secondary_reference_works"] = [
+                {
+                    "official_title": "망겜성 단편",
+                    "alias_or_mention": "망겜성",
+                    "confidence": "High",
+                    "source_tier": "official_detail",
+                }
+            ]
+            manager.record_result(result)
+            manager.finalize()
+            payload = json.loads(path.read_text(encoding="utf-8"))
+
+        self.assertEqual(set(payload["titles"]), {"망겜의 성기사"})
+        bucket = payload["titles"]["망겜의 성기사"]
+        self.assertEqual([entry["term"] for entry in bucket["slang"]], ["망겜성"])
+        self.assertNotIn("망겜성후기", [entry["term"] for entry in bucket["slang"]])
+        self.assertEqual(bucket["conflicts"], [])
+
+    def test_incomplete_or_inconsistent_store_true_contract_is_fail_closed(self):
+        cases = (
+            self._result(
+                11,
+                "괴담 호텔 탈출기",
+                "연참",
+                slang_insight={
+                    "detected_term": "연참",
+                    "decoded_term": "괴담 호텔 탈출기",
+                    "decode_verified": True,
+                    "canonical_work_alias": "쿠크루",
+                    "alias_scope": "pure_work_alias",
+                    "store_in_slang_db": True,
+                    "store_reason": "pure_work_alias",
+                },
+            ),
+            self._result(
+                12,
+                "옥수수",
+                "지력",
+                slang_insight={
+                    "detected_term": "지력",
+                    "decoded_term": "옥수수",
+                    "decode_verified": True,
+                    "canonical_work_alias": "지력",
+                    "alias_scope": "pure_work_alias",
+                    "store_in_slang_db": True,
+                    "store_reason": "model_asserted",
+                },
+            ),
+            self._result(
+                13,
+                "조선에서 태종이 나를 픽함",
+                "네이버",
+                slang_insight={
+                    "detected_term": "네이버",
+                    "decoded_term": "조선에서 태종이 나를 픽함",
+                    "canonical_work_alias": "네이버",
+                    "alias_scope": "pure_work_alias",
+                    "store_in_slang_db": True,
+                    "store_reason": "pure_work_alias",
+                },
+            ),
+            self._result(
+                14,
+                "아카데미 생존 갤러리",
+                "아생갤",
+                slang_insight={
+                    "detected_term": "아생갤",
+                    "decoded_term": "전혀 다른 작품",
+                    "decode_verified": True,
+                    "canonical_work_alias": "아생갤",
+                    "alias_scope": "pure_work_alias",
+                    "store_in_slang_db": True,
+                    "store_reason": "pure_work_alias",
+                },
+            ),
+        )
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "slang_db.json"
+            manager = SlangDBManager(path=path, run_id="guard-incomplete", enabled=True, flush_posts=10)
+            for result in cases:
+                manager.record_result(result)
+            manager.finalize()
+            payload = json.loads(path.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["titles"], {})
+
+    def test_structural_similarity_without_pair_proof_is_not_collectable(self):
+        cases = (
+            (11716464, "페이 포인트", "페이트"),
+            (11718079, "로판 속 주인공이 나만 좋아함", "로판이나"),
+            (11716462, "니들 생각 다 들린다", "니생"),
+            (11711608, "정의실현부 전략병기분대 부분대장입니다", "부분부분"),
+            (11710067, "유니콘이 안심하고 먹을수 있는 노벨피아 사료들 ver 1.1", "유니콘들"),
+            (11714907, "아카데미 생존 갤러리", "아생갤"),
+        )
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "slang_db.json"
+            manager = SlangDBManager(path=path, run_id="guard-structural-only", enabled=True, flush_posts=20)
+            for post_id, official_title, alias in cases:
+                manager.record_result(self._result(post_id, official_title, alias))
+            manager.finalize()
+            payload = json.loads(path.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["titles"], {})
+        self.assertEqual(payload["family_aliases"], {})
+
+    def test_reference_roles_do_not_mutate_slang_db_without_pair_proof(self):
+        result = self._result(11718079, "기준 작품", "기준약칭")
+        identity = result["analysis_result"]["identity"]
+        identity["novel_identity"] = {"official_title": None, "heretic_url": None}
+        identity["primary_work"] = None
+        identity["title_candidates"] = []
+        identity["recommendation_candidates"] = [
+            {
+                "official_title": "로판 속 주인공이 나만 좋아함",
+                "alias_or_mention": "로판이나",
+                "confidence": "High",
+                "source_tier": "official_detail",
+            }
+        ]
+        identity["mentioned_works"] = [
+            {
+                "official_title": "니들 생각 다 들린다",
+                "alias_or_mention": "니생",
+                "confidence": "High",
+                "source_tier": "official_detail",
+            }
+        ]
+        identity["secondary_reference_works"] = [
+            {
+                "official_title": "정의실현부 전략병기분대 부분대장입니다",
+                "alias_or_mention": "부분부분",
+                "confidence": "High",
+                "source_tier": "official_detail",
+            }
+        ]
+        identity["comparison_target"] = [
+            {
+                "official_title": "유니콘이 안심하고 먹을수 있는 노벨피아 사료들 ver 1.1",
+                "alias_or_mention": "유니콘들",
+                "confidence": "High",
+                "source_tier": "official_detail",
+            }
+        ]
+
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "slang_db.json"
+            manager = SlangDBManager(path=path, run_id="guard-reference-only", enabled=True, flush_posts=10)
+            manager.record_result(result)
+            manager.finalize()
+            payload = json.loads(path.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["titles"], {})
+
+    def test_fully_verified_alias_pairs_remain_collectable(self):
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "slang_db.json"
+            manager = SlangDBManager(path=path, run_id="guard-positive", enabled=True, flush_posts=10)
+            manager.record_result(
+                self._result(
+                    1,
+                    "아카데미 생존 갤러리",
+                    "아생갤",
+                    consistency_flags=[
+                        "confirmed_alias:아생갤",
+                        "verified_alias_official_detail_anchor",
+                    ],
+                )
+            )
+            manager.record_result(
+                self._result(
+                    2,
+                    "괴담 호텔 탈출기",
+                    "쿠크루",
+                    slang_insight={
+                        "detected_term": "쿠크루",
+                        "decoded_term": "괴담 호텔 탈출기",
+                        "decode_verified": True,
+                        "canonical_work_alias": "쿠크루",
+                        "alias_scope": "pure_work_alias",
+                        "store_in_slang_db": True,
+                        "store_reason": "pure_work_alias",
+                    },
+                )
+            )
+            manager.record_result(
+                self._result(
+                    3,
+                    "비구조 별칭 작품",
+                    "별칭코드",
+                    consistency_flags=[
+                        "confirmed_alias:별칭코드",
+                        "verified_alias_official_detail_anchor",
+                    ],
+                )
+            )
+            registry_result = self._result(4, "주무시기 전에 무엇을 하셨나요?", "주전무")
+            registry_result["analysis_result"]["identity"]["novel_identity"]["alias_resolution_sources"] = [
+                {
+                    "alias": "주전무",
+                    "canonical_title": "주무시기 전에 무엇을 하셨나요?",
+                    "alias_resolution_source": "known_abbreviation",
+                    "source_registry": "KNOWN_ABBREVIATIONS",
+                }
+            ]
+            manager.record_result(registry_result)
+            known_title_result = self._result(5, "아카데미 생존 갤러리", "아생갤")
+            known_title_result["analysis_result"]["identity"]["novel_identity"]["alias_resolution_sources"] = [
+                {
+                    "alias": "아생갤",
+                    "canonical_title": "아카데미 생존 갤러리",
+                    "alias_resolution_source": "known_title_abbreviation",
+                    "source_registry": "KNOWN_TITLE_ABBREVIATIONS",
+                }
+            ]
+            manager.record_result(known_title_result)
+            slang_dictionary_result = self._result(6, "로판 속 주인공이 나만 좋아함", "로나좋")
+            slang_dictionary_result["analysis_result"]["identity"]["novel_identity"]["alias_resolution_sources"] = [
+                {
+                    "alias": "로나좋",
+                    "canonical_title": "로판 속 주인공이 나만 좋아함",
+                    "alias_resolution_source": "slang_dictionary",
+                    "source_registry": "SLANG_DICTIONARY",
+                }
+            ]
+            manager.record_result(slang_dictionary_result)
+            manager.finalize()
+            payload = json.loads(path.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["titles"]["아카데미 생존 갤러리"]["slang"][0]["term"], "아생갤")
+        self.assertEqual(payload["titles"]["괴담 호텔 탈출기"]["slang"][0]["term"], "쿠크루")
+        self.assertEqual(payload["titles"]["비구조 별칭 작품"]["slang"][0]["term"], "별칭코드")
+        self.assertEqual(payload["titles"]["주무시기 전에 무엇을 하셨나요?"]["slang"][0]["term"], "주전무")
+        self.assertEqual(payload["titles"]["로판 속 주인공이 나만 좋아함"]["slang"][0]["term"], "로나좋")
+
+    def test_registry_provenance_requires_exact_enum_tuple_and_real_mapping(self):
+        cases = (
+            (
+                21,
+                "주무시기 전에 무엇을 하셨나요?",
+                "주전무",
+                "known_abbreviation",
+                "SLANG_DICTIONARY",
+            ),
+            (
+                22,
+                "임의 작품",
+                "임의약칭",
+                "known_abbreviation",
+                "KNOWN_ABBREVIATIONS",
+            ),
+            (
+                23,
+                "다른 작품",
+                "주전무",
+                "known_abbreviation",
+                "KNOWN_ABBREVIATIONS",
+            ),
+        )
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "slang_db.json"
+            manager = SlangDBManager(path=path, run_id="guard-registry-spoof", enabled=True, flush_posts=20)
+            for post_id, title, alias, resolution_source, registry in cases:
+                result = self._result(post_id, title, alias)
+                result["analysis_result"]["identity"]["novel_identity"]["alias_resolution_sources"] = [
+                    {
+                        "alias": alias,
+                        "canonical_title": title,
+                        "alias_resolution_source": resolution_source,
+                        "source_registry": registry,
+                    }
+                ]
+                manager.record_result(result)
+            manager.finalize()
+            payload = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {"titles": {}}
+
+        self.assertEqual(payload["titles"], {})
+
+    def test_non_boolean_store_values_are_fail_closed(self):
+        malformed_values = ("false", "true", 0, 1, [], {})
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "slang_db.json"
+            manager = SlangDBManager(path=path, run_id="guard-store-type", enabled=True, flush_posts=20)
+            for post_id, raw_store in enumerate(malformed_values, start=31):
+                manager.record_result(
+                    self._result(
+                        post_id,
+                        "아카데미 생존 갤러리",
+                        "아생갤",
+                        slang_insight={
+                            "detected_term": "아생갤",
+                            "decoded_term": "아카데미 생존 갤러리",
+                            "decode_verified": True,
+                            "canonical_work_alias": "아생갤",
+                            "alias_scope": "pure_work_alias",
+                            "store_in_slang_db": raw_store,
+                            "store_reason": "pure_work_alias",
+                        },
+                        consistency_flags=[
+                            "confirmed_alias:아생갤",
+                            "verified_alias_official_detail_anchor",
+                        ],
+                    )
+                )
+            manager.finalize()
+            payload = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {"titles": {}}
+
+        self.assertEqual(payload["titles"], {})
+
+    def test_persisted_unaligned_alias_cannot_seed_without_verified_contract(self):
+        unsafe_entry = {"term": "지력", "sources": ["primary_work", "title_candidate"]}
+        unsafe_bucket = {
+            "examples": [
+                {
+                    "official_title": "옥수수",
+                    "alias": "지력",
+                    "source_roles": ["primary_work", "title_candidate"],
+                }
+            ]
+        }
+        self.assertFalse(slang_db_alias_seed_is_safe("옥수수", unsafe_entry, unsafe_bucket))
+
+        structural_entry = {"term": "아생갤", "sources": ["primary_work", "title_candidate"]}
+        self.assertFalse(slang_db_alias_seed_is_safe("아카데미 생존 갤러리", structural_entry, {"examples": []}))
+
+        verified_entry = {"term": "쿠크루", "sources": ["slang_insight", "primary_work"]}
+        verified_bucket = {
+            "examples": [
+                {
+                    "official_title": "괴담 호텔 탈출기",
+                    "alias": "쿠크루",
+                    "slang_detected_term": "쿠크루",
+                    "slang_decoded_term": "괴담 호텔 탈출기",
+                    "slang_decode_verified": True,
+                    "slang_canonical_alias": "쿠크루",
+                    "slang_alias_scope": "pure_work_alias",
+                    "slang_store_in_db": True,
+                    "slang_store_reason": "pure_work_alias",
+                }
+            ]
+        }
+        self.assertTrue(slang_db_alias_seed_is_safe("괴담 호텔 탈출기", verified_entry, verified_bucket))
+
+        punctuated_entry = {"term": "K-문제", "sources": ["primary_work", "title_candidate"]}
+        punctuated_bucket = {
+            "examples": [
+                {
+                    "official_title": "비구조 별칭 작품",
+                    "alias": "K-문제",
+                    "consistency_flags": [
+                        "confirmed_alias:K-문제",
+                        "verified_alias_official_detail_anchor",
+                    ],
+                }
+            ]
+        }
+        self.assertTrue(
+            slang_db_alias_seed_is_safe("비구조 별칭 작품", punctuated_entry, punctuated_bucket)
+        )
+
+        malformed_bucket = {
+            "examples": [
+                {
+                    "official_title": "비구조 별칭 작품",
+                    "alias": "K-문제",
+                    "consistency_flags": 1,
+                }
+            ]
+        }
+        self.assertFalse(
+            slang_db_alias_seed_is_safe("비구조 별칭 작품", punctuated_entry, malformed_bucket)
+        )
+
+        valid_registry_entry = {"term": "주전무", "sources": ["primary_work"]}
+        valid_registry_bucket = {
+            "examples": [
+                {
+                    "official_title": "주무시기 전에 무엇을 하셨나요?",
+                    "alias": "주전무",
+                    "source_roles": ["primary_work"],
+                    "alias_resolution_sources": [
+                        {
+                            "alias": "주전무",
+                            "canonical_title": "주무시기 전에 무엇을 하셨나요?",
+                            "alias_resolution_source": "known_abbreviation",
+                            "source_registry": "KNOWN_ABBREVIATIONS",
+                        }
+                    ],
+                }
+            ]
+        }
+        self.assertTrue(
+            slang_db_alias_seed_is_safe(
+                "주무시기 전에 무엇을 하셨나요?",
+                valid_registry_entry,
+                valid_registry_bucket,
+            )
+        )
+
+        registry_entry = {"term": "주전무", "sources": ["secondary_reference"]}
+        reference_only_registry_bucket = {
+            "examples": [
+                {
+                    "official_title": "주무시기 전에 무엇을 하셨나요?",
+                    "alias": "주전무",
+                    "source_roles": ["secondary_reference"],
+                    "alias_resolution_sources": [
+                        {
+                            "alias": "주전무",
+                            "canonical_title": "주무시기 전에 무엇을 하셨나요?",
+                            "alias_resolution_source": "known_abbreviation",
+                            "source_registry": "KNOWN_ABBREVIATIONS",
+                        }
+                    ],
+                }
+            ]
+        }
+        self.assertFalse(
+            slang_db_alias_seed_is_safe(
+                "주무시기 전에 무엇을 하셨나요?",
+                registry_entry,
+                reference_only_registry_bucket,
+            )
+        )
+
+        invalid_true_registry_bucket = {
+            "examples": [
+                {
+                    "official_title": "주무시기 전에 무엇을 하셨나요?",
+                    "alias": "주전무",
+                    "source_roles": ["primary_work"],
+                    "slang_store_in_db": True,
+                    "slang_decode_verified": False,
+                    "slang_detected_term": "주전무",
+                    "slang_decoded_term": "주무시기 전에 무엇을 하셨나요?",
+                    "slang_canonical_alias": "주전무",
+                    "slang_alias_scope": "pure_work_alias",
+                    "slang_store_reason": "pure_work_alias",
+                    "alias_resolution_sources": [
+                        {
+                            "alias": "주전무",
+                            "canonical_title": "주무시기 전에 무엇을 하셨나요?",
+                            "alias_resolution_source": "known_abbreviation",
+                            "source_registry": "KNOWN_ABBREVIATIONS",
+                        }
+                    ],
+                }
+            ]
+        }
+        self.assertFalse(
+            slang_db_alias_seed_is_safe(
+                "주무시기 전에 무엇을 하셨나요?",
+                {"term": "주전무", "sources": ["primary_work"]},
+                invalid_true_registry_bucket,
+            )
         )
 
 

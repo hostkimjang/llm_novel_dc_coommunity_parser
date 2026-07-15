@@ -19,7 +19,11 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
+SRC_ROOT = REPO_ROOT / "src"
+if str(SRC_ROOT) not in sys.path:
+    sys.path.insert(0, str(SRC_ROOT))
 
+from llm_batch.domain.title_integrity import exact_title_integrity_match
 from tools.build_judge_seed_registry import clean_canary_row, seed_group
 from tools.compare_completed779_improvement import (
     analysis_identity,
@@ -122,15 +126,11 @@ def _normalize_expected_title(value: str | None) -> str:
 def expected_title_matches(expected: str | None, actual: str | None) -> bool:
     if not expected or not actual:
         return False
-    actual_norm = _normalize_expected_title(actual)
     for part in re.split(r"\s+/\s+|\s+or\s+|\s+또는\s+", str(expected)):
         candidate = part.strip()
         if not candidate:
             continue
-        candidate_norm = _normalize_expected_title(candidate)
-        if titles_match(candidate, actual):
-            return True
-        if candidate_norm and actual_norm and (candidate_norm in actual_norm or actual_norm in candidate_norm):
+        if exact_title_integrity_match(candidate, actual):
             return True
     return False
 

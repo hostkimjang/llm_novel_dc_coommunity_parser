@@ -9,7 +9,7 @@ import unittest
 from unittest.mock import patch
 
 from src.llm_batch.agentic_pipeline import AgenticPipeline
-from src.llm_batch.candidate_generation import (
+from src.llm_batch.grounding.candidate_generation import (
     build_candidate_generation_proof,
     build_candidate_producer_plan,
     build_candidate_producer_receipt,

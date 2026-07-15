@@ -1,5 +1,77 @@
 # Operation Quality Checklist
 
+## 2026-07-11 Loop643 bounded convergence 운영 체크
+
+- [x] Main Sol이 orchestration/최종 판정을 유지하고 Luna는 exact search audit, Terra는 source-only blind terminal review, Fable은 architecture 공격 감사에 한정했다.
+- [x] Fable terminal worker 정체는 중단하고 reviewer로 허위 표기하지 않았으며 Terra로 1회 fallback했다.
+- [x] R1 pre-child plan rejection을 actual runtime으로 세지 않았고 R2 child만 exact-once로 회계했다.
+- [x] Dashboard `18/18`과 runtime queue 0을 semantic approval로 사용하지 않았다.
+- [x] Aggregate search REVIEW와 row-level hard blocker를 분리하고 기존 deterministic `_search_issue`/publish dependency 계약으로 판정했다.
+- [x] Public-null non-required 4건만 two-review ledger로 terminal화했으며 Golden positive/published rows를 terminal 면제하지 않았다.
+- [x] Hard unsafe 발견 즉시 N=5/fresh375와 새 patch를 중단하고 PLATEAU_AUDIT_ONLY로 전환했다.
+- [x] Production 10만 scan을 실행하거나 승인하지 않았다.
+- Gate: `LIMIT_REACHED_HANDOFF`, harness N=5/fresh375 `NOT_RUN_AFTER_GOLDEN_HARD_FAIL`, `semantic_quality=REVIEW-LOCKED`, production `full_scan_approval=false`.
+
+## 2026-07-11 Loop642 strict BLOCKED_HANDOFF 운영 체크
+
+- [x] runtime/dashboard counter를 semantic 승인으로 사용하지 않았다.
+- [x] same blocker를 한 turn 안에서 중복 카운트하지 않고 세 별도 goal turn으로 결박했다.
+- [x] 새 user authority, external state, capability, fingerprint 변화가 없음을 확인했다.
+- [x] 허용된 safe material action이 0임을 확인했다.
+- [x] strict `3/3` 뒤에만 blocked 전환을 수행했고 status tool 성공을 확인했다.
+- [x] resume command와 exact-once 순서를 durable artifact에 남겼다.
+- Gate: `BLOCKED_HANDOFF`, `semantic_quality=REVIEW-LOCKED`, harness fresh375 `NOT_RUN_NOT_AUTHORIZED`, production `full_scan_approval=false`.
+
+## 2026-07-11 Loop642 LIMIT_REACHED continuation 운영 체크
+
+- [x] current runtime fingerprint와 immutable Golden SHA를 재확인했다.
+- [x] fingerprint-bound manifest `1`, i7 N=5/fresh375 artifact `0/0`을 확인했다.
+- [x] expert process `0`과 dashboard HTTP `200`을 분리하고 dashboard를 승인 근거로 쓰지 않았다.
+- [x] `11698880`의 wrong-work public publish를 safe terminal로 재분류하지 않았다.
+- [x] 새 architecture/model goal 미승인 상태와 authority blocker `2/3`을 기록했다.
+- [x] docs-only 정리를 진척 vector에서 제외했다.
+- Gate: `LIMIT_REACHED_HANDOFF`, `semantic_quality=REVIEW-LOCKED`, harness fresh375 `NOT_RUN_NOT_AUTHORIZED`, production `full_scan_approval=false`.
+
+## 2026-07-11 Loop642 i7 운영 체크
+
+- [x] Golden 전 result/manifest/checkpoint/pending 새 prefix가 모두 미존재인지 확인했다.
+- [x] fingerprint manifest/row echo를 `b035ffcd...aa06`으로 고정했다.
+- [x] 요청/유효 병렬도 `16/16`, dashboard `standalone_forward`, search non-light shard `16/16`, `--reuse-shards-only`, `--slang-db off`, VLM/OCR READY를 확인했다.
+- [x] pre/post query audit 모두 degraded/forbidden `0/0`이며 row-level unrecovered degraded와 required blocker가 0이다.
+- [x] runtime `18/18/0/0`, pending 0, failed 0, input/result/checkpoint global order·payload 일치를 확인했다.
+- [x] dashboard와 runtime integrity GO를 semantic 승인으로 오독하지 않았다.
+- [x] exact Golden 실패 1건을 확인한 즉시 같은 fingerprint 재실행과 N=5/fresh375를 중단했다.
+- [x] mechanical publication violation 0과 semantic wrong-work unsafe publish 1을 분리 보고했다.
+- [x] PLATEAU_AUDIT에서 잔여 1건을 `generalizable_fix`로 판결하고 safe terminal로 허위 종결하지 않았다.
+- [x] production 10만 scan 및 production full-scan approval은 별도 goal로 유지했다.
+
+## 2026-07-10 Loop641 recovery/residual 운영 체크
+
+- [x] 기존 Loop640 output을 재실행·truncate·overwrite하지 않았다.
+- [x] Recovery target 부재를 확인한 뒤 별도 artifact로 1회 복구하고 SHA/read-only를 고정했다.
+- [x] Original-order residual은 post_id 차집합으로 생성했으며 단순 prefix 절단을 사용하지 않았다.
+- [x] Relevant fingerprint와 blocker signature, before/after progress vector를 기록했다.
+- [x] Query preflight `16/16`, dashboard ON, `--parallel 16`, search non-light, reuse-only, slang off, VLM/OCR READY를 확인했다.
+- [x] 실행 중 `expert_main.py/src`를 동결하고 off-path tooling/docs만 변경한다.
+- [x] Raw config hash가 full375/residual300 입력 수 때문에 달라지는 것을 숨기지 않고 stable runtime fingerprint를 별도 검증한다.
+- [x] 독립 negative control로 merge/adjudication/search/always-on fail-open을 재현한 뒤 actual artifact/hash/readback에 결박했다.
+- [x] 관련 focused `86 tests PASS`, N=5 flip entrypoint PASS이며 flip 실행 예산은 아직 쓰지 않았다.
+- [ ] Loop641 완료 뒤 residual postflight, result/checkpoint/manifest `300/300/0/0`, runtime signature를 확인한다.
+- [ ] Recovered75+residual300 병합 뒤 unique/order/integrity `375/375/0/0`과 모든 post-run gate를 확인한다.
+- Historical gate at Loop641 time: `CONTINUE / RUNNING_NOT_APPROVAL`, `semantic_quality=REVIEW-LOCKED`, harness panel375 `IN_PROGRESS`, production `full_scan_approval=false`. 최신 current gate는 문서 최상단 Loop642 항목을 따른다.
+
+아래 `66/375 RUNNING` Loop640 live 메모는 historical snapshot이며 현재 상태가 아니다.
+
+## 2026-07-10 bounded convergence 운영 체크
+
+- [x] release-candidate fingerprint당 complete full375를 1회로 제한했다.
+- [x] interrupted run은 checkpoint+residual 복구하며 동일 output 재실행을 금지했다.
+- [x] full375를 stochastic flip 측정에 사용하지 않고 targeted+control N=5 probe만 1회 허용한다.
+- [x] 동일 blocker에 두 안전 개입 후 진척이 없으면 추가 대형 런 대신 `PLATEAU_AUDIT`로 전환한다.
+- [x] individual 삭제/인증 source는 전체 blocker가 아니라 safe terminal 후보로 분리한다.
+- [ ] 매 runtime 전 relevant fingerprint, expected information gain, 예상 감소 blocker/post_id를 기록한다.
+- [ ] 매 runtime 후 progress vector, terminal ledger, plateau streak/reset 사유를 기록한다.
+
 ## 2026-07-10 Loop640 live run health 운영 메모
 
 - [x] Loop640 background full375 run `20260710_005902_590310`의 live health audit을 갱신했다.

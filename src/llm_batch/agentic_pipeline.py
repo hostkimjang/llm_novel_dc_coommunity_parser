@@ -1,6 +1,8 @@
-"""
-Agentic Pipeline entrypoint.
-Runs expert orchestration and converts final context into output models.
+"""주력 Agentic 파이프라인의 application coordinator.
+
+전문가 실행, 검색, 후보 보존, 공개 판정을 연결하지만 각 기능 계약의 소유권은
+``domain``·``grounding``·``runtime`` 패키지에 둔다. 이 파일에서 새 규칙을
+직접 늘리기보다 해당 기능 패키지에 구현하고 여기서는 순서와 실패 경계만 조정한다.
 """
 
 from __future__ import annotations
@@ -28,11 +30,11 @@ from .experts.gatekeeper import GatekeeperExpert
 from .experts.discourse import DiscourseAnalyzer
 from .experts.decoder import DecoderExpert, KNOWN_ABBREVIATIONS, abbreviation_match_score
 from .experts.verifier import VerifierExpert
-from .rules import OFFICIAL_PLATFORMS
+from .domain.rules import OFFICIAL_PLATFORMS
 from .experts.critic import CriticExpert
 from .experts.synthesizer import SynthesizerExpert
 from .experts.arbiter import ArbiterExpert
-from .models import (
+from .domain.models import (
     PostInput,
     PickvelOutputItemV2,
     NovelIdentity,
@@ -42,7 +44,7 @@ from .models import (
     PickvelIdentity,
     PickvelAnalysis,
 )
-from .rules import (
+from .domain.rules import (
     NOISE_TERMS,
     NOVEL_SITES,
     SLANG_DICTIONARY,
@@ -58,14 +60,18 @@ from .rules import (
 )
 from .llm.client import LLMClient
 from .search.client import MCPClient
-from .batch_context import BatchContextMemory
-from .candidate_audit import (
+from .domain.batch_context import (
+    BATCH_CONTEXT_LEARNING_ENVELOPE_SCHEMA,
+    BatchContextMemory,
+    normalize_batch_context_learning_envelope,
+)
+from .grounding.candidate_audit import (
     TITLE_LED_WORK_CONSUMPTION_RE,
     apply_weak_public_title_bridge_guard,
     official_title_promotion_block_reasons,
     official_url_recoverable,
 )
-from .candidate_generation import (
+from .grounding.candidate_generation import (
     CandidateGenerationSnapshot,
     build_candidate_generation_proof,
     build_candidate_generation_snapshot,
@@ -85,9 +91,9 @@ from .promotion_gate import (
     evaluate_publish_contract,
     normalize_blocked_resolution_state,
 )
-from .title_integrity import parse_title_integrity_parts
-from .pipeline_stage_shadow import PipelineSearchStageShadow
-from .pipeline_stage_runtime_adapter import PipelineSearchRuntimeShadowAdapter
+from .domain.title_integrity import parse_title_integrity_parts
+from .runtime.pipeline_stage_shadow import PipelineSearchStageShadow
+from .runtime.pipeline_stage_runtime_adapter import PipelineSearchRuntimeShadowAdapter
 from .experts.utils import (
     _ts, set_worker_context,
     _norm_domain_text, _detect_domain_groups, _has_domain_conflict_for_mapping,
@@ -105,7 +111,7 @@ _NORMALIZE_MATCH_RE = re.compile(r"[^0-9a-zA-Z가-힣]")
 
 @lru_cache(maxsize=1)
 def _generic_topic_norm_terms_cached() -> frozenset[str]:
-    from .rules import GENRE_ARCHETYPE_TERMS
+    from .domain.rules import GENRE_ARCHETYPE_TERMS
 
     generic_terms: set[str] = set()
     for kws in _DOMAIN_SIGNAL_GROUPS.values():
@@ -194,6 +200,7 @@ class AgenticPipeline:
         recent_post_index: Optional[Dict[int, Dict[str, Any]]] = None,
         search_stage_shadow: Optional[PipelineSearchStageShadow] = None,
         search_runtime_shadow: Optional[PipelineSearchRuntimeShadowAdapter] = None,
+        batch_context_learning_enabled: bool = False,
     ):
         self.llm = llm or LLMClient()
         self.mcp = mcp or MCPClient()
@@ -203,6 +210,7 @@ class AgenticPipeline:
         self.worker_id = worker_id
         self.parallel_count = parallel_count
         self.batch_context = batch_context or BatchContextMemory(enabled=False)
+        self.batch_context_learning_enabled = batch_context_learning_enabled
         self.recent_post_index = recent_post_index or {}
 
         # Expert instances
@@ -3940,6 +3948,9 @@ class AgenticPipeline:
                         )
             try:
                 result = self._context_to_output(ctx)
+                result.batch_context_learning_envelope = (
+                    self._build_batch_context_learning_envelope(ctx)
+                )
             finally:
                 if _dump_armed:
                     try:
@@ -3968,7 +3979,11 @@ class AgenticPipeline:
                     print(f"[{_ts()}] postprocess trace: session_knowledge update done post_id={post_id}", file=sys.stderr)
             
             # BatchContextMemory 학습 (thread-safe, 병렬 모드에서도 동작)
-            if self.batch_context and self.batch_context.enabled:
+            if (
+                self.batch_context_learning_enabled
+                and self.batch_context
+                and self.batch_context.enabled
+            ):
                 if _trace_postprocess:
                     print(f"[{_ts()}] postprocess trace: batch_context learn start post_id={post_id}", file=sys.stderr)
                 self._learn_batch_context(ctx, result)
@@ -4002,6 +4017,72 @@ class AgenticPipeline:
             traceback.print_exc(file=sys.stderr)
             return self._error_output(post_id, str(e))
     
+    def _build_batch_context_learning_envelope(
+        self,
+        ctx: ConversationContext,
+    ) -> Dict[str, Any]:
+        """Capture only bounded semantic learning channels; never raw context."""
+        get_expert_output = getattr(ctx, "get_expert_output", None)
+        decoder_out = (
+            get_expert_output(ExpertType.DECODER) or {}
+            if callable(get_expert_output)
+            else {}
+        )
+        decoded_terms = (
+            decoder_out.get("decoded_terms", [])
+            if isinstance(decoder_out, dict)
+            else []
+        )
+        snippet_hints = getattr(ctx, "snippet_hints", {}) or {}
+        identified_author = None
+        author_hints = (
+            snippet_hints.get("author_hints") or []
+            if isinstance(snippet_hints, dict)
+            else []
+        )
+        for ah in author_hints:
+            if not isinstance(ah, dict):
+                continue
+            name = ah.get("name", "")
+            source = ah.get("source", "")
+            if name and source in ("url_fetch", "url_fetch_platform", "llm_snippet", "llm_term_role", "author_bridge"):
+                identified_author = name
+                break
+
+        verifier_out = (
+            get_expert_output(ExpertType.VERIFIER) or {}
+            if callable(get_expert_output)
+            else {}
+        )
+        vf_result = (
+            verifier_out.get("verification_result") or {}
+            if isinstance(verifier_out, dict)
+            else {}
+        )
+        identified_characters = []
+        for char in (
+            vf_result.get("confirmed_characters") or []
+            if isinstance(vf_result, dict)
+            else []
+        ):
+            if isinstance(char, str) and char.strip():
+                identified_characters.append(char.strip())
+
+        envelope = normalize_batch_context_learning_envelope(
+            {
+                "schema_version": BATCH_CONTEXT_LEARNING_ENVELOPE_SCHEMA,
+                "decoded_terms": decoded_terms,
+                "identified_author": identified_author,
+                "identified_characters": identified_characters,
+            }
+        )
+        return envelope or {
+            "schema_version": BATCH_CONTEXT_LEARNING_ENVELOPE_SCHEMA,
+            "decoded_terms": [],
+            "identified_author": None,
+            "identified_characters": [],
+        }
+
     def _learn_batch_context(self, ctx: ConversationContext, result: PickvelOutputItemV2) -> None:
         """포스트 처리 완료 후 BatchContextMemory에 학습 (thread-safe)."""
         if not self.batch_context or not self.batch_context.enabled:
@@ -4009,29 +4090,9 @@ class AgenticPipeline:
         if not result.identity.is_relevant:
             return
 
-        # Decoder 출력에서 decoded_terms 추출
-        decoder_out = ctx.get_expert_output(ExpertType.DECODER) or {}
-        decoded_terms = decoder_out.get("decoded_terms", [])
-        if not isinstance(decoded_terms, list):
-            decoded_terms = []
-
-        # snippet_hints에서 작가/캐릭터 추출
-        snippet_hints = getattr(ctx, "snippet_hints", {}) or {}
-        identified_author = None
-        for ah in (snippet_hints.get("author_hints") or []):
-            name = ah.get("name", "")
-            source = ah.get("source", "")
-            if name and source in ("url_fetch", "url_fetch_platform", "llm_snippet", "llm_term_role", "author_bridge"):
-                identified_author = name
-                break
-
-        # Verifier에서 캐릭터 추출
-        verifier_out = ctx.get_expert_output(ExpertType.VERIFIER) or {}
-        vf_result = verifier_out.get("verification_result") or {}
-        identified_characters = []
-        for char in (vf_result.get("confirmed_characters") or []):
-            if isinstance(char, str) and char.strip():
-                identified_characters.append(char.strip())
+        envelope = normalize_batch_context_learning_envelope(
+            getattr(result, "batch_context_learning_envelope", None)
+        ) or self._build_batch_context_learning_envelope(ctx)
 
         # 결과를 dict로 변환하여 learn_from_result 호출
         result_dict = {
@@ -4057,9 +4118,9 @@ class AgenticPipeline:
         }
         self.batch_context.learn_from_result(
             result_dict,
-            decoded_terms=decoded_terms,
-            identified_author=identified_author,
-            identified_characters=identified_characters,
+            decoded_terms=envelope["decoded_terms"],
+            identified_author=envelope["identified_author"],
+            identified_characters=envelope["identified_characters"],
         )
 
         # namu.wiki 페이지 캐시 업데이트
@@ -9193,7 +9254,7 @@ class AgenticPipeline:
         
         # ━━ 개선: relevant=true 코드 레벨 하드 게이트 ━━
         # 3단계 증거등급(강/중/약) 기반 판정 (수치 0~1 대신 이산값)
-        from .rules import EVIDENCE_GRADE_MAP, EVIDENCE_GRADE_STRONG, EVIDENCE_GRADE_MEDIUM, EVIDENCE_GRADE_WEAK
+        from .domain.rules import EVIDENCE_GRADE_MAP, EVIDENCE_GRADE_STRONG, EVIDENCE_GRADE_MEDIUM, EVIDENCE_GRADE_WEAK
         
         # 현재 앵커의 증거등급 산출
         _evidence_grade = EVIDENCE_GRADE_MAP.get(vf_anchor, EVIDENCE_GRADE_WEAK)
@@ -15104,7 +15165,7 @@ class AgenticPipeline:
                 _slang_contract["store_in_slang_db"] = False
                 if not _slang_contract.get("store_reason"):
                     _slang_contract["store_reason"] = "slang_insight_only_candidate"
-            from .models import SlangInsight as _SI
+            from .domain.models import SlangInsight as _SI
             _slang_cultural_context = self._sanitize_slang_cultural_context_for_image_conflict(
                 _vf_slang.get("cultural_context"),
                 ctx=ctx,
@@ -18954,9 +19015,8 @@ class AgenticPipeline:
                 text = re.sub(r"\s+", " ", str(raw or "")).strip(" \"'“”‘’.,;:!?…")
                 if not text:
                     return
-                text = re.sub(r"^\[[^\]]+\]\s*", "", text).strip()
                 norm = self._normalize_match_text(text)
-                if len(norm) < 10 or len(norm) > 90:
+                if len(norm) < 3 or len(norm) > 120:
                     return
                 if not re.search(r"[가-힣]", text):
                     return
@@ -18968,20 +19028,15 @@ class AgenticPipeline:
             for item in (post_data.get("image_enrichment") or []):
                 if not isinstance(item, dict) or self._is_background_listing_vlm_item(item):
                     continue
-                ocr_text = str(item.get("ocr_text") or "").strip()
-                if not ocr_text:
+                title_role = str(item.get("title_role") or "").strip().lower()
+                evidence_type = str(item.get("evidence_type") or "").strip().lower()
+                if title_role not in {"", "work_title", "unknown"}:
                     continue
-                for segment in re.split(r"(?:[.!?。！？…\n\r;；]+|[\"“”])", ocr_text):
-                    segment = segment.strip()
-                    if not segment:
-                        continue
-                    subsegments = [part for part in re.split(r"[,，]", segment) if part and part.strip()]
-                    for subsegment in subsegments:
-                        _push(subsegment)
-                    if len(subsegments) <= 1:
-                        _push(segment)
-                    if len(phrases) >= 4:
-                        return phrases
+                if evidence_type and evidence_type not in {"explicit_text", "cover_title"}:
+                    continue
+                _push(item.get("explicit_work_title"))
+                if len(phrases) >= 2:
+                    return phrases
             return phrases
 
         def _run_image_ocr_platform_phrase_searches() -> int:
@@ -18998,7 +19053,40 @@ class AgenticPipeline:
             }
             appended = 0
             seen_queries: set[str] = set()
+            prior_query_norms = {
+                self._normalize_match_text(query)
+                for query in (getattr(ctx, "executed_queries", None) or [])
+                if self._normalize_match_text(query)
+            }
+
+            def _prior_exact_typed_title_probe_seen(phrase: str) -> bool:
+                phrase_norm = self._normalize_match_text(phrase)
+                if not phrase_norm:
+                    return False
+                exact_probe_norms = {
+                    self._normalize_match_text(f'"{phrase}"'),
+                    self._normalize_match_text(f'site:novelpia.com/novel "{phrase}"'),
+                    self._normalize_match_text(f'"{phrase}" 노벨피아'),
+                }
+                for item in (post_data.get("image_enrichment") or []):
+                    if not isinstance(item, dict):
+                        continue
+                    item_title_norm = self._normalize_match_text(
+                        item.get("explicit_work_title") or ""
+                    )
+                    if item_title_norm != phrase_norm:
+                        continue
+                    author = str(item.get("explicit_author_name") or "").strip()
+                    if author:
+                        exact_probe_norms.add(
+                            self._normalize_match_text(f'"{phrase}" "{author}"')
+                        )
+                exact_probe_norms.discard("")
+                return bool(prior_query_norms.intersection(exact_probe_norms))
+
             for phrase in _iter_image_ocr_recall_phrases()[:2]:
+                if _prior_exact_typed_title_probe_seen(phrase):
+                    continue
                 queries = [
                     f'site:novelpia.com/novel "{phrase}"',
                     f'"{phrase}" 노벨피아',
@@ -26327,7 +26415,14 @@ OUTPUT JSON:
         selected_author = self._get_identified_author(ctx)
 
         candidate_urls: List[str] = [url]
-        candidate_urls.extend(self._collect_expert_urls(ctx))
+        candidate_urls.extend(
+            self._collect_expert_urls(
+                ctx,
+                selected_title=selected_title,
+                selected_author=selected_author,
+                search_results=search_results,
+            )
+        )
         matched_url = None
         if selected_title:
             matched_url = self._find_title_matched_official_url(selected_title, search_results, ctx=ctx)
@@ -50196,8 +50291,41 @@ OUTPUT JSON:
         novel_identity = (verifier_out.get("verification_result") or {}).get("novel_identity") or {}
         return novel_identity.get("official_novel_title") or novel_identity.get("official_title")
 
-    def _collect_expert_urls(self, ctx) -> list[str]:
-        urls: list[str] = []
+    def _collect_expert_urls(
+        self,
+        ctx,
+        *,
+        selected_title: Optional[str] = None,
+        selected_author: Optional[str] = None,
+        search_results: Optional[List[Dict[str, Any]]] = None,
+    ) -> list[str]:
+        url_evidence: list[Tuple[str, str]] = []
+
+        def _payload_text(payload: Any) -> str:
+            if not isinstance(payload, dict):
+                return ""
+            values: List[str] = []
+            for key in (
+                "title",
+                "official_title",
+                "official_novel_title",
+                "novel_title",
+                "name",
+                "author",
+                "author_name",
+                "writer",
+                "content",
+                "snippet",
+                "description",
+                "reason",
+            ):
+                value = payload.get(key)
+                if isinstance(value, str) and value.strip():
+                    values.append(value.strip())
+            best_match = payload.get("best_match")
+            if isinstance(best_match, dict):
+                values.append(_payload_text(best_match))
+            return " ".join(value for value in values if value)
 
         decoder_out = ctx.get_expert_output(ExpertType.DECODER) or {}
         for term in decoder_out.get("decoded_terms", []):
@@ -50208,13 +50336,61 @@ OUTPUT JSON:
                     continue
                 candidate_url = candidate.get("url")
                 if isinstance(candidate_url, str) and candidate_url.strip():
-                    urls.append(candidate_url.strip())
+                    url_evidence.append((candidate_url.strip(), _payload_text(candidate)))
 
         verifier_out = ctx.get_expert_output(ExpertType.VERIFIER) or {}
         novel_identity = (verifier_out.get("verification_result") or {}).get("novel_identity") or {}
         verifier_url = novel_identity.get("heretic_url")
         if isinstance(verifier_url, str) and verifier_url.strip():
-            urls.append(verifier_url.strip())
+            url_evidence.append((verifier_url.strip(), _payload_text(novel_identity)))
+
+        direct_url_norms = {
+            self._normalize_url_for_match(direct_url)
+            for direct_url in [
+                *self._extract_official_detail_urls_from_post_main(ctx),
+                *self._extract_official_detail_urls_from_comments(ctx),
+            ]
+            if self._normalize_url_for_match(direct_url)
+        }
+        selected_title_text = str(selected_title or "").strip()
+        selected_author_text = str(selected_author or "").strip()
+        result_rows = [
+            item
+            for item in (search_results or [])
+            if isinstance(item, dict)
+        ]
+
+        def _has_selected_evidence(candidate_url: str, evidence_text: str) -> bool:
+            candidate_norm = self._normalize_url_for_match(candidate_url)
+            if candidate_norm in direct_url_norms:
+                return True
+            matched_texts = [evidence_text]
+            for item in result_rows:
+                result_norm = self._normalize_url_for_match(item.get("url") or "")
+                if not result_norm or not (
+                    result_norm == candidate_norm
+                    or result_norm in candidate_norm
+                    or candidate_norm in result_norm
+                ):
+                    continue
+                matched_texts.append(
+                    " ".join(
+                        str(item.get(key) or "")
+                        for key in ("title", "content", "snippet", "description")
+                    )
+                )
+            evidence_blob = " ".join(text for text in matched_texts if text).strip()
+            if selected_title_text:
+                return bool(
+                    evidence_blob
+                    and self._text_matches_title_strict(evidence_blob, selected_title_text)
+                )
+            if selected_author_text:
+                return bool(
+                    evidence_blob
+                    and self._text_matches_phrase(evidence_blob, selected_author_text)
+                )
+            return True
 
         def _platform_priority(url: str) -> int:
             for index, platform in enumerate(OFFICIAL_PLATFORMS):
@@ -50224,7 +50400,9 @@ OUTPUT JSON:
 
         deduped = []
         seen = set()
-        for url in urls:
+        for url, evidence_text in url_evidence:
+            if not _has_selected_evidence(url, evidence_text):
+                continue
             if url not in seen:
                 seen.add(url)
                 deduped.append(url)
@@ -50773,7 +50951,13 @@ OUTPUT JSON:
                 return detected
         return None
 
-    def _get_fetched_entries_for_url(self, ctx, url: str) -> List[Dict[str, Any]]:
+    def _get_fetched_entries_for_url(
+        self,
+        ctx,
+        url: str,
+        *,
+        allow_live_fetch: bool = True,
+    ) -> List[Dict[str, Any]]:
         fetched = getattr(ctx, "fetched_page_info", None) or []
         target_norm = self._normalize_url_for_match(url)
         out: List[Dict[str, Any]] = []
@@ -50789,7 +50973,7 @@ OUTPUT JSON:
                 or (item_norm and target_norm and (item_norm in target_norm or target_norm in item_norm))
             ):
                 out.append(item)
-        if not out and target_norm:
+        if not out and target_norm and allow_live_fetch:
             fetched_entry = self._fetch_and_attach_page_info(ctx, url)
             if isinstance(fetched_entry, dict):
                 fetched_url = fetched_entry.get("url") or url
@@ -50998,7 +51182,7 @@ OUTPUT JSON:
         if not isinstance(title, str) or not title.strip():
             return False
         import re
-        from llm_batch.rules import is_genre_물_pattern
+        from llm_batch.domain.rules import is_genre_물_pattern
 
         norm = re.sub(r"[^0-9a-zA-Z가-힣]", "", title.lower())
         if not norm:
@@ -51739,10 +51923,6 @@ OUTPUT JSON:
 
     def _extract_title_from_validated_url(self, ctx, url: str) -> Optional[str]:
         fetched_entries = self._get_fetched_entries_for_url(ctx, url)
-        if not fetched_entries:
-            fetched_one = self._fetch_and_attach_page_info(ctx, url)
-            if fetched_one:
-                fetched_entries = [fetched_one]
 
         candidates: List[str] = []
         for fe in fetched_entries:
@@ -53209,7 +53389,7 @@ OUTPUT JSON:
              "reason": str}
             또는 None (LLM 호출 실패 시)
         """
-        # 텍스트가 너무 짧으면 판단 불가 → 스킵
+        # 텍스트가 너무 짧으면 판단 불가 : 스킵
         if not text_preview or len(text_preview.strip()) < 30:
             return None
 
@@ -53223,12 +53403,12 @@ OUTPUT JSON:
                 "'삭제되었습니다', '없는 페이지', '404' 등의 메시지가 보임\n"
                 "3. **unavailable**: '비공개', '서비스 종료', '접근 불가', '로그인 필요', "
                 "'연령 제한' 등으로 콘텐츠를 볼 수 없음\n\n"
-                "⚠️ 핵심 구분:\n"
+                " 핵심 구분:\n"
                 "- 소설 플랫폼(novelpia, munpia, kakao page 등)에서 실제 소설 본문/소개가 없고 "
-                "오류 메시지나 리다이렉트 안내만 보이면 → deleted 또는 unavailable\n"
-                "- 빈 페이지, 플랫폼 메인으로 리다이렉트된 페이지도 → deleted\n"
-                "- 소설 목록/검색 결과 페이지는 개별 작품이 아님 → unknown (novel_title=null)\n\n"
-                "📐 출력: 반드시 아래 JSON 형식만 출력하세요."
+                "오류 메시지나 리다이렉트 안내만 보이면 : deleted 또는 unavailable\n"
+                "- 빈 페이지, 플랫폼 메인으로 리다이렉트된 페이지도 : deleted\n"
+                "- 소설 목록/검색 결과 페이지는 개별 작품이 아님 : unknown (novel_title=null)\n\n"
+                " 출력: 반드시 아래 JSON 형식만 출력하세요."
             )
 
             page_title = structured.get('page_title') or structured.get('title') or '(없음)'
@@ -54322,8 +54502,37 @@ OUTPUT JSON:
                 author_evidence = True
                 score += 1.5
 
-        fetched_entries = self._get_fetched_entries_for_url(ctx, url)
+        fetched_entries = self._get_fetched_entries_for_url(
+            ctx,
+            url,
+            allow_live_fetch=False,
+        )
         if not fetched_entries:
+            direct_url_norms = {
+                self._normalize_url_for_match(direct_url)
+                for direct_url in [
+                    *self._extract_official_detail_urls_from_post_main(ctx),
+                    *self._extract_official_detail_urls_from_comments(ctx),
+                ]
+                if self._normalize_url_for_match(direct_url)
+            }
+            direct_packet_url = target_norm in direct_url_norms
+            prefetch_supported = bool(
+                direct_packet_url
+                or (identified_title and title_evidence)
+                or (not identified_title and identified_author and author_evidence)
+            )
+            if not prefetch_supported:
+                return {
+                    "url": url,
+                    "score": score,
+                    "valid": False,
+                    "title_evidence": title_evidence,
+                    "author_evidence": author_evidence,
+                    "invalid_reason": "prefetch_selected_identity_evidence_missing",
+                    "resolved_titles": support_titles,
+                    "representative_title": representative_title,
+                }
             fetched_one = self._fetch_and_attach_page_info(ctx, url)
             if fetched_one:
                 fetched_entries = [fetched_one]
@@ -68628,7 +68837,7 @@ def run_agentic_pipeline(
     """
     Run the full agentic pipeline from input JSON.
     """
-    from .pipeline import _load_json_items, _partition_items
+    from .pipelines.legacy import _load_json_items, _partition_items
     
     # Load input posts
     raw_items = _load_json_items(input_path)

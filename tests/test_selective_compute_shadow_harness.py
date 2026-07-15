@@ -30,7 +30,7 @@ from tools.run_selective_compute_shadow_harness import (
     validate_run_spec_dict,
     write_bundle,
 )
-from src.llm_batch.selective_compute_shadow import canonical_hash
+from src.llm_batch.measurement.selective_compute_shadow import canonical_hash
 
 
 ROOT = Path(__file__).resolve().parents[1]

@@ -63,7 +63,7 @@ except ModuleNotFoundError:
     )
 
 try:
-    from llm_batch.publication_commit import (
+    from llm_batch.ledger.publication_commit import (
         PUBLICATION_COMMIT_OWNER,
         PUBLICATION_COMMIT_SCHEMA,
         PUBLICATION_COMMIT_JOURNAL_SCHEMA,
@@ -76,7 +76,7 @@ try:
         validate_publication_result_decision,
     )
 except ModuleNotFoundError:
-    from src.llm_batch.publication_commit import (
+    from src.llm_batch.ledger.publication_commit import (
         PUBLICATION_COMMIT_OWNER,
         PUBLICATION_COMMIT_SCHEMA,
         PUBLICATION_COMMIT_JOURNAL_SCHEMA,
@@ -90,20 +90,25 @@ except ModuleNotFoundError:
     )
 
 try:
-    from llm_batch.selective_compute_shadow import (
+    from llm_batch.domain.batch_context import normalize_batch_context_learning_envelope
+except ModuleNotFoundError:
+    from src.llm_batch.domain.batch_context import normalize_batch_context_learning_envelope
+
+try:
+    from llm_batch.measurement.selective_compute_shadow import (
         COST_STATUS_PARTIAL_RUNTIME,
         DecisionCostTrace,
         normalize_optional_nonnegative_count,
     )
 except ModuleNotFoundError:
-    from src.llm_batch.selective_compute_shadow import (
+    from src.llm_batch.measurement.selective_compute_shadow import (
         COST_STATUS_PARTIAL_RUNTIME,
         DecisionCostTrace,
         normalize_optional_nonnegative_count,
     )
 
 try:
-    from llm_batch.early_route_measurement import (
+    from llm_batch.measurement.early_route_measurement import (
         ACCURACY_NOT_ESTIMABLE,
         ARM_AFTER,
         FROZEN_TRUTH_NOT_AVAILABLE,
@@ -118,7 +123,7 @@ try:
         decide_early_route,
     )
 except ModuleNotFoundError:
-    from src.llm_batch.early_route_measurement import (
+    from src.llm_batch.measurement.early_route_measurement import (
         ACCURACY_NOT_ESTIMABLE,
         ARM_AFTER,
         FROZEN_TRUTH_NOT_AVAILABLE,
@@ -357,11 +362,11 @@ def _maybe_enable_decision_ledger_v2_shadow(
     if not bool(shadow_config.get("enabled")):
         return registry
     try:
-        from llm_batch.decision_ledger_dual_write import (
+        from llm_batch.ledger.decision_ledger_dual_write import (
             DecisionLedgerV2DualWriteAdapter,
         )
     except ModuleNotFoundError:
-        from src.llm_batch.decision_ledger_dual_write import (
+        from src.llm_batch.ledger.decision_ledger_dual_write import (
             DecisionLedgerV2DualWriteAdapter,
         )
     return DecisionLedgerV2DualWriteAdapter(
@@ -1247,6 +1252,61 @@ def _large_run_complete_from_gates(
     )
 
 
+def _learn_batch_context_from_canonical_publication(
+    batch_context: Any,
+    canonical_result: Any,
+    publication_receipt: Any,
+    *,
+    created: bool,
+) -> bool:
+    """Learn only a newly committed, authoritative public result."""
+    if not created:
+        return False
+    if not batch_context or not getattr(batch_context, "enabled", False):
+        return False
+    if not isinstance(canonical_result, Mapping):
+        return False
+    if getattr(publication_receipt, "outcome", None) != "PUBLISH":
+        return False
+    if getattr(publication_receipt, "publish_allowed", None) is not True:
+        return False
+    analysis_result = canonical_result.get("analysis_result")
+    envelope = normalize_batch_context_learning_envelope(
+        analysis_result.get("batch_context_learning_envelope")
+        if isinstance(analysis_result, Mapping)
+        else None
+    )
+    learning_kwargs: Dict[str, Any] = {}
+    if envelope is not None:
+        learning_kwargs = {
+            "decoded_terms": envelope["decoded_terms"],
+            "identified_author": envelope["identified_author"],
+            "identified_characters": envelope["identified_characters"],
+        }
+    batch_context.learn_from_result(dict(canonical_result), **learning_kwargs)
+    return True
+
+
+def _drain_ordered_batch_context_learning(
+    batch_context: Any,
+    pending: Dict[int, Tuple[Any, Any, bool]],
+    *,
+    next_input_index: int,
+) -> int:
+    """Apply terminal publication rows to BatchContext in input order."""
+    next_index = next_input_index
+    while next_index in pending:
+        canonical_result, publication_receipt, created = pending.pop(next_index)
+        _learn_batch_context_from_canonical_publication(
+            batch_context,
+            canonical_result,
+            publication_receipt,
+            created=created,
+        )
+        next_index += 1
+    return next_index
+
+
 def _preview_publication_decision(
     result_item: Mapping[str, Any],
     *,
@@ -1468,7 +1528,7 @@ if _CLI_ARGS.input_flag:
     _CLI_ARGS.input = _CLI_ARGS.input_flag
 def _default_llm_model_for_server_type(server_type: Optional[str]) -> str:
     if str(server_type or "").strip().lower() == "vllm":
-        return "bg-digitalservices/Gemma-4-E4B-it-NVFP4"
+        return "bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4"
     return "google/gemma-4-26B-A4B-it"
 
 
@@ -10960,7 +11020,11 @@ def main() -> None:
             # 참고용 기존 Qwen 설정
             #_set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "Sehyo/Qwen3.5-35B-A3B-NVFP4"))
             #_set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "AxionML/Qwen3.5-35B-A3B-NVFP4"))
-            _set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4"))
+            _set_env(
+                "LLM_MODEL",
+                _CLI_ARGS.llm_model
+                or os.getenv("LLM_MODEL", _default_llm_model_for_server_type(LLM_SERVER_TYPE)),
+            )
             #_set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "bg-digitalservices/Gemma-4-E4B-it-NVFP4"))
             #_set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "cyankiwi/gemma-4-26B-A4B-it-AWQ-4bit"))
             # vLLM 전용 샘플링 기본값
@@ -11521,17 +11585,17 @@ def main() -> None:
             sys.path.insert(0, str(repo_root / "src"))
 
             from llm_batch.agentic_pipeline import AgenticPipeline
-            from llm_batch.decision_call_events import (
+            from llm_batch.ledger.decision_call_events import (
                 DecisionCallLedgerRegistry,
                 RowAttemptScope,
             )
-            from llm_batch.decision_tracing_llm import DecisionTracingLLMClient
+            from llm_batch.ledger.decision_tracing_llm import DecisionTracingLLMClient
             from llm_batch.llm.client import LLMClient
             from llm_batch.search.client import MCPClient
-            from llm_batch.models import PostInput, ContentBlock
-            from llm_batch.batch_context import BatchContextMemory
-            from llm_batch.slang_db import SlangDBManager, slang_db_alias_seed_is_safe
-            from llm_batch.candidate_audit import (
+            from llm_batch.domain.models import PostInput, ContentBlock
+            from llm_batch.domain.batch_context import BatchContextMemory
+            from llm_batch.slang.slang_db import SlangDBManager, slang_db_alias_seed_is_safe
+            from llm_batch.grounding.candidate_audit import (
                 apply_author_angle_official_detail_canonicalization,
                 apply_candidate_audit_fields,
                 apply_comment_surface_candidate_hints,
@@ -12282,10 +12346,49 @@ def main() -> None:
                 except Exception as _exc:
                     print(f"🗂️ Slang DB alias seed 주입 실패: {_exc}", file=sys.stderr, flush=True)
 
+            _batch_context_learning_pending: Dict[int, Tuple[Any, Any, bool]] = {}
+            _next_batch_context_learning_idx = 1
+
+            def _queue_batch_context_publication_learning(
+                *,
+                input_index: int,
+                canonical_result: Any,
+                publication_receipt: Any,
+                created: bool,
+            ) -> None:
+                nonlocal _next_batch_context_learning_idx
+                if input_index < _next_batch_context_learning_idx:
+                    if created:
+                        raise PublicationCommitError(
+                            "late created BatchContext publication-learning input index"
+                        )
+                    return
+                if input_index in _batch_context_learning_pending:
+                    raise PublicationCommitError(
+                        "duplicate BatchContext publication-learning input index"
+                    )
+                _batch_context_learning_pending[input_index] = (
+                    canonical_result,
+                    publication_receipt,
+                    created,
+                )
+                _next_batch_context_learning_idx = (
+                    _drain_ordered_batch_context_learning(
+                        _batch_context,
+                        _batch_context_learning_pending,
+                        next_input_index=_next_batch_context_learning_idx,
+                    )
+                )
+
             for _replay_index, (_replay_result, _replay_receipt) in sorted(
                 _publication_replay_by_index.items()
             ):
-                _batch_context.learn_from_result(_replay_result)
+                _queue_batch_context_publication_learning(
+                    input_index=_replay_index,
+                    canonical_result=_replay_result,
+                    publication_receipt=_replay_receipt,
+                    created=True,
+                )
                 _slang_db_manager.record_result(_replay_result)
 
             def _finalize_slang_db(*, publish: bool) -> None:
@@ -12318,6 +12421,7 @@ def main() -> None:
                     parallel_count=_PARALLEL,
                     batch_context=_batch_context,
                     recent_post_index=_recent_post_index,
+                    batch_context_learning_enabled=False,
                 )
                 print(f"[expert_main] worker W{worker_id} -> MCP shard {_endpoint}", file=sys.stderr, flush=True)
                 return _pipe
@@ -13192,6 +13296,12 @@ def main() -> None:
                     expected_input_index=global_idx,
                     expected_post_id=post_id,
                 )
+                _queue_batch_context_publication_learning(
+                    input_index=global_idx,
+                    canonical_result=canonical_result,
+                    publication_receipt=receipt,
+                    created=created,
+                )
                 return receipt, created, canonical_result
 
             # 📊 대시보드: batch_start
@@ -13264,6 +13374,19 @@ def main() -> None:
                     "model_parallel_max": _MODEL_PARALLEL_MAX,
                     "model_parallel_cap_applied": _MODEL_PARALLEL_CAP_APPLIED,
                     "model_parallel_cap_model": _PARALLEL_POLICY_MODEL,
+                    "batch_context_learning": {
+                        "schema_version": "batch_context_post_commit_learning_v1",
+                        "enabled": bool(_batch_context.enabled),
+                        "inline_learning_enabled": False,
+                        "publish_only": True,
+                        "input_ordered_drain": True,
+                        "next_input_index": _next_batch_context_learning_idx,
+                        "pending_count": len(_batch_context_learning_pending),
+                        "pending_input_indices": sorted(
+                            _batch_context_learning_pending
+                        )[:32],
+                        "same_wave_observation_deterministic": False,
+                    },
                     "llm_model": os.getenv("LLM_MODEL", ""),
                     "llm_endpoint": os.getenv("LLM_ENDPOINT", ""),
                     "llm_stream_first_token_timeout_seconds": os.getenv(
@@ -14238,7 +14361,7 @@ def main() -> None:
 def load_jsonl_posts(path: Path, *, snapshot_bytes: bytes | None = None) -> List:
     """JSONL 파일에서 포스트만 로드 (댓글 제외)"""
     sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
-    from llm_batch.models import PostInput, ContentBlock
+    from llm_batch.domain.models import PostInput, ContentBlock
 
     def _post_id_key(value: Any) -> Optional[int | str]:
         if value in (None, ""):
@@ -14490,6 +14613,7 @@ def load_jsonl_posts(path: Path, *, snapshot_bytes: bytes | None = None) -> List
     comments_map: Dict[int, List[Dict[str, Any]]] = {}
 
     post_line_numbers: Dict[int | str, int] = {}
+    identical_duplicate_post_rows: List[Tuple[int | str, int, int]] = []
     if snapshot_bytes is None:
         source_stream = path.open("r", encoding="utf-8-sig")
     else:
@@ -14518,13 +14642,37 @@ def load_jsonl_posts(path: Path, *, snapshot_bytes: bytes | None = None) -> List
                 if pid is None:
                     continue
                 if pid in post_map:
+                    previous = post_map[pid]
+                    previous_normalized = dict(previous)
+                    current_normalized = dict(item)
+                    previous_normalized["post_id"] = pid
+                    current_normalized["post_id"] = pid
+                    if previous_normalized == current_normalized:
+                        identical_duplicate_post_rows.append(
+                            (pid, post_line_numbers[pid], line_number)
+                        )
+                        continue
                     raise ValueError(
-                        "입력 JSONL에 중복 post_id가 있습니다: "
+                        "입력 JSONL에 내용이 다른 중복 post_id가 있습니다: "
                         f"post_id={pid}, first_line={post_line_numbers[pid]}, "
                         f"duplicate_line={line_number}"
                     )
                 post_map[pid] = item
                 post_line_numbers[pid] = line_number
+
+    if identical_duplicate_post_rows:
+        duplicate_post_ids = {item[0] for item in identical_duplicate_post_rows}
+        samples = ", ".join(
+            f"{pid}({first_line},{duplicate_line})"
+            for pid, first_line, duplicate_line in identical_duplicate_post_rows[:5]
+        )
+        print(
+            "[expert_main] 동일 post_id 중복 행을 첫 행 기준으로 멱등 처리했습니다: "
+            f"duplicate_rows={len(identical_duplicate_post_rows)}, "
+            f"duplicate_post_ids={len(duplicate_post_ids)}, samples={samples}",
+            file=sys.stderr,
+            flush=True,
+        )
 
     # PostInput으로 변환
     for pid, data in post_map.items():

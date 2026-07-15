@@ -10,7 +10,7 @@
 
 ## Current State (전제)
 
-- 게이트 구현: `src/llm_batch/candidate_audit.py::official_url_recoverable`(공식 DETAIL URL + post-side anchor 필수), `agentic_pipeline.py` official-url recall gate(승격 연결부), `_can_promote_title_after_semantic_no_work()` 통과 요구.
+- 게이트 구현: `src/llm_batch/grounding/candidate_audit.py::official_url_recoverable`(공식 DETAIL URL + post-side anchor 필수), `agentic_pipeline.py` official-url recall gate(승격 연결부), `_can_promote_title_after_semantic_no_work()` 통과 요구.
 - genre-surface 가드: `candidate_audit.GENRE_DESCRIPTOR_SURFACES` + `_is_genre_descriptor_surface()`가 약-anchor(full_title_surface/bracket_alias/official_page_alias_tag/title_unique_rare_token)를 장르/서술어 표면에서 차단(강-anchor OCR/confirmed-alias/in-body URL은 통과). 회귀 테스트 `tests/test_candidate_audit.py`에 genre 차단/통과 2건 포함(현재 23 tests OK).
 - 시드/풀: `out/full_post_judge_20260616_224555_632905/recall_recovery_seed.jsonl`(124행, deterministic_catchable 101), `_recall_rerun_pool.json`(`all_ordered` 1772 = ACCEPT-미해소, `high_recovery` score≥5 = 629), 저장-결과 probe `_gate_promotions_patched.json`(14건).
 - precision false-accept 예시(비승격 확인용 negative): over-resolved 11652201·11655387, wrong-work 11657013·11657016·11660235·11660257. 확정 genre 누수(수정됨, 비승격 확인용): 11716479(ts인방물).
@@ -18,8 +18,8 @@
 ## Required Reading
 
 - `docs/devs/GOAL_RECALL_URL_GATE.md`(§A 구현·검증, Phase A.4/A.5), `docs/devs/IMPROVEMENT_REGISTER.md`(IMP-278), `docs/devs/VERIFICATION_RESULTS.md`(2026-06-18 독립검증), `docs/devs/FULL_POST_JUDGE_RUNBOOK.md`(§0.7 게이트 분리, §6)
-- `src/llm_batch/candidate_audit.py`(`official_url_recoverable`:383, `_official_recall_anchor`, `_is_genre_descriptor_surface`, `GENRE_DESCRIPTOR_SURFACES`, `OFFICIAL_DETAIL_URL_RE`/`NON_DETAIL_URL_RE`), `src/llm_batch/agentic_pipeline.py`(`_derive_resolution_scope_fields`:11341, official-url gate 연결부, `_can_promote_title_after_semantic_no_work`)
-- `src/llm_batch/slang_db.py`의 `_is_generic_term` 장르 목록(genre stoplist 일반화 시 재사용), `expert_main.py`(입력 로더·CLI 플래그), `tests/test_candidate_audit.py`
+- `src/llm_batch/grounding/candidate_audit.py`(`official_url_recoverable`:383, `_official_recall_anchor`, `_is_genre_descriptor_surface`, `GENRE_DESCRIPTOR_SURFACES`, `OFFICIAL_DETAIL_URL_RE`/`NON_DETAIL_URL_RE`), `src/llm_batch/agentic_pipeline.py`(`_derive_resolution_scope_fields`:11341, official-url gate 연결부, `_can_promote_title_after_semantic_no_work`)
+- `src/llm_batch/slang/slang_db.py`의 `_is_generic_term` 장르 목록(genre stoplist 일반화 시 재사용), `expert_main.py`(입력 로더·CLI 플래그), `tests/test_candidate_audit.py`
 
 ## Operating Rules (양면 가드레일 — 절대 준수)
 
@@ -74,7 +74,7 @@
 - 시드 deterministic_catchable 회수율 기록(미승격은 사유). 회수율이 직전 라운드 대비 비합리적으로 떨어지지 않음(과교정 아님).
 - 검증 명령 통과:
   ```powershell
-  .venv312\Scripts\python.exe -m py_compile src\llm_batch\candidate_audit.py src\llm_batch\agentic_pipeline.py tests\test_candidate_audit.py
+  .venv312\Scripts\python.exe -m py_compile src\llm_batch\grounding\candidate_audit.py src\llm_batch\agentic_pipeline.py tests\test_candidate_audit.py
   .venv312\Scripts\python.exe -m unittest tests.test_candidate_audit tests.test_judge_seed_registry -v
   git diff --check
   ```

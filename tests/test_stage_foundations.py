@@ -10,9 +10,9 @@ import sys
 from pathlib import Path
 import tempfile
 
-from llm_batch.local_stage_gate import FileSingleflightLease, LocalSingleflight, LocalTokenBucket, StageGateTimeout, StageLimiterConfig, StageLimiterRegistry, StageSingleflightKey
-from llm_batch.shared_cache_contract import CacheNamespace, ReadOnlySharedCacheAdapter, SharedCacheContractError
-from llm_batch.stage_budget import ArtifactRef, StageBudgetBinding, StageBudgetError, build_shadow_stage_budget_receipt, build_stage_budget_snapshot, read_stage_budget_receipt
+from llm_batch.runtime.local_stage_gate import FileSingleflightLease, LocalSingleflight, LocalTokenBucket, StageGateTimeout, StageLimiterConfig, StageLimiterRegistry, StageSingleflightKey
+from llm_batch.runtime.shared_cache_contract import CacheNamespace, ReadOnlySharedCacheAdapter, SharedCacheContractError
+from llm_batch.runtime.stage_budget import ArtifactRef, StageBudgetBinding, StageBudgetError, build_shadow_stage_budget_receipt, build_stage_budget_snapshot, read_stage_budget_receipt
 
 
 class StageFoundationTests(unittest.TestCase):
@@ -127,7 +127,7 @@ class StageFoundationTests(unittest.TestCase):
             leader = first.acquire(key, timeout_ms=10, lease_timeout_ms=250)
             self.assertEqual((leader.role, leader.status), ("LEADER", "ACQUIRED"))
             env = dict(os.environ); env["PYTHONPATH"] = str(Path(__file__).resolve().parents[1] / "src") + os.pathsep + env.get("PYTHONPATH", "")
-            code = "import json,sys; from pathlib import Path; from llm_batch.local_stage_gate import FileSingleflightLease,StageSingleflightKey; k=StageSingleflightKey('a'*64,'scope','b'*64,'search','mcp','model','c'*64); r=FileSingleflightLease(Path(sys.argv[1])).acquire(k,timeout_ms=5,lease_timeout_ms=250); print(json.dumps({'role':r.role,'status':r.status}))"
+            code = "import json,sys; from pathlib import Path; from llm_batch.runtime.local_stage_gate import FileSingleflightLease,StageSingleflightKey; k=StageSingleflightKey('a'*64,'scope','b'*64,'search','mcp','model','c'*64); r=FileSingleflightLease(Path(sys.argv[1])).acquire(k,timeout_ms=5,lease_timeout_ms=250); print(json.dumps({'role':r.role,'status':r.status}))"
             child = subprocess.run([sys.executable, "-c", code, directory], capture_output=True, text=True, check=True, env=env)
             self.assertEqual(json.loads(child.stdout), {"role": "FOLLOWER", "status": "TIMEOUT"})
             follower = second.acquire(key, timeout_ms=5, lease_timeout_ms=30)

@@ -7,15 +7,15 @@ import threading
 import unittest
 from unittest import mock
 
-from src.llm_batch.decision_call_events import DecisionCallLedgerRegistry
-from src.llm_batch.decision_ledger_dual_write import (
+from src.llm_batch.ledger.decision_call_events import DecisionCallLedgerRegistry
+from src.llm_batch.ledger.decision_ledger_dual_write import (
     DecisionLedgerV2DualWriteAdapter,
     _sha,
 )
-from src.llm_batch.decision_ledger_v2 import DecisionCallLedgerV2, DecisionLedgerV2Error
-from src.llm_batch.decision_tracing_llm import DecisionTracingLLMClient
+from src.llm_batch.ledger.decision_ledger_v2 import DecisionCallLedgerV2, DecisionLedgerV2Error
+from src.llm_batch.ledger.decision_tracing_llm import DecisionTracingLLMClient
 from src.llm_batch.llm.client import LLMClient
-from src.llm_batch.publication_commit import build_publication_scope_descriptor
+from src.llm_batch.ledger.publication_commit import build_publication_scope_descriptor
 from expert_main import (
     _decision_affecting_publication_config,
     _decision_ledger_v2_off_status,
@@ -375,7 +375,7 @@ class DecisionLedgerDualWriteTests(unittest.TestCase):
             self.legacy, v2_root=self.root / "v2", shadow_enabled=True
         )
         with mock.patch(
-            "src.llm_batch.decision_ledger_dual_write._atomic_create_once",
+            "src.llm_batch.ledger.decision_ledger_dual_write._atomic_create_once",
             side_effect=OSError("disk"),
         ):
             status = adapter.disable_shadow("OPERATOR_ROLLBACK")
@@ -393,7 +393,7 @@ class DecisionLedgerDualWriteTests(unittest.TestCase):
             self.legacy, v2_root=v2_root, shadow_enabled=True
         )
         with mock.patch(
-            "src.llm_batch.decision_ledger_dual_write._atomic",
+            "src.llm_batch.ledger.decision_ledger_dual_write._atomic",
             side_effect=OSError("control disk"),
         ):
             status = adapter.disable_shadow("OPERATOR_ROLLBACK")

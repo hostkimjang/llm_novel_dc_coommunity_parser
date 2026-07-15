@@ -1,4 +1,4 @@
-﻿"""
+"""
 Orchestrator - 전문가 간 협력적 워크플로우 시스템
 전문가들의 요청을 해석하고, 필요한 전문가를 실행하며, 결과를 조율합니다.
 """
@@ -19,7 +19,7 @@ from enum import Enum
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Callable, Tuple
-from ..rules import (
+from ..domain.rules import (
     GENRE_ARCHETYPE_TERMS,
     NOVEL_SITES,
     OFFICIAL_PLATFORMS,
@@ -36,8 +36,8 @@ from .decoder import (
 )
 from .utils import _ts, set_worker_context, get_kiwi, KNOWN_TITLE_ABBREVIATIONS
 from ..search.content_trim import smart_trim_content, smart_trim_contents_parallel
-from ..candidate_audit import TITLE_LED_WORK_CONSUMPTION_RE
-from ..candidate_generation import (
+from ..grounding.candidate_audit import TITLE_LED_WORK_CONSUMPTION_RE
+from ..grounding.candidate_generation import (
     CandidateProducerPlan,
     build_candidate_producer_plan,
     build_candidate_producer_receipt,
@@ -77,7 +77,7 @@ def _normalize_alnum_kor_jamo_cached(text: str) -> str:
 def _extract_nouns(text: str) -> List[str]:
     """
     한국어텍스트에서 명사만 추출 (kiwipiepy 사용)
-    
+
     추출하는 품사:
     - NNG: 일반 명사 (소설 게임, 작품)
     - NNP: 고유 명사 (죽깨, 스마트, 이유반)
@@ -90,7 +90,7 @@ def _extract_nouns(text: str) -> List[str]:
         # Fallback: 정규식 토큰화(문장부호 제거) + 중복 제거
         tokens = re.findall(r"[A-Za-z0-9\uac00-\ud7a3]{2,}", text or "")
         return list(dict.fromkeys(tokens))
-    
+
     nouns = []
     try:
         result = kiwi.tokenize(text)
@@ -105,7 +105,7 @@ def _extract_nouns(text: str) -> List[str]:
         # 에러 시 fallback
         tokens = re.findall(r"[A-Za-z0-9\uac00-\ud7a3]{2,}", text or "")
         return list(dict.fromkeys(tokens))
-    
+
     return nouns
 
 
@@ -130,7 +130,7 @@ class ExpertMessage:
     message_type: str  # "analysis", "request", "question", "answer", "final"
     content: Dict[str, Any]
     timestamp: float = field(default_factory=time.time)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "from": self.from_expert.value,
@@ -152,7 +152,7 @@ class ConversationContext:
     expert_outputs: Dict[str, Dict[str, Any]] = field(default_factory=dict)
     iteration: int = 0
     max_iterations: int = 12
-    
+
     # NEW: 추정/후보 작품 목록 (Decoder 이상의 전문가가 각자 공유)
     suspected_titles: List[Dict[str, Any]] = field(default_factory=list)
     # 전문가 내부 cap 직전 후보 목록의 진단 영수증. expert_outputs/prompt에는 넣지 않고
@@ -179,30 +179,30 @@ class ConversationContext:
         default_factory=threading.RLock,
         repr=False,
     )
-    
+
     # 단계 1: DiscourseAnalyzer 결과 저장 (도메인 교차 검증용)
     primary_domain: Optional[str] = None  # "novel_work", "real_world", "meta", etc.
     discourse_intent: Optional[str] = None  # "discussion", "recommendation", "meme", etc.
-    
+
     # ⚡ Discourse Override: non-novel 도메인(high) 경고
     discourse_warning: Optional[str] = None  # e.g. "memes_humor(high)"
-    
+
     # ⚡ Phase31: Gatekeeper 원본 noise 판정 보존 (noise override 시 소멸 방지)
     # orchestrator가 noise를 취소해도, 원래 Gatekeeper가 noise라고 판단한 사실과
     # 그 추론을 후속 전문가(EvidenceScorer, Debate/Skeptic)에 전달
     original_gatekeeper_noise: bool = False
     original_gatekeeper_noise_reason: Optional[str] = None
     noise_override_reason: Optional[str] = None  # e.g. "discourse_novel_literature"
-    
+
     # ⚡ 연상기호 판정: is_association_not_discussion + title_body_consistency=false
     is_association_post: bool = False
-    
+
     # 단계 2: 전문가별 신뢰도추적 (Arbiter 가중 평가용)
     expert_confidence: Dict[str, float] = field(default_factory=dict)  # {"gatekeeper": 0.6, "verifier": 0.95}
-    
+
     # 단계 4: 불확실성 요인 축적 (카운터 및low-confidence 판정
     uncertainty_sources: List[str] = field(default_factory=list)
-    
+
     # 검색 쿼리 이력 추적 (중복 검색 방지)
     searched_queries: set = field(default_factory=set)
     # 검색 근거 전역 번호 (E001, E002, ...)
@@ -241,7 +241,7 @@ class ConversationContext:
             "direct_search_result_total": 0,
         }
     )
-    
+
     # ── 개선: candidate evidence bucket 분리 (증거 누수 방지) ──
     # 후보 제목별로 증거를 분리 저장하여 후보 A의 증거가 후보 B에 유입되는 것을 방지
     # 구조: {"작품제목": {"post_spans": [...], "search_snippets": [...], "official_urls": [...]}}
@@ -250,17 +250,17 @@ class ConversationContext:
     # 검색 결과의 author/character/상태 문맥이 원문과 어떻게 다시 결합되는지 저장해
     # decoder/verifier/final acceptance가 같은 해석을 공유하도록 한다.
     candidate_bridge_profiles: Dict[str, Dict[str, Any]] = field(default_factory=dict)
-    
+
     # ── 개선: 가설 상태머신 (hypothesis invalidation) ──
     # 현재 활성 가설과 버전 추적. 새 증거가 충돌하면 invalidate하고 재시작
     active_hypothesis: Optional[Dict[str, Any]] = field(default=None)
     # {"version": 1, "title": "...", "confidence": "high", "supporting_evidence": [...], "created_at_step": 3}
     hypothesis_history: List[Dict[str, Any]] = field(default_factory=list)
-    
+
     # ── 개선: 소스 신뢰도 가중치 ──
     # 검색 결과 소스별 신뢰도 점수 (공식 플랫폼 > 위키 > 커뮤니티/블로그)
     source_trust_scores: Dict[str, float] = field(default_factory=dict)
-    
+
     # 토큰 사용추적
     token_usage: Dict[str, int] = field(default_factory=lambda: {
         "prompt_tokens": 0,
@@ -271,7 +271,7 @@ class ConversationContext:
     search_budget_limit: int = 0
     search_stop_reason: Optional[str] = None
     final_consistency_flags: List[str] = field(default_factory=list)
-    
+
     def add_message(self, msg: ExpertMessage) -> None:
         self.messages.append(msg)
 
@@ -566,11 +566,11 @@ class ConversationContext:
                     self._candidate_producer_integrity_errors.append(
                         "search_receipt_record_failed"
                     )
-    
+
     def add_evidence_for_candidate(self, candidate_title: str, evidence_type: str, evidence: Any) -> None:
         """
         특정 후보 제목에 대한 증거를 분리 저장.
-        
+
         Args:
             candidate_title: 후보 작품 제목
             evidence_type: 'post_span' | 'search_snippet' | 'official_url'
@@ -589,7 +589,7 @@ class ConversationContext:
             bucket["search_snippets"].append(evidence)
         elif evidence_type == "official_url":
             bucket["official_urls"].append(evidence)
-    
+
     def get_candidate_evidence(self, candidate_title: str) -> Dict[str, List[Any]]:
         """특정 후보의 증거 bucket 반환."""
         return self.candidate_evidence.get(candidate_title, {
@@ -660,11 +660,11 @@ class ConversationContext:
             if _normalize_alnum_kor_cached(key) == title_norm and isinstance(profile, dict):
                 return dict(profile)
         return {}
-    
+
     def update_hypothesis(self, title: str, confidence: str, evidence: List[str], step: int) -> bool:
         """
         가설 상태머신: 새 가설을 설정하거나 기존 가설과 충돌 시 무효화.
-        
+
         Returns:
             True: 가설이 유지/갱신됨, False: 기존 가설이 무효화되어 리셋됨
         """
@@ -676,14 +676,14 @@ class ConversationContext:
             "supporting_evidence": evidence,
             "created_at_step": step,
         }
-        
+
         if self.active_hypothesis is None:
             # 첫 가설 설정
             self.active_hypothesis = new_hyp
             self.hypothesis_history.append(new_hyp)
             print(f"[{_ts()}][🎯] 🧪 가설 v{new_hyp['version']} 수립: '{title}' (conf={confidence})", file=sys.stderr)
             return True
-        
+
         old_title = self.active_hypothesis["title"]
         if old_title and title and old_title.replace(' ', '') != title.replace(' ', ''):
             # 가설 충돌: 다른 작품으로 전환 → 이전 가설 무효화
@@ -692,7 +692,7 @@ class ConversationContext:
             self.active_hypothesis["invalidated_by"] = title
             self.active_hypothesis["invalidated_at_step"] = step
             self.hypothesis_history.append(self.active_hypothesis.copy())
-            
+
             # 이전 후보의 증거를 새 후보에 재사용하지 않도록 분리
             print(
                 f"[{_ts()}][🎯] ⚠️ 가설 충돌: v{old_version} '{old_title}' → v{new_hyp['version']} '{title}'"
@@ -710,7 +710,7 @@ class ConversationContext:
             self.active_hypothesis["confidence"] = confidence
             self.active_hypothesis["supporting_evidence"].extend(evidence)
             return True
-    
+
     def score_source_trust(self, url: str) -> float:
         """
         URL 기반 소스 신뢰도 점수 반환.
@@ -739,11 +739,11 @@ class ConversationContext:
         if "blog.naver.com" in url_lower or "tistory.com" in url_lower:
             return 0.3
         return 0.2
-    
+
     @staticmethod
     def _normalize_url_for_dedup(url: str) -> str:
         """URL을 정규화하여 같은 페이지의 변형 URL을 동일하게 처리.
-        
+
         처리하는 중복 패턴:
         - dcinside: m.dcinside vs gall.dcinside, ?page= ?headid= ?recommend= 등
         - namu.wiki: ?uuid= ?rev= 쿼리 파라미터 제거
@@ -757,7 +757,7 @@ class ConversationContext:
             parsed = urlparse(url)
             host = (parsed.hostname or "").lower()
             path = parsed.path.rstrip("/")
-            
+
             # dcinside: m.dcinside.com/board/X/12345 ↔ gall.dcinside.com/mgallery/board/view/?id=X&no=12345
             if "dcinside.com" in host:
                 # 모바일 URL: /board/{gallery_id}/{post_no}
@@ -773,47 +773,47 @@ class ConversationContext:
                     return f"dcinside:{gid}:{no}"
                 # fallback: path만 정규화
                 return f"dcinside:{path}"
-            
+
             # namu.wiki: ?uuid=, ?rev= 제거
             if "namu.wiki" in host:
                 return f"namu:{path}"
-            
+
             # arca.live: path에 게시글 번호 포함, ?p= ?before= ?showComments= 무시
             if "arca.live" in host:
                 return f"arca:{path}"
-            
+
             # series.naver.com: productNo가 핵심
             if "series.naver.com" in host:
                 qs = parse_qs(parsed.query)
                 pno = (qs.get("productNo") or [""])[0]
                 if pno:
                     return f"naverseries:{pno}"
-            
+
             # ruliweb: /read/숫자 가 게시글 ID
             if "ruliweb.com" in host:
                 read_match = re.search(r"/read/(\d+)", path)
                 if read_match:
                     return f"ruliweb:{read_match.group(1)}"
-            
+
             # fmkorea: 숫자 ID가 path 끝에
             if "fmkorea.com" in host:
                 fmk_match = re.search(r"/(\d{5,})", path)
                 if fmk_match:
                     return f"fmkorea:{fmk_match.group(1)}"
-            
+
             # novelpia: /novel/숫자
             if "novelpia.com" in host:
                 np_match = re.search(r"/(novel|arena)/(\d+)", path)
                 if np_match:
                     return f"novelpia:{np_match.group(1)}:{np_match.group(2)}"
                 return f"novelpia:{path}"
-            
+
             # munpia: /숫자
             if "munpia.com" in host:
                 mp_match = re.search(r"/(\d+)", path)
                 if mp_match:
                     return f"munpia:{mp_match.group(1)}"
-            
+
             # 일반: scheme + host + path (쿼리 파라미터 제거)
             return f"{host}:{path}"
         except Exception:
@@ -822,36 +822,36 @@ class ConversationContext:
     def add_search_results(self, new_results: List[Dict[str, Any]]) -> int:
         """
         검색 결과 추가 (URL 기반 중복 제거 + 자기 참조 방지)
-        
+
         Returns:
             추가된 결과 수
         """
         if not new_results:
             return 0
-        
+
         # 기존 URL 추출 (원본 + 정규화 둘 다 추적)
         existing_urls = {r.get("url") for r in self.search_results if r.get("url")}
         existing_normalized = {
             self._normalize_url_for_dedup(r.get("url", ""))
             for r in self.search_results if r.get("url")
         }
-        
+
         # 현재 분석 중인 post의 URL 패턴 생성 (자기 참조 방지)
         current_post_id = str(self.post_data.get("post_id", ""))
         current_post_url = str(self.post_data.get("url", ""))
-        
+
         # 카운더 자기 참조 필터 정보 로깅 (처음 번만)
         if not hasattr(self, '_logged_self_ref_filter'):
             from datetime import datetime
             ts = datetime.now().strftime("%H:%M:%S.%f")[:-3]
             print(f"[{ts}][🎯] 📋 자기참조 필터: post_id='{current_post_id}'", file=sys.stderr)
             self._logged_self_ref_filter = True
-        
+
         # 중복 제거하며 추가
         added_count = 0
         skipped_self_ref = 0
         skipped_duplicate = 0
-        
+
         # DC갤러리 게시판URL에서 게시글 번호 추출 패턴
         import re
         _board_no_re = re.compile(r'[?&]no=(\d+)')
@@ -861,13 +861,13 @@ class ConversationContext:
             m = _board_no_re.search(current_post_url)
             if m:
                 current_board_no = m.group(1)
-        
+
         # 현재 포스트제목 (snippet 기반 자기참조 필터
         current_post_title = str(self.post_data.get("title", ""))
-        
+
         for result in new_results:
             url = str(result.get("url", ""))
-            
+
             # 자기 참조 체크: URL현재 post_id 또는 현재 URL 포함하면 제외
             is_self_ref = False
             if current_post_id and current_post_id in url:
@@ -886,12 +886,12 @@ class ConversationContext:
                     # dcinside URL이면 거의 뺤떎자기참조
                     if 'dcinside.com' in url:
                         is_self_ref = True
-            
+
             if is_self_ref:
                 skipped_self_ref += 1
                 # print(f"[{self._ts()}][🎯]   ⚠️ 자기참조 스킵: {url[:80]}...", file=sys.stderr)
                 continue  # 자기 참조 스킵
-            
+
             if url and url in existing_urls:
                 skipped_duplicate += 1
                 continue  # 중복 스킵 (정확 매칭)
@@ -955,7 +955,7 @@ class ConversationContext:
                 result["_trust_score"] = trust
                 self.source_trust_scores[url] = trust
             added_count += 1
-        
+
         # 결과 로깅
         if skipped_self_ref > 0:
             from datetime import datetime
@@ -965,9 +965,9 @@ class ConversationContext:
             from datetime import datetime
             ts = datetime.now().strftime("%H:%M:%S.%f")[:-3]
             print(f"[{ts}][ℹ️] duplicate filtered: {skipped_duplicate}", file=sys.stderr)
-        
+
         return added_count
-    
+
     def get_time_status(self) -> Dict[str, Any]:
         """분석 시간 상태 반환"""
         remaining = self.max_iterations - self.iteration
@@ -980,7 +980,7 @@ class ConversationContext:
         else:
             urgency = "NORMAL"
             message = "충분분석 시간있습니다. 필요다른 Expert먭쾶 협력요청하세"
-        
+
         return {
             "current_step": self.iteration,
             "remaining_steps": remaining,
@@ -1011,20 +1011,20 @@ class ConversationContext:
                 title += f" (⚠️ 이 작품은 '{_d_of}'의 2차창작/팬픽이며 원작 제목이 아닙니다)"
             rows.append(f"[{eid}] {title} | {url[:140]}")
         return "\n".join(rows)
-    
+
     def get_conversation_summary(self, compact: bool = False) -> str:
         """요약 생성 (LLM 프롬프트 - 시간 상태 포함
-        
+
         Args:
             compact: True면 최소 정보만(토큰 압축)
         """
         lines = []
-        
+
         # 시간 상태 먼저 표시
         time_status = self.get_time_status()
         lines.append(f"=== 분석 상태: Step {time_status['current_step']}/{time_status['current_step'] + time_status['remaining_steps']} ===")
         lines.append(f"[{time_status['urgency']}] {time_status['message']}")
-        
+
         if compact:
             # 간소모드: 핵심 결론만
             lines.append("")
@@ -1067,7 +1067,7 @@ class ConversationContext:
             if self.discourse_warning:
                 lines.append(f"[warning] discourse={self.discourse_warning}")
             return "\n".join(lines)
-        
+
         # 이전 전문가 분석 결과 요약
         lines.append("\n=== 이전 전문가 분석 결과 ===")
         for expert_name, output in self.expert_outputs.items():
@@ -1120,7 +1120,7 @@ class ConversationContext:
                     f"  - 접지: anchor={grounding.get('anchor_found')}, "
                     f"decoder_grounded={grounding.get('decoder_grounded')}"
                 )
-        
+
         # 기록 compact 모드가 아닐 때만
         if self.messages:
             lines.append("\n=== 이전 기록 ===")
@@ -1129,12 +1129,12 @@ class ConversationContext:
                     f"[{msg.from_expert.value}->{msg.to_expert.value if msg.to_expert else 'all'}] "
                     f"{msg.message_type}: {json.dumps(msg.content, ensure_ascii=False)[:100]}"  # 150->100
                 )
-        
+
         return "\n".join(lines)
-    
+
     def get_expert_output(self, expert: ExpertType) -> Optional[Dict[str, Any]]:
         return self.expert_outputs.get(expert.value)
-    
+
     def set_expert_output(self, expert: ExpertType, output: Dict[str, Any]) -> None:
         self.expert_outputs[expert.value] = output
         # 로그pretty-print결과 출력
@@ -1148,18 +1148,18 @@ class ConversationContext:
 class Orchestrator:
     """
     🎯 Orchestrator - 전문가 조율
-    
+
     븷:
     - 전문가들의 분석 결과 요청해석
     - ?ㅼ쓬대뼡 전문가를 실행유지 결정
     - 검색 요청 처리
     - 종료 조건 판단
-    
+
     협력 제한:
     - 같은 전문가 간의 협력 최대 1회
     - 전체 협력 요청 최대 3회
     """
-    
+
     def __init__(
         self,
         experts: Dict[ExpertType, Any],
@@ -2579,11 +2579,95 @@ class Orchestrator:
                 seen.add(norm)
         return seeds[:4]
 
+    def _typed_image_work_title_search_requests(
+        self,
+        ctx: ConversationContext,
+    ) -> Optional[List[Dict[str, Any]]]:
+        post_data = getattr(ctx, "post_data", None) or {}
+        for item in (post_data.get("image_enrichment") or []):
+            if not isinstance(item, dict) or bool(item.get("background_listing_only")):
+                continue
+            screen_type = str(item.get("screen_type") or "").strip().lower()
+            surface_type = str(item.get("surface_type") or "").strip().lower()
+            if screen_type == "platform_catalog_ui" or surface_type == "platform_catalog_ui":
+                continue
+            evidence_type = str(item.get("evidence_type") or "").strip().lower()
+            title_role = str(item.get("title_role") or "").strip().lower()
+            if evidence_type not in {"explicit_text", "cover_title"}:
+                continue
+            if title_role not in {"", "work_title", "unknown"}:
+                continue
+            title = re.sub(
+                r"\s+",
+                " ",
+                str(item.get("explicit_work_title") or "").strip(" \"'“”‘’"),
+            ).strip()
+            if not title:
+                continue
+            author = re.sub(
+                r"\s+",
+                " ",
+                str(item.get("explicit_author_name") or "").strip(" \"'“”‘’"),
+            ).strip()
+            exact_query = f'"{title}"'
+            if author:
+                exact_query = f'{exact_query} "{author}"'
+            return [
+                {
+                    "query": exact_query,
+                    "purpose": "image_work_cue_search",
+                    "priority": 0,
+                },
+                {
+                    "query": f'"{title}" 노벨피아',
+                    "purpose": "image_work_cue_search",
+                    "priority": 0,
+                },
+            ]
+        return None
+
+    def _clamp_typed_image_work_title_initial_search_requests(
+        self,
+        ctx: ConversationContext,
+        search_requests: List[Dict[str, Any]],
+        *,
+        phase: str = "initial",
+    ) -> List[Dict[str, Any]]:
+        typed_requests = self._typed_image_work_title_search_requests(ctx)
+        if typed_requests is None:
+            return search_requests
+        before_queries = [
+            str(req.get("query") or "").strip()
+            for req in (search_requests or [])
+            if isinstance(req, dict) and str(req.get("query") or "").strip()
+        ]
+        typed_queries = [str(req.get("query") or "").strip() for req in typed_requests]
+        if before_queries != typed_queries:
+            print(
+                f"[{_ts()}] {self.emoji} 🖼️ typed OCR 작품명 초기 검색 고정"
+                f"({phase}): {len(before_queries)}→{len(typed_queries)}, "
+                f"queries={typed_queries}",
+                file=sys.stderr,
+            )
+        return [dict(req) for req in typed_requests]
+
     def _inject_image_work_cue_search_requests(
         self,
         ctx: ConversationContext,
         search_requests: List[Dict[str, Any]],
     ) -> List[Dict[str, Any]]:
+        typed_requests = self._typed_image_work_title_search_requests(ctx)
+
+        # A typed VLM/OCR work-title field is already the highest-specificity
+        # image seed. Canonicalize the initial plan instead of appending it to
+        # token-split/general requests that were created before this stage.
+        if typed_requests is not None:
+            return self._clamp_typed_image_work_title_initial_search_requests(
+                ctx,
+                search_requests,
+                phase="inject",
+            )
+
         seeds = self._collect_image_work_cue_query_seeds(ctx)
         if not seeds:
             return search_requests
@@ -7003,7 +7087,7 @@ class Orchestrator:
         *,
         discourse_warning: Any = "",
     ) -> bool:
-        from llm_batch.rules import is_genre_물_pattern
+        from llm_batch.domain.rules import is_genre_물_pattern
 
         raw = str(token or "").strip()
         if not raw:
@@ -7524,6 +7608,15 @@ class Orchestrator:
         q_norm = self._normalize_search_term(raw)
         if not q_norm:
             return False
+        typed_requests = self._typed_image_work_title_search_requests(ctx)
+        if typed_requests is not None:
+            typed_query_norms = {
+                self._normalize_search_term(req.get("query") or "")
+                for req in typed_requests
+                if isinstance(req, dict)
+                and self._normalize_search_term(req.get("query") or "")
+            }
+            return q_norm in typed_query_norms
         official_probe_terms = {
             self._normalize_search_term(term)
             for term in (
@@ -9878,7 +9971,7 @@ class Orchestrator:
             kept.sort(key=_support_alias_query_rank)
 
         return kept
-    
+
     def _try_fast_path(
         self,
         ctx: ConversationContext,
@@ -9886,18 +9979,18 @@ class Orchestrator:
     ) -> Optional[ConversationContext]:
         """
         ⚡ Fast-Path 경량 사전판별
-        
+
         LLM 실행 놁씠 룰 기반으로 명확한 포스트를 빠른 처리합니다.
-        
+
         Returns:
             - ConversationContext: Fast-Path로 처리 완료된 결과
             - None: Fast-Path 불가 시 정규 파이프라인 진행
         """
         import re
-        
+
         post_data = ctx.post_data or {}
         title = post_data.get("title", "")
-        
+
         # 본문 텍스추출
         content_texts = []
         for block in post_data.get("content_blocks", []):
@@ -9906,14 +9999,14 @@ class Orchestrator:
             elif isinstance(block, str):
                 content_texts.append(block)
         content_joined = " ".join(content_texts[:5])[:300]  # 상위 300자만
-        
+
         title_stripped = title.strip()
-        
+
         # ───>Fast-Path 1: 제목+본문 모두 비어있음 ───>
         if not title_stripped and not content_joined.strip():
             print(f"[{_ts()}] {self.emoji} ⚡Fast-Path NOISE: 제목+본문 비어있음", file=sys.stderr)
             return self._build_fast_noise_ctx(ctx, "제목과 본문이 비어있습니다.")
-        
+
         # ───>Fast-Path 2: 자음/모음/특수문자만(이벤트숈꽌) ───>
         if title_stripped and re.fullmatch(r'[\u3131-\u314e\u314f-\u3163\s!?.~,;:\u314b\u314e\u3160\u315c]+', title_stripped):
             if len(content_joined.strip()) < 10:
@@ -9922,7 +10015,7 @@ class Orchestrator:
                     file=sys.stderr,
                 )
                 return self._build_fast_noise_ctx(ctx, f"이벤트입력 패턴: '{title_stripped}'")
-        
+
         # ───>Fast-Path 3: 반복/반복 패턴 ───>
         if content_joined.strip():
             unique_chars = set(content_joined.replace(" ", ""))
@@ -9932,7 +10025,7 @@ class Orchestrator:
                     ctx,
                     f"반복 패턴 노이즈: unique_chars={len(unique_chars)}",
                 )
-        
+
         # ───>Fast-Path 4: 본문 20자 이하 + 제목에 작품명 후보 ───>
         # DC갤러리 특성: 본문 "ㅋㅋㅋ", "ㄹㅇ", "인정" 등 짧은 반응,
         # 제목에 작품명이 있으면 제목 기반으로 작품 논의 판정 가능
@@ -9949,7 +10042,7 @@ class Orchestrator:
                     )
                 else:
                     # 회차 패턴이 있으면 더 확실한 작품 논의
-                    from ..rules import EPISODE_NUMBER_PATTERN
+                    from ..domain.rules import EPISODE_NUMBER_PATTERN
                     ep_match = EPISODE_NUMBER_PATTERN.search(title_stripped)
                     ep_info = f" (회차: {ep_match.group(0)})" if ep_match else ""
 
@@ -9963,10 +10056,10 @@ class Orchestrator:
                     # Decoder/Verifier 정규 파이프라인으로 계속 흘려보낸다.
                     self._build_fast_short_post_ctx(ctx, title_stripped, content_joined.strip())
                     return None
-        
+
         # ───>Fast-Path 5: 마스킹 제목 + 본문 부족 → 즉시 undecodable_reference ───>
         # "ㅁㅁ세계 ㄹㅇ 꿀잼", "■■ 1034일차" 등 — 작품 언급은 확실하지만 특정 불가
-        from ..rules import TITLE_MASKING_PATTERNS
+        from ..domain.rules import TITLE_MASKING_PATTERNS
         for mask_pat in TITLE_MASKING_PATTERNS:
             if mask_pat in title_stripped:
                 # 본문이 짧거나 없으면 해독 투입 대비 효과 없음
@@ -9981,10 +10074,10 @@ class Orchestrator:
                         ctx, title_stripped, mask_pat, content_joined.strip()
                     )
                 break  # 마스킹 있지만 본문 충분 → 정규 파이프라인에서 처리
-        
+
         # ───>Fast-Path 불가 시 정규 파이프라인───>
         return None
-    
+
     def _build_fast_noise_ctx(
         self,
         ctx: ConversationContext,
@@ -10007,7 +10100,7 @@ class Orchestrator:
             "confidence": "high",
             "notes": f"Fast-Path 노이즈 판정: {reason}",
         })
-        
+
         ctx.set_expert_output(ExpertType.ARBITER, {
             "final_decision": {
                 "is_relevant": False,
@@ -10018,25 +10111,25 @@ class Orchestrator:
             "final_reasoning": f"Fast-Path 판정: {reason}",
             "metadata_synthesis": {},
         })
-        
+
         ctx.add_message(ExpertMessage(
             from_expert=ExpertType.GATEKEEPER,
             to_expert=None,
             message_type="final",
             content={"decision": "noise", "reason": reason, "fast_path": True},
         ))
-        
+
         print(f"[{_ts()}] {self.emoji} ⚡ Fast-Path 완료: LLM 호출 0회, 검색 0회", file=sys.stderr)
         return ctx
-    
+
     def _guard_synthesizer_override(self, ctx: ConversationContext) -> None:
         """
         Synthesizer 합의-이탈 가드.
-        
+
         Decoder와 Verifier가 동일 작품을 high confidence로 합의했는데
         Synthesizer가 다른 작품을 제시한 경우 → Synthesizer 결과를 기각하고
         Decoder/Verifier 합의로 복원합니다.
-        
+
         판단 기준:
         1. Decoder best_match와 Verifier title이 동일 (정규화 비교)
         2. Decoder confidence ≥ high
@@ -10079,7 +10172,7 @@ class Orchestrator:
             vf_result_vo = verifier_out.get("verification_result") or verifier_out
             vf_title_vo = (vf_result_vo.get("verified_title") or vf_result_vo.get("title") or "").strip()
             vf_conf_vo = str(vf_result_vo.get("confidence") or vf_result_vo.get("verification_confidence", "")).lower()
-            
+
             if vf_title_vo and vf_conf_vo in ("high", "max", "very_high"):
                 synth_title_vo = (synth_out.get("reinterpreted_title") or "").strip()
                 if synth_title_vo and _norm(synth_title_vo) != _norm(vf_title_vo):
@@ -10156,10 +10249,10 @@ class Orchestrator:
     ) -> ConversationContext:
         """
         Fast-Path 해독불가(undecodable_reference) 결과 생성.
-        
+
         🔒 마스킹 제목(ㅁㅁ, ■■ 등) + 본문 부족 → 작품 언급은 확실하지만
         특정할 수 있는 정보가 없으므로 Decoder 투입 없이 즉시 판정.
-        
+
         is_relevant=False이지만 discussion_type=undecodable_reference로
         noise와 분리하여 품질 분석 정확도를 높임.
         """
@@ -10184,7 +10277,7 @@ class Orchestrator:
             "confidence": "high",
             "notes": f"마스킹 Fast-Path: '{masking_pattern}' 감지, 해독불가 판정",
         })
-        
+
         ctx.set_expert_output(ExpertType.ARBITER, {
             "final_decision": {
                 "is_relevant": False,
@@ -10199,7 +10292,7 @@ class Orchestrator:
             ),
             "metadata_synthesis": {},
         })
-        
+
         ctx.add_message(ExpertMessage(
             from_expert=ExpertType.GATEKEEPER,
             to_expert=None,
@@ -10210,14 +10303,14 @@ class Orchestrator:
                 "fast_path": True,
             },
         ))
-        
+
         print(
             f"[{_ts()}] {self.emoji} ⚡ Fast-Path UNDECODABLE 완료: "
             f"LLM 호출 0회, 검색 0회 (마스킹='{masking_pattern}')",
             file=sys.stderr,
         )
         return ctx
-    
+
     def _build_fast_short_post_ctx(
         self,
         ctx: ConversationContext,
@@ -10226,17 +10319,17 @@ class Orchestrator:
     ) -> ConversationContext:
         """
         Fast-Path 본문 20자 이하 short-post 결과 생성.
-        
+
         💡 본문이 극단적으로 짧지만 제목에 작품명이 있는 경우,
         noise로 처리하지 않고 '제목 기반 작품 논의 후보'로 판정하여
         정규 파이프라인에 제목만 넘깁니다 (LLM Decoder에게 제목 해석 위임).
-        
+
         이것은 noise 판정도 아니고 최종 판정도 아님 — Gatekeeper 결과만
         세팅하고 이후 Decoder/Arbiter에 위임합니다.
         """
         import re
-        from ..rules import EPISODE_NUMBER_PATTERN
-        
+        from ..domain.rules import EPISODE_NUMBER_PATTERN
+
         # 회차 번호 감지
         ep_match = EPISODE_NUMBER_PATTERN.search(title)
         episode_info = {}
@@ -10249,7 +10342,7 @@ class Orchestrator:
                     "source": "title",
                 },
             }
-        
+
         ctx.set_expert_output(ExpertType.GATEKEEPER, {
             "is_noise": False,
             "noise_reason": None,
@@ -10271,11 +10364,11 @@ class Orchestrator:
             "confidence": "medium",
             "notes": f"Short-post Fast-Path: body={len(body)}자, 제목 기반 판정 위임",
         })
-        
+
         # 🔑 핵심: Arbiter까지 세팅하지 않고 정규 파이프라인에 이어서 처리
         # → Decoder가 제목을 해석하고, Arbiter가 최종 판정
         # 하지만 Gatekeeper 결과를 미리 세팅해서 빠르게 통과
-        
+
         ctx.add_message(ExpertMessage(
             from_expert=ExpertType.GATEKEEPER,
             to_expert=None,
@@ -10288,7 +10381,7 @@ class Orchestrator:
                 "episode_info": episode_info,
             },
         ))
-        
+
         print(
             f"[{_ts()}] {self.emoji} ⚡ Short-Post Fast-Path: "
             f"Gatekeeper 세팅 완료 → Decoder 위임 (body={len(body)}자)",
@@ -10494,7 +10587,7 @@ class Orchestrator:
                 )
 
         return results
-    
+
     def process(
         self,
         post_data: Dict[str, Any],
@@ -10503,7 +10596,7 @@ class Orchestrator:
     ) -> ConversationContext:
         """
         전문가ㅼ쓣 조율섏뿬 포스트분석 완료
-        
+
         Returns:
             ConversationContext with all expert outputs and messages
         """
@@ -10522,20 +10615,20 @@ class Orchestrator:
                 file=sys.stderr,
             )
         self._active_ctx = ctx
-        
+
         # 쓰레드로컬 워커 ID 설정 (_ts() 로그 prefix용)
         set_worker_context(self.worker_id, self.parallel_count)
-        
+
         print(f"\n[{_ts()}] {self.emoji} Orchestrator 시작: post_id={ctx.post_id}", file=sys.stderr)
         self._prev_expert = ''  # 이전 전문가 초기화 (파이프라인 흐름 추적)
-        
+
         # ⚡ Fast-Path: 경량 사전판별, 명확한 포스트는 빠른 처리
         fast_path = self._try_fast_path(ctx, rules_config)
         if fast_path is not None:
             _emit_monitor("expert_phase", {"expert": "fast_path", "status": "done"}, post_id=ctx.post_id)
             self._last_ctx = fast_path
             return fast_path
-        
+
         # Phase 1: Gatekeeper 초기 분석
         gatekeeper_result = ctx.get_expert_output(ExpertType.GATEKEEPER) or {}
         _gk_prefilled_short = bool(
@@ -10553,7 +10646,7 @@ class Orchestrator:
                 ExpertType.GATEKEEPER, ctx, rules_config
             )
             gatekeeper_result = self._apply_gatekeeper_low_specific_guard(ctx, gatekeeper_result)
-        
+
         # 노이즈 판정 시 DiscourseAnalyzer로 2차 확인
         # Gatekeeper가 author_talk/trope_discussion을 noise로 오분류할 수 있음
         # DiscourseAnalyzer가 novel_literature 도메인이면 noise 판정 취소
@@ -10570,7 +10663,7 @@ class Orchestrator:
                 ctx.primary_domain = domain
                 ctx.discourse_intent = discourse_analysis.get('intent')
                 print(f"[{_ts()}] {self.emoji} 🔖 담론 분석 완료: domain={domain}, confidence={domain_conf}", file=sys.stderr)
-                
+
                 # novel_literature 도메인이면 noise 취소 후 전문가 루프 진행
                 # ⚡ Gatekeeper가 genre_discussion이고 엔티티0개이면 → 장르 일반론
                 #    이 이 경우 Discourse가 novel_literature여도 noise 취소 금지
@@ -10698,7 +10791,7 @@ class Orchestrator:
                 _requires_strict_grounding = gk_post_type in _strict_noise_types
                 _min_discourse_hits = 1 if _has_url_clue else 2
                 _title_body_cont = bool(_gk_context.get("title_as_body_continuation"))
-                
+
                 # ⚡ non_novel 도메인이면 noise 유지 (웹소설 외 도메인)
                 # 단, 강한 작품 앵커(URL/회차/공식플랫폼 근거)가 있는 경우만 면제
                 _gk_has_strong_anchor = self._has_strong_work_anchor(
@@ -10807,7 +10900,7 @@ class Orchestrator:
                     # non_novel 도메인이지만 강한 앵커가 있으므로 검증 단계로 진행
                     # ── 단, Gatekeeper가 명시적으로 비소설 매체(만화/동인지 등)를 감지했으면
                     #    strong_anchor가 있어도 noise를 유지한다 (히토미·엔헨 등 동인지 사이트) ──
-                    from ..rules import NON_NOVEL_MEDIA_KEYWORDS as _NNM_KW
+                    from ..domain.rules import NON_NOVEL_MEDIA_KEYWORDS as _NNM_KW
                     _gk_noise_reason_nnm = str(gatekeeper_result.get("noise_reason") or "").lower()
                     _gk_notes_nnm = str(gatekeeper_result.get("notes") or "").lower()
                     _post_title_nnm = str((ctx.post_data or {}).get("title") or "").lower()
@@ -10984,7 +11077,7 @@ class Orchestrator:
                         f" → noise 취소 차단, 장르 일반론으로 유지",
                         file=sys.stderr
                     )
-            
+
             if not discourse_override:
                 print(f"[{_ts()}] {self.emoji} 노이즈 감지 → 조기 종료", file=sys.stderr)
                 ctx.add_message(ExpertMessage(
@@ -10994,7 +11087,7 @@ class Orchestrator:
                     content={"decision": "noise", "reason": gatekeeper_result.get("noise_reason")},
                 ))
                 return ctx
-        
+
         # Phase 1.5: Discourse Analysis (도메의도 뚯븙)
         # Gatekeeper가 엔티티를 추출했지만 진짜 도메인 컨텍스트가 필요
         # (noise 2차 확인에서 이미 수행한 경우 스킵)
@@ -11007,7 +11100,7 @@ class Orchestrator:
             ctx.primary_domain = discourse_analysis.get('primary_domain')
             ctx.discourse_intent = discourse_analysis.get('intent')
             print(f"[{_ts()}] {self.emoji} 🔖 담론 분석 완료: domain={ctx.primary_domain}, intent={ctx.discourse_intent}", file=sys.stderr)
-        
+
         # ⚡ 연상기호 감지: is_association_not_discussion + title_body_consistency 불일치
         # 제목이 작품명처럼 보이는 것이 있어도, 본문과 전혀 무관하면 → 작품 검색 강도를 더 축소
         disc_out_assoc = ctx.get_expert_output(ExpertType.DISCOURSE)
@@ -11017,7 +11110,7 @@ class Orchestrator:
             title_body_ok = d_assoc.get('title_body_consistency', True)
             is_coherent = d_assoc.get('is_coherent', True)
             soften_assoc = self._should_soften_discourse_association_warning(ctx, d_assoc)
-            
+
             if is_assoc and not title_body_ok and not soften_assoc:
                 ctx.is_association_post = True
                 assoc_evidence = str(d_assoc.get('association_evidence') or "")
@@ -11053,7 +11146,7 @@ class Orchestrator:
                 ctx.uncertainty_sources.append(
                     "DiscourseAnalyzer: short cheer/announcement with work-like title terms → association warning softened"
                 )
-        
+
         # ⚡ Discourse 갑Override: non-novel 도메high)이면 경고 설정
         # Decoder/Verifier/Arbiter가 이 경고를 받아서 과잉 근거를 방지
         if ctx.primary_domain and is_non_novel_domain(ctx.primary_domain):
@@ -11077,7 +11170,7 @@ class Orchestrator:
                     file=sys.stderr,
                 )
                 print(f"[{_ts()}] {self.emoji} ⚠️ Discourse 경고: {ctx.discourse_warning} → Decoder/Arbiter 전달", file=sys.stderr)
-                
+
                 # ⚡ non_novel 도메인 강제 noise: 소설아닌 비관련 매체
                 # Gatekeeper가 noise=false여도 Discourse가 non_novel(high/medium)이면 조기 종료 가능
                 # 단, 강한 작품 앵커가 있는 경우는 검증 단계로 진행
@@ -11085,7 +11178,7 @@ class Orchestrator:
                 _gk2_has_strong_anchor = self._has_strong_work_anchor(ctx)
                 if is_non_novel_domain(ctx.primary_domain) and d_conf == "high" and not _gk2_has_strong_anchor:
                     # 본문에 비소설 매체 의심어가 실제로 있는지 한번 더 확인
-                    from ..rules import NON_NOVEL_MEDIA_KEYWORDS
+                    from ..domain.rules import NON_NOVEL_MEDIA_KEYWORDS
                     post_title = (ctx.post_data.get("title") or "").lower()
                     post_texts = " ".join(
                         (
@@ -11099,7 +11192,7 @@ class Orchestrator:
                         c for c in (ctx.comments or []) if isinstance(c, str)
                     ).lower()
                     all_text = f"{post_title} {post_texts} {comment_text}"
-                    
+
                     has_media_keyword = any(kw in all_text for kw in NON_NOVEL_MEDIA_KEYWORDS)
                     has_media_term = (
                         "만화" in all_text
@@ -11109,7 +11202,7 @@ class Orchestrator:
                         or "애니" in all_text
                         or "게임" in all_text
                     )
-                    
+
                     if has_media_keyword or has_media_term:
                         print(
                             f"[{_ts()}] {self.emoji} ⚡non_novel 강제 noise: "
@@ -11409,7 +11502,7 @@ class Orchestrator:
                         )
                         # ctx에도 반영
                         ctx.set_expert_output(ExpertType.GATEKEEPER, gatekeeper_result)
-        
+
         # 🆕 Phase34.6: DC 갤러리 TAG) TERM) 패턴 → TERM을 작품 약어로 인식
         # "TS) 주전무) 좆같이 굴어서..." 에서 TS=장르태그, 주전무=작품 약칭
         # Gatekeeper가 TERM을 character로 분류하는 오류 교정
@@ -11500,7 +11593,7 @@ class Orchestrator:
                 d_analysis = discourse_output.get("discourse_analysis", {})
                 novel_terms = d_analysis.get("title_novel_terms") or []
                 recovered_terms = list(dict.fromkeys(novel_terms))  # 순서 유지 중복 제거
-                
+
                 if recovered_terms:
                     gatekeeper_result["key_terms"] = recovered_terms
                     print(f"[{_ts()}] {self.emoji} 🔗 Gatekeeper key_terms 복구 (Discourse에서): {recovered_terms}", file=sys.stderr)
@@ -11520,7 +11613,7 @@ class Orchestrator:
                 f"[{_ts()}] {self.emoji} 🧯 비소설 강신호 감지: 검색 확장 축소 ({_limit_non_novel_reason})",
                 file=sys.stderr,
             )
-        
+
         # ⚡ 초기 검색 억제 판정 (non-novel 경고 + 강한 앵커 없음)
         _suppress_initial_search, _suppress_initial_reason = self._get_search_suppression_state(
             ctx, gatekeeper_result=gatekeeper_result
@@ -11724,15 +11817,15 @@ class Orchestrator:
                     f"[{_ts()}] {self.emoji} 🧯 비소설 강신호로 search_requests 축소: {_before}→{_after}",
                     file=sys.stderr,
                 )
-        
+
         if search_requests and self.search_fn:
             # ⚡ Phase28: Discourse-Informed 스마트 검색 생성
             # 기존 기계적 split을 Discourse의 이해를 기반으로 한 검색으로 대체
-            
+
             discourse_output = ctx.get_expert_output(ExpertType.DISCOURSE)
             discourse_novel_terms: set = set()
             discourse_suggestions: list = []
-            
+
             if discourse_output:
                 d_analysis = discourse_output.get("discourse_analysis", {})
                 # Discourse가 근거한 소설 관련 단어만 split 대상
@@ -11744,7 +11837,7 @@ class Orchestrator:
             )
             if _limit_non_novel_expansion and not _meta_platform_issue_ctx:
                 discourse_suggestions = []
-            
+
             # Step A: Discourse search_suggestions 우선 적용 (LLM맥락 이해 단계쿼리)
             existing_queries = {r.get("query", "") for r in search_requests}
             if discourse_suggestions:
@@ -11864,7 +11957,7 @@ class Orchestrator:
                 gatekeeper_result=gatekeeper_result,
                 phase="pre_expand",
             )
-            
+
             # Step B: 합성어 분리 검색을 Discourse novel_terms에만 적용 (기존 전체 key_terms 대신)
             # Discourse가 확고한 novel_terms가 비어있으면 기존 방식으로 fallback
             import re as _re
@@ -11877,7 +11970,7 @@ class Orchestrator:
                     f"[{_ts()}] {self.emoji} 🧪 장르/트로프 일반론 문맥: key_terms 기반 작품 split 검색 비활성화",
                     file=sys.stderr,
                 )
-            
+
             for term in gk_key_terms_for_split:
                 # ⚡ LLM이 리스트/숫자 등 비문자열을 반환할 수 있으므로 str만 처리
                 if not isinstance(term, str):
@@ -11886,7 +11979,7 @@ class Orchestrator:
                 term_clean = _re.sub(r'[^\uac00-\ud7a3]', '', term)
                 if len(term_clean) < 5:
                     continue
-                
+
                 # ⚡ Discourse 필터: novel_terms에 포함된 것만 split (아니면 스킵)
                 # Discourse가 없으면 모든 5글자+ 단어를 분리 (기존 방식)
                 if discourse_novel_terms:
@@ -11910,7 +12003,7 @@ class Orchestrator:
                 )
                 _has_phrase_shape = bool(len(_term_raw.split()) >= 2 or len(term_clean) >= 6)
                 _prefer_full_phrase = _full_phrase_queries_exist and _has_phrase_shape
-                
+
                 # 3글자/4글자 분리
                 for sp in [3, 4]:
                     if sp >= len(term_clean):
@@ -11927,7 +12020,7 @@ class Orchestrator:
                                 "priority": 1,
                             })
                             existing_queries.add(q_raw_front)
-                    
+
                     # 앞부분 검색(줄임 부분)
                     if not _prefer_full_phrase:
                         q_front = f"{front} 소설"
@@ -11938,7 +12031,7 @@ class Orchestrator:
                                 "priority": 2,
                             })
                             existing_queries.add(q_front)
-                    
+
                     # 앞부분을 더 분리 (4글자 시 2+2 검색)
                     if sp == 4 and len(front) == 4 and not _prefer_full_phrase:
                         q_split = f"{front[:2]} {front[2:]} 소설"
@@ -11968,7 +12061,7 @@ class Orchestrator:
                                 "priority": 1,
                             })
                             existing_queries.add(q_combo)
-                
+
                 print(
                     f"[{_ts()}] {self.emoji} ⚡ 합성어 분리 검색 추가: '{term}' ({len(term_clean)}글자)"
                     + (" [full-phrase preferred]" if _prefer_full_phrase else ""),
@@ -12050,7 +12143,7 @@ class Orchestrator:
                         file=sys.stderr,
                     )
                     break
-            
+
             # ⚡ Fix C: key_terms 중 search_requests에 커버 안 된 것에 대해
             # "{term} 소설" 검색 자동 추가 (개돌 같은 게임단어 dead-end 방지)
             # ⚠️ 캐릭터명/일반어는 제외 (주인공 빈도수, 아까움 등 불필요 검색 방지)
@@ -12941,13 +13034,22 @@ class Orchestrator:
                 gatekeeper_result=gatekeeper_result,
                 phase="initial",
             )
+            search_requests = self._clamp_typed_image_work_title_initial_search_requests(
+                ctx,
+                search_requests,
+                phase="pre_execute",
+            )
 
             # 초기 검색 쿼리 이력 기록
             for req in search_requests:
                 q = req.get("query", "").strip()
                 if q:
                     ctx.searched_queries.add(q)
-            initial_results = self._execute_searches(search_requests, ctx.post_id)
+            initial_results = self._execute_searches(
+                search_requests,
+                ctx.post_id,
+                initial_typed_title_only=True,
+            )
             # 초기 검색도 add_search_results 경로로 통일하여 전역 evidence_id 부여/중복가드 적용
             _init_added = ctx.add_search_results(initial_results)
             if _init_added != len(initial_results):
@@ -13034,11 +13136,11 @@ class Orchestrator:
                         f"[{_ts()}] {self.emoji} 📚 검색 근거 카탈로그 (EID 순)\n{_catalog}",
                         file=sys.stderr,
                     )
-        
+
         # ── Phase 2.5: Adaptive Query Chain (검색 갭 분석 + 보충 검색) ──
         if ctx.search_results and self.search_fn:
             self._adaptive_query_chain(ctx, gatekeeper_result=gatekeeper_result)
-        
+
         # ── Phase 2.6: 파생작/2차창작 검색 결과 감지 ──
         if ctx.search_results:
             _deriv_count = self._flag_derivative_search_results(
@@ -13049,16 +13151,16 @@ class Orchestrator:
                     f"[{_ts()}] {self.emoji} 🛡️ 파생작(2차창작) 검색 결과 {_deriv_count}건 플래그 설정",
                     file=sys.stderr,
                 )
-        
+
         # Phase 3: 력적 전문가 루프 (Agentic Collaboration)
         while ctx.iteration < ctx.max_iterations:
             ctx.iteration += 1
             # max_iterations에 안전장치일 뿐, 실제로는 보통 3-5번만종료
             print(f"\n[{_ts()}] {self.emoji} --- Step {ctx.iteration} ---", file=sys.stderr)
-            
+
             # ?ㅼ쓬 ?≪뀡 결정
             next_action = self._decide_next_action(ctx, rules_config)
-            
+
             if next_action["action"] == "call_expert":
                 # null/None/invalid expert 방어: 즉시 finalize하지 말고 Verifier로 안전 폴백
                 raw_expert = next_action.get("expert")
@@ -13096,12 +13198,12 @@ class Orchestrator:
                         )
                         expert_type = ExpertType.VERIFIER
                         is_collaboration = False
-                
+
                 if is_collaboration:
                     print(f"[{_ts()}] {self.emoji} 🔄 협력 실행: {expert_type.value}", file=sys.stderr)
-                
+
                 result = self._call_expert(expert_type, ctx, rules_config)
-                
+
                 # ⚡ Fix: 협력 Gatekeeper 실행 후 key_terms 병합 + 미발견 단어 보충 검색
                 # 2차GK가 반환한 key_terms 중 search_requests에 없는 단어를 자동 검색
                 if is_collaboration and expert_type == ExpertType.GATEKEEPER and result and self.search_fn:
@@ -13194,7 +13296,7 @@ class Orchestrator:
                                     )
                         else:
                             print(f"[{_ts()}] {self.emoji} 🔍 보충 검색 필요 없음 (모든 key_terms 이미 커버됨", file=sys.stderr)
-                
+
                 # ⚡CRITICAL: 협력 실행이든 일반 실행이든, verification_search는 무조건 수행!
                 # 추가 검색 요청 확인 (search_requests 또는 verification_search)
                 if result.get("search_requests") and self.search_fn:
@@ -13252,7 +13354,7 @@ class Orchestrator:
                     added = ctx.add_search_results(new_results)
                     if added < len(new_results):
                         print(f"[{_ts()}] {self.emoji} 🔍 중복 {len(new_results) - added}개제거", file=sys.stderr)
-                    
+
                     # ⚡ Fix B: 협력 GK search_requests 수행 후 snippet_hints 재추출
                     # 새 검색 결과에서 prefix matching 형식을 다시 수행하여 개돌→개돌전쟁같은 매핑 발견
                     if is_collaboration and expert_type == ExpertType.GATEKEEPER and new_results:
@@ -13275,7 +13377,7 @@ class Orchestrator:
                                     f"abbrev={len(sr_hints.get('abbreviation_hints', []))}",
                                     file=sys.stderr
                                 )
-                
+
                 # Decoder/Verifier의 verification_search 처리
                 # ⚡특별: 검색 후 해당 전문가를 다시 실행하여 새 결과로 리벨런스
                 if result.get("verification_search") and self.search_fn:
@@ -13304,13 +13406,13 @@ class Orchestrator:
                             verification_queries = []
                     else:
                         verification_queries = result["verification_search"]
-                    
+
                     # 배열 또는 ?⑥씪 문자처리
                     if isinstance(verification_queries, str):
                         verification_queries = [verification_queries]
                     elif not isinstance(verification_queries, list):
                         verification_queries = []
-                    
+
                     if verification_queries:
                         # 이미 검증한 쿼리 필터링
                         new_queries = [q for q in verification_queries if q not in ctx.searched_queries]
@@ -13332,17 +13434,17 @@ class Orchestrator:
                                 f"정합성 필터로 제거됨",
                                 file=sys.stderr,
                             )
-                    
+
                     if verification_queries:
                         print(f"[{_ts()}] {self.emoji} 🔍 축약어 후보 재검증{len(verification_queries)}가 {verification_queries[:2]}...", file=sys.stderr)
                         ctx.searched_queries.update(verification_queries)  # 검색 이력 기록
-                        
+
                         # 다중 쿼리를 검색 요청 정식으로 변환
                         search_requests = [
                             {"query": q, "purpose": "abbreviation_verification", "priority": 1}
                             for q in verification_queries
                         ]
-                        
+
                         # 🏷️ "근거된 작품 제목 + 캐릭터/단어" 조합 검색 자동 추가
                         # ⚡KNOWN_ABBREVIATIONS를 최우선으로 확인 (가장 신뢰도 높음)
                         _identified_title = None
@@ -13357,14 +13459,14 @@ class Orchestrator:
                                 if _kt_clean in KNOWN_ABBREVIATIONS:
                                     _identified_title = KNOWN_ABBREVIATIONS[_kt_clean]
                                     break
-                        
+
                         # KNOWN_ABBREVIATIONS에 없으면 snippet_hints에서 확인
                         if not _identified_title and hasattr(ctx, 'snippet_hints') and ctx.snippet_hints:
                             _abbrev_hints = ctx.snippet_hints.get("abbreviation_hints", [])
                             # 줄임 매핑에서 full title 추출 (abbreviation_hints만 사용 시 title_hints와 시너지 가능)
                             if _abbrev_hints:
                                 _identified_title = _abbrev_hints[0].get("full", "")
-                        
+
                         # suspected_titles에서도 확인 (Decoder가 이미 근거한 제목)
                         if not _identified_title and ctx.suspected_titles:
                             def _confidence_value(raw: Any) -> float:
@@ -13388,12 +13490,12 @@ class Orchestrator:
                                 if isinstance(_st, dict) and _st.get("title") and _confidence_value(_st.get("confidence", 0)) >= 0.7:
                                     _identified_title = _st["title"]
                                     break
-                        
+
                         if _identified_title:
                             _gk_out_c = ctx.get_expert_output(ExpertType.GATEKEEPER) or {}
                             _gk_entities_c = (_gk_out_c.get("detected_entities") or {}) if isinstance(_gk_out_c, dict) else {}
                             _gk_chars = _gk_entities_c.get("possible_characters", []) or []
-                            
+
                             for _char in _gk_chars[:3]:
                                 if isinstance(_char, str) and len(_char) >= 2:
                                     combo_q = f"{_identified_title} {_char}"
@@ -13405,7 +13507,7 @@ class Orchestrator:
                                         })
                                         ctx.searched_queries.add(combo_q)
                                         print(f"[{_ts()}] {self.emoji} 🔑 조합 검색 추가: '{combo_q}'", file=sys.stderr)
-                        
+
                         search_requests = self._prune_meta_prefix_search_requests(
                             ctx,
                             search_requests,
@@ -13434,7 +13536,7 @@ class Orchestrator:
                                 f"[{_ts()}] {self.emoji} 🔗 리콜 스킵: 신규 검색 증거 없음 (added={added})",
                                 file=sys.stderr,
                             )
-                        
+
                         # ⚡축약어 재검증 후 Decoder 와 Verifier 리콜 사이클
                         # 1. Decoder 리콜(새 검색 결과로 리해석)
                         print(f"[{_ts()}] {self.emoji} 🔗 1단계: Decoder 리콜(새 검색 결과)", file=sys.stderr)
@@ -13461,7 +13563,7 @@ class Orchestrator:
                             )
                             ctx.set_expert_output(ExpertType.DECODER, decoder_result)
                             _emit_monitor("expert_phase", {"expert": "decoder", "status": "done", "recall": True, "from": "verifier"}, post_id=ctx.post_id)
-                            
+
                             # 토큰 사용량 출력
                             llm = getattr(decoder_expert, 'llm', None)
                             if llm and llm.last_usage:
@@ -13478,7 +13580,7 @@ class Orchestrator:
                                 ctx.token_usage["prompt_tokens"] += prompt_tok
                                 ctx.token_usage["completion_tokens"] += completion_tok
                                 ctx.token_usage["total_tokens"] += total_tok
-                            
+
                             # ⚡2차 Decoder의 verification_search에 추가 검색
                             _trope_generalization_recall = self._is_trope_generalization_context(
                                 ctx,
@@ -13619,7 +13721,7 @@ class Orchestrator:
                                     abbr for abbr in abbrev_candidates
                                     if not self._is_low_specificity_search_seed(abbr)
                                 ][:4]
-                                
+
                                 if abbrev_candidates and not _trope_generalization_recall:
                                     platform_searches = []
                                     for abbr in abbrev_candidates:
@@ -13645,11 +13747,11 @@ class Orchestrator:
                                         f"[{_ts()}] {self.emoji} ⚡플랫폼검색 스킵: trope_generalization_recall",
                                         file=sys.stderr,
                                     )
-                            
+
                             # 3차 Decoder 실행 여부 결정
                             # (recall 검색 또는 플랫폼검색에서 새 결과가 추가되었으면 리콜
                             total_sr_count = len(ctx.search_results)
-                                        
+
                             # ⚡2차 Decoder 추가 검색 결과 포함하여 3차 Decoder 리콜
                             # (새 검색 결과에 정식 제목이 있을 수 있음)
                             if decoder_expert:
@@ -13665,7 +13767,7 @@ class Orchestrator:
                                     if bm.get("title"):
                                         prev_decoder_title = bm["title"]
                                         break
-                                
+
                                 # ⚡연상기호이면 3차 Decoder 실행 차단 (토큰 낭비 방지)
                                 # is_association_post=true이면 1~2차에서 이미 충분한 정보를 가졌음
                                 # 제목과 본문이 무관한 글에서 3차까지 급조 매칭 시도는 자원 낭비
@@ -13685,7 +13787,7 @@ class Orchestrator:
                                         f"(작품매칭 강박 방지, 토큰 압축)",
                                         file=sys.stderr,
                                     )
-                                
+
                                 # 🆕 2차 Decoder가 이미 medium/high 결과를 냈으면 3차 스킵
                                 # 3차 LLM 호출은 일관성이 떨어져 2차의 정답을 퇴행시키는 경향이 있음
                                 # 예: '즉사무림' → 2차에서 '즉사기 들고 무림에 떨어지다'(high)를
@@ -13707,10 +13809,10 @@ class Orchestrator:
                                         file=sys.stderr,
                                     )
                                     _skip_3rd = True
-                                
+
                                 if not _skip_3rd:
                                     print(f"[{_ts()}] {self.emoji} 🔗 1.5단계: Decoder 3차 실행 (추가 검색 결과 포함하여", file=sys.stderr)
-                                
+
                                     # 🏷️ 3차 실행 시 context overflow 방지: search_results 축소
                                     _sr_for_3rd = ctx.search_results
                                     _sr_chars = sum(
@@ -13721,7 +13823,7 @@ class Orchestrator:
                                     _gk_json_chars = len(json.dumps(gatekeeper_out, ensure_ascii=False))
                                     _total_chars = _sr_chars + _gk_json_chars + 30000  # 고정 프롬프트 비용
                                     _MAX_TOTAL_CHARS = 55000  # ~27.5K 토큰 (모델 32K 자 제한 덉쟾 마진)
-                                    
+
                                     if _total_chars > _MAX_TOTAL_CHARS:
                                         print(
                                             f"[{_ts()}] {self.emoji} ⚠️ 3차 실행 context 축소: "
@@ -13741,7 +13843,7 @@ class Orchestrator:
                                             else:
                                                 _no_url.append(sr)
                                         _sr_deduped = list(_url_best.values()) + _no_url
-                                        
+
                                         # 2) content 길이/총량 제한으로 실제 context를 줄인다.
                                         _MAX_SR_CHARS = max(6000, _MAX_TOTAL_CHARS - _gk_json_chars - 30000)
                                         _MAX_SR_ITEM_CONTENT_CHARS = 1800
@@ -13762,7 +13864,7 @@ class Orchestrator:
                                             _sr_trimmed_chars += _item_chars
                                             if len(_sr_trimmed) >= 20:
                                                 break
-                                        
+
                                         _new_sr_chars = sum(
                                             len(str(sr.get("title", ""))) + len(str(sr.get("content", "")))
                                             for sr in _sr_trimmed
@@ -13774,7 +13876,7 @@ class Orchestrator:
                                             file=sys.stderr,
                                         )
                                         _sr_for_3rd = _sr_trimmed
-                                    
+
                                     _emit_monitor(
                                         "expert_phase",
                                         {
@@ -13793,7 +13895,7 @@ class Orchestrator:
                                         conversation_context=ctx.get_conversation_summary(),
                                         ctx=ctx,
                                     )
-                                    
+
                                     # ⚡Decoder 급조 매칭 방지: 1차 2차에서 null이었는데
                                     # 3차에서 갑자기 매칭하면 discourse_warning 강화
                                     # 단, 2차까지 파싱 에러(빈 결과)인 경우는 "시도된 null"이 아니므로 제외
@@ -13820,10 +13922,10 @@ class Orchestrator:
                                                 ctx.uncertainty_sources.append(
                                                     "Decoder가 1차 2차에서 매칭 실패 후 3차에서 갑자기 매칭 → 신뢰도후보"
                                                 )
-                                    
+
                                     ctx.set_expert_output(ExpertType.DECODER, decoder_result_3)
                                     _emit_monitor("expert_phase", {"expert": "decoder", "status": "done", "recall": True, "from": "search"}, post_id=ctx.post_id)
-                                    
+
                                     # 토큰 사용
                                     llm3 = getattr(decoder_expert, 'llm', None)
                                     if llm3 and llm3.last_usage:
@@ -13841,7 +13943,7 @@ class Orchestrator:
                                         ctx.token_usage["completion_tokens"] += c3
                                         ctx.token_usage["total_tokens"] += t3
                                     # 3차에서는 추가 검색 없음 (무한 루프 방지)
-                        
+
                         # 2. Verifier 리콜(새 Decoder 결과로 재검증)
                         print(f"[{_ts()}] {self.emoji} 🔗 2단계: Verifier 리콜(새 Decoder 결과)", file=sys.stderr)
                         verifier_expert = self.experts.get(ExpertType.VERIFIER)
@@ -13869,7 +13971,7 @@ class Orchestrator:
                             ctx.set_expert_output(ExpertType.VERIFIER, verifier_result)
                             _emit_monitor("expert_phase", {"expert": "verifier", "status": "done", "recall": True, "from": "decoder"}, post_id=ctx.post_id)
                             result = verifier_result  # 현재 result 낅뜲댄듃
-                            
+
                             # 토큰 사용량 출력
                             llm = getattr(verifier_expert, 'llm', None)
                             if llm and llm.last_usage:
@@ -13886,9 +13988,9 @@ class Orchestrator:
                                 ctx.token_usage["prompt_tokens"] += prompt_tok
                                 ctx.token_usage["completion_tokens"] += completion_tok
                                 ctx.token_usage["total_tokens"] += total_tok
-                        
+
                         print(f"[{_ts()}] {self.emoji} → 전문가 리콜 완료", file=sys.stderr)
-                
+
                 # ⚡Decoder unresolved_terms 처리 (미해결 단어 자동 재검색)
                 if expert_type == ExpertType.DECODER and self.search_fn:
                     _suppress_aggressive, _suppress_reason = self._get_search_suppression_state(ctx)
@@ -13922,7 +14024,7 @@ class Orchestrator:
                             t for t in unresolved
                             if isinstance(t, dict) and t.get("needs_search", False) and t.get("term")
                         ]
-                        
+
                         if terms_to_search:
                             print(
                                 f"[{_ts()}] {self.emoji} unresolved terms found: {len(terms_to_search)} (auto-search)",
@@ -13930,7 +14032,7 @@ class Orchestrator:
                             )
                             for t in terms_to_search[:3]:  # 최대 3가
                                 print(f"[{_ts()}] {self.emoji}    붴 '{t.get('term')}' ({t.get('possible_types', ['unknown'])})", file=sys.stderr)
-                            
+
                             # 미해결 단어 검색 쿼리 생성
                             unresolved_searches = []
                             for t in terms_to_search[:3]:
@@ -13966,7 +14068,7 @@ class Orchestrator:
                                     _pt in {"slang", "unknown", "community_slang", "internet_slang"}
                                     for _pt in possible_type_norms
                                 )
-                                
+
                                 # 추정 유형에 따라 검색 쿼리 조정
                                 if _novelish_type:
                                     unresolved_searches.append({
@@ -13991,18 +14093,18 @@ class Orchestrator:
                                         "purpose": "unresolved_term_slang",
                                         "priority": 2
                                     })
-                            
+
                             if unresolved_searches:
                                 new_results = self._execute_searches(unresolved_searches, ctx.post_id)
                                 if new_results:
                                     added = ctx.add_search_results(new_results)
                                     print(f"[{_ts()}] {self.emoji} 🔍 미해결 단어 검색{added}개추가", file=sys.stderr)
-                                    
+
                                     # 미해결 단어 정보를 컨텍스트에 저장(Verifier에서 활용)
                                     if not hasattr(ctx, 'unresolved_terms_info'):
                                         ctx.unresolved_terms_info = []
                                     ctx.unresolved_terms_info.extend(terms_to_search[:3])
-                
+
                 # ⚡Decoder confidence가 낮으면 자동으로 핵심 단어 추가 검색
                 if expert_type == ExpertType.DECODER and self.search_fn:
                     _suppress_aggressive, _suppress_reason = self._get_search_suppression_state(ctx)
@@ -14044,7 +14146,7 @@ class Orchestrator:
                     else:
                         overall_conf = str(result.get("overall_confidence", "")).lower()
                         has_verification = bool(result.get("verification_search"))
-                    
+
                     # confidence가 low/none이고 verification_search를 요청하지 않은 경우
                     if overall_conf in ("low", "none") and not has_verification:
                         _force_skip_block = False
@@ -14132,7 +14234,7 @@ class Orchestrator:
                                             anchored = noun_norm in gk_char_norm
                                         if anchored and noun not in key_terms and noun != original_clean:
                                             key_terms.append(noun)
-                        
+
                         # 핵심 단어로 추가 검색 수행: 소설류 + 플랫폼검색
                         if _skip_auto_due_non_novel:
                             pass
@@ -14185,7 +14287,7 @@ class Orchestrator:
                                         f"신규 증거 없음(added=0)",
                                         file=sys.stderr,
                                     )
-                
+
                 # 전문가가 다른 전문가 요청있는지 확인 (Agentic 협력)
                 if self._is_memory_query_settled_rejection(ctx):
                     self._clear_memory_query_collaboration_requests(ctx)
@@ -14203,7 +14305,7 @@ class Orchestrator:
                 if requested and isinstance(requested, str) and requested.lower() not in ("none", "null", ""):
                     reason = result.get("request_reason", "추가 분석 필요")
                     question = (result.get("request_context") or {}).get("question", "")
-                    
+
                     try:
                         to_expert = ExpertType(requested)
                     except ValueError:
@@ -14212,7 +14314,7 @@ class Orchestrator:
                             file=sys.stderr,
                         )
                         to_expert = None
-                    
+
                     if to_expert:
                         ctx.add_message(ExpertMessage(
                             from_expert=expert_type,
@@ -14224,7 +14326,7 @@ class Orchestrator:
                         print(f"[{_ts()}] {self.emoji}    └ 이유: {reason}", file=sys.stderr)
                         if question:
                             print(f"[{_ts()}] {self.emoji}    └ 질문: {question[:100]}", file=sys.stderr)
-            
+
             elif next_action["action"] == "search":
                 query = next_action.get("query", "")
                 if query and self.search_fn:
@@ -14233,11 +14335,11 @@ class Orchestrator:
                         ctx.post_id
                     )
                     ctx.add_search_results(new_results)
-            
+
             elif next_action["action"] == "finalize":
                 print(f"[{_ts()}] {self.emoji} 종료 조건 충족 → Arbiter 실행", file=sys.stderr)
                 break
-        
+
         # Phase 3.5: Synthesizer (증거 기반 재해석)
         # 모든 전문가 분석 완료 후, 축적된 증거로 원문을 재해석
         if ExpertType.SYNTHESIZER in self.experts:
@@ -14255,30 +14357,30 @@ class Orchestrator:
                     "memory-query settled rejection",
                     file=sys.stderr,
                 )
-            
+
             # Gatekeeper noise + Decoder 미실행 → 명백한 noise, 재해석 불필요
             if _gk_out.get("is_noise") and not _dc_out:
                 _skip_synth = True
                 print(f"[{_ts()}] {self.emoji} 🔬 Synthesizer 스킵: Gatekeeper noise + Decoder 미실행", file=sys.stderr)
-            
+
             # Decoder confidence=None + Verifier is_relevant=False → 작품 미식별, 재해석 불필요
             if not _skip_synth:
                 _dc_conf = str(_dc_out.get("overall_confidence", "")).lower()
                 if _dc_conf in ("none", "") and _vf_result.get("is_relevant") is False:
                     _skip_synth = True
                     print(f"[{_ts()}] {self.emoji} 🔬 Synthesizer 스킵: Decoder none + Verifier irrelevant", file=sys.stderr)
-            
+
             if not _skip_synth:
                 print(f"[{_ts()}] {self.emoji} 🔬 Synthesizer: 증거 기반 재해석 시작", file=sys.stderr)
                 self._call_expert(ExpertType.SYNTHESIZER, ctx, rules_config)
             else:
                 print(f"[{_ts()}] {self.emoji} 🔬 Synthesizer 스킵됨", file=sys.stderr)
                 _emit_monitor("expert_phase", {"expert": "synthesizer", "status": "done", "skipped": True}, post_id=ctx.post_id)
-        
+
         # Phase 3.6: Synthesizer 합의-이탈 검증
         # Decoder/Verifier가 합의한 작품을 Synthesizer가 다른 작품으로 바꿨는지 감지
         self._guard_synthesizer_override(ctx)
-        
+
         # Phase 4: Final Arbiter + Multi-Expert Deliberation (A+B+C)
         if ExpertType.ARBITER in self.experts:
             _use_deliberation = os.getenv("DELIBERATION_ENABLED", "1") == "1"
@@ -14286,11 +14388,11 @@ class Orchestrator:
                 self._run_deliberation(ctx, rules_config)
             else:
                 self._call_expert(ExpertType.ARBITER, ctx, rules_config)
-        
+
         print(f"\n[{_ts()}] {self.emoji} Orchestrator 완료: {ctx.iteration} iterations", file=sys.stderr)
         self._last_ctx = ctx
         return ctx
-    
+
     def _call_expert(
         self,
         expert_type: ExpertType,
@@ -14302,18 +14404,18 @@ class Orchestrator:
         if not expert:
             print(f"[{_ts()}] {self.emoji} ⚠️ {expert_type.value} 전문가 없음", file=sys.stderr)
             return {}
-        
+
         # 뱤 이벤 전문가 단계 시작
         _emit_monitor("expert_phase", {"expert": expert_type.value, "status": "running", "from": getattr(self, '_prev_expert', '')}, post_id=ctx.post_id)
         self._prev_expert = expert_type.value
-        
+
         # 토큰 사용량 추적 시작 - LLM이 마지막 사용량 기록
         llm = getattr(expert, 'llm', None)
         if llm:
             prev_usage = llm.last_usage.copy() if llm.last_usage else None
         else:
             prev_usage = None
-        
+
         try:
             # post_data, comments None 체크
             post_data = ctx.post_data or {}
@@ -14322,7 +14424,7 @@ class Orchestrator:
             # 토큰 압축: CONVERSATION HISTORY에 기본 compact 사용 (환경변수로 opt-out 가능)
             use_compact_ctx = os.getenv("LLM_CONTEXT_COMPACT", "1") != "0"
             conv_summary = ctx.get_conversation_summary(compact=use_compact_ctx)
-             
+
             # 전문가별 실행 방식
             if expert_type == ExpertType.GATEKEEPER:
                 result = expert.analyze(post_data, comments, rules_config, ctx=ctx)
@@ -14369,7 +14471,7 @@ class Orchestrator:
                 search_results = ctx.search_results or []
                 decoder_output = ctx.get_expert_output(ExpertType.DECODER) or {}
                 decoded_terms = decoder_output.get("decoded_terms") or []
-                
+
                 # Decoder가 참조한 URL 수집 (best_match, candidates, supporting_evidence 모두)
                 used_urls = set()
                 for term in decoded_terms:
@@ -14392,7 +14494,7 @@ class Orchestrator:
                             continue
                         if evidence.get("url"):
                             used_urls.add(evidence["url"])
-                
+
                 # ━━ 공식 플랫폼 URL 강제 포함 ━━
                 # Decoder 후처리(약어스코어 교정 등)에서 발견한 플랫폼 증거가
                 # used_urls에 누락될 수 있으므로, ctx.search_results에서
@@ -14409,14 +14511,14 @@ class Orchestrator:
                     sr_url = sr.get("url", "")
                     if any(domain in sr_url for domain in _PLATFORM_DOMAINS):
                         platform_results.append(sr)
-                
+
                 # 사용된 결과만 필터링 + 상위 8개 제한 (중복 제거)
                 if used_urls:
                     limited_search = [r for r in search_results if r.get("url") in used_urls][:8]
                 else:
                     # Decoder가 아무것도 사용하지 않았으면 상위 5개만 전달
                     limited_search = search_results[:5]
-                
+
                 # 플랫폼 결과가 limited_search에 없으면 추가 (최대 4개)
                 _existing_urls = {r.get("url") for r in limited_search}
                 _added_platform = 0
@@ -14430,7 +14532,7 @@ class Orchestrator:
                         f"[{_ts()}][{self.emoji}] 🔗 Verifier에 플랫폼 증거 {_added_platform}건 강제 포함",
                         file=sys.stderr,
                     )
-                
+
                 result = expert.analyze(
                     post_data,
                     comments,
@@ -14454,26 +14556,26 @@ class Orchestrator:
                 result = expert.analyze(ctx)
             else:
                 result = {}
-            
+
             # 토큰 사용량 출력
             if llm and llm.last_usage:
                 usage = llm.last_usage
                 prompt_tok = usage.get("prompt_tokens", 0)
                 completion_tok = usage.get("completion_tokens", 0)
                 total_tok = usage.get("total_tokens", prompt_tok + completion_tok)
-                
+
                 print(f"[{_ts()}][{self.emoji}] {expert_type.value} 토큰 사용", file=sys.stderr)
                 print(f"  입력: {prompt_tok:,} tokens", file=sys.stderr)
                 print(f"  출력: {completion_tok:,} tokens", file=sys.stderr)
                 print(f"  총합: {total_tok:,} tokens", file=sys.stderr)
-                
+
                 # 컨텍스트에 토큰 사용량 축적
                 if not hasattr(ctx, 'token_usage'):
                     ctx.token_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
                 ctx.token_usage["prompt_tokens"] += prompt_tok
                 ctx.token_usage["completion_tokens"] += completion_tok
                 ctx.token_usage["total_tokens"] += total_tok
-            
+
             # ⚡ Fix: 협력 Gatekeeper 리콜 시 key_terms/detected_entities 병합
             # 2차 GK 결과가 1차보다 빈약하거나 누락되면 1차의 key_terms/entities가 유실됨
             if expert_type == ExpertType.GATEKEEPER:
@@ -14495,7 +14597,7 @@ class Orchestrator:
                             result["detected_entities"] = {}
                             new_ent = result["detected_entities"]
                         new_ent[ent_key] = merged
-            
+
             # 결과 저장
             ctx.set_expert_output(expert_type, result)
             ctx.add_message(ExpertMessage(
@@ -14504,12 +14606,12 @@ class Orchestrator:
                 message_type="analysis",
                 content=result,
             ))
-            
+
             # 뱤 이벤 전문가 단계 완료
             _emit_monitor("expert_phase", {"expert": expert_type.value, "status": "done"}, post_id=ctx.post_id)
-            
+
             return result
-            
+
         except Exception as e:
             import traceback
             print(f"[{_ts()}] {self.emoji} ⚠️ {expert_type.value} 에러: {e}", file=sys.stderr)
@@ -14519,7 +14621,7 @@ class Orchestrator:
             # 에러 결과도 저장하여 다른 전문가가 상황 파악하도록
             ctx.set_expert_output(expert_type, error_result)
             return error_result
-    
+
     def _run_deliberation(
         self,
         ctx: ConversationContext,
@@ -14527,7 +14629,7 @@ class Orchestrator:
     ) -> None:
         """
         Multi-Expert Deliberation (A+B+C) 실행.
-        
+
         흐름:
           1. EvidenceScorer 계산 (항상, 0 cost)
           2. 기본 Arbiter 호출 (1회)
@@ -14540,50 +14642,50 @@ class Orchestrator:
             "from": getattr(self, '_prev_expert', ''),
         }, post_id=ctx.post_id)
         self._prev_expert = "deliberation"
-        
+
         try:
             from .deliberation import DeliberationOrchestrator
-            
+
             arbiter_expert = self.experts.get(ExpertType.ARBITER)
             if not arbiter_expert:
                 print(f"[{_ts()}] {self.emoji} ⚠️ Arbiter 전문가 없음 → 심의 불가", file=sys.stderr)
                 return
-            
+
             llm_client = getattr(arbiter_expert, 'llm', None)
             if not llm_client:
                 print(f"[{_ts()}] {self.emoji} ⚠️ LLM 클라이언트 없음 → 기본 Arbiter로 폴백", file=sys.stderr)
                 self._call_expert(ExpertType.ARBITER, ctx, rules_config)
                 return
-            
+
             # 토큰 사용량 추적 시작
             prev_usage = llm_client.last_usage.copy() if llm_client.last_usage else None
-            
+
             delib = DeliberationOrchestrator(arbiter_expert, llm_client)
             result = delib.run(ctx)
-            
+
             if not result or "final_decision" not in result:
                 print(f"[{_ts()}] {self.emoji} ⚠️ Deliberation 실패 → 기본 Arbiter로 폴백", file=sys.stderr)
                 self._call_expert(ExpertType.ARBITER, ctx, rules_config)
                 return
-            
+
             # 토큰 사용량 기록
             if llm_client.last_usage:
                 usage = llm_client.last_usage
                 prompt_tok = usage.get("prompt_tokens", 0)
                 completion_tok = usage.get("completion_tokens", 0)
                 total_tok = usage.get("total_tokens", prompt_tok + completion_tok)
-                
+
                 print(f"[{_ts()}][{self.emoji}] deliberation 토큰 사용", file=sys.stderr)
                 print(f"  입력: {prompt_tok:,} tokens", file=sys.stderr)
                 print(f"  출력: {completion_tok:,} tokens", file=sys.stderr)
                 print(f"  총합: {total_tok:,} tokens", file=sys.stderr)
-                
+
                 if not hasattr(ctx, 'token_usage'):
                     ctx.token_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
                 ctx.token_usage["prompt_tokens"] += prompt_tok
                 ctx.token_usage["completion_tokens"] += completion_tok
                 ctx.token_usage["total_tokens"] += total_tok
-            
+
             # 결과 저장 (ARBITER 출력으로)
             ctx.set_expert_output(ExpertType.ARBITER, result)
             ctx.add_message(ExpertMessage(
@@ -14592,7 +14694,7 @@ class Orchestrator:
                 message_type="analysis",
                 content=result,
             ))
-            
+
             # 심의 메타데이터 로그
             _delib_meta = result.get("_deliberation", {})
             _method = _delib_meta.get("method", "unknown")
@@ -14605,9 +14707,9 @@ class Orchestrator:
                 f"evidence_score={_ev_score}, elapsed={_elapsed}s",
                 file=sys.stderr,
             )
-            
+
             _emit_monitor("expert_phase", {"expert": "deliberation", "status": "done"}, post_id=ctx.post_id)
-            
+
         except Exception as e:
             import traceback
             print(f"[{_ts()}] {self.emoji} ⚠️ Deliberation 오류: {e}", file=sys.stderr)
@@ -14615,7 +14717,7 @@ class Orchestrator:
             # 폴백: 기본 Arbiter 호출
             print(f"[{_ts()}] {self.emoji} 🔄 기본 Arbiter로 폴백", file=sys.stderr)
             self._call_expert(ExpertType.ARBITER, ctx, rules_config)
-    
+
     def _decide_next_action(
         self,
         ctx: ConversationContext,
@@ -14636,7 +14738,7 @@ class Orchestrator:
         dc = ctx.get_expert_output(ExpertType.DECODER)
         vf = ctx.get_expert_output(ExpertType.VERIFIER)
         cr = ctx.get_expert_output(ExpertType.CRITIC)
-        
+
         # 전체 협력 횟수 추적
         total_collaborations = getattr(ctx, '_total_collaborations', 0)
         MAX_TOTAL_COLLABORATIONS = 3  # 전체 협력 최대 3회
@@ -14648,7 +14750,7 @@ class Orchestrator:
                 file=sys.stderr,
             )
             return {"action": "finalize"}
-        
+
         # === 1. Expert 협력 요청 처리 (횟수 제한) ===
         for expert_type in [ExpertType.VERIFIER, ExpertType.DECODER, ExpertType.GATEKEEPER]:
             output = ctx.get_expert_output(expert_type)
@@ -14657,31 +14759,31 @@ class Orchestrator:
                 reason = output.get("request_reason", "협력 요청")
                 request_context = output.get("request_context") or {}
                 question = request_context.get("question", "")
-                
+
                 # ⚡협력 요청 필드 즉시 클리어(무한 루프 방지)
                 output["request_expert"] = None
                 output["request_reason"] = None
                 output["request_context"] = None
-                
+
                 # 이미 처리요청몄 확인
                 request_key = f"{expert_type.value}::{requested}"
                 processed_requests = getattr(ctx, '_processed_requests', set())
-                
+
                 # ⚡전체 협력 횟수 초과 시 무시
                 if total_collaborations >= MAX_TOTAL_COLLABORATIONS:
                     print(f"[{_ts()}] {self.emoji} 🚫 협력 요청 무시 (전체 {total_collaborations}전달): {request_key}", file=sys.stderr)
                     continue
-                
+
                 # ⚡같은 유형의 협력은 1번만
                 if request_key in processed_requests:
                     print(f"[{_ts()}] {self.emoji} collaboration request ignored (already processed): {request_key}", file=sys.stderr)
                     continue
-                
+
                 print(f"[{_ts()}] {self.emoji} 🔄 협력 요청 ({total_collaborations+1}/{MAX_TOTAL_COLLABORATIONS}): {request_key}", file=sys.stderr)
                 print(f"[{_ts()}] {self.emoji}    이유: {reason}", file=sys.stderr)
                 if question:
                     print(f"[{_ts()}] {self.emoji}    질문: {question[:100]}", file=sys.stderr)
-                
+
                 # 협력 처리 기록
                 ctx._processed_requests = processed_requests | {request_key}
                 ctx._total_collaborations = total_collaborations + 1
@@ -14692,11 +14794,11 @@ class Orchestrator:
                         f"decoder 실행 후 verifier 재검증 예약",
                         file=sys.stderr,
                     )
-                
+
                 return {"action": "call_expert", "expert": requested, "collaboration": True}
-        
+
         # 메시지 기반 요청 확인은 제거 (위 로직으로 충분)
-        
+
         # === 2. 순차 진행 ===
         if dc and not vf:
             return {"action": "call_expert", "expert": "verifier"}
@@ -14712,25 +14814,25 @@ class Orchestrator:
         # [Phase28] Critic은 Arbiter에 통합됨 — 별도 LLM 호출 불필요
         # Critic의 역할(메타데이터 추출, suspected_titles 정리)은 Arbiter.analyze()에서 코드레벨로 처리
         # if vf and not cr:  # DEPRECATED
-        
+
         # === 3. 쒖감 실행 (꾩쭅 실행 전문가) ===
         if not dc and gk:
             return {"action": "call_expert", "expert": "decoder"}
-        
+
         # === 4. 모든 전문가 완료 종료 ===
         # [Phase28] Critic 통합 후: Gatekeeper+Decoder+Verifier 완료 즉시 finalize
         if gk and dc and vf:
             return {"action": "finalize"}
-        
+
         # 5. 최대 반복 전달
         if ctx.iteration >= ctx.max_iterations:
             return {"action": "finalize"}
-        
+
         return {"action": "finalize"}
-    
+
     def _prioritize_search_results(self, results: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """검색 결과 우선순위 재정렬
-        
+
         우선순위:
         1. 공식 플랫폼 + 쿼리 핵심토큰 겹침
         2. 커뮤니티/위키 + 쿼리 핵심토큰 겹침
@@ -14753,7 +14855,7 @@ class Orchestrator:
 
         def _overlap_count(core_tokens: List[str], blob: str) -> int:
             """핵심 토큰과 blob 간 매칭 수를 계산.
-            
+
             Phase 32: 리터럴 부분문자열 매칭 외에 문자 bigram 기반
             부분 매칭을 추가. '즉사무림' vs '즉사기들고무림에떨어지다' 처럼
             약칭 글자가 정식 제목에 흩어져 있는 경우도 감지.
@@ -14803,7 +14905,7 @@ class Orchestrator:
             core_tokens = _query_core_tokens(query)
             overlap = _overlap_count(core_tokens, blob_norm)
             root_like = _is_root_like(url)
-            
+
             # 1순위: 공식 플랫폼
             rank = 4
             if any(platform in url for platform in OFFICIAL_PLATFORMS):
@@ -14829,7 +14931,7 @@ class Orchestrator:
 
             # rank 낮을수록 우선, overlap 많을수록 우선(-overlap), URL 길이 짧을수록 우선
             return (rank, -overlap, len(url))
-        
+
         # 우선순위로 정렬 (작은 글자가 우선)
         sorted_results = sorted(results, key=get_priority)
 
@@ -15007,7 +15109,7 @@ class Orchestrator:
                 file=sys.stderr,
             )
         return sanitized
-    
+
     def _is_relevant_result(self, result: Dict[str, Any], query: str) -> bool:
         """검색 결과가 현재 쿼리와 충분히 관련 있는지 판단"""
         url = str(result.get("url", "")).lower()
@@ -15121,7 +15223,7 @@ class Orchestrator:
     # ========================================================================
     # 🔬 Deep Search: snippet 분석 + URL 페치 + 은어/작가 추가 검색
     # ========================================================================
-    
+
     # snippet에서 제목/작가/약칭 후보를 미리 추출해 LLM 기반 분석을 보강
     _SNIPPET_TERM_CHAR = r"\uac00-\ud7a3A-Za-z0-9"
     _SNIPPET_TITLE_TERM_CLASS = rf"[{_SNIPPET_TERM_CHAR}]"
@@ -15204,7 +15306,7 @@ class Orchestrator:
         # "X 총 N화" 패턴은 '들을', '모든', '무료' 같은 일반어를 작가명으로
         # 오인하는 비율이 높아 제거한다. 작가 추출은 "작가/저자" 명시 패턴에 한정.
     ]
-    
+
     # 공식 소설플랫폼도메
     _OFFICIAL_PLATFORM_DOMAINS = {
         "novelpia.com", "munpia.com", "mm.munpia.com", "m.munpia.com",
@@ -15212,7 +15314,7 @@ class Orchestrator:
         "page.kakao.com", "kakao.page",
         "joara.com", "bookcube.com",
     }
-    
+
     def _llm_analyze_snippets(
         self,
         post_data: Dict[str, Any],
@@ -15882,30 +15984,30 @@ class Orchestrator:
             "관련된 정보만 정확히 근거하세요. "
             "동명의 다른 시리즈나 무관한 작품의 정보를 혼동하지 마세요. "
             "snippet에 정식 제목이나 작가명이 등장하면 반드시 추출하세요\n\n"
-            "⚠️ 스니펫에는 [official_platform/official_wiki/community/other], score, host 정보가 포함된다. "
+            " 스니펫에는 [official_platform/official_wiki/community/other], score, host 정보가 포함된다. "
             "동일 근거가 충돌하면 official_platform > community(캐릭터/줄거리 앵커 포함) > official_wiki > other "
             "순으로 신뢰하라.\n\n"
-            "⚠️ 각 스니펫 앞에는 근거 ID([E001] 또는 임시 [T001] 형태)가 있다. "
+            " 각 스니펫 앞에는 근거 ID([E001] 또는 임시 [T001] 형태)가 있다. "
             "근거를 서술할 때는 반드시 이 ID만 참조하고, 임의 번호([1],[2] 등) 생성을 금지한다.\n\n"
-            "⚠️ 핵심 앵커 보존: 게시글의 핵심 토큰(예: '즉사무림')과 형태소 핵심이 다른 제목(예: '실무림')으로 "
+            " 핵심 앵커 보존: 게시글의 핵심 토큰(예: '즉사무림')과 형태소 핵심이 다른 제목(예: '실무림')으로 "
             "가까운 철자만 보고 치환하지 마라. 키워드 핵심이 빠진 후보는 기본적으로 기각하라.\n\n"
-            "⚠️ 위키 단독 규칙: official_platform 근거가 없고 official_wiki만으로 제목을 추정할 때는 "
+            " 위키 단독 규칙: official_platform 근거가 없고 official_wiki만으로 제목을 추정할 때는 "
             "캐릭터/줄거리 고유 앵커가 같은 근거(EID)에서 확인되지 않으면 identified_title=null로 둬라.\n\n"
-            "⚠️ 캐릭터 괄호형 위키 규칙: 검색 제목이 '캐릭터명(작품명)'이고 그 캐릭터명이 게시글/댓글에 반복되면, "
+            " 캐릭터 괄호형 위키 규칙: 검색 제목이 '캐릭터명(작품명)'이고 그 캐릭터명이 게시글/댓글에 반복되면, "
             "괄호 안 작품명은 캐릭터 소속 작품 후보로 기록하라. 캐릭터명 자체를 작품명으로 쓰지 말고, "
             "동일 EID에서 캐릭터명과 작품명이 연결된 근거로 설명하라.\n\n"
-            "⚠️ 중요: 검색 결과가 소설이 아닌 다른 매체(VOCALOID 곡, 애니메이션, 게임, 만화, 영화 등)를"
+            " 중요: 검색 결과가 소설이 아닌 다른 매체(VOCALOID 곡, 애니메이션, 게임, 만화, 영화 등)를"
             "가리키는 경우, 함부로 소설로 매칭하지 마세요. "
             "검색 결과 다수가 특정 비소설 매체를 가리키면 identified_category에 그 매체를 기입하고, "
             "identified_title/identified_author를 null로 놓으세요. "
-            "예: 검색 결과 6건이 VOCALOID 곡을 가리키고 1건이 AA작품을 가리키면 →"
+            "예: 검색 결과 6건이 VOCALOID 곡을 가리키고 1건이 AA작품을 가리키면 :"
             "다수를 따라 identified_category='vocaloid_song'으로 판단하세요\n\n"
-            "⚠️ 가중요: 게시글이 '장르/트로프 일반론'인지 '특정 작품 언급'인지 반드시 먼저 판별하세요\n"
+            " 가중요: 게시글이 '장르/트로프 일반론'인지 '특정 작품 언급'인지 반드시 먼저 판별하세요\n"
             "검색에서 의심스럽게 매칭하는 소설을 발견하더라도, 게시글 자체가 그 소설을 언급하는지 확인해야 합니다\n\n"
-            "⚠️ [인수] 인터넷유행반줄임말확인:\n"
+            " [인수] 인터넷유행반줄임말확인:\n"
             "검색 결과에서 특정 단어가 '~의 줄임말', '~류', 'MZ세대 유행어', '인터넷 유행어' 형식으로"
             "언급하는 경우, 그 단어는 작가명이나 작품명이 아니라 **범용적 한국어 표현**입니다.\n"
-            "예: '감다' → 검색 결과 '감이 다 없어졌네의 줄임말' → 비유적 표현이지 작가명이 아님!\n"
+            "예: '감다' : 검색 결과 '감이 다 없어졌네의 줄임말' : 비유적 표현이지 작가명이 아님!\n"
             "    '작가 감다' 미쳤고' = '작가(의) 감각이 다 없어져서 미쳤다는 칭찬 표현\n"
             "이런 경우 identified_author에 해당 유행어를 작가명으로 넣지 마세요\n\n"
             "장르 일반론 판별 기준 (하나라도 해당 시 identified_category='genre_discussion'):\n"
@@ -15915,37 +16017,37 @@ class Orchestrator:
             "- 복수 일반 표현 사용: '~하는 소설', '~하는 작가', '~구조' 등\n"
             "- 의심어가 장르 자체를 다루는 일반 개념으로 사용됨(고유명사가 아님)\n"
             "- 커뮤니티 관용 말머리나 카테고리 표시 말머리이고 작품명이 아님\n\n"
-            "⚠️ 무협 세력/역할어 주의: 무림맹, 마교, 혈교, 정파, 사파, 천마, 맹주, 제자 등은 여러 작품에 반복되는 세계관 용어입니다. "
+            " 무협 세력/역할어 주의: 무림맹, 마교, 혈교, 정파, 사파, 천마, 맹주, 제자 등은 여러 작품에 반복되는 세계관 용어입니다. "
             "이 단어들만 후보 제목과 겹치면 특정 작품 약칭으로 보지 말고, 후보 제목의 고유 요소가 본문/댓글에 있는지 확인하세요.\n\n"
-            "🚨 장르 일반론 실제 사례 (이런 게시글은 genre_discussion!):\n\n"
+            " 장르 일반론 실제 사례 (이런 게시글은 genre_discussion!):\n\n"
             "  사례: '로판이나 웹소에서 가주습격은 일부로 당하는거지'\n"
-            "  → '로판이나 웹소에서'는 두 장르/매체를 묶어 일반화하는 표현.\n"
+            "  : '로판이나 웹소에서'는 두 장르/매체를 묶어 일반화하는 표현.\n"
             "    '가주습격'은 여러 작품에서 반복되는 장르 클리셰를 가리킨다.\n"
             "    검색에서 '이번 생은 가주가 되겠습니다'를 찾더라도 키워드 우연 일치.\n"
-            "    → genre_discussion\n\n"
+            "    : genre_discussion\n\n"
             "  사례: '백합에 쥬지난입이 이론상 꼴림 포텐셜 존나 높긴한디'\n"
-            "  → '백합(GL장르) + 난입(트로프)'은 장르 소재의 조합이지 작품명이 아니다.\n"
+            "  : '백합(GL장르) + 난입(트로프)'은 장르 소재의 조합이지 작품명이 아니다.\n"
             "    본문 '제대로 쓴거 한번도 못본거 같음'은 해당 소재의 작품 부재를 한탄.\n"
             "    아직 읽지도 않은 작품에 대한 리뷰를 쓸 수 없다.\n"
-            "    → genre_discussion\n\n"
+            "    : genre_discussion\n\n"
             "  사례: '소신발언)) 캐릭터갑 나이 몰랐음'\n"
-            "  → '소신발언))'은 DC갤러리의 '솔직한 의견:' 관용 접두사.\n"
+            "  : '소신발언))'은 DC갤러리의 '솔직한 의견:' 관용 접두사.\n"
             "    '))'는 태그와 내용을 분리하는 DC 표기법이지 작품명이 아니다.\n"
-            "    → genre_discussion\n\n"
+            "    : genre_discussion\n\n"
             "  사례: '후타 암타물을 보고싶구나..'\n"
-            "  → '후타나리 + 암타물'은 장르 조합이고 '보고싶구나'는 추천 요청.\n"
+            "  : '후타나리 + 암타물'은 장르 조합이고 '보고싶구나'는 추천 요청.\n"
             "    댓글에 novelpia URL이 있어도 그것은 추천 답변이지 주제가 아님.\n"
-            "    → genre_discussion\n\n"
+            "    : genre_discussion\n\n"
             "  비교: '작품약어갑 캐릭터갑이 각성했는데 ㅈㄴ 쎈거같은...'\n"
-            "  → '작품약어갑'은 특정 작품만의 고유 약칭, '캐릭터갑이'는 캐릭터 고유명.\n"
+            "  : '작품약어갑'은 특정 작품만의 고유 약칭, '캐릭터갑이'는 캐릭터 고유명.\n"
             "    이것은 장르 일반론이 아니라 특정 작품 토론이다.\n"
-            "    → work_discussion\n\n"
+            "    : work_discussion\n\n"
             "이 판별은 검색 결과 분석보다 선행해야 합니다. "
             "게시글이 장르 일반론이면, 검색에서 동명의 소설을 찾더라도 매칭하지 마세요\n\n"
-            "⚠️ 주의: 검색 결과에서 게시글 의심어가 특정 작품의 '줄임/줄임말'로 확인되거나, "
+            " 주의: 검색 결과에서 게시글 의심어가 특정 작품의 '줄임/줄임말'로 확인되거나, "
             "본문에 특정 캐릭터 고유명이 등장하면, 그것은 장르 일반론이 아니라 특정 작품 언급입니다. "
             "줄임 여부를 검색 결과에서 반드시 확인하세요\n\n"
-            "🚨 [시간지칭 원칙 — CRITICAL]:\n"
+            " [시간지칭 원칙 - CRITICAL]:\n"
             "'신작', '전작', '최신작', '이번작', '차기작', '신간', '새 거' 등의 시간지칭어는 "
             "작성자의 시점에서 상대적으로 사용된 것이다. "
             "우리는 그 시점에 있지 않으므로 어떤 작품을 가리키는지 특정할 수 없다.\n"
@@ -15954,13 +16056,13 @@ class Orchestrator:
             "  - identified_title은 반드시 null으로 놓아라 (검색에서 제목을 찾았더라도!)\n"
             "  - 검색에서 '작가의 신작 [X]' 패턴을 찾아도, 본문에 X가 직접 등장하지 않으면 매칭 금지\n"
             "  - 이유: 작가의 신작이 여러 개일 수 있고, 작성 시점도 다르다\n\n"
-            "⚠️ entity_role_hints 규칙:\n"
+            " entity_role_hints 규칙:\n"
             "- identified_title을 확정하지 못해도, 핵심 토큰의 역할은 분리해서 남겨라.\n"
             "- 커뮤니티 별칭이 실제 작가를 가리키면 role='author_alias'로 두고 resolved_to에 실제 작가명을 넣어라.\n"
             "- 작품 줄임말이면 role='work_alias'로 두고 resolved_to에 정식 제목을 넣어라.\n"
             "- 장르어/밈/메타 표현이면 role='genre_term' 또는 'community_meta'로 두고 resolved_to는 null로 둬라.\n"
             "- 이 필드는 post나 검색 근거에 실제로 나온 표현만 써라. 추측한 새 토큰을 만들지 마라.\n\n"
-            "⚠️ identified_title과 work_alias의 차이:\n"
+            " identified_title과 work_alias의 차이:\n"
             "- 검색/OCR로 정식 제목을 찾았더라도, 게시글 표면어가 그 작품의 '지속 약칭'인지 별도 판단하라.\n"
             "- 검색 후보가 공식 플랫폼에서 확인되지만 약칭 브리지가 약하면 identified_title은 null일 수 있다.\n"
             "- 이 경우 entity_role_hints에 role='work_alias', resolved_to='후보 제목', confidence='medium/low'를 남겨 후속 전문가가 hold 판단하게 하라.\n"
@@ -15985,12 +16087,12 @@ Gatekeeper 추정 캐릭터: {gk_chars}
         # 증거 정합성 분석이 있으면 프롬프트에 추가
         if _evidence_alignment_text:
             user_msg += f"""
-## 🔬 약칭-제목 증거 정합성 분석
+##  약칭-제목 증거 정합성 분석
 아래는 게시글 핵심 키워드(약칭)가 검색 결과에서 어떤 후보 제목과 얼마나 정합하는지 사전 분석한 결과입니다.
 약칭정합 = 약칭↔정식제목 형태소 매칭 점수 (1.0이면 완벽 매칭)
 동시등장 = 같은 snippet에서 약칭과 후보 제목이 함께 나타나는 횟수
 
-⚠️ 이 분석을 반드시 참고하여 identified_title을 결정하세요:
+ 이 분석을 반드시 참고하여 identified_title을 결정하세요:
 - 약칭 형태소가 정식 제목에 포함되지 않으면 (약칭정합<0.5) 오매칭 가능성 높음
 - 동시등장이 많고 약칭정합이 높은 후보가 올바른 매칭일 가능성이 높음
 - 유사한 2개 이상의 소설이 존재할 때, 약칭의 핵심 단어(예: "드래곤")가
@@ -16016,9 +16118,9 @@ Gatekeeper 추정 캐릭터: {gk_chars}
    장르 일반론이면post_intent="genre_discussion", identified_category="genre_discussion"으로 설정
    특정 작품 언급이면 post_intent="work_discussion"
 
-   **⚠️ genre_discussion 판정 인수 확인:**
+   ** genre_discussion 판정 인수 확인:**
    검색 결과에서 게시글의 핵심 의심어가 특정 작품의 줄임/줄임말로 확인된다면, 장르 일반론이 아니라 특정 작품 언급입니다
-   예: 검색 결과가 "A"라는 의심어를 "B라는 소설의 줄임"이라고 언급하면 → post_intent="work_discussion"
+   예: 검색 결과가 "A"라는 의심어를 "B라는 소설의 줄임"이라고 언급하면 : post_intent="work_discussion"
    또한: 본문/댓글에 특정 캐릭터 이름이 등장하면 특정 작품에 해당하는 것이므로 genre_discussion이 아님을 유의하라.
 1. identified_title: snippet에서 이 게시글에 해당하는 작품의 "정식 제목"을 찾으세요. **만약 post_intent가 "genre_discussion"이면 identified_title=null로 놓으세요.** 검색에서 의심스럽게 이름이 겹치는 소설을 찾더라도, 게시글이 그 소설을 직접 언급하는 것이 아니면 매칭하지 마세요
    - 무림맹/마교/혈교/정파/사파/천마/맹주/제자 같은 일반 세력·역할어만 겹치는 후보는 identified_title로 확정하지 마세요.
@@ -16071,7 +16173,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
             result = parse_json_with_think_removal(response_text)
             _snippet_category = (result.get("identified_category") or "unknown").lower()
             _snippet_post_intent = (result.get("post_intent") or "").lower()
-            
+
             # ── 후처리: 위험 줄임 매핑 제거 ──
             # key_terms에 없는 줄임, 문법적 축약(조사/어미 포함), 일반명사 등 필터링
             import re as _re_post
@@ -16257,7 +16359,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                     _filtered_abbrevs.append(_am)
                 if _removed_author_alias_abbrevs:
                     result["abbreviation_mappings"] = _filtered_abbrevs
-            
+
             # ── 후처리: irrelevant_authors에서 작품명이 섞인 경우 제거 ──
             # LLM이 "정령의 경제학" 같은 작품명을 작가로 잘못 분류하는 경우 방어
             _irr_authors = result.get("irrelevant_authors") or []
@@ -16308,7 +16410,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 )
                 result["identified_title"] = None
                 result["abbreviation_mappings"] = []
-            
+
             # ── 후처리: 비소설 매체 감지 시 작품 매칭 결과 무효화 ──
             category = (result.get("identified_category") or "unknown").lower()
             NON_NOVEL_CATEGORIES = {"vocaloid_song", "anime", "manga", "game", "aa_work"}
@@ -16603,7 +16705,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                             _id_title_norm,
                             _cand,
                         )
-                        
+
                         if _reverse_match_title:
                             # identified_title을 정식 제목으로 교체
                             _old_id = _id_title_raw
@@ -17145,7 +17247,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                         f"'{_id_author}' (title_linked_evidence 없음)",
                         file=sys.stderr,
                     )
-            
+
             print(
                 f"[{_ts()}] {self.emoji} 📌 LLM snippet 분석 완료: "
                 f"title={result.get('identified_title')}, "
@@ -17275,11 +17377,11 @@ Gatekeeper 추정 캐릭터: {gk_chars}
         system_msg = (
             "당신은 웹 페이지 내용 분석 전문가입니다. "
             "crawl4ai로 크롤링한 웹 페이지의 본문을 읽고, 이 페이지가 무엇인지 판단합니다.\n\n"
-            "📌 핵심 임무: 페이지 본문 텍스트를 **실제로 읽고** 다음을 판단하세요:\n"
+            " 핵심 임무: 페이지 본문 텍스트를 **실제로 읽고** 다음을 판단하세요:\n"
             "1. page_type: 이 페이지가 소설 작품 페이지(novel_page)인지, 커뮤니티 토론(community_post)인지, "
             "위키(wiki)인지, 블로그(blog)인지, 기타(unknown)인지\n"
             "2. novel_title: 이 페이지에서 논의/소개되는 실제 소설의 정식 제목\n"
-            "   - novel_page: 페이지 제목 자체가 소설 제목 (예: novelpia.com/viewer/... → 소설 제목 추출)\n"
+            "   - novel_page: 페이지 제목 자체가 소설 제목 (예: novelpia.com/viewer/... : 소설 제목 추출)\n"
             "   - community_post: 페이지 제목은 게시글 제목이지 소설 제목이 아님! "
             "     본문에서 실제로 논의하는 소설 제목을 찾으세요\n"
             "   - wiki: 문서 제목이 소설 제목이거나 본문에서 소설 정보를 추출\n"
@@ -17289,19 +17391,19 @@ Gatekeeper 추정 캐릭터: {gk_chars}
             "   - 'active': 소설 본문/정보가 정상적으로 표시됨\n"
             "   - 'deleted': '삭제된 작품', '존재하지 않는 페이지', '찾을 수 없습니다' 등\n"
             "   - 'unavailable': 비공개, 서비스 종료, 접근 불가 등\n"
-            "   ★ 중요: 소설 플랫폼 페이지(novelpia/munpia 등)에서 실제 소설 본문이 없고\n"
+            "    중요: 소설 플랫폼 페이지(novelpia/munpia 등)에서 실제 소설 본문이 없고\n"
             "     '삭제', '없는 작품', '비공개' 등의 메시지만 보이면 반드시 'deleted' 또는 'unavailable'로 판정!\n\n"
-            "⚠️ 중요 구분 규칙:\n"
+            " 중요 구분 규칙:\n"
             "- 문피아(munpia.com) square.munpia.com 등 커뮤니티 게시판의 글은 community_post\n"
             "  - 게시글 제목 '메이플 버전 망겜성?' 같은 것은 소설 제목이 아니라 토론 제목\n"
             "  - 본문에서 실제 소설 이름을 찾아내야 함 (예: '망겜의 성기사')\n"
             "- novelpia.com/viewer/... 또는 munpia.com/novel/... 은 novel_page\n"
             "  - 여기서 보이는 제목이 바로 소설 제목\n"
             "- 나무위키는 wiki, 블로그는 blog\n\n"
-            "⚠️ 게시글 문맥 활용:\n"
+            " 게시글 문맥 활용:\n"
             "원 게시글(DC커뮤니티)의 제목/본문/캐릭터 정보를 참고하여, "
             "크롤링된 페이지에서 해당 게시글과 관련된 소설 정보를 추출하세요.\n\n"
-            "📐 출력: 반드시 아래 JSON 형식 1개만 출력하세요. 다른 텍스트 없이 JSON만."
+            " 출력: 반드시 아래 JSON 형식 1개만 출력하세요. 다른 텍스트 없이 JSON만."
         )
 
         from .utils import parse_json_with_think_removal
@@ -17384,7 +17486,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 "analysis_source": "structured_fast_path",
             }
 
-        # ── 페이지별 개별 LLM 호출 (P1: LLM이 일부 페이지만 분석하는 문제 원천 방지) ──
+        #  페이지별 개별 LLM 호출 (P1: LLM이 일부 페이지만 분석하는 문제 원천 방지)
         results: List[Optional[Dict[str, Any]]] = []
         for page_idx, fp in enumerate(fetched_pages):
             url = fp.get("url", "")
@@ -17402,7 +17504,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
             _fast_path = _build_fast_path_analysis(fp)
             if _fast_path is not None:
                 print(
-                    f"[{_ts()}] {self.emoji} ⚡ page_analyzer fast-path skip: "
+                    f"[{_ts()}] {self.emoji}  page_analyzer fast-path skip: "
                     f"novel_page|title={_fast_path.get('novel_title','∅')} ({url[:60]})",
                     file=sys.stderr,
                 )
@@ -17413,7 +17515,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
             _cached_analysis = self._load_page_analyzer_cache(cache_key)
             if _cached_analysis is not None:
                 print(
-                    f"[{_ts()}] {self.emoji} ♻️ page_analyzer cache hit: "
+                    f"[{_ts()}] {self.emoji}  page_analyzer cache hit: "
                     f"{str(url or '')[:60]}",
                     file=sys.stderr,
                 )
@@ -17431,9 +17533,9 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 f"URL: {url}\n"
                 f"기존 page_type 힌트: {page_type_hint}\n"
                 f"페이지 제목: {title}\n"
-                f"── 크롤링 본문 (crawl4ai markdown) ──\n"
+                f" 크롤링 본문 (crawl4ai markdown) \n"
                 f"{_trim_page_preview_for_prompt(text_preview)}\n"
-                f"── 본문 끝 ──\n\n"
+                f" 본문 끝 \n\n"
                 f"## 분석 지시\n"
                 f"위 크롤링 본문을 실제로 읽고, 아래 JSON 1개를 출력하세요.\n\n"
                 f'{{\n'
@@ -17538,9 +17640,9 @@ Gatekeeper 추정 캐릭터: {gk_chars}
         self, search_results: List[Dict[str, Any]], key_terms: List[str]
     ) -> Dict[str, Any]:
         """검색 결과 snippet에서 제목/작가/줄임 후보를 코드로만 추출한다.
-        
+
         LLM을 사용하지 않고, 정규식 패턴 매칭으로 동작.
-        
+
         Returns:
             {
                 "title_hints": [{"title": str, "source": str, "url": str}],
@@ -17553,10 +17655,10 @@ Gatekeeper 추정 캐릭터: {gk_chars}
         author_hints = []
         abbreviation_hints = []
         fetchable_urls = []
-        
+
         seen_titles = set()
         seen_authors = set()
-        
+
         # ── 일반명사 블랙리스트: 줄임 매핑 key로 사용 불가 ──
         _GENERIC_WORDS = frozenset({
             "작가", "작품", "소설", "웹소설", "연재", "신작", "전작", "최신작",
@@ -17566,13 +17668,13 @@ Gatekeeper 추정 캐릭터: {gk_chars}
             "회귀", "환생", "빙의", "각성", "레벨업", "시스템",
             "죽는다", "불쌍해", "재밌다", "재밌네", "슬프다", "안타깝다",
         })
-        
+
         for r in search_results:
             content = r.get("content", "") or ""
             title = r.get("title", "") or ""
             url = r.get("url", "") or ""
             combined = f"{title} {content}"
-            
+
             # 1) 제목 패턴 추출
             _title_targets = [title]
             for pat in self._SNIPPET_TITLE_PATTERNS:
@@ -17602,7 +17704,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                         "source": "snippet_pattern",
                         "url": url,
                     })
-            
+
             # 2) 작가 패턴 추출
             for pat in self._SNIPPET_AUTHOR_PATTERNS:
                 for m in pat.finditer(combined):
@@ -17698,7 +17800,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                         "source": "author_bridge",
                         "url": url,
                     })
-            
+
             # 3) 줄임 매핑: "~줄임", "~줄여
             _abbrev_context = any(tok in combined for tok in ("줄임", "약칭", "정식명칭", "통칭", "별칭", "="))
             if _abbrev_context:
@@ -17736,7 +17838,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                                         "source": "snippet_pattern",
                                         "url": url,
                                     })
-            
+
             # 4-pre) key_term이 snippet에서 줄임으로 사용되면 정식 제목과 같이 나오는 경우
             # 예: "즉사무림 이름이 그래서 그렇지" + content에 "즉사기하고 무림에 떨어졌다는 소설"
             for kt in key_terms:
@@ -17773,9 +17875,9 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                     _domain = _urlparse(url).hostname or ""
                 except Exception:
                     _domain = ""
-                is_platform = any(_domain == d or _domain.endswith("." + d) 
+                is_platform = any(_domain == d or _domain.endswith("." + d)
                                   for d in self._OFFICIAL_PLATFORM_DOMAINS) or "namu.wiki" in _domain
-                
+
                 if is_platform:
                     # 플랫폼결과title에서 정식 제목 추출
                     clean_t = re.sub(r'\s*[-\(\[].*$', '', title).strip()
@@ -17834,7 +17936,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                                 "source": "community_mention",
                                 "url": url,
                             })
-            
+
             # 4-B) key_term 작가명 부분 매칭: key_term이 작가명의 접두사인 경우
             # 예: key_term '개돌'로 검색하여 '개돌전쟁' 작가 발견 시 작가 힌트 추가
             for kt in key_terms:
@@ -17866,7 +17968,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                             "source": "prefix_match_author",
                             "url": url,
                         })
-            
+
             # 5) URL을 가진 fetch 대상: 공식 플랫폼 + 나무위키 + 유용한 커뮤니티
             if url:
                 from urllib.parse import urlparse
@@ -17900,7 +18002,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                         fetchable_urls.append(url)
                 except Exception:
                     pass
-        
+
         _artifact_key_terms = [
             kt for kt in (key_terms or [])
             if isinstance(kt, str) and kt.strip()
@@ -17946,7 +18048,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 _title_norms.add(_ab_full)
             if _ab_abbr:
                 _title_norms.add(_ab_abbr)
-        
+
         if _title_norms:
             _before_authors = len(author_hints)
             author_hints = [
@@ -17960,7 +18062,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                     f"[_extract_hints] ⚠️ 작품명과 중복된 작가명 제거: {_removed}건",
                     file=sys.stderr,
                 )
-        
+
         return {
             "title_hints": title_hints,
             "author_hints": author_hints,
@@ -18410,19 +18512,19 @@ Gatekeeper 추정 캐릭터: {gk_chars}
     ) -> List[Dict[str, Any]]:
         """
         작가 브릿지 추출: 검색 결과에서 삼단논법 작가 연결을 감지한다.
-        
+
         패턴: "X작가 Y" + 다른 결과에서 "Y, 작가: Z"
         → X의 작가 = Z → "Z X 웹소설" 보충 검색 가능
-        
+
         예: "즉사무림작가 정령의 경제학" + "정령의 경제학 작가: 오늘도요"
         → 즉사무림 작가 = 오늘도요
-        
+
         Returns:
             [{"key_term": str, "author": str, "bridge_work": str,
               "evidence": str, "bridge_query": str}]
         """
         bridges: List[Dict[str, Any]] = []
-        
+
         # Step 1: "X작가 Y" / "X작가꺼 Y" 패턴 감지
         # X = key_term(미해결 약칭), Y = 작품명
         _bridge_pat = re.compile(
@@ -18435,10 +18537,10 @@ Gatekeeper 추정 캐릭터: {gk_chars}
             r'([\uac00-\ud7a3A-Za-z0-9]{2,10})작가\s*([\uac00-\ud7a3A-Za-z0-9\s]{2,25})',
             re.UNICODE,
         )
-        
+
         _kt_set = {re.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', t).lower()
                     for t in key_terms if isinstance(t, str)}
-        
+
         # X→Y 매핑 수집
         xy_pairs: List[tuple] = []  # (key_term_x, bridge_work_y, evidence_text)
         for sr in search_results:
@@ -18450,10 +18552,10 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                     x_norm = re.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', x_raw).lower()
                     if x_norm in _kt_set and len(y_raw) >= 2:
                         xy_pairs.append((x_raw, y_raw, combined[:100]))
-        
+
         if not xy_pairs:
             return bridges
-        
+
         # Step 2: Y의 작가 Z를 검색 결과 + author_hints에서 추출
         # 플랫폼 URL snippet에서 "작가: Z" 패턴
         _author_by_work: Dict[str, str] = {}
@@ -18486,7 +18588,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 sr_title_clean = re.sub(r'\s*[-\(\[].*$', '', sr.get('title', '')).strip()
                 if sr_title_clean:
                     _author_by_work[re.sub(r'[^\uac00-\ud7a3A-Za-z0-9]', '', sr_title_clean).lower()] = author_z
-        
+
         # Step 3: X→Y→Z 삼단논법 연결
         seen_bridges = set()
         for x_raw, y_raw, evidence in xy_pairs:
@@ -18498,7 +18600,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                     if y_norm in work_key or work_key in y_norm:
                         author_z = az
                         break
-            
+
             if author_z:
                 bridge_key = f"{x_raw}→{author_z}"
                 if bridge_key not in seen_bridges:
@@ -18517,7 +18619,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                         f"(경유: '{y_raw}')",
                         file=sys.stderr,
                     )
-        
+
         return bridges
 
     def _has_official_like_title_hints(self, hints: Optional[Dict[str, Any]]) -> bool:
@@ -19658,7 +19760,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                     file=sys.stderr,
                 )
                 continue
-            
+
             tied_to_post = bool(
                 abbrev_norm in key_terms_norm
                 or abbrev_norm in post_text_norm
@@ -20066,7 +20168,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                     existing_bridges.append(b)
                     seen_keys.add(b.get("key_term", ""))
             ctx.snippet_hints["author_bridge_evidence"] = existing_bridges[:5]
-    
+
     # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     # Phase 2.6: 파생작/2차창작 검색 결과 감지
     # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -20164,7 +20266,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
         max_rounds: int = 2,
     ) -> None:
         """Phase 2.5: 검색 결과 품질 갭을 분석하고 보충 검색을 수행한다.
-        
+
         Deep-research 스타일의 적응형 검색:
         1. 현재 증거 품질 평가 (공식 URL, 위키, 약칭 해소 여부)
         2. 갭 식별 (공식 URL 없음, 제목 미확정, 작가 미확인 등)
@@ -20201,7 +20303,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 file=sys.stderr,
             )
             return
-        
+
         for round_idx in range(max_rounds):
             gaps = self._identify_evidence_gaps(ctx, snippet_hints, key_terms)
             if not gaps:
@@ -20210,7 +20312,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                     file=sys.stderr,
                 )
                 break
-            
+
             # 갭별 타겟 쿼리 생성
             target_queries: List[Dict[str, Any]] = []
             for gap in gaps[:3]:  # 라운드당 최대 3개 갭 해소
@@ -20235,7 +20337,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                         file=sys.stderr,
                     )
                     continue
-                
+
                 if gap_type == "no_official_url" and gap_term:
                     # 공식 플랫폼 URL이 없음 → author_bridge가 있으면 작가+제목 2-hop을 먼저 확인한다.
                     for bridge_query in self._build_author_bridge_official_url_queries(
@@ -20257,7 +20359,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                             "priority": 0,
                         })
                         ctx.searched_queries.add(q)
-                
+
                 elif gap_type == "no_wiki_page" and gap_term:
                     # 나무위키 페이지 없음 → 나무위키 검색
                     q = f"site:namu.wiki {gap_term}"
@@ -20268,7 +20370,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                             "priority": 0,
                         })
                         ctx.searched_queries.add(q)
-                
+
                 elif gap_type == "unresolved_abbreviation" and gap_term:
                     # 약칭 미해소 → 줄임 의미 검색
                     q = f"{gap_term} 줄임 웹소설 정식 제목"
@@ -20279,7 +20381,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                             "priority": 1,
                         })
                         ctx.searched_queries.add(q)
-                
+
                 elif gap_type == "no_author" and gap_term:
                     # 작가명 미확인 → 작가 검색
                     q = f"{gap_term} 작가 웹소설"
@@ -20290,16 +20392,16 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                             "priority": 1,
                         })
                         ctx.searched_queries.add(q)
-            
+
             if not target_queries:
                 break
-            
+
             print(
                 f"[{_ts()}] {self.emoji} 🔗 AdaptiveChain round {round_idx + 1}: "
                 f"{len(target_queries)} 보충 쿼리 ({', '.join(g['type'] for g in gaps[:3])})",
                 file=sys.stderr,
             )
-            
+
             new_results = self._execute_searches(target_queries, ctx.post_id)
             if new_results:
                 added = ctx.add_search_results(new_results)
@@ -20311,7 +20413,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 new_hints = self._extract_hints_from_snippets(new_results, key_terms)
                 self._merge_snippet_hints(ctx, new_hints, key_terms)
                 snippet_hints = getattr(ctx, "snippet_hints", None) or {}
-                
+
                 # 새 결과에서 fetchable URL 발견 → 즉시 fetch
                 fetch_fn = getattr(self, 'fetch_fn', None)
                 if fetch_fn:
@@ -20457,18 +20559,18 @@ Gatekeeper 추정 캐릭터: {gk_chars}
         key_terms: List[str],
     ) -> List[Dict[str, str]]:
         """현재 증거에서 부족한 부분을 식별한다.
-        
+
         Returns:
             [{"type": "no_official_url"|"no_wiki_page"|"unresolved_abbreviation"|"no_author",
               "term": str, "description": str}]
         """
         gaps: List[Dict[str, str]] = []
-        
+
         # 현재 알려진 제목 후보
         title_hints = snippet_hints.get("title_hints") or []
         abbreviation_hints = snippet_hints.get("abbreviation_hints") or []
         author_hints = snippet_hints.get("author_hints") or []
-        
+
         # 확정 제목 후보 (또는 가설)
         best_title = ""
         _canonical_lock_title = str(getattr(ctx, "canonical_title_lock", "") or "").strip()
@@ -20483,7 +20585,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
             best_title = title_hints[0].get("title", "")
         if best_title and self._is_generic_topic_gap_term(best_title):
             best_title = ""
-        
+
         if not best_title:
             contextual_exact_title_gaps = self._contextual_exact_titles_without_official_detail(
                 ctx,
@@ -20507,7 +20609,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                             "description": f"약칭 '{kt}'의 정식 제목 미확인",
                         })
             return gaps
-        
+
         # 공식 플랫폼 URL 확인
         fetched_pages = getattr(ctx, "fetched_page_info", None) or []
         has_official_url = False
@@ -20518,7 +20620,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 has_official_url = True
             if "namu.wiki" in url:
                 has_wiki_url = True
-        
+
         # 검색 결과에서도 확인
         for sr in (ctx.search_results or []):
             sr_url = sr.get("url", "")
@@ -20551,7 +20653,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 "term": contextual_title,
                 "description": f"'{contextual_title}'의 contextual exact-title 공식 detail 미확정",
             })
-        
+
         if (
             not has_official_url
             and best_title not in author_bridge_official_gaps
@@ -20562,14 +20664,14 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 "term": best_title,
                 "description": f"'{best_title}'의 공식 플랫폼 URL 미발견",
             })
-        
+
         if not has_wiki_url:
             gaps.append({
                 "type": "no_wiki_page",
                 "term": best_title,
                 "description": f"'{best_title}'의 나무위키 페이지 미발견",
             })
-        
+
         if not author_hints:
             _author_locked = False
             if _canonical_lock_author:
@@ -20597,7 +20699,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 "term": best_title,
                 "description": f"'{best_title}'의 작가명 미확인",
             })
-        
+
         return gaps
 
     def _author_bridge_titles_without_exact_official_detail(
@@ -20823,10 +20925,10 @@ Gatekeeper 추정 캐릭터: {gk_chars}
     ) -> None:
         """
         ━━━ P2-1b: 커뮤니티 체인 2-hop 페치 ━━━
-        
+
         community_chain_search 쿼리 결과에서 커뮤니티 QA 페이지를 페치하고,
         댓글/본문에서 웹소설 작품명을 추출하여 후속 검색을 수행한다.
-        
+
         사용자가 설명한 "스마트 딥 리서치" 흐름:
         1. "세드릭 무슨 소설" 검색 → 커뮤니티 QA 발견
         2. 해당 페이지 페치 → 댓글에서 "가챠펑크" 추출
@@ -20834,16 +20936,16 @@ Gatekeeper 추정 캐릭터: {gk_chars}
         """
         import re as _re_chain
         import os as _os_chain
-        
+
         _enable = _os_chain.getenv(
             "LLM_ENABLE_COMMUNITY_CHAIN_FETCH", "1"
         ).strip().lower() in {"1", "true", "yes", "on"}
         if not _enable:
             return
-        
+
         if not self.fetch_fn or not self.search_fn:
             return
-        
+
         # 이미 공식 플랫폼에서 강한 증거가 있으면 스킵 (불필요한 비용 절감)
         _has_official_evidence = False
         for sr in (ctx.search_results or []):
@@ -20854,7 +20956,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
         # 공식 증거가 이미 있으면 체인 탐색 불필요
         if _has_official_evidence:
             return
-        
+
         # community_chain_search 결과를 식별한다
         _community_domains = ("gall.dcinside.com", "fmkorea.com", "ruliweb.com", "arca.live", "theqoo.net")
         _chain_urls: list[str] = []
@@ -20874,15 +20976,15 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                     _chain_urls.append(url)
             if len(_chain_urls) >= 3:
                 break
-        
+
         if not _chain_urls:
             return
-        
+
         print(
             f"[{_ts()}] {self.emoji} 🔗 커뮤니티 체인 페치 시도: {len(_chain_urls)}건",
             file=sys.stderr,
         )
-        
+
         # 커뮤니티 페이지에서 작품 제목 추출 패턴
         _WORK_MENTION_PATTERNS = [
             _re_chain.compile(r'(?:작품|소설|웹소설|제목)[은이가]?\s*[:\-]?\s*[「『<《]?([가-힣][가-힣\s]{2,20}[가-힣])[」』>》]?'),
@@ -20892,10 +20994,10 @@ Gatekeeper 추정 캐릭터: {gk_chars}
         _PLATFORM_URL_PATTERN = _re_chain.compile(
             r'(novelpia\.com|munpia\.com|page\.kakao\.com|series\.naver\.com|joara\.com)[^\s"\'<>]*'
         )
-        
+
         _extracted_titles: list[str] = []
         _extracted_urls: list[str] = []
-        
+
         for _url in _chain_urls[:2]:  # 비용 절감: 최대 2 페이지만 페치
             try:
                 _page = self._fetch_with_context_receipt(
@@ -20908,7 +21010,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 _page_text = str(_page.get("text") or _page.get("content") or "")
                 if not _page_text or len(_page_text) < 50:
                     continue
-                
+
                 # 패턴 1: 작품명 직접 언급
                 for _pat in _WORK_MENTION_PATTERNS:
                     for _m in _pat.finditer(_page_text[:5000]):
@@ -20920,7 +21022,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                             and not _found.endswith("채널")
                         ):
                             _extracted_titles.append(_found)
-                
+
                 # 패턴 2: 플랫폼 URL에서 작품명 추출
                 for _um in _PLATFORM_URL_PATTERN.finditer(_page_text[:5000]):
                     _purl = _um.group(0)
@@ -20928,7 +21030,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                         _purl = "https://" + _purl
                     if _purl not in _extracted_urls:
                         _extracted_urls.append(_purl)
-                
+
                 print(
                     f"[{_ts()}] {self.emoji} 🔗 커뮤니티 체인 페치 완료: {_url[:60]}... "
                     f"→ titles={_extracted_titles[:3]}, urls={len(_extracted_urls)}",
@@ -20939,7 +21041,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                     f"[{_ts()}] {self.emoji} ⚠️ 커뮤니티 체인 페치 실패: {_url[:50]}... → {e}",
                     file=sys.stderr,
                 )
-        
+
         # 추출된 작품명으로 후속 검색 (3-hop: 공식 플랫폼 검증)
         _followup_requests: list[dict] = []
         for _et in _extracted_titles[:3]:
@@ -20953,7 +21055,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                     "priority": 1,
                 })
                 ctx.searched_queries.add(_q)
-        
+
         # 추출된 플랫폼 URL도 검색 결과에 추가
         for _eu in _extracted_urls[:3]:
             ctx.add_search_results([{
@@ -20962,7 +21064,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 "content": "",
                 "source": "community_chain",
             }])
-        
+
         if _followup_requests:
             _followup_results = self._execute_searches(_followup_requests, ctx.post_id)
             if _followup_results:
@@ -20983,7 +21085,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
         gatekeeper_result: Optional[Dict[str, Any]] = None,
     ) -> None:
         """초기 검색 결과를 분석하여 추가 검색·URL 페치으로 정보를 보강한다.
-        
+
         1단계: snippet에서 제목/작가/줄임 힌트 추출 (기계정규
         1-B단계: LLM snippet 분석 (문맥 기반 힌트 필터링·보강)
         2단계: 공식 플랫폼 URL 페치 (나무위키, 노벨피아 등)
@@ -20991,9 +21093,9 @@ Gatekeeper 추정 캐릭터: {gk_chars}
         4단계: 은어 활용 쿼리 추가 ("뜻", "정식명칭")
         """
         import re as _re
-        
+
         hints = self._extract_hints_from_snippets(search_results, key_terms)
-        
+
         # ── 1-A단계: BatchContextMemory 사전 지식 주입 ──
         if self.batch_context and self.batch_context.enabled:
             _prior = self.batch_context.get_prior_hints(key_terms or [])
@@ -21024,7 +21126,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                             "name": pa["name"],
                             "source": "batch_memory",
                         })
-        
+
         _limit_non_novel_expansion_ds, _limit_non_novel_reason_ds = self._should_limit_non_novel_expansion(
             ctx, gatekeeper_result=gatekeeper_result
         )
@@ -21091,7 +21193,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 ):
                     return True
             return False
-        
+
         # ── 1-B단계: LLM snippet 분석 (문맥 기반 판별) ──
         # 기계적 추출로만 모은 힌트를 LLM에 문맥을 보내고 필터링·보강
         llm_snippet_result = None
@@ -21139,7 +21241,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
             llm_snippet_result = self._llm_analyze_snippets(
                 post_data, key_terms, search_results, gatekeeper_result
             )
-        
+
         if llm_snippet_result:
             _snippet_category = str(llm_snippet_result.get("identified_category") or "unknown").lower().strip()
             _snippet_post_intent = str(llm_snippet_result.get("post_intent") or "").lower().strip()
@@ -22069,7 +22171,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                         f"'{_abbr}' → '{_full}'",
                         file=sys.stderr,
                     )
-            
+
             # LLM 근거 작가로 author_hints 보강
             # 🛡️ 작품명이 작가명으로 오인된 경우 차단
             # 예: "정령의 경제학"은 작품명이지 작가명이 아님
@@ -22142,7 +22244,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                         f"'{llm_author}' (본문 앵커/작가 패턴 부재)",
                         file=sys.stderr,
                     )
-                
+
                 if _is_valid_author:
                     existing_authors = {h.get("name", "") for h in hints.get("author_hints", [])}
                     if llm_author not in existing_authors:
@@ -22209,7 +22311,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                             f"'{_alias_term or _author_name}' → '{_related_title}'",
                             file=sys.stderr,
                         )
-            
+
             # ⚡ 핵심: LLM이 무관하다고 판단한 작가 를 기계적 힌트에서 제거
             irrelevant_authors = set(llm_snippet_result.get("irrelevant_authors") or [])
             if irrelevant_authors:
@@ -22220,7 +22322,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 _gk_post_type_snip = _gk_result_snip.get("post_type", "") if isinstance(_gk_result_snip, dict) else ""
                 _gk_ent_snip = (_gk_result_snip.get("detected_entities") or {}) if isinstance(_gk_result_snip, dict) else {}
                 _gk_chars_snip = _gk_ent_snip.get("possible_characters") or []
-                
+
                 if _gk_post_type_snip == "work_discussion" and len(_gk_chars_snip) >= 3:
                     print(
                         f"[{_ts()}] {self.emoji} 🛡️ irrelevant_authors 무시: "
@@ -22243,10 +22345,10 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                             f"{irrelevant_authors} ({removed}개",
                             file=sys.stderr,
                         )
-            
+
             # LLM 결과를 ctx에 저장 (Decoder가 활용)
             ctx.llm_snippet_analysis = llm_snippet_result
-            
+
             # ⚡snippet_analyzer가 비소설 매체 또는 장르 일반론으로 판단한 경우
             _NON_NOVEL_CATS = {
                 "vocaloid_song",
@@ -22259,7 +22361,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 "aa_work",
                 "non_novel",
             }
-            
+
             # 🏷️ 장르 일반론 감지: snippet_analyzer가 게시글 의도를 genre_discussion으로 판단
             _hard_genre_generalization = False
             _skip_fetch_chain_for_genre_generalization = False
@@ -22345,7 +22447,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                         ctx.update_hypothesis(_lock_title_candidate, "high", _lock_ev, 0)
                 except Exception:
                     pass
-        
+
         # 결과 로깅 정리
         # 1) 줄임 매핑에서 작가명이 abbrev로 들어간 경우 제거
         _reliable_author_sources = {"url_fetch", "url_fetch_platform", "llm_snippet", "llm_term_role", "author_bridge"}
@@ -22368,7 +22470,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
             _removed_abbr = _before_abbr - len(hints["abbreviation_hints"])
             if _removed_abbr > 0:
                 print(f"[{_ts()}] {self.emoji} ⚡작가명→줄임 매핑 제거: {_known_authors} ({_removed_abbr}개", file=sys.stderr)
-        
+
         # 2) title_hints에서 나무위키 리비번호 정리
         for th in hints.get("title_hints", []):
             t = th.get("title", "")
@@ -22538,7 +22640,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                     f"제목 미상 문맥 → resolved/alias/fetch title reinforcement 억제",
                     file=sys.stderr,
                 )
-        
+
         # 결과 로깅
         if hints["title_hints"]:
             titles_str = ", ".join(h["title"] for h in hints["title_hints"][:5])
@@ -22721,7 +22823,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 for kt in (key_terms or [])[:2]:
                     if isinstance(kt, str) and len(kt) >= 2:
                         _namu_candidates.append(kt)
-            
+
             _namu_found = False
             for _nc in _namu_candidates[:2]:
                 _namu_q = f"site:namu.wiki {_nc} 웹소설"
@@ -22764,18 +22866,18 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                         f"[{_ts()}] {self.emoji} ⚠️ namu.wiki 자동 검색 실패: {e}",
                         file=sys.stderr,
                     )
-        
+
         # ── 2단계: URL 페치 후 content 보강 + 구조정보 추출 ──
         fetch_fn = getattr(self, 'fetch_fn', None)
         fetched_info: List[Dict[str, Any]] = []
-        
+
         # 🔬 검색 결과 URL 인덱스 맵(content 보강용)
         url_to_idx: Dict[str, int] = {}
         for i, sr in enumerate(search_results):
             u = sr.get("url", "")
             if u:
                 url_to_idx[u] = i
-        
+
         # ── 2-A: 본문·댓글에서 소설 플랫폼 URL 추출 (최우선 fetch 후보) ──
         _comment_platform_urls: List[str] = []
         _self_comment_platform_urls: List[str] = []
@@ -22799,7 +22901,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
             if isinstance(_c, dict)
         ]
         _post_author = str((post_data or {}).get("author") or "").strip()
-        
+
         for _m in _url_extract_pat.finditer(_all_post_text):
             _found_url = _m.group(1).rstrip(".,;:!?)")
             _found_lower = _found_url.lower()
@@ -22891,7 +22993,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 f"{len(_self_resolution_platform_urls)}건",
                 file=sys.stderr,
             )
-        
+
         _cheap_adjacent_lane = str(getattr(ctx, "search_budget_profile", "") or "") == "adjacent_meta_cheap"
         _short_alias_bridge_fetch_lane = str(getattr(ctx, "search_budget_profile", "") or "") == "short_alias_bridge"
 
@@ -22932,7 +23034,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 f"direct URL 없음 → fetch/page_analyzer 스킵",
                 file=sys.stderr,
             )
-        
+
         def _is_fetch_candidate_url(url: str) -> bool:
             if not isinstance(url, str) or not url:
                 return False
@@ -22963,7 +23065,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
             # dcinside는 일반 경로에서는 크롤링 실패율이 높아 후보에서 제외
             # (short_alias_bridge는 별칭 브릿지 확인을 위해 제한적으로 허용)
             return False
-        
+
         # hints에서 후보가 비었더라도, 검색 결과 상위 URL에서 폴백 후보를 구성해
         # 본문 보강이 완전히 꺼지는 상황을 줄인다.
         if (
@@ -23035,7 +23137,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                     )
 
         _fetch_candidates = self._trim_fetch_candidates_for_budget(ctx, _fetch_candidates)
-        
+
         if not fetch_fn:
             print(
                 f"[{_ts()}] {self.emoji} ℹ️ URL 페치 스킵: fetch_fn 미주입",
@@ -23051,7 +23153,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
             _fetch_success = 0
             # 🏷️ URL 관련성 필터링: 줄임 매핑에서 근거한 작품과 관련된 URL 우선
             _fetch_urls = list(_fetch_candidates)
-            
+
             # 신뢰 가능한 제목 앵커 수집
             _identified_titles_for_filter = set()
             for _ah in hints.get("abbreviation_hints", []):
@@ -23114,7 +23216,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                         score += 0.5   # 블로그: 리뷰/감상 부가정보
                     elif any(p in url_lower for p in ("dcinside", "fmkorea", "ruliweb", "arca.live")):
                         score += 0.3   # 커뮤니티: 맥락 보조 정보 (이전: 0 → 자연 탈락)
-                    
+
                     # 본문·댓글에서 직접 추출된 URL은 최고 가중치
                     if url in _comment_platform_urls:
                         score += 10.0  # 댓글 직접 링크: 가장 신뢰
@@ -23252,7 +23354,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                     if result and isinstance(result, dict):
                         structured = result.get("structured_info") or {}
                         text_preview = _trimmed_preview_by_index.get(fetch_index, result.get("text") or "")
-                        
+
                         # ── BM25 기반 콘텐츠 트리밍: 긴 문서(나무위키 234K chars 등)에서 관련 부분만 추출 ──
                         _orig_len = _trim_input_lens.get(fetch_index, len(result.get("text") or ""))
                         if _orig_len > _MAX_TEXT_PREVIEW:
@@ -23261,14 +23363,14 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                                 f"{_orig_len:,}자→{len(text_preview):,}자 (query='{_query_for_trim[:40]}')",
                                 file=sys.stderr,
                             )
-                        
+
                         if structured or text_preview:
                             fetched_info.append({
                                 "url": fetch_url,
                                 "structured_info": structured,
                                 "text_preview": text_preview,  # BM25 트리밍된 텍스트
                             })
-                            
+
                             # ── Phase 34: content_status 기반 삭제/미존재 소설 감지 ──
                             _cs = structured.get("content_status", "active")
                             _is_dead_content = _cs in ("deleted", "unavailable")
@@ -23285,12 +23387,12 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                                     f"content_status={_cs}, title='{_dead_title}' ← {fetch_url[:60]}",
                                     file=sys.stderr,
                                 )
-                            
+
                             # 구조적 정보에서 추가 힌트 추출
                             # 나무위키 리비번호 정리
                             def _clean_namu_rev(t: str) -> str:
                                 return re.sub(r'\s*\(r\d+\s*\)\s*$', '', t).strip() if t else t
-                            
+
                             # Phase 34: 삭제된 콘텐츠의 제목은 title_hints에 추가하지 않음
                             _is_direct_comment_fetch = fetch_url in _comment_platform_urls
                             if not _is_dead_content:
@@ -23338,7 +23440,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                                     f"title_hints 추가 스킵 ({fetch_url[:60]})",
                                     file=sys.stderr,
                                 )
-                            
+
                             # ── 커뮤니티 게시글에서 채굴된 소설 제목 활용 ──
                             _page_type = structured.get("page_type", "")
                             if _page_type == "community_post":
@@ -23372,9 +23474,9 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                                                 and th.get("title") == _comm_page_title
                                                 and th.get("source") in ("url_fetch", "url_fetch_platform"))
                                     ]
-                            
+
                             domain = result.get("domain", "")
-                            
+
                             # 🔬 핵심: fetch 본문으로 search_results의 content 보강
                             # ── 보강 시 크기 제한: 8K 이내로 (토큰 오버플로 방지) ──
                             _MAX_ENRICHED_CONTENT = 8000
@@ -23398,7 +23500,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                                         f"{len(old_content)}자→{len(search_results[idx]['content'])}자({domain})",
                                         file=sys.stderr
                                     )
-                            
+
                             _fm = structured.get('fetch_method', 'httpx')
                             _fm_icon = '🤖' if _fm == 'crawl4ai' else '📡'
                             _src_label = 'SearXNG fallback' if result.get('fallback') else _fm
@@ -23415,7 +23517,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                             _fetch_tried_urls.add(fetch_url)
                 except Exception as e:
                     print(f"[{_ts()}] {self.emoji} ⚠️ URL 페치 실패: {fetch_url} → {e}", file=sys.stderr)
-            
+
             # ── Fallback: novel_page 결과가 없으면 추가 후보 시도 ──
             _has_novel_page = any(
                 (fi.get("structured_info") or {}).get("page_type") == "novel_page"
@@ -23460,14 +23562,14 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                                 _fetch_success += 1
                     except Exception as e:
                         print(f"[{_ts()}] {self.emoji} ⚠️ Fallback 페치 실패: {fb_url} → {e}", file=sys.stderr)
-            
+
             if _fetch_success == 0:
                 print(
                     f"[{_ts()}] {self.emoji} ℹ️ URL 페치 결과: 성공 0건 "
                     f"(후보={min(len(_fetch_urls), 4)}건 시도)",
                     file=sys.stderr,
                 )
-        
+
         # ── 2.3 LLM 기반 페이지 내용 분석: crawl4ai 본문을 LLM이 읽고 판단 ──
         # page_type이 불확실하거나 community_post인 경우,
         # LLM에게 크롤링 본문을 보여주고 실제 소설 제목/페이지 유형을 판정받는다.
@@ -23489,7 +23591,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                     f"page_analyzer 스킵",
                     file=sys.stderr,
                 )
-            
+
             if _need_llm_analysis:
                 _llm_page_results = self._llm_analyze_fetched_pages(
                     post_data, key_terms, _need_llm_analysis, gatekeeper_result
@@ -23502,7 +23604,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                         _fi_url = fi.get("url", "")
                         _analysis_source = str(analysis.get("analysis_source") or "llm").strip().lower()
                         _is_fast_path = _analysis_source == "structured_fast_path"
-                        
+
                         # LLM이 판정한 page_type으로 갱신
                         llm_page_type = analysis.get("page_type", "")
                         if llm_page_type:
@@ -23517,10 +23619,10 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                                     f"{old_pt}→{llm_page_type} ({_fi_url[:50]})",
                                     file=sys.stderr,
                                 )
-                        
+
                         # LLM이 발견한 소설 제목
                         llm_novel_title = analysis.get("novel_title", "")
-                        
+
                         # ── Phase 34: LLM이 판정한 content_status 처리 ──
                         llm_content_status = analysis.get("content_status", "")
                         if llm_content_status in ("deleted", "unavailable"):
@@ -23548,10 +23650,10 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                                 file=sys.stderr,
                             )
                             si["content_status"] = "active"
-                        
+
                         # 삭제된 콘텐츠면 title_hints 추가 스킵
                         _is_llm_dead = si.get("content_status") in ("deleted", "unavailable")
-                        
+
                         _is_direct_comment_fetch = _fi_url in _comment_platform_urls
                         if llm_novel_title and len(llm_novel_title) >= 2:
                             si["llm_identified_title"] = llm_novel_title
@@ -23586,7 +23688,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                                     f"'{llm_novel_title}' → title_hints 추가 차단 ({_fi_url[:50]})",
                                     file=sys.stderr,
                                 )
-                        
+
                         # LLM이 발견한 작가명 (삭제 콘텐츠면 스킵)
                         llm_author = analysis.get("author", "")
                         if llm_author and len(llm_author) >= 2 and not _is_llm_dead and not _is_fast_path:
@@ -23594,7 +23696,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                                 "name": llm_author,
                                 "source": "llm_page_analysis",
                             })
-                        
+
                         # LLM이 발견한 약칭 매핑 (삭제 콘텐츠면 스킵)
                         if not _is_llm_dead and not _is_fast_path:
                             for am in (analysis.get("abbreviation_mappings") or []):
@@ -23605,15 +23707,15 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                                         "source": "llm_page_analysis",
                                         "url": _fi_url,
                                     })
-                        
+
                         fi["structured_info"] = si
-        
+
         # 페치 정보를 ctx에 저장 (Decoder/Verifier가 활용)
         if fetched_info:
             if not hasattr(ctx, 'fetched_page_info'):
                 ctx.fetched_page_info = []
             ctx.fetched_page_info.extend(fetched_info)
-        
+
         # ── Phase 34: 삭제 콘텐츠 후속 정리 ──
         # 페이지 fetch/분석 결과 삭제 판정된 제목이 있으면,
         # 이전 단계(snippet 등)에서 추가된 hints에서도 해당 제목을 제거/페널티
@@ -23642,13 +23744,13 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 )
             # ctx에 삭제 제목 목록 저장 (Decoder가 참조할 수 있도록)
             ctx._deleted_titles_list = list(_dead_titles)
-        
+
         # ── 2.4 Post-fetch 심층 분석: 페치 본문에서 추가 힌트 채굴 ──
         for fi in fetched_info:
             si = fi.get("structured_info") or {}
             tp = fi.get("text_preview") or ""
             _fi_url = fi.get("url", "")
-            
+
             # (a) 캐릭터 이름 → ctx 저장
             if si.get("characters"):
                 if not hasattr(ctx, "fetched_characters"):
@@ -23656,14 +23758,14 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 for cn in si["characters"]:
                     if cn not in ctx.fetched_characters:
                         ctx.fetched_characters.append(cn)
-            
+
             # (b) 연재 상태 / 화수 → ctx 저장
             for meta_key in ("serialization_status", "episode_count", "genre"):
                 if si.get(meta_key):
                     if not hasattr(ctx, "fetched_metadata"):
                         ctx.fetched_metadata = {}
                     ctx.fetched_metadata[meta_key] = si[meta_key]
-            
+
             # (c) text_preview에서 추가 약칭 마이닝 (서버 추출 보완)
             if tp and not si.get("abbreviations") and not _limit_non_novel_expansion_ds:
                 _extra_abbr_pats = [
@@ -23689,7 +23791,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                                 file=sys.stderr,
                             )
                             break
-            
+
             # (d) 플랫폼 정보 → ctx 저장
             if si.get("platforms"):
                 if not hasattr(ctx, "fetched_platforms"):
@@ -23697,7 +23799,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 for p in si["platforms"]:
                     if p not in ctx.fetched_platforms:
                         ctx.fetched_platforms.append(p)
-        
+
         # hints를 context에 병합 (정제 + 중복 제거)
         self._merge_snippet_hints(
             ctx,
@@ -23709,7 +23811,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
         _sanitized_ctx_hints = getattr(ctx, "snippet_hints", None) or {}
         for _hk in ("title_hints", "author_hints", "abbreviation_hints"):
             hints[_hk] = list(_sanitized_ctx_hints.get(_hk) or [])
-        
+
         # ── 2.5단계: 작가 브릿지 검색 ──
         # _extract_author_bridges 가 삼단논법으로 발견한 작가를 활용해 보충 검색
         # 예: "즉사무림작가 정령의 경제학" + "정령의 경제학 작가: 오늘도요"
@@ -23826,7 +23928,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                         f"[{_ts()}] {self.emoji} ⚠️ 브릿지 검색 실패: {bq} → {e}",
                         file=sys.stderr,
                     )
-        
+
         # ── 3단계: 작가명으로 2차 검색 수행 ──
         # ⚠️ 줄임 매핑의 정식 제목과 같은 snippet에서 발견된 작가만 검색(무관 작가 방지)
         # 예: "즉사무림" → "즉사기하고 무림에 떨어졌다" 매핑 등
@@ -23872,7 +23974,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                     f"[{_ts()}] {self.emoji} ⚡Deep Search 확장 스킵: {_suppress_reason}",
                     file=sys.stderr,
                 )
-        
+
         if hints["author_hints"] and self.search_fn and not _suppress_aggressive:
             # key_term/본문과 연결된 매핑만 신뢰 앵커로 사용
             _mapped_titles = set()
@@ -23955,7 +24057,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                         "purpose": "author_works_search",
                         "priority": 1,
                     })
-                    ctx.searched_queries.add(q)        
+                    ctx.searched_queries.add(q)
         # ── 4단계: 은어 활용 쿼리 ──
         # key_terms 중 해석되지 않은 은어에 대해 "뜻" "정식명칭" 검색
         # ⚠️ 일반 동사/형용어 불변 명사는 은어가 아니므로 스킵
@@ -23993,7 +24095,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
             for _ch in (llm_snippet_result.get("relevant_characters") or []):
                 if isinstance(_ch, str):
                     _gk_characters_for_abbrev.add(_re.sub(r'[^\uac00-\ud7a3]', '', _ch))
-        
+
         if self.search_fn and not _suppress_aggressive:
             for term in key_terms[:3]:
                 if not isinstance(term, str):
@@ -24033,7 +24135,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                         file=sys.stderr,
                     )
                     continue
-                
+
                 q_meaning = f"{term_clean} 줄임"
                 if q_meaning not in ctx.searched_queries:
                     additional_searches.append({
@@ -24042,7 +24144,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                         "priority": 2,
                     })
                     ctx.searched_queries.add(q_meaning)
-                
+
                 q_fullname = f"{term_clean} 뜻 정식명칭"
                 if q_fullname not in ctx.searched_queries:
                     additional_searches.append({
@@ -24070,7 +24172,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                                     "priority": 1,
                                 })
                                 ctx.searched_queries.add(_bq)
-        
+
         # 추가 검색 수행
         if additional_searches:
             print(
@@ -24084,7 +24186,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                     f"[{_ts()}] {self.emoji} 🔬 Deep Search 결과 {added}개추가",
                     file=sys.stderr
                 )
-                
+
                 # 새 결과에서도 힌트 재추출
                 new_hints = self._extract_hints_from_snippets(new_results, key_terms)
                 self._merge_snippet_hints(
@@ -24093,12 +24195,14 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                     key_terms,
                     post_data=post_data,
                 )
-    
+
     def _execute_searches(
         self,
         requests: List[Dict[str, Any]],
         post_id: int,
         ctx: Optional[ConversationContext] = None,
+        *,
+        initial_typed_title_only: bool = False,
     ) -> List[Dict[str, Any]]:
         """검색 수행 (URL 기반 중복 제거 + 우선순위 재정렬 + content 축소)"""
         if not self.search_fn:
@@ -24150,9 +24254,15 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                 gatekeeper_result=_gatekeeper_for_execute,
                 phase="execute_searches",
             )
+            if initial_typed_title_only:
+                requests = self._clamp_typed_image_work_title_initial_search_requests(
+                    ctx_ref,
+                    requests,
+                    phase="execute_searches",
+                )
         if not requests:
             return []
-        
+
         all_results = []
         seen_urls = set()  # URL 중복 체크
         seen_urls_norm = set()  # 정규화된 URL 중복 체크
@@ -25921,7 +26031,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
         finally:
             if _search_executor is not None:
                 _search_executor.shutdown(wait=True)
-        
+
         # 우선순위 재정렬적용
         if all_results:
             all_results = self._prioritize_search_results(all_results)
@@ -26015,7 +26125,7 @@ Gatekeeper 추정 캐릭터: {gk_chars}
                             print(f"[{_eid}] {_title[:90]} | {_url[:180]}", file=sys.stderr)
                         else:
                             print(f"[{_eid}] {_title[:90]}", file=sys.stderr)
-        
+
         if (
             ctx_ref is not None
             and _candidate_search_plan_inputs

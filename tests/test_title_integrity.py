@@ -6,7 +6,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from llm_batch.title_integrity import (  # noqa: E402
+from llm_batch.domain.title_integrity import (  # noqa: E402
     exact_title_integrity_match,
     parse_title_integrity_parts,
 )

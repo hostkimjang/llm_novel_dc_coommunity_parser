@@ -4,7 +4,7 @@ import copy
 from dataclasses import replace
 import unittest
 
-from src.llm_batch.candidate_generation import (
+from src.llm_batch.grounding.candidate_generation import (
     build_candidate_generation_proof,
     build_candidate_generation_snapshot,
     build_candidate_producer_plan,
@@ -12,7 +12,7 @@ from src.llm_batch.candidate_generation import (
     build_candidate_stage_receipt,
     build_title_candidate_generation_snapshot,
 )
-from src.llm_batch.candidate_set_shadow import (
+from src.llm_batch.grounding.candidate_set_shadow import (
     NIL_LABEL,
     PROBABILITY_STATUS,
     CandidateSet,
@@ -25,7 +25,7 @@ from src.llm_batch.candidate_set_shadow import (
     selective_shadow_from_identity,
     unavailable_shadow_payload,
 )
-from src.llm_batch.candidate_audit import apply_candidate_audit_fields
+from src.llm_batch.grounding.candidate_audit import apply_candidate_audit_fields
 from src.llm_batch.promotion_gate import (
     EvidenceRecord,
     GroundingState,

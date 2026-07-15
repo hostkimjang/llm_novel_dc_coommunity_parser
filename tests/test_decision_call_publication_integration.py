@@ -6,10 +6,10 @@ import tempfile
 import unittest
 from unittest import mock
 
-from src.llm_batch.decision_call_events import DecisionCallLedgerRegistry
-from src.llm_batch.decision_tracing_llm import DecisionTracingLLMClient
+from src.llm_batch.ledger.decision_call_events import DecisionCallLedgerRegistry
+from src.llm_batch.ledger.decision_tracing_llm import DecisionTracingLLMClient
 from src.llm_batch.llm.client import LLMClient
-from src.llm_batch.publication_commit import (
+from src.llm_batch.ledger.publication_commit import (
     PublicationCommitRegistry,
     commit_publication_result,
     compute_publication_decision_commit,

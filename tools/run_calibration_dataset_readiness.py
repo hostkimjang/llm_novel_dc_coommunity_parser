@@ -14,12 +14,12 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from src.llm_batch.calibration_dataset_readiness import (  # noqa: E402
+from src.llm_batch.grounding.calibration_dataset_readiness import (  # noqa: E402
     build_dataset_readiness,
     validate_dataset_readiness_against_sources,
     validate_dataset_readiness_manifest,
 )
-from src.llm_batch.candidate_set_calibration_shadow import (  # noqa: E402
+from src.llm_batch.grounding.candidate_set_calibration_shadow import (  # noqa: E402
     CalibrationEvaluationPolicy,
 )
 from tools.run_candidate_set_nil_shadow_harness import (  # noqa: E402
