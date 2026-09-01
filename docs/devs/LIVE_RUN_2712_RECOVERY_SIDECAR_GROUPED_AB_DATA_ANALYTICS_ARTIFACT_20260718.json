@@ -1,0 +1,400 @@
+{
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "동결 2,712행 Recovery Sidecar 실제 묶음 검증",
+    "description": "기존 공개 결과를 보존한 review-only recovery 구조의 32행 3회 BEFORE/AFTER exact-pair 검증",
+    "generatedAt": "2026-07-18T02:55:23+09:00",
+    "blocks": [
+      {
+        "id": "title",
+        "type": "markdown",
+        "body": "# 동결 2,712행 Recovery Sidecar 실제 묶음 검증"
+      },
+      {
+        "id": "summary",
+        "type": "markdown",
+        "body": "## 결론\n\n공개 WAL 비간섭과 192개 receipt coverage는 GO지만 자동 activation은 NO-GO다. 동일 release의 양 arm에서 source 정답 대비 반복 회귀 2행이 발생했고 search, router, call measurement도 green이 아니다. AFTER sidecar는 fresh에서 SKIPPED되어 arm 차이를 인과 효과로 해석하지 않는다."
+      },
+      {
+        "id": "headline_block",
+        "type": "metric-strip",
+        "cardIds": [
+          "runtime_card",
+          "receipt_card",
+          "regression_card",
+          "activation_card"
+        ]
+      },
+      {
+        "id": "gate_heading",
+        "type": "markdown",
+        "body": "## 게이트 상태"
+      },
+      {
+        "id": "gate_table_block",
+        "type": "table",
+        "tableId": "gate_table"
+      },
+      {
+        "id": "metric_heading",
+        "type": "markdown",
+        "body": "## 반복 합의 지표"
+      },
+      {
+        "id": "metric_chart_block",
+        "type": "chart",
+        "chartId": "metric_chart"
+      },
+      {
+        "id": "metric_table_block",
+        "type": "table",
+        "tableId": "metric_table"
+      },
+      {
+        "id": "case_heading",
+        "type": "markdown",
+        "body": "## 개선·회귀·변동성 사례"
+      },
+      {
+        "id": "case_table_block",
+        "type": "table",
+        "tableId": "case_table"
+      },
+      {
+        "id": "recovery_heading",
+        "type": "markdown",
+        "body": "## Review-only 포착"
+      },
+      {
+        "id": "recovery_table_block",
+        "type": "table",
+        "tableId": "recovery_table"
+      },
+      {
+        "id": "observability_heading",
+        "type": "markdown",
+        "body": "## Search·router·비용"
+      },
+      {
+        "id": "observability_table_block",
+        "type": "table",
+        "tableId": "observability_table"
+      },
+      {
+        "id": "next_steps",
+        "type": "markdown",
+        "body": "## 다음 조치\n\n계측 전용 release를 먼저 분리하고, direct OCR selector는 official-detail·canonical work ID·primary/current relation·single-work·non-media 조건을 모두 만족하는 review event에만 shadow로 적용한다. 반복 회귀 0, 신규 unsafe/wrong-title 0, provenance 100%, search/router/measurement green 전에는 P1/P2와 자동 공개를 열지 않는다."
+      },
+      {
+        "id": "caveats",
+        "type": "markdown",
+        "body": "## 주의사항\n\n이 결과는 동결 2,712행 전수 LLM 재실행이 아니라 위험·정상 cross-family 32행의 3회 반복이다. 2,712행은 persisted contract replay와 offline sidecar reconciliation으로 검증했다. Calls/tokens는 actual KPI가 아니라 observational partial이며 full_scan_approval=false다."
+      }
+    ],
+    "cards": [
+      {
+        "id": "runtime_card",
+        "dataset": "headline",
+        "sourceId": "grouped_analysis",
+        "metrics": [
+          {
+            "label": "Runtime GO arm",
+            "field": "runtime_go_arms",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "receipt_card",
+        "dataset": "headline",
+        "sourceId": "grouped_analysis",
+        "metrics": [
+          {
+            "label": "Validated receipts",
+            "field": "validated_receipts",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "regression_card",
+        "dataset": "headline",
+        "sourceId": "grouped_analysis",
+        "metrics": [
+          {
+            "label": "반복 source 회귀",
+            "field": "recurrent_regression_posts",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "activation_card",
+        "dataset": "headline",
+        "sourceId": "grouped_analysis",
+        "metrics": [
+          {
+            "label": "자동 activation",
+            "field": "automatic_activation_enabled",
+            "format": "number"
+          }
+        ]
+      }
+    ],
+    "charts": [
+      {
+        "id": "metric_chart",
+        "title": "반복 합의 품질 지표",
+        "subtitle": "AFTER 우세는 sidecar 인과 효과가 아니라 기술적 관측으로만 해석",
+        "type": "bar",
+        "dataset": "quality_chart",
+        "sourceId": "grouped_analysis",
+        "options": {
+          "orientation": "vertical",
+          "grouping": "grouped"
+        },
+        "encodings": {
+          "x": {
+            "field": "metric",
+            "type": "nominal",
+            "label": "지표"
+          },
+          "y": {
+            "field": "posts",
+            "type": "quantitative",
+            "label": "post 수",
+            "format": "number"
+          },
+          "color": {
+            "field": "arm",
+            "type": "nominal",
+            "label": "arm"
+          },
+          "tooltip": [
+            {
+              "field": "metric",
+              "type": "nominal"
+            },
+            {
+              "field": "arm",
+              "type": "nominal"
+            },
+            {
+              "field": "posts",
+              "type": "quantitative",
+              "format": "number"
+            }
+          ]
+        }
+      }
+    ],
+    "tables": [
+      {
+        "id": "gate_table",
+        "title": "승인 게이트",
+        "dataset": "gates",
+        "sourceId": "grouped_analysis",
+        "defaultSort": {
+          "field": "rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {"field": "rank", "label": "순서", "type": "number", "format": "number"},
+          {"field": "gate", "label": "게이트", "type": "text"},
+          {"field": "status", "label": "상태", "type": "text"},
+          {"field": "evidence", "label": "근거", "type": "text"}
+        ]
+      },
+      {
+        "id": "metric_table",
+        "title": "BEFORE/AFTER 반복 지표",
+        "dataset": "quality_metrics",
+        "sourceId": "grouped_analysis",
+        "defaultSort": {
+          "field": "rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {"field": "rank", "label": "순서", "type": "number", "format": "number"},
+          {"field": "metric", "label": "지표", "type": "text"},
+          {"field": "before", "label": "BEFORE", "type": "text"},
+          {"field": "after", "label": "AFTER", "type": "text"},
+          {"field": "interpretation", "label": "해석", "type": "text"}
+        ]
+      },
+      {
+        "id": "case_table",
+        "title": "핵심 post_id 전이",
+        "dataset": "cases",
+        "sourceId": "grouped_transitions",
+        "defaultSort": {
+          "field": "rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {"field": "rank", "label": "순서", "type": "number", "format": "number"},
+          {"field": "post_id", "label": "post_id", "type": "text"},
+          {"field": "expected", "label": "동결 정답", "type": "text"},
+          {"field": "before", "label": "BEFORE 3회", "type": "text"},
+          {"field": "after", "label": "AFTER 3회", "type": "text"},
+          {"field": "decision", "label": "판정", "type": "text"}
+        ]
+      },
+      {
+        "id": "recovery_table",
+        "title": "2,712행 review-only reconciliation",
+        "dataset": "recovery_metrics",
+        "sourceId": "frozen_reconciliation",
+        "defaultSort": {
+          "field": "rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {"field": "rank", "label": "순서", "type": "number", "format": "number"},
+          {"field": "metric", "label": "항목", "type": "text"},
+          {"field": "value", "label": "결과", "type": "text"},
+          {"field": "meaning", "label": "의미", "type": "text"}
+        ]
+      },
+      {
+        "id": "observability_table",
+        "title": "관측성 지표",
+        "dataset": "observability",
+        "sourceId": "grouped_analysis",
+        "defaultSort": {
+          "field": "rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {"field": "rank", "label": "순서", "type": "number", "format": "number"},
+          {"field": "metric", "label": "항목", "type": "text"},
+          {"field": "before", "label": "BEFORE", "type": "text"},
+          {"field": "after", "label": "AFTER", "type": "text"},
+          {"field": "status", "label": "상태", "type": "text"}
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "id": "grouped_analysis",
+        "label": "32행 exact repeated analysis",
+        "path": "/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260717/fresh_cross_family_recovery_sidecar_ab_v2/grouped_analysis/report.json",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_json_auto('/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260717/fresh_cross_family_recovery_sidecar_ab_v2/grouped_analysis/report.json')",
+          "description": "validated receipt 기반 32행·양 arm 각 3회 exact consensus summary",
+          "tables_used": ["/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260717/fresh_cross_family_recovery_sidecar_ab_v2/grouped_analysis/report.json"],
+          "filters": ["32 unique post_id", "BEFORE/OFF 3회", "AFTER/AUDIT_ONLY 요청 3회", "public_apply=false"],
+          "metric_definitions": ["반복 회귀=source 정답 행의 3회 majority가 frozen adjudication noncompliant", "unsafe majority=3회 중 2회 이상 정본과 다른 제목을 공개"]
+        }
+      },
+      {
+        "id": "grouped_transitions",
+        "label": "post_id transitions",
+        "path": "/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260717/fresh_cross_family_recovery_sidecar_ab_v2/grouped_analysis/transitions.jsonl",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_json_auto('/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260717/fresh_cross_family_recovery_sidecar_ab_v2/grouped_analysis/transitions.jsonl', format='newline_delimited')",
+          "description": "post_id exact 행별 source·BEFORE·AFTER 3회 projection 전이",
+          "tables_used": ["/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260717/fresh_cross_family_recovery_sidecar_ab_v2/grouped_analysis/transitions.jsonl"]
+        }
+      },
+      {
+        "id": "run_summary",
+        "label": "6-arm runner summary",
+        "path": "/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260717/fresh_cross_family_recovery_sidecar_ab_v2/run_summary.json",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_json_auto('/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260717/fresh_cross_family_recovery_sidecar_ab_v2/run_summary.json')",
+          "description": "6개 arm runtime·measurement·noninterference gate summary",
+          "tables_used": ["/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260717/fresh_cross_family_recovery_sidecar_ab_v2/run_summary.json"]
+        }
+      },
+      {
+        "id": "frozen_reconciliation",
+        "label": "2,712 review-only reconciliation",
+        "path": "/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260717/recovery_sidecar_v2_frozen2712_atomic_key_final/recovery_activation_reconciliation_summary.json",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "sql": "SELECT * FROM read_json_auto('/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260717/recovery_sidecar_v2_frozen2712_atomic_key_final/recovery_activation_reconciliation_summary.json')",
+          "description": "동결 2,712 checkpoint의 append-only review proposal reconciliation",
+          "tables_used": ["/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260717/recovery_sidecar_v2_frozen2712_atomic_key_final/recovery_activation_reconciliation_summary.json"],
+          "filters": ["frozen ledger exact 2,712 post_id", "public_apply=false", "network_used=false"]
+        }
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "status": "ready",
+    "generatedAt": "2026-07-18T02:55:23+09:00",
+    "datasets": {
+      "headline": [
+        {
+          "runtime_go_arms": 6,
+          "validated_receipts": 192,
+          "recurrent_regression_posts": 2,
+          "automatic_activation_enabled": 0
+        }
+      ],
+      "gates": [
+        {"rank": 1, "gate": "Runtime completion", "status": "GO", "evidence": "6/6 arm, 각 32/32, failure 0"},
+        {"rank": 2, "gate": "Public WAL noninterference", "status": "GO", "evidence": "실제 WAL 재해시: event 32→32, SHA 불변, public_apply=false"},
+        {"rank": 3, "gate": "2,712 persisted replay", "status": "GO", "evidence": "projection/fingerprint/reason/normal regression 0"},
+        {"rank": 4, "gate": "Semantic auto activation", "status": "NO-GO", "evidence": "source 정답 대비 반복 회귀 2행"},
+        {"rank": 5, "gate": "Call measurement", "status": "NO-GO", "evidence": "6/6 actual KPI NOT_ESTIMABLE"},
+        {"rank": 6, "gate": "Search health", "status": "NO-GO", "evidence": "각 arm degraded 61/96, unknown 16/96"},
+        {"rank": 7, "gate": "Review router", "status": "NO-GO", "evidence": "각 arm unknown 96/96"},
+        {"rank": 8, "gate": "Full scan", "status": "REVIEW-LOCKED", "evidence": "full_scan_approval=false"}
+      ],
+      "quality_chart": [
+        {"metric": "반복 source 회귀", "arm": "BEFORE", "posts": 2},
+        {"metric": "반복 source 회귀", "arm": "AFTER", "posts": 2},
+        {"metric": "신규 unsafe majority", "arm": "BEFORE", "posts": 1},
+        {"metric": "신규 unsafe majority", "arm": "AFTER", "posts": 0},
+        {"metric": "정답 recovery majority", "arm": "BEFORE", "posts": 0},
+        {"metric": "정답 recovery majority", "arm": "AFTER", "posts": 0},
+        {"metric": "PASS retention majority", "arm": "BEFORE", "posts": 0},
+        {"metric": "PASS retention majority", "arm": "AFTER", "posts": 1},
+        {"metric": "HOLD integrity majority", "arm": "BEFORE", "posts": 5},
+        {"metric": "HOLD integrity majority", "arm": "AFTER", "posts": 5}
+      ],
+      "quality_metrics": [
+        {"rank": 1, "metric": "source 정답→반복 비정상", "before": "2", "after": "2", "interpretation": "양 arm 동일 2행; 자동 승격 차단"},
+        {"rank": 2, "metric": "unsafe any/exact/majority", "before": "1 / 2 / 1", "after": "1 / 1 / 0", "interpretation": "AFTER 우세를 인과로 해석하지 않음"},
+        {"rank": 3, "metric": "FN recovery any/exact/majority", "before": "1 / 1 / 0", "after": "1 / 1 / 0", "interpretation": "majority recovery 없음"},
+        {"rank": 4, "metric": "PASS retention any/exact/majority", "before": "1 / 1 / 0", "after": "1 / 2 / 1", "interpretation": "11718120 stochastic 개선"},
+        {"rank": 5, "metric": "FP publish", "before": "0 / 0 / 0", "after": "0 / 0 / 0", "interpretation": "FP 3행 전 회차 HOLD"},
+        {"rank": 6, "metric": "HOLD integrity exact/majority", "before": "15 / 5", "after": "15 / 5", "interpretation": "HOLD 대조군 보존"},
+        {"rank": 7, "metric": "WRONG_WORK 미회복 exact/majority", "before": "9 / 3", "after": "9 / 3", "interpretation": "CORRECT 필요 3행 미회복"},
+        {"rank": 8, "metric": "동결 정본 majority compliance", "before": "16/32", "after": "17/32", "interpretation": "절대 품질 activation 기준 미달"}
+      ],
+      "cases": [
+        {"rank": 1, "post_id": "11718120", "expected": "괴담 호텔 탈출기", "before": "HOLD / 정답 / HOLD", "after": "정답 / 정답 / HOLD", "decision": "1/3→2/3, stochastic 개선 보류"},
+        {"rank": 2, "post_id": "11718097", "expected": "망겜의 힐러", "before": "정답 / HOLD / HOLD", "after": "HOLD / 정답 / HOLD", "decision": "양 arm 1/3, 반복 회귀"},
+        {"rank": 3, "post_id": "11716480", "expected": "여대생 가랑이 사이 무릎 꿇은 엄마들", "before": "오타1 / 오타2 / HOLD", "after": "HOLD / 오타1 / HOLD", "decision": "정확 회복 0/3, wrong-title 변동"}
+      ],
+      "recovery_metrics": [
+        {"rank": 1, "metric": "Exact coverage", "value": "2,712/2,712", "meaning": "동결 정본 전수"},
+        {"rank": 2, "metric": "Review events / posts", "value": "68 / 67", "meaning": "공개 적용 없는 후보 포착"},
+        {"rank": 3, "metric": "FN_TITLE_MISSING events", "value": "48/339", "meaning": "주요 recall 후보"},
+        {"rank": 4, "metric": "PASS extra review", "value": "0/230", "meaning": "PASS 비침범"},
+        {"rank": 5, "metric": "Provenance", "value": "68/68, 100%", "meaning": "append-only exact binding"},
+        {"rank": 6, "metric": "Replay new events", "value": "0", "meaning": "멱등성 확인"},
+        {"rank": 7, "metric": "public_apply=true", "value": "0", "meaning": "자동 공개 없음"}
+      ],
+      "observability": [
+        {"rank": 1, "metric": "Search status", "before": "degraded 61 / ok 19 / unknown 16", "after": "degraded 61 / ok 19 / unknown 16", "status": "NO-GO"},
+        {"rank": 2, "metric": "Router", "before": "unknown 96/96", "after": "unknown 96/96", "status": "NOT_ESTIMABLE"},
+        {"rank": 3, "metric": "Run wall time", "before": "3,519.2s", "after": "4,513.6s", "status": "관측치"},
+        {"rank": 4, "metric": "Expert calls", "before": "897", "after": "912", "status": "observational_partial"},
+        {"rank": 5, "metric": "Total tokens", "before": "7,834,692", "after": "8,601,017", "status": "observational_partial"}
+      ]
+    }
+  }
+}

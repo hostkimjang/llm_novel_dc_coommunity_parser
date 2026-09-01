@@ -1,0 +1,27 @@
+{
+  "ok": true,
+  "html": "/home/kimjang/llm_novel_dc_coommunity_parser/docs/devs/LIVE_RUN_2712_REMAINING_IMPROVEMENTS_BEFORE_SHADOW_AFTER_REPORT_20260718_KO.html",
+  "stages": {
+    "validation": "passed",
+    "package": "passed",
+    "verification": "structural_only"
+  },
+  "browserWarning": {
+    "code": "browser_unavailable",
+    "message": "packaged Chromium headless-shell executable was unavailable; ordinary Google Chrome did not satisfy the verifier chart-extraction environment"
+  },
+  "counts": {
+    "blocks": 19,
+    "charts": 3,
+    "html": 0,
+    "metrics": 4,
+    "tables": 3
+  },
+  "sourceDialog": "not_verified",
+  "sourceInteraction": "not_verified",
+  "viewports": [],
+  "artifact_sha256": "5b4057330c479e3d4d42d4bfa57b4facc7eea4d7a8d45a115be7fff87d9ea704",
+  "html_sha256": "d4c8a6916c41639005e6612e152e10dee921e2a8354480027029550bef5c8fb1",
+  "paired_sha256": "ab4d5552326b2d95deb8468840c36e08b5b82a6129b7bcea200d10936628a4df",
+  "notebook_sha256": "2e8d32d0a40913e7589a801d4eb4e1cc537d4d02149bf9f605cd405d025f9d83"
+}

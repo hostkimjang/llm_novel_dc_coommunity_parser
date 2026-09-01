@@ -1,0 +1,428 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "2,712행 개선 아키텍처 전문가 회의 보고서",
+    "description": "현재 개선 효과, 한계, 아키텍처 위험과 기존 정답 보존 우선의 다음 연구 방향",
+    "generatedAt": "2026-07-19T00:40:00+09:00",
+    "blocks": [
+      {
+        "id": "title",
+        "type": "markdown",
+        "body": "# 2,712행 개선 아키텍처 전문가 회의 보고서"
+      },
+      {
+        "id": "technical_summary",
+        "type": "markdown",
+        "body": "## 기술 요약\n\n**현재 구조는 공개 정답을 지키는 쪽으로 크게 개선됐지만, 의미 오류를 실제로 고치는 단계는 아직 NO-GO다.** 2,712행 exact replay에서 공개 decision/stable/public projection drift는 0이고 모든 새 계층은 `public_apply=false`였다. 반면 32행×3회 AFTER는 실제 recovery 적용군이 아닌 fresh shadow이며 measurement는 4/6 arm만 GO다. 따라서 majority compliance 17→18과 correct-title majority 0→1은 긍정 신호지만 인과효과가 아니다.\n\n**다음 선택은 in-place 의미 gate 추가가 아니라 동작 불변 finalizer 분리다.** `PublicationFinalizer`와 공통 immutable `ObservationEnvelope`를 먼저 도입하고, public WAL 복사본에만 가상 action을 적용하는 simulator에서 P1 효과를 측정해야 한다. 자동 recovery, P2 188건 early route, `full_scan_approval=true`는 계속 금지한다."
+      },
+      {
+        "id": "headline_metrics",
+        "type": "metric-strip",
+        "cardIds": [
+          "public_drift_card",
+          "measurement_card",
+          "router_card",
+          "activation_card"
+        ]
+      },
+      {
+        "id": "architecture_heading",
+        "type": "markdown",
+        "body": "## 공개 writer와 관측 sidecar가 분리된 현재 구조\n\n`입력 → AgenticPipeline/검색·전문가 → Arbiter → typed promotion gate → expert_main finalization`이 기본 경로다. Normal mode만 exact-once public WAL을 쓰며, fresh observation·review router·P1 plan·OCR recovery는 모두 non-writer다. 이 경계가 현재 가장 강한 안전 속성이다."
+      },
+      {
+        "id": "architecture_table_block",
+        "type": "table",
+        "tableId": "architecture_table"
+      },
+      {
+        "id": "improvement_heading",
+        "type": "markdown",
+        "body": "## 실제 개선과 미미·실패를 분리해야 한다\n\n무결성·관측 가능성은 검증된 개선이다. 의미 품질은 일부 신호만 좋아졌고 WRONG_WORK·PASS retention·검색·계측은 release gate를 닫고 있다. 서로 다른 분모의 지표는 합산하거나 평균내지 않았다."
+      },
+      {
+        "id": "improvement_table_block",
+        "type": "table",
+        "tableId": "improvement_table"
+      },
+      {
+        "id": "router_chart_heading",
+        "type": "markdown",
+        "body": "## Router는 위험 recall과 정상 false-review가 동시에 부족하다\n\n위험군 막대는 높을수록 좋고, 정상군 막대는 낮을수록 좋다. cohort가 중첩되므로 막대를 합산하지 않는다. 이 차트는 review queue 정책의 범위만 보여주며 공개 결과 변경 효과를 뜻하지 않는다."
+      },
+      {
+        "id": "router_chart_block",
+        "type": "chart",
+        "chartId": "router_chart"
+      },
+      {
+        "id": "gate_heading",
+        "type": "markdown",
+        "body": "## 현재 GO는 비간섭에 한정되고 자동 의미 개선은 NO-GO다\n\nRuntime completion, measurement, search health, semantic quality, P2, full scan을 독립 판정했다. 한 gate의 GO는 다른 gate를 승격하지 않는다."
+      },
+      {
+        "id": "gate_table_block",
+        "type": "table",
+        "tableId": "gate_table"
+      },
+      {
+        "id": "limits_heading",
+        "type": "markdown",
+        "body": "## 가장 큰 한계는 효과가 아니라 결합과 provenance다\n\n`_commit_final_result`의 순서 결합, sidecar별 상이한 source view, 불완전 row measurement, producer lineage divergence가 다음 변경의 회귀 반경을 키운다. title/post/alias별 예외는 이 문제를 해결하지 못한다."
+      },
+      {
+        "id": "limits_table_block",
+        "type": "table",
+        "tableId": "limits_table"
+      },
+      {
+        "id": "alternatives_heading",
+        "type": "markdown",
+        "body": "## 권고안은 additive finalizer·envelope·simulator다\n\n세 대안을 비교했다. 기존 public bytes와 decision hash를 golden fixture로 고정한 뒤 orchestration seam만 추출하는 안이 기존 정답 보존과 후속 실험 가능성을 가장 잘 균형 잡는다."
+      },
+      {
+        "id": "alternatives_table_block",
+        "type": "table",
+        "tableId": "alternatives_table"
+      },
+      {
+        "id": "roadmap_heading",
+        "type": "markdown",
+        "body": "## P0는 동작 불변, P1은 가상 적용, P2만 제한 canary다\n\n각 단계는 별도 rollback boundary를 갖는다. deterministic gate는 한 번의 실패도 hard failure이며, stochastic semantic 결과는 최소 3회 반복 consensus·any-run·variance를 함께 본다."
+      },
+      {
+        "id": "roadmap_table_block",
+        "type": "table",
+        "tableId": "roadmap_table"
+      },
+      {
+        "id": "experts_heading",
+        "type": "markdown",
+        "body": "## 전문가 회의는 모듈 PASS와 시스템 NO-GO를 함께 확인했다\n\nOpus의 PASS는 P1 contract에 한정된다. Terra·Luna의 system-level NO-GO와 모순되지 않는다. exact GPT-5.6 Sol + Pro의 과거 2,590행 답변은 복구됐고 verdict/dashboard/evidence 축 분리와 full-scope 과장 금지를 보조 의견으로 사용했다. 현재 2,712 architecture task는 bundle과 함께 정확히 한 번 제출했으나 transport/recovery 문제로 새 답변을 확보하지 못해 대안 합의에는 계수하지 않았다."
+      },
+      {
+        "id": "experts_table_block",
+        "type": "table",
+        "tableId": "experts_table"
+      },
+      {
+        "id": "actions_heading",
+        "type": "markdown",
+        "body": "## 우선순위는 계측·lineage·simulation 뒤 의미 적용이다\n\n비용이나 속도부터 최적화하지 않는다. 먼저 모든 row가 authoritative receipt에 연결되고, search provenance와 simulator 효과가 반복 검증돼야 한다."
+      },
+      {
+        "id": "actions_table_block",
+        "type": "table",
+        "tableId": "actions_table"
+      },
+      {
+        "id": "uncertainty",
+        "type": "markdown",
+        "body": "## 남은 불확실성\n\n1. fresh shadow 변화 중 실제 코드 변화와 LLM stochastic variance가 차지하는 비중을 아직 분리하지 못했다.\n2. persisted recovery sidecar 68 events/67 posts와 current extractor 79/78의 producer lineage 차이가 어떤 cohort를 바꾸는지 미해결이다.\n3. typed media·previous·comparison evidence coverage가 거의 없거나 0이라 P1의 일부 정책은 실데이터 효과를 측정하지 못했다.\n\n**최종 판정:** `runtime/comparability/public noninterference=GO`, `measurement/search/router/semantic activation/P2=NO-GO`, `full_scan_approval=false`."
+      }
+    ],
+    "cards": [
+      {
+        "id": "public_drift_card",
+        "dataset": "headline",
+        "sourceId": "validation_source",
+        "description": "2,712 deterministic replay의 decision/stable/projection drift",
+        "metrics": [
+          {"label": "public drift", "field": "public_drift", "format": "number"}
+        ]
+      },
+      {
+        "id": "measurement_card",
+        "dataset": "headline",
+        "sourceId": "grouped_source",
+        "description": "6개 grouped arm 중 measurement GO",
+        "metrics": [
+          {"label": "measurement GO arms", "field": "measurement_go_arms", "format": "number"},
+          {"label": "total arms", "field": "measurement_total_arms", "format": "number"}
+        ]
+      },
+      {
+        "id": "router_card",
+        "dataset": "headline",
+        "sourceId": "router_source",
+        "description": "2,712 high-risk union review recall",
+        "metrics": [
+          {"label": "router recall", "field": "router_recall_pct", "format": "number", "unit": "%"}
+        ]
+      },
+      {
+        "id": "activation_card",
+        "dataset": "headline",
+        "sourceId": "validation_source",
+        "description": "0=false; 자동 semantic activation 금지",
+        "metrics": [
+          {"label": "semantic auto activation", "field": "semantic_activation_numeric", "format": "number"}
+        ]
+      }
+    ],
+    "charts": [
+      {
+        "id": "router_chart",
+        "title": "2,712행 review-router cohort 비율",
+        "subtitle": "위험군=recall, 정상군=false-review; 분자는 routed rows, 분모는 cohort rows",
+        "type": "bar",
+        "dataset": "router_rates",
+        "sourceId": "router_source",
+        "options": {"orientation": "vertical", "grouping": "grouped"},
+        "encodings": {
+          "x": {"field": "cohort", "type": "nominal", "label": "cohort"},
+          "y": {"field": "rate_pct", "type": "quantitative", "label": "비율(%)", "format": "number"},
+          "color": {"field": "kind", "type": "nominal", "label": "해석"},
+          "tooltip": [
+            {"field": "numerator", "type": "quantitative", "format": "number"},
+            {"field": "denominator", "type": "quantitative", "format": "number"},
+            {"field": "rate_pct", "type": "quantitative", "format": "number"}
+          ]
+        }
+      }
+    ],
+    "tables": [
+      {
+        "id": "architecture_table",
+        "title": "현재 authoritative path와 sidecar",
+        "subtitle": "공개 쓰기 권한과 관측 범위를 분리",
+        "dataset": "architecture",
+        "sourceId": "architecture_source",
+        "defaultSort": {"field": "order", "direction": "asc"},
+        "columns": [
+          {"field": "order", "label": "순서", "type": "number", "format": "number"},
+          {"field": "component", "label": "구성요소", "type": "text"},
+          {"field": "authority", "label": "권한", "type": "text"},
+          {"field": "output", "label": "산출물", "type": "text"},
+          {"field": "safety", "label": "안전 계약", "type": "text"}
+        ]
+      },
+      {
+        "id": "improvement_table",
+        "title": "개선 결과 분류",
+        "subtitle": "검증된 개선·미미한 신호·실패/미입증·신규 위험",
+        "dataset": "improvements",
+        "sourceId": "synthesis_source",
+        "defaultSort": {"field": "rank", "direction": "asc"},
+        "columns": [
+          {"field": "rank", "label": "순서", "type": "number", "format": "number"},
+          {"field": "class", "label": "분류", "type": "text"},
+          {"field": "item", "label": "항목", "type": "text"},
+          {"field": "evidence", "label": "BEFORE/AFTER 근거", "type": "text"},
+          {"field": "verdict", "label": "판정", "type": "text"}
+        ]
+      },
+      {
+        "id": "gate_table",
+        "title": "독립 release gate",
+        "subtitle": "2026-07-19 현재 상태",
+        "dataset": "gates",
+        "sourceId": "validation_source",
+        "defaultSort": {"field": "rank", "direction": "asc"},
+        "columns": [
+          {"field": "rank", "label": "순서", "type": "number", "format": "number"},
+          {"field": "gate", "label": "게이트", "type": "text"},
+          {"field": "status", "label": "상태", "type": "text"},
+          {"field": "evidence", "label": "근거", "type": "text"},
+          {"field": "next", "label": "다음 통과 조건", "type": "text"}
+        ]
+      },
+      {
+        "id": "limits_table",
+        "title": "현재 구조 한계와 신규 버그·위험",
+        "subtitle": "기존 정답을 흔들 수 있는 결합과 측정 공백",
+        "dataset": "limits",
+        "sourceId": "synthesis_source",
+        "defaultSort": {"field": "rank", "direction": "asc"},
+        "columns": [
+          {"field": "rank", "label": "순서", "type": "number", "format": "number"},
+          {"field": "severity", "label": "심각도", "type": "text"},
+          {"field": "risk", "label": "위험", "type": "text"},
+          {"field": "evidence", "label": "근거", "type": "text"},
+          {"field": "impact", "label": "영향", "type": "text"}
+        ]
+      },
+      {
+        "id": "alternatives_table",
+        "title": "아키텍처 대안 비교",
+        "subtitle": "기존 정답 보존을 최우선으로 비교",
+        "dataset": "alternatives",
+        "sourceId": "council_source",
+        "defaultSort": {"field": "rank", "direction": "asc"},
+        "columns": [
+          {"field": "rank", "label": "우선순위", "type": "number", "format": "number"},
+          {"field": "option", "label": "대안", "type": "text"},
+          {"field": "preservation", "label": "정답 보존", "type": "text"},
+          {"field": "benefit", "label": "장점", "type": "text"},
+          {"field": "tradeoff", "label": "비용·위험", "type": "text"},
+          {"field": "decision", "label": "결정", "type": "text"}
+        ]
+      },
+      {
+        "id": "roadmap_table",
+        "title": "단계별 연구·구현·rollback boundary",
+        "subtitle": "P0 동작 불변 → P1 simulated intervention → P2 188 canary",
+        "dataset": "roadmap",
+        "sourceId": "synthesis_source",
+        "defaultSort": {"field": "rank", "direction": "asc"},
+        "columns": [
+          {"field": "rank", "label": "순서", "type": "number", "format": "number"},
+          {"field": "phase", "label": "단계", "type": "text"},
+          {"field": "work", "label": "작업", "type": "text"},
+          {"field": "rollback", "label": "rollback boundary", "type": "text"},
+          {"field": "go", "label": "GO 조건", "type": "text"}
+        ]
+      },
+      {
+        "id": "experts_table",
+        "title": "전문가 회의 의견과 적용 범위",
+        "subtitle": "실제 모델·추론과 의견의 증거 범위",
+        "dataset": "experts",
+        "sourceId": "council_source",
+        "defaultSort": {"field": "rank", "direction": "asc"},
+        "columns": [
+          {"field": "rank", "label": "순서", "type": "number", "format": "number"},
+          {"field": "role", "label": "역할", "type": "text"},
+          {"field": "model", "label": "실제 모델", "type": "text"},
+          {"field": "scope", "label": "검토 범위", "type": "text"},
+          {"field": "verdict", "label": "판정", "type": "text"}
+        ]
+      },
+      {
+        "id": "actions_table",
+        "title": "우선순위 Top 10",
+        "subtitle": "기존 정답 보호 기준의 실행 순서",
+        "dataset": "actions",
+        "sourceId": "synthesis_source",
+        "defaultSort": {"field": "priority", "direction": "asc"},
+        "columns": [
+          {"field": "priority", "label": "우선순위", "type": "number", "format": "number"},
+          {"field": "action", "label": "작업", "type": "text"},
+          {"field": "reason", "label": "이유", "type": "text"},
+          {"field": "gate", "label": "완료 게이트", "type": "text"}
+        ]
+      }
+    ],
+    "sources": [
+      {"id": "validation_source", "label": "2,712 남은 개선 검증", "path": "docs/devs/LIVE_RUN_2712_REMAINING_IMPROVEMENTS_BEFORE_SHADOW_AFTER_VALIDATION_20260718_KO.md", "query": {"engine": "sqlite", "language": "sql", "sql": "SELECT * FROM source_rows", "description": "검증 문서에서 보고서용 gate rows를 materialize", "tables_used": ["validation markdown"], "filters": ["2026-07-18 verified evidence only"], "metric_definitions": ["GO/NO-GO gates remain independent"]}},
+      {"id": "grouped_source", "label": "32행×3회 grouped analysis", "path": "out/regression_safe_2712_remaining_improvements_20260718/release_candidate_grouped_ab_v1/grouped_analysis/report.json", "query": {"engine": "sqlite", "language": "sql", "sql": "SELECT * FROM source_rows", "description": "grouped report의 exact paired metrics를 materialize", "tables_used": ["report.json"], "filters": ["32 rows", "BEFORE/SHADOW-AFTER", "3 repeats"], "metric_definitions": ["majority=2-of-3", "any-run=at least one run", "cost=observational_partial when measurement NO_GO"]}},
+      {"id": "router_source", "label": "2,712 review-router replay", "path": "out/regression_safe_2712_remaining_improvements_20260718/semantic_review_router_frozen2712_replay/summary.json", "query": {"engine": "sqlite", "language": "sql", "sql": "SELECT * FROM source_rows", "description": "router cohort numerator/denominator rows를 materialize", "tables_used": ["summary.json", "rows.jsonl"], "filters": ["exact post_id join", "frozen labels joined after receipt production"], "metric_definitions": ["risk recall=routed high-risk/cohort", "false-review=routed normal/cohort"]}},
+      {"id": "plan_source", "label": "2,712 P1 plan replay", "path": "out/regression_safe_2712_remaining_improvements_20260718/semantic_recovery_plan_frozen2712_replay/summary.json", "query": {"engine": "sqlite", "language": "sql", "sql": "SELECT * FROM source_rows", "description": "P1 plan-only rows를 materialize", "tables_used": ["summary.json", "rows.jsonl"], "filters": ["exact post_id join"], "metric_definitions": ["HOLD is advisory plan, not public action"]}},
+      {"id": "architecture_source", "label": "현재 아키텍처와 authoritative code seams", "path": "docs/ARCHITECTURE.md", "description": "docs/devs/SOURCE_LAYOUT_KO.md, expert_main.py, publication_commit.py, recovery_activation.py, promotion_gate.py, measurement sidecars를 함께 검토", "query": {"engine": "sqlite", "language": "sql", "sql": "SELECT * FROM source_rows", "description": "검토한 architecture/code inventory를 구성요소 rows로 materialize", "tables_used": ["docs/ARCHITECTURE.md", "docs/devs/SOURCE_LAYOUT_KO.md", "expert_main.py", "src/llm_batch/ledger/publication_commit.py"], "filters": ["authoritative active path only"], "metric_definitions": ["writer=may mutate public WAL", "sidecar=public_apply false"]}},
+      {"id": "council_source", "label": "전문가 회의록", "path": "docs/devs/ARCHITECTURE_IMPROVEMENT_EXPERT_COUNCIL_MINUTES_20260719_KO.md", "query": {"engine": "sqlite", "language": "sql", "sql": "SELECT * FROM source_rows", "description": "전문가별 실제 모델·범위·판정을 rows로 materialize", "tables_used": ["expert council minutes"], "filters": ["verified agent outputs only", "unrecovered Pro answer excluded"], "metric_definitions": ["module PASS does not imply system GO"]}},
+      {"id": "synthesis_source", "label": "검증·회의 통합 근거", "path": "docs/devs/ARCHITECTURE_IMPROVEMENT_EXPERT_COUNCIL_MINUTES_20260719_KO.md", "description": "검증 문서, grouped report, router/P1 replay와 로컬 코드 교차검증을 통합", "query": {"engine": "sqlite", "language": "sql", "sql": "SELECT * FROM source_rows", "description": "교차검증된 synthesis rows를 materialize", "tables_used": ["expert council minutes", "validation markdown", "grouped report.json"], "filters": ["causal overclaim excluded", "cohort denominators kept separate"], "metric_definitions": ["verified=deterministic or source-backed", "descriptive=non-causal repeated observation"]}}
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "status": "ready",
+    "generatedAt": "2026-07-19T00:40:00+09:00",
+    "datasets": {
+      "headline": [
+        {"public_drift": 0, "measurement_go_arms": 4, "measurement_total_arms": 6, "router_recall_pct": 53.0, "semantic_activation_numeric": 0}
+      ],
+      "architecture": [
+        {"order": 1, "component": "AgenticPipeline·검색·전문가", "authority": "evidence 생성", "output": "후보·관계·검색·OCR evidence", "safety": "여기서 public commit하지 않음"},
+        {"order": 2, "component": "Arbiter + promotion_gate", "authority": "typed publication decision", "output": "outcome·publish_allowed·projection", "safety": "fail-close blocker"},
+        {"order": 3, "component": "expert_main._commit_final_result", "authority": "orchestration", "output": "preview·receipt attach·invariance checks", "safety": "attach 전후 decision/stable/projection 재검증"},
+        {"order": 4, "component": "PublicationCommitRegistry", "authority": "유일한 public writer", "output": "scope/post/index exact-once fsync WAL", "safety": "CAS·authoritative first normal decision"},
+        {"order": 5, "component": "fresh semantic observation", "authority": "관측 전용", "output": "authoritative↔observed drift receipt", "safety": "pre-existing WAL 전수 reference·public WAL non-write"},
+        {"order": 6, "component": "semantic_review_router", "authority": "REVIEW_ONLY", "output": "review queue receipt", "safety": "public_apply=false·typed whitelist"},
+        {"order": 7, "component": "semantic_recovery_plan", "authority": "PLAN_ONLY", "output": "relation/media/canonical/HOLD/query 계획", "safety": "search/network 0·public_apply=false"},
+        {"order": 8, "component": "RecoveryActivationRegistry", "authority": "AUDIT_ONLY", "output": "Direct OCR proposal sidecar", "safety": "HMAC/hash chain·base commit 결속·public_apply=false"}
+      ],
+      "improvements": [
+        {"rank": 1, "class": "검증된 개선", "item": "공개 비간섭·deterministic replay", "evidence": "2,712/2,712; public decision/stable/projection drift 0; public_apply=true 0", "verdict": "GO"},
+        {"rank": 2, "class": "검증된 개선", "item": "measurement int-key·stage 연결", "evidence": "단건 canary linked/sealed 1/1; broad replay mismatch 0", "verdict": "M0 prerequisite GO"},
+        {"rank": 3, "class": "검증된 개선", "item": "search no-query 분류", "evidence": "complete zero counters만 NOT_APPLICABLE; grouped UNKNOWN 0", "verdict": "schema GO, quality NO-GO"},
+        {"rank": 4, "class": "검증된 개선", "item": "review/router/P1/OCR/shadow sidecar", "evidence": "receipt 2,712/2,712; stable/public drift 0; calls 0; explicit modes", "verdict": "관측 무결성 GO"},
+        {"rank": 5, "class": "미미한 신호", "item": "grouped majority compliance", "evidence": "17/32→18/32", "verdict": "descriptive only"},
+        {"rank": 6, "class": "미미한 신호", "item": "correct-title recovery", "evidence": "majority 0/11→1/11", "verdict": "descriptive only"},
+        {"rank": 7, "class": "미미한 신호", "item": "grouped router false-review", "evidence": "normal 9/30→6/30; high-risk recall 49/66 동일", "verdict": "여전히 NO-GO"},
+        {"rank": 8, "class": "실패·미입증", "item": "WRONG_WORK correction", "evidence": "3/3→3/3 unrecovered", "verdict": "실패"},
+        {"rank": 9, "class": "실패·미입증", "item": "PASS retention", "evidence": "1/2→1/2; AFTER any-run 2/2", "verdict": "불완전"},
+        {"rank": 10, "class": "실패·미입증", "item": "unsafe publish 안정성", "evidence": "any-run 2→3; majority unsafe 0→0; recurrent new unsafe/wrong-title 0/0", "verdict": "단일 악화만으로 rollback하지 않지만 activation 금지"},
+        {"rank": 11, "class": "실패·미입증", "item": "비용·벽시계 효과", "evidence": "calls 932→883, tokens 8.35M→8.45M, wall 3645.8s→3467.5s; measurement 4/6", "verdict": "NOT_ESTIMABLE"},
+        {"rank": 12, "class": "신규 위험", "item": "producer lineage divergence", "evidence": "persisted sidecar 68 events/67 posts vs current extractor 79/78", "verdict": "baseline 승격 금지"}
+      ],
+      "router_rates": [
+        {"cohort": "고위험 union", "kind": "risk recall", "numerator": 462, "denominator": 872, "rate_pct": 53.0},
+        {"cohort": "공개 개입 35", "kind": "risk recall", "numerator": 21, "denominator": 35, "rate_pct": 60.0},
+        {"cohort": "FN title missing", "kind": "risk recall", "numerator": 247, "denominator": 339, "rate_pct": 72.9},
+        {"cohort": "FP non-novel", "kind": "risk recall", "numerator": 50, "denominator": 72, "rate_pct": 69.4},
+        {"cohort": "WRONG_WORK", "kind": "risk recall", "numerator": 33, "denominator": 36, "rate_pct": 91.7},
+        {"cohort": "multiwork", "kind": "risk recall", "numerator": 45, "denominator": 91, "rate_pct": 49.5},
+        {"cohort": "PASS", "kind": "collateral false-review", "numerator": 42, "denominator": 230, "rate_pct": 18.3},
+        {"cohort": "정상 no-title", "kind": "collateral false-review", "numerator": 187, "denominator": 1580, "rate_pct": 11.8},
+        {"cohort": "초저위험", "kind": "collateral false-review", "numerator": 3, "denominator": 188, "rate_pct": 1.6}
+      ],
+      "gates": [
+        {"rank": 1, "gate": "runtime/comparability", "status": "GO", "evidence": "6/6 runtime·noninterference; exact 32×2×3", "next": "유지"},
+        {"rank": 2, "gate": "public noninterference", "status": "GO", "evidence": "WAL hash/event/config 불변; drift 0", "next": "모든 다음 단계 zero tolerance"},
+        {"rank": 3, "gate": "measurement", "status": "NO-GO", "evidence": "4/6 arm GO; 각 1 unlinked/estimated row", "next": "6/6·192/192 sealed+linked+actual usage readback"},
+        {"rank": 4, "gate": "search health", "status": "NO-GO", "evidence": "AFTER degraded 51/96, N/A 15/96, ok 30/96", "next": "unknown 0 유지·degraded 원인/복구/공개 fail-close 기준 고정"},
+        {"rank": 5, "gate": "review router", "status": "NO-GO", "evidence": "2,712 high-risk recall 53.0%; PASS false-review 18.3%", "next": "critical recall·collateral threshold 사전 고정 후 충족"},
+        {"rank": 6, "gate": "P1 semantic effectiveness", "status": "NO-GO", "evidence": "PLAN_ONLY; HOLD 883; 실제 intervention 없음", "next": "simulated intervention에서 반복 효과·회귀 검증"},
+        {"rank": 7, "gate": "P2 188 early route", "status": "NOT RUN", "evidence": "measurement/search/router 미충족", "next": "모든 의미·계측 hard gate green 뒤 제한 canary"},
+        {"rank": 8, "gate": "semantic auto activation", "status": "NO-GO", "evidence": "WRONG_WORK·PASS·unsafe any-run·variance 미해결", "next": "recurrent hard regression 0·PASS/HOLD 100%·wrong-work 반복 회복"},
+        {"rank": 9, "gate": "full_scan_approval", "status": "false", "evidence": "targeted 32×3과 offline replay만 존재", "next": "독립 full-scope semantic review 이후 별도 심사"}
+      ],
+      "limits": [
+        {"rank": 1, "severity": "High", "risk": "_commit_final_result orchestration concentration", "evidence": "publication·measurement·router·P1·shadow·recovery·batch learning 순서가 한 closure에 결합", "impact": "sidecar 추가가 stable hash·WAL·late mutation 회귀로 번질 수 있음"},
+        {"rank": 2, "severity": "High", "risk": "공통 semantic provenance 부재", "evidence": "router/P1/recovery가 서로 다른 whitelist/source view로 동일 결과 재해석", "impact": "판단 불일치와 lineage drift를 한 이벤트 그래프로 설명 불가"},
+        {"rank": 3, "severity": "High", "risk": "AFTER가 intervention arm이 아님", "evidence": "FRESH SHADOW-AFTER, recovery key/reconciliation 의도적 생략", "impact": "관측 변화의 인과 원인 증명 불가"},
+        {"rank": 4, "severity": "High", "risk": "measurement row linkage 결함", "evidence": "repeat1 BEFORE·repeat2 AFTER 각 31/32 linked", "impact": "calls/tokens/wall KPI가 NOT_ESTIMABLE"},
+        {"rank": 5, "severity": "High", "risk": "search degradation 집중", "evidence": "AFTER 51/96 rows SEARCH_DEGRADED", "impact": "증거 부족과 모델 의미 오류를 분리하기 어려움"},
+        {"rank": 6, "severity": "Medium", "risk": "attempt-local allowlist 분산", "evidence": "publication_commit stable view와 expert_main attach 순서에 key 계약 분산", "impact": "새 meta 누락이 decision equivalence를 바꿀 수 있음"},
+        {"rank": 7, "severity": "Medium", "risk": "P1 action taxonomy 부재", "evidence": "router REVIEW_REQUIRED와 P1 HOLD 우선순위가 별도", "impact": "과잉 queue/HOLD 원인 추적이 어려움"},
+        {"rank": 8, "severity": "Medium", "risk": "query_execution_allowed 명명", "evidence": "실제 calls 0인데 receipt가 실행 권한처럼 보일 수 있음", "impact": "후속 executor가 plan을 authority로 오해할 위험"},
+        {"rank": 9, "severity": "Medium", "risk": "관계·media evidence coverage 공백", "evidence": "previous 0, comparison 0, typed media action 0", "impact": "정책 구현은 PASS여도 실효성 측정 불가"},
+        {"rank": 10, "severity": "Low", "risk": "정본 아키텍처 문서 지연", "evidence": "docs/ARCHITECTURE.md가 2026-07-18 sidecar/fresh observation 층을 충분히 반영하지 않음", "impact": "운영자가 writer/non-writer 경계를 오해할 수 있음"}
+      ],
+      "alternatives": [
+        {"rank": 1, "option": "PublicationFinalizer + ObservationEnvelope + simulator", "preservation": "최상", "benefit": "기존 WAL bytes/decision schema를 고정하면서 결합·lineage·인과 측정 개선", "tradeoff": "초기 golden fixture·adapter 작업 필요", "decision": "권고"},
+        {"rank": 2, "option": "현재 구조에 sidecar/gate 계속 추가", "preservation": "단기 높음·장기 낮음", "benefit": "작은 diff와 빠른 실험", "tradeoff": "attach 순서·allowlist·late override 결합 누적", "decision": "P0 이후 제한"},
+        {"rank": 3, "option": "새 Semantic Decision Service로 전면 재작성", "preservation": "낮음", "benefit": "장기적으로 단일 source/provenance와 명확한 API", "tradeoff": "migration 반경·정답 흔들림·dual-run 비용이 큼", "decision": "지금은 보류"}
+      ],
+      "roadmap": [
+        {"rank": 1, "phase": "P0-A", "work": "PublicationFinalizer 동작 불변 추출", "rollback": "새 class 호출 seam만 되돌림; 기존 _commit_final_result 유지", "go": "golden WAL bytes·decision_id·stable/public projection exact equivalence"},
+        {"rank": 2, "phase": "P0-B", "work": "immutable ObservationEnvelope·SidecarReceipt protocol", "rollback": "adapter 제거; 기존 receipt schema 보존", "go": "router/P1/recovery/shadow exact join 100%; producer divergence 0"},
+        {"rank": 3, "phase": "P0-C", "work": "원자적 ROW_SEAL·external ledger link·actual usage readback", "rollback": "measurement writer 경계만 복귀", "go": "6/6 arm, 192/192 linked/sealed, estimated 0"},
+        {"rank": 4, "phase": "P1-A", "work": "public WAL copy 전용 shadow intervention simulator", "rollback": "simulator OFF; public writer capability 없음", "go": "source/arm exact pairing·public WAL 변화 0·simulated receipt 100%"},
+        {"rank": 5, "phase": "P1-B", "work": "Direct OCR·WRONG_WORK·multiwork·media·canonical family 반복", "rollback": "family별 independent feature flag", "go": "unsafe/wrong-title recurrent 0; PASS/HOLD retention 100%; correct-title 반복 개선"},
+        {"rank": 6, "phase": "P1-C", "work": "search provenance·cache/singleflight 최적화", "rollback": "cache bypass; 동일 evidence packet 유지", "go": "unknown 0; degraded fail-close; cost receipt actual/paired"},
+        {"rank": 7, "phase": "P2", "work": "초저위험 188건 제한 canary", "rollback": "early route OFF 즉시 복귀", "go": "모든 P0/P1 gate green·hard regression 0·dashboard ON·parallel 16"}
+      ],
+      "experts": [
+        {"rank": 1, "role": "아키텍처 진화", "model": "gpt-5.6-terra/high", "scope": "현재 전체 finalization·sidecar 구조", "verdict": "system NO-GO; finalizer/envelope/simulator 권고"},
+        {"rank": 2, "role": "의미 품질·정답 보존", "model": "Claude Opus 4.8/high", "scope": "P1 plan module·contract·12 tests", "verdict": "모듈 조건부 PASS; 전체 효과 승인 아님"},
+        {"rank": 3, "role": "계측·검색·운영", "model": "gpt-5.6-luna/max", "scope": "2,712 replay·32×3·measurement/search/cost", "verdict": "integrity GO; measurement/search/activation NO-GO"},
+        {"rank": 4, "role": "shadow 설계 선행 검토", "model": "gpt-5.6-sol/ultra", "scope": "과거 strict fresh seam", "verdict": "observation mode 권고가 현 소스에 구현됨"},
+        {"rank": 5, "role": "독립 Pro", "model": "GPT-5.6 Sol + Pro", "scope": "과거 2,590 답변 복구·현재 task 1회 제출/복구", "verdict": "과거 축 분리 의견만 보조 사용; 현재 답변 미확보"}
+      ],
+      "actions": [
+        {"priority": 1, "action": "모든 row measurement seal/link 결함 제거", "reason": "비용·속도·호출 KPI의 전제", "gate": "6/6, 192/192, estimated 0"},
+        {"priority": 2, "action": "PublicationFinalizer byte-equivalent 추출", "reason": "현재 최대 결합 seam 축소", "gate": "WAL/decision/stable/projection exact"},
+        {"priority": 3, "action": "공통 ObservationEnvelope 도입", "reason": "sidecar source lineage 통일", "gate": "exact join 100%, source hash 동일"},
+        {"priority": 4, "action": "68→79 recovery producer divergence reconciliation", "reason": "baseline·효과 분모 안정화", "gate": "producer divergence 0 또는 명시 migration"},
+        {"priority": 5, "action": "StablePublicationView schema-versioning", "reason": "attempt-local allowlist 누락 위험 제거", "gate": "새 meta가 stable hash를 바꾸지 않는 contract test"},
+        {"priority": 6, "action": "ActionTaxonomy와 signed execution capability 분리", "reason": "REVIEW/HOLD/QUERY 계획과 권한 혼동 방지", "gate": "plan만으로 search/public writer 호출 불가"},
+        {"priority": 7, "action": "shadow intervention simulator 구현", "reason": "실제 적용 없이 인과 arm 생성", "gate": "public WAL/config/event 변화 0"},
+        {"priority": 8, "action": "위험 family + 정상 collateral 3회 이상 반복", "reason": "stochastic 단일 결과 과적합 방지", "gate": "recurrent hard regression 0·variance envelope 충족"},
+        {"priority": 9, "action": "search provenance·cache 비용 최적화", "reason": "증거 동일성을 유지한 비용 절감", "gate": "quality noninferiority + actual paired cost"},
+        {"priority": 10, "action": "모든 gate green 뒤 188 P2 canary", "reason": "early route의 공개 위험 제한", "gate": "dashboard ON·parallel 16·full_scan 별도 false 유지"}
+      ]
+    }
+  },
+  "sources": [
+    {"id": "validation_source", "label": "2,712 남은 개선 검증", "path": "docs/devs/LIVE_RUN_2712_REMAINING_IMPROVEMENTS_BEFORE_SHADOW_AFTER_VALIDATION_20260718_KO.md", "query": {"engine": "sqlite", "language": "sql", "sql": "SELECT * FROM source_rows", "description": "검증 문서에서 보고서용 gate rows를 materialize", "tables_used": ["validation markdown"], "filters": ["2026-07-18 verified evidence only"], "metric_definitions": ["GO/NO-GO gates remain independent"]}},
+    {"id": "grouped_source", "label": "32행×3회 grouped analysis", "path": "out/regression_safe_2712_remaining_improvements_20260718/release_candidate_grouped_ab_v1/grouped_analysis/report.json", "query": {"engine": "sqlite", "language": "sql", "sql": "SELECT * FROM source_rows", "description": "grouped report의 exact paired metrics를 materialize", "tables_used": ["report.json"], "filters": ["32 rows", "BEFORE/SHADOW-AFTER", "3 repeats"], "metric_definitions": ["majority=2-of-3", "any-run=at least one run", "cost=observational_partial when measurement NO_GO"]}},
+    {"id": "router_source", "label": "2,712 review-router replay", "path": "out/regression_safe_2712_remaining_improvements_20260718/semantic_review_router_frozen2712_replay/summary.json", "query": {"engine": "sqlite", "language": "sql", "sql": "SELECT * FROM source_rows", "description": "router cohort numerator/denominator rows를 materialize", "tables_used": ["summary.json", "rows.jsonl"], "filters": ["exact post_id join", "frozen labels joined after receipt production"], "metric_definitions": ["risk recall=routed high-risk/cohort", "false-review=routed normal/cohort"]}},
+    {"id": "plan_source", "label": "2,712 P1 plan replay", "path": "out/regression_safe_2712_remaining_improvements_20260718/semantic_recovery_plan_frozen2712_replay/summary.json", "query": {"engine": "sqlite", "language": "sql", "sql": "SELECT * FROM source_rows", "description": "P1 plan-only rows를 materialize", "tables_used": ["summary.json", "rows.jsonl"], "filters": ["exact post_id join"], "metric_definitions": ["HOLD is advisory plan, not public action"]}},
+    {"id": "architecture_source", "label": "현재 아키텍처와 authoritative code seams", "path": "docs/ARCHITECTURE.md", "description": "docs/devs/SOURCE_LAYOUT_KO.md, expert_main.py, publication_commit.py, recovery_activation.py, promotion_gate.py, measurement sidecars를 함께 검토", "query": {"engine": "sqlite", "language": "sql", "sql": "SELECT * FROM source_rows", "description": "검토한 architecture/code inventory를 구성요소 rows로 materialize", "tables_used": ["docs/ARCHITECTURE.md", "docs/devs/SOURCE_LAYOUT_KO.md", "expert_main.py", "src/llm_batch/ledger/publication_commit.py"], "filters": ["authoritative active path only"], "metric_definitions": ["writer=may mutate public WAL", "sidecar=public_apply false"]}},
+    {"id": "council_source", "label": "전문가 회의록", "path": "docs/devs/ARCHITECTURE_IMPROVEMENT_EXPERT_COUNCIL_MINUTES_20260719_KO.md", "query": {"engine": "sqlite", "language": "sql", "sql": "SELECT * FROM source_rows", "description": "전문가별 실제 모델·범위·판정을 rows로 materialize", "tables_used": ["expert council minutes"], "filters": ["verified agent outputs only", "unrecovered Pro answer excluded"], "metric_definitions": ["module PASS does not imply system GO"]}},
+    {"id": "synthesis_source", "label": "검증·회의 통합 근거", "path": "docs/devs/ARCHITECTURE_IMPROVEMENT_EXPERT_COUNCIL_MINUTES_20260719_KO.md", "description": "검증 문서, grouped report, router/P1 replay와 로컬 코드 교차검증을 통합", "query": {"engine": "sqlite", "language": "sql", "sql": "SELECT * FROM source_rows", "description": "교차검증된 synthesis rows를 materialize", "tables_used": ["expert council minutes", "validation markdown", "grouped report.json"], "filters": ["causal overclaim excluded", "cohort denominators kept separate"], "metric_definitions": ["verified=deterministic or source-backed", "descriptive=non-causal repeated observation"]}}
+  ]
+}

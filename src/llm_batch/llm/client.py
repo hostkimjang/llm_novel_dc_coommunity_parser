@@ -4,7 +4,9 @@ import base64
 import hashlib
 import json
 import os
+import queue
 import select
+import socket
 import sys
 import threading
 import time
@@ -875,6 +877,66 @@ class LLMClient:
         
         # ── 반복 루프 다계층 방어 ──
         loop_detected = False
+        # vLLM의 provider-reported usage는 보통 마지막 SSE 이벤트에만 실린다.
+        # 의미 출력을 동결한 뒤 곧바로 소켓을 닫으면 그 마지막 이벤트를 놓쳐
+        # ESTIMATED로 강등된다. 반환 텍스트는 그대로 동결한 채 usage만 읽는
+        # drain-only 상태를 별도로 둔다.
+        _usage_drain_active = False
+        _usage_drain_complete = False
+        _usage_drain_reason: Optional[str] = None
+        _usage_drain_started_at: Optional[float] = None
+        _usage_drain_last_progress_at: Optional[float] = None
+        _stream_options = stream_body.get("stream_options")
+        _include_usage_requested = bool(
+            isinstance(_stream_options, dict) and _stream_options.get("include_usage")
+        )
+        _hard_cap_usage_drain_env = os.getenv("LLM_DRAIN_USAGE_AFTER_HARD_CAP")
+        if _hard_cap_usage_drain_env is None:
+            _hard_cap_usage_drain_enabled = _include_usage_requested
+        else:
+            _hard_cap_usage_drain_enabled = (
+                _include_usage_requested
+                and _hard_cap_usage_drain_env.strip().lower() in {"1", "true", "yes", "on"}
+            )
+        # 반복 감지 early-stop은 기본 enabled이지만, include_usage를 요청하지 않은
+        # 제공자에는 drain을 시작하지 않는다. 명시적인 0은 kill switch다.
+        _early_stop_usage_drain_env = os.getenv("LLM_DRAIN_USAGE_AFTER_EARLY_STOP")
+        if _early_stop_usage_drain_env is None:
+            _early_stop_usage_drain_enabled = _include_usage_requested
+        else:
+            _early_stop_usage_drain_enabled = (
+                _include_usage_requested
+                and _early_stop_usage_drain_env.strip().lower() in {"1", "true", "yes", "on"}
+            )
+        _usage_drain_capture_finish_reason = False
+
+        def _begin_usage_drain(
+            reason: str,
+            *,
+            enabled: bool,
+            capture_finish_reason: bool = False,
+        ) -> None:
+            nonlocal loop_detected, _usage_drain_active, _usage_drain_reason
+            nonlocal _usage_drain_started_at
+            nonlocal _usage_drain_last_progress_at
+            nonlocal _usage_drain_capture_finish_reason
+            loop_detected = True
+            if not enabled:
+                return
+            _usage_drain_active = True
+            _usage_drain_reason = reason
+            _usage_drain_capture_finish_reason = capture_finish_reason
+            _usage_drain_started_at = _time.monotonic()
+            _usage_drain_last_progress_at = _usage_drain_started_at
+            ts_drain = self._timestamp()
+            print(
+                f"\n[{ts_drain}][llm-stream] ℹ️ {tag} 의미 출력 동결 후 provider usage drain 시작 "
+                f"(reason={_usage_drain_reason}, "
+                f"signal_idle_limit={_USAGE_DRAIN_SIGNAL_IDLE_TIMEOUT_S:.2f}s, "
+                f"absolute_limit={_USAGE_DRAIN_MAX_SECONDS:.2f}s)",
+                file=sys.stderr,
+                flush=True,
+            )
         try:
             _ACC_HARD_CAP = int(os.getenv("LLM_ACC_HARD_CAP", "131000"))
         except (ValueError, TypeError):
@@ -926,6 +988,14 @@ class LLMClient:
         _STREAM_FIRST_TOKEN_TIMEOUT_S = _stream_timeout_env("LLM_STREAM_FIRST_TOKEN_TIMEOUT_SECONDS")
         _STREAM_IDLE_TIMEOUT_S = _stream_timeout_env("LLM_STREAM_IDLE_TIMEOUT_SECONDS")
         _STREAM_SIGNAL_IDLE_TIMEOUT_S = _stream_timeout_env("LLM_STREAM_SIGNAL_IDLE_TIMEOUT_SECONDS")
+        _USAGE_DRAIN_SIGNAL_IDLE_TIMEOUT_S = (
+            _stream_timeout_env("LLM_USAGE_DRAIN_SIGNAL_IDLE_TIMEOUT_SECONDS")
+            or 30.0
+        )
+        _USAGE_DRAIN_MAX_SECONDS = (
+            _stream_timeout_env("LLM_USAGE_DRAIN_MAX_SECONDS")
+            or 60.0
+        )
         if _STREAM_SIGNAL_IDLE_TIMEOUT_S is None:
             _STREAM_SIGNAL_IDLE_TIMEOUT_S = _STREAM_IDLE_TIMEOUT_S
         _stream_read_timeout_candidates = [
@@ -956,18 +1026,233 @@ class LLMClient:
                     flush=True,
                 )
         
+        _usage_drain_queue: Optional[queue.Queue[tuple[str, Any]]] = None
+        _usage_drain_stop_event = threading.Event()
+        _usage_drain_thread: Optional[threading.Thread] = None
+        _usage_drain_usage_seen = False
+        _usage_drain_cleanup_status = "NOT_ATTEMPTED"
+
+        class _UsageDrainStreamContext:
+            """하드캡 뒤 response close 소유권을 drain reader에 넘기는 래퍼."""
+
+            def __init__(self, inner: Any) -> None:
+                self._inner = inner
+                self._lock = threading.Lock()
+                self._delegated = False
+                self._closed = False
+
+            def __enter__(self) -> Any:
+                return self._inner.__enter__()
+
+            def delegate_close(self) -> None:
+                with self._lock:
+                    if not self._closed:
+                        self._delegated = True
+
+            def close_from_drain(self) -> None:
+                with self._lock:
+                    if self._closed:
+                        return
+                    self._closed = True
+                try:
+                    self._inner.__exit__(None, None, None)
+                except Exception as exc:
+                    ts_close = self_outer._timestamp()
+                    print(
+                        f"\n[{ts_close}][llm-warn] {tag} provider usage drain "
+                        f"response close 실패: {type(exc).__name__}: {exc}",
+                        file=sys.stderr,
+                        flush=True,
+                    )
+
+            def __exit__(self, exc_type: Any, exc: Any, tb: Any) -> bool:
+                with self._lock:
+                    if self._delegated or self._closed:
+                        return False
+                    self._closed = True
+                return bool(self._inner.__exit__(exc_type, exc, tb))
+
+        self_outer = self
+        _stream_context: Optional[_UsageDrainStreamContext] = None
+
         try:
             # httpx streaming with iter_text() for better SSE handling
-            with httpx.stream("POST", url, json=stream_body, timeout=_stream_timeout) as response:
+            _stream_context = _UsageDrainStreamContext(
+                httpx.stream("POST", url, json=stream_body, timeout=_stream_timeout)
+            )
+            with _stream_context as response:
                 response.raise_for_status()
+
+                def _abort_usage_drain_transport() -> None:
+                    """response lock을 거치지 않고 blocked recv를 깨우는 bounded cleanup."""
+                    nonlocal _usage_drain_cleanup_status
+                    try:
+                        extensions = getattr(response, "extensions", {})
+                        network_stream = (
+                            extensions.get("network_stream")
+                            if isinstance(extensions, dict)
+                            else None
+                        )
+                        raw_socket = None
+                        get_extra_info = getattr(network_stream, "get_extra_info", None)
+                        if callable(get_extra_info):
+                            raw_socket = get_extra_info("socket")
+                        if raw_socket is not None and hasattr(raw_socket, "shutdown"):
+                            raw_socket.shutdown(socket.SHUT_RDWR)
+                            _usage_drain_cleanup_status = "RAW_SOCKET_SHUTDOWN"
+                        elif network_stream is not None and callable(
+                            getattr(network_stream, "close", None)
+                        ):
+                            network_stream.close()
+                            _usage_drain_cleanup_status = "NETWORK_STREAM_CLOSE"
+                        else:
+                            _usage_drain_cleanup_status = "TRANSPORT_HANDLE_UNAVAILABLE"
+                    except Exception as exc:
+                        _usage_drain_cleanup_status = (
+                            f"TRANSPORT_ABORT_FAILED:{type(exc).__name__}"
+                        )
+                    ts_abort = self._timestamp()
+                    print(
+                        f"\n[{ts_abort}][llm-stream] ℹ️ {tag} provider usage drain "
+                        f"bounded transport cleanup={_usage_drain_cleanup_status}",
+                        file=sys.stderr,
+                        flush=True,
+                    )
                 
                 # SSE 버퍼: 줄 단위로 누적
                 buffer = ""
-                for text_chunk in response.iter_text():
-                    if loop_detected:
+                _stream_text_iterator = iter(response.iter_text())
+
+                def _enqueue_usage_drain(kind: str, payload: Any) -> bool:
+                    assert _usage_drain_queue is not None
+                    while not _usage_drain_stop_event.is_set():
+                        try:
+                            _usage_drain_queue.put((kind, payload), timeout=0.05)
+                            return True
+                        except queue.Full:
+                            continue
+                    return False
+
+                def _pump_usage_drain() -> None:
+                    assert _usage_drain_queue is not None
+                    try:
+                        for drain_chunk in _stream_text_iterator:
+                            if not _enqueue_usage_drain("chunk", drain_chunk):
+                                return
+                    except BaseException as exc:
+                        _enqueue_usage_drain("error", exc)
+                    else:
+                        _enqueue_usage_drain("eof", None)
+                    finally:
+                        assert _stream_context is not None
+                        _stream_context.close_from_drain()
+
+                while True:
+                    if _usage_drain_complete:
                         break
+                    if loop_detected and not _usage_drain_active:
+                        break
+                    if _usage_drain_active:
+                        if _usage_drain_started_at is None:
+                            raise RuntimeError("usage drain start time is missing")
+                        if _usage_drain_queue is None:
+                            # provider가 tail을 과도하게 밀어도 메모리를 무제한 사용하지
+                            # 않도록 reader와 parser 사이를 작게 backpressure 한다.
+                            _usage_drain_queue = queue.Queue(maxsize=256)
+                            _usage_drain_thread = threading.Thread(
+                                target=_pump_usage_drain,
+                                name=f"llm-usage-drain-{tag}",
+                                daemon=True,
+                            )
+                            # 여기부터 response close는 reader가 담당한다. 메인 스레드가
+                            # timeout 뒤 with.__exit__에서 같은 스트림 lock을 기다리는
+                            # 교착을 막는다.
+                            _stream_context.delegate_close()
+                            try:
+                                ts_reader = self._timestamp()
+                                print(
+                                    f"\n[{ts_reader}][llm-stream] ℹ️ {tag} provider usage "
+                                    "drain reader thread 시작 요청",
+                                    file=sys.stderr,
+                                    flush=True,
+                                )
+                                _usage_drain_thread.start()
+                                ts_reader = self._timestamp()
+                                print(
+                                    f"[{ts_reader}][llm-stream] ℹ️ {tag} provider usage "
+                                    "drain reader thread 시작 완료",
+                                    file=sys.stderr,
+                                    flush=True,
+                                )
+                            except BaseException:
+                                _stream_context.close_from_drain()
+                                raise
+                        _drain_elapsed = _time.monotonic() - _usage_drain_started_at
+                        _drain_now = _time.monotonic()
+                        if (
+                            _usage_drain_last_progress_at is not None
+                            and (_drain_now - _usage_drain_last_progress_at) >= 15.0
+                        ):
+                            ts_progress = self._timestamp()
+                            print(
+                                f"\n[{ts_progress}][llm-stream] … {tag} provider usage drain 진행중 "
+                                f"(elapsed={_drain_elapsed:.2f}s, "
+                                f"queue_size={_usage_drain_queue.qsize()}, "
+                                f"reader_alive={bool(_usage_drain_thread and _usage_drain_thread.is_alive())})",
+                                file=sys.stderr,
+                                flush=True,
+                            )
+                            _usage_drain_last_progress_at = _drain_now
+                        _drain_remaining = _USAGE_DRAIN_MAX_SECONDS - _drain_elapsed
+                        if _drain_remaining <= 0:
+                            _abort_usage_drain_transport()
+                            raise httpx.ReadTimeout(
+                                f"{tag} provider usage drain absolute timeout after "
+                                f"{_drain_elapsed:.2f}s (limit={_USAGE_DRAIN_MAX_SECONDS:.2f}s)"
+                            )
+                        try:
+                            _drain_kind, _drain_payload = _usage_drain_queue.get(
+                                timeout=min(
+                                    _USAGE_DRAIN_SIGNAL_IDLE_TIMEOUT_S,
+                                    _drain_remaining,
+                                )
+                            )
+                        except queue.Empty as exc:
+                            _drain_elapsed = _time.monotonic() - _usage_drain_started_at
+                            if _drain_elapsed >= _USAGE_DRAIN_MAX_SECONDS:
+                                _abort_usage_drain_transport()
+                                raise httpx.ReadTimeout(
+                                    f"{tag} provider usage drain absolute timeout after "
+                                    f"{_drain_elapsed:.2f}s "
+                                    f"(limit={_USAGE_DRAIN_MAX_SECONDS:.2f}s)"
+                                ) from exc
+                            _abort_usage_drain_transport()
+                            raise httpx.ReadTimeout(
+                                f"{tag} provider usage drain signal idle timeout after "
+                                f"{_drain_elapsed:.2f}s "
+                                f"(limit={_USAGE_DRAIN_SIGNAL_IDLE_TIMEOUT_S:.2f}s)"
+                            ) from exc
+                        if _drain_kind == "error":
+                            if isinstance(_drain_payload, BaseException):
+                                raise _drain_payload
+                            raise RuntimeError("usage drain pump returned an invalid error")
+                        if _drain_kind == "eof":
+                            ts_drain = self._timestamp()
+                            print(
+                                f"\n[{ts_drain}][llm-warn] {tag} provider usage drain EOF; "
+                                "기존 ESTIMATED fail-close 유지",
+                                file=sys.stderr,
+                                flush=True,
+                            )
+                            break
+                        text_chunk = str(_drain_payload)
+                    else:
+                        try:
+                            text_chunk = next(_stream_text_iterator)
+                        except StopIteration:
+                            break
                     _chunk_now = _time.time()
-                    if (
+                    if not _usage_drain_active and (
                         last_signal_at is not None
                         and _STREAM_SIGNAL_IDLE_TIMEOUT_S is not None
                         and (_chunk_now - last_signal_at) >= _STREAM_SIGNAL_IDLE_TIMEOUT_S
@@ -994,7 +1279,7 @@ class LLMClient:
                             f"whitespace_content_chunks={whitespace_content_chunk_count}, "
                             f"signals={signal_chunk_count})"
                         )
-                    if last_chunk_at is not None:
+                    if not _usage_drain_active and last_chunk_at is not None:
                         _gap = _chunk_now - last_chunk_at
                         if _gap >= _STREAM_GAP_WARN_S:
                             ts_gap = self._timestamp()
@@ -1011,7 +1296,7 @@ class LLMClient:
                                 f"(limit={_STREAM_IDLE_TIMEOUT_S:.2f}s)"
                             )
                     last_chunk_at = _chunk_now
-                    if (
+                    if not _usage_drain_active and (
                         first_token_at is None
                         and _STREAM_FIRST_TOKEN_TIMEOUT_S is not None
                         and (_chunk_now - _start) >= _STREAM_FIRST_TOKEN_TIMEOUT_S
@@ -1040,23 +1325,51 @@ class LLMClient:
                                 continue
                             try:
                                 chunk = _json.loads(data_str)
-                                all_chunks.append(chunk)  # 모든 청크 저장
-                                if isinstance(chunk, dict) and chunk.get("model"):
+                                if not _usage_drain_active:
+                                    all_chunks.append(chunk)  # 의미 처리 청크만 저장
+                                if (
+                                    not _usage_drain_active
+                                    and isinstance(chunk, dict)
+                                    and chunk.get("model")
+                                ):
                                     last_model = str(chunk.get("model"))
                                 
                                 # usage 정보 추출 (마지막 청크 또는 중간 청크에 포함될 수 있음)
-                                if "usage" in chunk:
+                                _usage_in_chunk = isinstance(chunk, dict) and "usage" in chunk
+                                if _usage_in_chunk:
                                     last_usage = chunk["usage"]
+                                    if _usage_drain_active:
+                                        _usage_drain_usage_seen = True
                                     if self.print_timings:
                                         ts_debug = self._timestamp()
                                         print(f"\n[{ts_debug}][llm-debug] usage 발견: {last_usage}", file=sys.stderr, flush=True)
                                 
-                                # 토큰 추출
+                                # finish_reason은 의미 출력과 별개인 provider 종료 메타데이터다.
+                                # hardcap은 기존 동결 계약을 유지하고, 반복 감지 early-stop의
+                                # drain만 tail의 non-null 값을 보존한다.
                                 choices = chunk.get("choices", [])
-                                if choices:
+                                if choices and (
+                                    not _usage_drain_active
+                                    or _usage_drain_capture_finish_reason
+                                ):
                                     fr = choices[0].get("finish_reason")
                                     if fr is not None:
                                         last_finish_reason = str(fr)
+                                if _usage_drain_active:
+                                    if _usage_drain_usage_seen:
+                                        _usage_drain_complete = True
+                                        ts_drain = self._timestamp()
+                                        print(
+                                            f"\n[{ts_drain}][llm-stream] ✅ {tag} provider usage drain 완료 "
+                                            f"(reason={_usage_drain_reason})",
+                                            file=sys.stderr,
+                                            flush=True,
+                                        )
+                                        break
+                                    # 동결 뒤의 reasoning/content는 반환값·파서·token_count에
+                                    # 절대 반영하지 않는다. 다음 SSE 이벤트에서 usage만 찾는다.
+                                    continue
+                                if choices:
                                     delta = choices[0].get("delta", {})
                                     # reasoning_content 먼저 출력 (--reasoning-format deepseek 사용 시)
                                     reasoning = delta.get("reasoning_content", "")
@@ -1127,7 +1440,11 @@ class LLMClient:
                                                         f"총 {_acc_len_now}자), 조기 종료",
                                                         file=sys.stderr, flush=True,
                                                     )
-                                                    loop_detected = True
+                                                    _begin_usage_drain(
+                                                        "JSON_OBJECT_REPEAT",
+                                                        enabled=_early_stop_usage_drain_enabled,
+                                                        capture_finish_reason=True,
+                                                    )
                                                     break
                                                 _json_depth += 1
                                             elif _ch == '}':
@@ -1175,7 +1492,11 @@ class LLMClient:
                                                         file=sys.stderr,
                                                         flush=True,
                                                     )
-                                                    loop_detected = True
+                                                    _begin_usage_drain(
+                                                        f"JSON_CONTINUATION:{_abort_reason}",
+                                                        enabled=_early_stop_usage_drain_enabled,
+                                                        capture_finish_reason=True,
+                                                    )
                                             if not _post_json_first_logged:
                                                 ts_post_json = self._timestamp()
                                                 _since_complete = (
@@ -1200,7 +1521,12 @@ class LLMClient:
                                         if _acc_len > _ACC_HARD_CAP:
                                             ts = self._timestamp()
                                             print(f"\n[{ts}][llm-stream] ⚠️ 누적 출력 하드캡 초과 ({_acc_len:,}자 > {_ACC_HARD_CAP:,}), 조기 종료", file=sys.stderr, flush=True)
-                                            loop_detected = True
+                                            _begin_usage_drain(
+                                                "ACC_HARD_CAP",
+                                                enabled=_hard_cap_usage_drain_enabled,
+                                            )
+                                            if _usage_drain_active:
+                                                continue
                                             break
                                         
                                         # (2) 텍스트 레벨 반복 패턴 탐지 (N토큰마다)
@@ -1248,14 +1574,43 @@ class LLMClient:
                                                         _found_loop = True
                                                         break
                                                 if _found_loop:
-                                                    loop_detected = True
+                                                    _begin_usage_drain(
+                                                        "TEXT_REPEAT",
+                                                        enabled=_early_stop_usage_drain_enabled,
+                                                        capture_finish_reason=True,
+                                                    )
                                                     break
                             except _json.JSONDecodeError:
                                 continue
         except Exception as e:
             ts = self._timestamp()
-            print(f"\n[{ts}][llm-error] HTTP 스트리밍 오류: {type(e).__name__}: {e}", file=sys.stderr, flush=True)
-            raise
+            if _usage_drain_active:
+                # 의미 결과는 이미 기존 조기 종료 지점에서 확정됐다. usage drain 실패가
+                # 종류와 무관하게 동일 요청의 재실행으로 번지지 않게 하고, 아래 기존
+                # ESTIMATED fail-close를 그대로 사용한다. KeyboardInterrupt/SystemExit 같은
+                # BaseException은 이 경로가 잡지 않으므로 정상적으로 전파된다.
+                print(
+                    f"\n[{ts}][llm-warn] {tag} provider usage drain 실패; "
+                    f"기존 ESTIMATED fail-close 유지 "
+                    f"(cleanup={_usage_drain_cleanup_status}): "
+                    f"{type(e).__name__}: {e}",
+                    file=sys.stderr,
+                    flush=True,
+                )
+            else:
+                print(f"\n[{ts}][llm-error] HTTP 스트리밍 오류: {type(e).__name__}: {e}", file=sys.stderr, flush=True)
+                raise
+        finally:
+            _usage_drain_stop_event.set()
+            if (
+                _usage_drain_thread is not None
+                and _usage_drain_thread is not threading.current_thread()
+                and _usage_drain_thread.is_alive()
+            ):
+                # response context가 먼저 닫혀 정상 httpx reader는 여기서 풀린다.
+                # 임의 generator가 close를 무시하더라도 요청 반환은 이 짧은 best-effort
+                # join보다 오래 막히지 않으며 daemon thread가 프로세스 종료를 막지 않는다.
+                _usage_drain_thread.join(timeout=0.1)
         
         _elapsed = _time.time() - _start
         ts = self._timestamp()

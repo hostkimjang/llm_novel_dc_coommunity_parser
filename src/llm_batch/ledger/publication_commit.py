@@ -54,6 +54,9 @@ _ATTEMPT_LOCAL_RUN_META_KEYS = frozenset(
         "decision_call_measurement",
         "measurement_execution_source",
         "early_route_measurement",
+        "publication_shadow_observation",
+        "semantic_review_router_receipt",
+        "semantic_recovery_plan_receipt",
         "fresh375_run_binding_token",
     }
 )

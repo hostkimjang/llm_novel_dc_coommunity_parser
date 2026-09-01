@@ -1,0 +1,458 @@
+{
+  "schema_version": "live_2712_before_after_notebook_summary_v1",
+  "generated_at": "2026-07-17T00:00:00+09:00",
+  "baseline": {
+    "rows": 2712,
+    "unique_post_ids": 2712,
+    "missing": 0,
+    "duplicates": 0
+  },
+  "lanes": [
+    {
+      "lane": "P0a 공개 안전",
+      "rows": 28,
+      "repeats_per_arm": 3,
+      "before_majority_compliant": 18,
+      "after_majority_compliant": 18,
+      "before_exact_compliant_runs": 54,
+      "after_exact_compliant_runs": 54,
+      "systematic_improvements": 0,
+      "systematic_regressions": 0,
+      "before_unsafe_any_run": 5,
+      "after_unsafe_any_run": 2,
+      "introduced_unsafe_any_run": 0,
+      "resolved_unsafe_all_runs": 3,
+      "gate": "MEASURED_NOT_AUTOMATICALLY_APPROVED"
+    },
+    {
+      "lane": "P0b 격리",
+      "rows": 32,
+      "repeats_per_arm": 3,
+      "before_majority_compliant": 2,
+      "after_majority_compliant": 2,
+      "before_exact_compliant_runs": 9,
+      "after_exact_compliant_runs": 9,
+      "systematic_improvements": 1,
+      "systematic_regressions": 1,
+      "before_unsafe_any_run": 2,
+      "after_unsafe_any_run": 2,
+      "introduced_unsafe_any_run": 1,
+      "resolved_unsafe_all_runs": 1,
+      "gate": "REVIEW_REQUIRED_SYSTEMATIC_REGRESSION"
+    }
+  ],
+  "p0a_transitions": [
+    {
+      "post_id": "11632937",
+      "expected_title": "약먹는 천재마법사",
+      "systematic_improvement": false,
+      "systematic_regression": false,
+      "unsafe_introduced": false,
+      "unsafe_resolved": true,
+      "normal_to_abnormal": null,
+      "before_public": {
+        "count": 2,
+        "fraction": 0.6666666666666666,
+        "fraction_label": "TWO_OF_THREE",
+        "label": "PUBLISH",
+        "publish_allowed": true,
+        "title": "약먹는 천재마법사",
+        "unanimous": false,
+        "variance_count": 1
+      },
+      "after_public": {
+        "count": 3,
+        "fraction": 1.0,
+        "fraction_label": "THREE_OF_THREE",
+        "label": "PUBLISH",
+        "publish_allowed": true,
+        "title": "약먹는 천재마법사",
+        "unanimous": true,
+        "variance_count": 0
+      }
+    },
+    {
+      "post_id": "11652199",
+      "expected_title": "타락면역이라 재앙급 마검",
+      "systematic_improvement": false,
+      "systematic_regression": false,
+      "unsafe_introduced": false,
+      "unsafe_resolved": true,
+      "normal_to_abnormal": null,
+      "before_public": {
+        "count": 1,
+        "fraction": 0.3333333333333333,
+        "fraction_label": "ONE_OF_THREE",
+        "label": "NO_CONSENSUS",
+        "publish_allowed": null,
+        "title": null,
+        "unanimous": false,
+        "variance_count": 2
+      },
+      "after_public": {
+        "count": 3,
+        "fraction": 1.0,
+        "fraction_label": "THREE_OF_THREE",
+        "label": "NO_PUBLISH",
+        "publish_allowed": false,
+        "title": null,
+        "unanimous": true,
+        "variance_count": 0
+      }
+    },
+    {
+      "post_id": "11674732",
+      "expected_title": "마법소녀는 은퇴하고 싶다",
+      "systematic_improvement": false,
+      "systematic_regression": false,
+      "unsafe_introduced": false,
+      "unsafe_resolved": true,
+      "normal_to_abnormal": null,
+      "before_public": {
+        "count": 2,
+        "fraction": 0.6666666666666666,
+        "fraction_label": "TWO_OF_THREE",
+        "label": "NO_PUBLISH",
+        "publish_allowed": false,
+        "title": null,
+        "unanimous": false,
+        "variance_count": 1
+      },
+      "after_public": {
+        "count": 3,
+        "fraction": 1.0,
+        "fraction_label": "THREE_OF_THREE",
+        "label": "NO_PUBLISH",
+        "publish_allowed": false,
+        "title": null,
+        "unanimous": true,
+        "variance_count": 0
+      }
+    }
+  ],
+  "p0b_transitions": [
+    {
+      "post_id": "11718097",
+      "expected_title": "망겜의 힐러",
+      "systematic_improvement": false,
+      "systematic_regression": false,
+      "unsafe_introduced": true,
+      "unsafe_resolved": false,
+      "normal_to_abnormal": null,
+      "before_public": {
+        "count": 3,
+        "fraction": 1.0,
+        "fraction_label": "THREE_OF_THREE",
+        "label": "NO_PUBLISH",
+        "publish_allowed": false,
+        "title": null,
+        "unanimous": true,
+        "variance_count": 0
+      },
+      "after_public": {
+        "count": 2,
+        "fraction": 0.6666666666666666,
+        "fraction_label": "TWO_OF_THREE",
+        "label": "NO_PUBLISH",
+        "publish_allowed": false,
+        "title": null,
+        "unanimous": false,
+        "variance_count": 1
+      }
+    },
+    {
+      "post_id": "11716480",
+      "expected_title": "여대생 가랑이 사이 무릎 꿇은 엄마들",
+      "systematic_improvement": false,
+      "systematic_regression": false,
+      "unsafe_introduced": false,
+      "unsafe_resolved": true,
+      "normal_to_abnormal": null,
+      "before_public": {
+        "count": 2,
+        "fraction": 0.6666666666666666,
+        "fraction_label": "TWO_OF_THREE",
+        "label": "NO_PUBLISH",
+        "publish_allowed": false,
+        "title": null,
+        "unanimous": false,
+        "variance_count": 1
+      },
+      "after_public": {
+        "count": 3,
+        "fraction": 1.0,
+        "fraction_label": "THREE_OF_THREE",
+        "label": "NO_PUBLISH",
+        "publish_allowed": false,
+        "title": null,
+        "unanimous": true,
+        "variance_count": 0
+      }
+    },
+    {
+      "post_id": "11711612",
+      "expected_title": "A급 헌터가 살아가는 법",
+      "systematic_improvement": false,
+      "systematic_regression": true,
+      "unsafe_introduced": false,
+      "unsafe_resolved": false,
+      "normal_to_abnormal": "TWO_OF_THREE",
+      "before_public": {
+        "count": 2,
+        "fraction": 0.6666666666666666,
+        "fraction_label": "TWO_OF_THREE",
+        "label": "PUBLISH",
+        "publish_allowed": true,
+        "title": "A급 헌터가 살아가는 법",
+        "unanimous": false,
+        "variance_count": 1
+      },
+      "after_public": {
+        "count": 2,
+        "fraction": 0.6666666666666666,
+        "fraction_label": "TWO_OF_THREE",
+        "label": "NO_PUBLISH",
+        "publish_allowed": false,
+        "title": null,
+        "unanimous": false,
+        "variance_count": 1
+      }
+    },
+    {
+      "post_id": "11705229",
+      "expected_title": "A급 헌터가 살아가는 법",
+      "systematic_improvement": true,
+      "systematic_regression": false,
+      "unsafe_introduced": false,
+      "unsafe_resolved": false,
+      "normal_to_abnormal": null,
+      "before_public": {
+        "count": 2,
+        "fraction": 0.6666666666666666,
+        "fraction_label": "TWO_OF_THREE",
+        "label": "NO_PUBLISH",
+        "publish_allowed": false,
+        "title": null,
+        "unanimous": false,
+        "variance_count": 1
+      },
+      "after_public": {
+        "count": 3,
+        "fraction": 1.0,
+        "fraction_label": "THREE_OF_THREE",
+        "label": "PUBLISH",
+        "publish_allowed": true,
+        "title": "A급 헌터가 살아가는 법",
+        "unanimous": true,
+        "variance_count": 0
+      }
+    }
+  ],
+  "observability": [
+    {
+      "lane": "P0a 공개 안전",
+      "before_total_tokens": {
+        "known_rows": 67,
+        "status": "PARTIAL",
+        "unknown_rows": 17,
+        "value": 7185618
+      },
+      "after_total_tokens": {
+        "known_rows": 64,
+        "status": "PARTIAL",
+        "unknown_rows": 20,
+        "value": 7163160
+      },
+      "before_wall_ms": {
+        "known_rows": 84,
+        "status": "MEASURED",
+        "unknown_rows": 0,
+        "value": 32483118
+      },
+      "after_wall_ms": {
+        "known_rows": 84,
+        "status": "MEASURED",
+        "unknown_rows": 0,
+        "value": 30431609
+      },
+      "before_search": {
+        "SEARCH_DEGRADED": 81,
+        "ok": 2
+      },
+      "after_search": {
+        "SEARCH_DEGRADED": 82
+      },
+      "before_router": {
+        "counts": {},
+        "known_rows": 0,
+        "unknown_rows": 84
+      },
+      "after_router": {
+        "counts": {},
+        "known_rows": 0,
+        "unknown_rows": 84
+      }
+    },
+    {
+      "lane": "P0b 격리",
+      "before_total_tokens": {
+        "known_rows": 95,
+        "status": "PARTIAL",
+        "unknown_rows": 1,
+        "value": 9799920
+      },
+      "after_total_tokens": {
+        "known_rows": 95,
+        "status": "PARTIAL",
+        "unknown_rows": 1,
+        "value": 9565065
+      },
+      "before_wall_ms": {
+        "known_rows": 96,
+        "status": "MEASURED",
+        "unknown_rows": 0,
+        "value": 46059744
+      },
+      "after_wall_ms": {
+        "known_rows": 96,
+        "status": "MEASURED",
+        "unknown_rows": 0,
+        "value": 46272142
+      },
+      "before_search": {
+        "SEARCH_DEGRADED": 85,
+        "ok": 7
+      },
+      "after_search": {
+        "SEARCH_DEGRADED": 89,
+        "ok": 4
+      },
+      "before_router": {
+        "counts": {},
+        "known_rows": 0,
+        "unknown_rows": 96
+      },
+      "after_router": {
+        "counts": {},
+        "known_rows": 0,
+        "unknown_rows": 96
+      }
+    }
+  ],
+  "deterministic_validation": {
+    "compile": "PASS",
+    "direct_image_integration": {
+      "tests": 101,
+      "status": "PASS"
+    },
+    "persisted_2712_replay": {
+      "adjudicated_cohorts": {
+        "dashboard_action": {
+          "CORRECT": 369,
+          "HOLD": 452,
+          "KEEP": 230,
+          "NOT_APPLICABLE": 1581,
+          "REMOVE": 80
+        },
+        "review_verdict": {
+          "CONTEXT_ONLY_CORRECT": 719,
+          "DASHBOARD_TITLE_MISMATCH": 7,
+          "EVIDENCE_CONFLICT": 25,
+          "EVIDENCE_INSUFFICIENT": 302,
+          "FN_TITLE_MISSING": 339,
+          "FP_NONNOVEL": 72,
+          "MULTIWORK_HOLD_CORRECT": 91,
+          "NOISE_CORRECT": 891,
+          "PASS": 230,
+          "WRONG_WORK": 36
+        }
+      },
+      "adjudication_projection_counts": {
+        "recomputed_adjudicated_unsafe_publish": 33,
+        "recomputed_adjudicated_unsafe_publish_not_estimable": 1,
+        "recomputed_adjudication_compliant": 2322,
+        "recomputed_adjudication_noncompliant": 386,
+        "recomputed_adjudication_not_estimable": 4,
+        "stored_adjudicated_unsafe_publish": 33,
+        "stored_adjudicated_unsafe_publish_not_estimable": 1,
+        "stored_adjudication_compliant": 2322,
+        "stored_adjudication_noncompliant": 386,
+        "stored_adjudication_not_estimable": 4,
+        "stored_compliant_to_recomputed_noncompliant_semantic_regressions": 0
+      },
+      "artifacts": {
+        "post_id_order_sha256": "17fd967325a66d2c5155e5f094f22c450dc09b2d44bbae0c19de48ceed61132e",
+        "rows_jsonl": {
+          "bytes": 5593360,
+          "path": "/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260716/replay_after_p0b_rollback/publish_contract_replay_rows.jsonl",
+          "sha256": "634ca68106a2b364f88c88381908c0be70f1212f37d6bab8f8b3f8919a4748d7"
+        }
+      },
+      "comparison_reasons": {},
+      "contract_counts": {
+        "fingerprint_mismatch": 0,
+        "legacy_semantic_publication_missing_neutral_compatibility": 2712,
+        "legacy_semantic_publication_present": 0,
+        "normal_to_abnormal_contract_regressions": 0,
+        "public_projection_mismatch": 0,
+        "reason_codes_mismatch": 0,
+        "recomputed_contract_internally_invalid": 0,
+        "semantic_publication_unknown_not_estimable": 0,
+        "stored_contract_internally_invalid": 0
+      },
+      "coverage": {
+        "estimable_rows": 2712,
+        "ledger_missing_from_raw": 0,
+        "ledger_rows": 2712,
+        "ledger_unique_post_ids": 2712,
+        "not_estimable_rows": 0,
+        "raw_extra_to_ledger": 395,
+        "raw_rows": 3107,
+        "raw_unique_post_ids": 3107,
+        "replay_rows": 2712
+      },
+      "expert_main_used": false,
+      "gate": "GO",
+      "legacy_semantic_publication_policy": "missing SemanticPublicationState is neutral compatibility; it is not an effectiveness claim",
+      "network_used": false,
+      "not_estimable_reasons": {},
+      "profile": "frozen2712",
+      "purpose": "deterministic_persisted_publish_contract_replay_not_semantic_llm_effectiveness",
+      "schema_version": "frozen_2712_publish_contract_replay_summary_v2",
+      "semantic_adjudication_is_cohort_only_not_production_input": true,
+      "sources": {
+        "final_adjudication_ledger": {
+          "bytes": 6207296,
+          "path": "/home/kimjang/llm_novel_dc_coommunity_parser/out/live_combined_row_review_20260715_143806_848671_2712_20260716/final_2712_row_adjudication_ledger.jsonl",
+          "sha256": "a43525abc4358592de4888301b51970826f27103aee3285b65ae85eceee93b24"
+        },
+        "raw_result": {
+          "bytes": 218012051,
+          "path": "/home/kimjang/llm_novel_dc_coommunity_parser/out/expert_result_20260715_143806_848671.json",
+          "sha256": "6e5b4bb7e318fcf58bbff1bce39290efa04bb1f7b074b9b9bbc08686c4f34cca"
+        }
+      }
+    },
+    "adjacent_contract": {
+      "tests": 413,
+      "passed": 412,
+      "failed": 1,
+      "status": "PRE_EXISTING_NO_GO",
+      "failure": "title_led_alias_official_detail_canonicalization"
+    }
+  },
+  "decisions": {
+    "p0a_semantic": "GO",
+    "p0b_semantic": "NO_GO_ROLLED_BACK",
+    "search_health": "NO_GO",
+    "review_router": "NOT_ESTIMABLE",
+    "runtime_completion_104502": "NO_GO_IN_PROGRESS",
+    "semantic_quality_104502": "NOT_EVALUATED",
+    "full_scan_approval": false
+  },
+  "sources": [
+    "/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260716/analysis/p0a_go2_repeat_consensus_summary.json",
+    "/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260716/analysis/p0b_isolation_repeat_consensus_summary.json",
+    "/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260716/replay_after_p0b_rollback/publish_contract_replay_summary.json"
+  ]
+}

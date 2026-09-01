@@ -1,0 +1,398 @@
+{
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "문제 처리 결과 개선 전후 비교",
+    "description": "현재 production에 유지된 P0a 해결 결과와 rollback된 P0b 실험 결과를 분리한 post_id exact 비교",
+    "generatedAt": "2026-07-17T12:00:00+09:00",
+    "blocks": [
+      {
+        "id": "title",
+        "type": "markdown",
+        "body": "# 문제 처리 결과 개선 전후 비교"
+      },
+      {
+        "id": "executive_summary",
+        "type": "markdown",
+        "sourceId": "lane_source",
+        "body": "## Executive Summary\n\n- **현재 적용된 P0a**는 문제 사례 3건의 unsafe/wrong-title 흔들림을 3회 반복 모두 해소했다. 28행 묶음에서 신규 unsafe 0건, systematic regression 0건이었다.\n- **P0b OCR recovery 실험**은 1건을 확실히 회복했지만, 다른 1건을 정상→비정상으로 회귀시키고 1건의 신규 wrong-title 공개를 만들었다. 따라서 P0b 전용 변경은 rollback되어 현재 코드에는 적용되지 않는다.\n- 결론은 **P0a 유지 / P0b 미적용**이다. 이번 판정은 targeted cohort 기준이며 `full_scan_approval=false`다."
+      },
+      {
+        "id": "headline_metrics",
+        "type": "metric-strip",
+        "cardIds": [
+          "current_resolved",
+          "p0a_introduced",
+          "p0b_regression",
+          "p0b_enabled"
+        ]
+      },
+      {
+        "id": "current_heading",
+        "type": "markdown",
+        "sourceId": "p0a_source",
+        "body": "## 현재 적용 중인 해결 결과\n\n세 사례 모두 AFTER 3회에서 unsafe/wrong-title이 재발하지 않았다. 첫 사례는 정답 공개가 안정됐고, 나머지 두 사례는 불충분하거나 충돌하는 근거에서 오제목 공개를 안전하게 막았다."
+      },
+      {
+        "id": "current_table_block",
+        "type": "table",
+        "tableId": "current_table"
+      },
+      {
+        "id": "unsafe_heading",
+        "type": "markdown",
+        "sourceId": "lane_source",
+        "body": "## 묶음 수준 안전성 비교\n\nP0a의 unsafe/wrong-title any-run 사례는 5건에서 2건으로 줄었다. P0b는 총수가 2건으로 같아 보이지만, 내부적으로 1건 해소와 1건 신규 발생이 교체되어 평균만으로는 실패를 숨기게 된다."
+      },
+      {
+        "id": "unsafe_chart_block",
+        "type": "chart",
+        "chartId": "unsafe_chart"
+      },
+      {
+        "id": "lane_table_block",
+        "type": "table",
+        "tableId": "lane_table"
+      },
+      {
+        "id": "experimental_heading",
+        "type": "markdown",
+        "sourceId": "p0b_source",
+        "body": "## 실험에서 좋아졌지만 적용하지 않은 결과\n\nP0b는 `11705229`를 3/3 정답 공개로 회복했고 `11716480`의 unsafe 흔들림도 없앴다. 그러나 lane 전체가 NO-GO여서 두 효과 모두 production에는 남기지 않았다. 두 번째 사례는 정답 회복이 아니라 안전 안정화다."
+      },
+      {
+        "id": "experimental_table_block",
+        "type": "table",
+        "tableId": "experimental_table"
+      },
+      {
+        "id": "rollback_heading",
+        "type": "markdown",
+        "sourceId": "p0b_source",
+        "body": "## P0b를 rollback한 이유\n\n한 사례에서 2/3 정답 공개가 2/3 미공개로 바뀌는 systematic regression이 발생했고, 다른 사례에서는 BEFORE에 없던 오제목 `뉴 빌런` 공개가 AFTER 1/3에서 새로 나타났다. 단일 성공보다 묶음 회귀 방지가 우선이므로 P0b 변경을 철회했다."
+      },
+      {
+        "id": "rollback_table_block",
+        "type": "table",
+        "tableId": "rollback_table"
+      },
+      {
+        "id": "next_actions",
+        "type": "markdown",
+        "body": "## 다음 조치\n\nP0a 안전 게이트는 현재 상태를 유지한다. OCR FN recovery는 direct OCR만으로 공개를 되살리지 말고, official-detail·primary relation·multiwork conflict를 함께 만족하는 더 좁은 조건으로 다시 설계해야 한다. 새 설계도 동일 post_id 묶음에서 최소 3회 반복해 정상→비정상 집중 여부를 먼저 확인한다."
+      },
+      {
+        "id": "further_questions",
+        "type": "markdown",
+        "body": "## Further Questions\n\n- P0b 성공 1건을 보존하면서 `11711612`와 `11718097`을 차단하는 공통 evidence 조건은 무엇인가?\n- 잔존 P0a unsafe 2건은 어떤 evidence family에 집중되는가?\n- 검색 상태가 정상화됐을 때 같은 cohort의 variance envelope가 유지되는가?"
+      },
+      {
+        "id": "caveats",
+        "type": "markdown",
+        "body": "## Caveats and Assumptions\n\n이 보고서는 동결 2,712건 중 targeted P0a 28행과 P0b 32행의 각 3회 반복 비교다. 전체 2,712행을 개선 코드로 새로 LLM 재실행한 결과가 아니며, 검색 health는 degraded 상태였다. review-router 효과도 추정 불가이므로 `full_scan_approval=false`를 유지한다."
+      }
+    ],
+    "cards": [
+      {
+        "id": "current_resolved",
+        "dataset": "headline",
+        "sourceId": "p0a_source",
+        "description": "현재 production에 남은 P0a에서 3회 모두 unsafe/wrong-title이 해소된 대표 post_id",
+        "metrics": [
+          {
+            "label": "현재 적용 해결 사례",
+            "field": "current_resolved_cases",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "p0a_introduced",
+        "dataset": "headline",
+        "sourceId": "p0a_source",
+        "description": "P0a AFTER에서 새로 발생한 unsafe/wrong-title post_id",
+        "metrics": [
+          {
+            "label": "P0a 신규 unsafe",
+            "field": "p0a_introduced_unsafe",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "p0b_regression",
+        "dataset": "headline",
+        "sourceId": "p0b_source",
+        "description": "P0b 격리 실험의 3회 majority systematic regression",
+        "metrics": [
+          {
+            "label": "P0b systematic 회귀",
+            "field": "p0b_systematic_regression",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "p0b_enabled",
+        "dataset": "headline",
+        "sourceId": "p0b_source",
+        "description": "0은 P0b 전용 변경이 rollback되어 현재 production에서 비활성임을 뜻함",
+        "metrics": [
+          {
+            "label": "P0b 현재 적용",
+            "field": "p0b_currently_enabled",
+            "format": "number"
+          }
+        ]
+      }
+    ],
+    "charts": [
+      {
+        "id": "unsafe_chart",
+        "title": "lane·arm별 unsafe/wrong-title any-run",
+        "subtitle": "P0a는 5→2로 감소했고 P0b는 2→2지만 신규 1건이 발생",
+        "type": "bar",
+        "dataset": "unsafe_metrics",
+        "sourceId": "lane_source",
+        "options": {
+          "orientation": "vertical",
+          "grouping": "grouped"
+        },
+        "encodings": {
+          "x": {
+            "field": "stage",
+            "type": "nominal",
+            "label": "lane / arm"
+          },
+          "y": {
+            "field": "unsafe_any_run",
+            "type": "quantitative",
+            "label": "post_id 수",
+            "format": "number"
+          },
+          "tooltip": [
+            {
+              "field": "stage",
+              "type": "nominal"
+            },
+            {
+              "field": "cohort_rows",
+              "type": "quantitative",
+              "format": "number"
+            },
+            {
+              "field": "unsafe_any_run",
+              "type": "quantitative",
+              "format": "number"
+            },
+            {
+              "field": "introduced_unsafe",
+              "type": "quantitative",
+              "format": "number"
+            }
+          ]
+        }
+      }
+    ],
+    "tables": [
+      {
+        "id": "current_table",
+        "title": "현재 production에 유지된 P0a 해결 사례",
+        "subtitle": "동일 입력 3회 반복의 post_id exact 전이",
+        "dataset": "current_solved",
+        "sourceId": "p0a_source",
+        "defaultSort": {
+          "field": "rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {"field": "rank", "label": "순서", "type": "number", "format": "number"},
+          {"field": "post_id", "label": "post_id", "type": "text"},
+          {"field": "expected_title", "label": "정본 제목", "type": "text"},
+          {"field": "before", "label": "개선 전 문제", "type": "text"},
+          {"field": "after", "label": "개선 후", "type": "text"},
+          {"field": "resolved_as", "label": "해결 방식", "type": "text"}
+        ]
+      },
+      {
+        "id": "lane_table",
+        "title": "P0a와 P0b 묶음 판정",
+        "subtitle": "각 arm 3회 반복; 평균 대신 systematic transition과 신규 unsafe를 함께 평가",
+        "dataset": "lane_metrics",
+        "sourceId": "lane_source",
+        "defaultSort": {
+          "field": "rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {"field": "rank", "label": "순서", "type": "number", "format": "number"},
+          {"field": "lane", "label": "lane", "type": "text"},
+          {"field": "rows", "label": "cohort 행", "type": "number", "format": "number"},
+          {"field": "unsafe_before", "label": "unsafe BEFORE", "type": "number", "format": "number"},
+          {"field": "unsafe_after", "label": "unsafe AFTER", "type": "number", "format": "number"},
+          {"field": "systematic_improvement", "label": "systematic 개선", "type": "number", "format": "number"},
+          {"field": "systematic_regression", "label": "systematic 회귀", "type": "number", "format": "number"},
+          {"field": "introduced_unsafe", "label": "신규 unsafe", "type": "number", "format": "number"},
+          {"field": "decision", "label": "최종 판정", "type": "text"}
+        ]
+      },
+      {
+        "id": "experimental_table",
+        "title": "P0b 실험상 개선 사례",
+        "subtitle": "lane rollback으로 현재 production에는 미적용",
+        "dataset": "experimental_improvements",
+        "sourceId": "p0b_source",
+        "defaultSort": {
+          "field": "rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {"field": "rank", "label": "순서", "type": "number", "format": "number"},
+          {"field": "post_id", "label": "post_id", "type": "text"},
+          {"field": "expected_title", "label": "정본 제목", "type": "text"},
+          {"field": "before", "label": "P0a-only", "type": "text"},
+          {"field": "after", "label": "P0a+P0b", "type": "text"},
+          {"field": "interpretation", "label": "해석", "type": "text"},
+          {"field": "production", "label": "현재 상태", "type": "text"}
+        ]
+      },
+      {
+        "id": "rollback_table",
+        "title": "P0b rollback을 결정한 회귀 사례",
+        "subtitle": "정상→비정상 반복 전이와 신규 wrong-title 공개",
+        "dataset": "rollback_reasons",
+        "sourceId": "p0b_source",
+        "defaultSort": {
+          "field": "rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {"field": "rank", "label": "순서", "type": "number", "format": "number"},
+          {"field": "post_id", "label": "post_id", "type": "text"},
+          {"field": "expected_title", "label": "정본 제목", "type": "text"},
+          {"field": "before", "label": "P0a-only", "type": "text"},
+          {"field": "after", "label": "P0a+P0b", "type": "text"},
+          {"field": "failure", "label": "회귀 유형", "type": "text"},
+          {"field": "decision", "label": "조치", "type": "text"}
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "id": "lane_source",
+        "label": "P0a/P0b 3회 repeat consensus 요약",
+        "path": "/home/kimjang/llm_novel_dc_coommunity_parser/docs/devs/LIVE_RUN_2712_BEFORE_AFTER_ANALYSIS_20260716.ipynb",
+        "query": {
+          "engine": "sqlite",
+          "language": "sql",
+          "sql": "WITH lane_metrics(rank,lane,rows,unsafe_before,unsafe_after,systematic_improvement,systematic_regression,introduced_unsafe,decision) AS (VALUES (1,'P0a 공개 안전',28,5,2,0,0,0,'GO / 현재 적용'),(2,'P0b OCR recovery',32,2,2,1,1,1,'NO-GO / ROLLED_BACK')) SELECT * FROM lane_metrics ORDER BY rank",
+          "description": "P0a와 P0b의 동일 post_id·각 3회 repeat consensus 핵심 지표",
+          "tables_used": [
+            "p0a_go2_repeat_consensus_summary.json",
+            "p0b_isolation_repeat_consensus_summary.json"
+          ],
+          "filters": [
+            "동일 post_id 집합",
+            "각 arm 3회",
+            "동일 RunSpec·검색 계약"
+          ],
+          "metric_definitions": [
+            "unsafe_any_run=3회 중 한 번이라도 unsafe 또는 wrong-title 공개가 있었던 post_id 수",
+            "systematic regression=3회 majority가 compliant에서 noncompliant로 전이",
+            "introduced unsafe=BEFORE any-run 0에서 AFTER any-run 1 이상으로 전이"
+          ]
+        }
+      },
+      {
+        "id": "p0a_source",
+        "label": "P0a 현재 적용 사례 exact consensus",
+        "path": "/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260716/analysis/p0a_go2_repeat_consensus_posts.jsonl",
+        "query": {
+          "engine": "sqlite",
+          "language": "sql",
+          "sql": "WITH current_solved(rank,post_id,expected_title,before,after,resolved_as) AS (VALUES (1,'11632937','약먹는 천재마법사','정답 PUBLISH 2/3 + 오제목/unsafe 1/3','정답 PUBLISH 3/3','정답 공개 안정화'),(2,'11652199','타락면역이라 재앙급 마검','정답·오제목·NO_PUBLISH 각 1/3','NO_PUBLISH 3/3','오제목 공개 차단'),(3,'11674732','마법소녀는 은퇴하고 싶다','NO_PUBLISH 2/3 + 축약 오제목 공개 1/3','NO_PUBLISH 3/3','근거 부족 fail-close')) SELECT * FROM current_solved ORDER BY rank",
+          "description": "P0a AFTER 전 3회에서 unsafe/wrong-title이 해소된 대표 post_id",
+          "tables_used": [
+            "p0a_go2_repeat_consensus_posts.jsonl",
+            "p0a_go2_repeat_consensus_summary.json"
+          ]
+        }
+      },
+      {
+        "id": "p0b_source",
+        "label": "P0b 격리 실험 exact consensus",
+        "path": "/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260716/analysis/p0b_isolation_repeat_consensus_posts.jsonl",
+        "query": {
+          "engine": "sqlite",
+          "language": "sql",
+          "sql": "WITH p0b_cases(rank,kind,post_id,expected_title,before,after,result) AS (VALUES (1,'실험상 개선','11705229','A급 헌터가 살아가는 법','2/3 NO_PUBLISH','3/3 정답 PUBLISH','systematic 개선'),(2,'안전 안정화','11716480','여대생 가랑이 사이 무릎 꿇은 엄마들','2/3 NO_PUBLISH + unsafe 흔들림','3/3 NO_PUBLISH','unsafe 해소, 정답 회복 아님'),(3,'systematic 회귀','11711612','A급 헌터가 살아가는 법','2/3 정답 PUBLISH','2/3 NO_PUBLISH','정상→비정상'),(4,'신규 wrong-title','11718097','망겜의 힐러','3/3 NO_PUBLISH','2/3 NO_PUBLISH + 뉴 빌런 공개 1/3','introduced unsafe')) SELECT * FROM p0b_cases ORDER BY rank",
+          "description": "P0b에서 개선과 회귀가 함께 발생해 lane을 rollback한 근거",
+          "tables_used": [
+            "p0b_isolation_repeat_consensus_posts.jsonl",
+            "p0b_isolation_repeat_consensus_summary.json"
+          ]
+        }
+      }
+    ]
+  },
+  "sources": [
+    {
+      "id": "full_report",
+      "label": "한국어 전체 BEFORE/AFTER 보고서",
+      "path": "/home/kimjang/llm_novel_dc_coommunity_parser/docs/devs/LIVE_RUN_2712_BEFORE_AFTER_REPORT_20260716_KO.md"
+    },
+    {
+      "id": "notebook",
+      "label": "재현 가능한 분석 notebook",
+      "path": "/home/kimjang/llm_novel_dc_coommunity_parser/docs/devs/LIVE_RUN_2712_BEFORE_AFTER_ANALYSIS_20260716.ipynb"
+    },
+    {
+      "id": "p0a_consensus",
+      "label": "P0a repeat consensus summary",
+      "path": "/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260716/analysis/p0a_go2_repeat_consensus_summary.json"
+    },
+    {
+      "id": "p0b_consensus",
+      "label": "P0b repeat consensus summary",
+      "path": "/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260716/analysis/p0b_isolation_repeat_consensus_summary.json"
+    }
+  ],
+  "snapshot": {
+    "version": 1,
+    "status": "ready",
+    "generatedAt": "2026-07-17T12:00:00+09:00",
+    "datasets": {
+      "headline": [
+        {
+          "current_resolved_cases": 3,
+          "p0a_introduced_unsafe": 0,
+          "p0b_systematic_regression": 1,
+          "p0b_currently_enabled": 0
+        }
+      ],
+      "unsafe_metrics": [
+        {"stage": "P0a BEFORE", "cohort_rows": 28, "unsafe_any_run": 5, "introduced_unsafe": 0},
+        {"stage": "P0a AFTER", "cohort_rows": 28, "unsafe_any_run": 2, "introduced_unsafe": 0},
+        {"stage": "P0b BEFORE", "cohort_rows": 32, "unsafe_any_run": 2, "introduced_unsafe": 0},
+        {"stage": "P0b AFTER", "cohort_rows": 32, "unsafe_any_run": 2, "introduced_unsafe": 1}
+      ],
+      "lane_metrics": [
+        {"rank": 1, "lane": "P0a 공개 안전", "rows": 28, "unsafe_before": 5, "unsafe_after": 2, "systematic_improvement": 0, "systematic_regression": 0, "introduced_unsafe": 0, "decision": "GO / 현재 적용"},
+        {"rank": 2, "lane": "P0b OCR recovery", "rows": 32, "unsafe_before": 2, "unsafe_after": 2, "systematic_improvement": 1, "systematic_regression": 1, "introduced_unsafe": 1, "decision": "NO-GO / ROLLED_BACK"}
+      ],
+      "current_solved": [
+        {"rank": 1, "post_id": "11632937", "expected_title": "약먹는 천재마법사", "before": "정답 PUBLISH 2/3 + 오제목/unsafe 1/3", "after": "정답 PUBLISH 3/3", "resolved_as": "정답 공개 안정화"},
+        {"rank": 2, "post_id": "11652199", "expected_title": "타락면역이라 재앙급 마검", "before": "정답·오제목·NO_PUBLISH 각 1/3", "after": "NO_PUBLISH 3/3", "resolved_as": "오제목 공개 차단"},
+        {"rank": 3, "post_id": "11674732", "expected_title": "마법소녀는 은퇴하고 싶다", "before": "NO_PUBLISH 2/3 + 축약 오제목 공개 1/3", "after": "NO_PUBLISH 3/3", "resolved_as": "근거 부족 fail-close"}
+      ],
+      "experimental_improvements": [
+        {"rank": 1, "post_id": "11705229", "expected_title": "A급 헌터가 살아가는 법", "before": "2/3 NO_PUBLISH", "after": "3/3 정답 PUBLISH", "interpretation": "실제 systematic FN 회복", "production": "미적용(rollback)"},
+        {"rank": 2, "post_id": "11716480", "expected_title": "여대생 가랑이 사이 무릎 꿇은 엄마들", "before": "2/3 NO_PUBLISH + unsafe 흔들림", "after": "3/3 NO_PUBLISH", "interpretation": "안전 안정화; 정답 회복 아님", "production": "미적용(rollback)"}
+      ],
+      "rollback_reasons": [
+        {"rank": 1, "post_id": "11711612", "expected_title": "A급 헌터가 살아가는 법", "before": "2/3 정답 PUBLISH", "after": "2/3 NO_PUBLISH", "failure": "systematic 정상→비정상 회귀", "decision": "P0b rollback"},
+        {"rank": 2, "post_id": "11718097", "expected_title": "망겜의 힐러", "before": "3/3 NO_PUBLISH", "after": "2/3 NO_PUBLISH + ‘뉴 빌런’ 공개 1/3", "failure": "신규 unsafe/wrong-title", "decision": "P0b rollback"}
+      ]
+    }
+  }
+}

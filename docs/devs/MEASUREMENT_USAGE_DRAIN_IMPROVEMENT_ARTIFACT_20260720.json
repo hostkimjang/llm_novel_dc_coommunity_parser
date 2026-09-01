@@ -1,0 +1,414 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "계측 완결성 개선과 다음 아키텍처 계획",
+    "description": "하드캡 SSE usage 유실 수정, 문제 2행 실제 canary, 2,712행 회귀와 다음 PublicationFinalizer·ObservationEnvelope 계획",
+    "generatedAt": "2026-07-20T00:30:00+09:00",
+    "blocks": [
+      {
+        "id": "title",
+        "type": "markdown",
+        "body": "# 계측 완결성 개선과 다음 아키텍처 계획"
+      },
+      {
+        "id": "technical_summary",
+        "type": "markdown",
+        "body": "## 기술 요약\n\n**이번 단계에서 계측 결함 1종은 코드로 수정했고, 과거 문제 2행은 새 실제 canary에서 모두 `measurement GO`로 회복했다.** 하드캡이 의미 출력을 동결한 뒤에도 vLLM의 마지막 provider usage SSE만 drain하는 경로를 추가했다. 동결 뒤 content는 결과·JSON parser·token count에 반영하지 않으며, drain 실패는 재시도하지 않고 기존 `ESTIMATED/NO-GO`를 유지한다.\n\n**기존 공개 정답은 흔들리지 않았다.** 두 canary 모두 public WAL 불변, public projection/outcome drift 0이고, 2,712행 deterministic replay도 public projection mismatch 0·reason mismatch 0·normal→abnormal 0이었다.\n\n**그러나 전체 개선은 끝나지 않았다.** 기존 32행×3회 grouped 6개 arm 전체 재실행, 의미 효과, search/router, PublicationFinalizer 추출, ObservationEnvelope, P2 188행 early route는 아직 미승인이다. 현재 최종 상태는 `measurement targeted GO`, `semantic/search/router/P2 NO-GO`, `full_scan_approval=false`다."
+      },
+      {
+        "id": "headline_metrics",
+        "type": "metric-strip",
+        "cardIds": [
+          "baseline_measurement_card",
+          "targeted_recovery_card",
+          "unlinked_card",
+          "replay_card",
+          "tests_card"
+        ]
+      },
+      {
+        "id": "linkage_chart_heading",
+        "type": "markdown",
+        "body": "## 동일 문제 2행에서 unlinked가 2건에서 0건으로 줄었다\n\n이 막대는 기존 실패 row attempt와 새 fresh observation의 link 상태만 비교한다. 각 시점의 분모는 같은 두 post_id이며, 의미 정확도나 32행 전체 arm의 개선률을 나타내지 않는다."
+      },
+      {
+        "id": "linkage_chart_block",
+        "type": "chart",
+        "chartId": "linkage_chart"
+      },
+      {
+        "id": "transition_heading",
+        "type": "markdown",
+        "body": "## 문제 2행의 계측 연결이 0/2에서 2/2로 회복됐다\n\n과거에는 각 행의 물리 호출 한 번이 provider usage 최종 SSE를 받지 못해 `COMPLETE_WITH_ESTIMATES`가 되었고, writer가 정확히 fail-close하면서 publication link를 만들지 않았다. 새 canary에서는 모든 호출 usage가 `PROVIDER_REPORTED`였고 row seal과 authoritative link가 함께 검증됐다. 이는 기존 추정치를 실제값으로 세탁한 결과가 아니다."
+      },
+      {
+        "id": "transition_table_block",
+        "type": "table",
+        "tableId": "transition_table"
+      },
+      {
+        "id": "scope_heading",
+        "type": "markdown",
+        "body": "## 비교 범위와 지표 정의\n\n`BEFORE`는 2026-07-18 grouped run에서 실제로 unlinked였던 두 row attempt다. `AFTER`는 같은 post_id를 각각 새 normal source owner와 fresh no-public-write observation으로 실행한 2026-07-20 canary다. `measurement GO`는 provider-reported usage, sealed row, authoritative publication link, 독립 readback exact가 모두 충족된 상태다. `wall_ms`는 물리 호출 시간의 합이며 end-to-end 지연과 동일하지 않다. 두 행뿐이므로 모양을 과장하는 차트 대신 exact audit table을 사용했다."
+      },
+      {
+        "id": "method_heading",
+        "type": "markdown",
+        "body": "## 수정은 HTTP vLLM 하드캡 경로 하나에 제한했다\n\n반환 텍스트는 기존 하드캡 지점에서 그대로 동결한다. 이후 SSE는 `stream_options.include_usage=true`인 경우에만 usage drain 모드로 읽고, reasoning/content/all-chunk 누적은 중지한다. 마지막 usage를 받으면 즉시 종료하며 `LLM_DRAIN_USAGE_AFTER_HARD_CAP=0`으로 되돌릴 수 있다. drain 중 transport 오류는 유효한 의미 결과를 버리거나 요청을 재실행하지 않고 기존 추정 usage와 NO-GO를 유지한다. JSON-tail·text-repeat 조기 종료는 비용·지연 의미를 바꾸지 않도록 이번 패치에서 제외했다."
+      },
+      {
+        "id": "gate_heading",
+        "type": "markdown",
+        "body": "## 무결성 게이트는 통과했지만 의미·검색 승인은 그대로 닫혀 있다\n\n실제 runtime, search health, measurement, 공개 비간섭, deterministic replay, semantic quality, P2, full scan을 서로 독립 판정했다. targeted 2행 성공을 32행×3회 전체 arm이나 2,712 의미 품질 개선으로 확대 해석하지 않는다."
+      },
+      {
+        "id": "gate_table_block",
+        "type": "table",
+        "tableId": "gate_table"
+      },
+      {
+        "id": "robustness_heading",
+        "type": "markdown",
+        "body": "## 강건성 확인과 남은 한계\n\nFocused/adjacent 63개 테스트와 compile/diff check가 통과했다. deterministic hard-cap test는 동결 뒤 content 비반영, provider usage 회수, kill switch, drain 오류 시 무재시도 fail-close를 각각 검증했다. 실제 두 canary에서는 원래의 stochastic runaway가 재발하지 않았으므로, 실환경에서 하드캡 drain이 직접 발동했다는 주장은 하지 않는다. 실런이 증명한 것은 과거 문제 post_id의 새 측정이 2/2 exact·linked로 끝났다는 사실이다.\n\n또한 새 canary의 독립 readback actual은 합계 27 calls, 381,157 tokens, physical-call wall 합 327,947ms이며 estimated usage 0이다. BEFORE arm은 estimated usage가 한 건씩 포함되어 actual KPI가 `NOT_ESTIMABLE`이므로 비용 개선률은 계산하지 않는다."
+      },
+      {
+        "id": "plan_heading",
+        "type": "markdown",
+        "body": "## 다음 구현은 기존 정답을 고정한 뒤 한 경계씩 진행한다\n\n전문가 감사의 공통 결론은 최종 writer를 한 번에 재작성하지 말고 golden equivalence부터 만드는 것이다. `PublicationFinalizer`는 기존 `evaluate_publish_contract/apply_publish_contract`를 감싸는 얇은 façade로 시작하고, `ObservationEnvelope`는 기존 receipt를 교체하지 않는 additive wrapper로만 도입한다. 각 단계는 별도 kill switch와 rollback boundary를 갖는다."
+      },
+      {
+        "id": "roadmap_table_block",
+        "type": "table",
+        "tableId": "roadmap_table"
+      },
+      {
+        "id": "further_questions",
+        "type": "markdown",
+        "body": "## 추가로 답해야 할 질문\n\n1. 32행×3회 동일 RunSpec 재실행에서 6/6 arm measurement가 exact로 닫히는가?\n2. PublicationFinalizer façade가 기존 identity·ledger·trace·decision hash를 byte-equivalent하게 보존하는가?\n3. ObservationEnvelope가 서로 다른 router/plan/shadow/recovery source view를 같은 snapshot lineage에 묶으면서 legacy receipt bytes를 보존하는가?\n4. search degraded와 router false-review가 개선되기 전에도 효과를 안전하게 측정할 public-WAL-copy simulator를 만들 수 있는가?\n5. 위 게이트가 모두 green일 때 초저위험 188행 P2 canary를 시작할 것인가?\n\n**현재 판정:** P0 usage-drain slice `GO`, PublicationFinalizer/Envelope `DESIGN READY·NOT IMPLEMENTED`, semantic activation/P2 `NO-GO`, `full_scan_approval=false`."
+      }
+    ],
+    "cards": [
+      {
+        "id": "baseline_measurement_card",
+        "dataset": "headline",
+        "sourceId": "baseline_source",
+        "description": "기존 grouped 6개 arm 중 measurement GO",
+        "metrics": [
+          {"label": "기존 GO arm", "field": "baseline_go_arms", "format": "number"},
+          {"label": "전체 arm", "field": "baseline_total_arms", "format": "number"}
+        ]
+      },
+      {
+        "id": "targeted_recovery_card",
+        "dataset": "headline",
+        "sourceId": "canary_source",
+        "description": "과거 문제 2행의 새 fresh observation measurement GO",
+        "metrics": [
+          {"label": "targeted GO rows", "field": "targeted_go_rows", "format": "number"},
+          {"label": "targeted rows", "field": "targeted_total_rows", "format": "number"}
+        ]
+      },
+      {
+        "id": "unlinked_card",
+        "dataset": "headline",
+        "sourceId": "comparison_source",
+        "description": "문제 2행의 unlinked 전이",
+        "metrics": [
+          {"label": "AFTER unlinked", "field": "after_unlinked_rows", "format": "number"},
+          {"label": "BEFORE unlinked", "field": "before_unlinked_rows", "format": "number"}
+        ]
+      },
+      {
+        "id": "replay_card",
+        "dataset": "headline",
+        "sourceId": "replay_source",
+        "description": "2,712행 normal-to-abnormal deterministic contract regression",
+        "metrics": [
+          {"label": "contract regression", "field": "frozen_contract_regressions", "format": "number"},
+          {"label": "replay rows", "field": "frozen_rows", "format": "number"}
+        ]
+      },
+      {
+        "id": "tests_card",
+        "dataset": "headline",
+        "sourceId": "code_source",
+        "description": "이번 slice focused/adjacent unittest",
+        "metrics": [
+          {"label": "tests OK", "field": "tests_ok", "format": "number"}
+        ]
+      }
+    ],
+    "charts": [
+      {
+        "id": "linkage_chart",
+        "title": "문제 2행의 계측 link 상태",
+        "subtitle": "BEFORE=기존 실패 attempt, AFTER=새 independent readback; 각 n=2",
+        "type": "bar",
+        "dataset": "linkage_counts",
+        "sourceId": "comparison_source",
+        "options": {"orientation": "vertical", "grouping": "grouped"},
+        "encodings": {
+          "x": {"field": "phase", "type": "nominal", "label": "비교 시점"},
+          "y": {"field": "rows", "type": "quantitative", "label": "행 수", "format": "number"},
+          "color": {"field": "link_status", "type": "nominal", "label": "link 상태"},
+          "tooltip": [
+            {"field": "phase", "type": "nominal"},
+            {"field": "link_status", "type": "nominal"},
+            {"field": "rows", "type": "quantitative", "format": "number"}
+          ]
+        }
+      }
+    ],
+    "tables": [
+      {
+        "id": "transition_table",
+        "title": "문제 post_id exact 계측 전이",
+        "subtitle": "BEFORE=실패한 grouped row attempt, AFTER=새 fresh observation independent readback",
+        "dataset": "transitions",
+        "sourceId": "comparison_source",
+        "defaultSort": {"field": "post_id", "direction": "desc"},
+        "columns": [
+          {"field": "post_id", "label": "post_id", "type": "text"},
+          {"field": "failed_stage", "label": "과거 유실 단계", "type": "text"},
+          {"field": "before_measurement", "label": "BEFORE", "type": "text"},
+          {"field": "after_measurement", "label": "AFTER", "type": "text"},
+          {"field": "after_exact_usage", "label": "AFTER exact usage", "type": "text"},
+          {"field": "after_calls", "label": "calls", "type": "number", "format": "number"},
+          {"field": "after_total_tokens", "label": "tokens", "type": "number", "format": "number"},
+          {"field": "after_wall_ms_sum", "label": "physical wall 합(ms)", "type": "number", "format": "number"},
+          {"field": "public_drift", "label": "public drift", "type": "text"}
+        ]
+      },
+      {
+        "id": "gate_table",
+        "title": "독립 GO/NO-GO 게이트",
+        "subtitle": "2026-07-20 targeted P0 결과와 미승인 범위를 분리",
+        "dataset": "gates",
+        "sourceId": "synthesis_source",
+        "defaultSort": {"field": "rank", "direction": "asc"},
+        "columns": [
+          {"field": "rank", "label": "순서", "type": "number", "format": "number"},
+          {"field": "gate", "label": "게이트", "type": "text"},
+          {"field": "status", "label": "상태", "type": "text"},
+          {"field": "evidence", "label": "근거", "type": "text"},
+          {"field": "boundary", "label": "해석 경계", "type": "text"}
+        ]
+      },
+      {
+        "id": "roadmap_table",
+        "title": "기존 정답 보존 우선 개선 계획",
+        "subtitle": "한 단계 한 rollback boundary; deterministic failure 1회면 즉시 NO-GO",
+        "dataset": "roadmap",
+        "sourceId": "code_source",
+        "defaultSort": {"field": "rank", "direction": "asc"},
+        "columns": [
+          {"field": "rank", "label": "순서", "type": "number", "format": "number"},
+          {"field": "phase", "label": "단계", "type": "text"},
+          {"field": "state", "label": "현재", "type": "text"},
+          {"field": "work", "label": "작업", "type": "text"},
+          {"field": "rollback", "label": "rollback", "type": "text"},
+          {"field": "go_condition", "label": "GO 조건", "type": "text"}
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "id": "baseline_source",
+        "label": "2026-07-18 grouped measurement baseline",
+        "path": "out/regression_safe_2712_remaining_improvements_20260718/release_candidate_grouped_ab_v1/run_summary.json",
+        "description": "실패 arm의 decision-call ledger independent readback을 함께 사용",
+        "query": {
+          "engine": "python",
+          "language": "python",
+          "sql": "SELECT * FROM source_rows",
+          "description": "run_summary와 immutable decision-call ledger를 post_id로 exact readback",
+          "tables_used": ["run_summary.json", "repeat_1/before_decision_call_ledger", "repeat_2/after_decision_call_ledger"],
+          "filters": ["post_id in 11718107,11718058", "actual failing row attempts only"],
+          "metric_definitions": ["measurement GO requires provider-reported usage, sealed row and authoritative link"]
+        }
+      },
+      {
+        "id": "canary_source",
+        "label": "2026-07-20 문제 2행 measurement canary",
+        "path": "out/measurement_usage_drain_canary_20260719",
+        "description": "post별 summary, manifest, checkpoint와 immutable decision-call ledger independent readback",
+        "query": {
+          "engine": "python",
+          "language": "python",
+          "sql": "SELECT * FROM source_rows",
+          "description": "두 post의 source/observed gate와 observed ledger를 exact readback",
+          "tables_used": ["post_11718107/summary.json", "post_11718058/summary.json", "observed_after_decision_call_ledger"],
+          "filters": ["requested_parallel=16", "effective_parallel=1", "dashboard on", "recovery activation off", "public_apply=false"],
+          "metric_definitions": ["physical wall 합=각 physical call wall_ms의 합; end-to-end wall이 아님"]
+        }
+      },
+      {
+        "id": "comparison_source",
+        "label": "문제 2행 BEFORE/AFTER exact transition",
+        "path": "docs/devs/CHECKLIST.md",
+        "description": "기존 failing arm ledger와 2026-07-20 canary independent readback을 post_id로 exact 결합",
+        "query": {
+          "engine": "python",
+          "language": "python",
+          "sql": "SELECT * FROM source_rows",
+          "description": "baseline decision-call ledgers와 새 canary summaries/ledgers의 exact paired transition",
+          "tables_used": ["release_candidate_grouped_ab_v1 failing ledgers", "measurement_usage_drain_canary_20260719 observed ledgers"],
+          "filters": ["post_id in 11718107,11718058", "only actual failing row attempts and new matched observations"],
+          "metric_definitions": ["linked/unlinked are independently validated immutable ledger row states"]
+        }
+      },
+      {
+        "id": "replay_source",
+        "label": "2,712행 deterministic publish-contract replay",
+        "path": "out/measurement_usage_drain_canary_20260719/frozen2712_publish_contract_replay/publish_contract_replay_summary.json",
+        "query": {
+          "engine": "python",
+          "language": "python",
+          "sql": "SELECT * FROM source_rows",
+          "description": "저장된 2,712행 publish contract를 현재 순수 계약으로 재평가",
+          "tables_used": ["final_2712_row_adjudication_ledger.jsonl", "expert_result_20260715_143806_848671.json"],
+          "filters": ["network_used=false", "expert_main_used=false", "adjudication is cohort-only"],
+          "metric_definitions": ["normal-to-abnormal=stored compliant에서 recomputed noncompliant로 전이"]
+        }
+      },
+      {
+        "id": "code_source",
+        "label": "usage drain 코드와 회귀 테스트",
+        "path": "src/llm_batch/llm/client.py",
+        "description": "tests/test_llm_client_stream_timeout.py 및 인접 contract tests를 함께 검토",
+        "query": {
+          "engine": "unittest",
+          "language": "python",
+          "sql": "SELECT * FROM source_rows",
+          "description": "compile, focused and adjacent unittest 결과를 materialize",
+          "tables_used": ["src/llm_batch/llm/client.py", "tests/test_llm_client_stream_timeout.py", "tests/test_decision_tracing_llm.py", "tests/test_publication_shadow_observation.py", "tests/test_semantic_recovery_plan.py", "tests/test_semantic_review_router.py", "tests/test_semantic_publication_authority_contract.py"],
+          "filters": ["63 tests executed 2026-07-20", "diff-check scoped to changed files"],
+          "metric_definitions": ["tests OK=count of executed unittest cases with zero failures/errors"]
+        }
+      },
+      {
+        "id": "synthesis_source",
+        "label": "P0 검증과 독립 게이트 종합",
+        "path": "docs/devs/CHECKLIST.md",
+        "description": "canary, replay, code tests와 아키텍처 감사를 과장 없이 통합",
+        "query": {
+          "engine": "manual_review",
+          "language": "text",
+          "sql": "SELECT * FROM source_rows",
+          "description": "서로 다른 분모와 게이트를 분리한 기술 검토",
+          "tables_used": ["CHECKLIST.md", "canary summaries", "replay summary", "code/test diff"],
+          "filters": ["targeted evidence only", "semantic causal claim excluded", "full_scan_approval remains false"],
+          "metric_definitions": ["GO statuses are scope-specific and non-transitive"]
+        }
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "status": "ready",
+    "generatedAt": "2026-07-20T00:30:00+09:00",
+    "datasets": {
+      "headline": [
+        {
+          "baseline_go_arms": 4,
+          "baseline_total_arms": 6,
+          "targeted_go_rows": 2,
+          "targeted_total_rows": 2,
+          "before_unlinked_rows": 2,
+          "after_unlinked_rows": 0,
+          "frozen_contract_regressions": 0,
+          "frozen_rows": 2712,
+          "tests_ok": 63
+        }
+      ],
+      "linkage_counts": [
+        {"phase": "BEFORE", "link_status": "linked", "rows": 0},
+        {"phase": "BEFORE", "link_status": "unlinked", "rows": 2},
+        {"phase": "AFTER", "link_status": "linked", "rows": 2},
+        {"phase": "AFTER", "link_status": "unlinked", "rows": 0}
+      ],
+      "transitions": [
+        {
+          "post_id": "11718107",
+          "failed_stage": "VERIFIER call #8",
+          "before_measurement": "NO-GO / sealed but unlinked / COMPLETE_WITH_ESTIMATES",
+          "after_measurement": "GO / sealed+linked / independent readback EXACT",
+          "after_exact_usage": "19/19 PROVIDER_REPORTED; ESTIMATED 0",
+          "after_calls": 19,
+          "after_total_tokens": 266014,
+          "after_wall_ms_sum": 218860,
+          "public_drift": "projection 0 / outcome 0 / WAL unchanged"
+        },
+        {
+          "post_id": "11718058",
+          "failed_stage": "SYNTHESIZER call #7",
+          "before_measurement": "NO-GO / sealed but unlinked / COMPLETE_WITH_ESTIMATES",
+          "after_measurement": "GO / sealed+linked / independent readback EXACT",
+          "after_exact_usage": "8/8 PROVIDER_REPORTED; ESTIMATED 0",
+          "after_calls": 8,
+          "after_total_tokens": 115143,
+          "after_wall_ms_sum": 109087,
+          "public_drift": "projection 0 / outcome 0 / WAL unchanged"
+        }
+      ],
+      "gates": [
+        {"rank": 1, "gate": "targeted runtime", "status": "GO", "evidence": "source+observed 4/4 runs completed; failed 0", "boundary": "두 문제 post만"},
+        {"rank": 2, "gate": "search health", "status": "GO for canary", "evidence": "각 run 16/16 healthy, failure 0", "boundary": "검색 결과의 의미 품질 승인이 아님"},
+        {"rank": 3, "gate": "call measurement", "status": "GO targeted", "evidence": "2/2 linked; 27/27 provider usage; independent EXACT", "boundary": "기존 6 arm 전체 재실행 전 grouped 승격 금지"},
+        {"rank": 4, "gate": "publication noninterference", "status": "GO", "evidence": "2/2 WAL unchanged; projection/outcome drift 0", "boundary": "fresh observation only"},
+        {"rank": 5, "gate": "frozen deterministic replay", "status": "GO", "evidence": "2,712/2,712; projection/reason mismatch 0; normal→abnormal 0", "boundary": "LLM 의미 효과가 아닌 저장 계약"},
+        {"rank": 6, "gate": "semantic quality", "status": "NO-GO", "evidence": "이번 패치는 의미 판정 로직을 변경하지 않음", "boundary": "기존 grouped variance와 WRONG_WORK 잔존"},
+        {"rank": 7, "gate": "PublicationFinalizer / Envelope", "status": "DESIGN READY", "evidence": "Luna·Sol 감사로 seam, schema, golden gate 정의", "boundary": "아직 production code 미구현"},
+        {"rank": 8, "gate": "P2 / full scan", "status": "NO-GO", "evidence": "router/search/semantic gate 미통과", "boundary": "full_scan_approval=false"}
+      ],
+      "roadmap": [
+        {"rank": 1, "phase": "P0-M", "state": "IMPLEMENTED + TARGETED GO", "work": "hard-cap 뒤 provider usage drain-only", "rollback": "LLM_DRAIN_USAGE_AFTER_HARD_CAP=0", "go_condition": "changed output 0, exact usage 또는 기존 fail-close"},
+        {"rank": 2, "phase": "P0-M2", "state": "PENDING", "work": "동일 32행×3회 grouped 6 arm 재실행", "rollback": "P0-M env kill switch", "go_condition": "measurement 6/6, deterministic invariant failure 0"},
+        {"rank": 3, "phase": "P0-F", "state": "DESIGN READY", "work": "얇은 PublicationFinalizer façade + golden equivalence harness", "rollback": "façade OFF, 기존 sync/reapply 경로", "go_condition": "identity/ledger/trace/decision hashes byte-equivalent"},
+        {"rank": 4, "phase": "P1-E", "state": "DESIGN READY", "work": "legacy receipt 참조형 ObservationEnvelope/SidecarReceipt", "rollback": "emission/consumption OFF; legacy receipts 유지", "go_condition": "public_apply=false, source lineage exact, public WAL 불변"},
+        {"rank": 5, "phase": "P1-S", "state": "BLOCKED BY PRIOR GATES", "work": "public WAL copy 전용 intervention simulator와 family 반복", "rollback": "simulator artifact 폐기; public writer 미연결", "go_condition": "cohort 개선, normal regression 반복 집중 0, variance 공개"},
+        {"rank": 6, "phase": "P2", "state": "NO-GO", "work": "초저위험 188행 early-route canary", "rollback": "route OFF", "go_condition": "measurement/search/router/semantic 전부 green"}
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "baseline_source",
+      "label": "2026-07-18 grouped measurement baseline",
+      "path": "out/regression_safe_2712_remaining_improvements_20260718/release_candidate_grouped_ab_v1/run_summary.json",
+      "query": {"engine": "python", "language": "python", "sql": "SELECT * FROM source_rows", "description": "실패 arm과 ledger readback", "tables_used": ["run_summary.json", "decision_call_ledgers"], "filters": ["problem rows only"], "metric_definitions": ["measurement linkage"]}
+    },
+    {
+      "id": "canary_source",
+      "label": "2026-07-20 문제 2행 measurement canary",
+      "path": "out/measurement_usage_drain_canary_20260719",
+      "query": {"engine": "python", "language": "python", "sql": "SELECT * FROM source_rows", "description": "canary summaries and independent readback", "tables_used": ["summary.json", "observed ledgers"], "filters": ["public_apply=false"], "metric_definitions": ["exact calls/tokens/wall"]}
+    },
+    {
+      "id": "comparison_source",
+      "label": "문제 2행 BEFORE/AFTER exact transition",
+      "path": "docs/devs/CHECKLIST.md",
+      "query": {"engine": "python", "language": "python", "sql": "SELECT * FROM source_rows", "description": "baseline failing ledgers and new canary independent readbacks", "tables_used": ["old ledgers", "new ledgers"], "filters": ["two exact post_ids"], "metric_definitions": ["immutable link transition"]}
+    },
+    {
+      "id": "replay_source",
+      "label": "2,712행 deterministic replay",
+      "path": "out/measurement_usage_drain_canary_20260719/frozen2712_publish_contract_replay/publish_contract_replay_summary.json",
+      "query": {"engine": "python", "language": "python", "sql": "SELECT * FROM source_rows", "description": "frozen contract replay", "tables_used": ["publish_contract_replay_summary.json"], "filters": ["network=false"], "metric_definitions": ["contract regression"]}
+    },
+    {
+      "id": "code_source",
+      "label": "usage drain code and tests",
+      "path": "src/llm_batch/llm/client.py",
+      "query": {"engine": "unittest", "language": "python", "sql": "SELECT * FROM source_rows", "description": "focused and adjacent tests", "tables_used": ["client.py", "tests"], "filters": ["63 tests"], "metric_definitions": ["zero failures/errors"]}
+    },
+    {
+      "id": "synthesis_source",
+      "label": "P0 검증 종합",
+      "path": "docs/devs/CHECKLIST.md",
+      "query": {"engine": "manual_review", "language": "text", "sql": "SELECT * FROM source_rows", "description": "scope-specific gate synthesis", "tables_used": ["CHECKLIST.md", "canary", "replay"], "filters": ["no causal overclaim"], "metric_definitions": ["non-transitive GO"]}
+    }
+  ]
+}

@@ -17,6 +17,8 @@ from expert_main import (
     _allow_missing_shard_auto_scale_up,
     _apply_reuse_only_healthy_endpoint_filter,
     _assert_fresh_output_attempt,
+    _attach_semantic_recovery_plan_receipt,
+    _attach_semantic_review_router_receipt,
     _build_decision_call_measurement_gate,
     _build_runtime_completion_gate,
     _build_completed_subset_rows,
@@ -43,12 +45,81 @@ from expert_main import (
     _public_comment_metadata,
     _runtime_binding_echo_fields,
     _require_fresh_execution_authoritative_references,
+    _snapshot_indexed_measurement_rows,
     _small_run_shard_lifecycle_blocked,
     load_jsonl_posts,
 )
 
 
 class ExpertMainInputLoaderTest(unittest.TestCase):
+    def test_router_attachment_preserves_publication_decision(self):
+        from src.llm_batch.ledger.publication_commit import (
+            compute_publication_decision_commit,
+        )
+        from tests.test_publication_decision_commit import _valid_result
+
+        result = _valid_result(post_id=101, publish=False)
+        before = compute_publication_decision_commit(
+            result,
+            publication_scope_id="a" * 64,
+            attempt_run_id="router-active-path-test",
+            input_index=1,
+            post_id=101,
+        )
+        receipt = _attach_semantic_review_router_receipt(
+            result,
+            publication_receipt=before,
+            attempt_run_id="router-active-path-test",
+        )
+        router_bound = compute_publication_decision_commit(
+            result,
+            publication_scope_id="a" * 64,
+            attempt_run_id="router-active-path-test",
+            input_index=1,
+            post_id=101,
+        )
+        plan_receipt = _attach_semantic_recovery_plan_receipt(
+            result,
+            publication_receipt=router_bound,
+            attempt_run_id="router-active-path-test",
+        )
+        after = compute_publication_decision_commit(
+            result,
+            publication_scope_id="a" * 64,
+            attempt_run_id="router-active-path-test",
+            input_index=1,
+            post_id=101,
+        )
+
+        self.assertEqual(receipt["mode"], "REVIEW_ONLY")
+        self.assertFalse(receipt["public_apply"])
+        self.assertEqual(plan_receipt["mode"], "PLAN_ONLY")
+        self.assertFalse(plan_receipt["public_apply"])
+        self.assertEqual(plan_receipt["plan"]["search_calls_executed"], 0)
+        self.assertEqual(plan_receipt["plan"]["network_calls_executed"], 0)
+        self.assertEqual(after.decision_id, before.decision_id)
+        self.assertEqual(router_bound.decision_id, before.decision_id)
+        self.assertEqual(after.stable_result_sha256, before.stable_result_sha256)
+        self.assertEqual(
+            router_bound.stable_result_sha256,
+            before.stable_result_sha256,
+        )
+        self.assertEqual(
+            after.public_projection_sha256,
+            before.public_projection_sha256,
+        )
+
+    def test_measurement_snapshot_preserves_integer_indices_and_detaches(self):
+        source = {1: {"row_summary": {"writer_complete": True}}}
+        snapshot = _snapshot_indexed_measurement_rows(source)
+
+        self.assertEqual(list(snapshot), [1])
+        snapshot[1]["row_summary"]["writer_complete"] = False
+        self.assertTrue(source[1]["row_summary"]["writer_complete"])
+
+        with self.assertRaisesRegex(ValueError, "positive int"):
+            _snapshot_indexed_measurement_rows({"1": {}})  # type: ignore[arg-type]
+
     def test_loader_and_line_count_use_one_immutable_input_snapshot(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "input.jsonl"

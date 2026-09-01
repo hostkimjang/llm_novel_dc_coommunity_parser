@@ -1316,6 +1316,394 @@ class PromotionGateContractTest(unittest.TestCase):
         )
         self.assertEqual(getattr(ctx, "_last_promotion_gate_decision"), decision)
 
+    def test_direct_image_multi_work_listing_is_quarantined_without_post_ui_signal(self):
+        pipeline = AgenticPipeline(llm=DummyLLM(), mcp=DummyMCP(), max_iterations=1)
+        selected_title = "선택된 작품"
+        item = {
+            "ocr_text": (
+                "다른 작품, 선택된 작품, NOVEL · 작가명, "
+                "434화 첫 장면, 433화 두 번째 장면, 432화 세 번째 장면"
+            ),
+            "visual_summary": "웹소설 플랫폼의 작품 목록 및 회차 리스트 화면 스크린샷",
+            "explicit_work_title": selected_title,
+            "explicit_author_name": "작가명",
+            "work_cues": [selected_title, "작가명"],
+            "evidence_type": "explicit_text",
+            "title_role": "work_title",
+            "promotion_eligible": True,
+            "confidence": "High",
+        }
+        ctx = ConversationContext(
+            post_id=1,
+            post_data={
+                "post_id": 1,
+                "title": "이번 주말에 왔네",
+                "content_blocks": [{"type": "image", "text": ""}],
+                "image_enrichment": [dict(item)],
+            },
+            comments=[],
+        )
+
+        self.assertTrue(pipeline._is_background_listing_vlm_item(item))
+        self.assertIsNone(pipeline._pick_promotable_direct_image_work_title_candidate(ctx))
+        self.assertFalse(
+            pipeline._has_structured_direct_image_work_surface_evidence(
+                ctx,
+                selected_title,
+            )
+        )
+        guarded = pipeline._apply_background_listing_guard(
+            item=dict(item),
+            post_data=ctx.post_data,
+            comments=[],
+        )
+        self.assertTrue(guarded["background_listing_only"])
+        self.assertEqual(selected_title, guarded["suppressed_explicit_work_title"])
+        self.assertEqual("", guarded["explicit_work_title"])
+
+    def test_direct_image_listing_inference_uses_distinct_numbered_episodes(self):
+        pipeline = AgenticPipeline(llm=DummyLLM(), mcp=DummyMCP(), max_iterations=1)
+        ocr_only_marker = {
+            "ocr_text": "작품 목록 선택된 작품 12화 첫 장면 11화 두 번째 장면",
+            "visual_summary": "웹소설 플랫폼 화면",
+        }
+        duplicated_one_episode = {
+            "ocr_text": "작품 목록 선택된 작품 12화",
+            "visual_summary": "작품 목록 화면의 12화 안내",
+        }
+        bare_episode_labels = {
+            "ocr_text": "작품 목록 회차 안내 회차 목록",
+            "visual_summary": "웹소설 플랫폼 화면",
+        }
+
+        self.assertTrue(pipeline._is_background_listing_vlm_item(ocr_only_marker))
+        self.assertFalse(pipeline._is_background_listing_vlm_item(duplicated_one_episode))
+        self.assertFalse(pipeline._is_background_listing_vlm_item(bare_episode_labels))
+
+    def test_direct_image_recorder_seals_headline_aligned_multi_work_conflict(self):
+        pipeline = AgenticPipeline(llm=DummyLLM(), mcp=DummyMCP(), max_iterations=1)
+        selected_title = "이미지에 선택된 작품"
+        competing_title = "본문이 가리키는 작품"
+        competing_alias = "본문작약칭"
+        ctx = ConversationContext(
+            post_id=2,
+            post_data={
+                "post_id": 2,
+                "title": f"{competing_alias}가 이번 주말에 왔네",
+                "content_blocks": [{"type": "image", "text": ""}],
+                "image_enrichment": [
+                    {
+                        "ocr_text": (
+                            f"{selected_title} 작가명 작가A 자유 연재 "
+                            "조회 335 추천 14 4회차"
+                        ),
+                        "visual_summary": "단일 웹소설 작품 상세 페이지",
+                        "explicit_work_title": selected_title,
+                        "explicit_author_name": "작가A",
+                        "work_cues": [selected_title, "조회 335", "추천 14", "4회차"],
+                        "evidence_type": "explicit_text",
+                        "title_role": "work_title",
+                        "focus_role": "work_anchor",
+                        "screen_type": "work_surface",
+                        "surface_type": "official_detail_page",
+                        "promotion_eligible": True,
+                        "confidence": "High",
+                    }
+                ],
+            },
+            comments=[],
+        )
+        primary = DetectedTitle(
+            official_title=selected_title,
+            confidence="High",
+            source_tier="mixed",
+            reference_role="primary",
+        )
+        competing = DetectedTitle(
+            official_title=competing_title,
+            confidence="High",
+            alias_or_mention=competing_alias,
+            source_tier="llm_only",
+            reference_role="mentioned",
+        )
+        final_decision = {
+            "work_resolution": "resolved",
+            "title_resolution_state": "resolved",
+            "discussion_type": "review",
+            "consistency_flags": ["multi_work_title_cleared"],
+            "primary_work": primary.model_dump(),
+            "mentioned_works": [competing.model_dump()],
+        }
+
+        decision = pipeline._record_direct_image_work_surface_gate_decision(
+            ctx,
+            selected_title,
+            final_decision=final_decision,
+            verification_result={},
+            title_candidates=[primary, competing],
+        )
+
+        self.assertEqual("candidate_only", decision["status"])
+        self.assertFalse(decision["publish_allowed"])
+        self.assertIn("evidence_conflict", decision["reason_codes"])
+        self.assertIn("primary_work_ambiguous", decision["reason_codes"])
+
+        later_decision = pipeline._record_public_title_gate_decision(
+            ctx,
+            GroundingState(
+                post_id=ctx.post_id,
+                candidate_title=selected_title,
+                source="title_led_alias_public_title",
+                official_title_exists=True,
+                row_discusses_work_as_work=True,
+                title_resolution_state="resolved",
+                work_resolution="resolved",
+                scope=ScopeState(
+                    scope_kind="current_work",
+                    confidence="high",
+                    direct_bridge_sources=["title_led_consumption_bridge"],
+                ),
+            ),
+            [
+                EvidenceRecord(
+                    kind="title_led_consumption_bridge",
+                    strength="strong",
+                    supports_publish=True,
+                    reason_code="title_led_consumption_bridge",
+                    candidate_title=selected_title,
+                )
+            ],
+            final_decision={
+                "work_resolution": "resolved",
+                "title_resolution_state": "resolved",
+                "discussion_type": "review",
+                "primary_work": primary.model_dump(),
+            },
+            verification_result={},
+            title_candidates=[primary],
+        )
+
+        self.assertEqual("candidate_only", later_decision["status"])
+        self.assertFalse(later_decision["publish_allowed"])
+        self.assertIn("evidence_conflict", later_decision["reason_codes"])
+        self.assertIn("primary_work_ambiguous", later_decision["reason_codes"])
+        semantic = final_decision["_promotion_gate_state"]["semantic_publication"]
+        self.assertEqual("conflict", semantic["evidence_status"])
+        self.assertEqual("ambiguous", semantic["primary_work_status"])
+
+    def test_direct_image_same_item_competing_work_surface_blocks_without_listing_marker(self):
+        pipeline = AgenticPipeline(llm=DummyLLM(), mcp=DummyMCP(), max_iterations=1)
+        selected_title = "이미지가 고른 작품"
+        competing_title = "같은 이미지의 경쟁 작품"
+        ctx = ConversationContext(
+            post_id=5,
+            post_data={
+                "post_id": 5,
+                "title": "이번 주말에 왔네",
+                "content_blocks": [{"type": "image", "text": ""}],
+                "image_enrichment": [
+                    {
+                        "source_url": "https://example.test/image/1",
+                        "block_index": 0,
+                        "ocr_text": (
+                            f"{competing_title}, {selected_title}, NOVEL · 작가A, "
+                            "434화 첫 장면, 433화 두 번째 장면"
+                        ),
+                        "visual_summary": "웹소설 플랫폼의 상세 화면 스크린샷",
+                        "explicit_work_title": selected_title,
+                        "explicit_author_name": "작가A",
+                        "work_cues": [selected_title, "작가A"],
+                        "evidence_type": "explicit_text",
+                        "title_role": "work_title",
+                        "focus_role": "work_anchor",
+                        "screen_type": "work_surface",
+                        "surface_type": "official_detail_page",
+                        "promotion_eligible": True,
+                        "confidence": "High",
+                    }
+                ],
+            },
+            comments=[],
+        )
+        primary = DetectedTitle(
+            official_title=selected_title,
+            confidence="High",
+            source_tier="mixed",
+            reference_role="primary",
+        )
+        competing = DetectedTitle(
+            official_title=competing_title,
+            confidence="High",
+            source_tier="llm_only",
+            reference_role="mentioned",
+        )
+        final_decision = {
+            "work_resolution": "resolved",
+            "title_resolution_state": "resolved",
+            "discussion_type": "review",
+            "primary_work": primary.model_dump(),
+            "mentioned_works": [competing.model_dump()],
+        }
+
+        decision = pipeline._record_direct_image_work_surface_gate_decision(
+            ctx,
+            selected_title,
+            final_decision=final_decision,
+            verification_result={},
+            title_candidates=[primary, competing],
+        )
+
+        self.assertEqual("candidate_only", decision["status"])
+        self.assertFalse(decision["publish_allowed"])
+        self.assertIn("evidence_conflict", decision["reason_codes"])
+        self.assertIn("primary_work_ambiguous", decision["reason_codes"])
+
+    def test_direct_image_multi_work_alias_requires_standalone_post_surface(self):
+        pipeline = AgenticPipeline(llm=DummyLLM(), mcp=DummyMCP(), max_iterations=1)
+        selected_title = "이미지 단일 작품"
+        competing_alias = "별도약칭"
+        ctx = ConversationContext(
+            post_id=3,
+            post_data={
+                "post_id": 3,
+                "title": f"{competing_alias}아님 이번 화 좋다",
+                "content_blocks": [{"type": "image", "text": ""}],
+                "image_enrichment": [
+                    {
+                        "ocr_text": f"{selected_title} 작가명 작가A 조회 335 추천 14 4회차",
+                        "visual_summary": "단일 웹소설 작품 상세 페이지",
+                        "explicit_work_title": selected_title,
+                        "explicit_author_name": "작가A",
+                        "work_cues": [selected_title, "조회 335", "추천 14", "4회차"],
+                        "evidence_type": "explicit_text",
+                        "title_role": "work_title",
+                        "focus_role": "work_anchor",
+                        "screen_type": "work_surface",
+                        "surface_type": "official_detail_page",
+                        "promotion_eligible": True,
+                        "confidence": "High",
+                    }
+                ],
+            },
+            comments=[],
+        )
+        primary = DetectedTitle(
+            official_title=selected_title,
+            confidence="High",
+            source_tier="mixed",
+            reference_role="primary",
+        )
+        competing = DetectedTitle(
+            official_title="별도 경쟁 작품",
+            confidence="High",
+            alias_or_mention=competing_alias,
+            source_tier="llm_only",
+            reference_role="mentioned",
+        )
+        final_decision = {
+            "work_resolution": "resolved",
+            "title_resolution_state": "resolved",
+            "discussion_type": "review",
+            "consistency_flags": ["multi_work_title_cleared"],
+            "primary_work": primary.model_dump(),
+            "mentioned_works": [competing.model_dump()],
+        }
+
+        semantic = pipeline._derive_semantic_publication_state(
+            ctx,
+            GroundingState(
+                post_id=3,
+                candidate_title=selected_title,
+                source="direct_image_work_surface_lock",
+                official_title_exists=True,
+                row_discusses_work_as_work=True,
+                title_resolution_state="resolved",
+                work_resolution="resolved",
+                scope=ScopeState(
+                    scope_kind="current_work",
+                    confidence="high",
+                    direct_bridge_sources=["direct_image_work_surface_lock"],
+                ),
+            ),
+            [
+                EvidenceRecord(
+                    kind="direct_image_work_surface",
+                    strength="strong",
+                    supports_publish=True,
+                    reason_code="direct_image_work_surface_bridge",
+                    candidate_title=selected_title,
+                )
+            ],
+            final_decision=final_decision,
+            verification_result={},
+            title_candidates=[primary, competing],
+        )
+
+        self.assertNotEqual("conflict", semantic.evidence_status)
+        self.assertEqual("unique", semantic.primary_work_status)
+
+    def test_direct_image_separate_detail_image_overrides_same_title_listing_ambiguity(self):
+        pipeline = AgenticPipeline(llm=DummyLLM(), mcp=DummyMCP(), max_iterations=1)
+        selected_title = "같은 작품"
+        listing_item = {
+            "source_url": "https://example.test/image/listing",
+            "block_index": 0,
+            "ocr_text": f"작품 목록 {selected_title} 12화 11화",
+            "visual_summary": "웹소설 작품 목록 화면",
+            "suppressed_explicit_work_title": selected_title,
+            "background_listing_only": True,
+            "promotion_eligible": False,
+        }
+        detail_item = {
+            "source_url": "https://example.test/image/detail",
+            "block_index": 1,
+            "ocr_text": f"{selected_title} 작가명 작가A 조회 335 추천 14 4회차",
+            "visual_summary": "단일 웹소설 작품 상세 페이지",
+            "explicit_work_title": selected_title,
+            "explicit_author_name": "작가A",
+            "work_cues": [selected_title, "조회 335", "추천 14", "4회차"],
+            "evidence_type": "explicit_text",
+            "title_role": "work_title",
+            "focus_role": "work_anchor",
+            "screen_type": "work_surface",
+            "surface_type": "official_detail_page",
+            "promotion_eligible": True,
+            "confidence": "High",
+        }
+        ctx = ConversationContext(
+            post_id=4,
+            post_data={
+                "post_id": 4,
+                "title": "이번 화 좋다",
+                "content_blocks": [{"type": "image", "text": ""}],
+                "image_enrichment": [listing_item, detail_item],
+            },
+            comments=[],
+        )
+        primary = DetectedTitle(
+            official_title=selected_title,
+            confidence="High",
+            source_tier="mixed",
+            reference_role="primary",
+        )
+        final_decision = {
+            "work_resolution": "resolved",
+            "title_resolution_state": "resolved",
+            "discussion_type": "review",
+            "primary_work": primary.model_dump(),
+        }
+
+        decision = pipeline._record_direct_image_work_surface_gate_decision(
+            ctx,
+            selected_title,
+            final_decision=final_decision,
+            verification_result={},
+            title_candidates=[primary],
+        )
+
+        self.assertEqual("publish", decision["status"])
+        self.assertTrue(decision["publish_allowed"])
+
     def test_direct_image_webtoon_media_is_candidate_hold_for_novel_parser(self):
         pipeline = AgenticPipeline(llm=DummyLLM(), mcp=DummyMCP(), max_iterations=1)
         title = "그레이스 길들이기"

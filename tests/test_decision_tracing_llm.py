@@ -152,6 +152,30 @@ class DecisionTracingLLMClientTest(unittest.TestCase):
         dispatch = next(f for f in self.frames() if f["frame_kind"] == "DISPATCH_INTENT")
         self.assertEqual(dispatch["payload"]["stage"], "DELIBERATION")
 
+    def test_comment_answer_judge_is_a_sealable_verifier_call(self):
+        client = self.client()
+
+        def completed(*args, **kwargs):
+            client.last_usage = {
+                "prompt_tokens": 2,
+                "completion_tokens": 1,
+                "total_tokens": 3,
+            }
+            client.last_usage_provenance = "PROVIDER_REPORTED"
+            client.last_model = "resolved"
+            return '{"comment_targets_post":true}'
+
+        with mock.patch.object(LLMClient, "_stream_chat_http", side_effect=completed):
+            client._stream_chat_http([], tag="comment_answer_judge")
+        client.seal_row_attempt()
+
+        dispatch = next(
+            frame for frame in self.frames() if frame["frame_kind"] == "DISPATCH_INTENT"
+        )
+        self.assertEqual(dispatch["payload"]["stage"], "VERIFIER")
+        self.assertEqual(self.registry.summary()["sealed_row_attempt_count"], 1)
+        self.assertEqual(self.registry.summary()["aborted_row_attempt_count"], 0)
+
     def test_estimated_usage_is_not_laundered_as_provider_reported(self):
         client = self.client()
 
@@ -174,6 +198,7 @@ class DecisionTracingLLMClientTest(unittest.TestCase):
             ("debate_advocate", "DELIBERATION"),
             ("snippet_analyzer", "SNIPPET_ANALYZER"),
             ("page_analyzer", "PAGE_ANALYZER"),
+            ("comment_answer_judge", "VERIFIER"),
         ):
             self.assertEqual(client._normalize_stage(tag, "TEXT"), (expected, True))
 

@@ -1,0 +1,1502 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "v7 최종 구조·계측 개선 BEFORE/AFTER 검증",
+    "description": "32행×3회 qualified expert_main, 192/192 독립 원장 readback, 2,712 replay와 cohort별 의미 변동을 분리 보고한다.",
+    "generatedAt": "2026-07-23T02:47:08+09:00",
+    "blocks": [
+      {
+        "id": "title",
+        "type": "markdown",
+        "body": "# v7 최종 구조·계측 개선 BEFORE/AFTER 검증"
+      },
+      {
+        "id": "summary",
+        "type": "markdown",
+        "body": "## 결론\n\n**계측은 GO, 의미 자동 활성화는 NO-GO다.** 사전 고정한 measurement-blind replacement를 포함한 선택 6개 arm은 runtime·measurement·noninterference 6/6, linked 192/192다. v6의 cross-arm systematic regression 2건과 introduced unsafe/wrong-title 각 2건은 v7에서 모두 0이 됐다. 그러나 `11718099` unsafe publish, `11718117` FN 회복 소실, wrong-work 3/5, router/search 미-green 때문에 production enable과 full scan 승인은 계속 닫는다."
+      },
+      {
+        "id": "headline",
+        "type": "metric-strip",
+        "cardIds": [
+          "measurement_card",
+          "semantic_card",
+          "replay_card",
+          "cost_card"
+        ]
+      },
+      {
+        "id": "measurement_heading",
+        "type": "markdown",
+        "body": "## 계측 완결률\n\nv4→v6→v7 원본→v7 qualified를 동일 분모로 비교한다. 원본 NO_GO와 retry1 NO_GO는 삭제하지 않았고, 사전 정책에 따라 첫 terminal measurement GO인 retry2만 분석 arm으로 선택했다."
+      },
+      {
+        "id": "measurement_chart_block",
+        "type": "chart",
+        "chartId": "measurement_chart"
+      },
+      {
+        "id": "semantic_heading",
+        "type": "markdown",
+        "body": "## 의미 결과와 변동성\n\nAFTER는 sidecar가 public apply되지 않은 fresh stochastic observation이다. 아래 변화는 기술적 비교이며 인과효과가 아니다."
+      },
+      {
+        "id": "semantic_chart_block",
+        "type": "chart",
+        "chartId": "semantic_chart"
+      },
+      {
+        "id": "v6_compare_block",
+        "type": "table",
+        "tableId": "v6_compare_table"
+      },
+      {
+        "id": "cohort_block",
+        "type": "table",
+        "tableId": "cohort_table"
+      },
+      {
+        "id": "examples_block",
+        "type": "table",
+        "tableId": "examples_table"
+      },
+      {
+        "id": "cost_heading",
+        "type": "markdown",
+        "body": "## calls·tokens·wall time\n\n호출·토큰은 immutable decision-call ledger 6개를 독립 재판독한 exact 값이다. run wall은 replacement retry2의 1,917.5초 꼬리 지연을 포함한다."
+      },
+      {
+        "id": "cost_block",
+        "type": "table",
+        "tableId": "cost_table"
+      },
+      {
+        "id": "retry_block",
+        "type": "table",
+        "tableId": "retry_table"
+      },
+      {
+        "id": "gate_block",
+        "type": "table",
+        "tableId": "gate_table"
+      },
+      {
+        "id": "architecture",
+        "type": "markdown",
+        "body": "## 현재 아키텍처 경계\n\n- `LLMClient`: hard-cap·repeat-stop 뒤 의미 텍스트를 동결하고 provider usage만 bounded drain한다. provider evidence가 없으면 ESTIMATED/UNAVAILABLE로 fail-close한다.\n- `Synthesizer`: 기본 2,048 token과 trusted-terminal quarantine를 사용한다.\n- pipeline verifier mapping: 예상 외 list/shape를 dict-only fail-close한다.\n- publication sidecar: source-owner WAL을 authoritative로 유지하고 BEFORE/OFF·AFTER/AUDIT_ONLY 관측은 public write를 하지 않는다.\n- analyzer: 원본 NO_GO를 보존한 measurement-blind replacement와 6개 immutable ledger independent readback을 검증한다.\n- PublicationFinalizer·ObservationEnvelope는 isolated test 상태이며 production runtime에는 연결하지 않았다."
+      },
+      {
+        "id": "roadmap_block",
+        "type": "table",
+        "tableId": "roadmap_table"
+      },
+      {
+        "id": "limitations",
+        "type": "markdown",
+        "body": "## 해석 제한\n\n- targeted 32행과 deterministic 2,712 replay는 full semantic scan이 아니다.\n- v7 AFTER는 fresh stochastic observation이므로 sidecar 효과의 인과 증명이 아니다.\n- source-relative instability와 search/router NO-GO가 남아 `production_enable_allowed=false`, `full_scan_approval=false`다.\n- retry2 선정은 semantic-blind measurement policy이지만 replacement가 긴 wall tail을 포함하므로 비용/시간 평균 하나로 일반화하지 않는다."
+      }
+    ],
+    "cards": [
+      {
+        "id": "measurement_card",
+        "dataset": "headline",
+        "sourceId": "v7_sidecar",
+        "source": {
+          "query": {
+            "engine": "portable_snapshot",
+            "sql": "SELECT runtime_go, measurement_go, linked_observations FROM snapshot.headline",
+            "description": "v7 qualified measurement",
+            "id": "measurement_card-query"
+          }
+        },
+        "description": "v7 qualified measurement",
+        "metrics": [
+          {
+            "label": "runtime GO",
+            "field": "runtime_go",
+            "format": "number"
+          },
+          {
+            "label": "measurement GO",
+            "field": "measurement_go",
+            "format": "number"
+          },
+          {
+            "label": "linked",
+            "field": "linked_observations",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "semantic_card",
+        "dataset": "headline",
+        "sourceId": "v7_consensus",
+        "source": {
+          "query": {
+            "engine": "portable_snapshot",
+            "sql": "SELECT systematic_regressions, introduced_unsafe, introduced_wrong_title FROM snapshot.headline",
+            "description": "v7 semantic guardrails",
+            "id": "semantic_card-query"
+          }
+        },
+        "description": "v7 semantic guardrails",
+        "metrics": [
+          {
+            "label": "systematic regression",
+            "field": "systematic_regressions",
+            "format": "number"
+          },
+          {
+            "label": "introduced unsafe",
+            "field": "introduced_unsafe",
+            "format": "number"
+          },
+          {
+            "label": "introduced wrong-title",
+            "field": "introduced_wrong_title",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "replay_card",
+        "dataset": "headline",
+        "sourceId": "replay",
+        "source": {
+          "query": {
+            "engine": "portable_snapshot",
+            "sql": "SELECT replay_rows, replay_mismatches FROM snapshot.headline",
+            "description": "2,712 deterministic replay",
+            "id": "replay_card-query"
+          }
+        },
+        "description": "2,712 deterministic replay",
+        "metrics": [
+          {
+            "label": "rows",
+            "field": "replay_rows",
+            "format": "number"
+          },
+          {
+            "label": "mismatches",
+            "field": "replay_mismatches",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "cost_card",
+        "dataset": "headline",
+        "sourceId": "v7_sidecar",
+        "source": {
+          "query": {
+            "engine": "portable_snapshot",
+            "sql": "SELECT expert_calls_delta_ratio, total_tokens_delta_ratio, run_wall_delta_ratio FROM snapshot.headline",
+            "description": "AFTER 대비 증감",
+            "id": "cost_card-query"
+          }
+        },
+        "description": "AFTER 대비 증감",
+        "metrics": [
+          {
+            "label": "calls Δ",
+            "field": "expert_calls_delta_ratio",
+            "format": "percent"
+          },
+          {
+            "label": "tokens Δ",
+            "field": "total_tokens_delta_ratio",
+            "format": "percent"
+          },
+          {
+            "label": "run wall Δ",
+            "field": "run_wall_delta_ratio",
+            "format": "percent"
+          }
+        ]
+      }
+    ],
+    "charts": [
+      {
+        "id": "measurement_chart",
+        "title": "grouped 계측 완결률",
+        "subtitle": "arm 분모 6, observation 분모 192",
+        "type": "bar",
+        "dataset": "measurement_versions",
+        "sourceId": "v7_sidecar",
+        "source": {
+          "query": {
+            "engine": "portable_snapshot",
+            "sql": "SELECT * FROM snapshot.measurement_versions",
+            "description": "version별 gate 완결률",
+            "id": "measurement-chart-query"
+          }
+        },
+        "options": {
+          "orientation": "vertical",
+          "grouping": "grouped"
+        },
+        "encodings": {
+          "x": {
+            "field": "version",
+            "type": "nominal",
+            "label": "run"
+          },
+          "y": {
+            "field": "rate_ratio",
+            "type": "quantitative",
+            "label": "완결률",
+            "format": "percent"
+          },
+          "color": {
+            "field": "metric",
+            "type": "nominal",
+            "label": "지표"
+          },
+          "tooltip": [
+            {
+              "field": "version",
+              "type": "nominal"
+            },
+            {
+              "field": "metric",
+              "type": "nominal"
+            },
+            {
+              "field": "rate_ratio",
+              "type": "quantitative",
+              "format": "percent"
+            },
+            {
+              "field": "count",
+              "type": "quantitative"
+            },
+            {
+              "field": "denominator",
+              "type": "quantitative"
+            }
+          ]
+        }
+      },
+      {
+        "id": "semantic_chart",
+        "title": "v6와 v7 majority compliance",
+        "subtitle": "각 version/arm n=32; causal effect 아님",
+        "type": "bar",
+        "dataset": "semantic_versions",
+        "sourceId": "v7_consensus",
+        "source": {
+          "query": {
+            "engine": "portable_snapshot",
+            "sql": "SELECT * FROM snapshot.semantic_versions",
+            "description": "version/arm별 majority",
+            "id": "semantic-chart-query"
+          }
+        },
+        "options": {
+          "orientation": "vertical",
+          "grouping": "stacked"
+        },
+        "encodings": {
+          "x": {
+            "field": "version_arm",
+            "type": "nominal",
+            "label": "version/arm"
+          },
+          "y": {
+            "field": "posts",
+            "type": "quantitative",
+            "label": "post 수",
+            "format": "number"
+          },
+          "color": {
+            "field": "verdict",
+            "type": "nominal",
+            "label": "majority"
+          },
+          "tooltip": [
+            {
+              "field": "version",
+              "type": "nominal"
+            },
+            {
+              "field": "arm",
+              "type": "nominal"
+            },
+            {
+              "field": "verdict",
+              "type": "nominal"
+            },
+            {
+              "field": "posts",
+              "type": "quantitative"
+            }
+          ]
+        }
+      }
+    ],
+    "tables": [
+      {
+        "id": "v6_compare_table",
+        "title": "v6→v7 변화",
+        "subtitle": "동일 32×3 계열의 기술적 비교",
+        "dataset": "v6_compare",
+        "sourceId": "v7_consensus",
+        "source": {
+          "query": {
+            "engine": "portable_snapshot",
+            "sql": "SELECT * FROM snapshot.v6_compare",
+            "description": "v6→v7 변화",
+            "id": "v6_compare_table-query"
+          }
+        },
+        "defaultSort": {
+          "field": "rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "rank",
+            "label": "순서",
+            "type": "number"
+          },
+          {
+            "field": "metric",
+            "label": "지표",
+            "type": "text"
+          },
+          {
+            "field": "v6",
+            "label": "v6",
+            "type": "text"
+          },
+          {
+            "field": "v7",
+            "label": "v7 qualified",
+            "type": "text"
+          },
+          {
+            "field": "assessment",
+            "label": "판정",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "id": "cohort_table",
+        "title": "cohort별 BEFORE/AFTER",
+        "subtitle": "평균 대신 eligibility·majority·any-run 분해",
+        "dataset": "cohorts",
+        "sourceId": "v7_sidecar",
+        "source": {
+          "query": {
+            "engine": "portable_snapshot",
+            "sql": "SELECT * FROM snapshot.cohorts",
+            "description": "cohort별 BEFORE/AFTER",
+            "id": "cohort_table-query"
+          }
+        },
+        "defaultSort": {
+          "field": "rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "rank",
+            "label": "순서",
+            "type": "number"
+          },
+          {
+            "field": "cohort",
+            "label": "cohort",
+            "type": "text"
+          },
+          {
+            "field": "eligible",
+            "label": "eligible",
+            "type": "number"
+          },
+          {
+            "field": "before",
+            "label": "BEFORE",
+            "type": "text"
+          },
+          {
+            "field": "after",
+            "label": "AFTER",
+            "type": "text"
+          },
+          {
+            "field": "assessment",
+            "label": "판정",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "id": "examples_table",
+        "title": "개선·악화·실패 사례",
+        "subtitle": "post_id exact transition",
+        "dataset": "examples",
+        "sourceId": "v7_consensus",
+        "source": {
+          "query": {
+            "engine": "portable_snapshot",
+            "sql": "SELECT * FROM snapshot.examples",
+            "description": "개선·악화·실패 사례",
+            "id": "examples_table-query"
+          }
+        },
+        "defaultSort": {
+          "field": "rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "rank",
+            "label": "순서",
+            "type": "number"
+          },
+          {
+            "field": "post_id",
+            "label": "post_id",
+            "type": "text"
+          },
+          {
+            "field": "kind",
+            "label": "구분",
+            "type": "text"
+          },
+          {
+            "field": "before",
+            "label": "BEFORE",
+            "type": "text"
+          },
+          {
+            "field": "after",
+            "label": "AFTER",
+            "type": "text"
+          },
+          {
+            "field": "interpretation",
+            "label": "해석",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "id": "cost_table",
+        "title": "독립 원장 비용 판독",
+        "subtitle": "calls/tokens exact; wall은 별도 범위",
+        "dataset": "costs",
+        "sourceId": "v7_sidecar",
+        "source": {
+          "query": {
+            "engine": "portable_snapshot",
+            "sql": "SELECT * FROM snapshot.costs",
+            "description": "독립 원장 비용 판독",
+            "id": "cost_table-query"
+          }
+        },
+        "defaultSort": {
+          "field": "rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "rank",
+            "label": "순서",
+            "type": "number"
+          },
+          {
+            "field": "metric",
+            "label": "지표",
+            "type": "text"
+          },
+          {
+            "field": "before",
+            "label": "BEFORE",
+            "type": "number"
+          },
+          {
+            "field": "after",
+            "label": "AFTER",
+            "type": "number"
+          },
+          {
+            "field": "delta",
+            "label": "증감",
+            "type": "number"
+          },
+          {
+            "field": "delta_ratio",
+            "label": "증감률",
+            "type": "number"
+          },
+          {
+            "field": "status",
+            "label": "상태",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "id": "retry_table",
+        "title": "measurement replacement 이력",
+        "subtitle": "원본·실패 retry를 모두 보존",
+        "dataset": "retries",
+        "sourceId": "retry_policy",
+        "source": {
+          "query": {
+            "engine": "portable_snapshot",
+            "sql": "SELECT * FROM snapshot.retries",
+            "description": "measurement replacement 이력",
+            "id": "retry_table-query"
+          }
+        },
+        "defaultSort": {
+          "field": "rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "rank",
+            "label": "순서",
+            "type": "number"
+          },
+          {
+            "field": "run",
+            "label": "run",
+            "type": "text"
+          },
+          {
+            "field": "run_id",
+            "label": "run_id",
+            "type": "text"
+          },
+          {
+            "field": "status",
+            "label": "연결",
+            "type": "text"
+          },
+          {
+            "field": "cause",
+            "label": "원인",
+            "type": "text"
+          },
+          {
+            "field": "disposition",
+            "label": "처리",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "id": "gate_table",
+        "title": "독립 게이트",
+        "subtitle": "runtime/search/semantic/full scan 분리",
+        "dataset": "gates",
+        "sourceId": "checklist",
+        "source": {
+          "query": {
+            "engine": "portable_snapshot",
+            "sql": "SELECT * FROM snapshot.gates",
+            "description": "독립 게이트",
+            "id": "gate_table-query"
+          }
+        },
+        "defaultSort": {
+          "field": "rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "rank",
+            "label": "순서",
+            "type": "number"
+          },
+          {
+            "field": "gate",
+            "label": "게이트",
+            "type": "text"
+          },
+          {
+            "field": "status",
+            "label": "상태",
+            "type": "text"
+          },
+          {
+            "field": "evidence",
+            "label": "근거",
+            "type": "text"
+          },
+          {
+            "field": "boundary",
+            "label": "경계",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "id": "roadmap_table",
+        "title": "다음 개선 계획",
+        "subtitle": "상위 gate 통과 전 P2 금지",
+        "dataset": "roadmap",
+        "sourceId": "checklist",
+        "source": {
+          "query": {
+            "engine": "portable_snapshot",
+            "sql": "SELECT * FROM snapshot.roadmap",
+            "description": "다음 개선 계획",
+            "id": "roadmap_table-query"
+          }
+        },
+        "defaultSort": {
+          "field": "rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "rank",
+            "label": "순서",
+            "type": "number"
+          },
+          {
+            "field": "phase",
+            "label": "단계",
+            "type": "text"
+          },
+          {
+            "field": "state",
+            "label": "현재",
+            "type": "text"
+          },
+          {
+            "field": "work",
+            "label": "작업",
+            "type": "text"
+          },
+          {
+            "field": "rollback",
+            "label": "rollback",
+            "type": "text"
+          },
+          {
+            "field": "go_condition",
+            "label": "GO 조건",
+            "type": "text"
+          }
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "id": "v7_sidecar",
+        "label": "v7 qualified sidecar 분석",
+        "path": "out/regression_safe_2712_next_improvements_20260722/grouped_ab_v7_early_stop_drain_20260722_231437/grouped_analysis_v7_qualified/sidecar_grouped/report.json",
+        "description": "replacement qualification, 6개 immutable ledger readback, cohort와 gate",
+        "query": {
+          "engine": "json",
+          "language": "python",
+          "sql": "SELECT * FROM sidecar_grouped.report",
+          "description": "replacement qualification, 6개 immutable ledger readback, cohort와 gate",
+          "tables_used": [
+            "sidecar_grouped.report"
+          ],
+          "filters": [
+            "192/192",
+            "public_apply=false"
+          ]
+        }
+      },
+      {
+        "id": "v7_consensus",
+        "label": "v7 3회 repeat consensus",
+        "path": "out/regression_safe_2712_next_improvements_20260722/grouped_ab_v7_early_stop_drain_20260722_231437/grouped_analysis_v7_qualified/repeat_consensus_summary.json",
+        "description": "exact 32×3 BEFORE/AFTER semantic consensus",
+        "query": {
+          "engine": "json",
+          "language": "python",
+          "sql": "SELECT * FROM repeat_consensus_summary",
+          "description": "exact 32×3 BEFORE/AFTER semantic consensus",
+          "tables_used": [
+            "repeat_consensus_summary"
+          ],
+          "filters": [
+            "pairing=EXACT"
+          ]
+        }
+      },
+      {
+        "id": "v6_analysis",
+        "label": "v6 grouped 분석",
+        "path": "out/regression_safe_2712_next_improvements_20260722/grouped_ab_v6_shape_guard_20260722_202616/grouped_analysis_v6/sidecar_grouped/report.json",
+        "description": "v6 대비 비교 기준",
+        "query": {
+          "engine": "json",
+          "language": "python",
+          "sql": "SELECT * FROM v6.sidecar_grouped.report",
+          "description": "v6 대비 비교 기준",
+          "tables_used": [
+            "v6.sidecar_grouped.report"
+          ],
+          "filters": [
+            "historical comparison"
+          ]
+        }
+      },
+      {
+        "id": "replay",
+        "label": "최종 2,712 publish-contract replay",
+        "path": "out/regression_safe_2712_next_improvements_20260722/grouped_ab_v7_early_stop_drain_20260722_231437/frozen2712_publish_contract_replay_final_qualified_20260723/publish_contract_replay_summary.json",
+        "description": "deterministic current-contract replay",
+        "query": {
+          "engine": "json",
+          "language": "python",
+          "sql": "SELECT * FROM coverage,contract_counts",
+          "description": "deterministic current-contract replay",
+          "tables_used": [
+            "coverage",
+            "contract_counts"
+          ],
+          "filters": [
+            "network_used=false",
+            "expert_main_used=false"
+          ]
+        }
+      },
+      {
+        "id": "retry_policy",
+        "label": "measurement-blind replacement policy",
+        "path": "out/regression_safe_2712_next_improvements_20260722/grouped_ab_v7_early_stop_drain_20260722_231437/replacement_attempts/repeat_3_after_measurement_retry_2/retry_policy.json",
+        "description": "semantic 결과를 보지 않고 첫 terminal measurement GO를 선택",
+        "query": {
+          "engine": "json",
+          "language": "python",
+          "sql": "SELECT * FROM selection_policy",
+          "description": "semantic 결과를 보지 않고 첫 terminal measurement GO를 선택",
+          "tables_used": [
+            "selection_policy"
+          ],
+          "filters": [
+            "semantic_result_blind=true"
+          ]
+        }
+      },
+      {
+        "id": "analyzer",
+        "label": "sidecar analyzer와 독립 readback",
+        "path": "tools/analyze_recovery_sidecar_grouped_ab.py",
+        "description": "attempt override·policy·immutable ledger exact readback",
+        "query": {
+          "engine": "json",
+          "language": "python",
+          "sql": "SELECT * FROM build_report",
+          "description": "attempt override·policy·immutable ledger exact readback",
+          "tables_used": [
+            "build_report"
+          ],
+          "filters": [
+            "independent_call_readback=true"
+          ]
+        }
+      },
+      {
+        "id": "checklist",
+        "label": "개발 체크리스트",
+        "path": "docs/devs/CHECKLIST.md",
+        "description": "scope별 GO/NO-GO와 rollback 경계",
+        "query": {
+          "engine": "json",
+          "language": "python",
+          "sql": "SELECT * FROM CHECKLIST",
+          "description": "scope별 GO/NO-GO와 rollback 경계",
+          "tables_used": [
+            "CHECKLIST"
+          ],
+          "filters": [
+            "full_scan_approval=false"
+          ]
+        }
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "status": "blocked",
+    "generatedAt": "2026-07-23T02:47:08+09:00",
+    "datasets": {
+      "headline": [
+        {
+          "runtime_go": 6,
+          "measurement_go": 6,
+          "linked_observations": 192,
+          "unlinked_observations": 0,
+          "systematic_regressions": 0,
+          "introduced_unsafe": 0,
+          "introduced_wrong_title": 0,
+          "replay_rows": 2712,
+          "replay_mismatches": 0,
+          "expert_calls_delta_ratio": -0.01812004530011325,
+          "total_tokens_delta_ratio": -0.015607186364974329,
+          "run_wall_delta_ratio": 0.23031397956640937,
+          "analyzer_tests": 12,
+          "focused_tests": 31,
+          "adjacent_tests": 263,
+          "full_scan_approval": false
+        }
+      ],
+      "measurement_versions": [
+        {
+          "version": "v4",
+          "metric": "runtime GO",
+          "count": 6,
+          "denominator": 6,
+          "rate_ratio": 1.0
+        },
+        {
+          "version": "v4",
+          "metric": "measurement GO",
+          "count": 3,
+          "denominator": 6,
+          "rate_ratio": 0.5
+        },
+        {
+          "version": "v4",
+          "metric": "linked observations",
+          "count": 189,
+          "denominator": 192,
+          "rate_ratio": 0.984375
+        },
+        {
+          "version": "v6",
+          "metric": "runtime GO",
+          "count": 6,
+          "denominator": 6,
+          "rate_ratio": 1.0
+        },
+        {
+          "version": "v6",
+          "metric": "measurement GO",
+          "count": 4,
+          "denominator": 6,
+          "rate_ratio": 0.6666666666666666
+        },
+        {
+          "version": "v6",
+          "metric": "linked observations",
+          "count": 190,
+          "denominator": 192,
+          "rate_ratio": 0.9895833333333334
+        },
+        {
+          "version": "v7 원본",
+          "metric": "runtime GO",
+          "count": 6,
+          "denominator": 6,
+          "rate_ratio": 1.0
+        },
+        {
+          "version": "v7 원본",
+          "metric": "measurement GO",
+          "count": 5,
+          "denominator": 6,
+          "rate_ratio": 0.8333333333333334
+        },
+        {
+          "version": "v7 원본",
+          "metric": "linked observations",
+          "count": 191,
+          "denominator": 192,
+          "rate_ratio": 0.9947916666666666
+        },
+        {
+          "version": "v7 qualified",
+          "metric": "runtime GO",
+          "count": 6,
+          "denominator": 6,
+          "rate_ratio": 1.0
+        },
+        {
+          "version": "v7 qualified",
+          "metric": "measurement GO",
+          "count": 6,
+          "denominator": 6,
+          "rate_ratio": 1.0
+        },
+        {
+          "version": "v7 qualified",
+          "metric": "linked observations",
+          "count": 192,
+          "denominator": 192,
+          "rate_ratio": 1.0
+        }
+      ],
+      "semantic_versions": [
+        {
+          "version": "v6",
+          "version_arm": "v6 BEFORE",
+          "arm": "BEFORE",
+          "verdict": "compliant",
+          "posts": 19,
+          "denominator": 32
+        },
+        {
+          "version": "v6",
+          "version_arm": "v6 BEFORE",
+          "arm": "BEFORE",
+          "verdict": "noncompliant",
+          "posts": 13,
+          "denominator": 32
+        },
+        {
+          "version": "v6",
+          "version_arm": "v6 AFTER",
+          "arm": "AFTER",
+          "verdict": "compliant",
+          "posts": 17,
+          "denominator": 32
+        },
+        {
+          "version": "v6",
+          "version_arm": "v6 AFTER",
+          "arm": "AFTER",
+          "verdict": "noncompliant",
+          "posts": 15,
+          "denominator": 32
+        },
+        {
+          "version": "v7 qualified",
+          "version_arm": "v7 qualified BEFORE",
+          "arm": "BEFORE",
+          "verdict": "compliant",
+          "posts": 18,
+          "denominator": 32
+        },
+        {
+          "version": "v7 qualified",
+          "version_arm": "v7 qualified BEFORE",
+          "arm": "BEFORE",
+          "verdict": "noncompliant",
+          "posts": 14,
+          "denominator": 32
+        },
+        {
+          "version": "v7 qualified",
+          "version_arm": "v7 qualified AFTER",
+          "arm": "AFTER",
+          "verdict": "compliant",
+          "posts": 18,
+          "denominator": 32
+        },
+        {
+          "version": "v7 qualified",
+          "version_arm": "v7 qualified AFTER",
+          "arm": "AFTER",
+          "verdict": "noncompliant",
+          "posts": 14,
+          "denominator": 32
+        }
+      ],
+      "v6_compare": [
+        {
+          "rank": 1,
+          "metric": "measurement linkage",
+          "v6": "190/192; 4/6 GO",
+          "v7": "192/192; 6/6 GO",
+          "assessment": "개선"
+        },
+        {
+          "rank": 2,
+          "metric": "systematic cross-arm regression",
+          "v6": "2",
+          "v7": "0",
+          "assessment": "개선; causal attribution 금지"
+        },
+        {
+          "rank": 3,
+          "metric": "introduced unsafe/wrong-title any-run",
+          "v6": "2/2",
+          "v7": "0/0",
+          "assessment": "개선"
+        },
+        {
+          "rank": 4,
+          "metric": "majority compliance BEFORE→AFTER",
+          "v6": "19→17",
+          "v7": "18→18",
+          "assessment": "cross-arm 악화 소멸"
+        },
+        {
+          "rank": 5,
+          "metric": "correct-title majority BEFORE→AFTER",
+          "v6": "2→0",
+          "v7": "1→1",
+          "assessment": "순악화 소멸, 절대 회복은 낮음"
+        },
+        {
+          "rank": 6,
+          "metric": "PASS majority",
+          "v6": "1/2→1/2",
+          "v7": "2/2→2/2",
+          "assessment": "관측 개선"
+        },
+        {
+          "rank": 7,
+          "metric": "wrong-work unrecovered",
+          "v6": "3/5→3/5",
+          "v7": "3/5→3/5",
+          "assessment": "실패/변화 없음"
+        }
+      ],
+      "cohorts": [
+        {
+          "rank": 1,
+          "cohort": "FN/title recovery",
+          "eligible": 11,
+          "before": "any 2, majority 1",
+          "after": "any 1, majority 1",
+          "assessment": "순증가 없음; 11718097은 AFTER 3/3 안정, 11718117은 AFTER 0/3"
+        },
+        {
+          "rank": 2,
+          "cohort": "unsafe publish",
+          "eligible": 32,
+          "before": "any 3, majority 1",
+          "after": "any 1, majority 1",
+          "assessment": "any-run 2건 해소, 11718099 persistent 2/3"
+        },
+        {
+          "rank": 3,
+          "cohort": "wrong-title publish",
+          "eligible": 32,
+          "before": "any 2, majority 0",
+          "after": "any 0, majority 0",
+          "assessment": "11718051·11716480 any-run 오류 해소"
+        },
+        {
+          "rank": 4,
+          "cohort": "HOLD integrity",
+          "eligible": 5,
+          "before": "majority 4/5",
+          "after": "majority 4/5",
+          "assessment": "변화 없음; 11718099 다수 publish"
+        },
+        {
+          "rank": 5,
+          "cohort": "wrong-work",
+          "eligible": 5,
+          "before": "unrecovered 3/5",
+          "after": "unrecovered 3/5",
+          "assessment": "11718051·11716500·11714903 미해결"
+        },
+        {
+          "rank": 6,
+          "cohort": "PASS retention",
+          "eligible": 2,
+          "before": "majority 2/2",
+          "after": "majority 2/2",
+          "assessment": "정상군 majority 유지; 각 arm exact 5/6"
+        },
+        {
+          "rank": 7,
+          "cohort": "FP non-novel",
+          "eligible": 3,
+          "before": "0/3",
+          "after": "0/3",
+          "assessment": "새 false positive 없음"
+        }
+      ],
+      "examples": [
+        {
+          "rank": 1,
+          "post_id": "11718051",
+          "kind": "개선",
+          "before": "1/3 wrong-title publish(양치기 마법사)",
+          "after": "3/3 HOLD",
+          "interpretation": "unsafe/wrong-title 해소; 정답 제목 복구는 아직 실패"
+        },
+        {
+          "rank": 2,
+          "post_id": "11716480",
+          "kind": "개선",
+          "before": "1/3 typo title publish",
+          "after": "3/3 HOLD",
+          "interpretation": "wrong-title 해소; correct title 회복은 없음"
+        },
+        {
+          "rank": 3,
+          "post_id": "11718097",
+          "kind": "안정화",
+          "before": "correct 2/3",
+          "after": "correct 3/3",
+          "interpretation": "망겜의 힐러 회복 합의 안정화"
+        },
+        {
+          "rank": 4,
+          "post_id": "11718117",
+          "kind": "악화/미미",
+          "before": "correct 1/3",
+          "after": "correct 0/3",
+          "interpretation": "아카데미의 피해자 FN 회복 소실; 양 arm majority는 이미 noncompliant"
+        },
+        {
+          "rank": 5,
+          "post_id": "11718099",
+          "kind": "실패",
+          "before": "unsafe publish 2/3",
+          "after": "unsafe publish 2/3",
+          "interpretation": "EVIDENCE_CONFLICT인데 빌어먹을 환생 다수 publish 지속"
+        },
+        {
+          "rank": 6,
+          "post_id": "11718122",
+          "kind": "계측 버그 관측",
+          "before": "retry1 VLM timeout",
+          "after": "retry2 exact",
+          "interpretation": "실패 physical attempt usage가 없어 retry1은 정직하게 NO_GO"
+        }
+      ],
+      "costs": [
+        {
+          "rank": 1,
+          "metric": "물리 LLM 호출",
+          "before": 883,
+          "after": 867,
+          "delta": -16,
+          "delta_ratio": -0.01812004530011325,
+          "status": "MEASURED"
+        },
+        {
+          "rank": 2,
+          "metric": "prompt tokens",
+          "before": 10951754,
+          "after": 10715092,
+          "delta": -236662,
+          "delta_ratio": -0.021609506568536874,
+          "status": "MEASURED"
+        },
+        {
+          "rank": 3,
+          "metric": "completion tokens",
+          "before": 565056,
+          "after": 621973,
+          "delta": 56917,
+          "delta_ratio": 0.10072806943028656,
+          "status": "MEASURED"
+        },
+        {
+          "rank": 4,
+          "metric": "total tokens",
+          "before": 11516810,
+          "after": 11337065,
+          "delta": -179745,
+          "delta_ratio": -0.015607186364974329,
+          "status": "MEASURED"
+        },
+        {
+          "rank": 5,
+          "metric": "physical call wall ms",
+          "before": 32867375,
+          "after": 35823371,
+          "delta": 2955996,
+          "delta_ratio": 0.08993708806985651,
+          "status": "MEASURED"
+        },
+        {
+          "rank": 6,
+          "metric": "search calls",
+          "before": 520,
+          "after": 495,
+          "delta": -25,
+          "delta_ratio": -0.04807692307692308,
+          "status": "MEASURED"
+        },
+        {
+          "rank": 7,
+          "metric": "run wall seconds",
+          "before": 3210.3999999999996,
+          "after": 3949.8,
+          "delta": 739.4000000000005,
+          "delta_ratio": 0.23031397956640937,
+          "status": "MEASURED_WITH_REPLACEMENT_TAIL"
+        }
+      ],
+      "retries": [
+        {
+          "rank": 1,
+          "run": "v7 original r3 AFTER",
+          "run_id": "20260723_010338_574277",
+          "status": "191/192",
+          "cause": "verifier ACC_HARD_CAP 뒤 60초 usage drain timeout",
+          "disposition": "원본 보존; NO_GO"
+        },
+        {
+          "rank": 2,
+          "run": "replacement retry1",
+          "run_id": "20260723_013036_430357",
+          "status": "31/32",
+          "cause": "VLM physical attempt ReadTimeout; model/usage unavailable",
+          "disposition": "원본 보존; NO_GO"
+        },
+        {
+          "rank": 3,
+          "run": "replacement retry2",
+          "run_id": "20260723_015151_275124",
+          "status": "32/32",
+          "cause": "hard-cap 1건 usage drain 성공",
+          "disposition": "precommitted measurement-blind policy로 qualified"
+        }
+      ],
+      "gates": [
+        {
+          "rank": 1,
+          "gate": "runtime completion",
+          "status": "GO",
+          "evidence": "6/6, completed/flushed 192/192, failed 0",
+          "boundary": "선택된 qualified six arms"
+        },
+        {
+          "rank": 2,
+          "gate": "call measurement",
+          "status": "GO",
+          "evidence": "immutable ledger readback 6/6, linked 192/192",
+          "boundary": "retry2 semantic-blind replacement 포함"
+        },
+        {
+          "rank": 3,
+          "gate": "noninterference",
+          "status": "GO",
+          "evidence": "6/6, WAL SHA/event 32 불변, public_apply=false",
+          "boundary": "shadow observation only"
+        },
+        {
+          "rank": 4,
+          "gate": "deterministic 2,712 replay",
+          "status": "GO",
+          "evidence": "2712/2712, mismatch 0, normal→abnormal 0",
+          "boundary": "저장 publish contract only"
+        },
+        {
+          "rank": 5,
+          "gate": "cross-arm semantic drift",
+          "status": "REVIEW",
+          "evidence": "systematic regression 0, introduced unsafe/wrong-title 0",
+          "boundary": "fresh stochastic observation; causal claim 금지"
+        },
+        {
+          "rank": 6,
+          "gate": "semantic auto activation",
+          "status": "NO-GO",
+          "evidence": "11718099 unsafe, 11718117 FN, wrong-work 3/5",
+          "boundary": "source-relative instability"
+        },
+        {
+          "rank": 7,
+          "gate": "review router",
+          "status": "NO-GO",
+          "evidence": "recall 66.7%→65.2%; false-review 23.3%→20.0%",
+          "boundary": "target recall 100% 미달"
+        },
+        {
+          "rank": 8,
+          "gate": "search health",
+          "status": "NO-GO",
+          "evidence": "unrecovered 182→178",
+          "boundary": "green=false"
+        },
+        {
+          "rank": 9,
+          "gate": "full scan approval",
+          "status": "NO-GO",
+          "evidence": "false",
+          "boundary": "targeted grouped/replay만으로 승격 금지"
+        }
+      ],
+      "roadmap": [
+        {
+          "rank": 1,
+          "phase": "P0 measurement",
+          "state": "GO·관측성 한계 공개",
+          "work": "failed physical attempt를 추정 승격하지 않는 replacement/resume 정식 하네스화",
+          "rollback": "replacement selector OFF",
+          "go_condition": "policy precommit·첫 measurement-GO 선택·원본 불변"
+        },
+        {
+          "rank": 2,
+          "phase": "P0 unsafe/HOLD",
+          "state": "NO-GO",
+          "work": "11718099 conflict evidence fail-close와 title revival 지점 교정",
+          "rollback": "late override flag OFF",
+          "go_condition": "HOLD 5/5, introduced unsafe 0 반복"
+        },
+        {
+          "rank": 3,
+          "phase": "P0 FN",
+          "state": "부분",
+          "work": "11718117 direct evidence title recovery가 AFTER에서 사라지는 조건 분리",
+          "rollback": "recovery flag OFF",
+          "go_condition": "FN majority 증가, PASS 2/2 유지"
+        },
+        {
+          "rank": 4,
+          "phase": "P1 wrong-work",
+          "state": "NO-GO",
+          "work": "11718051·11716500·11714903 primary/mentioned 관계·canonical binding 강화",
+          "rollback": "relationship gate OFF",
+          "go_condition": "wrong-work unrecovered 0/5"
+        },
+        {
+          "rank": 5,
+          "phase": "P1 router/search",
+          "state": "NO-GO",
+          "work": "router recall·search degradation 원인별 targeted bundle",
+          "rollback": "router/recovery plan REVIEW_ONLY",
+          "go_condition": "recall green, false-review guardrail, unrecovered 0"
+        },
+        {
+          "rank": 6,
+          "phase": "P2 early route",
+          "state": "보류",
+          "work": "초저위험 188 canary",
+          "rollback": "early route OFF",
+          "go_condition": "상위 semantic/search/router gate 전부 green"
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "v7_sidecar",
+      "label": "v7 qualified sidecar 분석",
+      "path": "out/regression_safe_2712_next_improvements_20260722/grouped_ab_v7_early_stop_drain_20260722_231437/grouped_analysis_v7_qualified/sidecar_grouped/report.json",
+      "description": "replacement qualification, 6개 immutable ledger readback, cohort와 gate",
+      "query": {
+        "engine": "json",
+        "language": "python",
+        "sql": "SELECT * FROM sidecar_grouped.report",
+        "description": "replacement qualification, 6개 immutable ledger readback, cohort와 gate",
+        "tables_used": [
+          "sidecar_grouped.report"
+        ],
+        "filters": [
+          "192/192",
+          "public_apply=false"
+        ]
+      }
+    },
+    {
+      "id": "v7_consensus",
+      "label": "v7 3회 repeat consensus",
+      "path": "out/regression_safe_2712_next_improvements_20260722/grouped_ab_v7_early_stop_drain_20260722_231437/grouped_analysis_v7_qualified/repeat_consensus_summary.json",
+      "description": "exact 32×3 BEFORE/AFTER semantic consensus",
+      "query": {
+        "engine": "json",
+        "language": "python",
+        "sql": "SELECT * FROM repeat_consensus_summary",
+        "description": "exact 32×3 BEFORE/AFTER semantic consensus",
+        "tables_used": [
+          "repeat_consensus_summary"
+        ],
+        "filters": [
+          "pairing=EXACT"
+        ]
+      }
+    },
+    {
+      "id": "v6_analysis",
+      "label": "v6 grouped 분석",
+      "path": "out/regression_safe_2712_next_improvements_20260722/grouped_ab_v6_shape_guard_20260722_202616/grouped_analysis_v6/sidecar_grouped/report.json",
+      "description": "v6 대비 비교 기준",
+      "query": {
+        "engine": "json",
+        "language": "python",
+        "sql": "SELECT * FROM v6.sidecar_grouped.report",
+        "description": "v6 대비 비교 기준",
+        "tables_used": [
+          "v6.sidecar_grouped.report"
+        ],
+        "filters": [
+          "historical comparison"
+        ]
+      }
+    },
+    {
+      "id": "replay",
+      "label": "최종 2,712 publish-contract replay",
+      "path": "out/regression_safe_2712_next_improvements_20260722/grouped_ab_v7_early_stop_drain_20260722_231437/frozen2712_publish_contract_replay_final_qualified_20260723/publish_contract_replay_summary.json",
+      "description": "deterministic current-contract replay",
+      "query": {
+        "engine": "json",
+        "language": "python",
+        "sql": "SELECT * FROM coverage,contract_counts",
+        "description": "deterministic current-contract replay",
+        "tables_used": [
+          "coverage",
+          "contract_counts"
+        ],
+        "filters": [
+          "network_used=false",
+          "expert_main_used=false"
+        ]
+      }
+    },
+    {
+      "id": "retry_policy",
+      "label": "measurement-blind replacement policy",
+      "path": "out/regression_safe_2712_next_improvements_20260722/grouped_ab_v7_early_stop_drain_20260722_231437/replacement_attempts/repeat_3_after_measurement_retry_2/retry_policy.json",
+      "description": "semantic 결과를 보지 않고 첫 terminal measurement GO를 선택",
+      "query": {
+        "engine": "json",
+        "language": "python",
+        "sql": "SELECT * FROM selection_policy",
+        "description": "semantic 결과를 보지 않고 첫 terminal measurement GO를 선택",
+        "tables_used": [
+          "selection_policy"
+        ],
+        "filters": [
+          "semantic_result_blind=true"
+        ]
+      }
+    },
+    {
+      "id": "analyzer",
+      "label": "sidecar analyzer와 독립 readback",
+      "path": "tools/analyze_recovery_sidecar_grouped_ab.py",
+      "description": "attempt override·policy·immutable ledger exact readback",
+      "query": {
+        "engine": "json",
+        "language": "python",
+        "sql": "SELECT * FROM build_report",
+        "description": "attempt override·policy·immutable ledger exact readback",
+        "tables_used": [
+          "build_report"
+        ],
+        "filters": [
+          "independent_call_readback=true"
+        ]
+      }
+    },
+    {
+      "id": "checklist",
+      "label": "개발 체크리스트",
+      "path": "docs/devs/CHECKLIST.md",
+      "description": "scope별 GO/NO-GO와 rollback 경계",
+      "query": {
+        "engine": "json",
+        "language": "python",
+        "sql": "SELECT * FROM CHECKLIST",
+        "description": "scope별 GO/NO-GO와 rollback 경계",
+        "tables_used": [
+          "CHECKLIST"
+        ],
+        "filters": [
+          "full_scan_approval=false"
+        ]
+      }
+    }
+  ]
+}

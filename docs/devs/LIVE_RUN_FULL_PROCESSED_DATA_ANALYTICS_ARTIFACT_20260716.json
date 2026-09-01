@@ -1,0 +1,51 @@
+{
+  "title": "라이브 런 처리행 전수 회계·판정 감사",
+  "status": "rendered",
+  "language": "ko",
+  "generated_at": "2026-07-16T03:14:55+09:00",
+  "validation": {
+    "validate_artifact": "PASS",
+    "render_artifact": "PASS"
+  },
+  "gate": {
+    "runtime": "IN_PROGRESS",
+    "semantic_quality": "REVIEW-LOCKED",
+    "full_scan_approval": false,
+    "snapshot_note": "런 진행 중 03:14:55 KST 관찰값이며 최종 런 수치가 아님"
+  },
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "라이브 런 처리행 전수 회계·판정 감사",
+    "blocks": [
+      {"id": "intro", "type": "markdown"},
+      {"id": "executive", "type": "markdown"},
+      {"id": "promotion_chart", "type": "chart", "chartId": "promotion_chart"},
+      {"id": "risk_table", "type": "table", "tableId": "risk_table"}
+    ],
+    "sources": [
+      {"id": "manifest", "path": "/home/kimjang/llm_novel_dc_coommunity_parser/out/expert_result_20260715_143806_848671_manifest.json"},
+      {"id": "result", "path": "/home/kimjang/llm_novel_dc_coommunity_parser/out/expert_result_20260715_143806_848671.json"},
+      {"id": "journal", "path": "/home/kimjang/llm_novel_dc_coommunity_parser/out/publication_commit_journals/aca96a362b90a1425befa01b2325200c51a27a34cac0376ebda5ef54a3b95655.jsonl"}
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "status": "ready",
+    "datasets": {
+      "promotion_status": [
+        {"status": "publish", "count": 185},
+        {"status": "candidate_only", "count": 776},
+        {"status": "reject", "count": 489}
+      ],
+      "risk_queue": [
+        {"queue": "search_degraded_publish", "count": 166, "severity": "REVIEW"},
+        {"queue": "ocr_conflict_publish", "count": 15, "severity": "REVIEW-LOCKED"},
+        {"queue": "nonwork_or_direct_image_warning_publish", "count": 15, "severity": "REVIEW-LOCKED"},
+        {"queue": "cross_media_publish", "count": 1, "severity": "REVIEW-LOCKED"},
+        {"queue": "pending_wal_not_in_result", "count": 14, "severity": "IN_PROGRESS"},
+        {"queue": "dashboard_extra_vs_result", "count": 15, "severity": "IN_PROGRESS"}
+      ]
+    }
+  }
+}

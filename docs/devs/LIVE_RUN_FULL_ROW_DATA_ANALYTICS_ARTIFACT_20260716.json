@@ -1,0 +1,437 @@
+{
+  "title": "라이브 런 전수 판정 감사",
+  "status": "validated_and_rendered",
+  "validation": {
+    "validate_artifact": "PASS",
+    "render_artifact": "PASS",
+    "corrected_aggregate": "근거 충돌·부족·다중작품 보류 418건"
+  },
+  "language": "ko",
+  "generated_at": "2026-07-16T00:00:00+09:00",
+  "gate": {
+    "scope": "FROZEN_2712",
+    "semantic": "COMPLETE_ROW_BY_ROW_REVIEW_FOR_FROZEN_2712",
+    "live_run": "IN_PROGRESS"
+  },
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "라이브 런 전수 판정 감사",
+    "description": "run 20260715_143806_848671의 2,712건 동결 처리행에 대한 행 단위 의미·대시보드 판정 보고서",
+    "generatedAt": "2026-07-16T00:00:00+09:00",
+    "sources": [
+      {
+        "id": "metrics_source",
+        "label": "통합 전수판정 지표",
+        "path": "/home/kimjang/llm_novel_dc_coommunity_parser/out/live_combined_row_review_20260715_143806_848671_2712_20260716/final_2712_row_summary.json",
+        "query": {
+          "engine": "sqlite",
+          "language": "sql",
+          "sql": "WITH metrics(total_rows,correct_rows,remove_rows,hold_rows,action_queue_rows) AS (VALUES (2712,369,80,452,1131)) SELECT * FROM metrics",
+          "description": "통합 전수판정 summary의 headline 지표를 재현하는 SQLite CTE",
+          "tables_used": [
+            "final_2712_row_summary.json"
+          ],
+          "filters": [
+            "동결 처리행 2,712건"
+          ],
+          "metric_definitions": [
+            "전수 판정 행=통합 ledger의 고유 post_id 수",
+            "제목 정정·게시 제거·근거 보류=final dashboard_action 별 행 수"
+          ]
+        }
+      },
+      {
+        "id": "verdict_source",
+        "label": "최종 판정 분포",
+        "path": "/home/kimjang/llm_novel_dc_coommunity_parser/out/live_combined_row_review_20260715_143806_848671_2712_20260716/final_2712_row_summary.json",
+        "query": {
+          "engine": "sqlite",
+          "language": "sql",
+          "sql": "WITH verdict_counts(verdict,count) AS (VALUES ('NOISE_CORRECT',891),('CONTEXT_ONLY_CORRECT',719),('FN_TITLE_MISSING',339),('EVIDENCE_INSUFFICIENT',302),('PASS',230),('MULTIWORK_HOLD_CORRECT',91),('FP_NONNOVEL',72),('WRONG_WORK',36),('EVIDENCE_CONFLICT',25),('DASHBOARD_TITLE_MISMATCH',7)) SELECT verdict,count,1.0*count/2712 AS share FROM verdict_counts",
+          "description": "통합 summary의 final verdict count를 재현하는 SQLite CTE",
+          "tables_used": [
+            "final_2712_row_summary.json"
+          ],
+          "filters": [
+            "동결 처리행 2,712건"
+          ],
+          "metric_definitions": [
+            "비율=count/2,712"
+          ]
+        }
+      },
+      {
+        "id": "action_source",
+        "label": "대시보드 조치 분포",
+        "path": "/home/kimjang/llm_novel_dc_coommunity_parser/out/live_combined_row_review_20260715_143806_848671_2712_20260716/final_2712_row_summary.json",
+        "query": {
+          "engine": "sqlite",
+          "language": "sql",
+          "sql": "WITH actions(action,count,operating_rule) AS (VALUES ('NOT_APPLICABLE',1581,'대시보드 작품 표기 조치 대상 아님'),('HOLD',452,'근거 보강 전 자동 게시 금지'),('CORRECT',369,'권장 작품명으로 정정'),('KEEP',230,'현재 작품명 유지'),('REMOVE',80,'비소설·wrong-work 표기 제거')) SELECT action,count,1.0*count/2712 AS share,operating_rule FROM actions",
+          "description": "통합 summary의 dashboard action count를 재현하는 SQLite CTE",
+          "tables_used": [
+            "final_2712_row_summary.json"
+          ],
+          "filters": [
+            "동결 처리행 2,712건"
+          ],
+          "metric_definitions": [
+            "비율=count/2,712"
+          ]
+        }
+      },
+      {
+        "id": "cross_review",
+        "label": "2,590건 고위험 교차·중재 대장",
+        "path": "/home/kimjang/llm_novel_dc_coommunity_parser/out/live_full_row_review_20260715_143806_848671_20260716/high_risk_cross_review_ledger.jsonl"
+      }
+    ],
+    "blocks": [
+      {
+        "id": "title",
+        "type": "markdown",
+        "body": "# 라이브 런 전수 판정 감사"
+      },
+      {
+        "id": "executive",
+        "type": "markdown",
+        "sourceId": "metrics_source",
+        "body": "## Executive Summary\n\n- **동결된 2,712건은 빠짐없이 판정됐다.** prefix 2,590건과 후속 tail 122건을 합쳐 `post_id` 2,712개 모두에 최종 판정이 있으며, 중복·누락은 0건이다.\n- **즉시 대시보드 운영 조치가 필요한 행은 1,131건이다.** 제목 보정 369건, 게시 제거 80건, 근거 보류 452건으로 구분된다. 나머지 230건은 현재 제목을 유지하고, 1,581건은 대시보드 표기가 적용 대상이 아니다.\n- **비소설 오채택은 72건, 작품 오인식은 36건이다.** 반대로 제목 누락은 339건이며, 단일 제목 확정이 어려운 근거 충돌·부족·다중작품 보류 418건은 성급한 게시보다 HOLD가 맞다.\n- **고위험 221건은 독립 재검토했고, 64건의 의견 차이는 제3 중재로 닫았다.** 이 64건은 원래 두 의견과 중재 근거가 모두 행별 대장에 보존된다."
+      },
+      {
+        "id": "metrics",
+        "type": "metric-strip",
+        "cardIds": [
+          "total",
+          "correct",
+          "remove",
+          "hold"
+        ]
+      },
+      {
+        "id": "verdict_heading",
+        "type": "markdown",
+        "sourceId": "metrics_source",
+        "body": "## 오류 유형은 제목 누락·근거 보류에 집중된다\n\n**제목 누락 339건과 근거 보류 418건이 가장 큰 품질 리스크다.** 대시보드에 올릴 제목을 보정할 수 있는 행은 즉시 `CORRECT`로 보내고, evidence가 부족하거나 복수 작품이 섞인 행은 `HOLD`로 분리해야 잘못된 작품명을 확산시키지 않는다."
+      },
+      {
+        "id": "verdict_chart_block",
+        "type": "chart",
+        "chartId": "verdict_chart"
+      },
+      {
+        "id": "verdict_interpretation",
+        "type": "markdown",
+        "sourceId": "metrics_source",
+        "body": "**비소설 오채택 72건과 wrong-work 36건은 제거 또는 재판정 대상이다.** `FP_NONNOVEL`은 대시보드에서 제거하고, `WRONG_WORK`는 올바른 작품명이 증명된 경우만 보정하며 그렇지 않으면 HOLD로 처리하는 것이 안전하다."
+      },
+      {
+        "id": "action_heading",
+        "type": "markdown",
+        "sourceId": "action_source",
+        "body": "## 대시보드 조치 큐는 1,131건으로 분리한다\n\n아래 분포는 최종 정본의 `dashboard_action` 값이다. `CORRECT`·`REMOVE`·`HOLD` 행은 모든 `post_id`, 권장 제목, 근거가 별도 JSONL 큐에 있다."
+      },
+      {
+        "id": "action_chart_block",
+        "type": "chart",
+        "chartId": "action_chart"
+      },
+      {
+        "id": "action_table_block",
+        "type": "table",
+        "tableId": "action_table"
+      },
+      {
+        "id": "arbitration",
+        "type": "markdown",
+        "sourceId": "cross_review",
+        "body": "## 고위험 의견 차이는 자동 다수결로 덮지 않았다\n\n고위험 221건 중 157건은 두 독립 검토가 일치했고, 64건은 verdict·대시보드 조치·권장 제목 중 하나 이상이 달랐다. 이 64건은 여섯 중재 shard에서 제3 판정을 받아 최종 정본에 반영했다. 따라서 교차 검토 불일치는 숨기지 않고 원래 두 의견과 중재 결과를 모두 보존한다."
+      },
+      {
+        "id": "next_steps",
+        "type": "markdown",
+        "sourceId": "action_source",
+        "body": "## 다음 조치\n\n1. `REMOVE` 80건은 웹 대시보드의 작품 표기에서 제거한다.\n2. `CORRECT` 369건은 행별 권장 제목으로 정정하고, 변경 전후 post_id 대조를 남긴다.\n3. `HOLD` 452건은 근거 보강 전 자동 게시하지 않는다.\n4. 실행 중 늘어난 후속 tail은 새 freeze packet으로 같은 전수 gate를 반복한다."
+      },
+      {
+        "id": "questions",
+        "type": "markdown",
+        "body": "## Further Questions\n\n- 검색 degraded 상태가 계속되는 동안 `HOLD` 452건 중 얼마나 많은 행이 제목 보정 가능으로 전환되는지 추적해야 한다.\n- 라이브 런은 이 동결 시점 이후에도 증가한다. 후속 결과행은 이 보고서 범위 밖이므로 다음 tail freeze에서 별도 전수 검토가 필요하다."
+      },
+      {
+        "id": "caveats",
+        "type": "markdown",
+        "sourceId": "metrics_source",
+        "body": "## 가정과 주의사항\n\n이 보고서는 result가 2,712건이던 동결 시점의 행 단위 정본이다. 전체 입력 104,502건의 최종 semantic approval을 뜻하지 않는다. 라이브 런은 계속 진행 중이고, search evidence에는 degraded 관측이 있어 HOLD 행을 공개 승인으로 승격하지 않는다."
+      }
+    ],
+    "cards": [
+      {
+        "id": "total",
+        "dataset": "metrics",
+        "sourceId": "metrics_source",
+        "description": "동결 시점에 행별 최종 판정이 존재하는 처리행 수",
+        "metrics": [
+          {
+            "label": "전수 판정 행",
+            "field": "total_rows",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "correct",
+        "dataset": "metrics",
+        "sourceId": "metrics_source",
+        "description": "대시보드의 작품명을 정정해야 하는 처리행 수",
+        "metrics": [
+          {
+            "label": "제목 정정",
+            "field": "correct_rows",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "remove",
+        "dataset": "metrics",
+        "sourceId": "metrics_source",
+        "description": "비소설 또는 잘못된 작품 표기를 제거해야 하는 처리행 수",
+        "metrics": [
+          {
+            "label": "게시 제거",
+            "field": "remove_rows",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "hold",
+        "dataset": "metrics",
+        "sourceId": "metrics_source",
+        "description": "근거 보강 전 자동 게시를 보류해야 하는 처리행 수",
+        "metrics": [
+          {
+            "label": "근거 보류",
+            "field": "hold_rows",
+            "format": "number"
+          }
+        ]
+      }
+    ],
+    "charts": [
+      {
+        "id": "verdict_chart",
+        "title": "최종 판정 유형",
+        "subtitle": "동결 2,712건의 행별 정본 분포",
+        "type": "bar",
+        "dataset": "verdict_distribution",
+        "sourceId": "verdict_source",
+        "encodings": {
+          "x": {
+            "field": "verdict",
+            "type": "nominal",
+            "label": "최종 판정"
+          },
+          "y": {
+            "field": "count",
+            "type": "quantitative",
+            "label": "건수",
+            "format": "number"
+          },
+          "tooltip": [
+            {
+              "field": "verdict",
+              "type": "nominal"
+            },
+            {
+              "field": "count",
+              "type": "quantitative",
+              "format": "number"
+            },
+            {
+              "field": "share",
+              "type": "quantitative",
+              "format": "percent"
+            }
+          ]
+        }
+      },
+      {
+        "id": "action_chart",
+        "title": "대시보드 조치 유형",
+        "subtitle": "동결 2,712건 기준; NOT_APPLICABLE은 작품 표기 조치 대상이 아님",
+        "type": "bar",
+        "dataset": "dashboard_actions",
+        "sourceId": "action_source",
+        "encodings": {
+          "x": {
+            "field": "action",
+            "type": "nominal",
+            "label": "조치"
+          },
+          "y": {
+            "field": "count",
+            "type": "quantitative",
+            "label": "건수",
+            "format": "number"
+          },
+          "tooltip": [
+            {
+              "field": "action",
+              "type": "nominal"
+            },
+            {
+              "field": "count",
+              "type": "quantitative",
+              "format": "number"
+            },
+            {
+              "field": "share",
+              "type": "quantitative",
+              "format": "percent"
+            }
+          ]
+        }
+      }
+    ],
+    "tables": [
+      {
+        "id": "action_table",
+        "title": "대시보드 조치별 운영 우선순위",
+        "subtitle": "즉시 제거·제목 보정·근거 보류·유지·비적용의 정본 건수",
+        "dataset": "dashboard_actions",
+        "sourceId": "action_source",
+        "defaultSort": {
+          "field": "count",
+          "direction": "desc"
+        },
+        "columns": [
+          {
+            "field": "action",
+            "label": "조치",
+            "type": "text"
+          },
+          {
+            "field": "count",
+            "label": "건수",
+            "format": "number",
+            "type": "number"
+          },
+          {
+            "field": "share",
+            "label": "비율",
+            "format": "percent",
+            "type": "percent"
+          },
+          {
+            "field": "operating_rule",
+            "label": "운영 규칙",
+            "type": "text"
+          }
+        ]
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "status": "ready",
+    "generatedAt": "2026-07-16T00:00:00+09:00",
+    "datasets": {
+      "metrics": [
+        {
+          "total_rows": 2712,
+          "correct_rows": 369,
+          "remove_rows": 80,
+          "hold_rows": 452,
+          "action_queue_rows": 1131
+        }
+      ],
+      "verdict_distribution": [
+        {
+          "verdict": "NOISE_CORRECT",
+          "count": 891,
+          "share": 0.32853982300884954
+        },
+        {
+          "verdict": "CONTEXT_ONLY_CORRECT",
+          "count": 719,
+          "share": 0.26511799410029496
+        },
+        {
+          "verdict": "FN_TITLE_MISSING",
+          "count": 339,
+          "share": 0.125
+        },
+        {
+          "verdict": "EVIDENCE_INSUFFICIENT",
+          "count": 302,
+          "share": 0.11135693215339233
+        },
+        {
+          "verdict": "PASS",
+          "count": 230,
+          "share": 0.08480825958702065
+        },
+        {
+          "verdict": "MULTIWORK_HOLD_CORRECT",
+          "count": 91,
+          "share": 0.03355457227138643
+        },
+        {
+          "verdict": "FP_NONNOVEL",
+          "count": 72,
+          "share": 0.02654867256637168
+        },
+        {
+          "verdict": "WRONG_WORK",
+          "count": 36,
+          "share": 0.01327433628318584
+        },
+        {
+          "verdict": "EVIDENCE_CONFLICT",
+          "count": 25,
+          "share": 0.009218289085545723
+        },
+        {
+          "verdict": "DASHBOARD_TITLE_MISMATCH",
+          "count": 7,
+          "share": 0.0025811209439528023
+        }
+      ],
+      "dashboard_actions": [
+        {
+          "action": "NOT_APPLICABLE",
+          "count": 1581,
+          "share": 0.5829646017699115,
+          "operating_rule": "대시보드 작품 표기 조치 대상 아님"
+        },
+        {
+          "action": "HOLD",
+          "count": 452,
+          "share": 0.16666666666666666,
+          "operating_rule": "근거 보강 전 자동 게시 금지"
+        },
+        {
+          "action": "CORRECT",
+          "count": 369,
+          "share": 0.13606194690265486,
+          "operating_rule": "권장 작품명으로 정정"
+        },
+        {
+          "action": "KEEP",
+          "count": 230,
+          "share": 0.08480825958702065,
+          "operating_rule": "현재 작품명 유지"
+        },
+        {
+          "action": "REMOVE",
+          "count": 80,
+          "share": 0.029498525073746312,
+          "operating_rule": "비소설·wrong-work 표기 제거"
+        }
+      ]
+    }
+  }
+}

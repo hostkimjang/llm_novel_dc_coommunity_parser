@@ -86,10 +86,12 @@ from .promotion_gate import (
     EvidenceRecord,
     GroundingState,
     PublishContract,
+    SemanticPublicationState,
     ScopeState,
     apply_publish_contract,
     evaluate_publish_contract,
     normalize_blocked_resolution_state,
+    semantic_publication_state_from_dict,
 )
 from .domain.title_integrity import parse_title_integrity_parts
 from .runtime.pipeline_stage_shadow import PipelineSearchStageShadow
@@ -187,6 +189,11 @@ class AgenticPipeline:
         "너무", "약간", "가나", "맞냐", "맞음", "있음", "없음", "정도", "뭐냐",
         "뭐임", "같음", "같다", "이유", "느낌", "언제", "회차", "유료화",
     }
+
+    @staticmethod
+    def _verifier_mapping(value: Any) -> Dict[str, Any]:
+        """Verifier nested payload가 매핑이 아니면 근거 없음으로 fail-close한다."""
+        return value if isinstance(value, dict) else {}
     
     def __init__(
         self,
@@ -1657,7 +1664,51 @@ class AgenticPipeline:
 
     @staticmethod
     def _is_background_listing_vlm_item(item: Dict[str, Any]) -> bool:
-        return bool((item or {}).get("background_listing_only"))
+        value = item or {}
+        if bool(value.get("background_listing_only")):
+            return True
+
+        screen_type = str(value.get("screen_type") or "").strip().lower()
+        surface_type = str(value.get("surface_type") or "").strip().lower()
+        focus_role = str(value.get("focus_role") or "").strip().lower()
+        title_role = str(value.get("title_role") or "").strip().lower()
+        if (
+            screen_type == "platform_catalog_ui"
+            or surface_type == "platform_listing_page"
+            or focus_role == "background_catalog"
+            or title_role == "background_listing"
+        ):
+            return True
+
+        # Some VLM responses omit the typed listing fields even though the
+        # image-local summary explicitly identifies a multi-work list.  Keep
+        # this inference deliberately narrow: ``작품 상세의 회차 목록`` is a
+        # valid single-work surface, while ``작품 목록`` plus at least two
+        # numbered episodes is a catalog/listing surface and cannot establish
+        # the current work on its own.
+        merged = " ".join(
+            str(value.get(key) or "")
+            for key in ("ocr_text", "visual_summary")
+        )
+        if not re.search(r"(?:작품|소설)\s*(?:목록|리스트|모음)", merged):
+            return False
+        numbered_episodes = {
+            match.group(1)
+            for match in re.finditer(
+                r"\b(\d+)\s*(?:화|회차?)\b",
+                merged,
+                flags=re.IGNORECASE,
+            )
+        }
+        numbered_episodes.update(
+            match.group(1)
+            for match in re.finditer(
+                r"\bep\.?\s*(\d+)\b",
+                merged,
+                flags=re.IGNORECASE,
+            )
+        )
+        return len(numbered_episodes) >= 2
 
     @staticmethod
     def _score_vlm_game_ui_signal(text: Any) -> int:
@@ -2982,6 +3033,8 @@ class AgenticPipeline:
         post_data: Dict[str, Any],
         comments: List[str],
     ) -> bool:
+        if self._is_background_listing_vlm_item(item):
+            return True
         if not self._has_platform_ui_focus_signal(post_data=post_data, comments=comments):
             return False
         summary = str(item.get("visual_summary") or "")
@@ -5744,12 +5797,14 @@ class AgenticPipeline:
                     _primary_domain_keep = str(_da_keep.get("primary_domain") or "").strip().lower()
                     _primary_domain_conf_keep = str(_da_keep.get("domain_confidence") or "").strip().lower()
                     _title_body_cont_keep = bool(_gate_clues_keep.get("title_as_body_continuation"))
-                    _decoded_keep = str(((vf_result.get("slang_insight") or {}).get("decoded_term")) or "").strip()
+                    _slang_keep = self._verifier_mapping(vf_result.get("slang_insight"))
+                    _grounding_keep = self._verifier_mapping(vf_result.get("grounding_check"))
+                    _decoded_keep = str(_slang_keep.get("decoded_term") or "").strip()
                     _body_present_keep = self._has_meaningful_body_or_comment(ctx)
                     _non_novel_text_keep = " ".join(
                         [
                             str(vf_result.get("rejection_reason") or ""),
-                            str((vf_result.get("grounding_check") or {}).get("grounding_issue") or ""),
+                            str(_grounding_keep.get("grounding_issue") or ""),
                             str(_da_keep.get("real_subject") or ""),
                             str(_da_keep.get("reasoning") or ""),
                         ]
@@ -15234,6 +15289,7 @@ class AgenticPipeline:
                 candidate_url=heretic_url,
                 final_decision=extended_identity,
                 verification_result=verification_result if isinstance(verification_result, dict) else None,
+                title_candidates=title_candidates,
             )
 
         if official_title and _batch_alias_rescued:
@@ -15699,6 +15755,10 @@ class AgenticPipeline:
                         **publish_contract.state.to_dict(),
                         "candidate_url": boundary_candidate_url,
                         "scope": publish_contract.state.scope,
+                        "retrieval": publish_contract.state.retrieval,
+                        "semantic_publication": (
+                            publish_contract.state.semantic_publication
+                        ),
                     }
                 )
                 publish_contract = evaluate_publish_contract(
@@ -16381,6 +16441,26 @@ class AgenticPipeline:
         if not isinstance(stats, dict):
             return None
 
+        # A zeroed search counter set is meaningful only when the producer
+        # supplied the complete counter schema.  Older/partial contexts must
+        # remain absent (and therefore UNKNOWN to readers), rather than being
+        # misclassified as a deliberate no-search outcome.
+        required_counter_keys = (
+            "total", "zero_result", "degraded_total", "degraded_zero",
+            "accepted_total", "raw_total", "filtered_total", "retried_total",
+            "cache_hit_total", "degraded_zero_suppressed_total",
+            "fallback_recovered_total", "degraded_recovered_total",
+            "unrecovered_degraded_total",
+            "direct_search_used_total", "direct_search_result_total",
+        )
+        if any(
+            key not in stats
+            or isinstance(stats.get(key), bool)
+            or not isinstance(stats.get(key), (int, float))
+            for key in required_counter_keys
+        ):
+            return None
+
         def _count(key: str) -> int:
             return self._safe_int(stats.get(key)) or 0
 
@@ -16403,7 +16483,8 @@ class AgenticPipeline:
             "direct_search_results": _count("direct_search_result_total"),
         }
         if not any(health.values()):
-            return None
+            health["status"] = "NOT_APPLICABLE"
+            return health
         if health["unrecovered_degraded"] > 0 or health["degraded_zero"] > health["degraded_recovered"]:
             health["status"] = "SEARCH_DEGRADED"
         elif health["degraded_recovered"] > 0:
@@ -36993,6 +37074,492 @@ OUTPUT JSON:
             updated_evidence,
         )
 
+    def _derive_semantic_publication_state(
+        self,
+        ctx,
+        state: GroundingState,
+        evidence: List[EvidenceRecord],
+        *,
+        final_decision: Optional[Dict[str, Any]] = None,
+        verification_result: Optional[Dict[str, Any]] = None,
+        title_candidates: Optional[List[DetectedTitle]] = None,
+        equivalent_candidate_titles: Optional[Iterable[str]] = None,
+    ) -> SemanticPublicationState:
+        """Bind structured semantic verdicts to the sealed publish contract.
+
+        This deliberately consumes typed expert fields, reference roles, scope,
+        and evidence records.  It does not classify media from the candidate's
+        surface text (in particular, ``갤러리`` is never a non-novel cue).
+        """
+
+        final = final_decision if isinstance(final_decision, dict) else {}
+        verification = verification_result if isinstance(verification_result, dict) else {}
+        scope = state.scope if isinstance(state.scope, ScopeState) else None
+
+        structured_containers: List[Dict[str, Any]] = [final, verification]
+        grounding = verification.get("grounding_check")
+        relation = verification.get("relation_judgment")
+        if isinstance(grounding, dict):
+            structured_containers.append(grounding)
+        if isinstance(relation, dict):
+            structured_containers.append(relation)
+
+        def _explicit_text_values(keys: Tuple[str, ...]) -> List[str]:
+            values: List[str] = []
+            for container in structured_containers:
+                for key in keys:
+                    value = container.get(key)
+                    if isinstance(value, str) and value.strip():
+                        normalized = value.strip().lower()
+                        if normalized not in values:
+                            values.append(normalized)
+            return values
+
+        explicit_evidence_values = _explicit_text_values(
+            ("evidence_status", "grounding_evidence_status")
+        )
+        evidence_aliases = {
+            "verified": "sufficient",
+            "grounded": "sufficient",
+            "resolved": "sufficient",
+            "conflicting": "conflict",
+            "contradictory": "conflict",
+            "missing": "insufficient",
+            "incomplete": "insufficient",
+            "unresolved": "insufficient",
+        }
+        normalized_evidence_values = [
+            evidence_aliases.get(value, value) for value in explicit_evidence_values
+        ]
+        evidence_value_set = set(normalized_evidence_values)
+        if "conflict" in evidence_value_set or (
+            "sufficient" in evidence_value_set and len(evidence_value_set) > 1
+        ):
+            evidence_status = "conflict"
+        elif "insufficient" in evidence_value_set:
+            evidence_status = "insufficient"
+        elif normalized_evidence_values:
+            evidence_status = normalized_evidence_values[0]
+        else:
+            evidence_status = ""
+        relation = verification.get("relation_judgment")
+        relation = relation if isinstance(relation, dict) else {}
+        relation_promotion = str(relation.get("promotion_decision") or "").strip().lower()
+        if relation_promotion in {"promote", "accept", "keep", "resolved"}:
+            relation_promotion = "allow"
+        elif relation_promotion in {"defer", "pending", "review"}:
+            relation_promotion = "hold"
+        elif relation_promotion in {"block", "deny", "nullify", "downgrade"}:
+            relation_promotion = "reject"
+
+        scope_conflicts = set(scope.conflict_reason_codes if scope else ())
+        structured_consistency_flags: set[str] = set()
+        for container in structured_containers:
+            for key in ("consistency_flags", "conflict_reason_codes"):
+                values = container.get(key)
+                if isinstance(values, (list, tuple)):
+                    structured_consistency_flags.update(
+                        str(value or "").strip().lower()
+                        for value in values
+                        if str(value or "").strip()
+                    )
+
+        direct_image_sources = {
+            "direct_image_work_surface_lock",
+            "direct_image_explicit_title_rescued",
+            "direct_image_ocr_catalog",
+            "structured_direct_image_work_surface",
+        }
+        direct_image_origin = bool(
+            str(state.source or "").strip().lower() in direct_image_sources
+            or any(
+                str(source or "").strip().lower() in direct_image_sources
+                for source in (scope.direct_bridge_sources if scope else ())
+            )
+        )
+        direct_image_primary_ambiguity = False
+        if direct_image_origin:
+            candidate_titles_for_match = {
+                str(value or "").strip()
+                for value in (
+                    state.candidate_title,
+                    *(equivalent_candidate_titles or ()),
+                )
+                if str(value or "").strip()
+            }
+            candidate_norms = {
+                self._normalize_match_text(value)
+                for value in candidate_titles_for_match
+                if self._normalize_match_text(value)
+            }
+            candidate_norm = self._normalize_match_text(state.candidate_title)
+
+            competing_values: List[Any] = []
+            for key in (
+                "mentioned_works",
+                "secondary_reference_works",
+                "comparison_target",
+            ):
+                value = final.get(key)
+                if isinstance(value, (list, tuple)):
+                    competing_values.extend(value)
+                elif value is not None:
+                    competing_values.append(value)
+            competing_values.extend(title_candidates or [])
+
+            competing_surface_groups: List[Tuple[str, str]] = []
+            for value in competing_values:
+                if isinstance(value, DetectedTitle):
+                    role = str(
+                        getattr(value, "reference_role", "") or ""
+                    ).strip().lower()
+                    other_title = str(
+                        getattr(value, "official_title", "") or ""
+                    ).strip()
+                    alias = str(
+                        getattr(value, "alias_or_mention", "") or ""
+                    ).strip()
+                elif isinstance(value, dict):
+                    role = str(
+                        value.get("reference_role") or value.get("role") or ""
+                    ).strip().lower()
+                    other_title = str(
+                        value.get("official_title")
+                        or value.get("official_novel_title")
+                        or value.get("title")
+                        or ""
+                    ).strip()
+                    alias = str(
+                        value.get("alias_or_mention")
+                        or value.get("matched_alias")
+                        or ""
+                    ).strip()
+                else:
+                    continue
+                other_norm = self._normalize_match_text(other_title)
+                if (
+                    role == "primary"
+                    or not other_norm
+                    or other_norm in candidate_norms
+                ):
+                    continue
+                if len(self._normalize_match_text(other_title)) < 3:
+                    other_title = ""
+                if len(self._normalize_match_text(alias)) < 3:
+                    alias = ""
+                if other_title or alias:
+                    competing_surface_groups.append((other_title, alias))
+
+            def _contains_bounded_alias(text: str, alias: str) -> bool:
+                if not text or not alias:
+                    return False
+                if self._contains_standalone_phrase(text, alias):
+                    return True
+                escaped = re.escape(alias)
+                return bool(
+                    re.search(
+                        rf"(?<![0-9A-Za-z가-힣]){escaped}"
+                        rf"(?:은|는|이|가|을|를|도|만)?"
+                        rf"(?![0-9A-Za-z가-힣])",
+                        text,
+                        flags=re.IGNORECASE,
+                    )
+                )
+
+            def _has_competing_surface(text: str) -> bool:
+                lowered = str(text or "").lower()
+                return any(
+                    bool(
+                        (other_title and self._text_matches_title_strict(lowered, other_title.lower()))
+                        or (alias and _contains_bounded_alias(lowered, alias.lower()))
+                    )
+                    for other_title, alias in competing_surface_groups
+                )
+
+            post_data = getattr(ctx, "post_data", None) or {}
+            image_items = (
+                post_data.get("image_enrichment") or []
+                if isinstance(post_data, dict)
+                else []
+            )
+            matching_image_items: List[Tuple[Dict[str, Any], bool]] = []
+            for item in image_items:
+                if not isinstance(item, dict):
+                    continue
+                item_title = str(
+                    item.get("explicit_work_title")
+                    or item.get("suppressed_explicit_work_title")
+                    or ""
+                ).strip()
+                item_surface_norms = {
+                    self._normalize_match_text(surface)
+                    for surface in (
+                        item_title,
+                        *(item.get("work_cues") or ()),
+                    )
+                    if self._normalize_match_text(surface)
+                }
+                text_blob = " ".join(
+                    str(item.get(key) or "")
+                    for key in ("ocr_text", "visual_summary")
+                )
+                if candidate_norms.intersection(item_surface_norms) or any(
+                    self._text_matches_title_strict(text_blob, candidate_title)
+                    for candidate_title in candidate_titles_for_match
+                ):
+                    matching_image_items.append(
+                        (item, _has_competing_surface(text_blob))
+                    )
+            direct_image_primary_ambiguity = bool(
+                matching_image_items
+                and not any(
+                    not self._is_background_listing_vlm_item(item)
+                    and not has_competing_surface
+                    for item, has_competing_surface in matching_image_items
+                )
+            )
+
+            if (
+                not direct_image_primary_ambiguity
+                and "multi_work_title_cleared" in structured_consistency_flags
+            ):
+                try:
+                    non_image_text = self._collect_non_image_post_text(
+                        ctx,
+                        include_comments=False,
+                    )
+                except Exception:
+                    non_image_text = ""
+                direct_image_primary_ambiguity = _has_competing_surface(
+                    non_image_text
+                )
+        explicit_conflict = bool(
+            scope_conflicts.intersection(
+                {
+                    "title_body_subject_conflict_unresolved",
+                    "multiple_primary_reference_roles",
+                    "official_detail_display_title_mismatch",
+                }
+            )
+            or structured_consistency_flags.intersection(
+                {
+                    "vlm_ocr_title_conflict_with_final_title",
+                    "ocr_title_conflict_with_stable_alias",
+                    "title_body_subject_conflict_unresolved",
+                    "multiple_primary_reference_roles",
+                    "official_detail_display_title_mismatch",
+                    "source_native_official_detail_conflict_held",
+                }
+            )
+        )
+        if explicit_conflict:
+            evidence_status = "conflict"
+        elif direct_image_primary_ambiguity:
+            evidence_status = "conflict"
+        elif not evidence_status and relation_promotion in {"hold", "reject"}:
+            evidence_status = "insufficient"
+        elif not evidence_status and relation_promotion == "allow":
+            evidence_status = "sufficient"
+        elif (
+            not evidence_status
+            and scope is not None
+            and scope.normalized_kind() == "current_work"
+            and any(record.supports_publish for record in evidence)
+        ):
+            evidence_status = "sufficient"
+
+        explicit_media_values = _explicit_text_values(
+            ("media_domain_class", "media_domain", "work_media_type")
+        )
+        media_aliases = {
+            "novel": "novel_work",
+            "webnovel": "novel_work",
+            "web_novel": "novel_work",
+            "novel_literature": "novel_work",
+            "non_novel": "non_novel_media",
+            "non-novel": "non_novel_media",
+            "webtoon": "non_novel_media",
+            "manga": "non_novel_media",
+            "comic": "non_novel_media",
+            "game": "non_novel_media",
+            "news": "non_novel_media",
+            "program": "non_novel_media",
+        }
+        normalized_media_values = [
+            media_aliases.get(value, value) for value in explicit_media_values
+        ]
+        media_value_set = set(normalized_media_values)
+        if len(media_value_set) > 1:
+            media_domain = "cross_media_unresolved"
+        elif normalized_media_values:
+            media_domain = normalized_media_values[0]
+        else:
+            media_domain = ""
+        if not media_domain and ctx is not None:
+            try:
+                discourse_output = ctx.get_expert_output(ExpertType.DISCOURSE) or {}
+            except Exception:
+                discourse_output = {}
+            discourse = (
+                discourse_output.get("discourse_analysis")
+                if isinstance(discourse_output, dict)
+                else {}
+            )
+            discourse = discourse if isinstance(discourse, dict) else {}
+            discourse_domain = str(discourse.get("primary_domain") or "").strip().lower()
+            discourse_confidence = str(
+                discourse.get("domain_confidence") or ""
+            ).strip().lower()
+            if discourse_confidence in {"high", "max"}:
+                if is_novel_domain(discourse_domain):
+                    media_domain = "novel_work"
+                elif is_non_novel_domain(discourse_domain):
+                    media_domain = "non_novel_media"
+        if not media_domain and state.candidate_url:
+            if self._is_novel_platform_url(state.candidate_url) and self._is_novel_detail_url(
+                state.candidate_url
+            ):
+                media_domain = "novel_work"
+
+        explicit_primary_values = _explicit_text_values(
+            ("primary_work_status", "primary_selection_status")
+        )
+        primary_aliases = {
+            "single": "unique",
+            "selected": "unique",
+            "resolved": "unique",
+            "multi_work": "multiple",
+            "multi-work": "multiple",
+            "multiple_primary": "multiple",
+            "unresolved": "ambiguous",
+            "uncertain": "ambiguous",
+            "no_primary": "missing",
+        }
+        normalized_primary_values = [
+            primary_aliases.get(value, value) for value in explicit_primary_values
+        ]
+        primary_value_set = set(normalized_primary_values)
+        if "multiple" in primary_value_set:
+            primary_status = "multiple"
+        elif len(primary_value_set) > 1:
+            primary_status = "ambiguous"
+        elif normalized_primary_values:
+            primary_status = normalized_primary_values[0]
+        else:
+            primary_status = ""
+
+        structured_primary_candidates: List[Tuple[str, str]] = []
+
+        def _add_primary(value: Any) -> None:
+            if isinstance(value, (list, tuple)):
+                for item in value:
+                    _add_primary(item)
+                return
+            if isinstance(value, DetectedTitle):
+                role = str(getattr(value, "reference_role", "") or "").strip().lower()
+                title_value = str(getattr(value, "official_title", "") or "").strip()
+                url_value = str(getattr(value, "heretic_url", "") or "").strip()
+            elif isinstance(value, dict):
+                role = str(value.get("reference_role") or value.get("role") or "").strip().lower()
+                title_value = str(
+                    value.get("official_title")
+                    or value.get("official_novel_title")
+                    or value.get("title")
+                    or ""
+                ).strip()
+                url_value = str(
+                    value.get("heretic_url")
+                    or value.get("official_url")
+                    or value.get("url")
+                    or ""
+                ).strip()
+            else:
+                return
+            if role == "primary" and title_value:
+                structured_primary_candidates.append(
+                    (
+                        self._normalize_match_text(title_value),
+                        self._normalize_url_for_match(url_value),
+                    )
+                )
+
+        _add_primary(final.get("primary_work"))
+        _add_primary(final.get("primary_works"))
+        for item in title_candidates or []:
+            _add_primary(item)
+
+        primary_urls = {
+            url_identity
+            for _, url_identity in structured_primary_candidates
+            if url_identity
+        }
+        primary_url_bound_titles = {
+            title_identity
+            for title_identity, url_identity in structured_primary_candidates
+            if url_identity and title_identity
+        }
+        primary_url_less_titles = {
+            title_identity
+            for title_identity, url_identity in structured_primary_candidates
+            if not url_identity and title_identity
+        }
+        if len(primary_urls) > 1:
+            primary_identity_count = len(primary_urls)
+        elif len(primary_urls) == 1:
+            primary_identity_count = 1 + len(
+                primary_url_less_titles - primary_url_bound_titles
+            )
+        else:
+            primary_identity_count = len(primary_url_less_titles)
+
+        work_resolution = str(
+            final.get("work_resolution") or state.work_resolution or ""
+        ).strip().lower()
+        if (
+            work_resolution in {"multi_work", "multiwork", "multiple"}
+            or primary_identity_count > 1
+            or "multiple_primary_reference_roles" in scope_conflicts
+        ):
+            primary_status = "multiple"
+        elif direct_image_primary_ambiguity:
+            primary_status = "ambiguous"
+        elif "title_body_subject_conflict_unresolved" in scope_conflicts:
+            primary_status = "ambiguous"
+        elif not primary_status and primary_identity_count == 1:
+            current_title_identities = {
+                self._normalize_match_text(value)
+                for value in (
+                    state.candidate_title,
+                    *(equivalent_candidate_titles or ()),
+                )
+                if self._normalize_match_text(value)
+            }
+            current_url_identity = self._normalize_url_for_match(state.candidate_url)
+            primary_matches_current = (
+                bool(current_url_identity and primary_urls)
+                and current_url_identity in primary_urls
+            ) or (
+                bool(
+                    current_title_identities.intersection(
+                        primary_url_bound_titles | primary_url_less_titles
+                    )
+                )
+            )
+            primary_status = "unique" if primary_matches_current else "ambiguous"
+        elif (
+            not primary_status
+            and scope is not None
+            and scope.normalized_kind() == "current_work"
+            and state.candidate_title
+        ):
+            primary_status = "unique"
+
+        return SemanticPublicationState(
+            evidence_status=evidence_status,
+            media_domain_class=media_domain,
+            primary_work_status=primary_status,
+        )
+
     def _record_public_title_gate_decision(
         self,
         ctx,
@@ -37190,6 +37757,83 @@ OUTPUT JSON:
                     )
                 )
             evidence = neutralized_evidence
+
+        previous_state_payload = getattr(ctx, "_last_promotion_gate_state", None)
+        previous_semantic: Optional[SemanticPublicationState] = None
+        if isinstance(previous_state_payload, dict):
+            previous_title = str(
+                previous_state_payload.get("candidate_title") or ""
+            ).strip()
+            if (
+                self._normalize_match_text(previous_title)
+                == self._normalize_match_text(state.candidate_title)
+            ):
+                try:
+                    candidate_previous_semantic = semantic_publication_state_from_dict(
+                        previous_state_payload.get("semantic_publication")
+                    )
+                except (TypeError, ValueError):
+                    candidate_previous_semantic = None
+                if (
+                    isinstance(candidate_previous_semantic, SemanticPublicationState)
+                    and candidate_previous_semantic.blocks_publish()
+                ):
+                    previous_semantic = candidate_previous_semantic
+        if previous_semantic is not None:
+            state = replace(state, semantic_publication=previous_semantic)
+
+        semantic_publication = self._derive_semantic_publication_state(
+            ctx,
+            state,
+            evidence,
+            final_decision=final_decision,
+            verification_result=verification_result,
+            title_candidates=title_candidates,
+            equivalent_candidate_titles=(
+                (original_title,)
+                if binding_status == "compatible" and canonical_title and original_title
+                else ()
+            ),
+        )
+        existing_semantic = state.semantic_publication
+        if isinstance(existing_semantic, SemanticPublicationState):
+            existing_evidence = existing_semantic.normalized_evidence_status()
+            derived_evidence = semantic_publication.normalized_evidence_status()
+            if existing_evidence and derived_evidence and existing_evidence != derived_evidence:
+                merged_evidence = (
+                    "conflict"
+                    if "conflict" in {existing_evidence, derived_evidence}
+                    or "sufficient" in {existing_evidence, derived_evidence}
+                    else "insufficient"
+                )
+            else:
+                merged_evidence = existing_evidence or derived_evidence
+
+            existing_media = existing_semantic.normalized_media_domain_class()
+            derived_media = semantic_publication.normalized_media_domain_class()
+            merged_media = (
+                "cross_media_unresolved"
+                if existing_media and derived_media and existing_media != derived_media
+                else existing_media or derived_media
+            )
+
+            existing_primary = existing_semantic.normalized_primary_work_status()
+            derived_primary = semantic_publication.normalized_primary_work_status()
+            if existing_primary and derived_primary and existing_primary != derived_primary:
+                merged_primary = (
+                    "multiple"
+                    if "multiple" in {existing_primary, derived_primary}
+                    else "ambiguous"
+                )
+            else:
+                merged_primary = existing_primary or derived_primary
+            semantic_publication = SemanticPublicationState(
+                evidence_status=merged_evidence,
+                media_domain_class=merged_media,
+                primary_work_status=merged_primary,
+            )
+        if not semantic_publication.is_default():
+            state = replace(state, semantic_publication=semantic_publication)
 
         contract = evaluate_publish_contract(
             state,
@@ -37680,6 +38324,7 @@ OUTPUT JSON:
         candidate_url: Optional[str] = None,
         final_decision: Optional[Dict[str, Any]] = None,
         verification_result: Optional[Dict[str, Any]] = None,
+        title_candidates: Optional[List[DetectedTitle]] = None,
         source: str = "direct_image_work_surface_lock",
     ) -> Dict[str, Any]:
         title = str(candidate_title or "").strip()
@@ -37873,6 +38518,8 @@ OUTPUT JSON:
             state,
             evidence,
             final_decision=final_decision,
+            verification_result=verification_result,
+            title_candidates=title_candidates,
         )
 
     def _record_title_led_alias_public_title_gate_decision(

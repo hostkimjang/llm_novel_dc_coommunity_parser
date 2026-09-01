@@ -1,5 +1,103 @@
 # Development Checklist
 
+## 2026-09-01 로컬 LLM grounding benchmark 심층 연구
+
+- [x] 연결된 로컬 LLM 품질 감사와 현재 P3 candidate recall/calibration 계약을 대조했다.
+- [x] MTEB(kor,v2), MIRACL-ko, NoMIRACL-ko, KLUE, NIKL, BEIR/KILT/BLINK, selective prediction·calibration·LLM-judge·주석 품질의 공식/원 연구를 확인했다.
+- [x] 현재 고위험 지표를 게시글 단위 Wilson 95% 구간으로 재판독했다. semantic `18/32` 구간은 `39.33%–71.83%`, correct-title `1/11`은 `1.62%–37.74%`, unsafe `1/32`는 `0.55%–15.74%`라 production 정확도·안전성 근거가 아니다.
+- [x] 외부 smoke + domain component gold + end-to-end promotion의 3층 benchmark, canonical work ID/alias/role/evidence schema, 단계별 metric과 A/B 순서를 [`LOCAL_LLM_GROUNDING_BENCHMARK_RESEARCH_20260901_KO.md`](LOCAL_LLM_GROUNDING_BENCHMARK_RESEARCH_20260901_KO.md)에 기록했다.
+- [x] 커뮤니티 제공 작품 축약어 목록 3종, 작가 커뮤니티 은어 정리 1종, Tanma 웹소설 용어집 4종의 구조·시점·source lineage를 감사했다.
+- [x] 발굴 결과를 `A. 소설 매칭(work_alias_registry)`과 `B. 소설 커뮤니티 이해(community_lexicon)`로 분리하고, provenance/source miner만 공유하는 투트랙을 설계했다.
+- [x] 현재 단일 `slang_insight`와 exact-pair Slang DB 계약은 사전형 게시글의 다중 항목 추출 lane이 아니므로, 기존 fail-close를 유지한 별도 shadow-only `lexicon_candidate_ledger`가 필요함을 확인했다.
+- [x] 새 LLM/VLM run을 수행하지 않았고 `FROZEN_ACTUAL NOT_READY`, semantic/search/router/production `NO-GO`, `full_scan_approval=false`를 유지했다.
+- [x] source 원문 전체 재배포와 중앙 Slang DB mutation은 수행하지 않았다. 원자적 관계·URL·날짜·locator·content hash만 보존하는 방향으로 한정했다.
+- [ ] 8개 seed URL의 source-profile parser와 `record_type/source_lineage/attested_at/status` schema를 shadow-only로 구현한다.
+- [ ] 기존 batch에서 용어집/목록형 게시글을 탐지해 두 candidate ledger로 routing하고, 충돌·미확인·고위험 항목만 사람 review queue로 보낸다.
+- [ ] source-backed DEV/CALIBRATION/FROZEN packet과 producer `COMPLETE` receipt를 만든 뒤 candidate recall→role/rerank→calibration→risk-coverage 순으로 actual 평가한다.
+
+## 2026-08-29 로컬 LLM 파이프라인 품질 현황 감사
+
+- [x] 현재 working tree와 최신 v7 qualified 로컬/self-hosted LLM 런을 대조했다. current/run release fingerprint는 `1ab9e3507c362c309427cbb69832815b2f69e3a173511c2783dc947c58f983aa`로 일치한다.
+- [x] 관련 명시 모듈 `403 tests OK`, 변경·신규 Python `py_compile OK`를 확인했다.
+- [x] v7 runtime·선택 런 measurement·publication noninterference·2,712 replay는 `GO`, semantic/search/router/P2/production/full scan은 `NO-GO`, `full_scan_approval=false`로 분리했다.
+- [x] 여러 SSE 이벤트가 한 `iter_text()` 청크에 합쳐질 때 의미 텍스트는 동결되지만 buffered provider usage를 놓쳐 `ESTIMATED`로 떨어지는 미커버 결함을 재현했다. same-chunk 회귀 테스트와 buffer-first drain 전에는 계측 구현 일반성을 승인하지 않는다.
+- [x] 결과와 근거는 [`LOCAL_LLM_PIPELINE_QUALITY_ASSESSMENT_VALIDATION_20260829_KO.md`](LOCAL_LLM_PIPELINE_QUALITY_ASSESSMENT_VALIDATION_20260829_KO.md)에 기록했다.
+
+## 2026-07-18 최종 변경 위험 감사
+
+- [x] 작업트리 전체 변경 세트(수정 6 core py + 신규 ledger/measurement 모듈 4 + tools 10 + tests/docs)를 읽기 중심으로 위험 감사했다. 변경 영역 대상 `299 tests PASS`(`venv/bin/python -m unittest`), 변경/신규 py `py_compile OK`, 시크릿/PII 스캔 0건이다.
+- [x] 신규 회귀 여부를 `git stash` 격리로 확인했다. discover의 대표 실패 클러스터 2개(official-detail/gallery 4건, promotion_gate restore-contract 2건)가 baseline에서도 동일 재현되어 이번 변경 유발 회귀가 아님을 확정했다(official-detail canonicalization은 기존 open gate).
+- [x] `unittest discover -s tests`의 `errors=86`은 import-time `--server-type/-s` argparse가 discover의 `-s tests`와 충돌한 하버스 아티팩트임을 확인했다(명시 모듈 실행 시 통과). `git diff --check`는 `expert_main.py:11280` trailing whitespace 1건(known dirty)만 남는다.
+- [x] docs/README·CHECKLIST가 코드 변경과 정합함을 확인했고, recovery sidecar `AUDIT_ONLY/public_apply=false`·shadow observation public WAL write 금지·자동 publish/full scan `NO-GO`·`full_scan_approval=false` 게이트가 유지됨을 확인했다. 결과: [`FINAL_CHANGE_RISK_AUDIT_20260718_KO.md`](FINAL_CHANGE_RISK_AUDIT_20260718_KO.md), 판정 `조건부 GO`.
+
+## 2026-07-16 라이브 `expert_main` 동결 전수 감사
+
+- [x] Python 3.11에서 `src/llm_batch/experts/arbiter.py` canonical-lock 중첩 f-string이 import를 막는 문제를 prompt byte 계약을 유지하는 helper로 분리했다. Python 3.11/3.12 compile과 exact prompt·인접 Arbiter 테스트를 통과했다.
+- [x] P0a 공개 safety seal로 `SemanticPublicationState(evidence/media/primary)`를 typed publish contract와 WAL 재계산에 결속하고, default legacy fingerprint는 유지했다. final/verifier 상충, 비소설·cross-media, 복수 primary, 기존 blocker 덮어쓰기, official-detail mismatch를 fail-close한다.
+- [x] Arbiter `multi_work_guard`가 High Verifier·High suspected title뿐 아니라 `heretic_url` fallback으로도 부활하지 않게 하고, contextual curated-alias 예외는 유지했다. 서로 다른 URL의 같은 표면 제목과 URL-less transitive bridge도 단일 primary로 합치지 않는다.
+- [x] 정확한 `GPT-5.6 Sol + Pro` implementation lane `live-2712-batched-improvement-20260716`의 기존 turn만 복구했다. model picker의 `GPT-5.6 Sol / Pro / verified=true`와 응답 SHA-256 `fadc0fbe4b4d6e21ba3f51c97f75eef2ca0c9951ed84b8da11498756e0f7b696`를 확인했으며 중복 제출은 하지 않았다. 제안은 untrusted advice로 취급하고 multi-work late revival처럼 로컬 재현·테스트된 항목만 반영했다.
+- [x] P0a focused·인접 계약 묶음 `233 tests PASS`, 최신 P0 의미/Arbiter 묶음 `50 tests PASS`, Python 3.11/3.12 compile, 관련 파일 `diff --check`를 통과했다.
+- [x] 첫 P0a actual 3회는 동일 28행/모델/입력, requested/effective parallel `16/16`, dashboard ON, VLM/OCR READY, runtime `6/6 GO`로 완주했다. exact consensus는 systematic compliant→noncompliant `0`이었지만 WRONG_WORK 한 행이 BEFORE `0/3` 공개에서 AFTER `2/3` 잘못된 작품 공개로 집중돼 semantic `NO-GO`와 rollback boundary를 발동했다.
+- [x] 위 actual 회귀를 post/title 예외 없이 교정했다. 이미지 자체의 `작품/소설 목록·리스트·모음 + 서로 다른 번호 회차 2개 이상`을 background listing으로 격리하고, 같은 이미지의 structured competing work, headline-aligned multi-work 후보, direct-image final recorder의 candidate/verifier 전달을 semantic `conflict/ambiguous`로 봉인한다. 동일 후보의 후속 batch/title-led/source-native allow gate가 blocker를 덮지 못하도록 candidate-bound sticky semantic state를 유지한다.
+- [x] direct-image 목록·동일 이미지 경쟁작·서로 다른 이미지 양성·회차 중복·OCR-only marker·약칭 조사/접미 경계·late overwrite와 기존 OCR/catalog/publication 양성을 포함한 인접 `181 tests PASS`를 확인했다. 독립 `P0a 수정 검토 (gpt-5.6-luna/max)`도 최종 `GO`다.
+- [x] 최신 P0a GO2 actual semantic gate를 별도 snapshot의 동일 28행·모델·입력 해시로 AFTER 3회 다시 실행했다. 6개 BEFORE/AFTER manifest 모두 completed/flushed/pending/failed `28/28/0/0`, requested/effective parallel `16/16`, dashboard ON, runtime `GO`, exact pairing `GO`다. 3회 합의는 majority compliance `18→18`, systematic regression `0`, 새 unsafe/wrong-title any-run `0`, 기존 unsafe/wrong-title 3건은 전 회차 해소됐다. 단일 회차 흔들림은 반복 집중 `0`이라 P0a semantic `GO`이며 이전 결함 재현 AFTER는 승인 입력에서 제외했다.
+- [x] P0a GO와 별개로 search health는 AFTER 관측 가능 82/82행이 `SEARCH_DEGRADED`, review router는 84/84행 `NOT_ESTIMABLE`, expert call 수는 `NOT_ESTIMABLE`, token은 partial이므로 운영·비용 축을 승인하지 않았다. `full_scan_approval=false`와 104,502행 런의 의미 승인은 계속 분리한다.
+- [x] P0b direct OCR title-only recovery를 별도 rollback 경계로 실험 구현하고 focused `7`, 공개 계약·OCR·Arbiter 인접 `169`, direct-image 통합 `101`, frozen 분석 도구 `33 tests PASS`, Python compile, `diff --check`, 2,712 persisted contract replay `GO`를 확인했다. 이 deterministic 결과는 실제 의미 효과 승인으로 승격하지 않았다.
+- [x] pre-P0 BEFORE와 P0a+P0b AFTER의 동일 title-recovery 32행을 각 3회 실행했다. 6개 manifest는 exact 입력 해시, completed/flushed/pending/failed `32/32/0/0`, requested/effective parallel `16/16`, dashboard ON, VLM/OCR READY, runtime `GO`였지만 combined consensus는 systematic regression `4`, improvement `1`이라 P0b 인과를 분리할 수 없었다.
+- [x] P0a-only BEFORE를 fresh snapshot 3회 추가해 P0a+P0b 3회와 exact 격리 비교했다. majority compliance `2→2`, exact compliant runs `9→9`, correct recovery any-run `6→5`, systematic improvement/regression `1/1`, 신규 unsafe/wrong-title any-run `1`, `TWO_OF_THREE` normal→abnormal 집중 `1`로 P0b semantic `NO-GO`를 확정했다. review router는 `NOT_ESTIMABLE`, search는 양 arm 대부분 `SEARCH_DEGRADED`라 별도 운영 축도 승인하지 않았다.
+- [x] `P0b 격리판정 (gpt-5.6-sol/ultra)`에서 canonical variant가 raw OCR exact-item 검사 전에 바뀌면 `not_applicable→legacy fallback`으로 빠질 수 있고 append-only activation provenance가 없음을 확인했다. P0b 전용 함수·late branch·7개 테스트를 rollback했으며 production/test SHA가 P0a GO2 snapshot과 일치한다. P0a safety seal은 유지하고 `full_scan_approval=false`다.
+- [x] rollback 후 Python compile, direct-image 통합 `101 tests PASS`, 2,712 persisted publish contract replay `GO`를 재확인했다. 광범위 인접 계약은 `412/413 PASS`이며 실패 1건은 현재 source와 P0a GO2 snapshot에서 동일 재현돼 rollback 회귀는 아니지만 deterministic hard failure로 남겼다.
+- [ ] `title_led_alias_official_detail_canonicalization`의 `official_detail_display_binding_unavailable/official_url_evidence_missing` 실패와 search degradation을 닫기 전 P1 관계·router·canonical·HOLD 및 P2 early route를 구현·승인하지 않는다.
+- [x] 기존 정답을 흔들지 않는 S0/S1 recovery 기반으로 `recovery_activation_ledger_v2`를 추가했다. 최종 publication WAL receipt/result를 exact 재검증한 뒤에만 별도 sidecar에 `AUDIT_ONLY/public_apply=false` event를 append하며, result JSON·`PickvelIdentity`·`candidate_ledger`·`publish_ledger`·checkpoint·base WAL은 수정하지 않는다. `expert_main.py`의 hook은 post-commit 재검증 뒤·batch learning 전에 있고, fresh measurement에서는 HMAC key 생성과 replay sidecar reconciliation을 모두 건너뛴다.
+- [x] scope-local 0600 HMAC key, proposal/base decision·commit·result·stable result·public projection·contract fingerprint exact binding, append-only hash chain, 16-way CAS idempotence, 위조 base 거부, I/O 실패 격리, unterminated final tail만 복구하고 completed/middle corruption은 fail-close하는 계약을 구현했다. HMAC key/raw capability는 recovery journal·result·checkpoint·manifest에 저장하지 않는다.
+- [x] direct OCR recovery는 공개 승격이 아니라 `HOLD + promotion_eligible explicit_text/work_title`만 읽는 review proposal로 배선했다. 기존 PUBLISH 행, background listing, suppressed OCR title은 proposal 대상에서 제외하고 canonical rewrite·legacy fallback·검색을 sidecar producer 안에서 실행하지 않는다.
+- [x] Python 3.11/3.12 focused sidecar `22 tests PASS`, publication/semantic/promotion/replay 인접 묶음 `187 tests PASS`, Python compile을 통과했다. partial key·16-way concurrent creator·completed invalid tail·middle corruption까지 fail-close로 검증했다. 동결 2,712 persisted publish contract replay는 `GO`, fingerprint/public projection/reason mismatch와 normal→abnormal contract regression이 모두 `0`이다.
+- [x] 단일 frozen publication scope 2,712행 sidecar reconciliation은 `GO`: checkpoint `2,712/2,712`, PUBLISH/HOLD `263/2,449`, review proposal/event `68/68`, provenance coverage `100%`, input checkpoint hash 변화 `0`, `public_apply=true 0`이다. 동일 출력 재실행은 created/replayed `0/68`로 event 중복 `0`이다. 제안은 `FN_TITLE_MISSING 48`, `PASS 0`, 정상 `NOISE_CORRECT/CONTEXT_ONLY_CORRECT 6/6`, 그 외 mismatch/conflict/insufficient/FP/multiwork/wrong-work `1/1/1/1/1/3`이다.
+- [x] 기존 title-recovery 32행 P0a-only 3회 checkpoint는 proposal `8/7/7`을 생성했지만 publication scope가 3개로 달라 global consensus를 `mixed_publication_scope_id / NO-GO`로 처리했다. 진단상 presence `1/3 2건, 2/3 4건, 3/3 4건`과 OCR 표기 variant 2건을 보존하며 자동 공개 근거로 사용하지 않는다.
+- [ ] recovery sidecar가 포착한 68건은 전부 `SEARCH_DEGRADED`이고 정상 NOT_APPLICABLE action의 추가 review가 12건이므로, review-only를 자동 publish로 승격하지 않는다. fresh 3회에서도 search/router/measurement와 의미 gate가 `NO-GO`였으므로 제한 activation 전제는 아직 충족되지 않았다.
+- [x] 실행 중인 104,502행 run의 3333~3348 endpoint와 겹치지 않는 독립 3349~3364 shard, standalone dashboard `8093`, requested/effective parallel `16/16`, `--slang-db off`, VLM/OCR READY로 32행 cross-family source owner와 BEFORE/OFF·AFTER/AUDIT_ONLY 요청을 각 3회 실행했다. 기존 대형 run은 읽기 전용으로 두고 중지·수정·재사용하지 않았다.
+- [x] stochastic divergence가 strict fresh equivalence에서 런을 중단하지 않도록 additive `FRESH_SEMANTIC_OBSERVATION_REQUIRED` 경로와 self-hashed `publication_shadow_observation_v1` receipt를 추가했다. 기존 strict `FRESH_EXECUTION_REQUIRED` 계약은 유지하고, observation은 authoritative/observed decision·outcome·publish·projection/stable hashes를 결속하며 public WAL write를 금지한다.
+- [x] actual 6개 arm은 모두 `32/32`, pending/failed `0/0`, dashboard ON, VLM/OCR READY, runtime/noninterference/receipt coverage `GO`다. validated receipt는 `192/192`, 실제 WAL은 event `32`, SHA `fb336f…c84d`로 manifest anchor와 일치했고 `public_apply=true 0`이다.
+- [x] post_id exact 반복 분석에서 source-compliant→majority noncompliant가 양 arm `2/2`(`11718097`, `11716480`), FN 11행 correct recovery majority `0/11`, PASS retention majority `0/2→1/2`, WRONG_WORK CORRECT 대상 미회복 `3/3`, frozen majority compliance `16/32→17/32`였다. AFTER sidecar는 fresh에서 `SKIPPED_FRESH_MEASUREMENT`라 arm 차이를 인과 효과로 해석하지 않고 semantic auto activation을 `NO-GO`로 닫았다.
+- [x] FP 3행은 양 arm 전 18회 HOLD, action HOLD 5행은 전 30회 HOLD로 collateral 대조군을 보존했다. 반면 `11716480`은 BEFORE wrong-title majority, AFTER any-run wrong-title이 남아 단일 좋아진 수치만으로 승격하지 않았다.
+- [x] call measurement는 arm별 linked `31/29/30/30/30/30`, sealed `186/192`, aborted/open `6/6`으로 `6/6 NO-GO`다. JSON roundtrip int→str row key 오조회, `comment_answer_judge` stage normalization, provider usage estimate를 의미 품질과 분리했고 calls/tokens는 `observational_partial`로만 기록했다.
+- [x] `tools/analyze_recovery_sidecar_grouped_ab.py`가 실제 WAL 재해시, exact receipt authority, eligible denominator, source-relative·절대 품질 gate, variable post와 projection excess, search/router/cost를 fail-close 분석한다. 합성 계약 `7 tests PASS`와 actual 재실행 `NO-GO`를 확인했다.
+- [x] `최종 승인 감사 (gpt-5.6-sol/ultra)`가 192행 pairing·receipt·WAL과 핵심 KPI를 독립 재현했다. 지적한 절대 품질 gate·variance 용어·eligible denominator·actual WAL 재해시·measurement completeness를 반영했다.
+- [x] 실제 묶음 결과를 [`LIVE_RUN_2712_RECOVERY_SIDECAR_GROUPED_AB_REPORT_20260718_KO.md`](LIVE_RUN_2712_RECOVERY_SIDECAR_GROUPED_AB_REPORT_20260718_KO.md), [`LIVE_RUN_2712_RECOVERY_SIDECAR_GROUPED_AB_VALIDATION_20260718_KO.md`](LIVE_RUN_2712_RECOVERY_SIDECAR_GROUPED_AB_VALIDATION_20260718_KO.md), [`LIVE_RUN_2712_RECOVERY_SIDECAR_GROUPED_AB_DATA_ANALYTICS_ARTIFACT_20260718.json`](LIVE_RUN_2712_RECOVERY_SIDECAR_GROUPED_AB_DATA_ANALYTICS_ARTIFACT_20260718.json)에 기록했다. Data Analytics artifact는 `validate/render ok`다.
+- [x] 최종 관련 회귀 `256 tests PASS`, Python 3.11 compileall·Python 3.12 핵심 py_compile을 확인했다. 새 2,712 persisted replay도 `GO`이며 projection/fingerprint/reason mismatch와 normal→abnormal contract regression은 모두 `0`이다. 사용자의 선행 모델-default 줄 바이트를 보존해 current/run release fingerprint `9346b0…0265b`를 exact 일치시켰고, 그 trailing whitespace 1건은 `git diff --check`의 알려진 선행 dirty 항목으로 남겼다.
+- [x] 최종 재검증에서 shadow observation 테스트 fixture의 `llm_batch...`/`src.llm_batch...` 이중 로드로 인한 클래스 identity 불일치를 확인했다. 테스트 import만 `expert_main`의 active module로 통일했고 production receipt validator/WAL 계약은 변경하지 않았다. 단독 테스트와 전체 256개 묶음 재검증은 PASS다.
+- [x] 구현·검증 결과를 [`LIVE_RUN_2712_RECOVERY_SIDECAR_IMPLEMENTATION_REPORT_20260717_KO.md`](LIVE_RUN_2712_RECOVERY_SIDECAR_IMPLEMENTATION_REPORT_20260717_KO.md)에 기록하고 [`LIVE_RUN_2712_RECOVERY_SIDECAR_DATA_ANALYTICS_ARTIFACT_20260717.json`](LIVE_RUN_2712_RECOVERY_SIDECAR_DATA_ANALYTICS_ARTIFACT_20260717.json)을 검증·렌더링했다. 독립 `배선 재검토 (gpt-5.6-terra/high)`와 `지표 독립 검산 (gpt-5.6-luna/medium)`은 모두 `GO`, Data Analytics artifact는 `validate/render ok`다. 현재 gate는 `S0/S1 deterministic=GO`, `review-only frozen reconciliation=GO`, `fresh runtime=NOT_RUN`, `automatic recovery publish=NO-GO`, `full_scan_approval=false`다.
+- [x] 실행 notebook [`LIVE_RUN_2712_BEFORE_AFTER_ANALYSIS_20260716.ipynb`](LIVE_RUN_2712_BEFORE_AFTER_ANALYSIS_20260716.ipynb)을 6개 code cell top-to-bottom로 실행하고, 한국어 보고서 [`LIVE_RUN_2712_BEFORE_AFTER_REPORT_20260716_KO.md`](LIVE_RUN_2712_BEFORE_AFTER_REPORT_20260716_KO.md), Data Analytics artifact [`LIVE_RUN_2712_BEFORE_AFTER_DATA_ANALYTICS_ARTIFACT_20260716.json`](LIVE_RUN_2712_BEFORE_AFTER_DATA_ANALYTICS_ARTIFACT_20260716.json), 검산 보고서 [`LIVE_RUN_2712_BEFORE_AFTER_VALIDATION_20260716_KO.md`](LIVE_RUN_2712_BEFORE_AFTER_VALIDATION_20260716_KO.md)를 작성했다. artifact validation/render는 모두 `ok=true`다.
+- [x] 동결 2,712행 정본과 raw result를 `post_id` exact join해 11개 회귀 cohort와 결정적 risk/cross-family bundle을 생성하는 `tools/build_frozen_2712_cohorts.py`를 추가했다. 누락·중복·중재 coverage 불일치는 fail-close하고 manifest에 술어·건수·해시·겹침·requested/effective parallel을 기록한다.
+- [x] BEFORE/AFTER JSON 배열을 동일 `post_id` 집합으로만 비교하고 unsafe publish·정답 회수·FP·wrong-work·HOLD·PASS·normal→abnormal·review router·search health·calls/tokens/wall을 내는 `tools/compare_frozen_2712_pair.py`를 추가했다.
+- [x] 동일 frozen 입력의 BEFORE/AFTER를 각 3회 반복해 `post_id` exact consensus로 분석하는 `tools/analyze_frozen_2712_repeat_consensus.py`를 추가했다. 입력 집합ㆍ중복ㆍ제공 manifest의 완료/parallel/dashboard/model/snapshot 불일치는 `HARD_FAILURE`이고, 의미 결과는 `1/3·2/3·3/3`로 보존한다. any-run unsafe/wrong title은 표면화하되 단발 wobble만으로 rollback하지 않으며, cohort/verdict/action·검색/router/cost의 known/unknown 집계를 JSONL/summary에 남긴다.
+- [x] 합성 CLI와 현재 자료 검증 `7 tests PASS`를 확인했다. 검색 저하 건수/불리언을 분리하고 production manifest의 `publication_input_snapshot_sha256`를 정본 키로 인정하며, any-run unsafe/wrong-title을 introduced/resolved/persistent exact transition으로 나눈다. 계약·사용법·게이트는 [`FROZEN_2712_REGRESSION_COHORTS_KO_20260716.md`](FROZEN_2712_REGRESSION_COHORTS_KO_20260716.md)에 기록했다.
+- [x] 저장된 v2 `promotion_gate_state/evidence/decision`만으로 2,712행을 결정적으로 재계산하는 `tools/replay_frozen_2712_publish_contract.py`를 추가했다. root 우선·명시적 v2 `candidate_ledger` fallback, exact join fail-close, `NOT_ESTIMABLE` 보존, legacy `SemanticPublicationState` 중립 호환을 기록했다. 내부 contract invalidity와 원장 action/title 사후 채점의 adjudicated unsafe/compliance/semantic regression은 production 입력과 분리한다.
+- [ ] title-recovery와 cross-family 32행 각 3회 비교는 완료했다. publication-safety·retention-controls의 family 전체 실제 bundle과 search/router/measurement 복구는 아직 미완료이므로 `REVIEW-LOCKED / full_scan_approval=false`를 유지한다.
+- [x] 구현 전에 2,712건 정본을 다시 집계해 공개 안전·정답 회수·비소설·wrong-work·multiwork·review routing·canonical title·early route 개선 후보와 BEFORE/AFTER 승인 지표를 작성했다. 보고서: [`LIVE_RUN_2712_PRE_IMPROVEMENT_REPORT_20260716_KO.md`](LIVE_RUN_2712_PRE_IMPROVEMENT_REPORT_20260716_KO.md)
+- [x] 재현 가능한 분석 노트북 [`LIVE_RUN_2712_PRE_IMPROVEMENT_ANALYSIS_20260716.ipynb`](LIVE_RUN_2712_PRE_IMPROVEMENT_ANALYSIS_20260716.ipynb)을 top-to-bottom 실행했다.
+- [x] Data Analytics artifact [`LIVE_RUN_2712_PRE_IMPROVEMENT_DATA_ANALYTICS_ARTIFACT_20260716.json`](LIVE_RUN_2712_PRE_IMPROVEMENT_DATA_ANALYTICS_ARTIFACT_20260716.json)을 검증·렌더링하고, 독립 검산 보고서 [`LIVE_RUN_2712_PRE_IMPROVEMENT_VALIDATION_20260716_KO.md`](LIVE_RUN_2712_PRE_IMPROVEMENT_VALIDATION_20260716_KO.md)를 작성했다.
+- [ ] 위 개선 후보는 아직 구현하지 않았다. 같은 입력·모델·검색 상태의 paired BEFORE/AFTER와 hard regression `0`을 통과하기 전 개선 효과를 확정하지 않는다.
+- [x] 실행 중인 런을 변경하지 않고, 2026-07-16 freeze 시점 result `2,590`건을 review packet(`batch_000`~`batch_025`, SHA `e0d63b8ab0d28530c175aa991e067a39f0a3849adad3ffe77d4a737f514c293a`)으로 고정했다.
+- [x] 자동 구조 대장 `2,590/2,590`, unique `2,590`, missing/extra `0`, dashboard 관측 `2,590`을 생성했다. 이 완료 표기는 의미 판정을 대신하지 않으며, 고위험 의미 재검토 대상 `221`건을 별도 packet으로 분리했다.
+- [x] prefix `2,590/2,590`의 독립 의미 판정 JSONL을 한 건씩 검증했다. 26개 batch 모두 `GO`, 중복·누락·extra `0`이다.
+- [x] 고위험 `221/221`건을 독립 교차 재검토했다. 최초 의견 차이 `64`건은 제3 중재 `64/64`로 모두 닫고, 원 의견·중재 근거를 행별 대장에 보존했다.
+- [x] prefix 뒤에 증가한 tail `122/122`건을 별도 freeze packet으로 전수 판정했다. 2개 batch 모두 `GO`, 중복·누락·extra `0`이다.
+- [x] prefix+tail의 고유 `post_id 2,712/2,712`을 최종 행별 정본과 dashboard 조치 큐로 결합했다. 전수 판정 대장은 `final_2712_row_adjudication_ledger.jsonl`, 조치 큐는 `dashboard_action_queue.jsonl`이다.
+- [x] Data Analytics 보고서 artifact를 검증하고 렌더링했다. 산출물은 [`LIVE_RUN_FULL_ROW_DATA_ANALYTICS_ARTIFACT_20260716.json`](LIVE_RUN_FULL_ROW_DATA_ANALYTICS_ARTIFACT_20260716.json), 종합 보고서는 [`LIVE_RUN_FULL_ROW_ADJUDICATION_20260716_KO.md`](LIVE_RUN_FULL_ROW_ADJUDICATION_20260716_KO.md)다.
+- [x] 2,712건 정본에서 개선 후보 8개, 현재 publish `KEEP/CORRECT/HOLD/REMOVE=228/15/12/8`, candidate FN 신호 정밀도 `105/184`를 재계산하고 [`LIVE_RUN_2712_PRE_IMPROVEMENT_REPORT_20260716_KO.md`](LIVE_RUN_2712_PRE_IMPROVEMENT_REPORT_20260716_KO.md)로 사전 보고했다.
+- [ ] 위 개선안은 아직 구현하지 않는다. 2,712건 golden replay·feature별 변경 범위·동일조건 canary 승인 뒤 별도 작업으로 진행한다.
+- [ ] 이 frozen `2,712` 뒤에 라이브 런이 추가 처리한 tail은 새 freeze packet으로 같은 전수 절차를 반복한다. 따라서 실행 중인 `104,502`건 전체 런의 semantic `GO`는 아직 선언하지 않는다.
+- [x] 런 `20260715_143806_848671`의 process/manifest/checkpoint/result/pending/publication journal/dashboard를 읽기 전용으로 대조했다.
+- [x] `requested/effective/active parallel=16/16/16`, embedded dashboard, VLM/OCR ON, `failed=0`을 확인했다.
+- [x] 현재 committed snapshot에서 dashboard title mapping mismatch `0`을 확인했지만, 이는 semantic approval이나 전체 런 승인으로 승격하지 않았다.
+- [x] `11684372` 비소설 프로그램 publish와 `11718099` OCR 충돌 wrong-work 후보를 `REJECT/REPROCESS` 및 `REVIEW-LOCKED`로 분리했다.
+- [x] GPT Pro 새 독립 검토 요청을 task `full-live-row-adjudication-20260716`으로 한 번 제출했다. bridge가 `inflight`/recovery 상태여 usable 신규 응답은 없었고, 중복 제출이나 과거 응답의 신규 근거 전용은 하지 않았다.
+- [x] semantic coverage의 browser/direct visual missing, 댓글 attribution/dialogue, cross-media intent 충돌을 별도 hold gate로 기록했다.
+- [x] 한국어 보고서 [`LIVE_RUN_FORENSIC_REVIEW_20260716_KO.md`](LIVE_RUN_FORENSIC_REVIEW_20260716_KO.md)를 작성했다.
+- [ ] 런 종료 후 immutable snapshot, exact-once journal/result/checkpoint 대조, 전체 semantic review와 최종 report 갱신을 수행한다.
+- [ ] `full_scan_approval=true` 또는 전체 품질 `GO`를 선언하기 전에 위 hold 항목과 search degraded를 닫는다.
+
 ## 2026-07-15 `src/llm_batch` 기능별 재배치
 
 - [x] 루트 Python 파일을 40개에서 4개로 줄이고 36개를 `domain/grounding/ledger/runtime/measurement/slang/pipelines`로 이동했다.
@@ -15015,3 +15113,354 @@
 - [ ] 크롤러/입력 생성기의 페이지 경계 겹침 원인을 별도 추적하고 source manifest에도 물리/unique/duplicate post 수를 남긴다.
 - [ ] 이 수정 뒤 104,502건 실제 대형 런은 아직 실행하지 않았다. runtime/semantic/full-scan 승인과 분리한다.
 - [x] `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`를 유지한다.
+
+## 2026-07-16 라이브 런 처리행 전수 회계·semantic 재검토
+
+- [x] 사용자 질문에 맞춰 “전수”를 구조 전수·회계 전수·의미 검수 큐·독립 의미 전수로 분리했다.
+  - 독립 의미 전수(전체 104,502건)는 아직 `NOT_DONE`이며 이를 완료했다고 보고하지 않는다.
+- [x] `20260715_143806_848671` 런의 rolling snapshot을 병렬 전문가로 읽기 전용 대조했다.
+  - 03:18:16 관찰: ordered result `1,455`, checkpoint/journal `1,466`, pending `11`, failed `0`.
+  - `result ∪ pending = checkpoint = journal`, duplicate/orphan/index mismatch `0`.
+  - 런은 여전히 진행 중이며 `terminal_artifacts_finalized=false`, `large_run_complete=false`.
+- [x] 처리행 구조 predicate를 전수 순회했다.
+  - publish `185`, candidate-only `776`, reject `489`.
+  - publish + 모델상 `is_novel_related=false` `0`이지만 semantic truth 증명으로 승격하지 않는다.
+  - 확정 비소설 오채택 후보 `11684372`, cross-media identity 충돌 `11684403`, OCR/작품 증거 충돌 `11718099`, `11676330`, `11681172`를 review queue로 고정했다.
+  - 보수적 candidate-only FN 후보 `101`은 확정 FN이 아닌 별도 재심사 큐다.
+- [x] 이미지·댓글·검색 evidence coverage를 분모와 함께 기록했다.
+  - image-dependent `854`, browser/direct artifact `0/854`, catalog unreviewable/source URL 누락 `8`.
+  - comment-dependent `1,140`, dialogue context 누락 `49`.
+  - `SEARCH_DEGRADED` `744`, search health 누락 `279`, search-dependent health 누락 `93`, degraded accepted `0` `85`.
+- [x] dashboard/API를 journal/result/pending과 대조했다.
+  - 공통 표시 필드 mismatch `0`.
+  - API에 `is_novel_related`, `publish_allowed`, primary subject, evidence IDs가 노출되지 않아 semantic/read-model completeness는 `NO-GO`.
+  - `/api/runs` timeout risk와 live offset/page race를 기록했다.
+- [x] 병렬 전문가 5개 완료 의견을 통합했으며 모두 `NO-GO / REVIEW-LOCKED / full_scan_approval=false`에 합의했다.
+- [x] GPT Pro fresh 호출은 preflight `response-streaming=warn`으로 fail-closed됐음을 기록했다. 이전 GPT-5.6 Sol + Pro review 결과는 보조 의견으로만 재사용한다.
+- [x] Data Analytics artifact를 `validate_artifact=PASS`, `render_artifact=PASS`로 생성·검증했다.
+  - `docs/devs/LIVE_RUN_FULL_PROCESSED_DATA_ANALYTICS_ARTIFACT_20260716.json`
+- [ ] 런 종료 전 `GO`, `full_scan_approval=true`, 전체 104,502건 의미 정확도 수치를 선언하지 않는다.
+- [ ] 런 종료 후 immutable snapshot, browser/direct visual, degraded search, 댓글 attribution/dialogue, candidate-only FN 재검토를 수행한다.
+- [x] 03:24:50 KST health 재확인에서 `result=1,456`, `checkpoint=1,477`, `pending=21`, `failed=0`을 기록했다.
+  - `ordered_flush_gap_in_progress`, `search_evidence=REVIEW`, `publication_contract_convergence=GO(violations=0)`이며 전체 승인으로 해석하지 않는다.
+
+## 2026-07-18 남은 개선 M0 측정 prerequisite 복구
+
+- [x] grouped BEFORE/AFTER 6-arm에서 발생한 `ROW_MEASUREMENT_MISSING`의 원인을 JSON 왕복 복사 중 양의 정수 input index가 문자열 key로 바뀐 결함으로 재현했다.
+- [x] `expert_main.py`의 decision-call·early-route measurement snapshot을 deep-copy 기반 `_snapshot_indexed_measurement_rows`로 교체했다. 양의 정수 key를 보존하고 문자열·bool·0 이하 key는 fail-close하며 공개 판정 입력은 변경하지 않는다.
+- [x] `comment_answer_judge` 호출 tag를 기존 허용 stage `VERIFIER`로 정규화했다. 새 stage를 추가하거나 의미 판정 prompt를 바꾸지 않고 기존 decision-call ledger seal 계약에만 연결했다.
+- [x] focused unit/contract와 인접 공개 계약 묶음을 검증했다.
+  - measurement/publication 관련 22 tests PASS
+  - decision tracing 14 tests PASS
+  - 광범위 measurement/publication 인접 274 tests PASS
+  - Python compile PASS
+- [x] 새 release fingerprint `68f579e20c8e2f91d14cc8363712a4b6c5a07f7137de34a3a746194fbce57692`로 동결 2,712행 persisted publish contract replay를 재실행했다.
+  - coverage `2,712/2,712`, 누락 `0`, fingerprint/public projection/reason mismatch `0`, normal→abnormal contract regression `0`
+  - stored/recomputed adjudicated unsafe publish `33/33`
+  - 산출물: `out/regression_safe_2712_remaining_improvements_20260718/measurement_prereq_frozen2712_replay/publish_contract_replay_summary.json`
+- [x] 과거 32행×6-arm artifact를 재작성하지 않고 fixed snapshot으로 진단했다. 잘못된 `ROW_MEASUREMENT_MISSING`은 사라지지만 당시 ledger의 aborted/open 6건과 unlinked 12건 때문에 과거 measurement gate는 계속 `NO-GO`다.
+- [x] 과거 반복 abort 대상 `post_id=11718115` 한 행으로 새 dashboard-on canary를 수행했다.
+  - source owner 1회 + fresh AFTER 1회, requested/effective parallel `16/1`, dashboard `http://127.0.0.1:8094`, recovery/early route `OFF`
+  - runtime `GO`, measurement `GO`, linked/sealed `1/1`, unlinked `0`, checkpoint validation `GO`
+  - public projection/outcome drift `0/0`, source/observed release fingerprint exact match, public WAL unchanged, `public_apply=false`
+  - 산출물: `out/regression_safe_2712_remaining_improvements_20260718/measurement_prereq_canary_post11718115_v1/summary.json`
+- [x] M0 gate를 `GO`로 닫되 승인 범위를 measurement prerequisite에만 한정했다. rollback boundary는 `_snapshot_indexed_measurement_rows`와 `comment_answer_judge→VERIFIER` mapping이며 search/router/P1/P2와 독립이다.
+- [ ] search health는 실제 `SEARCH_DEGRADED`와 no-search `NOT_APPLICABLE`, 상태 누락 `UNKNOWN`을 분리하기 전 `NO-GO`다.
+- [x] search-health M1 계측에서 producer가 완전한 numeric counter schema를 제공하고 모든 counter가 0인 경우만 `NOT_APPLICABLE`을 기록한다. stats 부재·불완전은 계속 `UNKNOWN`, 실제 저하 카운터는 기존 `SEARCH_DEGRADED`/`SEARCH_DEGRADED_RECOVERED` 판정을 유지한다.
+  - grouped analyzer는 `NOT_APPLICABLE`을 non-degraded로 인정하되 `not_applicable_rows`를 별도 집계한다.
+  - focused/integration 18 tests와 인접 12 tests, Python compile PASS
+  - 새 2,712 persisted replay `GO`: fingerprint/public projection/reason mismatch와 normal→abnormal contract regression 모두 `0`
+  - 산출물: `out/regression_safe_2712_remaining_improvements_20260718/search_health_na_frozen2712_replay/publish_contract_replay_summary.json`
+- [ ] M1은 분류 schema 개선만 `GO`다. 과거 6-arm의 no-search 32행은 생성 당시 필드가 없으므로 immutable artifact에서 계속 `UNKNOWN`이며, 새 release-candidate grouped run으로 coverage를 다시 측정한다.
+- [ ] 실제 `SEARCH_DEGRADED` 122/192 관측은 M1으로 해소하지 않았다. 검색 provider/throttle/filter 저하는 별도 search-quality `NO-GO`로 유지한다.
+- [ ] semantic review router는 attempt-local receipt coverage·high-risk recall·정상군 false-review rate를 측정하기 전 `NO-GO`다.
+- [x] frozen label을 runtime 입력으로 사용하지 않는 strict evidence-only `semantic_review_router_receipt_v1`을 구현했다.
+  - completed result의 typed promotion/scope/candidate/consistency/lint evidence whitelist만 canonical source view로 사용한다.
+  - state는 `REVIEW_REQUIRED/NO_REVIEW/NOT_APPLICABLE/UNKNOWN`, mode는 `REVIEW_ONLY`, `public_apply=false`다.
+  - publication scope/index/post/attempt/decision/stable/public projection에 결속하고 exact schema·source hash·decision hash·receipt hash를 재검증한다.
+  - `run_meta.semantic_review_router_receipt`를 stable publication payload에서 제외하고, attach 전후 decision/stable/public projection이 같지 않으면 fail-close한다.
+  - 기존 identity의 미존재 manual bool을 읽는 legacy analyzer fallback은 보존하되 새 receipt를 우선 검증한다.
+- [x] router active path/module/analyzer focused `21 tests PASS`, Python compile PASS를 확인했다.
+- [x] persisted checkpoint와 2,712 정본을 exact post_id로 결합한 offline replay를 실행했다.
+  - checkpoint/ledger/raw join `2,712/2,712`, missing `0`, raw extra inventory `395`
+  - receipt coverage `2,712/2,712`, `UNKNOWN 0`, `public_apply=true 0`
+  - state `REVIEW_REQUIRED 694 / NO_REVIEW 1,870 / NOT_APPLICABLE 148`
+  - decision ID/stable result/public projection drift `0/0/0`
+  - 산출물: `out/regression_safe_2712_remaining_improvements_20260718/semantic_review_router_frozen2712_replay/summary.json`, `rows.jsonl`
+- [x] router cohort 지표를 frozen label과 사후 결합해 계산했다. label/cohort는 receipt producer에 전달하지 않았다.
+  - high-risk union `462/872`, published intervention `21/35`, FN `247/339`, FP `50/72`, WRONG_WORK `33/36`, multiwork `45/91`, mismatch `4/7`, arbitration `62/64`
+  - false review: PASS `42/230`, safe no-title `187/1,580`, ultra-safe `3/188`
+  - cohort는 중첩되므로 개별 routed 건수를 합산해 전체 효과로 해석하지 않는다.
+- [x] router receipt integrity gate는 `GO`다.
+- [ ] high-risk/intervention recall이 100%가 아니고 정상군 false-review가 0이 아니므로 semantic router gate는 `NO-GO`다. broad threshold를 production에 넣지 않고 release-candidate grouped canary에서만 비교한다.
+- [ ] Direct OCR·WRONG_WORK·PASS retention·관계/media/canonical title·targeted HOLD는 review-only family slice와 release-candidate grouped 반복 검증 전 자동 공개하지 않는다.
+- [x] Direct OCR S1 감사에서 기존 extractor의 same-normalized-title `candidate_by_key` first-wins와 `canonical_work_id=""` 고정을 확인했다.
+  - persisted review sidecar `68 events/67 posts`, `public_apply=false 68/68`, `SEARCH_DEGRADED 68/68`
+  - canonical ID 검증 `0/68`, 안정적인 공식 detail URL/ID 근거 `3/68`
+  - FN direct OCR proposal recall `48/107`, proposal event의 FN precision `48/68`; FP `1`, WRONG_WORK `3`, MULTIWORK `1`, PASS `0`
+  - 동일 normalized OCR title 중복 `3 groups/6 events`; 한 그룹은 서로 다른 플랫폼 identity 가능성이 있어 title-only first-wins를 금지했다.
+- [x] S1 review-only identity gate를 구현했다.
+  - 후보를 normalized title별 list로 보존하고, 같은 title의 복수 canonical ID는 `canonical_identity_ambiguous`로 격리한다.
+  - Kakao `/content/<digits>`, Naver `productNo=<digits>`, Novelpia `/novel/<digits>`의 HTTPS 공식 detail만 stable ID와 canonical URL로 인정한다. listing·slug·malformed·unknown host는 거부한다.
+  - `source_tier/page_type/content_status` typed official-detail 근거가 없거나 후보 일부가 미검증이면 `canonical_identity_unverified`로 남기고 ID를 채우지 않는다.
+  - 모든 후보가 하나의 고유 verified identity에 결속되면 후보 record 수와 무관하게 동일 ID로 deduplicate한다. relation role도 첫 후보가 아니라 결정적으로 합성한다.
+  - rule version은 `direct_ocr_review_shadow_v2`; 기존 `RecoveryProposal`/event v2 schema와 legacy replay 검증은 유지한다.
+- [x] S1 focused tests `30 PASS`, Python compile PASS. stable URL 3개 플랫폼, canonicalization, listing/slug 거부, multi-ID ambiguity, single-ID duplicate, typed evidence 누락, legacy replay를 포함한다.
+- [ ] current extractor를 3,118 checkpoint rows에 재실행하면 `79 events/78 posts`, persisted sidecar는 `68 events/67 posts`다. 이 11-event producer lineage divergence를 닫기 전 S1 effectiveness/proposal count를 새 baseline으로 승격하지 않는다.
+- [ ] S1은 canonical identity fail-close만 구현했으며 automatic title recovery는 계속 `NO-GO / REVIEW-LOCKED`다. search degraded에서 query를 실행하거나 공개 title을 생성하지 않는다.
+- [x] P1 relation/media/canonical/HOLD를 공개 gate와 분리한 `semantic_recovery_plan_receipt_v1`으로 구현했다.
+  - exact self-hash `PLAN_ONLY/public_apply=false`; publication scope/index/post/attempt/decision/stable/public projection에 결속한다.
+  - typed relation은 `primary/previous/mentioned/comparison`만 허용하고 secondary/candidate 계열은 `mentioned`로만 강등한다. missing/multiple/ambiguous primary는 HOLD다.
+  - typed semantic media 또는 typed page type만 non-novel/cross-media quarantine 근거로 사용하며 title/alias/host 표면만으로 media를 분류하지 않는다.
+  - Kakao/Naver/Novelpia stable official-detail ID·canonical URL·typed source/page/status·display title이 함께 있을 때만 canonical binding을 만든다. raw OCR title은 count만 보존하고 display title로 렌더하지 않는다.
+  - HOLD blocker를 bounded query purpose 최대 2개로 계획하되 receipt producer는 search/network를 실행하지 않는다. degraded/unknown search에서는 execution 허용과 budget을 0으로 둔다.
+  - `run_meta.semantic_recovery_plan_receipt`를 stable publication payload에서 제외하고 attach 전후 decision/stable/public projection 불변을 강제한다.
+- [x] P1 module/active-path/import-namespace 보강과 grouped analyzer 인접 회귀 `33 tests PASS`, 별도 grouped plan 계측 포함 `25 tests PASS`, Python compile PASS를 확인했다.
+- [x] persisted checkpoint와 정본 2,712행 P1 plan replay를 완료했다.
+  - exact join/receipt `2,712/2,712`, missing·duplicate `0`, `UNKNOWN 0`, `public_apply=true 0`
+  - decision/stable/public projection drift `0/0/0`, 실제 search/network call `0/0`
+  - plan `HOLD 883 / NOT_APPLICABLE 1,829`
+  - canonical binding `153 rows / 163 bindings / 105 unique work IDs`
+  - relation evidence `primary 628 / mentioned 1,669 / previous 0 / comparison 0`
+  - raw OCR evidence `105 rows / 110 items`
+  - 산출물: `out/regression_safe_2712_remaining_improvements_20260718/semantic_recovery_plan_frozen2712_replay/summary.json`, `rows.jsonl`
+- [x] P1 offline cohort breakdown을 frozen label과 사후 결합했다.
+  - high-risk `HOLD 620/872`, published intervention `31/35`, FN `283/339`, FP `60/72`, WRONG_WORK `35/36`, multiwork `52/91`, mismatch `7/7`
+  - collateral HOLD: PASS `117/230`, safe no-title `139/1,580`, ultra-safe `14/188`
+  - typed non-novel/cross-media evidence가 persisted source view에 없어 media quarantine 관측은 `0`; 이는 coverage 한계이지 FP가 해결됐다는 뜻이 아니다.
+- [x] P1 receipt integrity gate는 `GO`다.
+- [ ] P1은 plan-only이고 collateral HOLD가 많으며 실제 recovery effect를 측정하지 않았으므로 semantic effectiveness gate는 `NO-GO`다. `query_execution_allowed 114 rows/planned budget 128`은 실행 권한이나 실행 결과가 아니며 자동 query/publish로 승격하지 않는다.
+- [ ] P2 초저위험 188 early route는 hard regression `0`, 신규 unsafe/wrong-title `0`, provenance `100%`, measurement/search/router green 전 실행하지 않는다.
+- [x] 현재 작업의 GPT-5.6 Sol + Pro 자동 review는 동일 task를 한 번만 제출했다. provider `commit-not-verified`로 lane이 `recovery_required`가 되었고 복구 시 `response-streaming=warn`이 확인돼 중복 제출하지 않았다. 검증된 새 Pro 답변이 없으므로 로컬 구현 근거로 사용하지 않는다.
+- [x] 실행 중인 104,502행 run `20260715_143806_848671`은 읽기 전용으로 유지했으며 commit/push/deploy/central slang promotion을 수행하지 않았다.
+- [x] 현재 상태를 `runtime completion=부분 실런 GO`, `measurement=M0 GO`, `search=NO-GO`, `semantic quality=REVIEW-LOCKED`, `full_scan_approval=false`로 분리한다.
+- [x] release-candidate canary v2를 새 release fingerprint `dd8ba61c…74666`로 재실행했다. source/observed runtime·measurement·publication noninterference가 모두 `GO`, linked/sealed `1/1`, projection/outcome drift `0/0`, public WAL unchanged, router `NO_REVIEW`, P1 plan `NOT_APPLICABLE`, plan search/network call `0/0`, `public_apply=false`다.
+- [x] standalone dashboard `8095`, 독립 shard `3349~3364`, requested/effective parallel `16/16`, VLM/OCR READY, `FROZEN_OFF`, 동일 32행 입력으로 release-candidate BEFORE/OFF·AFTER/AUDIT_ONLY를 각 3회 완주했다. 6개 arm runtime/noninterference는 `6/6 GO`, exact pairing은 `32×2×3`, failed `0`이다.
+- [x] grouped router/P1 attempt-local receipt coverage는 각각 `192/192`, UNKNOWN `0`, P1 executed search/network `0/0`, `public_apply=true 0`이다. grouped P1 plan integrity는 `GO`지만 plan-only 효과 승인과 자동 실행 권한은 아니다.
+- [ ] grouped call measurement는 `4/6 GO`다. repeat 1 BEFORE와 repeat 2 AFTER에서 각 1행이 unlinked/usage-estimated로 남아 전체 measurement gate는 `NO-GO`다. M0 단건 canary 성공을 32행 전 arm 완전성으로 승격하지 않는다.
+- [ ] grouped semantic auto activation은 `NO-GO`다. majority compliance `17/32→18/32`, correct-title majority `0/11→1/11`, descriptive normal→abnormal `0`, recurrent new unsafe/wrong-title `0/0`이지만 PASS retention `1/2→1/2`, WRONG_WORK unrecovered `3/3→3/3`, unsafe any-run `2→3`, variable posts `4→5`다.
+- [ ] review-router는 grouped AFTER high-risk recall `49/66=74.2%`, normal-control false-review `6/30=20.0%`로 semantic gate `NO-GO`다. search는 AFTER `SEARCH_DEGRADED 51/96`, `NOT_APPLICABLE 15/96`, UNKNOWN `0`으로 상태 coverage만 개선됐고 search-quality는 `NO-GO`다.
+- [ ] P2 초저위험 188 early route는 measurement/search/router hard gate가 green이 아니므로 실행하지 않았다. targeted shadow 결과로 `full_scan_approval=true`를 선언하지 않는다.
+- [x] exact 2,712행 paired JSONL, 실행 notebook, canonical Data Analytics artifact와 self-contained 한국어 HTML을 생성했다. artifact validation/package는 `passed`, verification은 packaged headless-shell 부재로 `structural_only`; 일반 Chrome은 `browser_environment_mismatch`로 fail-close했다. 산출물은 [`LIVE_RUN_2712_REMAINING_IMPROVEMENTS_BEFORE_SHADOW_AFTER_REPORT_20260718_KO.html`](LIVE_RUN_2712_REMAINING_IMPROVEMENTS_BEFORE_SHADOW_AFTER_REPORT_20260718_KO.html), [`...VALIDATION_20260718_KO.md`](LIVE_RUN_2712_REMAINING_IMPROVEMENTS_BEFORE_SHADOW_AFTER_VALIDATION_20260718_KO.md), [`...ANALYSIS_20260718.ipynb`](LIVE_RUN_2712_REMAINING_IMPROVEMENTS_BEFORE_SHADOW_AFTER_ANALYSIS_20260718.ipynb), [`...PAIRED_20260718.jsonl`](LIVE_RUN_2712_REMAINING_IMPROVEMENTS_BEFORE_SHADOW_AFTER_PAIRED_20260718.jsonl)이다.
+
+## 2026-07-19 2,712행 개선 아키텍처 전문가 회의
+
+- [x] 현재 authoritative path를 현 소스 기준으로 재구성했다.
+  - `AgenticPipeline/Arbiter → promotion_gate → expert_main._commit_final_result → PublicationCommitRegistry`만 normal public writer다.
+  - fresh observation, review router, P1 plan, recovery sidecar는 각각 non-writer이며 `public_apply=false`다.
+- [x] 실제 모델·추론을 분리한 독립 검토를 수행했다.
+  - 아키텍처 `gpt-5.6-terra/high`
+  - P1 의미 계약 `anthropic/claude-opus-4-8/high`
+  - 계측·검색·운영 `gpt-5.6-luna/max`
+  - 선행 shadow seam `gpt-5.6-sol/ultra`는 현행 observation mode의 설계 이력으로만 사용했다.
+- [x] 모듈 PASS와 시스템 NO-GO를 분리했다.
+  - Opus의 P1 contract PASS는 `PLAN_ONLY/public_apply=false`, typed evidence, 12/12 tests 범위다.
+  - 2,712 collateral HOLD와 32×3 effectiveness는 여전히 system `NO-GO`다.
+- [x] 현재 개선을 분류했다.
+  - 검증된 개선: public noninterference, deterministic replay, measurement key/stage prerequisite, search `NOT_APPLICABLE` schema, router/P1/OCR/shadow receipt integrity.
+  - 미미·기술통계 신호: majority `17→18`, correct-title `0/11→1/11`, grouped normal false-review `9/30→6/30`.
+  - 실패·미입증: WRONG_WORK `3/3→3/3`, PASS retention `1/2→1/2`, unsafe any-run `2→3`, cost/wall `NOT_ESTIMABLE`.
+- [x] 구조 한계를 기록했다.
+  - `_commit_final_result` orchestration concentration
+  - sidecar별 상이한 source projection과 공통 provenance 부재
+  - measurement 4/6와 search degraded 51/96
+  - recovery producer lineage `68 events/67 posts → 79/78`
+  - attempt-local allowlist·attach 순서 결합, P1 action taxonomy·execution capability 혼동 위험
+- [x] 권고 순서를 `PublicationFinalizer` 동작 불변 추출 → immutable `ObservationEnvelope` → 192/192 row measurement seal/link → public WAL copy 전용 intervention simulator → family 반복 → P2 188 canary로 고정했다.
+- [x] 정확한 GPT-5.6 Sol + Pro preflight는 `family=gpt-5.6-sol/model=pro/effort=null`, upload/model/streaming capability `ok`였다.
+- [x] 기존 review lane `recovery_required`를 중복 전송 없이 기록 session만 복구했다. exact `GPT-5.6 Sol Pro` model evidence와 과거 2,590행 답변 hash를 확인했다.
+- [x] 새 `architecture-improvement-council-20260719` hard-boundary prompt와 verified selected bundle `13 files/1,002,127 bytes`는 정확히 한 번 제출했다. `fetch failed` 뒤 lane을 `recovery_required`로 보존했고 같은 prompt를 재전송하지 않았다.
+- [x] 현재 task의 기록 session 복구는 CDP 부재·headless 금지·headed Xvfb provider-status 미검증으로 fail-closed됐다. 과거 Pro의 verdict/dashboard/evidence 축 분리와 full-scope 과장 금지만 역사적 보조 의견으로 사용하고 현재 task 합의에는 계수하지 않았다.
+- [x] 한국어 Data Analytics artifact와 self-contained HTML을 생성했다.
+  - artifact validation/package `passed`
+  - verification `structural_only`(installed Chromium headless-shell 부재)
+  - 산출물: [`ARCHITECTURE_IMPROVEMENT_EXPERT_COUNCIL_REPORT_20260719_KO.html`](ARCHITECTURE_IMPROVEMENT_EXPERT_COUNCIL_REPORT_20260719_KO.html), [`...ARTIFACT_20260719.json`](ARCHITECTURE_IMPROVEMENT_EXPERT_COUNCIL_ARTIFACT_20260719.json), [`...MINUTES_20260719_KO.md`](ARCHITECTURE_IMPROVEMENT_EXPERT_COUNCIL_MINUTES_20260719_KO.md), [`...VALIDATION_20260719_KO.md`](ARCHITECTURE_IMPROVEMENT_EXPERT_COUNCIL_VALIDATION_20260719_KO.md)
+- [ ] current gate는 `runtime/comparability/public noninterference=GO`, `measurement/search/router/semantic activation/P2=NO-GO`, `full_scan_approval=false`로 유지한다.
+- [ ] 다음 구현은 이 회의에서 수행하지 않았다. P0 finalizer/envelope/measurement 개선은 별도 rollback boundary와 deterministic golden equivalence로 시작한다.
+
+## 2026-07-20 P1 recovery plan receipt 독립 리뷰
+
+- [x] 독립 리뷰 lane(`p1_review_plan_fable5_high`)이 과업 정본 `out/regression_safe_2712_remaining_improvements_20260718/p1_review_plan_task_ko.md` 대비 구현을 재검증했다.
+  - 재실행: focused `12/12`, analyzer `5/5`, 인접 router/promotion gate `112 OK`, `py_compile` PASS
+  - 계약: `PLAN_ONLY/public_apply=false`, 4-role 관계·secondary 승격 금지, typed media quarantine, 3-platform stable canonical binding, OCR raw title 비렌더, degraded query budget 0, recompute validator fail-close 모두 확인
+  - 비간섭: attach 전후 decision/stable/public projection 불변 테스트와 2,712행 replay drift `0/0/0` 확인
+  - 지적: 정본 allowlist 4항목 대비 `expert_main.py` attach 배선·frozen2712 analyzer 추가는 범위 일탈(경미·문서화됨). `_identity_key` display-key 우선 계수와 `_HEALTHY_SEARCH_STATUSES` 확장 표기는 후속 개선 후보
+  - 결론: 모듈 계약 PASS, integrity `GO` 유지, semantic effectiveness `NO-GO`·`full_scan_approval=false` 승격 근거 아님
+  - 산출물: [`P1_RECOVERY_PLAN_REVIEW_20260720_KO.md`](P1_RECOVERY_PLAN_REVIEW_20260720_KO.md)
+
+## 2026-07-20 계측 완결성 P0 구현·실제 canary·다음 계획
+
+- [x] 기존 grouped measurement `4/6 GO`의 두 실패행을 exact independent readback으로 재진단했다.
+  - `11718107`, run `20260718_161927_672759`: VERIFIER physical call 1건이 `ESTIMATED`, row는 `COMPLETE_WITH_ESTIMATES`, sealed but unlinked, actual KPI `NOT_ESTIMABLE`
+  - `11718058`, run `20260718_171925_454703`: SYNTHESIZER physical call 1건이 `ESTIMATED`, row는 `COMPLETE_WITH_ESTIMATES`, sealed but unlinked, actual KPI `NOT_ESTIMABLE`
+  - 두 경우 모두 writer가 추정 usage를 actual로 세탁하지 않고 publication link를 거부한 것은 올바른 fail-close다.
+- [x] 근본 원인을 `src/llm_batch/llm/client.py::_http_stream_completion`의 HTTP vLLM stream 조기 종료로 확인했다.
+  - 누적 출력 하드캡에서 연결을 닫아 vLLM의 마지막 usage-only SSE를 놓쳤다.
+  - `DecisionTracingLLMClient`·writer·link 계약은 ESTIMATED를 정확히 보존하고 있었으므로 수정 대상에서 제외했다.
+- [x] P0 최소 slice를 구현했다.
+  - 하드캡에서 반환 의미 텍스트를 기존 지점 그대로 동결한다.
+  - `stream_options.include_usage=true`일 때만 뒤 SSE를 drain-only로 읽는다.
+  - 동결 뒤 content/reasoning/all-chunks/token_count/JSON parser에는 반영하지 않는다.
+  - provider usage를 받으면 `PROVIDER_REPORTED`; 받지 못하면 기존 `ESTIMATED/NO-GO`를 유지한다.
+  - drain transport 오류는 의미 결과를 버리거나 같은 요청을 재시도하지 않는다.
+  - rollback kill switch는 `LLM_DRAIN_USAGE_AFTER_HARD_CAP=0`이다.
+  - JSON-tail/text-repeat 조기 종료는 비용·지연 의미 보존을 위해 이번 변경 범위에서 제외했다.
+- [x] deterministic/adjacent 회귀를 통과했다.
+  - hard-cap output 불변/provider usage 회수/kill switch/drain 오류 무재시도 테스트를 추가했다.
+  - `test_llm_client_stream_timeout` 포함 decision tracing, measurement canary, publication shadow, semantic plan/router/publication authority 묶음 `63 tests OK`
+  - `python3 -m py_compile` PASS, 변경 파일 `git diff --check` PASS
+  - system `python`·pytest는 없었고 repo `.venv/bin/python -m unittest`로 검증했다.
+- [x] 과거 문제 2행을 새 실제 `source owner + fresh observation` canary로 검증했다.
+  - 입력 `post_id=11718107`: source run `20260720_001419_426889`, observed run `20260720_001635_937131`
+  - 입력 `post_id=11718058`: source run `20260720_002026_224705`, observed run `20260720_002227_884580`
+  - 각 run requested/effective parallel `16/1`, standalone dashboard `8093` ON, isolated shards `3349~3364`, health `16/16`, recovery activation OFF
+  - runtime `4/4 GO`, observed measurement `2/2 GO`, sealed/linked `2/2`, unlinked `0`, public WAL unchanged `2/2`, public projection/outcome drift `0/0`, `public_apply=false`
+  - independent readback exact: provider usage `27/27`, estimated `0`, calls `27`, prompt/completion/total tokens `359,697/21,460/381,157`, physical-call wall 합 `327,947ms`, retry `0`
+  - 실제 canary에서 stochastic runaway/hard-cap 자체는 재발하지 않았으므로 drain 직접 발동의 실환경 재현이라고 주장하지 않는다. 실런 근거는 문제 post_id의 새 계측 완결 `2/2`다.
+- [x] 2,712행 frozen publish-contract replay를 통과했다.
+  - replay `2,712/2,712`, network/expert_main 미사용
+  - public projection mismatch `0`, reason-code mismatch `0`, fingerprint mismatch `0`
+  - normal→abnormal contract regression `0`, internally invalid `0`
+  - 산출물: `out/measurement_usage_drain_canary_20260719/frozen2712_publish_contract_replay/publish_contract_replay_summary.json`
+- [x] 다음 아키텍처 경계를 서로 다른 실제 모델로 읽기 전용 감사했다.
+  - `anthropic/claude-fable-5/high`: P1 plan-only contract·비간섭 재검증; semantic effectiveness 승격 금지
+  - `gpt-5.6-sol/ultra`: legacy receipt 참조형 additive `ObservationEnvelope/SidecarReceipt`, source-lineage·public_apply false·WAL 불변 gate
+  - `gpt-5.6-luna/high`: 기존 `evaluate_publish_contract/apply_publish_contract`를 감싸는 얇은 `PublicationFinalizer` façade, golden byte/hash equivalence와 rollback/NO-GO 경계
+- [ ] 기존 32행×3회 grouped 6개 arm 전체 measurement를 재실행하지 않았으므로 기존 system measurement gate는 targeted GO로만 갱신한다.
+  - 다음 GO: 동일 RunSpec/입력/검색 조건에서 runtime/noninterference `6/6`, measurement `6/6`, deterministic invariant failure `0`
+- [ ] `PublicationFinalizer`와 `ObservationEnvelope`는 design-ready이지 production code 구현 완료가 아니다.
+  - Finalizer는 identity/candidate-ledger/trace/publish-ledger/decision hash golden equivalence가 먼저다.
+  - Envelope는 기존 receipt bytes를 교체하지 않고 emission/consumption OFF kill switch를 가진 additive wrapper여야 한다.
+- [ ] semantic/search/router/P2/full scan은 계속 `NO-GO`다.
+  - 이번 패치는 의미 판정 로직을 바꾸지 않았다.
+  - P2 초저위험 188행은 measurement/search/router/semantic gate가 모두 green 뒤에만 실행한다.
+  - `full_scan_approval=false`를 유지한다.
+- [x] 한국어 Data Analytics 기술 보고서를 canonical artifact로 생성했다.
+  - artifact validation/package `passed`
+  - verification `structural_only`(설치된 Chromium headless-shell 없음); source interaction/browser viewport QA는 미실행
+  - 산출물: [`MEASUREMENT_USAGE_DRAIN_IMPROVEMENT_REPORT_20260720_KO.html`](MEASUREMENT_USAGE_DRAIN_IMPROVEMENT_REPORT_20260720_KO.html), [`MEASUREMENT_USAGE_DRAIN_IMPROVEMENT_ARTIFACT_20260720.json`](MEASUREMENT_USAGE_DRAIN_IMPROVEMENT_ARTIFACT_20260720.json)
+- [x] 보호 중인 104,502-input run `20260715_143806_848671`은 읽기 전용 상태 확인만 했고 중지·수정·재사용하지 않았다.
+- [x] commit/push/deploy/central slang DB promotion은 수행하지 않았다.
+
+## 2026-07-23 v7 qualified 192/192 최종 검증
+
+- [x] v6 이후 코드를 동결한 v7 동일 RunSpec 32행×BEFORE/AFTER×3회를 `--parallel 16`, dashboard ON으로 완주했다.
+  - 선택 6개 arm은 runtime `6/6 GO`, completed/flushed `192/192`, failed `0`, requested/effective parallel `16/16`, publication noninterference `6/6 GO`다.
+  - 독립 immutable decision-call ledger readback은 linked `192/192`, unlinked `0`, actual usage 전부 provider-reported로 measurement `6/6 GO`다.
+  - input snapshot·publication scope·model이 일치하고 authoritative WAL은 event `32`, SHA `7a289d809a2e9bf8872f55f30866408fc4d98aa9fac072f4369c04b7ec151517`로 불변이다.
+- [x] 원본 v7의 measurement gap과 replacement를 숨기거나 덮어쓰지 않았다.
+  - 원본 repeat 3 AFTER `20260723_010338_574277`은 `11718107` VERIFIER hard-cap 뒤 provider-usage drain timeout으로 `191/192`, `NO-GO`다.
+  - retry 1 `20260723_013036_430357`은 `11718122` 최초 VLM `ReadTimeout`의 model/usage 부재로 `31/32`, `NO-GO`다.
+  - retry 2 `20260723_015151_275124`는 사전 고정 `semantic_result_blind=true` 정책을 만족한 첫 terminal attempt이며 `32/32 GO`로 선택했다.
+  - 정책 SHA-256은 `78f5eb2d919912c24760b6d0c6501f703004932d41105bf9bffbb950bcdab580`; 추정 usage 승격과 기존 attempt overwrite는 금지했다.
+- [x] exact paired 3회 consensus를 cohort별로 분석했다.
+  - majority compliant `18/32→18/32`, systematic cross-arm improvement/regression `0/0`, introduced unsafe/wrong-title `0/0`이다.
+  - unsafe any-run `3→1`, wrong-title any-run `2→0`; `11718051`·`11716480`의 일회성 wrong-title publish는 해소됐다.
+  - correct-title은 any-run `2/11→1/11`, majority `1/11→1/11`; `11718097`은 `2/3→3/3`, `11718117`은 `1/3→0/3`이다.
+  - HOLD integrity majority `4/5→4/5`, PASS `2/2→2/2`, FP `0/3→0/3`, wrong-work 미복구 `3/5→3/5`다.
+  - `11718099`의 evidence-conflict unsafe publish가 양 arm `2/3`으로 지속되므로 semantic auto activation은 `NO-GO`다.
+- [x] search/router/recovery-plan 게이트를 의미 품질과 분리했다.
+  - high-risk review recall `44/66(66.67%)→43/66(65.15%)`, normal false-review `7/30(23.33%)→6/30(20.00%)`로 router는 `NO-GO`다.
+  - search calls `520→495`, unrecovered degraded `182→178`이나 green이 아니므로 search health는 `NO-GO`다.
+  - recovery-plan receipt는 양 arm `96/96`, network/search/public apply `0/0/0`으로 audit-only coverage·비간섭은 `GO`다.
+- [x] actual 호출·토큰을 선택 6개 immutable ledger에서 독립 재판독했다.
+  - expert calls `883→867`, prompt `10,951,754→10,715,092`, completion `565,056→621,973`, total `11,516,810→11,337,065`다.
+  - physical-call wall 합 `32,867,375→35,823,371ms`, run wall 합 `3,210.4→3,949.8s`; AFTER retry 2의 `1,917.5s` long tail을 포함하므로 평균 속도 악화로 일반화하지 않는다.
+- [x] 최종 코드로 frozen 2,712 persisted publish-contract replay를 다시 통과했다.
+  - `2,712/2,712` estimable, ledger missing `0`, projection/reason/fingerprint mismatch `0/0/0`, internally invalid `0`, normal→abnormal contract regression `0`이다.
+  - network와 `expert_main.py` 미사용 deterministic replay이며 2,712행 LLM 의미 개선 증거로 확대하지 않는다.
+  - 산출물: `out/regression_safe_2712_next_improvements_20260722/grouped_ab_v7_early_stop_drain_20260722_231437/frozen2712_publish_contract_replay_final_qualified_20260723/publish_contract_replay_summary.json`
+- [x] 최종 worktree deterministic 회귀를 재실행했다.
+  - focused client/Synth/shape `31/31 OK`
+  - 인접 publication/measurement/router/recovery `263/263 OK`
+  - grouped analyzer replacement/readback `12/12 OK`
+  - 관련 Python compile PASS; `git diff --check`는 사용자 기존 `expert_main.py:11280` trailing whitespace 1건을 별도 선행 dirty change로 보존하고 이번 변경 파일은 PASS로 확인한다.
+- [x] 한국어 Data Analytics 최종 산출물을 생성·검증했다.
+  - 보고서: `docs/devs/NEXT_STRUCTURAL_AND_MEASUREMENT_IMPROVEMENT_FINAL_REPORT_20260723_KO.html`
+  - artifact: `docs/devs/NEXT_STRUCTURAL_AND_MEASUREMENT_IMPROVEMENT_FINAL_ARTIFACT_20260723.json`
+  - 검증문: `docs/devs/NEXT_STRUCTURAL_AND_MEASUREMENT_IMPROVEMENT_FINAL_VALIDATION_20260723_KO.md`
+  - canonical renderer validation/package `passed`; Chromium headless-shell 부재로 browser verification은 `structural_only`다.
+- [ ] semantic quality, search health, review router, P2 초저위험 188 canary, production activation, full scan은 계속 `NO-GO`다.
+  - targeted v7은 measurement/noninterference를 닫았을 뿐 source-relative persistent unsafe publish와 wrong-work를 해결하지 못했다.
+  - `public_apply=false`, `production_enable_allowed=false`, `full_scan_approval=false`를 유지한다.
+- [x] 보호 run `20260715_143806_848671`과 shard `3333~3348`은 읽기 전용으로 유지했고 commit/push/deploy/central slang DB promotion을 수행하지 않았다.
+
+## 2026-07-22 다음 구조 개선 agentic harness 진행
+
+- [x] 직전 shell 차단은 저장소 문제가 아니라 제한형 sandbox의 `bwrap` loopback 초기화 실패로 확인했다.
+  - root와 여러 모델의 단순 `pwd/rg`도 명령 실행 전 `RTM_NEWADDR`로 실패했다.
+  - unrestricted profile 복구 뒤 `pwd`, `git status`, compile, local shard health가 모두 정상화됐다.
+  - 차단 중 파일 수정·실런·대시보드 기동은 없었다.
+- [x] `PublicationFinalizer` 동작 불변 slice를 구현했다.
+  - 신규 `src/llm_batch/ledger/publication_finalizer.py`는 기존 `evaluate_publish_contract`와 `apply_publish_contract`만 감싸는 copy-on-write façade다.
+  - `expert_main.py` 배선·기존 authoritative 함수·writer/WAL은 변경하지 않았다.
+  - publish/HOLD contract, identity, public projection, stable result, `decision_id`, input/decision/public/stable/result/commit hash golden equivalence를 검증했다.
+  - 신규 focused `7/7 OK`; production 미배선이 rollback boundary다.
+- [x] additive `ObservationEnvelope/SidecarReceipt v1` slice를 구현했다.
+  - 신규 `src/llm_batch/measurement/observation_envelope.py`는 기존 shadow/router/plan/recovery receipt를 교체하지 않는 독립 strict wrapper다.
+  - `public_apply=false`, exact coordinate/publication binding, source lineage, legacy receipt hash reference, sorted unique parent refs, storage/readback hash를 강제한다.
+  - `APPLIED_TO/AUTHORIZED_BY` 의미는 허용하지 않고 `OBSERVED_FROM/MEASURED_AGAINST/TRACE_LINKED_TO`만 허용한다.
+  - runtime/run_meta/recovery writer에는 배선하지 않았다. 신규 focused `8/8 OK`; emission/consumption 미사용이 rollback boundary다.
+- [x] 두 slice와 publication/promotion/sidecar/measurement 인접 회귀 `240/240 OK`, `py_compile`, `git diff --check`를 통과했다.
+- [x] 첫 grouped v2 source-owner는 32/32, failed 0, terminal finalization까지 성공했지만 비교 arm 시작 전 release fingerprint가 달라져 정상 fail-close했다.
+  - source-owner 실행 중 `src/llm_batch` 신규 모듈이 생성되어 다음 process의 development disk snapshot이 달라졌다.
+  - 첫 fresh observation은 authoritative WAL/scope 불일치로 의미 호출 전에 차단됐다. runner/production semantic bug로 오판하거나 부분 결과를 비교에 쓰지 않는다.
+  - v2 artifact는 코드 중간 변경 감지 검증으로 보존하고 grouped 효과 정본에서는 제외한다.
+- [ ] 모든 `src` 구현 에이전트를 종료하고 fingerprint `ce57d429b7e569184d51d9637dfcc63c2a79b435da3f10c08fbd69a2e5bc74b4`로 동결한 v3 grouped series를 실행 중이다.
+  - output: `out/regression_safe_2712_next_improvements_20260722/measurement_grouped_ab_v3_code_frozen`
+  - 동일 frozen 32행, BEFORE/OFF·AFTER/AUDIT_ONLY 각 3회, requested/effective parallel `16/16`, dashboard `8093`, shard `3349~3364` 16/16 READY다.
+  - 완료 전 `expert_main.py`와 `src/llm_batch/**/*.py`를 수정하지 않는다.
+  - GO 조건은 runtime/noninterference/measurement `6/6`, exact sealed+linked `192/192`, deterministic invariant failure `0`이다.
+- [ ] semantic/search/router/P2/full scan은 이번 구조·계측 slice와 별도다.
+  - `full_scan_approval=false`, `public_apply=false`, P2 188 early route 미실행을 유지한다.
+
+## 2026-07-22 구조·계측 후속 구현과 3회 묶음 회귀
+
+- [x] 실행 중인 104,502-input run `20260715_143806_848671`과 shard `3333~3348`은 읽기 전용으로 유지했다. 독립 shard `3349~3364`, dashboard `http://127.0.0.1:8093`, 기본 요청 병렬도 `16`만 사용했다.
+- [x] v4 코드 동결 32행×BEFORE/AFTER×3회 런에서 runtime `6/6 GO`를 확인했지만 measurement는 `3/6 GO`, link `189/192`였다.
+  - 동일 `post_id=11718058`의 Synthesizer가 공백/장문 출력을 만들며 3개 arm에서 provider usage terminal을 잃었다.
+  - 산출물: `out/regression_safe_2712_next_improvements_20260722/measurement_grouped_ab_v4_bounded_drain_code_frozen_20260722_162638`
+- [x] Synthesizer를 일반화된 fail-close로 보강했다.
+  - 기본 `max_tokens=2048`, `LLM_SYNTHESIZER_MAX_TOKENS` override, `LLM_SYNTHESIZER_REQUIRE_TRUSTED_TERMINAL=0` rollback을 제공한다.
+  - HTTP stream은 `PROVIDER_REPORTED + finish_reason=stop`만 신뢰하고 `ESTIMATED/UNAVAILABLE/length/max_tokens` 결과는 downstream evidence로 사용하지 않는다.
+  - 문제행 실제 canary는 runtime/measurement/link `GO/GO/1`, public WAL 불변이었다.
+  - 산출물: `out/regression_safe_2712_next_improvements_20260722/synth_quarantine_canary_20260722_185309/summary.json`
+- [x] v5b가 새 verifier schema-shape 버그를 드러냈다.
+  - `post_id=11718061`에서 `slang_insight`가 dict 대신 list로 반환돼 terminal `.get()`에서 `AttributeError`가 발생했다.
+  - `AgenticPipeline._verifier_mapping()`으로 `slang_insight`와 인접 `grounding_check`를 dict만 수용하고 나머지는 `{}`로 버리는 fail-close를 적용했다. 값 내부의 긍정 근거를 살리기보다 false negative를 허용하는 보수적 경계다.
+  - 문제행 실제 canary는 runtime/measurement/link `GO/GO/1`, projection/outcome drift `0/0`, public WAL 불변이었다.
+  - 산출물: `out/regression_safe_2712_next_improvements_20260722/slang_shape_canary_20260722_201653/summary.json`
+- [x] 최종 코드 동결 v6 32행×BEFORE/AFTER×3회를 `--parallel 16`, dashboard ON으로 완주했다.
+  - runtime `6/6 GO`, completed/flushed `192/192`, failed `0`, publication noninterference `6/6 GO`, `public_apply=false`다.
+  - measurement `4/6 GO`, link `190/192`로 전체 measurement는 `NO-GO`다.
+  - repeat 2 BEFORE의 유일한 누락은 최초 `VLM_OCR` 300초 `ReadTimeout`이다. retry가 의미 결과를 복구했지만 실패한 물리 요청의 exact usage/model receipt가 없어 `UNAVAILABLE`을 유지했다.
+  - repeat 2 AFTER의 유일한 누락은 같은 행 Synthesizer의 반복 텍스트 조기 종료다. semantic raw output은 quarantine됐지만 provider usage tail을 읽지 못해 `ESTIMATED`였다.
+  - 산출물: `out/regression_safe_2712_next_improvements_20260722/grouped_ab_v6_shape_guard_20260722_202616/run_summary.json`
+- [x] v6 exact paired/3회 consensus/sidecar 분석을 생성했다.
+  - exact pairing `32×3`, majority compliant `19→17`, systematic improvement `0`, systematic regression `2`(`11718097`, `11716480`)다.
+  - correct-title majority `2→0`, HOLD integrity `5/5→5/5`, FP `0→0`, PASS majority `1/2→1/2`, WRONG_WORK 미해결 `3/5→3/5`다.
+  - AFTER unsafe/wrong-title any-run은 `0→2`지만 majority unsafe는 `0`; 한 번의 stochastic publish를 causal effect로 승격하지 않는다.
+  - router recall `66.7%→77.3%`와 normal false-review `23.3%→26.7%`, search unrecovered degraded `192→204`로 router/search는 `NO-GO`다.
+  - AFTER는 `SKIPPED_FRESH_MEASUREMENT`인 신선 관측이며 sidecar apply가 없어 causal improvement/regression을 증명하지 않는다.
+  - 산출물: `.../grouped_analysis_v6/repeat_consensus_summary.json`, `.../grouped_analysis_v6/sidecar_grouped/report.json`
+- [x] 반복 감지 intentional early-stop에도 bounded provider usage drain을 연결했다.
+  - JSON 객체 반복, JSON 후속 생성 차단, 텍스트 반복 세 분기는 의미 content/reasoning/model/token을 동결하고 provider usage와 non-null finish reason만 최대 60초 drain한다.
+  - `LLM_DRAIN_USAGE_AFTER_EARLY_STOP=0` kill switch를 제공한다. tail 부재/EOF/error/timeout은 재시도하지 않고 기존 `ESTIMATED/NO-GO`를 유지한다.
+  - hard-cap 기존 동작과 finish-reason 동결 계약은 보존했다.
+- [x] 최종 코드 회귀를 통과했다.
+  - focused client/Synth/shape `31/31 OK`, 인접 publication/measurement/router/recovery `263/263 OK`, Python compile, scoped diff check PASS다.
+  - repeat tail usage+stop, kill switch, tail error no-retry는 deterministic test로 직접 검증했다.
+- [x] 실제 `post_id=11718097` canary는 source/observed runtime `GO/GO`, measurement `GO`, link `1/1`, projection/outcome drift `0/0`, release fingerprint match, public WAL 불변이다.
+  - 이번 stochastic canary에서는 repeat-stop이 발동하지 않았으므로 early-stop drain의 실환경 직접 발동 증거로 과장하지 않는다.
+  - 산출물: `out/regression_safe_2712_next_improvements_20260722/early_stop_drain_canary_20260722_225400/summary.json`
+- [x] 최종 코드로 2,712행 persisted publish-contract replay를 재실행했다.
+  - `2,712/2,712` estimable, ledger 누락 `0`, projection/reason/fingerprint mismatch `0/0/0`, normal→abnormal contract regression `0`이다.
+  - 네트워크와 `expert_main.py`를 사용하지 않은 deterministic 계약 회귀이며 LLM 의미 효과 주장이 아니다.
+  - 산출물: `out/regression_safe_2712_next_improvements_20260722/frozen2712_publish_contract_replay_early_stop_drain_final/publish_contract_replay_summary.json`
+- [x] `PublicationFinalizer`와 `ObservationEnvelope`는 단위·golden 계약까지만 구현했고 authoritative runtime에는 배선하지 않았다.
+  - 다음 순서는 post-serializer parity integration test → append-only `AUDIT_ONLY` envelope readback → shadow 안정화 뒤 마지막 writer 한 지점의 façade 교체다.
+- [ ] 전체 measurement `192/192`, semantic recovery, search, router, P2 188, full scan은 계속 `NO-GO`다.
+  - 실패한 provider 요청의 exact usage는 provider request ID 기반 immutable receipt reconciliation 없이는 추정하지 않는다.
+  - total calls/tokens/cost는 v6 measurement가 green이 아니므로 `NOT_ESTIMABLE`이다.
+  - `production_enable_allowed=false`, `full_scan_approval=false`를 유지한다.
+- [x] commit/push/deploy/central slang DB promotion은 수행하지 않았다.

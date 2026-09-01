@@ -1,0 +1,1069 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "동결 2,712행 남은 개선: BEFORE 대비 SHADOW-AFTER 기술 검증",
+    "description": "공개 비간섭 개선과 실제 의미 효과 미승인을 분리한 2,712행·32행×3회 기술 보고서",
+    "generatedAt": "2026-07-18T18:27:13+09:00",
+    "blocks": [
+      {
+        "id": "title",
+        "type": "markdown",
+        "body": "# 동결 2,712행 남은 개선: BEFORE 대비 SHADOW-AFTER 기술 검증"
+      },
+      {
+        "id": "summary",
+        "type": "markdown",
+        "body": "## 결론\n\n구현·receipt 무결성·공개 비간섭은 GO다. 그러나 실제 자동 recovery와 P2는 NO-GO다. 32행×3회에서 majority compliance는 17→18, correct title majority는 0→1이었지만, measurement 4/6만 GO, router recall 74.2%, 정상 false-review 20.0%, search degraded, WRONG_WORK 3/3 미회복, PASS retention 1/2 때문에 기존 정답 무변경 원칙을 해제하지 않는다."
+      },
+      {
+        "id": "headline_metrics",
+        "type": "metric-strip",
+        "cardIds": [
+          "join_card",
+          "drift_card",
+          "majority_card",
+          "full_scan_card"
+        ]
+      },
+      {
+        "id": "gate_heading",
+        "type": "markdown",
+        "body": "## GO/NO-GO 매트릭스\n\nRuntime, measurement, search, semantic quality, full scan을 분리했다."
+      },
+      {
+        "id": "gate_table_block",
+        "type": "table",
+        "tableId": "gate_table"
+      },
+      {
+        "id": "grouped_heading",
+        "type": "markdown",
+        "body": "## 32행×3회 실제 grouped 관측\n\nAFTER는 sidecar를 실제 공개 적용한 인과 arm이 아니라 fresh SHADOW-AFTER다. 막대는 정본 대비 반복 consensus 또는 any-run 수를 보여준다."
+      },
+      {
+        "id": "grouped_chart_block",
+        "type": "chart",
+        "chartId": "grouped_chart"
+      },
+      {
+        "id": "examples_heading",
+        "type": "markdown",
+        "body": "## 개선·악화·변동성 보류 사례\n\n한 번의 흔들림은 자동 rollback 근거가 아니며, 반복 합의와 정본 기준으로 분류했다."
+      },
+      {
+        "id": "examples_table_block",
+        "type": "table",
+        "tableId": "examples_table"
+      },
+      {
+        "id": "router_heading",
+        "type": "markdown",
+        "body": "## Review router는 관측 가능해졌지만 승인 임계치 미달\n\n위험군 recall과 정상군 false-review를 같은 분모 정의로 따로 표시한다. cohort는 중첩되므로 합산하지 않는다."
+      },
+      {
+        "id": "router_chart_block",
+        "type": "chart",
+        "chartId": "router_chart"
+      },
+      {
+        "id": "plan_heading",
+        "type": "markdown",
+        "body": "## P1 plan-only는 안전하게 봉인됐지만 collateral HOLD가 크다\n\n계획은 search/network를 실행하지 않고 공개 결과를 바꾸지 않는다. HOLD 비율은 실제 개선률이 아니다."
+      },
+      {
+        "id": "plan_chart_block",
+        "type": "chart",
+        "chartId": "plan_chart"
+      },
+      {
+        "id": "integrity_heading",
+        "type": "markdown",
+        "body": "## Exact join과 source 무결성\n\n2,712행 paired JSONL이 정본이다. frozen label은 receipt를 생성한 뒤에만 결합했다."
+      },
+      {
+        "id": "integrity_table_block",
+        "type": "table",
+        "tableId": "integrity_table"
+      },
+      {
+        "id": "limits",
+        "type": "markdown",
+        "body": "## 한계와 다음 경계\n\nDirect OCR은 canonical identity fail-close까지만 구현됐고 producer lineage가 68→79 events로 갈라진다. typed media evidence가 persisted source view에 없어 media quarantine 효과는 미측정이다. P2 188건은 measurement/search/router가 모두 green이 아니므로 실행하지 않았다. 정확한 GPT-5.6 Sol + Pro lane은 recovery_required에서 중복 제출하지 않았고 새 검증 답변이 없어 로컬 근거로 사용하지 않았다. 104,502행 run은 읽기 전용이며 이 보고서는 full scan 승인이 아니다."
+      }
+    ],
+    "cards": [
+      {
+        "id": "join_card",
+        "dataset": "headline",
+        "sourceId": "paired_source",
+        "description": "ledger/router/plan exact join",
+        "metrics": [
+          {
+            "label": "exact paired rows",
+            "field": "paired_rows",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "drift_card",
+        "dataset": "headline",
+        "sourceId": "paired_source",
+        "description": "공개 decision/stable/projection drift",
+        "metrics": [
+          {
+            "label": "public drift",
+            "field": "public_drift",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "majority_card",
+        "dataset": "headline",
+        "sourceId": "grouped_source",
+        "description": "32행 majority compliance AFTER-BEFORE",
+        "metrics": [
+          {
+            "label": "majority delta",
+            "field": "majority_delta",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "full_scan_card",
+        "dataset": "headline",
+        "sourceId": "replay_source",
+        "description": "0=false; targeted 결과를 전체 승인으로 승격하지 않음",
+        "metrics": [
+          {
+            "label": "full_scan_approval",
+            "field": "full_scan_numeric",
+            "format": "number"
+          }
+        ]
+      }
+    ],
+    "charts": [
+      {
+        "id": "grouped_chart",
+        "title": "32행×3회 품질 지표",
+        "subtitle": "majority 또는 any-run 수; 지표별 분모가 다름",
+        "type": "bar",
+        "dataset": "grouped_quality",
+        "sourceId": "grouped_source",
+        "options": {
+          "orientation": "vertical",
+          "grouping": "grouped"
+        },
+        "encodings": {
+          "x": {
+            "field": "metric",
+            "type": "nominal",
+            "label": "지표"
+          },
+          "y": {
+            "field": "value",
+            "type": "quantitative",
+            "label": "post_id 수",
+            "format": "number"
+          },
+          "color": {
+            "field": "arm",
+            "type": "nominal",
+            "label": "arm"
+          },
+          "tooltip": [
+            {
+              "field": "metric",
+              "type": "nominal"
+            },
+            {
+              "field": "arm",
+              "type": "nominal"
+            },
+            {
+              "field": "value",
+              "type": "quantitative",
+              "format": "number"
+            }
+          ]
+        }
+      },
+      {
+        "id": "router_chart",
+        "title": "cohort별 review-router 비율",
+        "subtitle": "위험군은 recall, 정상군은 false-review; 목표는 각각 100%와 0%",
+        "type": "bar",
+        "dataset": "router_rates",
+        "sourceId": "router_source",
+        "options": {
+          "orientation": "vertical",
+          "grouping": "grouped"
+        },
+        "encodings": {
+          "x": {
+            "field": "cohort",
+            "type": "nominal",
+            "label": "cohort"
+          },
+          "y": {
+            "field": "rate_pct",
+            "type": "quantitative",
+            "label": "비율(%)",
+            "format": "number"
+          },
+          "color": {
+            "field": "kind",
+            "type": "nominal",
+            "label": "해석"
+          },
+          "tooltip": [
+            {
+              "field": "numerator",
+              "type": "quantitative",
+              "format": "number"
+            },
+            {
+              "field": "denominator",
+              "type": "quantitative",
+              "format": "number"
+            },
+            {
+              "field": "rate_pct",
+              "type": "quantitative",
+              "format": "number"
+            }
+          ]
+        }
+      },
+      {
+        "id": "plan_chart",
+        "title": "P1 plan-only HOLD 비율",
+        "subtitle": "위험군과 collateral 대조군; 실제 recovery 효과가 아님",
+        "type": "bar",
+        "dataset": "plan_hold",
+        "sourceId": "plan_source",
+        "options": {
+          "orientation": "vertical"
+        },
+        "encodings": {
+          "x": {
+            "field": "cohort",
+            "type": "nominal",
+            "label": "cohort"
+          },
+          "y": {
+            "field": "rate_pct",
+            "type": "quantitative",
+            "label": "HOLD 비율(%)",
+            "format": "number"
+          },
+          "tooltip": [
+            {
+              "field": "hold",
+              "type": "quantitative",
+              "format": "number"
+            },
+            {
+              "field": "denominator",
+              "type": "quantitative",
+              "format": "number"
+            },
+            {
+              "field": "rate_pct",
+              "type": "quantitative",
+              "format": "number"
+            }
+          ]
+        }
+      }
+    ],
+    "tables": [
+      {
+        "id": "gate_table",
+        "title": "게이트 매트릭스",
+        "subtitle": "runtime·measurement·search·semantic·full scan 분리",
+        "dataset": "gate_matrix",
+        "sourceId": "grouped_source",
+        "defaultSort": {
+          "field": "rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "rank",
+            "label": "순서",
+            "type": "number",
+            "format": "number"
+          },
+          {
+            "field": "gate",
+            "label": "게이트",
+            "type": "text"
+          },
+          {
+            "field": "status",
+            "label": "상태",
+            "type": "text"
+          },
+          {
+            "field": "evidence",
+            "label": "근거",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "id": "examples_table",
+        "title": "post_id exact 주요 사례",
+        "subtitle": "개선·새 악화·정상행 변동·미해결·variance hold",
+        "dataset": "examples",
+        "sourceId": "grouped_source",
+        "columns": [
+          {
+            "field": "category",
+            "label": "분류",
+            "type": "text"
+          },
+          {
+            "field": "post_id",
+            "label": "post_id",
+            "type": "text"
+          },
+          {
+            "field": "verdict",
+            "label": "정본",
+            "type": "text"
+          },
+          {
+            "field": "expected",
+            "label": "기대 제목",
+            "type": "text"
+          },
+          {
+            "field": "before",
+            "label": "BEFORE",
+            "type": "text"
+          },
+          {
+            "field": "after",
+            "label": "SHADOW-AFTER",
+            "type": "text"
+          },
+          {
+            "field": "disposition",
+            "label": "조치",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "id": "integrity_table",
+        "title": "source 무결성",
+        "subtitle": "행·고유 ID·누락·extra·SHA-256",
+        "dataset": "source_integrity",
+        "sourceId": "paired_source",
+        "columns": [
+          {
+            "field": "source",
+            "label": "source",
+            "type": "text"
+          },
+          {
+            "field": "path",
+            "label": "path",
+            "type": "text"
+          },
+          {
+            "field": "sha256",
+            "label": "SHA-256",
+            "type": "text"
+          },
+          {
+            "field": "rows",
+            "label": "rows",
+            "type": "number",
+            "format": "number"
+          },
+          {
+            "field": "unique_post_ids",
+            "label": "unique",
+            "type": "number",
+            "format": "number"
+          },
+          {
+            "field": "missing",
+            "label": "missing",
+            "type": "number",
+            "format": "number"
+          },
+          {
+            "field": "extra",
+            "label": "extra",
+            "type": "number",
+            "format": "number"
+          }
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "id": "router_source",
+        "label": "2,712 review-router replay",
+        "path": "out/regression_safe_2712_remaining_improvements_20260718/semantic_review_router_frozen2712_replay/summary.json",
+        "query": {
+          "engine": "sqlite",
+          "language": "sql",
+          "sql": "SELECT * FROM source_rows",
+          "description": "위험군 recall과 정상군 false-review",
+          "tables_used": [
+            "summary.json",
+            "rows.jsonl"
+          ],
+          "filters": [
+            "exact post_id join",
+            "frozen labels joined only after receipt production"
+          ],
+          "metric_definitions": [
+            "majority=2-of-3",
+            "systematic=majority transition",
+            "any-run=at least one of three"
+          ]
+        }
+      },
+      {
+        "id": "plan_source",
+        "label": "2,712 P1 plan replay",
+        "path": "out/regression_safe_2712_remaining_improvements_20260718/semantic_recovery_plan_frozen2712_replay/summary.json",
+        "query": {
+          "engine": "sqlite",
+          "language": "sql",
+          "sql": "SELECT * FROM source_rows",
+          "description": "HOLD·canonical binding·OCR·query plan",
+          "tables_used": [
+            "summary.json",
+            "rows.jsonl"
+          ],
+          "filters": [
+            "exact post_id join",
+            "frozen labels joined only after receipt production"
+          ],
+          "metric_definitions": [
+            "majority=2-of-3",
+            "systematic=majority transition",
+            "any-run=at least one of three"
+          ]
+        }
+      },
+      {
+        "id": "grouped_source",
+        "label": "32행×3회 BEFORE/SHADOW-AFTER",
+        "path": "out/regression_safe_2712_remaining_improvements_20260718/release_candidate_grouped_ab_v1/grouped_analysis/report.json",
+        "query": {
+          "engine": "sqlite",
+          "language": "sql",
+          "sql": "SELECT * FROM source_rows",
+          "description": "반복 consensus·variance·search·cost",
+          "tables_used": [
+            "report.json",
+            "transitions.jsonl"
+          ],
+          "filters": [
+            "exact post_id join",
+            "frozen labels joined only after receipt production"
+          ],
+          "metric_definitions": [
+            "majority=2-of-3",
+            "systematic=majority transition",
+            "any-run=at least one of three"
+          ]
+        }
+      },
+      {
+        "id": "paired_source",
+        "label": "2,712 exact paired table",
+        "path": "docs/devs/LIVE_RUN_2712_REMAINING_IMPROVEMENTS_BEFORE_SHADOW_AFTER_PAIRED_20260718.jsonl",
+        "query": {
+          "engine": "sqlite",
+          "language": "sql",
+          "sql": "SELECT * FROM source_rows",
+          "description": "공개 비간섭과 attempt-local receipt exact join",
+          "tables_used": [
+            "paired JSONL"
+          ],
+          "filters": [
+            "exact post_id join",
+            "frozen labels joined only after receipt production"
+          ],
+          "metric_definitions": [
+            "majority=2-of-3",
+            "systematic=majority transition",
+            "any-run=at least one of three"
+          ]
+        }
+      },
+      {
+        "id": "replay_source",
+        "label": "release-candidate persisted replay",
+        "path": "out/regression_safe_2712_remaining_improvements_20260718/release_candidate_frozen2712_replay/publish_contract_replay_summary.json",
+        "query": {
+          "engine": "sqlite",
+          "language": "sql",
+          "sql": "SELECT * FROM source_rows",
+          "description": "공개 계약 deterministic regression",
+          "tables_used": [
+            "publish_contract_replay_summary.json"
+          ],
+          "filters": [
+            "exact post_id join",
+            "frozen labels joined only after receipt production"
+          ],
+          "metric_definitions": [
+            "majority=2-of-3",
+            "systematic=majority transition",
+            "any-run=at least one of three"
+          ]
+        }
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "status": "ready",
+    "generatedAt": "2026-07-18T18:27:13+09:00",
+    "datasets": {
+      "headline": [
+        {
+          "paired_rows": 2712,
+          "public_drift": 0,
+          "majority_delta": 1,
+          "full_scan_numeric": 0
+        }
+      ],
+      "gate_matrix": [
+        {
+          "rank": 1,
+          "gate": "2,712 exact join/receipt",
+          "status": "GO",
+          "evidence": "2,712/2,712; duplicate/missing 0"
+        },
+        {
+          "rank": 2,
+          "gate": "public noninterference",
+          "status": "GO",
+          "evidence": "decision/stable/projection drift 0; public_apply=true 0"
+        },
+        {
+          "rank": 3,
+          "gate": "release-candidate canary",
+          "status": "GO",
+          "evidence": "runtime/measurement/noninterference GO; release fingerprint match"
+        },
+        {
+          "rank": 4,
+          "gate": "grouped runtime/comparability",
+          "status": "GO",
+          "evidence": "6/6 runtime GO; exact 32×3×2; dashboard/parallel 16"
+        },
+        {
+          "rank": 5,
+          "gate": "grouped call measurement",
+          "status": "NO_GO",
+          "evidence": "4/6 GO; two unlinked/estimated rows"
+        },
+        {
+          "rank": 6,
+          "gate": "review router",
+          "status": "NO_GO",
+          "evidence": "high-risk recall 74.2%; normal false-review 20.0%"
+        },
+        {
+          "rank": 7,
+          "gate": "P1 recovery plan",
+          "status": "PLAN_ONLY / NO_GO",
+          "evidence": "receipt 192/192; public apply/calls 0; effectiveness unproven"
+        },
+        {
+          "rank": 8,
+          "gate": "search quality",
+          "status": "NO_GO",
+          "evidence": "AFTER SEARCH_DEGRADED 51/96; unknown 0"
+        },
+        {
+          "rank": 9,
+          "gate": "semantic auto activation",
+          "status": "NO_GO",
+          "evidence": "SOURCE_RELATIVE_RECURRENT_REGRESSION, PASS_RETENTION_INCOMPLETE, WRONG_WORK_CORRECTION_UNRESOLVED, MEASUREMENT_NOT_GREEN, SEARCH_OR_ROUTER_NOT_GREEN"
+        },
+        {
+          "rank": 10,
+          "gate": "P2 ultra-safe early route",
+          "status": "NOT_RUN / NO_GO",
+          "evidence": "measurement/search/router hard prerequisites not green"
+        },
+        {
+          "rank": 11,
+          "gate": "full_scan_approval",
+          "status": "false",
+          "evidence": "targeted shadow/grouped evidence only"
+        }
+      ],
+      "grouped_quality": [
+        {
+          "metric": "majority compliance",
+          "arm": "BEFORE",
+          "value": 17
+        },
+        {
+          "metric": "majority compliance",
+          "arm": "AFTER",
+          "value": 18
+        },
+        {
+          "metric": "correct title recovery",
+          "arm": "BEFORE",
+          "value": 0
+        },
+        {
+          "metric": "correct title recovery",
+          "arm": "AFTER",
+          "value": 1
+        },
+        {
+          "metric": "FP",
+          "arm": "BEFORE",
+          "value": 0
+        },
+        {
+          "metric": "FP",
+          "arm": "AFTER",
+          "value": 0
+        },
+        {
+          "metric": "HOLD integrity",
+          "arm": "BEFORE",
+          "value": 5
+        },
+        {
+          "metric": "HOLD integrity",
+          "arm": "AFTER",
+          "value": 5
+        },
+        {
+          "metric": "PASS retention",
+          "arm": "BEFORE",
+          "value": 1
+        },
+        {
+          "metric": "PASS retention",
+          "arm": "AFTER",
+          "value": 1
+        },
+        {
+          "metric": "unsafe any-run",
+          "arm": "BEFORE",
+          "value": 2
+        },
+        {
+          "metric": "unsafe any-run",
+          "arm": "AFTER",
+          "value": 3
+        },
+        {
+          "metric": "wrong-work unrecovered",
+          "arm": "BEFORE",
+          "value": 3
+        },
+        {
+          "metric": "wrong-work unrecovered",
+          "arm": "AFTER",
+          "value": 3
+        }
+      ],
+      "router_rates": [
+        {
+          "cohort": "고위험 union",
+          "kind": "risk_recall",
+          "numerator": 462,
+          "denominator": 872,
+          "rate_pct": 53.0
+        },
+        {
+          "cohort": "공개 개입 35",
+          "kind": "risk_recall",
+          "numerator": 21,
+          "denominator": 35,
+          "rate_pct": 60.0
+        },
+        {
+          "cohort": "FN title missing",
+          "kind": "risk_recall",
+          "numerator": 247,
+          "denominator": 339,
+          "rate_pct": 72.9
+        },
+        {
+          "cohort": "FP non-novel",
+          "kind": "risk_recall",
+          "numerator": 50,
+          "denominator": 72,
+          "rate_pct": 69.4
+        },
+        {
+          "cohort": "WRONG_WORK",
+          "kind": "risk_recall",
+          "numerator": 33,
+          "denominator": 36,
+          "rate_pct": 91.7
+        },
+        {
+          "cohort": "multiwork",
+          "kind": "risk_recall",
+          "numerator": 45,
+          "denominator": 91,
+          "rate_pct": 49.5
+        },
+        {
+          "cohort": "PASS (오검토)",
+          "kind": "collateral_false_review",
+          "numerator": 42,
+          "denominator": 230,
+          "rate_pct": 18.3
+        },
+        {
+          "cohort": "정상 no-title (오검토)",
+          "kind": "collateral_false_review",
+          "numerator": 187,
+          "denominator": 1580,
+          "rate_pct": 11.8
+        },
+        {
+          "cohort": "초저위험 (오검토)",
+          "kind": "collateral_false_review",
+          "numerator": 3,
+          "denominator": 188,
+          "rate_pct": 1.6
+        }
+      ],
+      "plan_hold": [
+        {
+          "cohort": "고위험 union",
+          "hold": 620,
+          "denominator": 872,
+          "rate_pct": 71.1
+        },
+        {
+          "cohort": "공개 개입 35",
+          "hold": 31,
+          "denominator": 35,
+          "rate_pct": 88.6
+        },
+        {
+          "cohort": "FN title missing",
+          "hold": 283,
+          "denominator": 339,
+          "rate_pct": 83.5
+        },
+        {
+          "cohort": "FP non-novel",
+          "hold": 60,
+          "denominator": 72,
+          "rate_pct": 83.3
+        },
+        {
+          "cohort": "WRONG_WORK",
+          "hold": 35,
+          "denominator": 36,
+          "rate_pct": 97.2
+        },
+        {
+          "cohort": "multiwork",
+          "hold": 52,
+          "denominator": 91,
+          "rate_pct": 57.1
+        },
+        {
+          "cohort": "PASS (오검토)",
+          "hold": 117,
+          "denominator": 230,
+          "rate_pct": 50.9
+        },
+        {
+          "cohort": "정상 no-title (오검토)",
+          "hold": 139,
+          "denominator": 1580,
+          "rate_pct": 8.8
+        },
+        {
+          "cohort": "초저위험 (오검토)",
+          "hold": 14,
+          "denominator": 188,
+          "rate_pct": 7.4
+        }
+      ],
+      "examples": [
+        {
+          "category": "개선",
+          "post_id": "11716480",
+          "verdict": "FN_TITLE_MISSING",
+          "expected": "여대생 가랑이 사이 무릎 꿇은 엄마들",
+          "before": "1/3 compliant; TWO_OF_THREE",
+          "after": "2/3 compliant; TWO_OF_THREE",
+          "disposition": "자동 활성화 금지; 반복/정본 근거 보존"
+        },
+        {
+          "category": "새 악화(단발)",
+          "post_id": "11716479",
+          "verdict": "FN_TITLE_MISSING",
+          "expected": "지력 99 고능아인 척하기",
+          "before": "0/3 compliant; THREE_OF_THREE",
+          "after": "0/3 compliant; TWO_OF_THREE",
+          "disposition": "자동 활성화 금지; 반복/정본 근거 보존"
+        },
+        {
+          "category": "새 악화(단발)",
+          "post_id": "11718099",
+          "verdict": "EVIDENCE_CONFLICT",
+          "expected": null,
+          "before": "3/3 compliant; THREE_OF_THREE",
+          "after": "2/3 compliant; TWO_OF_THREE",
+          "disposition": "자동 활성화 금지; 반복/정본 근거 보존"
+        },
+        {
+          "category": "정상행 변동",
+          "post_id": "11718119",
+          "verdict": "PASS",
+          "expected": "즉사기 들고 무림에 떨어지다",
+          "before": "2/3 compliant; TWO_OF_THREE",
+          "after": "3/3 compliant; THREE_OF_THREE",
+          "disposition": "자동 활성화 금지; 반복/정본 근거 보존"
+        },
+        {
+          "category": "정상행 변동",
+          "post_id": "11718120",
+          "verdict": "PASS",
+          "expected": "괴담 호텔 탈출기",
+          "before": "0/3 compliant; THREE_OF_THREE",
+          "after": "1/3 compliant; TWO_OF_THREE",
+          "disposition": "자동 활성화 금지; 반복/정본 근거 보존"
+        },
+        {
+          "category": "미해결",
+          "post_id": "11714903",
+          "verdict": "WRONG_WORK",
+          "expected": "괴담 호텔 탈출기",
+          "before": "0/3 compliant; THREE_OF_THREE",
+          "after": "0/3 compliant; THREE_OF_THREE",
+          "disposition": "자동 활성화 금지; 반복/정본 근거 보존"
+        },
+        {
+          "category": "미해결",
+          "post_id": "11716500",
+          "verdict": "WRONG_WORK",
+          "expected": "이세계 검은 머리 외국인",
+          "before": "0/3 compliant; THREE_OF_THREE",
+          "after": "0/3 compliant; THREE_OF_THREE",
+          "disposition": "자동 활성화 금지; 반복/정본 근거 보존"
+        },
+        {
+          "category": "미해결",
+          "post_id": "11718051",
+          "verdict": "WRONG_WORK",
+          "expected": "몰락민족의 천재 기사",
+          "before": "0/3 compliant; TWO_OF_THREE",
+          "after": "0/3 compliant; THREE_OF_THREE",
+          "disposition": "자동 활성화 금지; 반복/정본 근거 보존"
+        },
+        {
+          "category": "변동성 보류",
+          "post_id": "11718097",
+          "verdict": "FN_TITLE_MISSING",
+          "expected": "망겜의 힐러",
+          "before": "0/3 compliant; TWO_OF_THREE",
+          "after": "1/3 compliant; ONE_OF_THREE",
+          "disposition": "자동 활성화 금지; 반복/정본 근거 보존"
+        }
+      ],
+      "source_integrity": [
+        {
+          "source": "ledger",
+          "path": "out/live_combined_row_review_20260715_143806_848671_2712_20260716/final_2712_row_adjudication_ledger.jsonl",
+          "sha256": "a43525abc4358592de4888301b51970826f27103aee3285b65ae85eceee93b24",
+          "rows": 2712,
+          "unique_post_ids": 2712,
+          "missing": 0,
+          "extra": 0
+        },
+        {
+          "source": "checkpoint",
+          "path": "out/expert_result_20260715_143806_848671_checkpoint.jsonl",
+          "sha256": "d1cdca69623a1bd72afdcea5e009129055ee430fdd493b47b148e6c206837824",
+          "rows": 3118,
+          "unique_post_ids": 3118,
+          "missing": 0,
+          "extra": 406
+        },
+        {
+          "source": "router",
+          "path": "out/regression_safe_2712_remaining_improvements_20260718/semantic_review_router_frozen2712_replay/rows.jsonl",
+          "sha256": "3f66fa1011ee46a5b74fb3016bca445419963594899f52bbad4fa5c6e15b841d",
+          "rows": 2712,
+          "unique_post_ids": 2712,
+          "missing": 0,
+          "extra": 0
+        },
+        {
+          "source": "plan",
+          "path": "out/regression_safe_2712_remaining_improvements_20260718/semantic_recovery_plan_frozen2712_replay/rows.jsonl",
+          "sha256": "31dbf4c3444f63506f9e965cdd7eaa2944c02783f47c0ddec94b64b6603c451c",
+          "rows": 2712,
+          "unique_post_ids": 2712,
+          "missing": 0,
+          "extra": 0
+        },
+        {
+          "source": "paired",
+          "path": "docs/devs/LIVE_RUN_2712_REMAINING_IMPROVEMENTS_BEFORE_SHADOW_AFTER_PAIRED_20260718.jsonl",
+          "sha256": "ab4d5552326b2d95deb8468840c36e08b5b82a6129b7bcea200d10936628a4df",
+          "rows": 2712,
+          "unique_post_ids": 2712,
+          "missing": 0,
+          "extra": 0
+        },
+        {
+          "source": "grouped transitions",
+          "path": "out/regression_safe_2712_remaining_improvements_20260718/release_candidate_grouped_ab_v1/grouped_analysis/transitions.jsonl",
+          "sha256": "45413a238de87709a43c4cea887152e7963d9bdb94447c48329d574453194056",
+          "rows": 32,
+          "unique_post_ids": 32,
+          "missing": 0,
+          "extra": 0
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "router_source",
+      "label": "2,712 review-router replay",
+      "path": "out/regression_safe_2712_remaining_improvements_20260718/semantic_review_router_frozen2712_replay/summary.json",
+      "query": {
+        "engine": "sqlite",
+        "language": "sql",
+        "sql": "SELECT * FROM source_rows",
+        "description": "위험군 recall과 정상군 false-review",
+        "tables_used": [
+          "summary.json",
+          "rows.jsonl"
+        ],
+        "filters": [
+          "exact post_id join",
+          "frozen labels joined only after receipt production"
+        ],
+        "metric_definitions": [
+          "majority=2-of-3",
+          "systematic=majority transition",
+          "any-run=at least one of three"
+        ]
+      }
+    },
+    {
+      "id": "plan_source",
+      "label": "2,712 P1 plan replay",
+      "path": "out/regression_safe_2712_remaining_improvements_20260718/semantic_recovery_plan_frozen2712_replay/summary.json",
+      "query": {
+        "engine": "sqlite",
+        "language": "sql",
+        "sql": "SELECT * FROM source_rows",
+        "description": "HOLD·canonical binding·OCR·query plan",
+        "tables_used": [
+          "summary.json",
+          "rows.jsonl"
+        ],
+        "filters": [
+          "exact post_id join",
+          "frozen labels joined only after receipt production"
+        ],
+        "metric_definitions": [
+          "majority=2-of-3",
+          "systematic=majority transition",
+          "any-run=at least one of three"
+        ]
+      }
+    },
+    {
+      "id": "grouped_source",
+      "label": "32행×3회 BEFORE/SHADOW-AFTER",
+      "path": "out/regression_safe_2712_remaining_improvements_20260718/release_candidate_grouped_ab_v1/grouped_analysis/report.json",
+      "query": {
+        "engine": "sqlite",
+        "language": "sql",
+        "sql": "SELECT * FROM source_rows",
+        "description": "반복 consensus·variance·search·cost",
+        "tables_used": [
+          "report.json",
+          "transitions.jsonl"
+        ],
+        "filters": [
+          "exact post_id join",
+          "frozen labels joined only after receipt production"
+        ],
+        "metric_definitions": [
+          "majority=2-of-3",
+          "systematic=majority transition",
+          "any-run=at least one of three"
+        ]
+      }
+    },
+    {
+      "id": "paired_source",
+      "label": "2,712 exact paired table",
+      "path": "docs/devs/LIVE_RUN_2712_REMAINING_IMPROVEMENTS_BEFORE_SHADOW_AFTER_PAIRED_20260718.jsonl",
+      "query": {
+        "engine": "sqlite",
+        "language": "sql",
+        "sql": "SELECT * FROM source_rows",
+        "description": "공개 비간섭과 attempt-local receipt exact join",
+        "tables_used": [
+          "paired JSONL"
+        ],
+        "filters": [
+          "exact post_id join",
+          "frozen labels joined only after receipt production"
+        ],
+        "metric_definitions": [
+          "majority=2-of-3",
+          "systematic=majority transition",
+          "any-run=at least one of three"
+        ]
+      }
+    },
+    {
+      "id": "replay_source",
+      "label": "release-candidate persisted replay",
+      "path": "out/regression_safe_2712_remaining_improvements_20260718/release_candidate_frozen2712_replay/publish_contract_replay_summary.json",
+      "query": {
+        "engine": "sqlite",
+        "language": "sql",
+        "sql": "SELECT * FROM source_rows",
+        "description": "공개 계약 deterministic regression",
+        "tables_used": [
+          "publish_contract_replay_summary.json"
+        ],
+        "filters": [
+          "exact post_id join",
+          "frozen labels joined only after receipt production"
+        ],
+        "metric_definitions": [
+          "majority=2-of-3",
+          "systematic=majority transition",
+          "any-run=at least one of three"
+        ]
+      }
+    }
+  ]
+}

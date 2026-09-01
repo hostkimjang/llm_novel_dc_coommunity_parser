@@ -191,21 +191,91 @@ class SynthesizerExpert:
             return []
         return [item for item in hidden if isinstance(item, dict)]
 
+    def _resolve_max_tokens(self) -> int:
+        """Synthesizer 전용 출력 상한을 전역/클라이언트 상한 안에서 해석한다."""
+        import os
+
+        def _positive_int(value: Any, fallback: int) -> int:
+            try:
+                parsed = int(value)
+            except (TypeError, ValueError):
+                parsed = int(fallback)
+            return max(1, parsed)
+
+        global_default = _positive_int(getattr(self.llm, "max_tokens", 32768), 32768)
+        global_cap = _positive_int(
+            os.getenv(
+                "LLM_EXPERT_MAX_TOKENS",
+                os.getenv("LLM_MAX_TOKENS", str(global_default)),
+            ),
+            global_default,
+        )
+        client_cap = _positive_int(getattr(self.llm, "max_tokens", global_cap), global_cap)
+        synthesizer_cap = _positive_int(
+            os.getenv("LLM_SYNTHESIZER_MAX_TOKENS", "2048"),
+            2048,
+        )
+        return min(synthesizer_cap, global_cap, client_cap)
+
+    @staticmethod
+    def _trusted_terminal_required() -> bool:
+        import os
+
+        return os.getenv(
+            "LLM_SYNTHESIZER_REQUIRE_TRUSTED_TERMINAL",
+            "1",
+        ).strip().lower() in {"1", "true", "yes", "on"}
+
+    def _reject_untrusted_terminal(self) -> None:
+        """절단·추정 HTTP stream 결과가 downstream 근거로 부활하지 않게 한다."""
+        if not self._trusted_terminal_required():
+            return
+
+        raw_provenance = getattr(self.llm, "last_usage_provenance", None)
+        raw_finish_reason = getattr(self.llm, "last_finish_reason", None)
+        provenance = (
+            str(raw_provenance).strip().upper()
+            if raw_provenance is not None
+            else None
+        )
+        finish_reason = (
+            str(raw_finish_reason).strip().lower()
+            if raw_finish_reason is not None
+            else None
+        )
+        backend = str(getattr(self.llm, "backend", "http") or "http").lower()
+        streaming = bool(getattr(self.llm, "stream", False))
+        strict_http_stream = backend != "local" and streaming
+
+        reasons: List[str] = []
+        if provenance in {"ESTIMATED", "UNAVAILABLE"}:
+            reasons.append(f"usage_provenance={provenance}")
+        if finish_reason in {"length", "max_tokens"}:
+            reasons.append(f"finish_reason={finish_reason}")
+        if strict_http_stream and provenance != "PROVIDER_REPORTED":
+            reasons.append(f"trusted_usage_missing={provenance}")
+        if strict_http_stream and finish_reason != "stop":
+            reasons.append(f"trusted_terminal_missing={finish_reason}")
+
+        if reasons:
+            raise ValueError(
+                "untrusted synthesizer terminal: " + ", ".join(dict.fromkeys(reasons))
+            )
+
     def _call_llm(self, user_prompt: str) -> Optional[Dict[str, Any]]:
         """LLM 호출 + JSON 파싱"""
         response_text = ""
+        max_tokens = self._resolve_max_tokens()
         try:
-            import os
-            _default_max_tokens = os.getenv(
-                "LLM_EXPERT_MAX_TOKENS",
-                os.getenv("LLM_MAX_TOKENS", "32768"),
-            )
-            max_tokens = int(_default_max_tokens)
-            max_tokens = max(512, min(max_tokens, 65536))
             messages = [
                 {"role": "system", "content": SYNTHESIZER_SYSTEM},
                 {"role": "user", "content": user_prompt},
             ]
+
+            # 이전 호출의 종료 메타가 이번 응답을 신뢰시키지 못하게 초기화한다.
+            for attr in ("last_usage_provenance", "last_finish_reason"):
+                if hasattr(self.llm, attr):
+                    setattr(self.llm, attr, None)
 
             response_text = self.llm._stream_chat_http(
                 messages=messages,
@@ -216,6 +286,8 @@ class SynthesizerExpert:
 
             if not response_text:
                 return None
+
+            self._reject_untrusted_terminal()
 
             parsed = parse_json_with_think_removal(response_text)
             return parsed

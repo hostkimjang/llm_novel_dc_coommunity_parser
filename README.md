@@ -4,6 +4,12 @@
 
 커뮤니티 글에는 작품명보다 축약어, 초성, 캐릭터명, 작가명, 밈이 먼저 나오는 경우가 많습니다. 이 프로젝트는 여러 분석 역할과 검색 결과를 함께 사용하되, 근거가 부족하면 작품명을 공개하지 않고 후보 상태로 남기는 것을 기본 원칙으로 삼습니다.
 
+## 최신 검증 — 2026-07-23
+
+코드 동결 32행의 `BEFORE/OFF`와 `AFTER/AUDIT_ONLY`를 각각 3회 실행한 v7 qualified 검증은 runtime·measurement·publication noninterference를 `6/6`, exact linked observation을 `192/192`로 닫았습니다. 2,712행 persisted publish-contract replay도 mismatch와 정상→비정상 contract regression `0`으로 통과했습니다.
+
+다만 majority 의미 품질은 `18/32→18/32`이고 persistent unsafe publish와 wrong-work 미해결이 남아 semantic/search/router/P2/full scan은 계속 `NO-GO`, `full_scan_approval=false`입니다. 개선·미미·실패 사례와 재시도 원장까지 포함한 정본은 [v7 최종 BEFORE/AFTER 보고서](docs/devs/NEXT_STRUCTURAL_AND_MEASUREMENT_IMPROVEMENT_FINAL_REPORT_20260723_KO.html)와 [검증문](docs/devs/NEXT_STRUCTURAL_AND_MEASUREMENT_IMPROVEMENT_FINAL_VALIDATION_20260723_KO.md)입니다.
+
 ## 현재 상태
 
 아키텍처 구현 완료와 실제 성능 검증은 서로 다른 단계입니다.

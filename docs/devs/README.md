@@ -12,6 +12,16 @@
 8. [2026-07-14 Slang DB 오염 감사](SLANG_DB_POLLUTION_AUDIT_KO_20260714.md): 일반명사·비별칭 work delta, exact alias-pair write/seed fail-close, 중앙 승격 gate
 9. [Goal 코드 산출물 정리 정책](CODE_ARTIFACT_CLEANUP_POLICY_KO.md): 일회성 smoke/builder 수명주기, Git allowlist 승격 기준, 2026-07-15 정리 결과
 10. [`src/llm_batch` 소스 구조](SOURCE_LAYOUT_KO.md): 기능별 패키지 경계, import 이동 표, 한국어 주석·프롬프트 규칙
+11. [동결 2,712건 회귀 cohort·bundle 계약](FROZEN_2712_REGRESSION_COHORTS_KO_20260716.md): exact cohort, 결정적 실행 bundle, paired transition 지표와 현재 게이트
+12. [동결 2,712건 개선 BEFORE/AFTER](LIVE_RUN_2712_BEFORE_AFTER_REPORT_20260716_KO.md): P0a actual GO, P0b 격리 NO-GO·rollback, 검색·router·runtime·full-scan 분리 판정
+13. [동결 2,712건 recovery sidecar 구현·검증](LIVE_RUN_2712_RECOVERY_SIDECAR_IMPLEMENTATION_REPORT_20260717_KO.md): 기존 공개 projection 불변, direct OCR review-only provenance, 남은 fresh/search/activation 게이트
+14. [동결 2,712건 recovery sidecar 실제 묶음 검증](LIVE_RUN_2712_RECOVERY_SIDECAR_GROUPED_AB_REPORT_20260718_KO.md): 32행 양 arm 각 3회, 192 receipt·실제 WAL 비간섭, 개선·회귀·변동성, 자동 activation NO-GO
+15. [동결 2,712건 남은 개선 BEFORE/SHADOW-AFTER](LIVE_RUN_2712_REMAINING_IMPROVEMENTS_BEFORE_SHADOW_AFTER_REPORT_20260718_KO.html): exact 2,712 paired receipt, 새 32행×3회 release-candidate 관측, router/P1/search/P2 분리 판정
+16. [2,712건 개선 아키텍처 전문가 회의](ARCHITECTURE_IMPROVEMENT_EXPERT_COUNCIL_REPORT_20260719_KO.html): 실제 Terra/Opus/Luna 전문가 의견, 현 아키텍처·개선/미미/실패 분류, 기존 정답 보존 우선 P0/P1/P2 연구 순서
+17. [계측 완결성 개선과 다음 아키텍처 계획](MEASUREMENT_USAGE_DRAIN_IMPROVEMENT_REPORT_20260720_KO.html): hard-cap 뒤 provider usage drain-only 구현, 과거 문제 2행 실제 canary 2/2 GO, 2,712행 replay, PublicationFinalizer·ObservationEnvelope 다음 계획
+18. [구조·계측 후속 구현과 3회 묶음 회귀](NEXT_STRUCTURAL_AND_MEASUREMENT_IMPROVEMENT_REPORT_20260722_KO.html): Synth quarantine·verifier shape guard·repeat-stop usage drain, 32행×양 arm×3회 runtime/measurement/semantic 분리 판정, 2,712행 최종 replay
+19. [v7 qualified 최종 BEFORE/AFTER 보고서](NEXT_STRUCTURAL_AND_MEASUREMENT_IMPROVEMENT_FINAL_REPORT_20260723_KO.html): 사전 고정 semantic-blind replacement를 포함한 exact `192/192` 계측, cohort별 개선·미미·실패, 실제 호출·토큰·시간, 2,712 contract replay와 semantic/full-scan `NO-GO` 경계. [검증문](NEXT_STRUCTURAL_AND_MEASUREMENT_IMPROVEMENT_FINAL_VALIDATION_20260723_KO.md)과 [portable artifact](NEXT_STRUCTURAL_AND_MEASUREMENT_IMPROVEMENT_FINAL_ARTIFACT_20260723.json)를 함께 본다.
+20. [로컬 LLM grounding 벤치마크 심층 연구](LOCAL_LLM_GROUNDING_BENCHMARK_RESEARCH_20260901_KO.md): MTEB/MIRACL/NoMIRACL/KLUE/EL·selective prediction 사례를 현 P3 계약에 대조하고, domain gold schema·stage metric·표본 수·정답 회수 개선 A/B와 승격 gate를 제안한다. 커뮤니티 축약어·은어·용어집 8개 source 감사와 `소설 매칭 / 커뮤니티 이해` 투트랙 silver-mining 설계를 포함한다. 새 actual run은 없으며 `FROZEN_ACTUAL NOT_READY`, semantic/full-scan `NO-GO`를 유지한다.
 
 현재 상태는 범위별로 다르다.
 
@@ -23,6 +33,13 @@
 | 운영 승인 | `REVIEW-LOCKED / full_scan_approval=false` | cheap routing과 전체 스캔은 열지 않는다. |
 | 2026-07-14 라이브 런 | `RUNNING_DEGRADED / NO-GO` | 저장 무결성은 진행 중 정합이지만 검색 저하와 의미·비용 blocker 때문에 현재 full run 계속은 권고하지 않는다. |
 | current Slang work artifact | `NO-GO / QUARANTINE` | 중앙 DB는 미변경이며 patched fresh canary 전에는 work artifact를 승격하지 않는다. |
+| 동결 2,712건 targeted 개선 | `P0a GO / P0b ROLLED_BACK` | 3회 exact consensus에서 P0a systematic regression 0, P0b regression 1·신규 unsafe 1. search/router/P1/P2/full scan은 미승인이다. |
+| 동결 2,712건 recovery sidecar | `DETERMINISTIC GO / REVIEW-ONLY / SEMANTIC NO-GO` | 공개 WAL·192 receipt 비간섭, proposal `68`·provenance 100%. 실제 32행 3회에서 source 반복 회귀 2행, search/router/measurement NO-GO라 자동 publish와 P1/P2는 미승인이다. |
+| 동결 2,712건 남은 개선 | `INTEGRITY GO / SHADOW-AFTER / AUTO-ACTIVATION NO-GO` | router/P1 receipt `2,712/2,712`, public drift `0`; 새 grouped majority `17→18`이지만 measurement `4/6`, router recall `74.2%`, normal false-review `20.0%`, search degraded로 P2 188건은 미실행이다. |
+| 2026-07-19 아키텍처 회의 | `P0 RESEARCH READY / IMPLEMENTATION NOT STARTED` | 권고안은 byte-equivalent `PublicationFinalizer`, 공통 `ObservationEnvelope`, shadow intervention simulator다. 새 Pro 답변은 recovery lock으로 미확보했고 자동 activation/full scan은 계속 NO-GO다. |
+| 2026-07-20 계측 P0 | `TARGETED MEASUREMENT GO / SEMANTIC NO-GO` | HTTP vLLM hard-cap usage drain-only를 구현했다. 과거 unlinked 2행의 새 canary는 measurement `2/2 GO`, provider usage `27/27`, public drift `0`, 2,712 deterministic normal→abnormal `0`이다. 기존 32행×3회 전체 재실행·semantic/search/router/P2는 미승인이고 `full_scan_approval=false`다. |
+| 2026-07-22 구조·계측 후속 | `RUNTIME 6/6 GO / MEASUREMENT 4/6 NO-GO / SEMANTIC NO-GO` | v6 192행은 runtime 실패 0·public WAL 비간섭이지만 usage link `190/192`, majority compliant `19→17`, systematic regression 2다. Synth quarantine·shape guard·repeat-stop drain은 focused 31·인접 263·실 canary·2,712 replay를 통과했으나 자동 activation과 full scan은 미승인이다. |
+| 2026-09-01 grounding benchmark·community silver 연구 | `RESEARCH COMPLETE / EXTRACTOR NOT_IMPLEMENTED / PRODUCTION NO-GO` | 공개 benchmark는 component smoke로만 쓴다. 커뮤니티 목록은 `work_alias_registry`와 `community_lexicon`의 silver seed이며 gold나 중앙 DB write가 아니다. 실제 승인은 source-backed DEV/CAL/FROZEN과 문맥 gold가 필요하고, P3 headline은 계속 `null/NOT_EVALUABLE`이다. |
 
 ### 현재 계약을 읽을 때의 구분
 
@@ -32,7 +49,7 @@
 - `FULL_EXPERT_REQUIRED`/`CHEAP_RULE_ELIGIBLE`: shadow 관측 값이며 운영 라우팅 허가가 아니다.
 - 실제 run은 `--parallel 16`, dashboard ON을 기본으로 하고 manifest의 requested/effective parallel을 함께 확인한다.
 
-이 디렉터리는 개발 TODO, 기능 개선, 런 리뷰, 체크리스트, 검증 결과를 추적하는 문서 허브다. 최신 독자용 정본은 위 1~10번이며, `LLM_PIPELINE_IMPROVEMENT_READER_GUIDE_KO_20260711.md`는 P3/P4 v14 시점의 역사적 설명으로만 사용한다.
+이 디렉터리는 개발 TODO, 기능 개선, 런 리뷰, 체크리스트, 검증 결과를 추적하는 문서 허브다. 최신 독자용 정본은 위 1~18번이며, `LLM_PIPELINE_IMPROVEMENT_READER_GUIDE_KO_20260711.md`는 P3/P4 v14 시점의 역사적 설명으로만 사용한다.
 
 ## 이전 개선 상태 — 2026-07-12 P4 선택적 비용 라우팅 그림자 v3
 

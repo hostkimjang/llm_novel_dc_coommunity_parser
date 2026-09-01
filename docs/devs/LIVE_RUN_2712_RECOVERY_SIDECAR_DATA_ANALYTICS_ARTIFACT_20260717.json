@@ -1,0 +1,407 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "동결 2,712행 Recovery Sidecar 개선 검증",
+    "description": "기존 공개 결과를 보존하는 review-only direct OCR recovery sidecar의 구현·회귀 검증 보고서",
+    "generatedAt": "2026-07-17T21:42:00+09:00",
+    "sources": [
+      {
+        "id": "contract_replay",
+        "label": "동결 2,712행 publish contract replay summary",
+        "path": "/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260717/recovery_sidecar_s0_replay_atomic_key_final/publish_contract_replay_summary.json",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "description": "동결 adjudication ledger와 저장된 expert result를 post_id exact join한 결정적 publish-contract 재계산",
+          "executed_at": "2026-07-17T21:42:00+09:00",
+          "filters": [
+            "동결 adjudication ledger post_id 2,712개 exact selection",
+            "network_used=false",
+            "expert_main_used=false"
+          ],
+          "metric_definitions": [
+            "공개 projection 불일치 = 저장된 공개 projection과 재계산 projection이 다른 행 수",
+            "정상→비정상 계약 회귀 = 저장 시 정상인 행이 재계산에서 계약 비정상으로 전이한 행 수"
+          ],
+          "sql": "SELECT contract_counts.public_projection_mismatch AS public_projection_mismatch, contract_counts.normal_to_abnormal_contract_regressions AS normal_to_abnormal_regression, contract_counts.fingerprint_mismatch AS fingerprint_mismatch, contract_counts.reason_codes_mismatch AS reason_codes_mismatch, coverage.replay_rows AS replay_rows, adjudication_projection_counts.stored_adjudicated_unsafe_publish AS stored_unsafe_publish, adjudication_projection_counts.recomputed_adjudicated_unsafe_publish AS recomputed_unsafe_publish FROM read_json_auto('/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260717/recovery_sidecar_s0_replay_atomic_key_final/publish_contract_replay_summary.json')",
+          "tables_used": [
+            "/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260717/recovery_sidecar_s0_replay_atomic_key_final/publish_contract_replay_summary.json"
+          ]
+        }
+      },
+      {
+        "id": "recovery_sidecar",
+        "label": "동결 2,712행 recovery activation reconciliation summary",
+        "path": "/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260717/recovery_sidecar_v2_frozen2712_atomic_key_final/recovery_activation_reconciliation_summary.json",
+        "query": {
+          "engine": "duckdb",
+          "language": "sql",
+          "description": "검증된 publication checkpoint를 변경하지 않고 direct OCR review-only sidecar를 재구성한 결과",
+          "executed_at": "2026-07-17T21:42:00+09:00",
+          "filters": [
+            "final adjudication ledger post_id 2,712개",
+            "AUDIT_ONLY",
+            "public_apply=false",
+            "single publication_scope_id"
+          ],
+          "metric_definitions": [
+            "review 후보 이벤트 = explicit direct OCR HOLD evidence에서 생성된 append-only proposal event 수",
+            "provenance coverage = sidecar event 수 / 관측된 proposal 수",
+            "후보 비율 = 해당 verdict의 sidecar event 수 / 동결 ledger의 해당 verdict 행 수"
+          ],
+          "sql": "SELECT rates.key AS review_verdict, CAST(json_extract_string(rates.value, '$.proposal_rows') AS BIGINT) AS proposal_events, CAST(json_extract_string(rates.value, '$.frozen_rows') AS BIGINT) AS frozen_rows, CAST(json_extract_string(rates.value, '$.proposal_rate') AS DOUBLE) AS proposal_rate FROM read_json_auto('/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260717/recovery_sidecar_v2_frozen2712_atomic_key_final/recovery_activation_reconciliation_summary.json') AS summary CROSS JOIN json_each(to_json(summary.proposal_rates_by_review_verdict)) AS rates",
+          "tables_used": [
+            "/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260717/recovery_sidecar_v2_frozen2712_atomic_key_final/recovery_activation_reconciliation_summary.json"
+          ]
+        }
+      }
+    ],
+    "cards": [
+      {
+        "id": "projection_mismatch",
+        "dataset": "contract_kpis",
+        "sourceId": "contract_replay",
+        "description": "저장 결과와 결정적 재계산의 공개 projection 차이",
+        "metrics": [
+          {
+            "label": "공개 projection 불일치",
+            "field": "public_projection_mismatch",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "normal_regression",
+        "dataset": "contract_kpis",
+        "sourceId": "contract_replay",
+        "description": "저장 시 정상에서 재계산 계약 비정상으로 바뀐 행",
+        "metrics": [
+          {
+            "label": "정상→비정상 계약 회귀",
+            "field": "normal_to_abnormal_regression",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "review_candidates",
+        "dataset": "recovery_kpis",
+        "sourceId": "recovery_sidecar",
+        "description": "공개 적용 없이 별도 sidecar에 기록된 검토 후보",
+        "metrics": [
+          {
+            "label": "review 후보 이벤트",
+            "field": "proposal_events",
+            "format": "number"
+          },
+          {
+            "label": "고유 post",
+            "field": "unique_posts",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "provenance",
+        "dataset": "recovery_kpis",
+        "sourceId": "recovery_sidecar",
+        "description": "관측 proposal이 exact base receipt와 event로 결속된 비율",
+        "metrics": [
+          {
+            "label": "provenance coverage",
+            "field": "provenance_coverage",
+            "format": "percent"
+          }
+        ]
+      },
+      {
+        "id": "public_apply",
+        "dataset": "recovery_kpis",
+        "sourceId": "recovery_sidecar",
+        "description": "review-only event 중 공개 결과를 바꾼 이벤트",
+        "metrics": [
+          {
+            "label": "public_apply=true",
+            "field": "public_apply_true",
+            "format": "number"
+          }
+        ]
+      }
+    ],
+    "charts": [
+      {
+        "id": "proposal_by_verdict",
+        "title": "review-only 후보 이벤트 분포",
+        "subtitle": "동결 2,712행의 adjudication verdict별 sidecar 이벤트 수; 전체 68건",
+        "type": "horizontalBar",
+        "dataset": "verdict_breakdown",
+        "sourceId": "recovery_sidecar",
+        "question": "review-only direct OCR 후보는 어떤 판정군에 집중되는가?",
+        "rationale": "판정군별 절대 후보 수와 원래 분모를 함께 보존하는 범주 비교",
+        "encodings": {
+          "x": {
+            "field": "review_verdict",
+            "type": "nominal",
+            "aggregate": "none",
+            "label": "동결 판정"
+          },
+          "y": {
+            "field": "proposal_events",
+            "type": "quantitative",
+            "aggregate": "none",
+            "label": "후보 이벤트",
+            "format": "number"
+          },
+          "tooltip": [
+            {
+              "field": "proposal_events",
+              "type": "quantitative",
+              "label": "후보 이벤트",
+              "format": "number"
+            },
+            {
+              "field": "frozen_rows",
+              "type": "quantitative",
+              "label": "동결 분모",
+              "format": "number"
+            },
+            {
+              "field": "proposal_rate",
+              "type": "quantitative",
+              "label": "후보 비율",
+              "format": "percent"
+            }
+          ]
+        },
+        "xAxisTitle": "동결 adjudication verdict",
+        "yAxisTitle": "review-only 후보 이벤트 수",
+        "valueFormat": "number",
+        "layout": "full",
+        "maxRows": 10,
+        "intent": "comparison",
+        "comparisonContext": {
+          "denominator": "각 adjudication verdict의 동결 행 수",
+          "grain": "sidecar proposal event",
+          "normalization": "절대 event 수; tooltip에 event/동결 분모 비율",
+          "unit": "events"
+        },
+        "palette": {
+          "kind": "sequential",
+          "name": "blue"
+        },
+        "labels": {
+          "values": "all"
+        },
+        "settings": {
+          "orientation": "horizontal",
+          "sort": "descending",
+          "showValues": true
+        }
+      }
+    ],
+    "blocks": [
+      {
+        "id": "title",
+        "type": "markdown",
+        "body": "# 동결 2,712행 Recovery Sidecar 개선 검증"
+      },
+      {
+        "id": "technical_summary",
+        "type": "markdown",
+        "body": "## 기술 요약\n\n**기존 공개 결과 보존 게이트는 통과했습니다.** 2,712행 persisted replay에서 공개 projection·fingerprint·reason-code 불일치와 정상→비정상 계약 회귀가 모두 0이었습니다. Direct OCR recovery는 공개 결과를 쓰지 않는 별도 append-only sidecar로만 동작하며, 68개 이벤트(67개 고유 post)를 exact publication receipt에 결속했습니다.\n\n**자동 공개 회복은 아직 승인하지 않습니다.** 68개 이벤트 전부가 `SEARCH_DEGRADED`, `evidence_status=unresolved`, `public_apply=false`입니다. 따라서 이 결과는 후보 포착과 provenance 안전성의 증명이지, 정답 title recovery 또는 의미 품질 향상의 증명이 아닙니다."
+      },
+      {
+        "id": "headline_metrics",
+        "type": "metric-strip",
+        "cardIds": [
+          "projection_mismatch",
+          "normal_regression",
+          "review_candidates",
+          "provenance",
+          "public_apply"
+        ]
+      },
+      {
+        "id": "candidate_concentration",
+        "type": "markdown",
+        "sourceId": "recovery_sidecar",
+        "body": "## 후보는 FN에 집중됐고 PASS는 건드리지 않았습니다\n\n68개 이벤트 중 `FN_TITLE_MISSING`이 48개로 가장 많았고, 동결 PASS 230행에서는 0개였습니다. 다만 `NOT_APPLICABLE`에 해당하는 이벤트가 12개(고유 post 11개) 있어 false-review 비용은 남아 있습니다. 이 때문에 현재 단계는 review-only가 맞습니다."
+      },
+      {
+        "id": "proposal_chart",
+        "type": "chart",
+        "chartId": "proposal_by_verdict"
+      },
+      {
+        "id": "scope_and_definitions",
+        "type": "markdown",
+        "body": "## 범위와 판정 기준\n\n- 분석 단위: 동결 ledger의 `post_id` 2,712개, exact join\n- 기준선: 저장된 publication result·receipt·public projection\n- 개선 경로: conflict-free explicit direct OCR HOLD에서 review proposal만 생성\n- hard guardrail: public projection 불일치 0, 정상→비정상 계약 회귀 0, provenance 100%, `public_apply=true` 0\n- 효과 지표: 올바른 제목의 자동 회복이 아니라 review 후보 포착률과 정상군 비침범"
+      },
+      {
+        "id": "methodology",
+        "type": "markdown",
+        "body": "## 검증 방법은 공개 결과와 recovery overlay를 분리했습니다\n\n먼저 저장된 v2 gate state를 현재 순수 계약으로 재계산해 기존 공개 projection과 비교했습니다. 그 다음 검증된 publication checkpoint를 읽기 전용으로 재검증하고, 별도 HMAC capability·hash-chain sidecar에 proposal을 append했습니다. 같은 입력을 재실행했을 때 신규 event 0, replay 68로 멱등성을 확인했습니다. Python 3.11/3.12 focused 계약 테스트와 187개 인접 회귀도 통과했습니다."
+      },
+      {
+        "id": "limitations",
+        "type": "markdown",
+        "sourceId": "recovery_sidecar",
+        "body": "## 검색 저하 때문에 의미 효과는 아직 판단할 수 없습니다\n\n모든 후보 이벤트가 `SEARCH_DEGRADED`이며 canonical title과 official-detail binding이 완료되지 않았습니다. 과거 32행 반복 결과는 publication scope가 서로 달라 consensus 승인 자료로 사용할 수 없습니다. 실행 중인 104,502-input 생산 run을 보존하기 위해 동일 shared shard에서 fresh grouped expert_main canary도 아직 시작하지 않았습니다."
+      },
+      {
+        "id": "next_steps",
+        "type": "markdown",
+        "body": "## 다음 단계는 shadow 반복 후 제한적 activation입니다\n\n1. 현재 104,502-input run 종료 뒤 dashboard ON·`--parallel 16`으로 동일 RunSpec의 위험군/정상군 fresh BEFORE/AFTER를 최소 3회 수행합니다.\n2. FN direct OCR, published intervention, FP, wrong-work, multiwork, mismatch, arbitration과 PASS/NOT_APPLICABLE/초저위험을 exact paired transition으로 검증합니다.\n3. search/router가 green이고 반복 hard regression·new unsafe가 0일 때만 별도 activation ledger에서 제한 승인을 검토합니다.\n4. 그 전까지 sidecar는 review-only로 유지하고 `full_scan_approval=false`를 유지합니다."
+      },
+      {
+        "id": "further_questions",
+        "type": "markdown",
+        "body": "## 추가 확인 질문\n\n- fresh 반복에서 12개 NOT_APPLICABLE 후보가 같은 post에 집중되는가, 아니면 stochastic 분산인가?\n- official-detail/search가 정상화될 때 48개 FN 후보 중 몇 개가 adjudicated title과 일치하는가?\n- relation role과 multi-title conflict를 추가 gate로 쓰면 FN recall을 크게 잃지 않고 false-review를 줄일 수 있는가?"
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-07-17T21:42:00+09:00",
+    "status": "ready",
+    "datasets": {
+      "contract_kpis": [
+        {
+          "public_projection_mismatch": 0,
+          "normal_to_abnormal_regression": 0,
+          "fingerprint_mismatch": 0,
+          "reason_codes_mismatch": 0,
+          "replay_rows": 2712,
+          "stored_unsafe_publish": 33,
+          "recomputed_unsafe_publish": 33
+        }
+      ],
+      "recovery_kpis": [
+        {
+          "proposal_events": 68,
+          "unique_posts": 67,
+          "provenance_coverage": 1,
+          "public_apply_true": 0,
+          "search_degraded_events": 68,
+          "frozen_rows": 2712
+        }
+      ],
+      "verdict_breakdown": [
+        {
+          "review_verdict": "FN_TITLE_MISSING",
+          "proposal_events": 48,
+          "frozen_rows": 339,
+          "proposal_rate": 0.1415929203539823
+        },
+        {
+          "review_verdict": "CONTEXT_ONLY_CORRECT",
+          "proposal_events": 6,
+          "frozen_rows": 719,
+          "proposal_rate": 0.008344923504867872
+        },
+        {
+          "review_verdict": "NOISE_CORRECT",
+          "proposal_events": 6,
+          "frozen_rows": 891,
+          "proposal_rate": 0.006734006734006734
+        },
+        {
+          "review_verdict": "WRONG_WORK",
+          "proposal_events": 3,
+          "frozen_rows": 36,
+          "proposal_rate": 0.08333333333333333
+        },
+        {
+          "review_verdict": "DASHBOARD_TITLE_MISMATCH",
+          "proposal_events": 1,
+          "frozen_rows": 7,
+          "proposal_rate": 0.14285714285714285
+        },
+        {
+          "review_verdict": "EVIDENCE_CONFLICT",
+          "proposal_events": 1,
+          "frozen_rows": 25,
+          "proposal_rate": 0.04
+        },
+        {
+          "review_verdict": "EVIDENCE_INSUFFICIENT",
+          "proposal_events": 1,
+          "frozen_rows": 302,
+          "proposal_rate": 0.0033112582781456954
+        },
+        {
+          "review_verdict": "FP_NONNOVEL",
+          "proposal_events": 1,
+          "frozen_rows": 72,
+          "proposal_rate": 0.013888888888888888
+        },
+        {
+          "review_verdict": "MULTIWORK_HOLD_CORRECT",
+          "proposal_events": 1,
+          "frozen_rows": 91,
+          "proposal_rate": 0.01098901098901099
+        },
+        {
+          "review_verdict": "PASS",
+          "proposal_events": 0,
+          "frozen_rows": 230,
+          "proposal_rate": 0
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "contract_replay",
+      "label": "동결 2,712행 publish contract replay summary",
+      "path": "/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260717/recovery_sidecar_s0_replay_atomic_key_final/publish_contract_replay_summary.json",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "description": "동결 adjudication ledger와 저장된 expert result를 post_id exact join한 결정적 publish-contract 재계산",
+        "executed_at": "2026-07-17T21:42:00+09:00",
+        "filters": [
+          "동결 adjudication ledger post_id 2,712개 exact selection",
+          "network_used=false",
+          "expert_main_used=false"
+        ],
+        "metric_definitions": [
+          "공개 projection 불일치 = 저장된 공개 projection과 재계산 projection이 다른 행 수",
+          "정상→비정상 계약 회귀 = 저장 시 정상인 행이 재계산에서 계약 비정상으로 전이한 행 수"
+        ],
+        "sql": "SELECT contract_counts.public_projection_mismatch AS public_projection_mismatch, contract_counts.normal_to_abnormal_contract_regressions AS normal_to_abnormal_regression, contract_counts.fingerprint_mismatch AS fingerprint_mismatch, contract_counts.reason_codes_mismatch AS reason_codes_mismatch, coverage.replay_rows AS replay_rows, adjudication_projection_counts.stored_adjudicated_unsafe_publish AS stored_unsafe_publish, adjudication_projection_counts.recomputed_adjudicated_unsafe_publish AS recomputed_unsafe_publish FROM read_json_auto('/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260717/recovery_sidecar_s0_replay_atomic_key_final/publish_contract_replay_summary.json')",
+        "tables_used": [
+          "/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260717/recovery_sidecar_s0_replay_atomic_key_final/publish_contract_replay_summary.json"
+        ]
+      }
+    },
+    {
+      "id": "recovery_sidecar",
+      "label": "동결 2,712행 recovery activation reconciliation summary",
+      "path": "/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260717/recovery_sidecar_v2_frozen2712_atomic_key_final/recovery_activation_reconciliation_summary.json",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "description": "검증된 publication checkpoint를 변경하지 않고 direct OCR review-only sidecar를 재구성한 결과",
+        "executed_at": "2026-07-17T21:42:00+09:00",
+        "filters": [
+          "final adjudication ledger post_id 2,712개",
+          "AUDIT_ONLY",
+          "public_apply=false",
+          "single publication_scope_id"
+        ],
+        "metric_definitions": [
+          "review 후보 이벤트 = explicit direct OCR HOLD evidence에서 생성된 append-only proposal event 수",
+          "provenance coverage = sidecar event 수 / 관측된 proposal 수",
+          "후보 비율 = 해당 verdict의 sidecar event 수 / 동결 ledger의 해당 verdict 행 수"
+        ],
+        "sql": "SELECT rates.key AS review_verdict, CAST(json_extract_string(rates.value, '$.proposal_rows') AS BIGINT) AS proposal_events, CAST(json_extract_string(rates.value, '$.frozen_rows') AS BIGINT) AS frozen_rows, CAST(json_extract_string(rates.value, '$.proposal_rate') AS DOUBLE) AS proposal_rate FROM read_json_auto('/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260717/recovery_sidecar_v2_frozen2712_atomic_key_final/recovery_activation_reconciliation_summary.json') AS summary CROSS JOIN json_each(to_json(summary.proposal_rates_by_review_verdict)) AS rates",
+        "tables_used": [
+          "/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260717/recovery_sidecar_v2_frozen2712_atomic_key_final/recovery_activation_reconciliation_summary.json"
+        ]
+      }
+    }
+  ]
+}

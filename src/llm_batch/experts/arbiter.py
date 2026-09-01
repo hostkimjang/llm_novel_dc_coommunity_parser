@@ -33,6 +33,27 @@ if TYPE_CHECKING:
     from .orchestrator import ConversationContext
 
 
+def _build_snippet_canonical_lock_prompt(title: Any, author: Any = "") -> str:
+    """Build the canonical-lock prompt without nested f-string expressions."""
+    canonical_title = str(title or "").strip()
+    if not canonical_title:
+        return ""
+    canonical_author = str(author or "").strip()
+    author_line = (
+        f"- snippet canonical author: {canonical_author}\n"
+        if canonical_author
+        else ""
+    )
+    return (
+        "\n\n=== SNIPPET CANONICAL LOCK (스니펫 정식 후보 잠금) ===\n"
+        f"- snippet canonical title: {canonical_title}\n"
+        f"{author_line}"
+        "- 이 제목은 약칭, 본문 앵커, 작가/캐릭터 단서가 결합된 스니펫 기반 정식 후보입니다.\n"
+        "- 이후 검색에서 표면 유사 후보가 나타나더라도, "
+        "본문 직접 단서와 작가/캐릭터 결합이 약한 후보로 대체하지 마세요.\n"
+    )
+
+
 # 도메인 충돌 감지 + 아는 약어: utils.py 에서 import
 
 
@@ -2068,13 +2089,9 @@ class ArbiterExpert:
             _canonical_lock_norm = _norm_title_local(_canonical_lock_title)
             _overlap_norms = set(_dv_overlap)
             if _canonical_lock_norm and _canonical_lock_norm not in _overlap_norms:
-                user_prompt += (
-                    "\n\n=== SNIPPET CANONICAL LOCK (스니펫 정식 후보 잠금) ===\n"
-                    f"- snippet canonical title: {_canonical_lock_title}\n"
-                    f"{f'- snippet canonical author: {_canonical_lock_author}\n' if _canonical_lock_author else ''}"
-                    "- 이 제목은 약칭, 본문 앵커, 작가/캐릭터 단서가 결합된 스니펫 기반 정식 후보입니다.\n"
-                    "- 이후 검색에서 표면 유사 후보가 나타나더라도, "
-                    "본문 직접 단서와 작가/캐릭터 결합이 약한 후보로 대체하지 마세요.\n"
+                user_prompt += _build_snippet_canonical_lock_prompt(
+                    _canonical_lock_title,
+                    _canonical_lock_author,
                 )
                 print(
                     f"[{_ts()}][{self.emoji}] 🔐 snippet canonical lock 주입: "
@@ -7056,7 +7073,13 @@ class ArbiterExpert:
                 if not isinstance(_null_block_reasons, list):
                     _null_block_reasons = []
                 _has_strong_null_block = any(
-                    r in {"temporal_reference_guard", "post_title_theft_guard", "author_criticism_guard", "recommendation_guard"}
+                    r in {
+                        "temporal_reference_guard",
+                        "post_title_theft_guard",
+                        "author_criticism_guard",
+                        "recommendation_guard",
+                        "multi_work_guard",
+                    }
                     for r in _null_block_reasons
                 )
 
@@ -7254,8 +7277,19 @@ class ArbiterExpert:
             _null_block_reasons_for_url = decision.get("_title_null_block_reasons")
             if not isinstance(_null_block_reasons_for_url, list):
                 _null_block_reasons_for_url = []
-            _memory_query_null_block_for_url = "memory_query_forced_upgrade_guard" in _null_block_reasons_for_url
-            if decision.get("is_relevant") and not decision.get("heretic_url") and not _memory_query_null_block_for_url:
+            _strong_null_block_for_url = any(
+                reason in {
+                    "temporal_reference_guard",
+                    "post_title_theft_guard",
+                    "author_criticism_guard",
+                    "recommendation_guard",
+                    "multi_work_guard",
+                    "memory_query_forced_upgrade_guard",
+                    "curated_alias_missing_contextual_work_anchor",
+                }
+                for reason in _null_block_reasons_for_url
+            )
+            if decision.get("is_relevant") and not decision.get("heretic_url") and not _strong_null_block_for_url:
                 _fallback_url = None
                 # 1순위: Verifier가 확인한 URL
                 _vf_out = ctx.get_expert_output(ExpertType.VERIFIER) or {}

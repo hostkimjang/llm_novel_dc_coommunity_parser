@@ -79,6 +79,16 @@ CONTRACT_BLOCKING_REASON_CODES = {
     "title_body_subject_conflict_unresolved",
     "title_resolution_state_not_publishable",
     "work_resolution_not_publishable",
+    "evidence_conflict",
+    "evidence_insufficient",
+    "evidence_status_not_publishable",
+    "non_novel_media",
+    "cross_media_unresolved",
+    "media_domain_not_novel_work",
+    "multiple_primary_works",
+    "no_unique_primary_work",
+    "primary_work_ambiguous",
+    "primary_work_status_not_publishable",
 }
 
 SCOPE_CURRENT_WORK = "current_work"
@@ -92,6 +102,10 @@ SCOPE_KINDS = {
     "context_only",
     "unknown",
 }
+
+SEMANTIC_EVIDENCE_SUFFICIENT = "sufficient"
+SEMANTIC_MEDIA_NOVEL_WORK = "novel_work"
+SEMANTIC_PRIMARY_UNIQUE = "unique"
 
 
 @dataclass(frozen=True)
@@ -137,6 +151,90 @@ class ScopeState:
 
 
 @dataclass(frozen=True)
+class SemanticPublicationState:
+    """Typed semantic authority for the final public projection.
+
+    Empty fields are a legacy-compatible no-op.  Once an upstream producer
+    explicitly supplies a field, only the publishable value is allow-listed;
+    conflict/insufficient, non-novel/cross-media, and non-unique primary-work
+    states therefore fail closed even if a later stage tries to revive a title.
+    """
+
+    evidence_status: str = ""
+    media_domain_class: str = ""
+    primary_work_status: str = ""
+
+    def __post_init__(self) -> None:
+        for field_name in (
+            "evidence_status",
+            "media_domain_class",
+            "primary_work_status",
+        ):
+            if not isinstance(getattr(self, field_name), str):
+                raise ValueError(f"semantic_publication.{field_name} must be a string")
+
+    def normalized_evidence_status(self) -> str:
+        return str(self.evidence_status or "").strip().lower()
+
+    def normalized_media_domain_class(self) -> str:
+        return str(self.media_domain_class or "").strip().lower()
+
+    def normalized_primary_work_status(self) -> str:
+        return str(self.primary_work_status or "").strip().lower()
+
+    def is_default(self) -> bool:
+        return not (
+            self.normalized_evidence_status()
+            or self.normalized_media_domain_class()
+            or self.normalized_primary_work_status()
+        )
+
+    def derived_reason_codes(self) -> List[str]:
+        codes: List[str] = []
+        evidence_status = self.normalized_evidence_status()
+        media_domain = self.normalized_media_domain_class()
+        primary_status = self.normalized_primary_work_status()
+
+        if evidence_status and evidence_status != SEMANTIC_EVIDENCE_SUFFICIENT:
+            codes.append(
+                "evidence_conflict"
+                if evidence_status == "conflict"
+                else "evidence_insufficient"
+                if evidence_status == "insufficient"
+                else "evidence_status_not_publishable"
+            )
+        if media_domain and media_domain != SEMANTIC_MEDIA_NOVEL_WORK:
+            codes.append(
+                "non_novel_media"
+                if media_domain == "non_novel_media"
+                else "cross_media_unresolved"
+                if media_domain == "cross_media_unresolved"
+                else "media_domain_not_novel_work"
+            )
+        if primary_status and primary_status != SEMANTIC_PRIMARY_UNIQUE:
+            codes.append(
+                "multiple_primary_works"
+                if primary_status in {"multiple", "multiwork"}
+                else "no_unique_primary_work"
+                if primary_status in {"missing", "none", "no_unique"}
+                else "primary_work_ambiguous"
+                if primary_status == "ambiguous"
+                else "primary_work_status_not_publishable"
+            )
+        return _dedupe(codes)
+
+    def blocks_publish(self) -> bool:
+        return bool(self.derived_reason_codes())
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "evidence_status": self.evidence_status,
+            "media_domain_class": self.media_domain_class,
+            "primary_work_status": self.primary_work_status,
+        }
+
+
+@dataclass(frozen=True)
 class GroundingState:
     post_id: Optional[int]
     candidate_title: str
@@ -153,6 +251,7 @@ class GroundingState:
     candidate_inventory_count: int = 0
     scope: Optional[ScopeState] = None
     retrieval: Optional["RetrievalState"] = None
+    semantic_publication: Optional[SemanticPublicationState] = None
 
     def __post_init__(self) -> None:
         value = self.candidate_inventory_count
@@ -173,6 +272,15 @@ class GroundingState:
             payload.pop("retrieval", None)
         else:
             payload["retrieval"] = self.retrieval.to_dict()
+        # Preserve v2 fingerprints for legacy/default callers.  A populated
+        # semantic authority is part of the sealed decision input.
+        if (
+            not isinstance(self.semantic_publication, SemanticPublicationState)
+            or self.semantic_publication.is_default()
+        ):
+            payload.pop("semantic_publication", None)
+        else:
+            payload["semantic_publication"] = self.semantic_publication.to_dict()
         payload["scope"] = self.scope.to_dict() if isinstance(self.scope, ScopeState) else None
         return payload
 
@@ -440,13 +548,25 @@ def _state_reason_codes(state: GroundingState) -> List[str]:
         codes.extend(["scope_unknown", "scope_not_current_work", "fail_closed_scope_missing"])
     if isinstance(state.retrieval, RetrievalState) and state.retrieval.blocks_publish():
         codes.extend(state.retrieval.derived_reason_codes())
+    if (
+        isinstance(state.semantic_publication, SemanticPublicationState)
+        and state.semantic_publication.blocks_publish()
+    ):
+        codes.extend(state.semantic_publication.derived_reason_codes())
     return normalize_scope_reason_codes(codes, scope_kind=scope_kind)
 
 
 def _canonical_payload(value: Any) -> Any:
     if isinstance(
         value,
-        (EvidenceRecord, ScopeState, GroundingState, RetrievalState, PromotionDecision),
+        (
+            EvidenceRecord,
+            ScopeState,
+            SemanticPublicationState,
+            GroundingState,
+            RetrievalState,
+            PromotionDecision,
+        ),
     ):
         return _canonical_payload(value.to_dict())
     if isinstance(value, Mapping):
@@ -645,6 +765,35 @@ def retrieval_state_from_dict(value: Any) -> Optional[RetrievalState]:
     )
 
 
+def semantic_publication_state_from_dict(
+    value: Any,
+) -> Optional[SemanticPublicationState]:
+    if isinstance(value, SemanticPublicationState):
+        return value
+    if not isinstance(value, Mapping):
+        return None
+    allowed_fields = {
+        "evidence_status",
+        "media_domain_class",
+        "primary_work_status",
+    }
+    unexpected = set(value) - allowed_fields
+    if unexpected:
+        raise ValueError(
+            "semantic_publication fields mismatch: "
+            f"extra={sorted(str(item) for item in unexpected)}"
+        )
+    for field_name in allowed_fields:
+        field_value = value.get(field_name, "")
+        if not isinstance(field_value, str):
+            raise ValueError(f"semantic_publication.{field_name} must be a string")
+    return SemanticPublicationState(
+        evidence_status=value.get("evidence_status", ""),
+        media_domain_class=value.get("media_domain_class", ""),
+        primary_work_status=value.get("primary_work_status", ""),
+    )
+
+
 def grounding_state_from_dict(value: Any) -> GroundingState:
     payload = value if isinstance(value, Mapping) else {}
     post_id = payload.get("post_id")
@@ -668,6 +817,9 @@ def grounding_state_from_dict(value: Any) -> GroundingState:
         candidate_inventory_count=_nonnegative_int(payload.get("candidate_inventory_count")),
         scope=scope_state_from_dict(payload.get("scope")),
         retrieval=retrieval_state_from_dict(payload.get("retrieval")),
+        semantic_publication=semantic_publication_state_from_dict(
+            payload.get("semantic_publication")
+        ),
     )
 
 

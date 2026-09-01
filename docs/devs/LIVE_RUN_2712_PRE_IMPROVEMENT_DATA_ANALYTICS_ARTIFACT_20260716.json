@@ -1,0 +1,754 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "2,712건 구현 전 개선안",
+    "description": "동결 2,712건 전수 판정에서 도출한 개선 우선순위와 BEFORE/AFTER 기대 동작",
+    "generatedAt": "2026-07-16T14:46:38+09:00",
+    "sources": [
+      {
+        "id": "metrics_source",
+        "label": "2,712건 구현 전 핵심 지표",
+        "path": "/home/kimjang/llm_novel_dc_coommunity_parser/docs/devs/LIVE_RUN_2712_PRE_IMPROVEMENT_ANALYSIS_20260716.ipynb",
+        "query": {
+          "engine": "sqlite",
+          "language": "sql",
+          "sql": "WITH metrics(total_rows,published_rows,published_intervention,published_intervention_rate,fn_rows,fn_ocr_rows,fn_candidate_rows,fp_rows,wrong_work_rows,multiwork_rows,mismatch_rows,pass_rows,hold_evidence_rows,high_risk_rows,high_risk_unflagged,safe_no_title_rows,safe_route_candidates) AS (VALUES (2712,263,35,35.0/263,339,107,249,72,36,91,7,230,418,872,678,1580,188)) SELECT * FROM metrics",
+          "description": "실행 완료된 분석 노트북의 핵심 지표를 재현하는 SQLite CTE",
+          "tables_used": [
+            "final_2712_row_adjudication_ledger.jsonl"
+          ],
+          "filters": [
+            "동결 정본 2,712건",
+            "independent_semantic_verdict 사용"
+          ],
+          "metric_definitions": [
+            "공개 후 개입=pipeline.publish_allowed=true AND dashboard_action!=KEEP",
+            "고위험=FP_NONNOVEL|WRONG_WORK|FN_TITLE_MISSING|DASHBOARD_TITLE_MISMATCH|EVIDENCE_CONFLICT|EVIDENCE_INSUFFICIENT|MULTIWORK_HOLD_CORRECT",
+            "초기 안전 라우팅=검증 no-title 중 image/OCR/title candidate/comment 모두 없음",
+            "title candidate 보유 FN=FN_TITLE_MISSING AND source_evidence.title_candidates 비어 있지 않음"
+          ]
+        }
+      },
+      {
+        "id": "cohort_source",
+        "label": "개선 후보별 관측 영향 모집단",
+        "path": "/home/kimjang/llm_novel_dc_coommunity_parser/docs/devs/LIVE_RUN_2712_PRE_IMPROVEMENT_ANALYSIS_20260716.ipynb",
+        "query": {
+          "engine": "sqlite",
+          "language": "sql",
+          "sql": "WITH cohorts(label,rows,share_of_total,priority,cohort_definition,overlap_note,rank) AS (VALUES ('검토 플래그 누락',678,678.0/2712,'P1','고위험 판정이지만 자동 의미 재검토 플래그가 false','다른 오류 cohort와 중복',1),('근거 HOLD',418,418.0/2712,'P1','근거 충돌·부족·다중작품','다른 오류 cohort와 중복',2),('정답 제목 누락',339,339.0/2712,'P0','FN_TITLE_MISSING','OCR·candidate cohort와 중복',3),('초기 안전 라우팅',188,188.0/2712,'P2','이미지·OCR·후보·댓글이 모두 없는 검증 음성','검증 no-title 1,580건의 부분집합',4),('비소설·wrong-work',108,108.0/2712,'P0/P1','FP_NONNOVEL 72 + WRONG_WORK 36','공개 후 개입 cohort와 중복',5),('공개 후 개입',35,35.0/2712,'P0','pipeline publish였으나 최종 action이 KEEP 아님','다른 오류 cohort와 중복',6),('제목 문자열 오류',7,7.0/2712,'P1','DASHBOARD_TITLE_MISMATCH','공개 후 개입 cohort와 중복',7)) SELECT * FROM cohorts ORDER BY rows DESC",
+          "description": "개선 후보별 중복 허용 cohort를 재현하는 SQLite CTE",
+          "tables_used": [
+            "final_2712_row_adjudication_ledger.jsonl"
+          ],
+          "filters": [
+            "동결 정본 2,712건",
+            "cohort 간 중복 허용"
+          ],
+          "metric_definitions": [
+            "share_of_total=rows/2,712",
+            "cohort 건수는 서로 합산하지 않음"
+          ]
+        }
+      },
+      {
+        "id": "recommendation_source",
+        "label": "구현 전 개선 우선순위",
+        "path": "/home/kimjang/llm_novel_dc_coommunity_parser/docs/devs/LIVE_RUN_2712_PRE_IMPROVEMENT_REPORT_20260716_KO.md",
+        "query": {
+          "engine": "sqlite",
+          "language": "sql",
+          "sql": "WITH recommendations(priority_rank,priority,improvement,observed_rows,before_state,after_state,example_post_id,validation_gate) AS (VALUES (1,'P0','최종 공개 hard gate',35,'형식 정합성만으로 publish 잔존','evidence·primary·multiwork·media domain이 모두 안전할 때만 공개','11718099','35건 정본 action exact match; PASS 230 regression 0'),(2,'P0','직접 근거 제목 회수',339,'OCR·공식 후보가 있어도 title null','경쟁 direct anchor가 없으면 canonical title로 승격','11718117','OCR direct 107 우선 회수; FP/wrong-work 증가 0'),(3,'P0','비소설 media quarantine',72,'일반어·공지·뉴스 UI가 작품 후보로 연결','media domain이 novel이 아니면 공개·관련성 승격 차단','11714881','FP 72 novel public projection 0'),(4,'P1','primary/reference/multiwork 관계',127,'이전작·비교작 중 한 작품을 선택','primary·previous·mentioned·comparison을 분리하고 multiwork는 HOLD','11718051 / 11708442','wrong 36 정본 일치; multiwork 91 단일 공개 0'),(5,'P1','semantic review router 확장',678,'구조 모순이 없으면 review flag 누락','OCR/final 불일치·official candidate null·media/multiwork 신호를 review queue로 전달','11718117 / 11718051','high-risk recall과 false-review rate 동시 보고'),(6,'P1','canonical work ID→title 렌더링',7,'오타·공백·추정문이 public title에 섞임','work ID 선택 후 registry official title만 공개','11682775','canonical 6 + 추정문 HOLD 1'),(7,'P1','targeted evidence recovery HOLD',418,'HOLD가 null 상태로만 남거나 일부 publish','부족 근거·경쟁 후보·검색 목적·terminal rule을 저장','11718096','근거 없는 자동 승격 0; recovery 성공률 별도 측정'),(8,'P2','초저위험 early route',188,'모든 행이 full path 비용 사용','이미지·OCR·후보·댓글 모두 없을 때만 no-work 제안, 신호 발생 시 fallback','11718070','188건 result drift 0 뒤 실제 calls/wall time 측정')) SELECT * FROM recommendations ORDER BY priority_rank",
+          "description": "전수 판정에서 도출한 8개 개선안의 before/after와 검증 gate를 재현하는 SQLite CTE",
+          "tables_used": [
+            "final_2712_row_adjudication_ledger.jsonl",
+            "LIVE_RUN_2712_PRE_IMPROVEMENT_ANALYSIS_20260716.ipynb"
+          ],
+          "filters": [
+            "구현 전 제안",
+            "실제 AFTER 효과 미측정"
+          ],
+          "metric_definitions": [
+            "observed_rows=해당 개선과 직접 관련된 관측 cohort; 중복 가능"
+          ]
+        }
+      },
+      {
+        "id": "examples_source",
+        "label": "대표 BEFORE/AFTER 사례",
+        "path": "/home/kimjang/llm_novel_dc_coommunity_parser/out/live_combined_row_review_20260715_143806_848671_2712_20260716/final_2712_row_adjudication_ledger.jsonl",
+        "query": {
+          "engine": "sqlite",
+          "language": "sql",
+          "sql": "WITH examples(example_rank,post_id,issue,before_state,after_state,observed_outcome) AS (VALUES (1,'11718099','OCR와 본문 작품 충돌','빌어먹을 환생 publish','충돌 해소 전 HOLD','EVIDENCE_CONFLICT / HOLD'),(2,'11718117','직접 OCR 정답 누락','title null','아카데미의 피해자로 정정','FN_TITLE_MISSING / CORRECT'),(3,'11714881','현실 뉴스의 일반어 오매칭','코로나 소설 후보 유지','news domain으로 작품 후보 격리','FP_NONNOVEL / REMOVE'),(4,'11718051','이전작을 신작으로 오인','양치기 마법사 publish','몰락민족의 천재 기사로 정정','WRONG_WORK / CORRECT'),(5,'11708442','세 작품 비교를 하나로 축소','용사 파티 때려치웁니다 publish','MULTIWORK/HOLD','EVIDENCE_CONFLICT / HOLD'),(6,'11682775','정식명 문자열 중복 오타','여자가 되어서 되어라도 복수한다','registry 정식명으로 렌더링','DASHBOARD_TITLE_MISMATCH / CORRECT'),(7,'11718096','중간 신뢰도 alias','기계공주 후보만 남음','targeted alias 확인 성공 시 정정, 실패 시 HOLD','EVIDENCE_INSUFFICIENT / HOLD'),(8,'11718070','명백한 현실 잡담','full path 처리','초저위험 early route 후 no-work, 신호 시 fallback','NOISE_CORRECT / NOT_APPLICABLE')) SELECT * FROM examples ORDER BY example_rank",
+          "description": "대표 post_id의 관측 전 상태와 기대 후 상태를 재현하는 SQLite CTE",
+          "tables_used": [
+            "final_2712_row_adjudication_ledger.jsonl"
+          ],
+          "filters": [
+            "대표 사례 8건",
+            "AFTER는 설계 기대 동작"
+          ],
+          "metric_definitions": [
+            "observed_outcome=독립 최종 판정과 dashboard action"
+          ]
+        }
+      },
+      {
+        "id": "cross_review_source",
+        "label": "고위험 교차검토 요약",
+        "path": "/home/kimjang/llm_novel_dc_coommunity_parser/out/live_full_row_review_20260715_143806_848671_20260716/high_risk_cross_review_summary.json"
+      }
+    ],
+    "blocks": [
+      {
+        "id": "title",
+        "type": "markdown",
+        "body": "# 2,712건 구현 전 개선안"
+      },
+      {
+        "id": "executive",
+        "type": "markdown",
+        "sourceId": "metrics_source",
+        "body": "## Executive Summary\n\n- **최우선은 최종 공개 게이트다.** 공개 263건 중 35건(13.3%)은 최종적으로 제거 8건·정정 15건·보류 12건이 필요했다.\n- **정답 회수는 별도 lane으로 열어야 한다.** 제목 누락 339건 중 explicit OCR title 107건, title candidate 보유 249건이 우선 검증 대상이다.\n- **자동 의미 재검토 coverage를 넓혀야 한다.** 고위험 872건 중 678건은 자동 review flag가 없었다.\n- **비용 최적화는 초저위험 188건부터 시작한다.** AFTER 효과는 아직 측정되지 않았으며 paired replay를 통과해야 한다."
+      },
+      {
+        "id": "metrics",
+        "type": "metric-strip",
+        "cardIds": [
+          "published_intervention",
+          "fn_recovery",
+          "review_coverage",
+          "safe_route"
+        ]
+      },
+      {
+        "id": "scale_heading",
+        "type": "markdown",
+        "sourceId": "cohort_source",
+        "body": "## 가장 큰 기회는 review coverage와 근거 HOLD에 있다\n\n아래 막대는 개선 후보별 관측 영향 행 수다. cohort는 서로 겹치므로 막대 값을 더해 전체 개선량으로 읽으면 안 된다. 규모는 우선순위를 정하는 기준이고, 실제 효과는 같은 입력의 paired BEFORE/AFTER로 확인해야 한다."
+      },
+      {
+        "id": "impact_chart_block",
+        "type": "chart",
+        "chartId": "impact_chart"
+      },
+      {
+        "id": "scale_interpretation",
+        "type": "markdown",
+        "sourceId": "cohort_source",
+        "body": "**검토 플래그 누락 678건은 현재 구조 점검만으로 의미 오류를 충분히 라우팅하지 못한다는 신호다.** 다만 review queue를 무작정 넓히면 비용이 늘 수 있으므로 high-risk recall과 false-review rate를 함께 측정해야 한다. 제목 누락 339건은 공개 차단과 반대 방향의 문제여서 별도 recovery lane이 필요하다."
+      },
+      {
+        "id": "priority_heading",
+        "type": "markdown",
+        "sourceId": "recommendation_source",
+        "body": "## 안전 차단 뒤에 정답 회수와 비용 개선을 연다\n\nP0는 잘못된 공개를 막고 직접 근거가 있는 정답을 회수한다. P1은 작품 관계·검토 라우팅·정식명·HOLD 복구 상태를 정교화한다. P2 early route는 의미 게이트가 모두 고정된 뒤에만 시작한다."
+      },
+      {
+        "id": "priority_table_block",
+        "type": "table",
+        "tableId": "priority_table"
+      },
+      {
+        "id": "examples_heading",
+        "type": "markdown",
+        "sourceId": "examples_source",
+        "body": "## 같은 입력이 개선 후 어떻게 달라져야 하는가\n\n대표 사례는 문자열 유사도보다 근거 충돌, 현재 주작품 관계, media domain, canonical title identity가 먼저 결정되어야 함을 보여 준다. AFTER 열은 구현 결과가 아니라 frozen replay에서 만족해야 할 기대 동작이다."
+      },
+      {
+        "id": "examples_table_block",
+        "type": "table",
+        "tableId": "examples_table"
+      },
+      {
+        "id": "sequence",
+        "type": "markdown",
+        "sourceId": "metrics_source",
+        "body": "## 회귀 세트를 먼저 고정하고 안전 순서로 구현한다\n\n1. 공개 후 개입 35건·FN 339건·FP 72건·wrong-work 36건·multiwork 91건·mismatch 7건·PASS 230건·검증 음성 1,580건을 frozen 회귀 세트로 고정한다.\n2. 최종 공개 hard gate와 sealed dashboard projection을 먼저 적용한다.\n3. non-novel media domain과 primary/reference/multiwork 관계를 결속한다.\n4. direct OCR·official-detail recovery를 별도 lane으로 연다.\n5. semantic review router와 canonical title renderer를 보강한다.\n6. targeted HOLD recovery를 연결한 뒤 초저위험 188건 early-route canary를 실행한다."
+      },
+      {
+        "id": "arbitration_regression",
+        "type": "markdown",
+        "sourceId": "cross_review_source",
+        "body": "## 중재 64건은 별도 회귀 세트로 고정한다\n\n고위험 교차검토 221건 중 64건은 최초 두 판정이 달라 제3 중재로 닫혔다. 이 행들은 단순 다수결이 아니라 최종 중재 정본과 exact match해야 하며, 판정·dashboard action·권장 제목 중 어느 하나라도 달라지면 의미 회귀로 본다."
+      },
+      {
+        "id": "questions",
+        "type": "markdown",
+        "body": "## Further Questions\n\n- explicit OCR가 없는 FN 232건을 alias·character·author·official-detail 조합으로 추가 labeling해야 한다.\n- HOLD 418건의 실제 검색 복구율은 search degraded가 해소된 동일 조건 rerun 전에는 알 수 없다.\n- 현재 worktree의 부분 게이트가 active run과 동일한지 확인한 뒤 신규 구현과 배선 수정의 범위를 나눠야 한다.\n- dashboard가 multiwork를 별도 표시할지 single-title만 지원할지 제품 계약이 필요하다."
+      },
+      {
+        "id": "caveats",
+        "type": "markdown",
+        "sourceId": "metrics_source",
+        "body": "## Caveats and Assumptions\n\n이 보고서는 동결 2,712건에만 적용된다. 개선 후보 cohort는 중복되며 합산할 수 없다. AFTER는 설계 기대값이고 구현·fresh run·paired 검증은 아직 수행하지 않았다. search degraded 또는 외부 확인이 없는 행은 계속 HOLD해야 하며, 전체 104,502건의 오류율이나 개선률로 외삽하지 않는다."
+      }
+    ],
+    "cards": [
+      {
+        "id": "published_intervention",
+        "dataset": "metrics",
+        "sourceId": "metrics_source",
+        "description": "pipeline publish였지만 최종 dashboard_action이 KEEP이 아닌 행",
+        "metrics": [
+          {
+            "label": "공개 후 개입",
+            "field": "published_intervention",
+            "format": "number"
+          },
+          {
+            "label": "공개행 비율",
+            "field": "published_intervention_rate",
+            "format": "percent"
+          }
+        ]
+      },
+      {
+        "id": "fn_recovery",
+        "dataset": "metrics",
+        "sourceId": "metrics_source",
+        "description": "정답 작품명이 있으나 pipeline 공개 title이 누락된 행",
+        "metrics": [
+          {
+            "label": "제목 누락",
+            "field": "fn_rows",
+            "format": "number"
+          },
+          {
+            "label": "explicit OCR",
+            "field": "fn_ocr_rows",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "review_coverage",
+        "dataset": "metrics",
+        "sourceId": "metrics_source",
+        "description": "고위험 판정인데 자동 의미 재검토 플래그가 없던 행",
+        "metrics": [
+          {
+            "label": "검토 플래그 누락",
+            "field": "high_risk_unflagged",
+            "format": "number"
+          },
+          {
+            "label": "고위험 전체",
+            "field": "high_risk_rows",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "safe_route",
+        "dataset": "metrics",
+        "sourceId": "metrics_source",
+        "description": "이미지·OCR·후보·댓글이 모두 없는 검증 음성",
+        "metrics": [
+          {
+            "label": "초기 안전 라우팅",
+            "field": "safe_route_candidates",
+            "format": "number"
+          },
+          {
+            "label": "검증 no-title",
+            "field": "safe_no_title_rows",
+            "format": "number"
+          }
+        ]
+      }
+    ],
+    "charts": [
+      {
+        "id": "impact_chart",
+        "title": "개선 후보별 관측 영향 행 수",
+        "subtitle": "동결 2,712건 기준; cohort는 서로 중복되며 합산 불가",
+        "type": "bar",
+        "dataset": "improvement_cohorts",
+        "sourceId": "cohort_source",
+        "encodings": {
+          "x": {
+            "field": "label",
+            "type": "nominal",
+            "label": "개선 후보"
+          },
+          "y": {
+            "field": "rows",
+            "type": "quantitative",
+            "label": "관측 행 수",
+            "format": "number"
+          },
+          "tooltip": [
+            {
+              "field": "label",
+              "type": "nominal"
+            },
+            {
+              "field": "rows",
+              "type": "quantitative",
+              "format": "number"
+            },
+            {
+              "field": "share_of_total",
+              "type": "quantitative",
+              "format": "percent"
+            },
+            {
+              "field": "priority",
+              "type": "nominal"
+            },
+            {
+              "field": "cohort_definition",
+              "type": "nominal"
+            },
+            {
+              "field": "overlap_note",
+              "type": "nominal"
+            }
+          ]
+        }
+      }
+    ],
+    "tables": [
+      {
+        "id": "priority_table",
+        "title": "개선 우선순위와 BEFORE/AFTER 계약",
+        "subtitle": "동결 전수 판정에서 관측된 모집단과 frozen replay 승인 기준",
+        "dataset": "recommendations",
+        "sourceId": "recommendation_source",
+        "defaultSort": {
+          "field": "priority_rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "priority_rank",
+            "label": "순서",
+            "type": "number",
+            "format": "number"
+          },
+          {
+            "field": "priority",
+            "label": "우선순위",
+            "type": "text"
+          },
+          {
+            "field": "improvement",
+            "label": "개선안",
+            "type": "text"
+          },
+          {
+            "field": "observed_rows",
+            "label": "관측 행",
+            "type": "number",
+            "format": "number"
+          },
+          {
+            "field": "before_state",
+            "label": "개선 전",
+            "type": "text"
+          },
+          {
+            "field": "after_state",
+            "label": "개선 후 기대",
+            "type": "text"
+          },
+          {
+            "field": "example_post_id",
+            "label": "대표 post_id",
+            "type": "text"
+          },
+          {
+            "field": "validation_gate",
+            "label": "승인 게이트",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "id": "examples_table",
+        "title": "대표 BEFORE/AFTER 사례",
+        "subtitle": "8개 대표 post_id의 관측 결과와 구현 후 기대 동작",
+        "dataset": "examples",
+        "sourceId": "examples_source",
+        "defaultSort": {
+          "field": "example_rank",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "example_rank",
+            "label": "순서",
+            "type": "number",
+            "format": "number"
+          },
+          {
+            "field": "post_id",
+            "label": "post_id",
+            "type": "text"
+          },
+          {
+            "field": "issue",
+            "label": "문제",
+            "type": "text"
+          },
+          {
+            "field": "before_state",
+            "label": "개선 전",
+            "type": "text"
+          },
+          {
+            "field": "after_state",
+            "label": "개선 후 기대",
+            "type": "text"
+          },
+          {
+            "field": "observed_outcome",
+            "label": "최종 정본",
+            "type": "text"
+          }
+        ]
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "status": "ready",
+    "generatedAt": "2026-07-16T14:46:38+09:00",
+    "datasets": {
+      "metrics": [
+        {
+          "total_rows": 2712,
+          "published_rows": 263,
+          "published_intervention": 35,
+          "published_intervention_rate": 0.13307984790874525,
+          "fn_rows": 339,
+          "fn_ocr_rows": 107,
+          "high_risk_rows": 872,
+          "high_risk_unflagged": 678,
+          "safe_no_title_rows": 1580,
+          "safe_route_candidates": 188,
+          "fn_candidate_rows": 249,
+          "fp_rows": 72,
+          "wrong_work_rows": 36,
+          "multiwork_rows": 91,
+          "mismatch_rows": 7,
+          "pass_rows": 230,
+          "hold_evidence_rows": 418
+        }
+      ],
+      "improvement_cohorts": [
+        {
+          "label": "검토 플래그 누락",
+          "rows": 678,
+          "share_of_total": 0.25,
+          "priority": "P1",
+          "cohort_definition": "고위험 판정이지만 자동 의미 재검토 플래그가 false",
+          "overlap_note": "다른 오류 cohort와 중복",
+          "rank": 1
+        },
+        {
+          "label": "근거 HOLD",
+          "rows": 418,
+          "share_of_total": 0.1541297935103245,
+          "priority": "P1",
+          "cohort_definition": "근거 충돌·부족·다중작품",
+          "overlap_note": "다른 오류 cohort와 중복",
+          "rank": 2
+        },
+        {
+          "label": "정답 제목 누락",
+          "rows": 339,
+          "share_of_total": 0.125,
+          "priority": "P0",
+          "cohort_definition": "FN_TITLE_MISSING",
+          "overlap_note": "OCR·candidate cohort와 중복",
+          "rank": 3
+        },
+        {
+          "label": "초기 안전 라우팅",
+          "rows": 188,
+          "share_of_total": 0.06932153392330384,
+          "priority": "P2",
+          "cohort_definition": "이미지·OCR·후보·댓글이 모두 없는 검증 음성",
+          "overlap_note": "검증 no-title 1,580건의 부분집합",
+          "rank": 4
+        },
+        {
+          "label": "비소설·wrong-work",
+          "rows": 108,
+          "share_of_total": 0.03982300884955752,
+          "priority": "P0/P1",
+          "cohort_definition": "FP_NONNOVEL 72 + WRONG_WORK 36",
+          "overlap_note": "공개 후 개입 cohort와 중복",
+          "rank": 5
+        },
+        {
+          "label": "공개 후 개입",
+          "rows": 35,
+          "share_of_total": 0.012905604719764012,
+          "priority": "P0",
+          "cohort_definition": "pipeline publish였으나 최종 action이 KEEP 아님",
+          "overlap_note": "다른 오류 cohort와 중복",
+          "rank": 6
+        },
+        {
+          "label": "제목 문자열 오류",
+          "rows": 7,
+          "share_of_total": 0.0025811209439528023,
+          "priority": "P1",
+          "cohort_definition": "DASHBOARD_TITLE_MISMATCH",
+          "overlap_note": "공개 후 개입 cohort와 중복",
+          "rank": 7
+        }
+      ],
+      "recommendations": [
+        {
+          "priority_rank": 1,
+          "priority": "P0",
+          "improvement": "최종 공개 hard gate",
+          "observed_rows": 35,
+          "before_state": "형식 정합성만으로 publish 잔존",
+          "after_state": "evidence·primary·multiwork·media domain이 모두 안전할 때만 공개",
+          "example_post_id": "11718099",
+          "validation_gate": "35건 정본 action exact match; PASS 230 regression 0"
+        },
+        {
+          "priority_rank": 2,
+          "priority": "P0",
+          "improvement": "직접 근거 제목 회수",
+          "observed_rows": 339,
+          "before_state": "OCR·공식 후보가 있어도 title null",
+          "after_state": "경쟁 direct anchor가 없으면 canonical title로 승격",
+          "example_post_id": "11718117",
+          "validation_gate": "OCR direct 107 우선 회수; FP/wrong-work 증가 0"
+        },
+        {
+          "priority_rank": 3,
+          "priority": "P0",
+          "improvement": "비소설 media quarantine",
+          "observed_rows": 72,
+          "before_state": "일반어·공지·뉴스 UI가 작품 후보로 연결",
+          "after_state": "media domain이 novel이 아니면 공개·관련성 승격 차단",
+          "example_post_id": "11714881",
+          "validation_gate": "FP 72 novel public projection 0"
+        },
+        {
+          "priority_rank": 4,
+          "priority": "P1",
+          "improvement": "primary/reference/multiwork 관계",
+          "observed_rows": 127,
+          "before_state": "이전작·비교작 중 한 작품을 선택",
+          "after_state": "primary·previous·mentioned·comparison을 분리하고 multiwork는 HOLD",
+          "example_post_id": "11718051 / 11708442",
+          "validation_gate": "wrong 36 정본 일치; multiwork 91 단일 공개 0"
+        },
+        {
+          "priority_rank": 5,
+          "priority": "P1",
+          "improvement": "semantic review router 확장",
+          "observed_rows": 678,
+          "before_state": "구조 모순이 없으면 review flag 누락",
+          "after_state": "OCR/final 불일치·official candidate null·media/multiwork 신호를 review queue로 전달",
+          "example_post_id": "11718117 / 11718051",
+          "validation_gate": "high-risk recall과 false-review rate 동시 보고"
+        },
+        {
+          "priority_rank": 6,
+          "priority": "P1",
+          "improvement": "canonical work ID→title 렌더링",
+          "observed_rows": 7,
+          "before_state": "오타·공백·추정문이 public title에 섞임",
+          "after_state": "work ID 선택 후 registry official title만 공개",
+          "example_post_id": "11682775",
+          "validation_gate": "canonical 6 + 추정문 HOLD 1"
+        },
+        {
+          "priority_rank": 7,
+          "priority": "P1",
+          "improvement": "targeted evidence recovery HOLD",
+          "observed_rows": 418,
+          "before_state": "HOLD가 null 상태로만 남거나 일부 publish",
+          "after_state": "부족 근거·경쟁 후보·검색 목적·terminal rule을 저장",
+          "example_post_id": "11718096",
+          "validation_gate": "근거 없는 자동 승격 0; recovery 성공률 별도 측정"
+        },
+        {
+          "priority_rank": 8,
+          "priority": "P2",
+          "improvement": "초저위험 early route",
+          "observed_rows": 188,
+          "before_state": "모든 행이 full path 비용 사용",
+          "after_state": "이미지·OCR·후보·댓글 모두 없을 때만 no-work 제안, 신호 발생 시 fallback",
+          "example_post_id": "11718070",
+          "validation_gate": "188건 result drift 0 뒤 실제 calls/wall time 측정"
+        }
+      ],
+      "examples": [
+        {
+          "example_rank": 1,
+          "post_id": "11718099",
+          "issue": "OCR와 본문 작품 충돌",
+          "before_state": "빌어먹을 환생 publish",
+          "after_state": "충돌 해소 전 HOLD",
+          "observed_outcome": "EVIDENCE_CONFLICT / HOLD"
+        },
+        {
+          "example_rank": 2,
+          "post_id": "11718117",
+          "issue": "직접 OCR 정답 누락",
+          "before_state": "title null",
+          "after_state": "아카데미의 피해자로 정정",
+          "observed_outcome": "FN_TITLE_MISSING / CORRECT"
+        },
+        {
+          "example_rank": 3,
+          "post_id": "11714881",
+          "issue": "현실 뉴스의 일반어 오매칭",
+          "before_state": "코로나 소설 후보 유지",
+          "after_state": "news domain으로 작품 후보 격리",
+          "observed_outcome": "FP_NONNOVEL / REMOVE"
+        },
+        {
+          "example_rank": 4,
+          "post_id": "11718051",
+          "issue": "이전작을 신작으로 오인",
+          "before_state": "양치기 마법사 publish",
+          "after_state": "몰락민족의 천재 기사로 정정",
+          "observed_outcome": "WRONG_WORK / CORRECT"
+        },
+        {
+          "example_rank": 5,
+          "post_id": "11708442",
+          "issue": "세 작품 비교를 하나로 축소",
+          "before_state": "용사 파티 때려치웁니다 publish",
+          "after_state": "MULTIWORK/HOLD",
+          "observed_outcome": "EVIDENCE_CONFLICT / HOLD"
+        },
+        {
+          "example_rank": 6,
+          "post_id": "11682775",
+          "issue": "정식명 문자열 중복 오타",
+          "before_state": "여자가 되어서 되어라도 복수한다",
+          "after_state": "registry 정식명으로 렌더링",
+          "observed_outcome": "DASHBOARD_TITLE_MISMATCH / CORRECT"
+        },
+        {
+          "example_rank": 7,
+          "post_id": "11718096",
+          "issue": "중간 신뢰도 alias",
+          "before_state": "기계공주 후보만 남음",
+          "after_state": "targeted alias 확인 성공 시 정정, 실패 시 HOLD",
+          "observed_outcome": "EVIDENCE_INSUFFICIENT / HOLD"
+        },
+        {
+          "example_rank": 8,
+          "post_id": "11718070",
+          "issue": "명백한 현실 잡담",
+          "before_state": "full path 처리",
+          "after_state": "초저위험 early route 후 no-work, 신호 시 fallback",
+          "observed_outcome": "NOISE_CORRECT / NOT_APPLICABLE"
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "metrics_source",
+      "label": "2,712건 구현 전 핵심 지표",
+      "path": "/home/kimjang/llm_novel_dc_coommunity_parser/docs/devs/LIVE_RUN_2712_PRE_IMPROVEMENT_ANALYSIS_20260716.ipynb",
+      "query": {
+        "engine": "sqlite",
+        "language": "sql",
+        "sql": "WITH metrics(total_rows,published_rows,published_intervention,published_intervention_rate,fn_rows,fn_ocr_rows,fn_candidate_rows,fp_rows,wrong_work_rows,multiwork_rows,mismatch_rows,pass_rows,hold_evidence_rows,high_risk_rows,high_risk_unflagged,safe_no_title_rows,safe_route_candidates) AS (VALUES (2712,263,35,35.0/263,339,107,249,72,36,91,7,230,418,872,678,1580,188)) SELECT * FROM metrics",
+        "description": "실행 완료된 분석 노트북의 핵심 지표를 재현하는 SQLite CTE",
+        "tables_used": [
+          "final_2712_row_adjudication_ledger.jsonl"
+        ],
+        "filters": [
+          "동결 정본 2,712건",
+          "independent_semantic_verdict 사용"
+        ],
+        "metric_definitions": [
+          "공개 후 개입=pipeline.publish_allowed=true AND dashboard_action!=KEEP",
+          "고위험=FP_NONNOVEL|WRONG_WORK|FN_TITLE_MISSING|DASHBOARD_TITLE_MISMATCH|EVIDENCE_CONFLICT|EVIDENCE_INSUFFICIENT|MULTIWORK_HOLD_CORRECT",
+          "초기 안전 라우팅=검증 no-title 중 image/OCR/title candidate/comment 모두 없음",
+          "title candidate 보유 FN=FN_TITLE_MISSING AND source_evidence.title_candidates 비어 있지 않음"
+        ]
+      }
+    },
+    {
+      "id": "cohort_source",
+      "label": "개선 후보별 관측 영향 모집단",
+      "path": "/home/kimjang/llm_novel_dc_coommunity_parser/docs/devs/LIVE_RUN_2712_PRE_IMPROVEMENT_ANALYSIS_20260716.ipynb",
+      "query": {
+        "engine": "sqlite",
+        "language": "sql",
+        "sql": "WITH cohorts(label,rows,share_of_total,priority,cohort_definition,overlap_note,rank) AS (VALUES ('검토 플래그 누락',678,678.0/2712,'P1','고위험 판정이지만 자동 의미 재검토 플래그가 false','다른 오류 cohort와 중복',1),('근거 HOLD',418,418.0/2712,'P1','근거 충돌·부족·다중작품','다른 오류 cohort와 중복',2),('정답 제목 누락',339,339.0/2712,'P0','FN_TITLE_MISSING','OCR·candidate cohort와 중복',3),('초기 안전 라우팅',188,188.0/2712,'P2','이미지·OCR·후보·댓글이 모두 없는 검증 음성','검증 no-title 1,580건의 부분집합',4),('비소설·wrong-work',108,108.0/2712,'P0/P1','FP_NONNOVEL 72 + WRONG_WORK 36','공개 후 개입 cohort와 중복',5),('공개 후 개입',35,35.0/2712,'P0','pipeline publish였으나 최종 action이 KEEP 아님','다른 오류 cohort와 중복',6),('제목 문자열 오류',7,7.0/2712,'P1','DASHBOARD_TITLE_MISMATCH','공개 후 개입 cohort와 중복',7)) SELECT * FROM cohorts ORDER BY rows DESC",
+        "description": "개선 후보별 중복 허용 cohort를 재현하는 SQLite CTE",
+        "tables_used": [
+          "final_2712_row_adjudication_ledger.jsonl"
+        ],
+        "filters": [
+          "동결 정본 2,712건",
+          "cohort 간 중복 허용"
+        ],
+        "metric_definitions": [
+          "share_of_total=rows/2,712",
+          "cohort 건수는 서로 합산하지 않음"
+        ]
+      }
+    },
+    {
+      "id": "recommendation_source",
+      "label": "구현 전 개선 우선순위",
+      "path": "/home/kimjang/llm_novel_dc_coommunity_parser/docs/devs/LIVE_RUN_2712_PRE_IMPROVEMENT_REPORT_20260716_KO.md",
+      "query": {
+        "engine": "sqlite",
+        "language": "sql",
+        "sql": "WITH recommendations(priority_rank,priority,improvement,observed_rows,before_state,after_state,example_post_id,validation_gate) AS (VALUES (1,'P0','최종 공개 hard gate',35,'형식 정합성만으로 publish 잔존','evidence·primary·multiwork·media domain이 모두 안전할 때만 공개','11718099','35건 정본 action exact match; PASS 230 regression 0'),(2,'P0','직접 근거 제목 회수',339,'OCR·공식 후보가 있어도 title null','경쟁 direct anchor가 없으면 canonical title로 승격','11718117','OCR direct 107 우선 회수; FP/wrong-work 증가 0'),(3,'P0','비소설 media quarantine',72,'일반어·공지·뉴스 UI가 작품 후보로 연결','media domain이 novel이 아니면 공개·관련성 승격 차단','11714881','FP 72 novel public projection 0'),(4,'P1','primary/reference/multiwork 관계',127,'이전작·비교작 중 한 작품을 선택','primary·previous·mentioned·comparison을 분리하고 multiwork는 HOLD','11718051 / 11708442','wrong 36 정본 일치; multiwork 91 단일 공개 0'),(5,'P1','semantic review router 확장',678,'구조 모순이 없으면 review flag 누락','OCR/final 불일치·official candidate null·media/multiwork 신호를 review queue로 전달','11718117 / 11718051','high-risk recall과 false-review rate 동시 보고'),(6,'P1','canonical work ID→title 렌더링',7,'오타·공백·추정문이 public title에 섞임','work ID 선택 후 registry official title만 공개','11682775','canonical 6 + 추정문 HOLD 1'),(7,'P1','targeted evidence recovery HOLD',418,'HOLD가 null 상태로만 남거나 일부 publish','부족 근거·경쟁 후보·검색 목적·terminal rule을 저장','11718096','근거 없는 자동 승격 0; recovery 성공률 별도 측정'),(8,'P2','초저위험 early route',188,'모든 행이 full path 비용 사용','이미지·OCR·후보·댓글 모두 없을 때만 no-work 제안, 신호 발생 시 fallback','11718070','188건 result drift 0 뒤 실제 calls/wall time 측정')) SELECT * FROM recommendations ORDER BY priority_rank",
+        "description": "전수 판정에서 도출한 8개 개선안의 before/after와 검증 gate를 재현하는 SQLite CTE",
+        "tables_used": [
+          "final_2712_row_adjudication_ledger.jsonl",
+          "LIVE_RUN_2712_PRE_IMPROVEMENT_ANALYSIS_20260716.ipynb"
+        ],
+        "filters": [
+          "구현 전 제안",
+          "실제 AFTER 효과 미측정"
+        ],
+        "metric_definitions": [
+          "observed_rows=해당 개선과 직접 관련된 관측 cohort; 중복 가능"
+        ]
+      }
+    },
+    {
+      "id": "examples_source",
+      "label": "대표 BEFORE/AFTER 사례",
+      "path": "/home/kimjang/llm_novel_dc_coommunity_parser/out/live_combined_row_review_20260715_143806_848671_2712_20260716/final_2712_row_adjudication_ledger.jsonl",
+      "query": {
+        "engine": "sqlite",
+        "language": "sql",
+        "sql": "WITH examples(example_rank,post_id,issue,before_state,after_state,observed_outcome) AS (VALUES (1,'11718099','OCR와 본문 작품 충돌','빌어먹을 환생 publish','충돌 해소 전 HOLD','EVIDENCE_CONFLICT / HOLD'),(2,'11718117','직접 OCR 정답 누락','title null','아카데미의 피해자로 정정','FN_TITLE_MISSING / CORRECT'),(3,'11714881','현실 뉴스의 일반어 오매칭','코로나 소설 후보 유지','news domain으로 작품 후보 격리','FP_NONNOVEL / REMOVE'),(4,'11718051','이전작을 신작으로 오인','양치기 마법사 publish','몰락민족의 천재 기사로 정정','WRONG_WORK / CORRECT'),(5,'11708442','세 작품 비교를 하나로 축소','용사 파티 때려치웁니다 publish','MULTIWORK/HOLD','EVIDENCE_CONFLICT / HOLD'),(6,'11682775','정식명 문자열 중복 오타','여자가 되어서 되어라도 복수한다','registry 정식명으로 렌더링','DASHBOARD_TITLE_MISMATCH / CORRECT'),(7,'11718096','중간 신뢰도 alias','기계공주 후보만 남음','targeted alias 확인 성공 시 정정, 실패 시 HOLD','EVIDENCE_INSUFFICIENT / HOLD'),(8,'11718070','명백한 현실 잡담','full path 처리','초저위험 early route 후 no-work, 신호 시 fallback','NOISE_CORRECT / NOT_APPLICABLE')) SELECT * FROM examples ORDER BY example_rank",
+        "description": "대표 post_id의 관측 전 상태와 기대 후 상태를 재현하는 SQLite CTE",
+        "tables_used": [
+          "final_2712_row_adjudication_ledger.jsonl"
+        ],
+        "filters": [
+          "대표 사례 8건",
+          "AFTER는 설계 기대 동작"
+        ],
+        "metric_definitions": [
+          "observed_outcome=독립 최종 판정과 dashboard action"
+        ]
+      }
+    },
+    {
+      "id": "cross_review_source",
+      "label": "고위험 교차검토 요약",
+      "path": "/home/kimjang/llm_novel_dc_coommunity_parser/out/live_full_row_review_20260715_143806_848671_20260716/high_risk_cross_review_summary.json"
+    }
+  ]
+}

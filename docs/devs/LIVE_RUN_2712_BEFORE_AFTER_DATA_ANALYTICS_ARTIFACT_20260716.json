@@ -1,0 +1,295 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "동결 2,712건 개선 BEFORE/AFTER",
+    "description": "P0a 공개 안전 게이트와 rollback된 P0b OCR recovery의 3회 exact consensus 보고서",
+    "generatedAt": "2026-07-17T00:10:00+09:00",
+    "blocks": [
+      {
+        "id": "title",
+        "type": "markdown",
+        "body": "# 동결 2,712건 개선 BEFORE/AFTER"
+      },
+      {
+        "id": "executive",
+        "type": "markdown",
+        "sourceId": "lane_source",
+        "body": "## 결론\n\nP0a 공개 안전 게이트는 systematic regression 0, 신규 unsafe/wrong-title 0으로 유지한다. P0b 격리 lane은 systematic improvement/regression 1/1, correct recovery any-run 6→5, 신규 unsafe/wrong-title any-run 1로 NO-GO였고 P0b 전용 코드를 rollback했다. 검색과 review-router는 승인 불가이며 full_scan_approval=false다."
+      },
+      {
+        "id": "headline_metrics",
+        "type": "metric-strip",
+        "cardIds": [
+          "p0a_regression",
+          "p0a_unsafe_resolved",
+          "p0b_regression",
+          "full_scan"
+        ]
+      },
+      {
+        "id": "unsafe_heading",
+        "type": "markdown",
+        "sourceId": "lane_source",
+        "body": "## lane별 unsafe publish any-run\n\n막대는 서로 다른 cohort의 각 3회 반복에서 한 번이라도 unsafe였던 post_id 수다. P0a는 5→2로 감소했지만 P0b 격리는 총수 2→2 안에서 신규 1건과 해소 1건이 교체됐다."
+      },
+      {
+        "id": "unsafe_chart_block",
+        "type": "chart",
+        "chartId": "unsafe_chart"
+      },
+      {
+        "id": "lane_heading",
+        "type": "markdown",
+        "sourceId": "lane_source",
+        "body": "## 반복 consensus 게이트\n\nmajority뿐 아니라 exact compliant runs, systematic transition, introduced unsafe를 함께 본다."
+      },
+      {
+        "id": "lane_table_block",
+        "type": "table",
+        "tableId": "lane_table"
+      },
+      {
+        "id": "transition_heading",
+        "type": "markdown",
+        "sourceId": "transition_source",
+        "body": "## 개선·회귀·변동성 사례\n\nP0b의 단일 개선은 lane 전체 NO-GO 때문에 production에 남기지 않았다. 1/3 wobble은 단독 rollback 근거가 아니라 systematic regression과 정적 우회와 함께 사용했다."
+      },
+      {
+        "id": "transition_table_block",
+        "type": "table",
+        "tableId": "transition_table"
+      },
+      {
+        "id": "validation_heading",
+        "type": "markdown",
+        "sourceId": "validation_source",
+        "body": "## 결정적 검증과 승인 분리\n\nrollback replay와 direct-image 통합은 통과했다. P0a snapshot에서도 재현되는 인접 계약 1건 실패는 rollback 회귀가 아니지만 hard failure라 P1/P2 확대를 막는다."
+      },
+      {
+        "id": "validation_table_block",
+        "type": "table",
+        "tableId": "validation_table"
+      },
+      {
+        "id": "operations",
+        "type": "markdown",
+        "sourceId": "observability_source",
+        "body": "## 검색·router·비용\n\nP0a AFTER의 검색 관측 가능 82/82행은 모두 SEARCH_DEGRADED였다. P0b 격리도 BEFORE 85/92, AFTER 89/93이 degraded였다. review-router는 모든 run-row에서 NOT_ESTIMABLE이고 token도 partial이므로 운영·비용 축을 승인하지 않는다."
+      },
+      {
+        "id": "caveats",
+        "type": "markdown",
+        "body": "## Caveats and Assumptions\n\n결과는 동결 2,712건의 targeted cohort에만 적용된다. publication-safety·retention-controls 잔여 family와 전체 2,712 fresh LLM run은 미실행이다. 실행 중인 104,502행 런은 terminal이 아니며 semantic quality가 평가되지 않았다. full_scan_approval=false를 유지한다."
+      }
+    ],
+    "cards": [
+      {
+        "id": "p0a_regression",
+        "dataset": "headline",
+        "sourceId": "lane_source",
+        "description": "P0a 28행 3회 majority systematic regression",
+        "metrics": [
+          {"label": "P0a systematic regression", "field": "p0a_systematic_regressions", "format": "number"}
+        ]
+      },
+      {
+        "id": "p0a_unsafe_resolved",
+        "dataset": "headline",
+        "sourceId": "lane_source",
+        "description": "P0a AFTER 전 회차에서 unsafe가 해소된 post_id",
+        "metrics": [
+          {"label": "P0a unsafe 해소", "field": "p0a_unsafe_resolved", "format": "number"}
+        ]
+      },
+      {
+        "id": "p0b_regression",
+        "dataset": "headline",
+        "sourceId": "lane_source",
+        "description": "P0b 격리 32행 3회 majority systematic regression",
+        "metrics": [
+          {"label": "P0b systematic regression", "field": "p0b_systematic_regressions", "format": "number"}
+        ]
+      },
+      {
+        "id": "full_scan",
+        "dataset": "headline",
+        "sourceId": "lane_source",
+        "description": "0=false; targeted 결과를 전체 승인으로 승격하지 않음",
+        "metrics": [
+          {"label": "full_scan_approval", "field": "full_scan_approval_numeric", "format": "number"}
+        ]
+      }
+    ],
+    "charts": [
+      {
+        "id": "unsafe_chart",
+        "title": "lane별 unsafe publish any-run",
+        "subtitle": "P0a는 감소, P0b 격리는 총수 유지 속 신규·해소가 교체",
+        "type": "bar",
+        "dataset": "unsafe_metrics",
+        "sourceId": "lane_source",
+        "options": {"orientation": "vertical", "grouping": "grouped"},
+        "encodings": {
+          "x": {"field": "lane", "type": "nominal", "label": "lane"},
+          "y": {"field": "unsafe_any_run", "type": "quantitative", "label": "post_id 수", "format": "number"},
+          "color": {"field": "arm", "type": "nominal", "label": "arm"},
+          "tooltip": [
+            {"field": "lane", "type": "nominal"},
+            {"field": "arm", "type": "nominal"},
+            {"field": "unsafe_any_run", "type": "quantitative", "format": "number"}
+          ]
+        }
+      }
+    ],
+    "tables": [
+      {
+        "id": "lane_table",
+        "title": "3회 exact consensus lane 판정",
+        "subtitle": "동일 입력·모델·parallel·dashboard·VLM/OCR 계약",
+        "dataset": "lane_metrics",
+        "sourceId": "lane_source",
+        "defaultSort": {"field": "rank", "direction": "asc"},
+        "columns": [
+          {"field": "rank", "label": "순서", "type": "number", "format": "number"},
+          {"field": "lane", "label": "lane", "type": "text"},
+          {"field": "rows", "label": "행", "type": "number", "format": "number"},
+          {"field": "before_majority", "label": "BEFORE majority", "type": "number", "format": "number"},
+          {"field": "after_majority", "label": "AFTER majority", "type": "number", "format": "number"},
+          {"field": "systematic_improvements", "label": "systematic 개선", "type": "number", "format": "number"},
+          {"field": "systematic_regressions", "label": "systematic 회귀", "type": "number", "format": "number"},
+          {"field": "introduced_unsafe", "label": "신규 unsafe", "type": "number", "format": "number"},
+          {"field": "decision", "label": "판정", "type": "text"}
+        ]
+      },
+      {
+        "id": "transition_table",
+        "title": "post_id exact 주요 전이",
+        "subtitle": "개선, 새 회귀, 단발 변동성을 함께 공개",
+        "dataset": "transitions",
+        "sourceId": "transition_source",
+        "defaultSort": {"field": "rank", "direction": "asc"},
+        "columns": [
+          {"field": "rank", "label": "순서", "type": "number", "format": "number"},
+          {"field": "lane", "label": "lane", "type": "text"},
+          {"field": "post_id", "label": "post_id", "type": "text"},
+          {"field": "expected_title", "label": "정본 제목", "type": "text"},
+          {"field": "transition", "label": "전이", "type": "text"},
+          {"field": "consensus", "label": "반복 합의", "type": "text"},
+          {"field": "disposition", "label": "조치", "type": "text"}
+        ]
+      },
+      {
+        "id": "validation_table",
+        "title": "결정적·운영 게이트",
+        "subtitle": "runtime, semantic, search, full scan을 분리",
+        "dataset": "validation",
+        "sourceId": "validation_source",
+        "defaultSort": {"field": "rank", "direction": "asc"},
+        "columns": [
+          {"field": "rank", "label": "순서", "type": "number", "format": "number"},
+          {"field": "gate", "label": "게이트", "type": "text"},
+          {"field": "status", "label": "상태", "type": "text"},
+          {"field": "evidence", "label": "근거", "type": "text"}
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "id": "lane_source",
+        "label": "P0a/P0b 반복 consensus summary",
+        "path": "/home/kimjang/llm_novel_dc_coommunity_parser/docs/devs/LIVE_RUN_2712_BEFORE_AFTER_ANALYSIS_20260716.ipynb",
+        "query": {
+          "engine": "sqlite",
+          "language": "sql",
+          "sql": "WITH lane_metrics(rank,lane,rows,before_majority,after_majority,systematic_improvements,systematic_regressions,introduced_unsafe,decision) AS (VALUES (1,'P0a 공개 안전',28,18,18,0,0,0,'GO'),(2,'P0b 격리',32,2,2,1,1,1,'NO-GO / ROLLED_BACK')) SELECT * FROM lane_metrics ORDER BY rank",
+          "description": "실행된 notebook의 3회 exact consensus 핵심 지표",
+          "tables_used": ["p0a_go2_repeat_consensus_summary.json", "p0b_isolation_repeat_consensus_summary.json"],
+          "filters": ["동일 post_id 집합", "각 arm 3회", "manifest comparability GO"],
+          "metric_definitions": ["systematic=3회 majority compliant↔noncompliant 전이", "introduced_unsafe=BEFORE any-run 0, AFTER any-run 1 이상"]
+        }
+      },
+      {
+        "id": "transition_source",
+        "label": "post_id exact transition 대장",
+        "path": "/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260716/analysis/p0b_isolation_repeat_consensus_posts.jsonl",
+        "query": {
+          "engine": "sqlite",
+          "language": "sql",
+          "sql": "WITH transitions(rank,lane,post_id,expected_title,transition,consensus,disposition) AS (VALUES (1,'P0a','11632937','약먹는 천재마법사','unsafe 해소','2/3 PUBLISH→3/3 정답 PUBLISH','P0a 유지'),(2,'P0a','11652199','타락면역이라 재앙급 마검','unsafe 해소','NO_CONSENSUS→3/3 NO_PUBLISH','P0a 유지'),(3,'P0a','11674732','마법소녀는 은퇴하고 싶다','unsafe 해소','2/3 NO_PUBLISH→3/3 NO_PUBLISH','P0a 유지'),(4,'P0b','11705229','A급 헌터가 살아가는 법','systematic 개선','2/3 NO_PUBLISH→3/3 정답 PUBLISH','lane NO-GO로 미채택'),(5,'P0b','11711612','A급 헌터가 살아가는 법','systematic 회귀','2/3 정답 PUBLISH→2/3 NO_PUBLISH','rollback 근거'),(6,'P0b','11718097','망겜의 힐러','신규 unsafe/wrong-title','BEFORE 0/3→AFTER 1/3','단발 보존 + NO-GO'),(7,'P0b','11716480','여대생 가랑이 사이 무릎 꿇은 엄마들','안전 안정화','2/3 NO_PUBLISH→3/3 NO_PUBLISH','정답 회수 아님')) SELECT * FROM transitions ORDER BY rank",
+          "description": "3회 consensus에서 개선·회귀·unsafe 전이가 있는 대표 post_id",
+          "tables_used": ["p0a_go2_repeat_consensus_posts.jsonl", "p0b_isolation_repeat_consensus_posts.jsonl"]
+        }
+      },
+      {
+        "id": "validation_source",
+        "label": "rollback 검증과 승인 분리",
+        "path": "/home/kimjang/llm_novel_dc_coommunity_parser/docs/devs/LIVE_RUN_2712_BEFORE_AFTER_REPORT_20260716_KO.md",
+        "query": {
+          "engine": "sqlite",
+          "language": "sql",
+          "sql": "WITH validation(rank,gate,status,evidence) AS (VALUES (1,'Python compile','PASS','agentic/promotion/arbiter/expert_main'),(2,'direct-image 통합','PASS','101 tests'),(3,'2,712 persisted replay','GO','rollback 후 exact replay'),(4,'인접 deterministic','NO-GO','412/413; P0a snapshot에서도 1건 재현'),(5,'104,502 runtime','NO-GO / IN_PROGRESS','3,118 completed, 3,107 flushed, pending 11'),(6,'104,502 semantic','NOT_EVALUATED','runtime과 분리'),(7,'full_scan_approval','false','targeted 결과만 존재')) SELECT * FROM validation ORDER BY rank",
+          "description": "결정적 검증과 runtime/semantic/full-scan 승인 분리",
+          "tables_used": ["publish_contract_replay_summary.json", "expert_result_20260715_143806_848671_manifest.json"]
+        }
+      },
+      {
+        "id": "observability_source",
+        "label": "검색·router·token·wall 관측",
+        "path": "/home/kimjang/llm_novel_dc_coommunity_parser/docs/devs/LIVE_RUN_2712_BEFORE_AFTER_NOTEBOOK_SUMMARY_20260716.json",
+        "query": {
+          "engine": "sqlite",
+          "language": "sql",
+          "sql": "WITH observability(lane,arm,total_tokens,total_tokens_status,search_known,search_degraded,router_known,router_unknown) AS (VALUES ('P0a','BEFORE',7185618,'PARTIAL',83,81,0,84),('P0a','AFTER',7163160,'PARTIAL',82,82,0,84),('P0b 격리','BEFORE',9799920,'PARTIAL',92,85,0,96),('P0b 격리','AFTER',9565065,'PARTIAL',93,89,0,96)) SELECT * FROM observability",
+          "description": "검색 상태와 token/router 관측 가능성을 arm별로 분리",
+          "tables_used": ["p0a_go2_repeat_consensus_summary.json", "p0b_isolation_repeat_consensus_summary.json"]
+        }
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "status": "ready",
+    "generatedAt": "2026-07-17T00:10:00+09:00",
+    "datasets": {
+      "headline": [
+        {"p0a_systematic_regressions": 0, "p0a_unsafe_resolved": 3, "p0b_systematic_regressions": 1, "full_scan_approval_numeric": 0}
+      ],
+      "unsafe_metrics": [
+        {"lane": "P0a 공개 안전", "arm": "BEFORE", "unsafe_any_run": 5},
+        {"lane": "P0a 공개 안전", "arm": "AFTER", "unsafe_any_run": 2},
+        {"lane": "P0b 격리", "arm": "BEFORE", "unsafe_any_run": 2},
+        {"lane": "P0b 격리", "arm": "AFTER", "unsafe_any_run": 2}
+      ],
+      "lane_metrics": [
+        {"rank": 1, "lane": "P0a 공개 안전", "rows": 28, "before_majority": 18, "after_majority": 18, "systematic_improvements": 0, "systematic_regressions": 0, "introduced_unsafe": 0, "decision": "GO"},
+        {"rank": 2, "lane": "P0b 격리", "rows": 32, "before_majority": 2, "after_majority": 2, "systematic_improvements": 1, "systematic_regressions": 1, "introduced_unsafe": 1, "decision": "NO-GO / ROLLED_BACK"}
+      ],
+      "transitions": [
+        {"rank": 1, "lane": "P0a", "post_id": "11632937", "expected_title": "약먹는 천재마법사", "transition": "unsafe 해소", "consensus": "2/3 PUBLISH→3/3 정답 PUBLISH", "disposition": "P0a 유지"},
+        {"rank": 2, "lane": "P0a", "post_id": "11652199", "expected_title": "타락면역이라 재앙급 마검", "transition": "unsafe 해소", "consensus": "NO_CONSENSUS→3/3 NO_PUBLISH", "disposition": "P0a 유지"},
+        {"rank": 3, "lane": "P0a", "post_id": "11674732", "expected_title": "마법소녀는 은퇴하고 싶다", "transition": "unsafe 해소", "consensus": "2/3 NO_PUBLISH→3/3 NO_PUBLISH", "disposition": "P0a 유지"},
+        {"rank": 4, "lane": "P0b", "post_id": "11705229", "expected_title": "A급 헌터가 살아가는 법", "transition": "systematic 개선", "consensus": "2/3 NO_PUBLISH→3/3 정답 PUBLISH", "disposition": "lane NO-GO로 미채택"},
+        {"rank": 5, "lane": "P0b", "post_id": "11711612", "expected_title": "A급 헌터가 살아가는 법", "transition": "systematic 회귀", "consensus": "2/3 정답 PUBLISH→2/3 NO_PUBLISH", "disposition": "rollback 근거"},
+        {"rank": 6, "lane": "P0b", "post_id": "11718097", "expected_title": "망겜의 힐러", "transition": "신규 unsafe/wrong-title", "consensus": "BEFORE 0/3→AFTER 1/3", "disposition": "단발 보존 + NO-GO"},
+        {"rank": 7, "lane": "P0b", "post_id": "11716480", "expected_title": "여대생 가랑이 사이 무릎 꿇은 엄마들", "transition": "안전 안정화", "consensus": "2/3 NO_PUBLISH→3/3 NO_PUBLISH", "disposition": "정답 회수 아님"}
+      ],
+      "validation": [
+        {"rank": 1, "gate": "Python compile", "status": "PASS", "evidence": "agentic/promotion/arbiter/expert_main"},
+        {"rank": 2, "gate": "direct-image 통합", "status": "PASS", "evidence": "101 tests"},
+        {"rank": 3, "gate": "2,712 persisted replay", "status": "GO", "evidence": "rollback 후 exact replay"},
+        {"rank": 4, "gate": "인접 deterministic", "status": "NO-GO", "evidence": "412/413; P0a snapshot에서도 1건 재현"},
+        {"rank": 5, "gate": "104,502 runtime", "status": "NO-GO / IN_PROGRESS", "evidence": "3,118 completed, 3,107 flushed, pending 11"},
+        {"rank": 6, "gate": "104,502 semantic", "status": "NOT_EVALUATED", "evidence": "runtime과 분리"},
+        {"rank": 7, "gate": "full_scan_approval", "status": "false", "evidence": "targeted 결과만 존재"}
+      ]
+    }
+  },
+  "sources": [
+    {"id": "notebook", "label": "실행 notebook", "path": "/home/kimjang/llm_novel_dc_coommunity_parser/docs/devs/LIVE_RUN_2712_BEFORE_AFTER_ANALYSIS_20260716.ipynb"},
+    {"id": "report", "label": "한국어 BEFORE/AFTER 보고서", "path": "/home/kimjang/llm_novel_dc_coommunity_parser/docs/devs/LIVE_RUN_2712_BEFORE_AFTER_REPORT_20260716_KO.md"},
+    {"id": "p0a", "label": "P0a 3회 consensus", "path": "/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260716/analysis/p0a_go2_repeat_consensus_summary.json"},
+    {"id": "p0b", "label": "P0b 격리 3회 consensus", "path": "/home/kimjang/llm_novel_dc_coommunity_parser/out/regression_safe_2712_improvement_20260716/analysis/p0b_isolation_repeat_consensus_summary.json"}
+  ]
+}

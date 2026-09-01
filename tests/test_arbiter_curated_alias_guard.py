@@ -650,7 +650,8 @@ class ArbiterCuratedAliasGuardTest(unittest.TestCase):
                     "is_relevant": True,
                     "novel_identity": {
                         "official_novel_title": "Alpha Novel",
-                        "confidence": "Medium",
+                        "confidence": "High",
+                        "heretic_url": "https://novelpia.com/novel/12345",
                     },
                     "grounding_check": {
                         "anchor_found": "title_abbrev_mention",
@@ -752,6 +753,7 @@ class ArbiterCuratedAliasGuardTest(unittest.TestCase):
         self.assertIn("저신뢰 차단", decision.get("notes", ""))
 
     def test_multi_work_guard_blocks_alias_only_single_title_for_compare_context(self):
+        arbiter_module.KNOWN_ABBREVIATIONS = {}
         arbiter = _arbiter(_arbiter_response("Alpha Novel", discussion_type="review"))
         ctx = ConversationContext(
             post_id=14,
@@ -762,6 +764,14 @@ class ArbiterCuratedAliasGuardTest(unittest.TestCase):
             },
             comments=[],
         )
+        ctx.suspected_titles = [
+            {
+                "title": "Alpha Novel",
+                "url": "https://novelpia.com/novel/12345",
+                "confidence": "High",
+                "source": "verifier",
+            }
+        ]
         ctx.set_expert_output(
             ExpertType.GATEKEEPER,
             {
@@ -812,12 +822,19 @@ class ArbiterCuratedAliasGuardTest(unittest.TestCase):
                 }
             },
         )
+        ctx.add_evidence_for_candidate(
+            "Alpha Novel",
+            "official_url",
+            "https://novelpia.com/novel/12345",
+        )
 
         decision = arbiter.analyze(ctx)["final_decision"]
 
         self.assertIsNone(decision["official_title"])
         self.assertIsNone(decision["official_novel_title"])
+        self.assertIsNone(decision["heretic_url"])
         self.assertIn("multi_work_guard", decision.get("_title_null_block_reasons", []))
+        self.assertTrue(decision.get("_title_deliberately_null"))
 
     def test_multi_work_guard_allows_curated_alias_with_work_anchor(self):
         arbiter = _arbiter(_arbiter_response("Alpha Novel", discussion_type="review"))

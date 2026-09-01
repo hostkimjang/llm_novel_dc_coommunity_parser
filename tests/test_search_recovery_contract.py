@@ -360,6 +360,21 @@ class SearchRecoveryContractTest(unittest.TestCase):
         self.assertEqual(audit["row_search_health"]["unrecovered_degraded_total"], 0)
         self.assertNotIn("search_degraded_observed", audit["blockers"])
 
+    def test_complete_zero_search_stats_are_not_applicable(self):
+        ctx = ConversationContext(post_id=11700483, post_data={}, comments=[])
+        health = AgenticPipeline._build_search_health_public_fields(
+            AgenticPipeline.__new__(AgenticPipeline), ctx
+        )
+        self.assertIsNotNone(health)
+        self.assertEqual(health["status"], "NOT_APPLICABLE")
+        self.assertEqual(health["queries_issued"], 0)
+
+    def test_missing_or_incomplete_search_stats_remain_unknown(self):
+        pipeline = AgenticPipeline.__new__(AgenticPipeline)
+        for stats in (None, {"total": 0}):
+            ctx = type("Ctx", (), {"search_query_stats": stats})()
+            self.assertIsNone(pipeline._build_search_health_public_fields(ctx))
+
 
 if __name__ == "__main__":
     unittest.main()

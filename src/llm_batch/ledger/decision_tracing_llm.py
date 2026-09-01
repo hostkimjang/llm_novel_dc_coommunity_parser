@@ -240,6 +240,8 @@ class DecisionTracingLLMClient(LLMClient):
             return "SNIPPET_ANALYZER", True
         if raw == "page_analyzer":
             return "PAGE_ANALYZER", True
+        if raw == "comment_answer_judge":
+            return "VERIFIER", True
         for name in (
             "gatekeeper", "decoder", "verifier", "arbiter", "critic",
             "discourse", "synthesizer", "deliberation",

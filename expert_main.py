@@ -90,6 +90,25 @@ except ModuleNotFoundError:
     )
 
 try:
+    from llm_batch.ledger.recovery_activation import (
+        RECOVERY_ACTIVATION_LEDGER_SCHEMA,
+        RecoveryActivationError,
+        RecoveryActivationRegistry,
+        derive_review_recovery_capability,
+        extract_direct_ocr_review_proposals,
+        load_or_create_recovery_activation_hmac_key,
+    )
+except ModuleNotFoundError:
+    from src.llm_batch.ledger.recovery_activation import (
+        RECOVERY_ACTIVATION_LEDGER_SCHEMA,
+        RecoveryActivationError,
+        RecoveryActivationRegistry,
+        derive_review_recovery_capability,
+        extract_direct_ocr_review_proposals,
+        load_or_create_recovery_activation_hmac_key,
+    )
+
+try:
     from llm_batch.domain.batch_context import normalize_batch_context_learning_envelope
 except ModuleNotFoundError:
     from src.llm_batch.domain.batch_context import normalize_batch_context_learning_envelope
@@ -105,6 +124,47 @@ except ModuleNotFoundError:
         COST_STATUS_PARTIAL_RUNTIME,
         DecisionCostTrace,
         normalize_optional_nonnegative_count,
+    )
+
+try:
+    from llm_batch.measurement.publication_shadow_observation import (
+        PUBLICATION_SHADOW_OBSERVATION_SCHEMA,
+        PublicationShadowObservationError,
+        build_publication_shadow_observation,
+        validate_publication_shadow_observation,
+    )
+except ModuleNotFoundError:
+    from src.llm_batch.measurement.publication_shadow_observation import (
+        PUBLICATION_SHADOW_OBSERVATION_SCHEMA,
+        PublicationShadowObservationError,
+        build_publication_shadow_observation,
+        validate_publication_shadow_observation,
+    )
+
+try:
+    from llm_batch.measurement.semantic_review_router import (
+        SemanticReviewRouterError,
+        build_semantic_review_router_receipt,
+        validate_semantic_review_router_receipt,
+    )
+except ModuleNotFoundError:
+    from src.llm_batch.measurement.semantic_review_router import (
+        SemanticReviewRouterError,
+        build_semantic_review_router_receipt,
+        validate_semantic_review_router_receipt,
+    )
+
+try:
+    from llm_batch.measurement.semantic_recovery_plan import (
+        SemanticRecoveryPlanError,
+        build_semantic_recovery_plan_receipt,
+        validate_semantic_recovery_plan_receipt,
+    )
+except ModuleNotFoundError:
+    from src.llm_batch.measurement.semantic_recovery_plan import (
+        SemanticRecoveryPlanError,
+        build_semantic_recovery_plan_receipt,
+        validate_semantic_recovery_plan_receipt,
     )
 
 try:
@@ -151,6 +211,12 @@ _MEASUREMENT_ARM_ENV = "PIPELINE_MEASUREMENT_ARM"
 _MEASUREMENT_EXECUTION_MODE_ENV = "PIPELINE_MEASUREMENT_EXECUTION_MODE"
 _MEASUREMENT_EARLY_ROUTE_MODE_ENV = "PIPELINE_MEASUREMENT_EARLY_ROUTE_MODE"
 _MEASUREMENT_MUTABLE_CONTEXT_MODE_ENV = "PIPELINE_MEASUREMENT_MUTABLE_CONTEXT_MODE"
+_MEASUREMENT_EXECUTION_NORMAL = "NORMAL"
+_MEASUREMENT_EXECUTION_FRESH_STRICT = "FRESH_EXECUTION_REQUIRED"
+_MEASUREMENT_EXECUTION_FRESH_SHADOW = "FRESH_SEMANTIC_OBSERVATION_REQUIRED"
+_RECOVERY_ACTIVATION_MODE_ENV = "RECOVERY_ACTIVATION_MODE"
+_RECOVERY_ACTIVATION_MODE_OFF = "OFF"
+_RECOVERY_ACTIVATION_MODE_AUDIT_ONLY = "AUDIT_ONLY"
 _EARLY_ROUTE_MODE_OFF = "OFF"
 _EARLY_ROUTE_MODE_SOURCE_ONLY_V1 = "SOURCE_ONLY_V1"
 _MEASUREMENT_MUTABLE_CONTEXT_NORMAL = "NORMAL"
@@ -172,6 +238,51 @@ _PUBLICATION_DECISION_ENV_PREFIXES = (
 
 # 대시보드 비활성화 플래그: --no-dashboard
 _NO_DASHBOARD = "--no-dashboard" in sys.argv
+
+
+def _initialize_recovery_activation_runtime(
+    *,
+    journal_path: Path,
+    hmac_key_path: Path,
+    publication_scope_id: str,
+    requested_mode: str,
+    fresh_execution_required: bool,
+) -> Tuple[
+    Optional[bytes],
+    Optional[RecoveryActivationRegistry],
+    str,
+    str,
+]:
+    """Initialize the review sidecar only after explicit audit-only opt-in.
+
+    ``OFF`` is the production default.  A fresh paired measurement also stays
+    byte-clean even when ``AUDIT_ONLY`` was requested: it creates no key,
+    journal, or lock file and never reconciles publication replay into the
+    sidecar.  This helper is intentionally executable in a temporary directory
+    so the no-write boundary is covered by integration tests rather than only
+    by source-order inspection.
+    """
+
+    mode = str(requested_mode or _RECOVERY_ACTIVATION_MODE_OFF).strip().upper()
+    if mode not in {
+        _RECOVERY_ACTIVATION_MODE_OFF,
+        _RECOVERY_ACTIVATION_MODE_AUDIT_ONLY,
+    }:
+        raise RecoveryActivationError(
+            f"{_RECOVERY_ACTIVATION_MODE_ENV} must be OFF or AUDIT_ONLY"
+        )
+    if fresh_execution_required:
+        return None, None, "SKIPPED_FRESH_MEASUREMENT", mode
+    if mode == _RECOVERY_ACTIVATION_MODE_OFF:
+        return None, None, "DISABLED", mode
+
+    hmac_key = load_or_create_recovery_activation_hmac_key(hmac_key_path)
+    registry = RecoveryActivationRegistry(
+        journal_path,
+        publication_scope_id=publication_scope_id,
+        hmac_key=hmac_key,
+    )
+    return hmac_key, registry, "READY", mode
 
 
 def _decision_call_measurement_config(
@@ -203,11 +314,20 @@ def _decision_call_measurement_config(
     if arm and arm not in {"BEFORE", "AFTER"}:
         raise ValueError(f"{_MEASUREMENT_ARM_ENV} must be BEFORE or AFTER")
     execution_mode = str(
-        env.get(_MEASUREMENT_EXECUTION_MODE_ENV, "NORMAL") or "NORMAL"
+        env.get(_MEASUREMENT_EXECUTION_MODE_ENV, _MEASUREMENT_EXECUTION_NORMAL)
+        or _MEASUREMENT_EXECUTION_NORMAL
     ).strip().upper()
-    if execution_mode not in {"NORMAL", "FRESH_EXECUTION_REQUIRED"}:
+    fresh_execution_modes = {
+        _MEASUREMENT_EXECUTION_FRESH_STRICT,
+        _MEASUREMENT_EXECUTION_FRESH_SHADOW,
+    }
+    if execution_mode not in {
+        _MEASUREMENT_EXECUTION_NORMAL,
+        *fresh_execution_modes,
+    }:
         raise ValueError(
-            f"{_MEASUREMENT_EXECUTION_MODE_ENV} must be NORMAL or FRESH_EXECUTION_REQUIRED"
+            f"{_MEASUREMENT_EXECUTION_MODE_ENV} must be NORMAL, "
+            "FRESH_EXECUTION_REQUIRED, or FRESH_SEMANTIC_OBSERVATION_REQUIRED"
         )
     early_route_mode = str(
         env.get(_MEASUREMENT_EARLY_ROUTE_MODE_ENV, _EARLY_ROUTE_MODE_OFF)
@@ -253,11 +373,11 @@ def _decision_call_measurement_config(
             "measurement bindings require PIPELINE_DECISION_CALL_LEDGER_MODE=SHADOW or REQUIRED"
         )
     if mode == "REQUIRED" and (
-        binding_status != "BOUND" or execution_mode != "FRESH_EXECUTION_REQUIRED"
+        binding_status != "BOUND" or execution_mode not in fresh_execution_modes
     ):
         raise ValueError(
             "REQUIRED decision call measurement needs complete RunSpec/pair/arm bindings "
-            "and FRESH_EXECUTION_REQUIRED"
+            "and an explicit fresh no-public-write execution mode"
         )
     if mode == "REQUIRED" and mutable_context_mode != _MEASUREMENT_MUTABLE_CONTEXT_FROZEN_OFF:
         raise ValueError(
@@ -268,12 +388,19 @@ def _decision_call_measurement_config(
         raise ValueError(
             "REQUIRED paired measurement permits only slang DB OFF or READ_ONLY"
         )
+    if (
+        execution_mode == _MEASUREMENT_EXECUTION_FRESH_SHADOW
+        and early_route_mode != _EARLY_ROUTE_MODE_OFF
+    ):
+        raise ValueError(
+            "FRESH_SEMANTIC_OBSERVATION_REQUIRED forbids early-route execution"
+        )
     early_route_enabled = bool(
         early_route_mode == _EARLY_ROUTE_MODE_SOURCE_ONLY_V1
         and mode == "REQUIRED"
         and binding_status == "BOUND"
         and arm == ARM_AFTER
-        and execution_mode == "FRESH_EXECUTION_REQUIRED"
+        and execution_mode == _MEASUREMENT_EXECUTION_FRESH_STRICT
         and mutable_context_mode == _MEASUREMENT_MUTABLE_CONTEXT_FROZEN_OFF
         and measurement_slang_access_mode in {"OFF", "READ_ONLY"}
     )
@@ -294,11 +421,17 @@ def _decision_call_measurement_config(
         "arm": arm or None,
         "execution_mode": execution_mode,
         "binding_status": binding_status,
-        "fresh_execution_required": execution_mode == "FRESH_EXECUTION_REQUIRED",
+        "fresh_execution_required": execution_mode in fresh_execution_modes,
+        "semantic_drift_observation": (
+            execution_mode == _MEASUREMENT_EXECUTION_FRESH_SHADOW
+        ),
+        "publication_decision_equivalence_required": (
+            execution_mode == _MEASUREMENT_EXECUTION_FRESH_STRICT
+        ),
         "actual_kpi_eligible": bool(
             mode == "REQUIRED"
             and binding_status == "BOUND"
-            and execution_mode == "FRESH_EXECUTION_REQUIRED"
+            and execution_mode in fresh_execution_modes
         ),
         "early_route_mode": early_route_mode,
         "early_route_enabled": early_route_enabled,
@@ -320,6 +453,16 @@ def _decision_call_measurement_config(
             mutable_context_binding
         ),
     }
+
+
+def _measurement_execution_source(
+    measurement_config: Mapping[str, Any],
+) -> str:
+    if bool(measurement_config.get("semantic_drift_observation")):
+        return "FRESH_SHADOW_OBSERVATION_NO_PUBLIC_WRITE"
+    if bool(measurement_config.get("fresh_execution_required")):
+        return "FRESH_EXECUTION_NO_PUBLIC_WRITE"
+    return "NORMAL_PUBLICATION_OWNER"
 
 
 def _decision_ledger_v2_shadow_config(
@@ -1125,6 +1268,87 @@ def _require_fresh_execution_authoritative_references(
         )
 
 
+def _snapshot_indexed_measurement_rows(
+    rows_by_index: Mapping[int, Mapping[str, Any]],
+) -> Dict[int, Dict[str, Any]]:
+    """Detach an in-memory measurement map without stringifying row indices."""
+
+    snapshot = copy.deepcopy(dict(rows_by_index))
+    for input_index in snapshot:
+        if (
+            isinstance(input_index, bool)
+            or not isinstance(input_index, int)
+            or input_index <= 0
+        ):
+            raise ValueError("measurement row index must be a positive int")
+    return snapshot
+
+
+def _attach_semantic_review_router_receipt(
+    result: Dict[str, Any],
+    *,
+    publication_receipt: Any,
+    attempt_run_id: str,
+) -> Dict[str, Any]:
+    """Attach one validated review-only receipt without changing publication.
+
+    The router consumes only the completed result's typed evidence.  Its
+    ``run_meta`` key is excluded from the stable publication payload, so a
+    caller must still recompute and compare the publication receipt after
+    this helper returns.
+    """
+
+    if not isinstance(result, dict):
+        raise SemanticReviewRouterError("router result must be an object")
+    run_meta = result.get("run_meta")
+    if not isinstance(run_meta, dict):
+        run_meta = {}
+        result["run_meta"] = run_meta
+    run_meta.pop("semantic_review_router_receipt", None)
+    receipt = build_semantic_review_router_receipt(
+        result,
+        publication_receipt,
+        attempt_run_id=attempt_run_id,
+    )
+    run_meta["semantic_review_router_receipt"] = receipt
+    return validate_semantic_review_router_receipt(
+        receipt,
+        result=result,
+        expected_publication_receipt=publication_receipt,
+        expected_attempt_run_id=attempt_run_id,
+    )
+
+
+def _attach_semantic_recovery_plan_receipt(
+    result: Dict[str, Any],
+    *,
+    publication_receipt: Any,
+    attempt_run_id: str,
+) -> Dict[str, Any]:
+    """Attach one validated P1 plan receipt without executing or publishing."""
+
+    if not isinstance(result, dict):
+        raise SemanticRecoveryPlanError("recovery-plan result must be an object")
+    run_meta = result.get("run_meta")
+    if not isinstance(run_meta, dict):
+        run_meta = {}
+        result["run_meta"] = run_meta
+    run_meta.pop("semantic_recovery_plan_receipt", None)
+    receipt = build_semantic_recovery_plan_receipt(
+        result,
+        publication_receipt,
+        attempt_run_id=attempt_run_id,
+    )
+    normalized = validate_semantic_recovery_plan_receipt(
+        receipt,
+        result=result,
+        expected_publication_receipt=publication_receipt,
+        expected_attempt_run_id=attempt_run_id,
+    )
+    run_meta["semantic_recovery_plan_receipt"] = normalized
+    return normalized
+
+
 def _build_decision_call_measurement_gate(
     *,
     measurement_config: Mapping[str, Any],
@@ -1198,6 +1422,39 @@ def _build_decision_call_measurement_gate(
             attempt_receipt.get("publication_link_status") or ""
         ) != "LINKED_EXTERNAL_LEDGER":
             reasons.append("ROW_EXTERNAL_LEDGER_UNLINKED")
+        if bool(measurement_config.get("semantic_drift_observation")):
+            raw_observation = (
+                attempt_receipt.get("publication_shadow_observation")
+                if isinstance(attempt_receipt, Mapping)
+                else None
+            )
+            try:
+                observation = validate_publication_shadow_observation(
+                    raw_observation
+                )
+            except PublicationShadowObservationError:
+                reasons.append("ROW_SHADOW_OBSERVATION_INVALID")
+            else:
+                ledger_row = (
+                    ledger_ref.get("row") if isinstance(ledger_ref, Mapping) else None
+                )
+                if (
+                    observation["input_index"] != input_index
+                    or not isinstance(ledger_row, Mapping)
+                    or str(observation["post_id"])
+                    != str(ledger_row.get("post_id"))
+                ):
+                    reasons.append("ROW_SHADOW_OBSERVATION_COORDINATE_MISMATCH")
+                if (
+                    attempt_receipt.get("publication_decision_id_preview")
+                    != observation["observed_decision"]["decision_id"]
+                ):
+                    reasons.append("ROW_SHADOW_OBSERVATION_PREVIEW_MISMATCH")
+                if (
+                    attempt_receipt.get("publication_link_decision_id")
+                    != observation["authoritative_decision"]["decision_id"]
+                ):
+                    reasons.append("ROW_SHADOW_OBSERVATION_AUTHORITY_LINK_MISMATCH")
 
     reason_codes = sorted(set(reasons))
     return {
@@ -11020,6 +11277,7 @@ def main() -> None:
             # 참고용 기존 Qwen 설정
             #_set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "Sehyo/Qwen3.5-35B-A3B-NVFP4"))
             #_set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "AxionML/Qwen3.5-35B-A3B-NVFP4"))
+            _set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "unsloth/gemma-4-26B-A4B-it-NVFP4"))
             _set_env(
                 "LLM_MODEL",
                 _CLI_ARGS.llm_model
@@ -12166,6 +12424,17 @@ def main() -> None:
             _publication_scope_config_sha256 = hashlib.sha256(
                 _publication_scope_config_text.encode("utf-8")
             ).hexdigest()
+            _semantic_observation_mode = bool(
+                _decision_call_measurement.get("semantic_drift_observation")
+            )
+            if _semantic_observation_mode and (
+                not publication_scope_config_path.is_file()
+                or not publication_commit_journal_path.is_file()
+            ):
+                raise PublicationCommitError(
+                    "FRESH_SEMANTIC_OBSERVATION_REQUIRED needs a pre-existing "
+                    "authoritative publication WAL and scope config"
+                )
             if publication_scope_config_path.exists():
                 if publication_scope_config_path.read_text(
                     encoding="utf-8"
@@ -12178,18 +12447,175 @@ def main() -> None:
                     publication_scope_config_path,
                     _publication_scope_config_text,
                 )
-            try:
-                publication_commit_registry = PublicationCommitRegistry(
-                    publication_commit_journal_path,
-                    scope_descriptor=publication_scope_descriptor,
-                    create_new=True,
-                )
-            except FileExistsError:
+            if _semantic_observation_mode:
                 publication_commit_registry = PublicationCommitRegistry(
                     publication_commit_journal_path,
                     scope_descriptor=publication_scope_descriptor,
                     create_new=False,
                 )
+            else:
+                try:
+                    publication_commit_registry = PublicationCommitRegistry(
+                        publication_commit_journal_path,
+                        scope_descriptor=publication_scope_descriptor,
+                        create_new=True,
+                    )
+                except FileExistsError:
+                    publication_commit_registry = PublicationCommitRegistry(
+                        publication_commit_journal_path,
+                        scope_descriptor=publication_scope_descriptor,
+                        create_new=False,
+                    )
+            _publication_wal_start_bytes = publication_commit_journal_path.read_bytes()
+            _publication_wal_start_sha256 = hashlib.sha256(
+                _publication_wal_start_bytes
+            ).hexdigest()
+            _publication_wal_start_event_count = publication_commit_registry.count
+            recovery_activation_journal_path = (
+                publication_commit_journal_path.parent
+                / f"{publication_scope_id}.recovery_activation.jsonl"
+            )
+            recovery_activation_hmac_key_path = (
+                publication_commit_journal_path.parent
+                / f"{publication_scope_id}.recovery_activation.key"
+            )
+            _recovery_activation_requested_mode = str(
+                os.environ.get(
+                    _RECOVERY_ACTIVATION_MODE_ENV,
+                    _RECOVERY_ACTIVATION_MODE_OFF,
+                )
+                or _RECOVERY_ACTIVATION_MODE_OFF
+            ).strip().upper()
+            _recovery_activation_effective_mode = "INVALID"
+            _recovery_activation_status = "NO_GO"
+            _recovery_activation_errors: List[str] = []
+            _recovery_activation_stats = {
+                "proposals_observed": 0,
+                "events_created": 0,
+                "events_replayed": 0,
+                "append_errors": 0,
+            }
+            _recovery_activation_stats_lock = threading.Lock()
+            try:
+                (
+                    _recovery_activation_hmac_key,
+                    recovery_activation_registry,
+                    _recovery_activation_status,
+                    _recovery_activation_effective_mode,
+                ) = _initialize_recovery_activation_runtime(
+                    journal_path=recovery_activation_journal_path,
+                    hmac_key_path=recovery_activation_hmac_key_path,
+                    publication_scope_id=publication_scope_id,
+                    requested_mode=_recovery_activation_requested_mode,
+                    fresh_execution_required=_decision_call_measurement[
+                        "fresh_execution_required"
+                    ],
+                )
+            except RecoveryActivationError as exc:
+                _recovery_activation_hmac_key = None
+                recovery_activation_registry = None
+                _recovery_activation_status = "NO_GO"
+                _recovery_activation_errors.append(str(exc))
+                print(
+                    "[expert_main] ⚠️ review recovery sidecar disabled: "
+                    f"{exc}",
+                    file=sys.stderr,
+                    flush=True,
+                )
+
+            def _ensure_review_recovery_sidecar(
+                *,
+                canonical_result: Mapping[str, Any],
+                publication_receipt: Any,
+            ) -> None:
+                """Best-effort audit-only append after authoritative WAL validation.
+
+                Sidecar failure never rewrites or invalidates the already durable
+                public decision. A later WAL reconciliation retries the same
+                deterministic proposal/capability pair.
+                """
+
+                nonlocal _recovery_activation_status
+                registry = recovery_activation_registry
+                if registry is None:
+                    return
+                try:
+                    proposals = extract_direct_ocr_review_proposals(canonical_result)
+                except Exception as exc:
+                    with _recovery_activation_stats_lock:
+                        _recovery_activation_stats["append_errors"] += 1
+                        _recovery_activation_errors.append(
+                            f"extract:{type(exc).__name__}:{exc}"
+                        )
+                        _recovery_activation_status = "NO_GO"
+                    return
+                if not proposals:
+                    return
+                with _recovery_activation_stats_lock:
+                    _recovery_activation_stats["proposals_observed"] += len(proposals)
+                for proposal in proposals:
+                    try:
+                        raw_capability = derive_review_recovery_capability(
+                            publication_receipt,
+                            proposal,
+                            hmac_key=registry.hmac_key,
+                        )
+                        _event, created = registry.ensure_proposal(
+                            receipt=publication_receipt,
+                            canonical_result=canonical_result,
+                            proposal=proposal,
+                            raw_capability=raw_capability,
+                        )
+                        with _recovery_activation_stats_lock:
+                            _recovery_activation_stats[
+                                "events_created" if created else "events_replayed"
+                            ] += 1
+                    except RecoveryActivationError as exc:
+                        with _recovery_activation_stats_lock:
+                            _recovery_activation_stats["append_errors"] += 1
+                            _recovery_activation_errors.append(str(exc))
+                            _recovery_activation_status = "NO_GO"
+                        print(
+                            "[expert_main] ⚠️ review recovery sidecar append failed: "
+                            f"post_id={publication_receipt.post_id} error={exc}",
+                            file=sys.stderr,
+                            flush=True,
+                        )
+
+            def _recovery_activation_manifest_fields() -> Dict[str, Any]:
+                with _recovery_activation_stats_lock:
+                    stats = dict(_recovery_activation_stats)
+                    errors = list(_recovery_activation_errors)
+                    status = _recovery_activation_status
+                registry = recovery_activation_registry
+                return {
+                    "recovery_activation_schema": RECOVERY_ACTIVATION_LEDGER_SCHEMA,
+                    "recovery_activation_requested_mode": (
+                        _recovery_activation_requested_mode
+                    ),
+                    "recovery_activation_mode": _recovery_activation_effective_mode,
+                    "recovery_activation_public_apply": False,
+                    "recovery_activation_status": status,
+                    "recovery_activation_journal": str(
+                        recovery_activation_journal_path
+                    ),
+                    "recovery_activation_event_count": (
+                        len(registry.events()) if registry is not None else 0
+                    ),
+                    "recovery_activation_proposals_observed": stats[
+                        "proposals_observed"
+                    ],
+                    "recovery_activation_events_created": stats["events_created"],
+                    "recovery_activation_events_replayed": stats[
+                        "events_replayed"
+                    ],
+                    "recovery_activation_append_errors": stats["append_errors"],
+                    "recovery_activation_tail_repair_count": (
+                        registry.tail_repair_count if registry is not None else 0
+                    ),
+                    "recovery_activation_error_samples": errors[-10:],
+                }
+
             _publication_replay_by_index: Dict[int, tuple[Dict[str, Any], Any]] = {}
             for _replay_receipt in publication_commit_registry.receipts():
                 _replay_result = publication_commit_registry.result(_replay_receipt.post_id)
@@ -12204,6 +12630,11 @@ def main() -> None:
                     expected_input_index=_replay_receipt.input_index,
                     expected_post_id=_replay_receipt.post_id,
                 )
+                if not _decision_call_measurement["fresh_execution_required"]:
+                    _ensure_review_recovery_sidecar(
+                        canonical_result=_replay_result,
+                        publication_receipt=_replay_receipt,
+                    )
                 _publication_replay_by_index[_replay_receipt.input_index] = (
                     _replay_result,
                     _replay_receipt,
@@ -12258,6 +12689,8 @@ def main() -> None:
             )
             _decision_call_attempts_by_index: Dict[int, Dict[str, Any]] = {}
             _decision_call_attempts_lock = threading.RLock()
+            _publication_shadow_observations_by_index: Dict[int, Dict[str, Any]] = {}
+            _publication_shadow_observations_lock = threading.RLock()
             _early_route_by_index: Dict[int, Dict[str, Any]] = {}
             _early_route_lock = threading.RLock()
 
@@ -12527,6 +12960,8 @@ def main() -> None:
                     "closure_frame_sha256": ledger_ref["closure_frame_sha256"],
                     "event_root_sha256": ledger_ref["event_root_sha256"],
                     "publication_decision_id_preview": None,
+                    "publication_link_decision_id": None,
+                    "publication_shadow_observation": None,
                     "publication_link_status": (
                         "PENDING_PUBLICATION_DECISION"
                         if frame_kind == "ROW_SEAL"
@@ -12657,6 +13092,48 @@ def main() -> None:
                     if entry["ledger_ref"]["closure_kind"] == "ROW_SEAL":
                         receipt["publication_link_status"] = "PENDING_EXTERNAL_LEDGER_LINK"
 
+            def _record_publication_shadow_observation(
+                *,
+                index: int,
+                observation: Mapping[str, Any],
+            ) -> None:
+                normalized = validate_publication_shadow_observation(observation)
+                with _publication_shadow_observations_lock:
+                    if index in _publication_shadow_observations_by_index:
+                        raise PublicationCommitError(
+                            "duplicate publication shadow observation input index"
+                        )
+                    _publication_shadow_observations_by_index[index] = normalized
+                with _decision_call_attempts_lock:
+                    entry = _decision_call_attempts_by_index.get(index)
+                    if entry is None:
+                        raise PublicationCommitError(
+                            "publication shadow observation has no decision-call row"
+                        )
+                    entry["attempt_receipt"][
+                        "publication_shadow_observation"
+                    ] = normalized
+
+            def _attach_publication_shadow_observation(
+                result_item: Dict[str, Any],
+                *,
+                index: int,
+            ) -> None:
+                with _publication_shadow_observations_lock:
+                    observation = _publication_shadow_observations_by_index.get(index)
+                    snapshot = (
+                        json.loads(json.dumps(observation, ensure_ascii=False))
+                        if isinstance(observation, Mapping)
+                        else None
+                    )
+                if snapshot is None:
+                    return
+                run_meta = result_item.get("run_meta")
+                if not isinstance(run_meta, dict):
+                    run_meta = {}
+                    result_item["run_meta"] = run_meta
+                run_meta["publication_shadow_observation"] = snapshot
+
             def _link_decision_call_attempt(
                 *,
                 index: int,
@@ -12704,6 +13181,7 @@ def main() -> None:
                     receipt = _decision_call_attempts_by_index[index]["attempt_receipt"]
                     receipt["publication_link_status"] = "LINKED_EXTERNAL_LEDGER"
                     receipt["publication_link_frame_sha256"] = link_frame.get("frame_sha256")
+                    receipt["publication_link_decision_id"] = decision_id
 
             # ─── 단일 포스트 처리 함수 ────────────────────
             def _process_one(
@@ -12890,6 +13368,8 @@ def main() -> None:
                         "decision_call_measurement",
                         "measurement_execution_source",
                         "early_route_measurement",
+                        "semantic_review_router_receipt",
+                        "semantic_recovery_plan_receipt",
                         "fresh375_run_binding_token",
                     ):
                         run_meta.pop(stale_key, None)
@@ -12907,7 +13387,9 @@ def main() -> None:
                                 _decision_call_measurement
                             ),
                             "measurement_execution_source": (
-                                "FRESH_EXECUTION_NO_PUBLIC_WRITE"
+                                _measurement_execution_source(
+                                    _decision_call_measurement
+                                )
                             ),
                             **_early_route_run_meta_fields(index),
                             **_decision_call_run_meta_fields(index),
@@ -13106,9 +13588,9 @@ def main() -> None:
                         "decision_cost_trace": _decision_cost_trace.to_dict(),
                         "decision_call_measurement": dict(_decision_call_measurement),
                         "measurement_execution_source": (
-                            "FRESH_EXECUTION_NO_PUBLIC_WRITE"
-                            if _decision_call_measurement["fresh_execution_required"]
-                            else "NORMAL_PUBLICATION_OWNER"
+                            _measurement_execution_source(
+                                _decision_call_measurement
+                            )
                         ),
                         **_early_route_run_meta_fields(index),
                         **_decision_call_run_meta_fields(index),
@@ -13211,6 +13693,9 @@ def main() -> None:
                         reference_receipt=(
                             reference[1]
                             if _decision_call_measurement["fresh_execution_required"]
+                            and _decision_call_measurement[
+                                "publication_decision_equivalence_required"
+                            ]
                             and reference is not None
                             else None
                         ),
@@ -13243,6 +13728,88 @@ def main() -> None:
                     # do not change the logical decision ID, but they remain in
                     # the exact stored-row result hash for the first WAL owner.
                     _attach_decision_call_run_meta(result_item, index=global_idx)
+                router_binding_receipt = preview
+                if router_binding_receipt is None:
+                    router_binding_receipt = _preview_publication_decision(
+                        result_item,
+                        publication_scope_id=publication_scope_id,
+                        attempt_run_id=ts,
+                        input_index=global_idx,
+                        post_id=post_id,
+                        reference_receipt=(
+                            reference[1]
+                            if _decision_call_measurement["fresh_execution_required"]
+                            and _decision_call_measurement[
+                                "publication_decision_equivalence_required"
+                            ]
+                            and reference is not None
+                            else None
+                        ),
+                    )
+                _attach_semantic_review_router_receipt(
+                    result_item,
+                    publication_receipt=router_binding_receipt,
+                    attempt_run_id=ts,
+                )
+                router_bound_receipt = _preview_publication_decision(
+                    result_item,
+                    publication_scope_id=publication_scope_id,
+                    attempt_run_id=ts,
+                    input_index=global_idx,
+                    post_id=post_id,
+                    reference_receipt=(
+                        reference[1]
+                        if _decision_call_measurement["fresh_execution_required"]
+                        and _decision_call_measurement[
+                            "publication_decision_equivalence_required"
+                        ]
+                        and reference is not None
+                        else None
+                    ),
+                )
+                if (
+                    router_bound_receipt.decision_id
+                    != router_binding_receipt.decision_id
+                    or router_bound_receipt.stable_result_sha256
+                    != router_binding_receipt.stable_result_sha256
+                    or router_bound_receipt.public_projection_sha256
+                    != router_binding_receipt.public_projection_sha256
+                ):
+                    raise PublicationCommitError(
+                        "semantic review router changed the publication decision"
+                    )
+                _attach_semantic_recovery_plan_receipt(
+                    result_item,
+                    publication_receipt=router_bound_receipt,
+                    attempt_run_id=ts,
+                )
+                plan_bound_receipt = _preview_publication_decision(
+                    result_item,
+                    publication_scope_id=publication_scope_id,
+                    attempt_run_id=ts,
+                    input_index=global_idx,
+                    post_id=post_id,
+                    reference_receipt=(
+                        reference[1]
+                        if _decision_call_measurement["fresh_execution_required"]
+                        and _decision_call_measurement[
+                            "publication_decision_equivalence_required"
+                        ]
+                        and reference is not None
+                        else None
+                    ),
+                )
+                if (
+                    plan_bound_receipt.decision_id
+                    != router_bound_receipt.decision_id
+                    or plan_bound_receipt.stable_result_sha256
+                    != router_bound_receipt.stable_result_sha256
+                    or plan_bound_receipt.public_projection_sha256
+                    != router_bound_receipt.public_projection_sha256
+                ):
+                    raise PublicationCommitError(
+                        "semantic recovery plan changed the publication decision"
+                    )
                 if _decision_call_measurement["fresh_execution_required"]:
                     receipt = _preview_publication_decision(
                         result_item,
@@ -13250,19 +13817,80 @@ def main() -> None:
                         attempt_run_id=ts,
                         input_index=global_idx,
                         post_id=post_id,
-                        reference_receipt=(reference[1] if reference is not None else None),
+                        reference_receipt=(
+                            reference[1]
+                            if reference is not None
+                            and _decision_call_measurement[
+                                "publication_decision_equivalence_required"
+                            ]
+                            else None
+                        ),
                     )
                     if preview is not None and receipt.decision_id != preview.decision_id:
                         raise PublicationCommitError(
                             "attempt-local decision call receipt changed publication decision ID"
                         )
+                    if receipt.decision_id != router_bound_receipt.decision_id:
+                        raise PublicationCommitError(
+                            "router-bound fresh receipt changed publication decision ID"
+                        )
+                    if receipt.decision_id != plan_bound_receipt.decision_id:
+                        raise PublicationCommitError(
+                            "plan-bound fresh receipt changed publication decision ID"
+                        )
+                    publication_link_decision_id = receipt.decision_id
+                    if _decision_call_measurement["semantic_drift_observation"]:
+                        if reference is None:
+                            raise PublicationCommitError(
+                                "shadow observation requires authoritative WAL reference"
+                            )
+                        observation = build_publication_shadow_observation(
+                            observed_receipt=receipt,
+                            authoritative_receipt=reference[1],
+                        )
+                        _record_publication_shadow_observation(
+                            index=global_idx,
+                            observation=observation,
+                        )
+                        _attach_publication_shadow_observation(
+                            result_item,
+                            index=global_idx,
+                        )
+                        publication_link_decision_id = reference[1].decision_id
                     _link_decision_call_attempt(
                         index=global_idx,
-                        decision_id=receipt.decision_id,
+                        decision_id=publication_link_decision_id,
                     )
                     _attach_decision_call_run_meta(result_item, index=global_idx)
+                    _attach_publication_shadow_observation(
+                        result_item,
+                        index=global_idx,
+                    )
                     _attach_early_route_run_meta(result_item, index=global_idx)
-                    return receipt, False, result_item
+                    # Linking and observation fields are attempt-local, so they
+                    # must not change the logical decision ID. They do change
+                    # the exact stored-row hash, however; seal the checkpoint
+                    # receipt only after every run_meta field is attached.
+                    final_receipt = _preview_publication_decision(
+                        result_item,
+                        publication_scope_id=publication_scope_id,
+                        attempt_run_id=ts,
+                        input_index=global_idx,
+                        post_id=post_id,
+                        reference_receipt=(
+                            reference[1]
+                            if reference is not None
+                            and _decision_call_measurement[
+                                "publication_decision_equivalence_required"
+                            ]
+                            else None
+                        ),
+                    )
+                    if final_receipt.decision_id != receipt.decision_id:
+                        raise PublicationCommitError(
+                            "final attempt-local metadata changed publication decision ID"
+                        )
+                    return final_receipt, False, result_item
                 receipt, created = commit_publication_result(
                     result_item,
                     registry=publication_commit_registry,
@@ -13273,6 +13901,14 @@ def main() -> None:
                 if preview is not None and receipt.decision_id != preview.decision_id:
                     raise PublicationCommitError(
                         "publication owner decision ID differs from precomputed call-ledger link"
+                    )
+                if receipt.decision_id != router_bound_receipt.decision_id:
+                    raise PublicationCommitError(
+                        "publication owner decision ID differs from router binding"
+                    )
+                if receipt.decision_id != plan_bound_receipt.decision_id:
+                    raise PublicationCommitError(
+                        "publication owner decision ID differs from recovery plan binding"
                     )
                 _link_decision_call_attempt(
                     index=global_idx,
@@ -13295,6 +13931,10 @@ def main() -> None:
                     expected_scope_id=publication_scope_id,
                     expected_input_index=global_idx,
                     expected_post_id=post_id,
+                )
+                _ensure_review_recovery_sidecar(
+                    canonical_result=canonical_result,
+                    publication_receipt=receipt,
                 )
                 _queue_batch_context_publication_learning(
                     input_index=global_idx,
@@ -13334,16 +13974,136 @@ def main() -> None:
             _slang_db_work_artifact_complete = False
             _slang_db_promotion_ready = False
 
+            def _publication_shadow_observation_manifest() -> Dict[str, Any]:
+                required = bool(
+                    _decision_call_measurement.get("semantic_drift_observation")
+                )
+                with _publication_shadow_observations_lock:
+                    rows = {
+                        index: json.loads(json.dumps(value, ensure_ascii=False))
+                        for index, value in sorted(
+                            _publication_shadow_observations_by_index.items()
+                        )
+                    }
+                drift_counts = {
+                    "decision_id": 0,
+                    "outcome": 0,
+                    "publish_allowed": 0,
+                    "decision_payload": 0,
+                    "public_projection": 0,
+                    "stable_result": 0,
+                }
+                field_map = {
+                    "decision_equivalent": "decision_id",
+                    "outcome_equal": "outcome",
+                    "publish_allowed_equal": "publish_allowed",
+                    "decision_payload_equal": "decision_payload",
+                    "public_projection_equal": "public_projection",
+                    "stable_result_equal": "stable_result",
+                }
+                for observation in rows.values():
+                    comparison = observation["comparison"]
+                    for equality_field, count_field in field_map.items():
+                        if comparison[equality_field] is False:
+                            drift_counts[count_field] += 1
+                root_material = [
+                    {
+                        "input_index": index,
+                        "post_id": observation["post_id"],
+                        "receipt_sha256": observation["receipt_sha256"],
+                    }
+                    for index, observation in rows.items()
+                ]
+                expected_count = len(posts) if required else 0
+                observed_count = len(rows)
+                return {
+                    "schema_version": "publication_shadow_observation_manifest_v1",
+                    "receipt_schema_version": (
+                        PUBLICATION_SHADOW_OBSERVATION_SCHEMA
+                    ),
+                    "required": required,
+                    "status": (
+                        "GO"
+                        if required and observed_count == expected_count
+                        else "NO_GO"
+                        if required
+                        else "NOT_APPLICABLE"
+                    ),
+                    "public_apply": False,
+                    "expected_observation_count": expected_count,
+                    "observed_observation_count": observed_count,
+                    "decision_equivalent_count": (
+                        observed_count - drift_counts["decision_id"]
+                    ),
+                    "drift_counts": drift_counts,
+                    "observation_root_sha256": hashlib.sha256(
+                        json.dumps(
+                            root_material,
+                            ensure_ascii=False,
+                            sort_keys=True,
+                            separators=(",", ":"),
+                        ).encode("utf-8")
+                    ).hexdigest(),
+                }
+
+            def _publication_noninterference_gate() -> Dict[str, Any]:
+                required = _semantic_observation_mode
+                reasons: List[str] = []
+                current_sha256: Optional[str] = None
+                current_event_count: Optional[int] = None
+                current_scope_config_sha256: Optional[str] = None
+                try:
+                    current_bytes = publication_commit_journal_path.read_bytes()
+                    current_sha256 = hashlib.sha256(current_bytes).hexdigest()
+                    current_event_count = sum(
+                        1 for line in current_bytes.splitlines() if line.strip()
+                    )
+                except OSError as exc:
+                    reasons.append(f"PUBLICATION_WAL_READ_ERROR:{type(exc).__name__}")
+                try:
+                    current_scope_config_bytes = (
+                        publication_scope_config_path.read_bytes()
+                    )
+                    current_scope_config_sha256 = hashlib.sha256(
+                        current_scope_config_bytes
+                    ).hexdigest()
+                except OSError as exc:
+                    reasons.append(
+                        f"PUBLICATION_SCOPE_CONFIG_READ_ERROR:{type(exc).__name__}"
+                    )
+                if required:
+                    if current_sha256 != _publication_wal_start_sha256:
+                        reasons.append("PUBLICATION_WAL_SHA256_CHANGED")
+                    if current_event_count != _publication_wal_start_event_count:
+                        reasons.append("PUBLICATION_WAL_EVENT_COUNT_CHANGED")
+                    if current_scope_config_sha256 != _publication_scope_config_sha256:
+                        reasons.append("PUBLICATION_SCOPE_CONFIG_SHA256_CHANGED")
+                return {
+                    "schema_version": "publication_noninterference_gate_v1",
+                    "required": required,
+                    "status": (
+                        "GO" if required and not reasons else "NO_GO" if required else "NOT_APPLICABLE"
+                    ),
+                    "public_write_allowed": False if required else None,
+                    "start_wal_sha256": _publication_wal_start_sha256,
+                    "current_wal_sha256": current_sha256,
+                    "start_wal_event_count": _publication_wal_start_event_count,
+                    "current_wal_event_count": current_event_count,
+                    "start_scope_config_sha256": _publication_scope_config_sha256,
+                    "current_scope_config_sha256": current_scope_config_sha256,
+                    "reason_codes": sorted(set(reasons)),
+                }
+
             def _parallel_manifest_fields() -> Dict[str, Any]:
                 _tail_repair_records = publication_commit_registry.tail_repair_records()
                 _decision_call_ledger_summary = decision_call_ledger_registry.summary()
                 with _decision_call_attempts_lock:
-                    _decision_call_snapshot = json.loads(
-                        json.dumps(_decision_call_attempts_by_index, ensure_ascii=False)
+                    _decision_call_snapshot = _snapshot_indexed_measurement_rows(
+                        _decision_call_attempts_by_index
                     )
                 with _early_route_lock:
-                    _early_route_snapshot = json.loads(
-                        json.dumps(_early_route_by_index, ensure_ascii=False)
+                    _early_route_snapshot = _snapshot_indexed_measurement_rows(
+                        _early_route_by_index
                     )
                 _early_route_aggregate = _build_early_route_manifest_aggregate(
                     _early_route_snapshot,
@@ -13477,6 +14237,7 @@ def main() -> None:
                     "publication_scope_id": publication_scope_id,
                     "publication_input_snapshot_sha256": _input_snapshot_sha256,
                     "publication_commit_journal": str(publication_commit_journal_path),
+                    **_recovery_activation_manifest_fields(),
                     "publication_commit_tail_repair_dir": str(
                         publication_commit_registry.tail_repair_dir
                     ),
@@ -13529,10 +14290,8 @@ def main() -> None:
                         _publication_release_attestation_status
                     ),
                     "publication_commit_count": publication_commit_registry.count,
-                    "publication_execution_mode": (
-                        "FRESH_EXECUTION_NO_PUBLIC_WRITE"
-                        if _decision_call_measurement["fresh_execution_required"]
-                        else "NORMAL_PUBLICATION_OWNER"
+                    "publication_execution_mode": _measurement_execution_source(
+                        _decision_call_measurement
                     ),
                     "decision_call_measurement": dict(_decision_call_measurement),
                     "decision_ledger_v2_shadow_config": dict(
@@ -13561,6 +14320,12 @@ def main() -> None:
                     ),
                     "decision_call_ledger_production_enable_allowed": False,
                     "decision_call_ledger_summary": _decision_call_ledger_summary,
+                    "publication_shadow_observation": (
+                        _publication_shadow_observation_manifest()
+                    ),
+                    "publication_noninterference_gate": (
+                        _publication_noninterference_gate()
+                    ),
                     "early_route_measurement": _early_route_aggregate,
                     "output_attempt_claim": str(attempt_claim_path),
                     "output_attempt_claim_sha256": _attempt_claim_sha256,
@@ -13578,8 +14343,8 @@ def main() -> None:
 
                 ledger_summary = decision_call_ledger_registry.summary()
                 with _decision_call_attempts_lock:
-                    row_attempts = json.loads(
-                        json.dumps(_decision_call_attempts_by_index, ensure_ascii=False)
+                    row_attempts = _snapshot_indexed_measurement_rows(
+                        _decision_call_attempts_by_index
                     )
                 measurement_gate = _build_decision_call_measurement_gate(
                     measurement_config=_decision_call_measurement,
@@ -13588,8 +14353,8 @@ def main() -> None:
                     expected_input_count=len(posts),
                 )
                 with _early_route_lock:
-                    early_route_rows = json.loads(
-                        json.dumps(_early_route_by_index, ensure_ascii=False)
+                    early_route_rows = _snapshot_indexed_measurement_rows(
+                        _early_route_by_index
                     )
                 early_route_aggregate = _build_early_route_manifest_aggregate(
                     early_route_rows,
@@ -13636,6 +14401,26 @@ def main() -> None:
                         "blocks_large_run_complete": True,
                         "reason_codes": sorted(merged_reasons),
                     }
+                publication_noninterference_gate = (
+                    _publication_noninterference_gate()
+                )
+                if (
+                    publication_noninterference_gate["required"]
+                    and publication_noninterference_gate["status"] != "GO"
+                ):
+                    merged_reasons = set(measurement_gate.get("reason_codes") or [])
+                    merged_reasons.update(
+                        f"NONINTERFERENCE_{reason}"
+                        for reason in publication_noninterference_gate["reason_codes"]
+                    )
+                    if not publication_noninterference_gate["reason_codes"]:
+                        merged_reasons.add("PUBLICATION_NONINTERFERENCE_GATE_NOT_GO")
+                    measurement_gate = {
+                        **measurement_gate,
+                        "status": "NO_GO",
+                        "blocks_large_run_complete": True,
+                        "reason_codes": sorted(merged_reasons),
+                    }
                 runtime_completion_gate = _build_runtime_completion_gate(
                     input_post_count=len(posts),
                     completed_count=completed_count,
@@ -13650,10 +14435,19 @@ def main() -> None:
                 return {
                     "runtime_completion_gate": runtime_completion_gate,
                     "measurement_gate": measurement_gate,
+                    "publication_noninterference_gate": (
+                        publication_noninterference_gate
+                    ),
                     "early_route_execution_gate": early_route_execution_gate,
                     "semantic_approval": {
-                        "status": "NOT_EVALUATED",
+                        "status": (
+                            "REVIEW_LOCKED"
+                            if _semantic_observation_mode
+                            else "NOT_EVALUATED"
+                        ),
                         "runtime_completion_is_semantic_approval": False,
+                        "full_scan_approval": False,
+                        "production_enable_allowed": False,
                         "reason_codes": [
                             "RUNTIME_COMPLETION_SEPARATE_FROM_SEMANTIC_APPROVAL"
                         ],
@@ -13929,6 +14723,7 @@ def main() -> None:
                         "pending_snapshot": str(pending_snapshot_path),
                         "publication_commit_journal": str(publication_commit_journal_path),
                         "publication_scope_id": publication_scope_id,
+                        **_recovery_activation_manifest_fields(),
                         "completed_subset_json": _completed_subset_state["completed_subset_json"],
                         "completed_subset_manifest": _completed_subset_state["completed_subset_manifest"],
                         "completed_subset_written": _completed_subset_state["completed_subset_written"],
@@ -13975,6 +14770,7 @@ def main() -> None:
                         "pending_snapshot": str(pending_snapshot_path),
                         "publication_commit_journal": str(publication_commit_journal_path),
                         "publication_scope_id": publication_scope_id,
+                        **_recovery_activation_manifest_fields(),
                         **_parallel_manifest_fields(),
                         "completed_subset_json": str(completed_subset_path),
                         "completed_subset_count": len(subset_rows),
