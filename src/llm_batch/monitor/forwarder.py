@@ -30,12 +30,15 @@ import httpx
 
 # 유실되면 대시보드 표시가 깨지는 이벤트 — 큐를 크게 잡고 실패 시 재적재
 _CRITICAL_EVENT_TYPES = frozenset({
+    "batch_prepare",
     "batch_start",
     "batch_complete",
+    "batch_failed",
     "post_start",
     "post_complete",
     "llm_suspend",
     "llm_resume",
+    "native_recovery_complete",
 })
 
 

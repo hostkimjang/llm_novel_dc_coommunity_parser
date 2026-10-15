@@ -21,6 +21,12 @@ from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 from .event_bus import monitor
+from .run_index import RunIndex, bound_manifest, bound_manifest_rows, inside, row_meta
+from .recovery_view import bind_recovery_view_row, read_recovery_view
+from .recovery_provider_view import bind_recovery_provider_view_row, read_recovery_provider_view
+from .recovery_native_view import bind_recovery_native_view_row, read_recovery_native_view
+
+_run_index = RunIndex()
 
 # ─── FastAPI 앱 ────────────────────────────────────────────
 
@@ -32,6 +38,9 @@ _OUT_DIR = _REPO_ROOT / "out"
 _LOG_DIR = _REPO_ROOT / "logs"
 _STATIC_DIR = Path(__file__).resolve().parent / "static"
 _SLANG_DB_PATH = _REPO_ROOT / "slang_db" / "slang_db.json"
+
+# 프런트엔드 자산만 제공한다. 결과·로그 등 저장소의 다른 파일은 포함하지 않는다.
+app.mount("/static", StaticFiles(directory=str(_STATIC_DIR)), name="dashboard-static")
 
 # 감지 핸드셰이크 마커 — expert_main이 같은 포트의 무관한 앱을 오인하지 않게 한다.
 _HEALTH_SERVICE_MARKER = "expert-pipeline-monitor"
@@ -81,6 +90,19 @@ def _ingest_token_ok(request: Request) -> bool:
     return request.headers.get("X-Ingest-Token", "") == expected
 
 
+def _verified_failed_runner_binding(data):
+    """Legacy output-only UI needs actual local receipt/plan/manifest readback."""
+    try:
+        from tools.attach_manifest_dashboard import _failure_item
+        ref, manifest_ref = data["receipt_ref"], data["manifest_ref"]
+        rebuilt = _failure_item(Path(manifest_ref["path"]), Path(ref["path"]),
+                                expected_run_id=data["run_id"], started_at=(data["started_at_epoch"]
+                                    if data.get("start_time_source") == "RUNNER_EPOCH" else None))
+        return rebuilt["data"] == data
+    except Exception:
+        return False
+
+
 @app.post("/api/ingest")
 def api_ingest(request: Request, payload: Dict[str, Any] = Body(...)):
     """expert_main forwarder가 보내는 이벤트/로그/스냅샷 배치를 주입한다.
@@ -106,12 +128,21 @@ def api_ingest(request: Request, payload: Dict[str, Any] = Body(...)):
         try:
             kind = item.get("kind")
             if kind == "event":
-                monitor.ingest_event(
-                    str(item.get("type") or ""),
-                    item.get("data") or {},
-                    ts=item.get("ts"),
-                )
-                accepted += 1
+                event_type = str(item.get("type") or "")
+                event_data = item.get("data") or {}
+                if event_type == "batch_failed":
+                    verified = _verified_failed_runner_binding(event_data)
+                    core_notice = (event_data.get("failure_origin") == "CORE_EXCEPTION"
+                                   and event_data.get("reason_code") == "CORE_EXCEPTION"
+                                   and event_data.get("process_exited") is False
+                                   and event_data.get("exit_code") is None)
+                    if not core_notice and not verified:
+                        continue
+                    applied = monitor.ingest_failure(event_data, legacy_receipt_bound=verified)
+                else:
+                    applied = monitor.ingest_event(event_type, event_data, ts=item.get("ts"))
+                if applied is not False:
+                    accepted += 1
             elif kind == "log":
                 raw_worker_id = item.get("worker_id")
                 monitor.ingest_log(
@@ -120,8 +151,8 @@ def api_ingest(request: Request, payload: Dict[str, Any] = Body(...)):
                 )
                 accepted += 1
             elif kind == "status_snapshot":
-                monitor.load_status_snapshot(item.get("data") or {})
-                accepted += 1
+                if monitor.load_status_snapshot(item.get("data") or {}) is not False:
+                    accepted += 1
         except Exception:
             continue
 
@@ -205,7 +236,8 @@ async def api_result_detail(post_id: int):
             continue
         item = _find_post_in_result_file(path, post_id)
         if item is not None:
-            return JSONResponse(_to_live_detail(item, summary=summary))
+            output, _ = _current_output_binding()
+            return JSONResponse(await asyncio.to_thread(_to_live_detail, item, summary=summary, output_path=output or path))
 
     if summary:
         return JSONResponse(summary)
@@ -234,7 +266,8 @@ async def api_slang_db(
 
 
 _TS_RE = re.compile(r"(\d{8}_\d{6})")
-_FINAL_RESULT_RE = re.compile(r"^expert_result_\d{8}_\d{6}_\d+\.json$")
+_FINAL_RESULT_RE = re.compile(r"^expert_result_(\d{8}_\d{6}_\d+)\.json$")
+_FULL_RUN_ID_RE = re.compile(r"^\d{8}_\d{6}_\d+$")
 
 
 def _parse_run_ts(filename: str) -> Optional[str]:
@@ -251,10 +284,7 @@ def _parse_run_ts(filename: str) -> Optional[str]:
 
 
 def _load_result_file(filepath: Path) -> List[Dict[str, Any]]:
-    data = json.loads(filepath.read_text(encoding="utf-8"))
-    if not isinstance(data, list):
-        raise ValueError("top-level JSON must be an array")
-    return data
+    return _run_index.load_result(filepath, _OUT_DIR)
 
 
 def _unwrap_result_item(item: Dict[str, Any]) -> Dict[str, Any]:
@@ -281,8 +311,57 @@ def _find_post_in_result_file(filepath: Path, post_id: int) -> Optional[Dict[str
 
 
 def _is_final_result_file(path_or_name: Any) -> bool:
-    name = path_or_name.name if isinstance(path_or_name, Path) else str(path_or_name or "")
+    name = Path(str(path_or_name or "")).name
     return bool(_FINAL_RESULT_RE.fullmatch(name))
+
+
+def _current_output_binding() -> tuple[Optional[Path], bool]:
+    """Return the repository-local current output and whether a scope was declared.
+
+    A declared current output is authoritative even while its final JSON is not
+    present yet.  Returning ``(None, True)`` for an unsafe binding prevents the
+    live API from silently reading an unrelated historical result.
+    """
+
+    status = monitor.get_status()
+    output_name = str(status.get("output_file") or "").strip()
+    if not output_name:
+        return None, False
+
+    output_path = Path(output_name)
+    if not output_path.is_absolute():
+        output_path = _OUT_DIR / output_path
+    try:
+        output_path = output_path.resolve()
+        output_path.relative_to(_OUT_DIR.resolve())
+    except (OSError, ValueError):
+        return None, True
+    if output_path.suffix.lower() != ".json":
+        return None, True
+    return output_path, True
+
+
+def _run_id_from_current_output(output_path: Path) -> Optional[str]:
+    """Resolve the exact run id without borrowing a timestamp from history."""
+    match = _FINAL_RESULT_RE.fullmatch(output_path.name)
+    binding = bound_manifest(output_path, _OUT_DIR)
+    if binding["binding_status"] == "MISMATCH":
+        return None
+    run_id = binding["summary"].get("run_id") or (match.group(1) if match else "")
+    if not isinstance(run_id, str) or not _FULL_RUN_ID_RE.fullmatch(run_id):
+        return None
+    if output_path.exists():
+        try:
+            rows = _load_result_file(output_path)
+            for item in rows:
+                item = _unwrap_result_item(item)
+                if row_meta(item).get("run_id") not in (None, "", run_id):
+                    return None
+            if binding["summary"] and bound_manifest_rows(output_path, _OUT_DIR, rows)["binding_status"] == "MISMATCH":
+                return None
+        except (OSError, ValueError, UnicodeError):
+            return None
+    return run_id
 
 
 def _recent_final_result_paths() -> List[Path]:
@@ -297,16 +376,19 @@ def _recent_final_result_paths() -> List[Path]:
 
 def _candidate_result_paths() -> List[Path]:
     candidate_paths: List[Path] = []
-    status = monitor.get_status()
-    output_name = status.get("output_file")
-    if output_name and _is_final_result_file(output_name):
-        output_path = _OUT_DIR / output_name
+    output_path, current_scope_declared = _current_output_binding()
+    if current_scope_declared:
+        if output_path is None:
+            return []
         candidate_paths.append(output_path)
 
-        # 실행 중에는 final JSON이 아직 flush 중일 수 있으므로 현재 run의 snapshot을 폴백으로 둔다.
-        pending_snapshot = _OUT_DIR / f"{Path(output_name).stem}_pending_snapshot.json"
+        # 실행 중에는 final JSON이 아직 flush 중일 수 있으므로 같은 디렉터리의
+        # current-run snapshot만 폴백으로 둔다. current scope가 선언된 동안에는
+        # post_id가 같은 과거 실행으로 넘어가지 않는다.
+        pending_snapshot = output_path.with_name(f"{output_path.stem}_pending_snapshot.json")
         if pending_snapshot not in candidate_paths:
             candidate_paths.append(pending_snapshot)
+        return candidate_paths
 
     for path in _recent_final_result_paths():
         if path not in candidate_paths:
@@ -489,12 +571,21 @@ def _has_text(value: Any) -> bool:
 
 def _summary_needs_identity_enrichment(item: Dict[str, Any]) -> bool:
     missing_structure = not any(item.get(key) for key in ("topicality", "subtype", "work_resolution"))
+    missing_scope = not all(key in item for key in (
+        "identity_state",
+        "is_novel_related",
+        "is_resolved_work_discussion",
+        "title_resolution_state",
+        "title_resolution_allowed",
+        "primary_subject_type",
+        "primary_subject_text",
+    ))
     missing_reason = not (
         _has_text(item.get("reason"))
         or _has_text(item.get("reason_lines"))
         or _has_text(item.get("analysis_notes"))
     )
-    return missing_structure or missing_reason
+    return missing_structure or missing_scope or missing_reason
 
 
 def _build_live_results_payload(
@@ -546,6 +637,13 @@ def _enrich_summary_from_result(summary: Dict[str, Any], item: Dict[str, Any]) -
     enriched = dict(summary)
     enriched.update({
         "is_relevant": identity.get("is_relevant", summary.get("is_relevant")),
+        "identity_state": identity.get("identity_state", summary.get("identity_state")),
+        "is_novel_related": identity.get("is_novel_related", summary.get("is_novel_related")),
+        "is_resolved_work_discussion": identity.get("is_resolved_work_discussion", summary.get("is_resolved_work_discussion")),
+        "title_resolution_state": identity.get("title_resolution_state", summary.get("title_resolution_state")),
+        "title_resolution_allowed": identity.get("title_resolution_allowed", summary.get("title_resolution_allowed")),
+        "primary_subject_type": identity.get("primary_subject_type", summary.get("primary_subject_type")),
+        "primary_subject_text": identity.get("primary_subject_text", summary.get("primary_subject_text")),
         "official_title": novel.get("official_title", summary.get("official_title")),
         "confidence": novel.get("confidence", summary.get("confidence")),
         "discussion_type": identity.get("discussion_type", summary.get("discussion_type")),
@@ -591,11 +689,14 @@ def _to_history_summary(item: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def _to_live_detail(item: Dict[str, Any], summary: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+def _to_live_detail(item: Dict[str, Any], summary: Optional[Dict[str, Any]] = None,
+                    *, output_path: Optional[Path] = None) -> Dict[str, Any]:
     item = _unwrap_result_item(item)
     identity = (item.get("analysis_result") or {}).get("identity") or {}
     novel = identity.get("novel_identity") or {}
     detail = {
+        # 상세 화면은 현재 identity 계약 전체를 받는다. 목록/SSE의 크기는 유지한다.
+        **identity,
         "post_id": item.get("post_id"),
         "title": item.get("title", ""),
         "author": item.get("author"),
@@ -628,7 +729,15 @@ def _to_live_detail(item: Dict[str, Any], summary: Optional[Dict[str, Any]] = No
         "slang_insight": identity.get("slang_insight"),
         "analysis": (item.get("analysis_result") or {}).get("analysis"),
         "novel_identity": novel,
+        "run_meta": row_meta(item),
     }
+    if output_path is not None:
+        detail["run_manifest"] = bound_manifest(output_path, _OUT_DIR, item=item)
+        detail["recovery_execution"] = read_recovery_view(output_path, _OUT_DIR, item=item)
+        detail["recovery_provider_execution"] = read_recovery_provider_view(output_path, _OUT_DIR, item=item)
+        detail["recovery_native_execution"] = read_recovery_native_view(output_path, _OUT_DIR, item=item)
+        # WAL 재생 행의 원래 run_id와 현재 export를 합치지 않는다.
+        detail["recovery_native_export_manifest"] = bound_manifest(output_path, _OUT_DIR)
     if summary:
         for key in ("elapsed", "token_usage", "flow_log", "flow_dropped", "worker_id"):
             if key in summary and summary.get(key) is not None:
@@ -638,44 +747,77 @@ def _to_live_detail(item: Dict[str, Any], summary: Optional[Dict[str, Any]] = No
 
 @app.get("/api/runs")
 async def api_runs():
-    """과거 실행 이력 목록 (out/ 디렉토리 기준)"""
-    if not _OUT_DIR.exists():
-        return JSONResponse([])
+    """기존 최상위 결과와 검증된 중첩 sidecar를 제한된 캐시로 조회한다."""
+    current_output, _ = _current_output_binding()
+    records = await asyncio.to_thread(_run_index.records, _OUT_DIR, current_output=current_output)
+    runs = [_run_public(record) for record in records.values()]
+    return JSONResponse(runs, headers={"X-Run-Index-Truncated": str(_run_index.truncated).lower()})
 
-    runs: List[Dict[str, Any]] = []
-    for f in _recent_final_result_paths():
-        stat = f.stat()
-        # 포스트 개수 빠르게 읽기 (JSON 배열 최상위만)
-        post_count = 0
-        try:
-            raw = f.read_text(encoding="utf-8")[:200]
-            # 실제 파싱 대신 빠르게 배열 추정
-            if raw.strip().startswith("["):
-                # "post_id" 키 개수로 대략 추정하면 느릴 수 있으므로
-                # 전체 파일을 읽어서 파싱
-                data = json.loads(f.read_text(encoding="utf-8"))
-                if isinstance(data, list):
-                    post_count = len(data)
-        except Exception:
-            pass
 
-        # 매칭되는 로그 파일 탐색
-        ts_match = _TS_RE.search(f.name)
-        log_name = None
-        if ts_match:
-            log_candidate = _LOG_DIR / f"expert_run_{ts_match.group(1)}.log"
-            if log_candidate.exists():
-                log_name = log_candidate.name
+def _run_public(record):
+    public = dict(record.public)
+    public["timestamp"] = _parse_run_ts(public.get("run_id") or public["filename"])
+    run_id = public.get("run_id")
+    if run_id:
+        log = inside(_LOG_DIR / f"expert_run_{run_id}.log", _LOG_DIR)
+        if log is not None and log.is_file():
+            public["log_file"] = log.name
+    return public
 
-        runs.append({
-            "filename": f.name,
-            "timestamp": _parse_run_ts(f.name),
-            "size_kb": round(stat.st_size / 1024, 1),
-            "post_count": post_count,
-            "log_file": log_name,
+
+def _history_record(filename):
+    if ".." in filename or "/" in filename or "\\" in filename:
+        return None, JSONResponse({"error": "invalid run key"}, status_code=400)
+    current_output, _ = _current_output_binding()
+    record = _run_index.resolve(filename, _OUT_DIR, current_output=current_output)
+    if record is None:
+        return None, JSONResponse({"error": "not found"}, status_code=404)
+    return record, None
+
+
+def _history_item(item, record, recovery_view=None, provider_view=None, native_view=None):
+    result = dict(_unwrap_result_item(item))
+    recovery = (read_recovery_view(record.path, _OUT_DIR, item=result) if recovery_view is None
+                else bind_recovery_view_row(recovery_view, result))
+    provider = (read_recovery_provider_view(record.path, _OUT_DIR, item=result) if provider_view is None
+                else bind_recovery_provider_view_row(provider_view, result))
+    native = (read_recovery_native_view(record.path, _OUT_DIR, item=result) if native_view is None
+              else bind_recovery_native_view_row(native_view, result))
+    result["run_meta"] = row_meta(result)
+    result["run_manifest"] = bound_manifest(record.path, _OUT_DIR, item=result, manifest_path=record.manifest)
+    result["recovery_execution"] = recovery
+    result["recovery_provider_execution"] = provider
+    result["recovery_native_execution"] = native
+    result["recovery_native_export_manifest"] = bound_manifest(record.path, _OUT_DIR, manifest_path=record.manifest)
+    return result
+
+
+def _history_detail(filename, offset, limit, summary):
+    record, error = _history_record(filename)
+    if error is not None:
+        return error
+    try:
+        data = _load_result_file(record.path)
+        if not summary:
+            recovery = read_recovery_view(record.path, _OUT_DIR)
+            provider = read_recovery_provider_view(record.path, _OUT_DIR)
+            native = read_recovery_native_view(record.path, _OUT_DIR)
+            return JSONResponse([_history_item(item, record, recovery, provider, native) for item in data])
+        data = [_unwrap_result_item(item) for item in data]
+        relevant = sum(1 for item in data if ((item.get("analysis_result") or {}).get("identity") or {}).get("is_relevant"))
+        identified = sum(1 for item in data if ((((item.get("analysis_result") or {}).get("identity") or {}).get("novel_identity") or {}).get("official_title")))
+        return JSONResponse({
+            "items": [_to_history_summary(item) for item in data[offset:offset + limit]],
+            "total": len(data), "offset": offset, "limit": limit,
+            "has_more": offset + limit < len(data),
+            "stats": {"relevant": relevant, "identified": identified, "noise": len(data) - relevant},
+            "run": _run_public(record),
+            "run_manifest": bound_manifest_rows(record.path, _OUT_DIR, data, manifest_path=record.manifest),
+            "recovery_native_execution": read_recovery_native_view(record.path, _OUT_DIR),
+            "recovery_native_export_manifest": bound_manifest(record.path, _OUT_DIR, manifest_path=record.manifest),
         })
-
-    return JSONResponse(runs)
+    except (OSError, ValueError, UnicodeError):
+        return JSONResponse({"error": "result unavailable or invalid"}, status_code=422)
 
 
 @app.get("/api/runs/{filename}")
@@ -685,61 +827,46 @@ async def api_run_detail(
     limit: int = Query(200, ge=1, le=1000),
     summary: bool = Query(False),
 ):
-    """특정 과거 결과 JSON 반환"""
-    # path traversal 방지
-    if ".." in filename or "/" in filename or "\\" in filename:
-        return JSONResponse({"error": "invalid filename"}, status_code=400)
-
-    filepath = _OUT_DIR / filename
-    if not filepath.exists() or not _is_final_result_file(filepath.name):
-        return JSONResponse({"error": "not found"}, status_code=404)
-
-    try:
-        data = _load_result_file(filepath)
-        if not summary:
-            return JSONResponse(data)
-
-        relevant = sum(
-            1
-            for item in data
-            if ((item.get("analysis_result") or {}).get("identity") or {}).get("is_relevant")
-        )
-        identified = sum(
-            1
-            for item in data
-            if ((((item.get("analysis_result") or {}).get("identity") or {}).get("novel_identity") or {}).get("official_title"))
-        )
-        page = data[offset:offset + limit]
-        return JSONResponse({
-            "items": [_to_history_summary(item) for item in page],
-            "total": len(data),
-            "offset": offset,
-            "limit": limit,
-            "has_more": offset + limit < len(data),
-            "stats": {
-                "relevant": relevant,
-                "identified": identified,
-                "noise": len(data) - relevant,
-            },
-        })
-    except Exception as e:
-        return JSONResponse({"error": str(e)}, status_code=500)
+    """불투명 실행 키와 기존 최상위 filename을 모두 지원한다."""
+    return await asyncio.to_thread(_history_detail, filename, offset, limit, summary)
 
 
 @app.get("/api/runs/{filename}/posts/{post_id}")
 async def api_run_post_detail(filename: str, post_id: int):
     """특정 과거 실행에서 post_id 상세 결과 반환"""
-    if ".." in filename or "/" in filename or "\\" in filename:
-        return JSONResponse({"error": "invalid filename"}, status_code=400)
-
-    filepath = _OUT_DIR / filename
-    if not filepath.exists() or not _is_final_result_file(filepath.name):
-        return JSONResponse({"error": "not found"}, status_code=404)
-
-    item = _find_post_in_result_file(filepath, post_id)
+    record, error = await asyncio.to_thread(_history_record, filename)
+    if error is not None:
+        return error
+    item = await asyncio.to_thread(_find_post_in_result_file, record.path, post_id)
     if item is None:
         return JSONResponse({"error": "not found"}, status_code=404)
-    return JSONResponse(_unwrap_result_item(item))
+    return JSONResponse(await asyncio.to_thread(_history_item, item, record))
+
+
+@app.get("/api/runs/{filename}/log")
+def api_run_log(filename: str, tail: int = Query(300, ge=1, le=5000)):
+    """선택한 실행 ID의 로그만 읽고 큰 로그는 마지막 2 MiB로 제한한다."""
+    record, error = _history_record(filename)
+    if error is not None:
+        return error
+    run_id = _run_id_from_current_output(record.path)
+    if not run_id:
+        return JSONResponse({"lines": [], "source": None, "run_id": None}, status_code=404)
+    path = inside(_LOG_DIR / f"expert_run_{run_id}.log", _LOG_DIR)
+    if path is None or not path.is_file():
+        return JSONResponse({"lines": [], "source": None, "run_id": run_id}, status_code=404)
+    try:
+        with path.open("rb") as stream:
+            size = stream.seek(0, 2)
+            start = max(0, size - 2 * 1024 * 1024)
+            stream.seek(start)
+            raw = stream.read(2 * 1024 * 1024)
+        lines = raw.decode("utf-8-sig", errors="replace").splitlines()
+        if start and lines:
+            lines = lines[1:]
+        return JSONResponse({"lines": lines[-tail:], "source": path.name, "run_id": run_id, "truncated": bool(start)})
+    except OSError:
+        return JSONResponse({"lines": [], "source": None, "run_id": run_id}, status_code=404)
 
 
 @app.get("/api/logs/{filename}")
@@ -748,8 +875,8 @@ async def api_log_detail(filename: str, tail: int = Query(300, ge=1, le=5000)):
     if ".." in filename or "/" in filename or "\\" in filename:
         return JSONResponse({"error": "invalid filename"}, status_code=400)
 
-    filepath = _LOG_DIR / filename
-    if not filepath.exists() or not filepath.name.startswith("expert_run_"):
+    filepath = inside(_LOG_DIR / filename, _LOG_DIR)
+    if filepath is None or not filepath.exists() or not filepath.name.startswith("expert_run_"):
         return JSONResponse({"error": "not found"}, status_code=404)
 
     try:
@@ -771,6 +898,9 @@ def _extract_post_log_from_file(filepath: Path, post_id: int) -> Optional[List[s
     
     배너 시작 줄(===…) 부터 완료 마커 이후 구분선(===…)까지 추출합니다.
     """
+    filepath = inside(filepath, _LOG_DIR)
+    if filepath is None:
+        return None
     try:
         # GB급 통합 로그를 통째로 read하면 메모리 스파이크(파일 크기의 2-3배)가
         # 발생한다 — 상한 초과 파일은 건너뛴다 (워커별 로그가 1차 탐색 대상이라
@@ -871,13 +1001,30 @@ def api_post_log(post_id: int, source: str = Query("auto", pattern="^(auto|file)
                     "lines": in_memory,
                 })
 
-        # 2) 워커별 로그 파일 탐색 (최신순)
+        output_path, current_scope_declared = _current_output_binding()
+        current_run_id = (
+            _run_id_from_current_output(output_path)
+            if output_path is not None
+            else None
+        )
+
+        # 2) 워커별 로그 파일 탐색. current output이 선언된 경우 동일 run id로만
+        # 범위를 고정하며, 결속 정보가 없다고 과거 실행으로 넘어가지 않는다.
         if _LOG_DIR.exists():
             try:
-                worker_logs = sorted(
-                    _LOG_DIR.glob("expert_run_*_W*.log"),
-                    key=lambda p: p.stat().st_mtime,
-                    reverse=True,
+                worker_pattern = (
+                    f"expert_run_{current_run_id}_W*.log"
+                    if current_scope_declared and current_run_id
+                    else "expert_run_*_W*.log"
+                )
+                worker_logs = (
+                    sorted(
+                        _LOG_DIR.glob(worker_pattern),
+                        key=lambda p: p.stat().st_mtime,
+                        reverse=True,
+                    )
+                    if (not current_scope_declared or current_run_id)
+                    else []
                 )
             except OSError:
                 worker_logs = []
@@ -893,14 +1040,22 @@ def api_post_log(post_id: int, source: str = Query("auto", pattern="^(auto|file)
 
             # 3) 통합 로그 파일 탐색
             try:
-                main_logs = sorted(
-                    _LOG_DIR.glob("expert_run_*.log"),
-                    key=lambda p: p.stat().st_mtime,
-                    reverse=True,
-                )
+                if current_scope_declared:
+                    main_logs = (
+                        [_LOG_DIR / f"expert_run_{current_run_id}.log"]
+                        if current_run_id
+                        else []
+                    )
+                    main_logs = [path for path in main_logs if path.exists()]
+                else:
+                    main_logs = sorted(
+                        _LOG_DIR.glob("expert_run_*.log"),
+                        key=lambda p: p.stat().st_mtime,
+                        reverse=True,
+                    )
+                    main_logs = [p for p in main_logs if "_W" not in p.name]
             except OSError:
                 main_logs = []
-            main_logs = [p for p in main_logs if "_W" not in p.name]
             for mlog in main_logs[:5]:
                 extracted = _extract_post_log_from_file(mlog, post_id)
                 if extracted:

@@ -1,0 +1,4 @@
+/* 재생성: npx.cmd --yes --package tailwindcss@3.4.17 tailwindcss --config tools/dashboard/tailwind.config.cjs --input tools/dashboard/input.css --output src/llm_batch/monitor/static/utilities.css --minify */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

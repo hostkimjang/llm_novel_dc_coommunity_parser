@@ -3,172 +3,58 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🤖 Expert Pipeline Monitor</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-  body { background: #0f172a; color: #e2e8f0; font-family: 'Segoe UI', system-ui, sans-serif; }
-  .glass { background: rgba(30,41,59,.7); backdrop-filter: blur(8px); border: 1px solid rgba(148,163,184,.15); }
-  .page-shell { width: min(80vw, 1680px); margin-left: auto; margin-right: auto; }
-  .step-active { background: #2563eb; color: #fff; box-shadow: 0 0 12px rgba(37,99,235,.5); }
-  .step-done { background: #059669; color: #fff; }
-  .step-idle { background: rgba(51,65,85,.6); color: #94a3b8; }
-  .step-skipped { background: rgba(51,65,85,.3); color: #475569; text-decoration: line-through; }
-  #log-area { font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; font-size: 12px; line-height: 1.5; }
-  #log-area::-webkit-scrollbar { width: 6px; }
-  #log-area::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
-  .badge-relevant { background: #059669; }
-  .badge-noise { background: #64748b; }
-  .badge-core { background: #059669; }
-  .badge-adjacent { background: #d97706; }
-  .badge-unrelated { background: #475569; }
-  .badge-high { background: #2563eb; }
-  .badge-medium { background: #d97706; }
-  .badge-low { background: #dc2626; }
-  .subtle-meta { color: #94a3b8; font-size: 11px; line-height: 1.35; }
-  .tab-active { border-bottom: 2px solid #2563eb; color: #fff; }
-  .tab-idle { border-bottom: 2px solid transparent; color: #94a3b8; }
-  .tab-idle:hover { color: #cbd5e1; }
-  .fade-in { animation: fadeIn .3s ease; }
-  @keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:none} }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
-  .anim-pulse { animation: pulse 1.5s infinite; }
-  .step-recall { position: relative; }
-  .step-recall::after { content: attr(data-recall-count); position: absolute; top: -6px; right: -6px; background: #f59e0b; color: #000; font-size: 9px; font-weight: 700; min-width: 14px; height: 14px; border-radius: 7px; display: flex; align-items: center; justify-content: center; }
-  tr.row-clickable { cursor: pointer; }
-  tr.row-clickable:hover { background: rgba(51,65,85,.4); }
-  .expand-toggle-btn { display:block; width:100%; margin-top:4px; padding:4px 0; border:none; border-radius:6px; background:rgba(51,65,85,.35); color:#94a3b8; font-size:11px; cursor:pointer; transition:.15s; }
-  .expand-toggle-btn:hover { background:rgba(51,65,85,.6); color:#e2e8f0; }
-  /* 관련/노이즈 행 시각 구분 — 배지 색만으로는 스캔이 어렵다 */
-  tr.row-relevant { background: rgba(16,185,129,.05); box-shadow: inset 2px 0 0 rgba(16,185,129,.45); }
-  tr.row-relevant:hover { background: rgba(16,185,129,.12); }
-  tr.row-noise { opacity: .75; }
-  tr.row-noise:hover { opacity: 1; background: rgba(51,65,85,.4); }
-  /* Modal */
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.65); backdrop-filter: blur(4px); z-index: 900; display: flex; align-items: center; justify-content: center; }
-  .modal-panel { background: #1e293b; border: 1px solid rgba(148,163,184,.2); border-radius: 16px; width: min(96vw, 80vw); max-width: 1500px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 25px 60px rgba(0,0,0,.5); }
-  .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid rgba(71,85,105,.4); flex-shrink: 0; }
-  .modal-body { overflow-y: auto; padding: 20px 24px; flex: 1; }
-  .modal-body::-webkit-scrollbar { width: 6px; }
-  .modal-body::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
-  .modal-close { width: 32px; height: 32px; border-radius: 8px; border: none; background: rgba(71,85,105,.5); color: #cbd5e1; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: .15s; }
-  .modal-close:hover { background: #ef4444; color: #fff; }
-  .detail-section { margin-bottom: 16px; }
-  .detail-section-title { font-size: 13px; font-weight: 600; color: #94a3b8; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
-  .detail-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px 20px; }
-  .detail-kv .label { color: #64748b; font-size: 11px; }
-  .detail-kv .value { color: #e2e8f0; font-size: 13px; margin-top: 1px; }
-  .detail-block { background: rgba(15,23,42,.6); border: 1px solid rgba(71,85,105,.3); border-radius: 8px; padding: 12px; margin-top: 6px; font-size: 12px; line-height: 1.7; color: #cbd5e1; max-height: 200px; overflow-y: auto; white-space: pre-wrap; word-break: break-word; }
-  .detail-block::-webkit-scrollbar { width: 5px; }
-  .detail-block::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
-  .reason-block { white-space: normal; line-height: 1.75; }
-  .reason-section { margin-top: 10px; }
-  .reason-section:first-child { margin-top: 0; }
-  .reason-section-header { color: #e2e8f0; font-size: 12px; font-weight: 700; margin-bottom: 4px; }
-  .reason-line { color: #cbd5e1; font-size: 12px; margin: 2px 0; word-break: break-word; }
-  .reason-line.bullet { padding-left: 10px; text-indent: -10px; }
-  .reason-line.muted { color: #94a3b8; }
-  .tag-chip { display: inline-block; padding: 2px 8px; border-radius: 6px; background: rgba(71,85,105,.5); color: #cbd5e1; font-size: 11px; margin: 2px 3px 2px 0; }
-  @keyframes modalIn { from{opacity:0;transform:scale(.95)} to{opacity:1;transform:none} }
-  .modal-panel { animation: modalIn .2s ease; }
-  /* Pipeline Flow Timeline */
-  .flow-log { max-height: 120px; overflow-y: auto; scrollbar-width: thin; }
-  .flow-log::-webkit-scrollbar { width: 4px; }
-  .flow-log::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
-  .flow-entry { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; line-height: 1; }
-  .flow-arrow { color: #475569; font-size: 13px; }
-  .flow-arrow.recall { color: #f59e0b; }
-  .flow-step { padding: 2px 7px; border-radius: 4px; font-weight: 500; }
-  .flow-step.normal { background: rgba(5,150,105,.25); color: #6ee7b7; }
-  .flow-step.active { background: rgba(37,99,235,.35); color: #93c5fd; box-shadow: 0 0 6px rgba(37,99,235,.3); }
-  .flow-step.recall { background: rgba(245,158,11,.25); color: #fcd34d; }
-  .flow-reason { font-size: 10px; color: #94a3b8; font-style: italic; }
-  /* ── Log Viewer Modal ── */
-  .log-modal-panel { background: #0f172a; border: 1px solid rgba(148,163,184,.2); border-radius: 16px; width: min(98vw, 88vw); max-width: 1800px; max-height: 92vh; display: flex; flex-direction: column; box-shadow: 0 25px 60px rgba(0,0,0,.6); animation: modalIn .2s ease; }
-  .log-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; border-bottom: 1px solid rgba(71,85,105,.4); flex-shrink: 0; }
-  .log-modal-body { flex: 1; overflow-y: auto; padding: 0; font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace; font-size: 11.5px; line-height: 1.6; }
-  .log-modal-body::-webkit-scrollbar { width: 6px; }
-  .log-modal-body::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
-  .log-line { padding: 0 16px; white-space: pre-wrap; word-break: break-all; }
-  .log-line:hover { background: rgba(51,65,85,.3); }
-  .log-line.log-gk { color: #6ee7b7; }
-  .log-line.log-dc { color: #93c5fd; }
-  .log-line.log-de { color: #c4b5fd; }
-  .log-line.log-ar { color: #fcd34d; }
-  .log-line.log-vr { color: #f9a8d4; }
-  .log-line.log-sy { color: #7dd3fc; }
-  .log-line.log-dl { color: #fca5a5; }
-  .log-line.log-search { color: #a5b4fc; }
-  .log-line.log-llm { color: #64748b; }
-  .log-line.log-banner { color: #f59e0b; font-weight: 600; }
-  .log-line.log-result { color: #34d399; font-weight: 500; }
-  .log-filter-bar { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-  .log-filter-btn { padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(148,163,184,.2); background: transparent; color: #94a3b8; font-size: 10px; cursor: pointer; transition: .15s; }
-  .log-filter-btn:hover { background: rgba(51,65,85,.5); color: #e2e8f0; }
-  .log-filter-btn.active { background: rgba(37,99,235,.3); border-color: rgba(37,99,235,.5); color: #93c5fd; }
-  /* ── Parallel Worker Cards ── */
-  .worker-card { background: rgba(30,41,59,.8); border: 1px solid rgba(148,163,184,.12); border-radius: 12px; padding: 14px; transition: all .3s; }
-  .worker-card.active { border-color: rgba(37,99,235,.4); box-shadow: 0 0 12px rgba(37,99,235,.15); }
-  .worker-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 6px; }
-  .worker-badge.w0 { background: rgba(37,99,235,.25); color: #93c5fd; }
-  .worker-badge.w1 { background: rgba(168,85,247,.25); color: #c4b5fd; }
-  .worker-badge.w2 { background: rgba(236,72,153,.25); color: #f9a8d4; }
-  .worker-badge.w3 { background: rgba(245,158,11,.25); color: #fcd34d; }
-  .worker-badge.w4 { background: rgba(5,150,105,.25); color: #6ee7b7; }
-  .worker-badge.w5 { background: rgba(239,68,68,.25); color: #fca5a5; }
-  .worker-badge.w6 { background: rgba(14,165,233,.25); color: #7dd3fc; }
-  .worker-badge.w7 { background: rgba(132,204,22,.25); color: #bef264; }
-  .worker-mini-step { display: inline-block; padding: 1px 5px; border-radius: 3px; font-size: 10px; font-weight: 500; margin: 1px; }
-  .worker-mini-step.idle { background: rgba(51,65,85,.5); color: #64748b; }
-  .worker-mini-step.active { background: rgba(37,99,235,.4); color: #93c5fd; }
-  .worker-mini-step.done { background: rgba(5,150,105,.3); color: #6ee7b7; }
-  @keyframes workerIn { from{opacity:0;transform:scale(.95)} to{opacity:1;transform:none} }
-  @keyframes workerOut { from{opacity:1;transform:none} to{opacity:0;transform:scale(.95)} }
-  .worker-card-enter { animation: workerIn .3s ease; }
-</style>
+<title>Expert — Pipeline Monitor</title>
+<meta name="color-scheme" content="light dark">
+<script src="/static/theme.js?v=20260922-reason-log-v1"></script>
+  <script src="/static/presentation.js?v=20261013-nsfw-assessment-reason-v2"></script>
+<link rel="stylesheet" href="/static/utilities.css?v=20260922-reason-log-v1">
+<link rel="stylesheet" href="/static/dashboard.css?v=20260922-reason-log-v1">
 </head>
-<body class="min-h-screen p-4 md:p-6">
+<body>
+<a href="#main-content" class="skip-link">본문으로 건너뛰기</a>
+<aside class="sidebar" aria-label="주 탐색">
+  <a class="brand" href="/" aria-label="Expert 대시보드 홈">
+    <span class="brand-mark">e<span>.</span></span>
+    <span>expert<span class="brand-sub">PIPELINE MONITOR</span></span>
+  </a>
+  <div class="workspace-label">WORKSPACE</div>
+  <nav class="main-nav" aria-label="대시보드 메뉴">
+    <button onclick="switchTab('live')" id="tab-live" class="tab-active" aria-current="page"><span class="icon icon-activity" aria-hidden="true"></span><span>실시간 모니터</span><span class="nav-live-dot" aria-hidden="true"></span></button>
+    <button onclick="switchTab('history')" id="tab-history" class="tab-idle"><span class="icon icon-history" aria-hidden="true"></span><span>실행 이력</span></button>
+    <button onclick="switchTab('slang-db')" id="tab-slang-db" class="tab-idle"><span class="icon icon-database" aria-hidden="true"></span><span>Slang DB</span></button>
+  </nav>
+</aside>
 
-<!-- Header -->
-<div class="page-shell mb-6">
-  <div class="flex items-center justify-between flex-wrap gap-4">
-    <h1 class="text-2xl font-bold">🤖 Expert Pipeline Monitor</h1>
-    <div class="flex items-center gap-3">
-      <span id="conn-status" class="text-xs px-2 py-1 rounded-full bg-red-900 text-red-300">● 연결 중...</span>
-      <span id="clock" class="text-sm text-slate-400"></span>
+<div class="app-frame">
+  <header class="topbar">
+    <div class="breadcrumb"><span>워크스페이스</span><span class="icon icon-chevron-right" aria-hidden="true"></span><strong id="breadcrumb-current">실시간 모니터</strong></div>
+    <div class="topbar-actions">
+      <span id="conn-status" class="text-xs bg-red-900 text-red-300" role="status">● 연결 중...</span>
+      <span id="clock"></span>
+      <div class="theme-switch" role="group" aria-label="화면 테마">
+        <button type="button" data-theme-choice="light" aria-label="화이트 모드" aria-pressed="false" title="화이트 모드"><span class="icon icon-sun" aria-hidden="true"></span></button>
+        <button type="button" data-theme-choice="dark" aria-label="다크 모드" aria-pressed="false" title="다크 모드"><span class="icon icon-moon" aria-hidden="true"></span></button>
+      </div>
     </div>
-  </div>
-</div>
+  </header>
 
-<div class="page-shell space-y-4">
-
-  <!-- Tab Bar -->
-  <div class="flex gap-6 border-b border-slate-700 mb-2">
-    <button onclick="switchTab('live')" id="tab-live" class="pb-2 text-sm font-medium tab-active">📡 실시간 모니터</button>
-    <button onclick="switchTab('history')" id="tab-history" class="pb-2 text-sm font-medium tab-idle">📁 과거 실행 이력</button>
-    <button onclick="switchTab('slang-db')" id="tab-slang-db" class="pb-2 text-sm font-medium tab-idle">🗂️ Slang DB</button>
-  </div>
-
+  <main id="main-content" class="page-shell" tabindex="-1">
+    <div class="page-heading">
+      <div><div class="eyebrow" id="page-eyebrow">LIVE OVERVIEW</div><h1 id="page-title">실시간 모니터</h1><p id="page-description">파이프라인의 모든 흐름, 하나의 워크스페이스에서.</p></div>
+      <span class="page-tag"><span class="icon icon-layers" aria-hidden="true"></span> Expert Pipeline</span>
+    </div>
   <!-- ===== LIVE TAB ===== -->
   <div id="panel-live">
 
-	    <!-- Progress Bar -->
-	    <div class="glass rounded-xl p-4 mb-4">
-	      <div class="flex items-center justify-between mb-2">
-	        <div class="flex items-center gap-2">
-          <span id="batch-status-icon" class="text-lg">⏸️</span>
-          <span id="batch-status-text" class="text-sm font-medium">배치 대기 중</span>
-        </div>
-        <span id="progress-text" class="text-sm text-slate-400">0 / 0</span>
+    <section class="glass progress-card" aria-label="배치 진행 상태">
+      <div class="progress-heading">
+        <div class="batch-heading"><span id="batch-status-icon" aria-hidden="true">대기</span><div><div class="eyebrow">BATCH PROGRESS</div><div id="batch-status-text" role="status">배치 대기 중</div></div></div>
+        <div class="progress-numbers"><strong id="progress-percent">0<span>%</span></strong><span id="progress-text">0 / 0</span></div>
       </div>
-      <div class="w-full bg-slate-700 rounded-full h-3 overflow-hidden">
-        <div id="progress-bar" class="bg-blue-500 h-3 rounded-full transition-all duration-500" style="width:0%"></div>
-      </div>
-	      <div class="flex justify-between mt-2 text-xs text-slate-400">
-	        <span id="elapsed-text">경과: -</span>
-	        <span id="eta-text">ETA: -</span>
-	        <span id="avg-text">평균: -</span>
-	      </div>
-	    </div>
+      <div id="progress-track" role="progressbar" aria-label="배치 처리 진행률" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="progress-bar" style="width:0%"></div></div>
+      <div id="batch-failure-detail" class="section-note" role="status" hidden></div>
+      <div class="progress-footer"><span id="elapsed-text">경과: -</span><span id="eta-text">ETA: -</span><span id="avg-text">평균: -</span><span class="progress-caption">포스트 처리 현황</span></div>
+    </section>
 
 	    <div id="llm-suspend-banner" class="hidden glass rounded-xl p-4 mb-4 border border-amber-500/30 bg-amber-950/20">
 	      <div class="flex items-start gap-3">
@@ -195,74 +81,48 @@
 	      </div>
 	    </div>
 
-	    <!-- Stats Cards + Pipeline -->
-	    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-
-      <!-- Stats Cards -->
-      <div class="glass rounded-xl p-4 space-y-3">
-        <h3 class="text-sm font-semibold text-slate-300 mb-2">📊 통계</h3>
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-          <div class="text-center">
-            <div id="stat-relevant" class="text-2xl font-bold text-emerald-400">0</div>
-            <div class="text-xs text-slate-400">Relevant</div>
-          </div>
-          <div class="text-center">
-            <div id="stat-noise" class="text-2xl font-bold text-slate-400">0</div>
-            <div class="text-xs text-slate-400">Noise</div>
-          </div>
-          <div class="text-center">
-            <div id="stat-tokens" class="text-2xl font-bold text-blue-400">0</div>
-            <div class="text-xs text-slate-400">총 토큰</div>
-          </div>
-          <div class="text-center">
-            <div id="stat-prompt-tokens" class="text-2xl font-bold text-sky-400">0</div>
-            <div class="text-xs text-slate-400">입력 토큰</div>
-          </div>
-          <div class="text-center">
-            <div id="stat-completion-tokens" class="text-2xl font-bold text-violet-400">0</div>
-            <div class="text-xs text-slate-400">출력 토큰</div>
-          </div>
-          <div class="text-center">
-            <div id="stat-cache" class="text-2xl font-bold text-amber-400">-</div>
-            <div class="text-xs text-slate-400">캐시 히트율</div>
-          </div>
-        </div>
-      </div>
-
+    <section class="stats-grid" aria-label="실행 통계"><div class="stat-card stat-positive"><div class="stat-label">관련 포스트</div><strong id="stat-relevant">0</strong><span class="stat-caption">RELEVANT</span></div>
+<div class="stat-card "><div class="stat-label">노이즈</div><strong id="stat-noise">0</strong><span class="stat-caption">NOISE</span></div>
+<div class="stat-card "><div class="stat-label">이벤트 관측 토큰</div><strong id="stat-tokens">0</strong><span class="stat-caption">수신 이벤트 합계 · 정식 KPI 아님</span></div>
+<div class="stat-card "><div class="stat-label">입력 토큰</div><strong id="stat-prompt-tokens">0</strong><span class="stat-caption">INPUT TOKENS</span></div>
+<div class="stat-card "><div class="stat-label">출력 토큰</div><strong id="stat-completion-tokens">0</strong><span class="stat-caption">OUTPUT TOKENS</span></div>
+<div class="stat-card "><div class="stat-label">검색 캐시 적중률</div><strong id="stat-cache">-</strong><span class="stat-caption">CACHE HIT</span></div></section>
+    <div class="pipeline-overview">
       <!-- Pipeline Steps -->
-      <div class="lg:col-span-2 glass rounded-xl p-4">
-        <h3 class="text-sm font-semibold text-slate-300 mb-3">🔬 파이프라인 단계</h3>
+      <section class="pipeline-card glass">
+        <div class="section-heading"><div><span class="eyebrow">EXECUTION FLOW</span><h2>파이프라인</h2></div><span class="section-note">9개의 전문가 단계</span></div>
         <div class="flex items-center gap-1 flex-wrap" id="pipeline-steps">
-          <div data-step="fast_path" data-recall-count="" class="step-idle rounded-lg px-3 py-2 text-xs font-medium transition-all">⚡ Fast-Path</div>
+          <div data-step="fast_path" data-recall-count="" class="step-idle rounded-lg px-3 py-2 text-xs font-medium transition-all"><span class="stage-index">01</span>Fast-Path</div>
           <span class="text-slate-600">→</span>
-          <div data-step="gatekeeper" data-recall-count="" class="step-idle rounded-lg px-3 py-2 text-xs font-medium transition-all">🎭 Gatekeeper</div>
+          <div data-step="gatekeeper" data-recall-count="" class="step-idle rounded-lg px-3 py-2 text-xs font-medium transition-all"><span class="stage-index">02</span>Gatekeeper</div>
           <span class="text-slate-600">→</span>
-          <div data-step="discourse" data-recall-count="" class="step-idle rounded-lg px-3 py-2 text-xs font-medium transition-all">📖 Discourse</div>
+          <div data-step="discourse" data-recall-count="" class="step-idle rounded-lg px-3 py-2 text-xs font-medium transition-all"><span class="stage-index">03</span>Discourse</div>
           <span class="text-slate-600">→</span>
-          <div data-step="search" data-recall-count="" class="step-idle rounded-lg px-3 py-2 text-xs font-medium transition-all">🔎 Search</div>
+          <div data-step="search" data-recall-count="" class="step-idle rounded-lg px-3 py-2 text-xs font-medium transition-all"><span class="stage-index">04</span>Search</div>
           <span class="text-slate-600">→</span>
-          <div data-step="decoder" data-recall-count="" class="step-idle rounded-lg px-3 py-2 text-xs font-medium transition-all">🔤 Decoder</div>
+          <div data-step="decoder" data-recall-count="" class="step-idle rounded-lg px-3 py-2 text-xs font-medium transition-all"><span class="stage-index">05</span>Decoder</div>
           <span class="text-slate-600">→</span>
-          <div data-step="verifier" data-recall-count="" class="step-idle rounded-lg px-3 py-2 text-xs font-medium transition-all">🔍 Verifier</div>
+          <div data-step="verifier" data-recall-count="" class="step-idle rounded-lg px-3 py-2 text-xs font-medium transition-all"><span class="stage-index">06</span>Verifier</div>
           <span class="text-slate-600">→</span>
-          <div data-step="critic" data-recall-count="" class="step-idle rounded-lg px-3 py-2 text-xs font-medium transition-all">📚 Critic</div>
+          <div data-step="critic" data-recall-count="" class="step-idle rounded-lg px-3 py-2 text-xs font-medium transition-all"><span class="stage-index">07</span>Critic</div>
           <span class="text-slate-600">→</span>
-          <div data-step="synthesizer" data-recall-count="" class="step-idle rounded-lg px-3 py-2 text-xs font-medium transition-all">🔬 Synthesizer</div>
+          <div data-step="synthesizer" data-recall-count="" class="step-idle rounded-lg px-3 py-2 text-xs font-medium transition-all"><span class="stage-index">08</span>Synthesizer</div>
           <span class="text-slate-600">→</span>
-          <div data-step="arbiter" data-recall-count="" class="step-idle rounded-lg px-3 py-2 text-xs font-medium transition-all">⚖️ Arbiter</div>
+          <div data-step="arbiter" data-recall-count="" class="step-idle rounded-lg px-3 py-2 text-xs font-medium transition-all"><span class="stage-index">09</span>Arbiter</div>
         </div>
-        <div class="mt-3 text-xs text-slate-400">
-          현재: <span id="current-post-label" class="text-slate-200">-</span>
+        <div class="current-post-row mt-3 text-xs text-slate-400">
+          현재 포스트 <span id="current-post-label" class="text-slate-200">-</span>
         </div>
         <!-- 실행 흐름 타임라인 -->
-        <div class="mt-3 pt-3 border-t border-slate-700/40">
+        <div class="flow-timeline mt-3 pt-3 border-t border-slate-700/40">
           <div class="flex items-center justify-between mb-1">
-            <span class="text-xs text-slate-500">📌 실행 흐름</span>
+            <span class="text-xs text-slate-500">실행 타임라인</span>
             <button onclick="clearFlowLog()" class="text-xs text-slate-600 hover:text-slate-400">지우기</button>
           </div>
-          <div id="flow-log" class="flow-log flex flex-wrap items-center gap-1 min-h-[24px]"></div>
+          <div id="flow-log" class="flow-log flex flex-wrap items-center gap-1 min-h-[24px]" aria-label="실행 타임라인"></div>
         </div>
-      </div>
+        <p class="parallel-flow-note">각 워커의 진행 단계와 재호출 상태는 아래 카드에 표시됩니다.</p>
+      </section>
     </div>
 
     <!-- Results + Logs -->
@@ -271,26 +131,23 @@
     <div id="parallel-section" class="hidden mb-4">
       <div class="glass rounded-xl p-4">
         <div class="flex items-center justify-between mb-3">
-          <h3 class="text-sm font-semibold text-slate-300">🔀 병렬 처리 현황</h3>
+          <div><span class="eyebrow">WORKER ACTIVITY</span><h2>병렬 처리 현황 <span id="workers-active-count" class="count-badge">0</span></h2></div>
           <span id="parallel-count-badge" class="text-xs px-2 py-0.5 rounded-full bg-blue-900/50 text-blue-300">N workers</span>
         </div>
         <div id="parallel-workers" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3"></div>
       </div>
     </div>
 
-    <div class="glass rounded-xl p-4 mb-4">
+    <div class="panel-toolbar">
       <div class="flex items-center justify-between gap-3 flex-wrap">
-        <div>
-          <h3 class="text-sm font-semibold text-slate-300">🪟 패널 표시</h3>
-          <div class="text-xs text-slate-500 mt-1">실시간 모니터 하단 패널을 원하는 형태로 전환합니다.</div>
-        </div>
+        <div><h2>처리 결과와 로그</h2><p class="section-note">결과와 로그를 필요한 만큼 펼쳐보세요.</p></div>
         <div class="flex items-center gap-2 flex-wrap">
           <button id="toggle-live-results" onclick="toggleLivePanel('results')" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors">
-            <span>📋 처리 결과</span>
+            <span>처리 결과</span>
             <span id="toggle-live-results-state" class="ml-2 rounded px-1.5 py-0.5 text-[10px] font-bold">ON</span>
           </button>
           <button id="toggle-live-logs" onclick="toggleLivePanel('logs')" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors">
-            <span>📜 실시간 로그</span>
+            <span>실시간 로그</span>
             <span id="toggle-live-logs-state" class="ml-2 rounded px-1.5 py-0.5 text-[10px] font-bold">ON</span>
           </button>
         </div>
@@ -308,15 +165,15 @@
       <!-- Results Table -->
       <div id="live-results-panel" class="glass rounded-xl p-4">
         <div class="flex items-center justify-between mb-3 gap-3 flex-wrap">
-          <h3 class="text-sm font-semibold text-slate-300">📋 처리 결과</h3>
+          <h3 class="text-sm font-semibold text-slate-300">처리 결과</h3>
           <div class="flex items-center gap-2 text-xs flex-wrap">
-            <input id="live-search" type="search" placeholder="🔍 제목/작품/ID 검색"
+            <input id="live-search" type="search" placeholder="제목, 작품, ID 검색" aria-label="처리 결과 검색"
                    oninput="onLiveSearchInput()"
                    class="px-2.5 py-1 rounded bg-slate-800 border border-slate-700 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 w-44">
             <div class="flex rounded overflow-hidden border border-slate-700">
               <button id="live-filter-all" onclick="setLiveFilter('all')" class="px-2 py-1 bg-blue-600 text-white">전체</button>
-              <button id="live-filter-relevant" onclick="setLiveFilter('relevant')" class="px-2 py-1 bg-slate-800 text-slate-300 hover:bg-slate-700">✅ 관련</button>
-              <button id="live-filter-noise" onclick="setLiveFilter('noise')" class="px-2 py-1 bg-slate-800 text-slate-300 hover:bg-slate-700">🗑 노이즈</button>
+              <button id="live-filter-relevant" onclick="setLiveFilter('relevant')" class="px-2 py-1 bg-slate-800 text-slate-300 hover:bg-slate-700">관련</button>
+              <button id="live-filter-noise" onclick="setLiveFilter('noise')" class="px-2 py-1 bg-slate-800 text-slate-300 hover:bg-slate-700">노이즈</button>
             </div>
             <span id="live-filter-badge" class="hidden px-2 py-1 rounded bg-amber-900/40 text-amber-300 border border-amber-700/40">⏸ 필터 중 — 실시간 갱신 일시정지</span>
             <button id="live-prev-btn" onclick="changeLivePage(-1)" class="px-2 py-1 rounded bg-slate-800 text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed">이전</button>
@@ -350,7 +207,7 @@
             </thead>
             <tbody id="results-body"></tbody>
           </table>
-          <div id="results-empty" class="text-center text-slate-500 py-8">아직 처리된 포스트가 없습니다</div>
+          <div id="results-empty" class="text-center text-slate-500 py-8">처리 결과를 기다리고 있습니다. 배치가 시작되면 이곳에 표시됩니다.</div>
         </div>
         <div id="live-page-buttons" class="mt-3 flex items-center justify-center gap-1 flex-wrap"></div>
       </div>
@@ -359,7 +216,7 @@
       <div id="live-logs-panel" class="glass rounded-xl p-4 flex flex-col">
         <div class="flex items-start justify-between mb-3 gap-3 flex-wrap">
           <div class="flex flex-col gap-2 min-w-0 flex-1">
-            <h3 class="text-sm font-semibold text-slate-300">📜 실시간 로그</h3>
+            <h3 class="text-sm font-semibold text-slate-300">실시간 로그</h3>
             <div id="log-worker-tabs" class="hidden flex flex-wrap items-center gap-1 max-w-full">
               <button onclick="switchLogWorker(-1)" data-log-w="-1" class="text-xs px-2 py-0.5 rounded-full bg-blue-900/60 text-blue-300 font-medium">전체</button>
             </div>
@@ -376,7 +233,7 @@
   <!-- ===== HISTORY TAB ===== -->
   <div id="panel-history" class="hidden">
     <div class="glass rounded-xl p-4 mb-4">
-      <h3 class="text-sm font-semibold text-slate-300 mb-3">📁 과거 실행 이력</h3>
+      <h3 class="text-sm font-semibold text-slate-300 mb-3">실행 이력</h3>
       <div id="history-list" class="space-y-2">
         <div class="text-sm text-slate-500">로딩 중...</div>
       </div>
@@ -389,6 +246,8 @@
           <h3 class="text-sm font-semibold text-slate-300">📄 <span id="history-detail-title">-</span></h3>
           <button onclick="closeHistoryDetail()" class="text-xs text-slate-400 hover:text-white">✕ 닫기</button>
         </div>
+        <p id="history-run-summary" class="text-xs text-slate-400 mb-3"></p>
+        <details class="raw-record mb-3"><summary>이 실행의 설정과 종료 계측</summary><div id="history-run-meta"></div></details>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
           <div class="text-center">
             <div id="hist-total" class="text-xl font-bold text-blue-400">0</div>
@@ -435,7 +294,7 @@
                 <th class="text-left py-2 px-2">구조</th>
                 <th class="text-left py-2 px-2">작품 / 해결</th>
                 <th class="text-left py-2 px-2">Conf.</th>
-                <th class="text-left py-2 px-2">토론유형</th>
+                <th class="text-left py-2 px-2">토론 유형</th>
               </tr>
             </thead>
             <tbody id="history-results-body"></tbody>
@@ -445,7 +304,7 @@
 
       <!-- History Log -->
       <div id="history-log-section" class="hidden glass rounded-xl p-4">
-        <h3 class="text-sm font-semibold text-slate-300 mb-3">📜 로그</h3>
+        <h3 class="text-sm font-semibold text-slate-300 mb-3">실행 로그</h3>
         <div id="history-log-area" class="overflow-auto max-h-[40vh] bg-slate-900/50 rounded-lg p-3 text-xs font-mono whitespace-pre-wrap" style="overflow-wrap:break-word;word-break:normal"></div>
       </div>
     </div>
@@ -456,7 +315,7 @@
     <div class="glass rounded-xl p-4">
       <div class="flex items-center justify-between mb-3 gap-3 flex-wrap">
         <div>
-          <h3 class="text-sm font-semibold text-slate-300">🗂️ Slang DB</h3>
+          <h3 class="text-sm font-semibold text-slate-300">Slang DB</h3>
           <div class="text-xs text-slate-500 mt-1">원본 제목별 slang 집계를 테이블로 조회합니다.</div>
         </div>
         <div class="flex items-center gap-4 text-xs text-slate-400 flex-wrap">
@@ -513,10 +372,12 @@
       <div id="slang-db-page-buttons" class="mt-3 flex items-center justify-center gap-1 flex-wrap"></div>
     </div>
   </div>
+  </main>
+  <footer class="app-footer"><span>Expert Pipeline Monitor</span><span>실시간 상태 · 실행 이력 · 작품 데이터</span></footer>
 </div>
 
 <!-- Detail Modal -->
-<div id="detail-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal()">
+<div id="detail-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title" style="display:none" onclick="if(event.target===this)closeModal()">
   <div class="modal-panel">
     <div class="modal-header">
       <div class="min-w-0">
@@ -530,8 +391,8 @@
         <button id="modal-nav-next" onclick="navModal(1)" title="다음 포스트 (→)"
                 class="px-2.5 py-1 rounded bg-slate-800 text-slate-300 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed text-sm">▶</button>
         <button onclick="copyModalJson(this)" title="이 포스트의 상세 데이터를 JSON으로 복사"
-                class="px-2.5 py-1 rounded bg-slate-800 text-slate-300 hover:bg-slate-700 text-sm ml-1">📋 JSON</button>
-        <button class="modal-close" onclick="closeModal()">&times;</button>
+                class="px-2.5 py-1 rounded bg-slate-800 text-slate-300 hover:bg-slate-700 text-sm ml-1">JSON</button>
+        <button class="modal-close" aria-label="상세 닫기" onclick="closeModal()">&times;</button>
       </div>
     </div>
     <div class="modal-body" id="modal-body"></div>
@@ -539,21 +400,28 @@
 </div>
 
 <!-- Log Viewer Modal -->
-<div id="log-modal" class="modal-overlay" style="display:none;z-index:950" onclick="if(event.target===this)closeLogModal()">
+<div id="log-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="log-modal-title" style="display:none;z-index:950" onclick="if(event.target===this)closeLogModal()">
   <div class="log-modal-panel">
     <div class="log-modal-header">
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-        <span id="log-modal-title" class="text-sm font-bold">📜 처리 로그</span>
+        <span id="log-modal-title" class="text-sm font-bold">처리 로그</span>
         <span id="log-modal-source" class="text-xs text-slate-500"></span>
         <div class="log-filter-bar">
-          <button class="log-filter-btn active" data-filter="all" onclick="toggleLogFilter(this)">전체</button>
-          <button class="log-filter-btn active" data-filter="llm" onclick="toggleLogFilter(this)">LLM</button>
-          <button class="log-filter-btn active" data-filter="search" onclick="toggleLogFilter(this)">검색</button>
-          <button class="log-filter-btn active" data-filter="json" onclick="toggleLogFilter(this)">JSON</button>
+          <button class="log-filter-btn active" data-filter="all" aria-pressed="true" onclick="toggleLogFilter(this)">전체</button>
+          <button class="log-filter-btn" data-filter="llm" aria-pressed="false" onclick="toggleLogFilter(this)">LLM</button>
+          <button class="log-filter-btn" data-filter="search" aria-pressed="false" onclick="toggleLogFilter(this)">검색</button>
+          <button class="log-filter-btn" data-filter="json" aria-pressed="false" onclick="toggleLogFilter(this)">JSON</button>
+          <button class="log-filter-btn" data-filter="warning" aria-pressed="false" onclick="toggleLogFilter(this)">주의·오류</button>
+          <button class="log-filter-btn" data-filter="result" aria-pressed="false" onclick="toggleLogFilter(this)">결과</button>
         </div>
         <span id="log-modal-count" class="text-xs text-slate-500"></span>
       </div>
-      <button class="modal-close" onclick="closeLogModal()">&times;</button>
+      <button class="modal-close" aria-label="로그 닫기" onclick="closeLogModal()">&times;</button>
+    </div>
+    <div class="log-view-toolbar">
+      <label>보기 <select id="log-view-mode" onchange="resetLogPage()"><option value="pretty">단계별로 보기</option><option value="raw">원문 보기</option></select></label>
+      <input id="log-search" type="search" placeholder="로그 내용 검색" aria-label="로그 내용 검색" oninput="scheduleLogSearch()">
+      <div class="log-pager"><button id="log-page-prev" onclick="changeLogPage(-1)">이전</button><span id="log-page-label" aria-live="polite"></span><button id="log-page-next" onclick="changeLogPage(1)">다음</button></div>
     </div>
     <div class="log-modal-body" id="log-modal-body"></div>
   </div>
@@ -609,6 +477,7 @@ let liveResultPage = [];
 let liveCurrentPage = 0;
 let liveTotalResults = 0;
 let livePageLoading = false;
+let liveResultGeneration = 0;
 let _livePendingReloadPage = null;
 // 검색/필터 — 활성화되면 서버 측 필터 결과 스냅샷을 보여주고
 // 실시간 upsert/건수 증분을 일시정지한다 (배지로 안내)
@@ -649,6 +518,10 @@ function updateLiveFilterUI() {
 }
 let historyFileName = '';
 let historyLogFileName = '';
+let historyRunItems = new Map();
+let historySelectionVersion = 0;
+let historyModalVersion = 0;
+let modalHistoryRunKey = '';
 let historyPageData = [];
 let historyCurrentPage = 0;
 let historyTotalResults = 0;
@@ -769,6 +642,10 @@ function toLiveSummary(item) {
   const analysis = item.analysis_result?.analysis || {};
   const novel = identity.novel_identity || {};
   return {
+    ...Object.fromEntries([
+      "is_novel_related", "is_resolved_work_discussion", "title_resolution_state",
+      "title_resolution_allowed", "primary_subject_type", "primary_subject_text",
+    ].map(key => [key, identity[key]])),
     post_id: item.post_id,
     title: item.title || '',
     author: item.author,
@@ -828,10 +705,10 @@ const SUBTYPE_LABELS = {
 };
 
 const WORK_RESOLUTION_LABELS = {
-  resolved: 'resolved',
-  unresolved: 'unresolved',
-  multi_work: 'multi_work',
-  none: 'none',
+  resolved: '확정',
+  unresolved: '미확정',
+  multi_work: '복수 작품',
+  none: '없음',
 };
 
 const ANCHOR_TYPE_LABELS = {
@@ -847,10 +724,10 @@ const ANCHOR_TYPE_LABELS = {
 };
 
 const ANCHOR_STRENGTH_LABELS = {
-  high: 'high',
-  medium: 'medium',
-  low: 'low',
-  none: 'none',
+  high: '높음',
+  medium: '보통',
+  low: '낮음',
+  none: '없음',
 };
 
 const CONTEXT_SOURCE_LABELS = {
@@ -863,9 +740,9 @@ const CONTEXT_SOURCE_LABELS = {
 };
 
 const RELEVANCE_SCOPE_LABELS = {
-  core: 'core',
-  adjacent: 'adjacent',
-  off_topic: 'off_topic',
+  core: '핵심 관련',
+  adjacent: '주변 관련',
+  off_topic: '무관',
 };
 
 function enumLabel(value, labels) {
@@ -875,7 +752,7 @@ function enumLabel(value, labels) {
 
 function topicalityMeta(topicality, isRelevant) {
   if (!topicality && typeof isRelevant !== 'boolean') {
-    return { label: 'unknown', cls: 'bg-slate-700 text-slate-300' };
+    return { label: '미확인', cls: 'bg-slate-700 text-slate-300' };
   }
   if (topicality === 'core_relevant') {
     return { label: TOPICALITY_LABELS[topicality], cls: 'badge-core' };
@@ -887,8 +764,8 @@ function topicalityMeta(topicality, isRelevant) {
     return { label: TOPICALITY_LABELS[topicality], cls: 'badge-unrelated' };
   }
   return isRelevant
-    ? { label: 'relevant', cls: 'badge-relevant' }
-    : { label: 'noise', cls: 'badge-noise' };
+    ? { label: '관련', cls: 'badge-relevant' }
+    : { label: '무관', cls: 'badge-noise' };
 }
 
 function compactStructureText(data) {
@@ -961,8 +838,8 @@ function renderSlangInsightDetail(slangInsight) {
   }
 
   if (!stored) lines.push(`<span class="tag-chip">DB 저장 차단</span>`);
-  if (scope) lines.push(`scope: ${escHtml(scope)}`);
-  if (reason) lines.push(`reason: ${escHtml(reason)}`);
+  if (scope) lines.push(`별칭 범위: ${escHtml(scope)}`);
+  if (reason) lines.push(`저장 판단 사유: ${escHtml(reason)}`);
   return lines.join('<br>');
 }
 
@@ -1021,11 +898,35 @@ function mergeLiveDetail(summary, detail) {
     merged[key] = value;
   }
 
+  // NSFW 세 필드는 현재 상세 행에서만 가져온다. 메모 등 기존 병합은 유지한다.
+  if (merged.analysis && typeof merged.analysis === 'object' && !Array.isArray(merged.analysis)) {
+    const analysis = { ...merged.analysis };
+    const detailOwnsRow = src.post_id != null && src.post_id === merged.post_id;
+    const detailAnalysis = detailOwnsRow && src.analysis && typeof src.analysis === 'object'
+      && !Array.isArray(src.analysis) ? src.analysis : {};
+    for (const key of ['is_nsfw', 'nsfw_assessment_status', 'nsfw_assessment_reason']) {
+      if (Object.hasOwn(detailAnalysis, key)) analysis[key] = detailAnalysis[key];
+      else delete analysis[key];
+    }
+    merged.analysis = analysis;
+  }
+
   if (src.flow_log) merged.flow_log = src.flow_log;
   else if (summary?.flow_log) merged.flow_log = summary.flow_log;
 
   if (src.token_usage) merged.token_usage = src.token_usage;
   else if (summary?.token_usage) merged.token_usage = summary.token_usage;
+
+  // provider 기록은 현재 상세 응답만 사용한다. 이전 요약의 성공 기록을 재사용하지 않는다.
+  if (Object.prototype.hasOwnProperty.call(src, 'recovery_provider_execution')) {
+    merged.recovery_provider_execution = src.recovery_provider_execution;
+  } else delete merged.recovery_provider_execution;
+  if (Object.prototype.hasOwnProperty.call(src, 'recovery_native_execution')) {
+    merged.recovery_native_execution = src.recovery_native_execution;
+  } else delete merged.recovery_native_execution;
+  if (Object.prototype.hasOwnProperty.call(src, 'recovery_native_export_manifest')) {
+    merged.recovery_native_export_manifest = src.recovery_native_export_manifest;
+  } else delete merged.recovery_native_export_manifest;
 
   if (src.elapsed != null) merged.elapsed = src.elapsed;
   else if (summary?.elapsed != null) merged.elapsed = summary.elapsed;
@@ -1084,6 +985,19 @@ workerLogs.set(-1, []);  // 전체 로그
 // ─── Tab Switching ──────────────────────────────
 function switchTab(tab) {
   currentTab = tab;
+  const pageMeta = {
+    live: ['실시간 모니터', 'LIVE OVERVIEW', '파이프라인의 모든 흐름, 하나의 워크스페이스에서.'],
+    history: ['실행 이력', 'RUN HISTORY', '지난 실행을 돌아보고, 결과와 판단의 근거를 확인하세요.'],
+    'slang-db': ['Slang DB', 'KNOWLEDGE BASE', '작품별 별칭과 커뮤니티 표현을 한곳에서 살펴보세요.'],
+  }[tab];
+  document.getElementById('page-title').textContent = pageMeta[0];
+  document.getElementById('breadcrumb-current').textContent = pageMeta[0];
+  document.getElementById('page-eyebrow').textContent = pageMeta[1];
+  document.getElementById('page-description').textContent = pageMeta[2];
+  document.querySelectorAll('.main-nav button').forEach(button => {
+    if (button.id === 'tab-' + tab) button.setAttribute('aria-current', 'page');
+    else button.removeAttribute('aria-current');
+  });
   document.getElementById('panel-live').classList.toggle('hidden', tab !== 'live');
   document.getElementById('panel-history').classList.toggle('hidden', tab !== 'history');
   document.getElementById('panel-slang-db').classList.toggle('hidden', tab !== 'slang-db');
@@ -1189,6 +1103,7 @@ function updateLiveToggleButton(panelKey, enabled) {
   button.className = enabled
     ? 'px-3 py-1.5 rounded-lg text-xs font-medium transition-colors bg-blue-600/20 text-blue-200 border border-blue-500/40 hover:bg-blue-600/30'
     : 'px-3 py-1.5 rounded-lg text-xs font-medium transition-colors bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700';
+  button.setAttribute('aria-pressed', String(enabled));
   badge.textContent = enabled ? 'ON' : 'OFF';
   badge.className = enabled
     ? 'ml-2 rounded px-1.5 py-0.5 text-[10px] font-bold bg-blue-500/20 text-blue-200'
@@ -1207,7 +1122,7 @@ function renderLivePanelVisibility() {
   logsPanel.classList.toggle('hidden', !showLogs);
 
   if (showResults && showLogs) {
-    grid.className = 'grid grid-cols-1 lg:grid-cols-2 gap-4';
+    grid.className = 'grid grid-cols-1 gap-4';
     emptyState.classList.add('hidden');
   } else if (showResults || showLogs) {
     grid.className = 'grid grid-cols-1 gap-4';
@@ -1355,7 +1270,7 @@ function renderLiveResultsNow() {
   // 절대 번호라 기존 행은 불변이므로 증분이 정확하다.
   const tbody = document.getElementById('results-body');
   const empty = document.getElementById('results-empty');
-  empty.textContent = '아직 처리된 포스트가 없습니다';
+  empty.textContent = '처리 결과를 기다리고 있습니다. 배치가 시작되면 이곳에 표시됩니다.';
 
   if (!liveResultPage.length) {
     tbody.innerHTML = '';
@@ -1429,6 +1344,7 @@ async function loadLiveResults(page = 0) {
     return;
   }
   livePageLoading = true;
+  const requestGeneration = liveResultGeneration;
   const requestPage = Math.max(page, 0);
   const requestSearchQuery = liveSearchQuery;
   const requestRelevanceFilter = liveRelevanceFilter;
@@ -1458,7 +1374,8 @@ async function loadLiveResults(page = 0) {
     }
 
     if (
-      requestSearchQuery !== liveSearchQuery
+      requestGeneration !== liveResultGeneration
+      || requestSearchQuery !== liveSearchQuery
       || requestRelevanceFilter !== liveRelevanceFilter
       || (_livePendingReloadPage !== null && _livePendingReloadPage !== requestPage)
     ) {
@@ -1473,6 +1390,7 @@ async function loadLiveResults(page = 0) {
     renderLiveResults();
     if (liveCurrentPage === 0) _cacheSaveResults();
   } catch (err) {
+    if (requestGeneration !== liveResultGeneration) return;
     console.warn('[Dashboard] live results load failed', err);
     if (!liveInitialPageLoaded && _restoreLiveResultsFromCache()) {
       return;
@@ -1793,12 +1711,42 @@ setInterval(() => {
   fetch('/api/status').then(r => r.json()).then(updateStatus).catch(() => {});
 }, 5000);
 
+let lastNativeProgress = null;
+function renderNativeProgress(data, reset = false) {
+  let panel = document.getElementById('native-recovery-phase');
+  if (!panel) {
+    panel = document.createElement('div'); panel.id = 'native-recovery-phase'; panel.setAttribute('role', 'status');
+    panel.className = 'section-note'; document.getElementById('batch-status-text').parentElement.appendChild(panel);
+  }
+  if (reset) { lastNativeProgress = null; panel.textContent = ''; return false; }
+  const sha = x => typeof x === 'string' && /^[a-f0-9]{64}$/.test(x);
+  if (!data || data.schema_version !== 'native_recovery_progress_v1'
+    || typeof data.run_id !== 'string' || !data.run_id || !sha(data.publication_scope_id) || !sha(data.policy_sha256)
+    || ['sequence', 'total', 'processed', 'completed', 'not_executed', 'incomplete'].some(k =>
+      !Number.isSafeInteger(data[k]) || data[k] < 0 || data[k] > 10000000)
+    || data.processed > data.total || data.completed + data.not_executed + data.incomplete > data.processed
+    || !['RUNNING', 'COMPLETED', 'INCOMPLETE'].includes(data.status)) return false;
+  const ref = data.aggregate_ref;
+  if (ref !== null && (!ref || typeof ref.path !== 'string' || !ref.path || !sha(ref.sha256)
+    || !Number.isSafeInteger(ref.bytes) || ref.bytes <= 0 || ref.bytes > 32 * 1024 * 1024)) return false;
+  if (data.status === 'COMPLETED' && (ref === null || data.processed !== data.total)) return false;
+  const old = lastNativeProgress;
+  if (old && (['run_id', 'publication_scope_id', 'policy_sha256'].some(k => old[k] !== data[k])
+    || data.sequence <= old.sequence || data.total !== old.total || data.processed < old.processed
+    || ['COMPLETED', 'INCOMPLETE'].includes(old.status))) return false;
+  lastNativeProgress = { ...data };
+  panel.textContent = `별도 native 복구 ${data.processed}/${data.total} · ${data.status} · 기본 분석 카운터와 별도 · 공개 적용 없음`;
+  return true;
+}
+
 // ─── Event Handlers ─────────────────────────────
 function handleEvent(msg) {
   const { type, data } = msg;
   
   switch (type) {
+    case 'batch_prepare':
     case 'batch_start':
+      renderNativeProgress(null, true);
       parallelCount = data.parallel_count || 1;
       setLlmSuspendState({ active: false });
       doneSteps.clear();
@@ -1806,11 +1754,15 @@ function handleEvent(msg) {
       resetPipelineSteps();
       clearFlowLog();
       activeWorkers.clear();
+      liveResultGeneration += 1;
       liveResultPage = [];
       liveCurrentPage = 0;
       liveTotalResults = 0;
       liveInitialPageLoaded = false;
       livePendingRestoreItems = [];
+      liveCachedSnapshot = { items: [], total: 0, page: 0 };
+      _cacheSaveResultsLastTs = 0;
+      _livePendingReloadPage = null;
       slangDbLoaded = false;
       renderLiveResults();
       _cacheSaveResults();
@@ -1908,12 +1860,24 @@ function handleEvent(msg) {
       break;
     }
 
+    case 'native_recovery_progress':
+    case 'native_recovery_complete':
+      if (renderNativeProgress(data) && type === 'native_recovery_complete') loadLiveResults(liveCurrentPage);
+      break;
+
     case 'search_stats':
+      break;
+
+    case 'batch_failed':
+      activeWorkers.clear();
+      resetPipelineSteps();
+      renderWorkerCards();
+      fetch('/api/status').then(r => r.json()).then(updateStatus).catch(() => {});
       break;
 
     case 'batch_complete':
       setLlmSuspendState({ active: false });
-      document.getElementById('batch-status-icon').textContent = '✅';
+      document.getElementById('batch-status-icon').textContent = '✓';
       document.getElementById('batch-status-text').textContent = '배치 완료';
       resetPipelineSteps();
       activeWorkers.clear();
@@ -1955,7 +1919,23 @@ function handleEvent(msg) {
 
 // ─── UI Updates ─────────────────────────────────
 
+function batchStatePresentation(s) {
+  const failure = s.batch_failure;
+  if (s.batch_status === 'FAILED' && failure && failure.schema_version === 'dashboard_run_failure_v1') {
+    const counts = failure.manifest_counts || {};
+    return { state: 'failed', icon: '!', label: failure.process_exited === false ? '배치 중단 · 프로세스 종료 미확인 · 실측 미완료' : '배치 실패 · 실측 미완료',
+      detail: `${failure.reason_code}: ${failure.message || ''} · 저장 ${counts.flushed_count ?? '?'} / ${counts.input_post_count ?? s.total_posts ?? '?'} · 처리 관측 ${s.done_count || 0} · 실행 ${failure.run_id}` };
+  }
+  if (s.llm_suspended) return { state: 'suspended', icon: '!', label: 'LLM 서버 확인 대기', detail: '' };
+  if (s.batch_running) return { state: 'running', icon: '↻', label: '배치 실행 중', detail: '' };
+  if (s.batch_status === 'INCOMPLETE') return { state: 'incomplete', icon: '!', label: '배치 미완료', detail: '' };
+  if (s.batch_status === 'COMPLETED' || s.done_count > 0) return { state: 'complete', icon: '✓', label: '배치 완료', detail: '' };
+  return { state: 'idle', icon: 'Ⅱ', label: '배치 대기 중', detail: '' };
+}
+
 function updateStatus(s) {
+  if (s?.output_file && lastKnownStatus?.output_file && s.output_file !== lastKnownStatus.output_file) renderNativeProgress(null, true);
+  if (Object.prototype.hasOwnProperty.call(s || {}, 'native_recovery')) renderNativeProgress(s.native_recovery);
   lastKnownStatus = { ...(s || {}) };
   setLlmSuspendState({
     active: !!s.llm_suspended,
@@ -1966,29 +1946,28 @@ function updateStatus(s) {
     startedAt: s.llm_suspend_started_at || '',
     resumedAt: s.llm_suspend_resumed_at || '',
   });
-  const pct = s.progress_pct || 0;
+  const pct = Math.max(0, Math.min(100, Number(s.progress_pct) || 0));
+  document.getElementById('progress-percent').innerHTML = Math.round(pct) + '<span>%</span>';
+  document.getElementById('progress-track').setAttribute('aria-valuenow', String(pct));
+  const batchView = batchStatePresentation(s);
+  document.querySelector('.progress-card').dataset.state = batchView.state;
   document.getElementById('progress-bar').style.width = pct + '%';
   document.getElementById('progress-text').textContent = `${s.done_count || 0} / ${s.total_posts || 0}`;
   
-  if (s.llm_suspended) {
-    document.getElementById('batch-status-icon').textContent = '⚠️';
-    document.getElementById('batch-status-icon').classList.remove('anim-pulse');
-    document.getElementById('batch-status-text').textContent = 'LLM 서버 확인 대기';
-  } else if (s.batch_running) {
-    document.getElementById('batch-status-icon').textContent = '🔄';
-    document.getElementById('batch-status-icon').classList.add('anim-pulse');
-    document.getElementById('batch-status-text').textContent = '배치 실행 중';
-  } else if (s.done_count > 0) {
-    document.getElementById('batch-status-icon').textContent = '✅';
-    document.getElementById('batch-status-icon').classList.remove('anim-pulse');
-    document.getElementById('batch-status-text').textContent = '배치 완료';
-  } else {
-    document.getElementById('batch-status-icon').textContent = '⏸️';
-    document.getElementById('batch-status-icon').classList.remove('anim-pulse');
-    document.getElementById('batch-status-text').textContent = '배치 대기 중';
+  document.getElementById('batch-status-icon').textContent = batchView.icon;
+  document.getElementById('batch-status-icon').classList.toggle('anim-pulse', batchView.state === 'running');
+  document.getElementById('batch-status-text').textContent = batchView.label;
+  const failureDetail = document.getElementById('batch-failure-detail');
+  failureDetail.hidden = !batchView.detail;
+  failureDetail.textContent = batchView.detail; // diagnostic text is never HTML
+  if (batchView.state === 'failed') {
+    activeWorkers.clear();
+    resetPipelineSteps();
+    renderWorkerCards();
+    document.getElementById('current-post-label').textContent = '실행 중단 · 최종 저장 미완료';
   }
-  
-  document.getElementById('elapsed-text').textContent = `경과: ${fmtTime(s.elapsed_sec)}`;
+
+  document.getElementById('elapsed-text').textContent = `경과: ${fmtTime(s.elapsed_sec)}${s.batch_start_time_source === 'LEGACY_INFERRED_OR_ATTACH_TIME' ? ' (시각 추정)' : ''}`;
   document.getElementById('eta-text').textContent = `ETA: ${s.eta_sec > 0 ? fmtTime(s.eta_sec) : '-'}`;
   document.getElementById('avg-text').textContent = `평균: ${s.avg_sec_per_post ? s.avg_sec_per_post.toFixed(1) + 's' : '-'}`;
   
@@ -2043,7 +2022,7 @@ function updateStatus(s) {
     // 단, (재)연결 직후 첫 status는 무조건 1회 복원 — SSE 이벤트가 계속 흘러
     // lastEventTime이 최신이어도 끊김 구간의 stale 카드를 정리해야 한다.
     const sseTracking = !sseRestorePending && activeWorkers.size > 0 && (Date.now() - lastEventTime) < 15000;
-    if (!sseTracking && s.active_posts && typeof s.active_posts === 'object') {
+    if (batchView.state !== 'failed' && !sseTracking && s.active_posts && typeof s.active_posts === 'object') {
       sseRestorePending = false;
       activeWorkers.clear();
       for (const [pid, info] of Object.entries(s.active_posts)) {
@@ -2104,9 +2083,9 @@ function resetPipelineSteps() {
 
 // ─── Pipeline Flow Timeline ────────────────────────
 const STEP_LABELS = {
-  fast_path: '⚡FP', gatekeeper: '🎭GK', discourse: '📖DC',
-  search: '🔎SR', decoder: '🔤DE', verifier: '🔍VR',
-  critic: '📚CR', synthesizer: '🔬SY', arbiter: '⚖️AR'
+  fast_path: 'FP', gatekeeper: 'GK', discourse: 'DC',
+  search: 'SR', decoder: 'DE', verifier: 'VR',
+  critic: 'CR', synthesizer: 'SY', arbiter: 'AR'
 };
 
 function addFlowEntry(expert, isRecall, fromExpert, reason) {
@@ -2167,6 +2146,7 @@ const _workerRenderSigs = new Map();
 
 function toggleParallelUI(isParallel) {
   const section = document.getElementById('parallel-section');
+  document.querySelector('.pipeline-overview').dataset.mode = isParallel ? 'parallel' : 'sequential';
   if (isParallel) {
     section.classList.remove('hidden');
     document.getElementById('parallel-count-badge').textContent = `${parallelCount} workers`;
@@ -2183,6 +2163,7 @@ function renderWorkerCards() {
 function renderWorkerCardsNow() {
   const container = document.getElementById('parallel-workers');
   if (!container) return;
+  document.getElementById('workers-active-count').textContent = activeWorkers.size;
 
   if (activeWorkers.size > 0) {
     container.querySelectorAll('[data-worker-empty="1"]').forEach(el => el.remove());
@@ -2225,7 +2206,7 @@ function renderWorkerCardsNow() {
 
     const wid = w.worker_id;
     const colorIdx = wid % 8;
-    const expertLabel = w.expert ? (STEP_LABELS[w.expert] || w.expert) : '대기';
+    const expertLabel = w.expert ? w.expert.replace(/_/g, ' ').replace(/^./, c => c.toUpperCase()) : '대기';
     const isRunning = w.status === 'running';
     const doneSig = MINI_STEPS.filter(s => w.doneSteps.has(s)).join(',');
     const recallSig = MINI_STEPS.map(s => `${s}:${w.recallCounts[s] || 0}`).join('|');
@@ -2259,9 +2240,9 @@ function renderWorkerCardsNow() {
         <span class="text-xs text-slate-500 worker-elapsed" data-started="${w.startedAt || ''}"></span>
         <span class="text-xs text-slate-400">#${postId}</span>
       </div>
-      <div class="text-xs text-slate-300 truncate mb-2" title="${escHtml(w.title)}">${escHtml((w.title || '').slice(0,35))}</div>
-      <div class="flex flex-wrap gap-0.5 mb-1">${stepsHtml}</div>
-      <div class="text-xs ${isRunning ? 'text-blue-300 anim-pulse' : 'text-slate-500'}">${expertLabel} ${isRunning ? '⏳' : ''}</div>
+      <div class="worker-title" title="${escHtml(w.title)}">${escHtml(w.title || '제목 없음')}</div>
+      <div class="worker-stages">${stepsHtml}</div>
+      <div class="worker-footer"><span class="${isRunning ? 'text-blue-300' : 'text-slate-500'}">${expertLabel}</span><span class="worker-state">${isRunning ? '처리 중' : '대기'}</span></div>
     `;
   });
 
@@ -2359,7 +2340,7 @@ async function copyModalJson(btn) {
     setTimeout(() => { btn.textContent = orig; }, 1200);
   } else {
     btn.textContent = '복사 실패';
-    setTimeout(() => { btn.textContent = orig || '📋 JSON'; }, 1200);
+    setTimeout(() => { btn.textContent = orig || 'JSON'; }, 1200);
   }
 }
 
@@ -2375,6 +2356,8 @@ function showModalLoading(title, subtitle = '') {
 async function openLiveModal(postId) {
   const summary = liveResultPage.find(item => item.post_id === postId);
   if (!summary) return;
+  const requestVersion = ++historyModalVersion;
+  modalHistoryRunKey = '';
 
   _setModalNav(liveResultPage, postId, 'live');
   showModalLoading(`#${postId} — ${summary.title || '(제목 없음)'}`);
@@ -2382,6 +2365,7 @@ async function openLiveModal(postId) {
     const res = await fetch(`/api/results/${postId}`);
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    if (historyModalVersion !== requestVersion) return;
     const detailReady = hasDetailPayload(data);
     const summaryReady = hasDetailPayload(summary);
     if (!detailReady && !summaryReady) {
@@ -2396,6 +2380,7 @@ async function openLiveModal(postId) {
     }
     showModal(mergeLiveDetail(summary, data), 'live');
   } catch (err) {
+    if (historyModalVersion !== requestVersion) return;
     if (hasDetailPayload(summary)) {
       showModal({
         ...summary,
@@ -2409,6 +2394,8 @@ async function openLiveModal(postId) {
 
 async function openHistoryModal(postId) {
   if (!historyFileName) return;
+  const selectedRun = historyFileName;
+  const requestVersion = ++historyModalVersion;
 
   const summary = historyPageData.find(item => item.post_id === postId);
   _setModalNav(historyPageData, postId, 'history');
@@ -2418,17 +2405,20 @@ async function openHistoryModal(postId) {
   );
 
   try {
-    const res = await fetch(`/api/runs/${encodeURIComponent(historyFileName)}/posts/${postId}`);
+    const res = await fetch(`/api/runs/${encodeURIComponent(selectedRun)}/posts/${encodeURIComponent(postId)}`);
     const data = await res.json();
+    if (historyFileName !== selectedRun || historyModalVersion !== requestVersion) return;
     if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
     showModal(data, 'history');
   } catch (err) {
+    if (historyFileName !== selectedRun || historyModalVersion !== requestVersion) return;
     document.getElementById('modal-body').innerHTML = `<div class="text-center text-red-400 py-12">상세 정보를 불러오지 못했습니다.<br><span class="text-xs text-slate-500">${escHtml(err.message || 'unknown error')}</span></div>`;
   }
 }
 
 function showModal(d, mode) {
   const isHistory = mode === 'history';
+  modalHistoryRunKey = isHistory ? historyFileName : '';
   _modalCurrentData = d;
   _updateModalNavButtons();
 
@@ -2438,9 +2428,9 @@ function showModal(d, mode) {
   document.getElementById('modal-title').textContent = `#${postId} — ${titleText}`;
   
   const sub = [];
-  if (d.author) sub.push(d.author);
-  if (d.created_at) sub.push(d.created_at);
-  if (d.url) sub.push(`<a href="${escHtml(d.url)}" target="_blank" class="text-blue-400 hover:underline">🔗 원본 보기</a>`);
+  if (d.author) sub.push(escHtml(d.author));
+  if (d.created_at) sub.push(escHtml(d.created_at));
+  if (d.url) sub.push(DashboardPresentation.safeLink(d.url, '원본 보기'));
   document.getElementById('modal-subtitle').innerHTML = sub.join(' · ');
   
   let html = '';
@@ -2479,19 +2469,9 @@ function showModal(d, mode) {
     anchor_type: anchorType === '-' ? null : anchorType,
     anchor_strength: anchorStrength === '-' ? null : anchorStrength,
   });
-  const reason = isHistory ? (identity.reason || '') : (d.reason || '');
-  const reasonLines = isHistory ? (identity.reason_lines || []) : (d.reason_lines || []);
-  const analysisNotes = isHistory ? ((analysis.notes || d.analysis_notes || '')) : (d.analysis_notes || analysis.notes || '');
   const detailWarning = !isHistory ? String(d._detail_warning || '').trim() : '';
   const slangInsight = isHistory ? identity.slang_insight : d.slang_insight;
   const topicalityBadge = topicalityMeta(topicality === '-' ? null : topicality, isRelevant);
-  const hasPrimaryReason = Boolean((reason && String(reason).trim()) || (Array.isArray(reasonLines) && reasonLines.length));
-  const reasonDisplay = (reason && String(reason).trim())
-    ? String(reason).trim()
-    : (Array.isArray(reasonLines) && reasonLines.length
-      ? reasonLines.filter(Boolean).join('\n').trim()
-      : String(analysisNotes || '').trim());
-  const reasonLabel = hasPrimaryReason ? '📝 판정 사유' : '📝 판정 사유 보조';
 
   if (detailWarning) {
     html += `<div class="detail-section">`;
@@ -2499,12 +2479,14 @@ function showModal(d, mode) {
     html += `</div>`;
   }
   
+  // 원문은 사유 뒤에 배치해 판정부터 읽도록 한다.
+  const originalStart = html.length;
   // ━━━ ① 원본 게시글 정보 ━━━
   html += `<div class="detail-section">`;
-  html += `<div class="detail-section-title">📌 원본 게시글</div>`;
+  html += `<div class="detail-section-title">원본 게시글</div>`;
   html += `<div class="detail-grid">`;
-  html += dkv('Post ID', postId);
-  html += dkv('제목', `<span class="text-white font-medium">${escHtml(titleText)}</span>`);
+  html += dkv('게시글 ID', postId);
+  html += dkv('제목', `<span class="detail-primary font-medium">${escHtml(titleText)}</span>`);
   if (d.author) html += dkv('작성자', escHtml(d.author));
   if (d.created_at) html += dkv('작성일', escHtml(d.created_at));
   html += `</div></div>`;
@@ -2525,7 +2507,7 @@ function showModal(d, mode) {
   const comments = d.comments;
   if (comments && comments.length) {
     html += `<div class="detail-section">`;
-    html += `<div class="detail-section-title">💬 댓글 <span class="text-xs text-slate-500 font-normal">(${comments.length}개)</span></div>`;
+    html += `<div class="detail-section-title">댓글 <span class="text-xs text-slate-500 font-normal">(${comments.length}개)</span></div>`;
     html += expandableBlock(
       comments.map(c => escHtml(typeof c === 'string' ? c : JSON.stringify(c))).join('\n'),
       { expandIf: comments.length > 12 },
@@ -2533,98 +2515,107 @@ function showModal(d, mode) {
     html += `</div>`;
   }
   
+  const originalHtml = html.slice(originalStart);
+  html = html.slice(0, originalStart);
+
   // ━━━ ② 판정 결과 ━━━
   html += `<div class="detail-section" style="border-top:1px solid rgba(71,85,105,.3); padding-top:16px;">`;
-  html += `<div class="detail-section-title">🏷️ 판정 결과</div>`;
+  html += `<div class="detail-section-title">판정 결과</div>`;
   html += `<div class="detail-grid">`;
-  html += dkv('Topicality', `<span class="px-2 py-0.5 rounded ${topicalityBadge.cls} text-xs font-medium">${escHtml(topicalityBadge.label)}</span>`);
-  html += dkv('기존 relevance', typeof isRelevant === 'boolean'
-    ? (isRelevant
-      ? '<span class="px-2 py-0.5 rounded badge-relevant text-xs font-medium">✅ relevant</span>'
-      : '<span class="px-2 py-0.5 rounded badge-noise text-xs font-medium">⛔ noise</span>')
-    : '<span class="px-2 py-0.5 rounded bg-slate-700 text-slate-300 text-xs font-medium">unknown</span>');
-  html += dkv('Subtype', escHtml(enumLabel(subtype === '-' ? null : subtype, SUBTYPE_LABELS)));
-  html += dkv('Work Resolution', escHtml(enumLabel(workResolution === '-' ? null : workResolution, WORK_RESOLUTION_LABELS)));
-  html += dkv('소설명', `<span class="text-white font-medium">${escHtml(displayWorkTitle)}</span>`);
-  html += dkv('신뢰도', `<span class="px-1.5 py-0.5 rounded text-xs ${confBadge(confidence)}">${confidence}</span>`);
-  html += dkv('토론유형', escHtml(discussionType));
-  html += dkv('앵커', escHtml(`${enumLabel(anchorType === '-' ? null : anchorType, ANCHOR_TYPE_LABELS)} / ${enumLabel(anchorStrength === '-' ? null : anchorStrength, ANCHOR_STRENGTH_LABELS)}`));
-  if (d.elapsed != null) html += dkv('소요시간', d.elapsed.toFixed(1) + 's');
+  html += dkv('주제 관련성', `<span class="px-2 py-0.5 rounded ${topicalityBadge.cls} text-xs font-medium">${escHtml(topicalityBadge.label)}</span>`);
+  html += dkv('세부 분류', escHtml(enumLabel(subtype === '-' ? null : subtype, SUBTYPE_LABELS)));
+  html += dkv('작품 식별', escHtml(enumLabel(workResolution === '-' ? null : workResolution, WORK_RESOLUTION_LABELS)));
+  html += dkv('소설명', `<span class="detail-primary font-medium">${escHtml(displayWorkTitle)}</span>`);
+  html += dkv('신뢰도', `<span class="px-1.5 py-0.5 rounded text-xs ${confBadge(confidence)}">${escHtml(confidence)}</span>`);
+  html += dkv('토론 유형', escHtml(discussionType));
+  html += dkv('작품 단서', escHtml(`${enumLabel(anchorType === '-' ? null : anchorType, ANCHOR_TYPE_LABELS)} / ${enumLabel(anchorStrength === '-' ? null : anchorStrength, ANCHOR_STRENGTH_LABELS)}`));
+  if (Number.isFinite(d.elapsed)) html += dkv('소요 시간', d.elapsed.toFixed(1) + 's');
   const workUrl = novel.heretic_url || d.heretic_url || null;
   const showWorkUrl = (identityState === 'resolved_title' || workResolution === 'resolved') && !!workUrl;
-  if (showWorkUrl) html += dkv('작품 URL', `<a href="${escHtml(workUrl)}" target="_blank" class="text-blue-400 hover:underline text-xs">${escHtml(workUrl)}</a>`);
+  if (showWorkUrl) html += dkv('작품 URL', DashboardPresentation.safeLink(workUrl));
   const tu = d.token_usage;
-  if (tu && tu.total_tokens) {
-    html += dkv('토큰', `입력 ${fmtNum(tu.prompt_tokens||0)} / 출력 ${fmtNum(tu.completion_tokens||0)} / 총 ${fmtNum(tu.total_tokens||0)}`);
+  if (tu && typeof tu === 'object') {
+    const tokenText = value => value === null ? 'null · 산정값 없음' : value === undefined ? '미기록' : fmtNum(value);
+    html += dkv('행 token_usage 관측', `입력 ${escHtml(tokenText(tu.prompt_tokens))} / 출력 ${escHtml(tokenText(tu.completion_tokens))} / 총 ${escHtml(tokenText(tu.total_tokens))}`);
   }
   html += `</div></div>`;
 
+  const metadataStart = html.length;
   if (contextSources.length || consistencyFlags.length) {
     html += `<div class="detail-section">`;
-    html += `<div class="detail-section-title">🧭 구조화 메타</div>`;
+    html += `<div class="detail-section-title">판정에 사용한 정보</div>`;
     html += `<div class="detail-grid">`;
-    if (contextSources.length) html += dkv('컨텍스트 소스', renderTagChips(contextSources, CONTEXT_SOURCE_LABELS));
-    if (consistencyFlags.length) html += dkv('정합성 경고', renderTagChips(consistencyFlags));
+    if (contextSources.length) html += dkv('참고한 자료', renderTagChips(contextSources, CONTEXT_SOURCE_LABELS));
+    if (consistencyFlags.length) html += dkv('일관성 점검 코드', renderTagChips(consistencyFlags));
     html += `</div></div>`;
   }
 
   if (primaryWork || comparisonTarget || futureWatchTarget || titleCandidates.length || mentionedWorks.length || recommendationCandidates.length) {
     html += `<div class="detail-section">`;
-    html += `<div class="detail-section-title">📚 작품 구조</div>`;
+    html += `<div class="detail-section-title">작품과 후보</div>`;
     html += `<div class="detail-grid">`;
-    if (primaryWork) html += dkv('Primary', renderTagChips([titleLabel(primaryWork)]));
-    if (comparisonTarget) html += dkv('Comparison', renderTagChips([titleLabel(comparisonTarget)]));
-    if (futureWatchTarget) html += dkv('Future Watch', renderTagChips([titleLabel(futureWatchTarget)]));
-    if (mentionedWorks.length) html += dkv('Mentioned Works', renderTagChips(mentionedWorks.map(titleLabel)));
-    if (recommendationCandidates.length) html += dkv('Recommendation Candidates', renderTagChips(recommendationCandidates.map(titleLabel)));
-    if (titleCandidates.length) html += dkv('Title Candidates', renderTagChips(titleCandidates.map(titleLabel)));
+    if (primaryWork) html += dkv('중심 작품', renderTagChips([titleLabel(primaryWork)]));
+    if (comparisonTarget) html += dkv('비교 대상', renderTagChips([titleLabel(comparisonTarget)]));
+    if (futureWatchTarget) html += dkv('향후 관심 작품', renderTagChips([titleLabel(futureWatchTarget)]));
+    if (mentionedWorks.length) html += dkv('언급한 작품', renderTagChips(mentionedWorks.map(titleLabel)));
+    if (recommendationCandidates.length) html += dkv('추천 후보', renderTagChips(recommendationCandidates.map(titleLabel)));
+    if (titleCandidates.length) html += dkv('제목 후보', renderTagChips(titleCandidates.map(titleLabel)));
     html += `</div></div>`;
   }
   
+  const metadataHtml = html.slice(metadataStart);
+  html = html.slice(0, metadataStart);
+
   // ━━━ ③ 판정 사유 ━━━
-  html += `<div class="detail-section">`;
-  html += `<div class="detail-section-title">${reasonLabel}</div>`;
-  if (reasonDisplay) {
-    html += expandableBlock(renderReasonHtml(reasonDisplay), {
-      maxHeight: 300,
-      blockClass: 'reason-block',
-      expandIf: reasonDisplay.length > 600 || reasonDisplay.split('\n').length > 12,
-    });
-  } else {
-    html += `<div class="detail-block text-slate-400">저장된 판정 사유가 없습니다. 현재 실행이 패치 이전 코드이거나 결과 저장 전에 열린 항목일 수 있습니다.</div>`;
-  }
-  html += `</div>`;
+  html += DashboardPresentation.renderExplanation(identity, analysis, d.analysis_notes);
   
+  html += DashboardPresentation.renderIdentity(identity);
+  html += metadataHtml;
+
   // ━━━ ④ 분석 상세 ━━━
   const extras = [];
   if (slangInsight) {
     extras.push(dkv(slangInsightDetailLabel(slangInsight), renderSlangInsightDetail(slangInsight)));
   }
   if (analysis.detected_titles && analysis.detected_titles.length) {
-    const tt = analysis.detected_titles.map(t => `${escHtml(t.official_title||'?')} (${t.confidence||'-'})`).join(', ');
-    extras.push(dkv('감지 작품', tt));
+    const tt = analysis.detected_titles.map(t => `${escHtml(t.official_title||'?')} (${escHtml(t.confidence||'-')})`).join(', ');
+    extras.push(dkv('발견한 작품', tt));
   }
   if (analysis.sentiment_profile) {
     const sp = analysis.sentiment_profile;
-    extras.push(dkv('감성', `${sp.sentiment||'-'} / Pacing: ${sp.pacing||'-'} / Drift: ${sp.drift_risk||'-'}`));
+    extras.push(dkv('감성', `${escHtml(sp.sentiment||'-')} / 전개 속도: ${escHtml(sp.pacing||'-')} / 이탈 위험: ${escHtml(sp.drift_risk||'-')}`));
   }
-  if (analysis.is_nsfw) extras.push(dkv('NSFW', '⚠️ Yes'));
-  if (analysis.user_segment) extras.push(dkv('독자 세그먼트', escHtml(analysis.user_segment)));
+  extras.push(dkv('NSFW', escHtml(DashboardPresentation.nsfwLabel(analysis.is_nsfw, analysis.nsfw_assessment_status))));
+  extras.push(dkv('NSFW 평가 사유', escHtml(DashboardPresentation.nsfwReasonLabel(
+    analysis.is_nsfw, analysis.nsfw_assessment_status, analysis.nsfw_assessment_reason))));
+  if (analysis.user_segment) extras.push(dkv('독자 유형', escHtml(analysis.user_segment)));
   if (extras.length) {
-    html += `<div class="detail-section"><div class="detail-section-title">🔍 분석 상세</div><div class="detail-grid">${extras.join('')}</div></div>`;
+    html += `<div class="detail-section"><div class="detail-section-title">분석 상세</div><div class="detail-grid">${extras.join('')}</div></div>`;
   }
   // 마이크로 태그
   if (analysis.micro_tags && analysis.micro_tags.length) {
-    html += `<div class="detail-section"><div class="detail-section-title">🏷 마이크로 태그</div><div>`;
+    html += `<div class="detail-section"><div class="detail-section-title">세부 태그</div><div>`;
     html += analysis.micro_tags.map(t => `<span class="tag-chip">${escHtml(t)}</span>`).join('');
     html += `</div></div>`;
   }
   
+  html += DashboardPresentation.renderContextDiagnostics(d.run_meta?.source_context_diagnostics);
+  html += DashboardPresentation.renderCandidateRetrieval(d.run_meta?.candidate_retrieval_shadow);
+  html += DashboardPresentation.renderCandidateReranker(d.run_meta?.candidate_reranker_shadow);
+  html += DashboardPresentation.renderCandidateCalibration(d.run_meta?.candidate_calibration_shadow);
+  html += DashboardPresentation.renderCandidateInference(d.run_meta?.candidate_reranker_inference, d.run_meta?.candidate_inference_capture, d);
+  html += DashboardPresentation.renderCandidateCapture(d.run_meta?.candidate_reranker_capture);
+  html += DashboardPresentation.renderCandidateSemantics(d.run_meta?.candidate_reranker_semantics, d.run_manifest);
+  html += DashboardPresentation.renderCandidateSemanticsCapture(d.run_meta?.candidate_reranker_semantics_capture);
+  html += DashboardPresentation.renderCommunityKnowledge(d.run_meta?.community_knowledge_readback);
+  html += DashboardPresentation.renderRunContext(d);
+  html += `<details class="source-record detail-section"><summary>원본 게시글과 댓글</summary>${originalHtml}</details>`;
+
   // ━━━ ⑤ 실행 흐름 ━━━
   const fl = d.flow_log;
   if (fl && fl.length) {
     html += `<div class="detail-section" style="border-top:1px solid rgba(71,85,105,.3); padding-top:16px;">`;
-    html += `<div class="detail-section-title">📌 실행 흐름 <span class="text-xs text-slate-500 font-normal">(${fl.length}단계${d.flow_dropped ? `, 앞 ${d.flow_dropped}단계 생략` : ''})</span></div>`;
+    html += `<div class="detail-section-title">실행 타임라인 <span class="text-xs text-slate-500 font-normal">(${fl.length}단계${d.flow_dropped ? `, 앞 ${d.flow_dropped}단계 생략` : ''})</span></div>`;
     html += `<div class="flex flex-wrap items-center gap-1">`;
     fl.forEach((f, i) => {
       if (i > 0) {
@@ -2635,7 +2626,7 @@ function showModal(d, mode) {
         }
       }
       const cls = f.recall ? 'recall' : 'normal';
-      html += `<span class="flow-step ${cls}" title="${escHtml(f.reason||'')}">${STEP_LABELS[f.expert]||f.expert}</span>`;
+      html += `<span class="flow-step ${cls}" title="${escHtml(f.reason||'')}">${escHtml(STEP_LABELS[f.expert]||f.expert)}</span>`;
       if (f.recall && f.reason) {
         html += `<span class="flow-reason">(${escHtml(f.reason)})</span>`;
       }
@@ -2645,8 +2636,9 @@ function showModal(d, mode) {
   
   // ━━━ ⑥ 처리 로그 보기 버튼 ━━━
   html += `<div class="detail-section" style="border-top:1px solid rgba(71,85,105,.3); padding-top:16px; text-align:center;">`;
-  html += `<button onclick="openPostLog(${postId})" style="padding:8px 24px; border-radius:8px; border:1px solid rgba(37,99,235,.5); background:rgba(37,99,235,.15); color:#93c5fd; font-size:13px; font-weight:500; cursor:pointer; transition:.2s;" onmouseover="this.style.background='rgba(37,99,235,.3)'" onmouseout="this.style.background='rgba(37,99,235,.15)'">`
-  html += `📜 처리 로그 보기</button>`;
+  html += isHistory
+    ? '<button onclick="openHistoryRunLog()" class="detail-log-button">선택 실행 로그 보기 · 최근 500줄</button>'
+    : `<button onclick="openPostLog(${postId})" class="detail-log-button">처리 로그 보기</button>`;
   html += `</div>`;
   
   document.getElementById('modal-body').innerHTML = html;
@@ -2655,6 +2647,8 @@ function showModal(d, mode) {
 }
 
 function closeModal() {
+  historyModalVersion++;
+  modalHistoryRunKey = '';
   document.getElementById('detail-modal').style.display = 'none';
   document.body.style.overflow = '';
   _modalCurrentData = null;
@@ -2689,27 +2683,54 @@ document.addEventListener('keydown', (e) => {
 // ─── Post Log Viewer ────────────────────────────
 
 let _logRawLines = [];  // 원본 로그 라인 보관
-let _logFilters = { all: true, llm: true, search: true, json: true };
+let _logFilter = 'all';
+let _logPage = 0;
+let _logRecords = [];
+let _logParsedSource = null;
+let _logSearchTimer = null;
+let _logRequestId = 0;
+const LOG_PAGE_SIZE = 200;
 
-async function openPostLog(postId, preferFile = false) {
+function openHistoryRunLog() {
+  if (modalHistoryRunKey) openPostLog(_modalCurrentData?.post_id, false, modalHistoryRunKey);
+}
+
+async function openPostLog(postId, preferFile = false, runKey = '') {
+  const requestId = ++_logRequestId;
   const body = document.getElementById('log-modal-body');
   const titleEl = document.getElementById('log-modal-title');
   const sourceEl = document.getElementById('log-modal-source');
   const countEl = document.getElementById('log-modal-count');
   
-  titleEl.textContent = `📜 Post #${postId} 처리 로그`;
+  titleEl.textContent = runKey ? '선택 실행 로그 · 최근 500줄' : `게시글 #${postId} 처리 로그`;
   sourceEl.textContent = '불러오는 중...';
   countEl.textContent = '';
-  body.innerHTML = '<div style="padding:40px;text-align:center;color:#64748b">⏳ 로그를 불러오는 중...</div>';
+  body.innerHTML = '<div style="padding:40px;text-align:center;color:var(--muted)">로그를 불러오는 중입니다.</div>';
   
   document.getElementById('log-modal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
   
-  // Reset filters
-  _logFilters = { all: true, llm: true, search: true, json: true };
-  document.querySelectorAll('.log-filter-btn').forEach(btn => btn.classList.add('active'));
+  clearTimeout(_logSearchTimer);
+  _logRawLines = [];
+  _logParsedSource = null;
+  _logRecords = [];
+  _logFilter = 'all';
+  _logPage = 0;
+  sourceEl.style.color = '';
+  document.getElementById('log-search').value = '';
+  document.getElementById('log-view-mode').value = 'pretty';
+  document.getElementById('log-page-label').textContent = '';
+  document.getElementById('log-page-prev').disabled = true;
+  document.getElementById('log-page-next').disabled = true;
+  document.querySelectorAll('.log-filter-btn').forEach(btn => {
+    const selected = btn.dataset.filter === 'all';
+    btn.classList.toggle('active', selected);
+    btn.setAttribute('aria-pressed', String(selected));
+  });
   
   // 헬퍼: 캐시에서 로드 시도
   function _tryLoadFromCache() {
+    if (runKey) return false;
     const cached = _cacheGetPostLog(postId);
     if (cached && cached.lines && cached.lines.length > 0) {
       _logRawLines = cached.lines;
@@ -2723,16 +2744,19 @@ async function openPostLog(postId, preferFile = false) {
   }
 
   try {
-    const resp = await fetch(`/api/post_log/${postId}${preferFile ? '?source=file' : ''}`);
+    const resp = await fetch(runKey
+      ? `/api/runs/${encodeURIComponent(runKey)}/log?tail=500`
+      : `/api/post_log/${postId}${preferFile ? '?source=file' : ''}`);
+    if (requestId !== _logRequestId) return;
 
     // 서버가 JSON이 아닌 HTML을 반환하는 경우 (구 버전 서버 등)
     const ct = resp.headers.get('content-type') || '';
     if (!ct.includes('application/json')) {
       // 캐시 폴백
       if (_tryLoadFromCache()) return;
-      body.innerHTML = `<div style="padding:40px;text-align:center;color:#f59e0b">
+      body.innerHTML = `<div style="padding:40px;text-align:center;color:var(--warning)">
         ⚠️ 서버가 JSON 대신 ${escHtml(ct || 'unknown')} 응답을 반환했습니다. (HTTP ${resp.status})<br>
-        <span style="font-size:12px;color:#94a3b8">expert_main.py를 재시작하면 해결됩니다.</span>
+        <span style="font-size:12px;color:var(--muted)">expert_main.py를 재시작하면 해결됩니다.</span>
       </div>`;
       sourceEl.textContent = '';
       return;
@@ -2740,19 +2764,21 @@ async function openPostLog(postId, preferFile = false) {
     
     if (!resp.ok && resp.status !== 404) {
       const errText = await resp.text();
+      if (requestId !== _logRequestId) return;
       // 캐시 폴백
       if (_tryLoadFromCache()) return;
-      body.innerHTML = `<div style="padding:40px;text-align:center;color:#ef4444">❌ 서버 오류 (HTTP ${resp.status}): ${escHtml(errText.slice(0, 200))}</div>`;
+      body.innerHTML = `<div style="padding:40px;text-align:center;color:var(--danger)">❌ 서버 오류 (HTTP ${resp.status}): ${escHtml(errText.slice(0, 200))}</div>`;
       sourceEl.textContent = '';
       return;
     }
     
     const data = await resp.json();
+    if (requestId !== _logRequestId) return;
     
     if (!data.lines || data.lines.length === 0) {
       // 서버에 없으면 캐시 시도
       if (_tryLoadFromCache()) return;
-      body.innerHTML = '<div style="padding:40px;text-align:center;color:#94a3b8">📭 이 포스트의 처리 로그를 찾을 수 없습니다.<br><span style="font-size:11px;color:#64748b">로그 파일이 삭제되었거나 아직 처리되지 않은 포스트일 수 있습니다.</span></div>';
+      body.innerHTML = '<div style="padding:40px;text-align:center;color:var(--muted)">이 게시글의 처리 로그를 찾을 수 없습니다.<br><span style="font-size:11px;color:var(--muted)">로그 파일이 삭제되었거나 아직 처리하지 않은 게시글일 수 있습니다.</span></div>';
       sourceEl.textContent = '';
       return;
     }
@@ -2760,162 +2786,97 @@ async function openPostLog(postId, preferFile = false) {
     _logRawLines = data.lines;
     // 인메모리 로그는 post_start 이후 라인만 수집되어 앞뒤가 잘릴 수 있다 —
     // 파일에서 전체 구간(배너~완료 요약)을 다시 불러오는 버튼 제공.
-    if (data.source === 'memory') {
-      sourceEl.innerHTML = `(인메모리 — 일부만 보일 수 있음) <button onclick="openPostLog(${postId}, true)" class="text-xs px-2 py-0.5 rounded bg-slate-700 hover:bg-slate-600 text-slate-200">📄 파일에서 전체 로그</button>`;
+    if (!runKey && data.source === 'memory') {
+      sourceEl.innerHTML = `(메모리에 보관한 로그 · 일부 구간만 포함) <button onclick="openPostLog(${postId}, true)" class="text-xs px-2 py-0.5 rounded bg-slate-700 hover:bg-slate-600 text-slate-200">파일 로그 불러오기</button>`;
     } else {
       sourceEl.textContent = `(${data.source || '?'})`;
     }
     // 로그를 localStorage에 캐시 (서버 종료 후에도 열람 가능)
-    _cacheSavePostLog(postId, { source: data.source, lines: data.lines });
+    if (!runKey) _cacheSavePostLog(postId, { source: data.source, lines: data.lines });
     renderLogLines();
   } catch (err) {
+    if (requestId !== _logRequestId) return;
     // 네트워크 오류 → 캐시 폴백
     if (_tryLoadFromCache()) return;
     
     const isNetErr = err.message.includes('Failed to fetch') || err.message.includes('NetworkError');
     if (isNetErr) {
-      body.innerHTML = `<div style="padding:40px;text-align:center;color:#f59e0b">
+      body.innerHTML = `<div style="padding:40px;text-align:center;color:var(--warning)">
         ⚠️ 서버에 연결할 수 없습니다. 캐시된 로그도 없습니다.<br>
-        <span style="font-size:12px;color:#94a3b8">서버 실행 중에 한 번 로그를 열면 자동으로 캐시됩니다.</span>
+        <span style="font-size:12px;color:var(--muted)">서버 실행 중에 한 번 로그를 열면 자동으로 캐시됩니다.</span>
       </div>`;
     } else {
-      body.innerHTML = `<div style="padding:40px;text-align:center;color:#ef4444">❌ 로그 로딩 실패: ${escHtml(err.message)}<br>
-        <span style="font-size:11px;color:#94a3b8">expert_main.py를 재시작하면 해결됩니다.</span></div>`;
+      body.innerHTML = `<div style="padding:40px;text-align:center;color:var(--danger)">❌ 로그를 불러오지 못했습니다: ${escHtml(err.message)}<br>
+        <span style="font-size:11px;color:var(--muted)">expert_main.py를 재시작하면 해결됩니다.</span></div>`;
     }
     sourceEl.textContent = '';
   }
 }
 
-function classifyLogLine(line) {
-  // 분류: banner, llm, search, json, result, gk/dc/de/ar/vr/sy/dl, default
-  if (line.startsWith('===') || line.startsWith('───') || line.startsWith('━━━')) return 'banner';
-  if (line.includes('📌 Post ID:') || line.includes('📝 제목:') || line.includes('🤖 [W')) return 'banner';
-  if (line.includes('🚀 Agentic Pipeline start:')) return 'banner';
-  if (line.includes('✅ Post') && line.includes('완료')) return 'result';
-  if (line.includes('📊 Post') && line.includes('token usage')) return 'result';
-  if (line.includes('[llm-debug]') || line.includes('[llm-stream]') || line.includes('[llm-usage]') || line.includes('[llm-context]')) return 'llm';
-  if (line.includes('🔍 검') || line.includes('search results:') || line.includes('검색 품질')) return 'search';
-  if (line.trimStart().startsWith('{') || line.trimStart().startsWith('"') || line.trimStart().startsWith('}')) return 'json';
-  if (line.includes('[🎭]') || line.includes('Gatekeeper')) return 'gk';
-  if (line.includes('[📖]') || line.includes('Discourse')) return 'dc';
-  if (line.includes('[🔓]') || line.includes('Decoder')) return 'de';
-  if (line.includes('[⚖]') || line.includes('[⚖️]') || line.includes('Arbiter')) return 'ar';
-  if (line.includes('[✅]') || line.includes('Verifier')) return 'vr';
-  if (line.includes('[📊]') || line.includes('Synthesizer')) return 'sy';
-  if (line.includes('deliberation') || line.includes('Deliberation')) return 'dl';
-  return '';
-}
-
 function renderLogLines() {
   const body = document.getElementById('log-modal-body');
-  const countEl = document.getElementById('log-modal-count');
-
-  // classifyLogLine은 라인당 1회만 (필터+렌더에 재사용 — 대용량 로그 비용 절반)
-  const html = [];
-  let visibleCount = 0;
-  for (const line of _logRawLines) {
-    const cls = classifyLogLine(line);
-    if (_logFilters.all) {
-      if (cls === 'llm' && !_logFilters.llm) continue;
-      if (cls === 'search' && !_logFilters.search) continue;
-      if (cls === 'json' && !_logFilters.json) continue;
-    }
-    visibleCount++;
-    html.push(`<div class="log-line ${cls ? `log-${cls}` : ''}">${escHtml(line)}</div>`);
+  if (_logParsedSource !== _logRawLines) {
+    _logRecords = DashboardPresentation.parseLogs(_logRawLines);
+    _logParsedSource = _logRawLines;
   }
-  countEl.textContent = `${visibleCount} / ${_logRawLines.length} 줄`;
-
-  body.innerHTML = html.join('') || '<div style="padding:20px;text-align:center;color:#64748b">필터에 맞는 로그가 없습니다.</div>';
+  const query = document.getElementById('log-search').value.trim().toLocaleLowerCase();
+  const matches = _logRecords.filter(record =>
+    (_logFilter === 'all' || record.category === _logFilter) &&
+    (!query || record.lines.some(line => line.toLocaleLowerCase().includes(query)))
+  );
+  const raw = document.getElementById('log-view-mode').value === 'raw';
+  const visibleLines = matches.reduce((count, record) => count + record.lines.length, 0);
+  // 원문은 실제 줄 단위로 페이지를 나눠 큰 JSON 한 건도 화면 크기를 제한한다.
+  const rows = raw ? matches.flatMap(record => record.lines.map(line => ({ ...record, lines: [line] }))) : matches;
+  const pages = Math.max(1, Math.ceil(rows.length / LOG_PAGE_SIZE));
+  _logPage = Math.max(0, Math.min(_logPage, pages - 1));
+  const page = rows.slice(_logPage * LOG_PAGE_SIZE, (_logPage + 1) * LOG_PAGE_SIZE);
+  body.innerHTML = DashboardPresentation.renderLogs(page, { raw });
+  document.getElementById('log-modal-count').textContent = `${visibleLines.toLocaleString()} / ${_logRawLines.length.toLocaleString()}줄`;
+  document.getElementById('log-page-label').textContent = `${_logPage + 1} / ${pages}쪽`;
+  document.getElementById('log-page-prev').disabled = _logPage === 0;
+  document.getElementById('log-page-next').disabled = _logPage >= pages - 1;
 }
 
 function toggleLogFilter(btn) {
-  const filter = btn.dataset.filter;
-  
-  if (filter === 'all') {
-    // 전체 토글: 모두 켜기 또는 끄기
-    const newState = !_logFilters.all;
-    _logFilters.all = newState;
-    _logFilters.llm = newState;
-    _logFilters.search = newState;
-    _logFilters.json = newState;
-    document.querySelectorAll('.log-filter-btn').forEach(b => {
-      b.classList.toggle('active', newState);
-    });
-  } else {
-    _logFilters[filter] = !_logFilters[filter];
-    btn.classList.toggle('active', _logFilters[filter]);
-    // 'all' 상태 동기화
-    const allOn = _logFilters.llm && _logFilters.search && _logFilters.json;
-    _logFilters.all = allOn;
-    document.querySelector('.log-filter-btn[data-filter="all"]').classList.toggle('active', allOn);
-  }
-  
+  _logFilter = btn.dataset.filter;
+  document.querySelectorAll('.log-filter-btn').forEach(button => {
+    const selected = button.dataset.filter === _logFilter;
+    button.classList.toggle('active', selected);
+    button.setAttribute('aria-pressed', String(selected));
+  });
+  resetLogPage();
+}
+
+function resetLogPage() {
+  _logPage = 0;
   renderLogLines();
+  document.getElementById('log-modal-body').scrollTop = 0;
+}
+
+function scheduleLogSearch() {
+  clearTimeout(_logSearchTimer);
+  _logSearchTimer = setTimeout(resetLogPage, 180);
+}
+
+function changeLogPage(delta) {
+  _logPage += delta;
+  renderLogLines();
+  document.getElementById('log-modal-body').scrollTop = 0;
 }
 
 function closeLogModal() {
+  ++_logRequestId;
+  clearTimeout(_logSearchTimer);
+  _logRecords = [];
+  _logParsedSource = null;
   document.getElementById('log-modal').style.display = 'none';
+  if (document.getElementById('detail-modal').style.display !== 'flex') document.body.style.overflow = '';
   _logRawLines = [];
 }
 
 function dkv(label, value) {
   return `<div class="detail-kv"><div class="label">${label}</div><div class="value">${value ?? '-'}</div></div>`;
-}
-
-function normalizeReasonText(text) {
-  let value = String(text || '').replace(/\r\n/g, '\n').trim();
-  if (!value) return '';
-  value = value.replace(
-    /\s*(\[(?:판정 요약|원문 해석|최종 종합|근거 스코어|근거 요약|정합성 교정)\])/g,
-    '\n$1'
-  );
-  value = value.replace(/\n{3,}/g, '\n\n');
-  return value.trim();
-}
-
-function renderReasonHtml(text) {
-  const normalized = normalizeReasonText(text);
-  if (!normalized) return '';
-
-  const lines = normalized.split('\n');
-  const sections = [];
-  let current = null;
-
-  function ensureSection(defaultTitle = '') {
-    if (!current) {
-      current = { title: defaultTitle, lines: [] };
-      sections.push(current);
-    }
-    return current;
-  }
-
-  lines.forEach(rawLine => {
-    const line = String(rawLine || '').trimEnd();
-    const trimmed = line.trim();
-    if (!trimmed) return;
-
-    const headerMatch = trimmed.match(/^\[(.+)\]$/);
-    if (headerMatch) {
-      current = { title: headerMatch[1], lines: [] };
-      sections.push(current);
-      return;
-    }
-
-    ensureSection().lines.push(trimmed);
-  });
-
-  return sections.map(section => {
-    const titleHtml = section.title
-      ? `<div class="reason-section-header">${escHtml(section.title)}</div>`
-      : '';
-    const bodyHtml = section.lines.map(line => {
-      const cls = ['reason-line'];
-      if (/^-\s+/.test(line)) cls.push('bullet');
-      if (/^discussion_type=/.test(line)) cls.push('muted');
-      return `<div class="${cls.join(' ')}">${escHtml(line)}</div>`;
-    }).join('');
-    return `<div class="reason-section">${titleHtml}${bodyHtml}</div>`;
-  }).join('');
 }
 
 function confBadge(conf) {
@@ -2957,13 +2918,15 @@ function flushLogArea() {
   const area = document.getElementById('log-area');
   if (!area) return;
   if (livePanelVisibility && livePanelVisibility.logs === false) return;
+  const openRecords = new Set(Array.from(area.querySelectorAll('details.log-record[open]'), node => node.dataset.logKey));
+  const scrollTop = area.scrollTop;
   const lines = workerLogs.get(currentLogWorker) || [];
   const renderLines = tailLogLinesForRender(lines);
   const omitted = Math.max(0, lines.length - renderLines.length);
-  area.textContent = (omitted > 0
-    ? [`… live 표시 한도 때문에 앞 ${omitted}줄은 생략됨`, ...renderLines]
-    : renderLines
-  ).join('\n');
+  area.innerHTML = (omitted > 0 ? `<p class="section-note">화면 표시 한도에 따라 앞 ${omitted}줄을 생략했습니다.</p>` : '')
+    + DashboardPresentation.renderLogs(DashboardPresentation.parseLogs(renderLines), { grouped: false });
+  area.querySelectorAll('details.log-record').forEach(node => { if (openRecords.has(node.dataset.logKey)) node.open = true; });
+  area.scrollTop = scrollTop;
   const autoscroll = document.getElementById('log-autoscroll');
   if (autoscroll && autoscroll.checked) {
     area.scrollTop = area.scrollHeight;
@@ -3039,32 +3002,25 @@ function updateLogTabStyles() {
 
 // ─── History ────────────────────────────────────
 async function loadHistoryList() {
-  const res = await fetch('/api/runs');
-  const runs = await res.json();
   const container = document.getElementById('history-list');
-  
-  if (!runs.length) {
-    container.innerHTML = '<div class="text-sm text-slate-500">과거 실행 기록이 없습니다</div>';
-    return;
+  try {
+    const res = await fetch('/api/runs');
+    const runs = await res.json();
+    if (!res.ok || !Array.isArray(runs)) throw new Error(runs.error || '실행 목록을 읽지 못했습니다.');
+    historyRunItems = new Map(runs.map(run => [DashboardPresentation.historyRunSummary(run).key, run]));
+    const truncated = res.headers.get('X-Run-Index-Truncated') === 'true';
+    container.innerHTML = (truncated ? '<p class="text-sm text-amber-300">탐색 상한에 도달해 일부 실행 이력이 목록에서 생략됐습니다.</p>' : '')
+      + (runs.length ? runs.map(DashboardPresentation.renderHistoryRun).join('')
+        : '<div class="text-sm text-slate-500">과거 실행 기록이 없습니다</div>');
+    container.querySelectorAll('[data-run-key]').forEach(button => {
+      button.addEventListener('click', () => {
+        const run = historyRunItems.get(button.dataset.runKey);
+        if (run) loadHistoryDetail(button.dataset.runKey, run.log_file || '');
+      });
+    });
+  } catch (err) {
+    container.innerHTML = '<p class="text-sm text-amber-300">' + escHtml(err.message) + '</p>';
   }
-  
-  container.innerHTML = runs.map(r => `
-    <div class="flex items-center justify-between p-3 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 cursor-pointer transition-colors"
-         onclick="loadHistoryDetail('${r.filename}', '${r.log_file || ''}')">
-      <div class="flex items-center gap-3">
-        <span class="text-lg">📄</span>
-        <div>
-          <div class="text-sm font-medium">${r.timestamp || r.filename}</div>
-          <div class="text-xs text-slate-400">${r.filename}</div>
-        </div>
-      </div>
-      <div class="flex items-center gap-4 text-xs text-slate-400">
-        <span>📝 ${r.post_count}개</span>
-        <span>💾 ${r.size_kb}KB</span>
-        ${r.log_file ? '<span>📜 로그</span>' : ''}
-      </div>
-    </div>
-  `).join('');
 }
 
 function renderHistoryResults() {
@@ -3102,37 +3058,55 @@ function renderHistoryResults() {
 }
 
 async function loadHistoryDetail(filename, logFile, page = 0) {
+  const selectionVersion = ++historySelectionVersion;
+  historyModalVersion++;
   historyFileName = filename;
   historyLogFileName = logFile || '';
   historyCurrentPage = Math.max(page, 0);
-
-  const offset = historyCurrentPage * HISTORY_PAGE_SIZE;
-  const res = await fetch(`/api/runs/${encodeURIComponent(filename)}?summary=1&offset=${offset}&limit=${HISTORY_PAGE_SIZE}`);
-  const payload = await res.json();
-
-  if (!Array.isArray(payload.items)) return;
-  historyPageData = payload.items;
-  historyTotalResults = Number(payload.total || 0);
-
-  document.getElementById('history-detail').classList.remove('hidden');
-  document.getElementById('history-detail-title').textContent = filename;
-
-  const stats = payload.stats || {};
-  document.getElementById('hist-total').textContent = historyTotalResults;
-  document.getElementById('hist-relevant').textContent = stats.relevant || 0;
-  document.getElementById('hist-identified').textContent = stats.identified || 0;
-  document.getElementById('hist-noise').textContent = stats.noise || 0;
-
+  historyPageData = [];
+  historyTotalResults = 0;
   renderHistoryResults();
-  
+  document.getElementById('history-detail').classList.remove('hidden');
+  const selected = historyRunItems.get(filename) || { filename };
+  const initialView = DashboardPresentation.historyRunSummary(selected);
+  document.getElementById('history-detail-title').textContent = initialView.path;
+  document.getElementById('history-run-summary').textContent = '선택한 실행을 불러오는 중입니다.';
+  document.getElementById('history-run-meta').innerHTML = '';
   const logSection = document.getElementById('history-log-section');
-  if (historyLogFileName) {
-    logSection.classList.remove('hidden');
-    const logRes = await fetch('/api/logs/' + historyLogFileName + '?tail=500');
-    const lines = await logRes.json();
-    document.getElementById('history-log-area').textContent = Array.isArray(lines) ? lines.join('\n') : '';
-  } else {
-    logSection.classList.add('hidden');
+  logSection.classList.add('hidden');
+  document.getElementById('history-log-area').innerHTML = '';
+  for (const id of ['hist-total', 'hist-relevant', 'hist-identified', 'hist-noise']) document.getElementById(id).textContent = '—';
+  try {
+    const offset = historyCurrentPage * HISTORY_PAGE_SIZE;
+    const res = await fetch(`/api/runs/${encodeURIComponent(filename)}?summary=1&offset=${offset}&limit=${HISTORY_PAGE_SIZE}`);
+    const payload = await res.json();
+    if (selectionVersion !== historySelectionVersion) return;
+    if (!res.ok || !Array.isArray(payload.items)) throw new Error(payload.error || '실행 결과 형식이 올바르지 않습니다.');
+    historyPageData = payload.items;
+    historyTotalResults = Number(payload.total || 0);
+    const run = payload.run || selected;
+    const view = DashboardPresentation.historyRunSummary(run);
+    document.getElementById('history-detail-title').textContent = view.path;
+    document.getElementById('history-run-summary').textContent = view.completion + ' · ' + view.mode + ' · ' + view.settings;
+    document.getElementById('history-run-meta').innerHTML = DashboardPresentation.renderRunContext({ run_manifest: payload.run_manifest, recovery_native_execution: payload.recovery_native_execution, recovery_native_export_manifest: payload.recovery_native_export_manifest });
+    const stats = payload.stats || {};
+    document.getElementById('hist-total').textContent = historyTotalResults;
+    document.getElementById('hist-relevant').textContent = stats.relevant ?? '미기록';
+    document.getElementById('hist-identified').textContent = stats.identified ?? '미기록';
+    document.getElementById('hist-noise').textContent = stats.noise ?? '미기록';
+    renderHistoryResults();
+    // 파일명으로 별도 로그를 추측하지 않고 선택한 실행에 결속된 로그만 요청한다.
+    const logRes = await fetch(`/api/runs/${encodeURIComponent(filename)}/log?tail=500`);
+    const logPayload = await logRes.json();
+    if (selectionVersion !== historySelectionVersion) return;
+    if (logRes.ok && Array.isArray(logPayload.lines)) {
+      logSection.classList.remove('hidden');
+      document.getElementById('history-log-area').innerHTML = DashboardPresentation.renderLogs(
+        DashboardPresentation.parseLogs(tailLogLinesForRender(logPayload.lines)));
+    }
+  } catch (err) {
+    if (selectionVersion !== historySelectionVersion) return;
+    document.getElementById('history-run-summary').textContent = '조회 실패: ' + err.message;
   }
 }
 
@@ -3144,6 +3118,8 @@ function changeHistoryPage(delta) {
 }
 
 function closeHistoryDetail() {
+  historySelectionVersion++;
+  historyModalVersion++;
   document.getElementById('history-detail').classList.add('hidden');
   historyFileName = '';
   historyLogFileName = '';
@@ -3196,7 +3172,7 @@ setInterval(() => {
   if (!document.hidden) {
     document.querySelectorAll('.worker-elapsed').forEach(el => {
       const started = Number(el.dataset.started);
-      if (started > 0) el.textContent = '⏱ ' + fmtTime((Date.now() - started) / 1000);
+      if (started > 0) el.textContent = fmtTime((Date.now() - started) / 1000);
     });
   }
 }, 1000);

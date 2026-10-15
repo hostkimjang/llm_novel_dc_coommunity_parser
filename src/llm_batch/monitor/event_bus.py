@@ -11,11 +11,42 @@ from __future__ import annotations
 
 import asyncio
 import json
+import math
+import os
+from copy import deepcopy
+import re
 import threading
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
+
+
+def _native_progress(value):
+    """진행 표시는 저장 성공 증거가 아니다. 정수/결속/분모만 제한해 보존한다."""
+    if type(value) is not dict or set(value) != {"schema_version", "run_id", "publication_scope_id",
+            "policy_sha256", "sequence", "status", "total", "processed", "completed",
+            "not_executed", "incomplete", "aggregate_ref"}:
+        return None
+    if (value["schema_version"] != "native_recovery_progress_v1"
+            or type(value["run_id"]) is not str or not 0 < len(value["run_id"]) <= 200
+            or any(type(value[k]) is not str or re.fullmatch(r"[a-f0-9]{64}", value[k]) is None
+                   for k in ("publication_scope_id", "policy_sha256"))
+            or type(value["status"]) is not str or value["status"] not in {"RUNNING", "COMPLETED", "INCOMPLETE"}
+            or any(type(value[k]) is not int or not 0 <= value[k] <= 10000000
+                   for k in ("sequence", "total", "processed", "completed", "not_executed", "incomplete"))
+            or value["processed"] > value["total"]
+            or value["completed"] + value["not_executed"] + value["incomplete"] > value["processed"]):
+        return None
+    ref = value["aggregate_ref"]
+    if ref is not None and (type(ref) is not dict or set(ref) != {"path", "sha256", "bytes"}
+            or type(ref["path"]) is not str or not 0 < len(ref["path"]) <= 4096
+            or type(ref["sha256"]) is not str or re.fullmatch(r"[a-f0-9]{64}", ref["sha256"]) is None
+            or type(ref["bytes"]) is not int or not 0 < ref["bytes"] <= 32 * 1024 * 1024):
+        return None
+    if value["status"] == "COMPLETED" and (ref is None or value["processed"] != value["total"]):
+        return None
+    return deepcopy(value)
 
 
 @dataclass
@@ -45,11 +76,19 @@ class MonitorState:
         # 배치 상태
         self.batch_running: bool = False
         self.batch_start_time: float = 0.0
+        self.batch_start_time_source = "UNSPECIFIED"
+        self.run_id: str = ""
+        self.publication_scope_id = None
+        self.batch_status: str = "IDLE"
+        self.batch_failure = None
+        self._failed_outputs = {}
         self.total_posts: int = 0
         self.current_index: int = 0  # 1-based (순차 모드용)
         self.input_file: str = ""
         self.output_file: str = ""
         self.parallel_count: int = 1  # 병렬 워커 수
+        self.native_recovery = None
+        self._native_binding = {}
         self.llm_suspended: bool = False
         self.llm_suspend_message: str = ""
         self.llm_suspend_error: str = ""
@@ -77,6 +116,8 @@ class MonitorState:
         # 검색 캐시 통계
         self.search_hits: int = 0
         self.search_misses: int = 0
+        # None은 워커별 분해 정보가 없는 구형 전체 스냅샷이다.
+        self._search_stats_workers: Optional[Dict[str, Dict[str, int]]] = None
 
         # 포스트별 결과 요약
         self.post_summaries: List[Dict[str, Any]] = []
@@ -129,7 +170,8 @@ class MonitorState:
     def emit(self, event_type: str, data: Optional[Dict[str, Any]] = None) -> None:
         """이벤트를 발행하고 SSE 구독자에게 브로드캐스트"""
         data = data or {}
-        self._handle_event(event_type, data)
+        if self._handle_event(event_type, data) is False:
+            return
 
         payload = {
             "type": event_type,
@@ -157,12 +199,14 @@ class MonitorState:
         emit()을 재사용하지 않는 이유: 원본 ts 보존 + forwarder 재전달 차단.
         """
         data = data or {}
-        self._handle_event(event_type, data)
+        if self._handle_event(event_type, data) is False:
+            return False
         self._broadcast({
             "type": event_type,
             "data": data,
             "ts": ts or datetime.now().isoformat(),
         })
+        return True
 
     def load_status_snapshot(self, snapshot: Dict[str, Any]) -> None:
         """forwarder 스냅샷 리싱크: 누계 카운터/요약을 정본 상태로 덮어쓴다.
@@ -171,7 +215,58 @@ class MonitorState:
         expert_main 쪽 MonitorState가 항상 정본이므로 주기 스냅샷으로 치유한다.
         """
         with self._lock:
+            failure = snapshot.get("batch_failure")
+            if failure is not None:
+                if (not isinstance(failure, dict) or snapshot.get("run_id") != failure.get("run_id")
+                        or self._output_key(snapshot.get("output_file")) != self._output_key(failure.get("output_file"))):
+                    return False
+                return self._accept_run_failure(failure)
+            # batch_start를 놓쳤어도 새 결과 경로의 정본 snapshot에 이전 복구를 섞지 않는다.
+            incoming_output = snapshot.get("output_file")
+            incoming_run = snapshot.get("run_id") or ""
+            incoming_scope = snapshot.get("publication_scope_id")
+            if (incoming_output and self._output_key(incoming_output) == self._output_key(self.output_file)
+                    and self.publication_scope_id is not None and incoming_scope is not None
+                    and incoming_scope != self.publication_scope_id):
+                return False
+            output_key = self._output_key(incoming_output or self.output_file)
+            failed_run = self._failed_outputs.get(output_key)
+            if failed_run and (not incoming_run or incoming_run == failed_run):
+                return False
+            if (incoming_output and self.output_file
+                    and self._output_key(incoming_output) == self._output_key(self.output_file)
+                    and incoming_run and self.run_id and incoming_run != self.run_id):
+                return False
+            if incoming_output and self.output_file and incoming_output != self.output_file:
+                self.batch_failure = None
+                self.batch_status = "IDLE"
+                self.run_id = ""
+                self.publication_scope_id = None
+                self.done_count = self.relevant_done_count = self.noise_done_count = 0
+                self.post_summaries = []
+                self._summary_post_ids = set()
+                self.active_posts = {}
+                self._active_post_by_worker = {}
+                self.native_recovery = None
+                self._native_binding = {}
+                self._reset_search_stats()
+            if "native_recovery" in snapshot and snapshot["native_recovery"] is not None:
+                self._accept_native_progress(snapshot["native_recovery"])
+            if incoming_run:
+                self.run_id = incoming_run
+            if incoming_scope is not None:
+                self.publication_scope_id = incoming_scope
             self.batch_running = bool(snapshot.get("batch_running", self.batch_running))
+            status = snapshot.get("batch_status")
+            if status in {"RUNNING", "COMPLETED", "INCOMPLETE", "IDLE"}:
+                self.batch_status = status
+            elif self.batch_running:
+                self.batch_status = "RUNNING"
+            elif snapshot.get("total_posts", 0) > snapshot.get("done_count", 0):
+                self.batch_status = "INCOMPLETE"
+            elif snapshot.get("done_count", 0) > 0:
+                self.batch_status = "COMPLETED"
+
             self.total_posts = int(snapshot.get("total_posts", self.total_posts) or 0)
             self.current_index = int(snapshot.get("current_index", self.current_index) or 0)
             self.input_file = snapshot.get("input_file", self.input_file) or self.input_file
@@ -184,11 +279,11 @@ class MonitorState:
                     "completion_tokens": int(tu.get("completion_tokens", 0) or 0),
                     "total_tokens": int(tu.get("total_tokens", 0) or 0),
                 }
-            self.search_hits = int(snapshot.get("search_hits", self.search_hits) or 0)
-            self.search_misses = int(snapshot.get("search_misses", self.search_misses) or 0)
+            self._restore_search_stats(snapshot)
             if snapshot.get("batch_start_time"):
                 try:
                     self.batch_start_time = float(snapshot["batch_start_time"])
+                    self.batch_start_time_source = snapshot.get("batch_start_time_source", "UNSPECIFIED")
                 except Exception:
                     pass
             summaries = snapshot.get("post_summaries")
@@ -292,17 +387,24 @@ class MonitorState:
         """현재 상태 스냅샷 반환 (REST API용)"""
         with self._lock:
             elapsed = time.time() - self.batch_start_time if self.batch_running else 0
+            if self.batch_failure is not None:
+                elapsed = max(0.0, self.batch_failure["ended_at_epoch"] - self.batch_failure["started_at_epoch"])
             # len(post_summaries) 대신 누계 카운터 — standalone 리싱크(요약 500건
             # 캡) 후에도 진행률이 정확하다. 내장 모드에서는 두 값이 항상 같다.
             done_count = max(self.done_count, len(self.post_summaries))
             avg_time = elapsed / done_count if done_count > 0 else 0
-            remaining = (self.total_posts - done_count) * avg_time if done_count > 0 else 0
+            remaining = (self.total_posts - done_count) * avg_time if done_count > 0 and self.batch_running else 0
 
             relevant_count = self.relevant_done_count
             noise_count = self.noise_done_count
 
             return {
                 "batch_running": self.batch_running,
+                "batch_status": self.batch_status,
+                "batch_start_time_source": self.batch_start_time_source,
+                "run_id": self.run_id,
+                "publication_scope_id": self.publication_scope_id,
+                "batch_failure": deepcopy(self.batch_failure),
                 "total_posts": self.total_posts,
                 "current_index": self.current_index,
                 "done_count": done_count,
@@ -317,6 +419,7 @@ class MonitorState:
                 "token_usage": dict(self.token_usage),
                 "search_hits": self.search_hits,
                 "search_misses": self.search_misses,
+                "search_stats_workers": deepcopy(self._search_stats_workers),
                 "relevant_count": relevant_count,
                 "noise_count": noise_count,
                 "input_file": self.input_file,
@@ -324,6 +427,7 @@ class MonitorState:
                 "flow_log": list(self._flow_log),
                 # 🔥 병렬 모드 필드
                 "parallel_count": self.parallel_count,
+                "native_recovery": deepcopy(self.native_recovery),
                 "active_posts": {str(k): dict(v) for k, v in self.active_posts.items()},
                 "llm_suspended": self.llm_suspended,
                 "llm_suspend_message": self.llm_suspend_message,
@@ -422,17 +526,239 @@ class MonitorState:
 
     # ─── 내부 ──────────────────────────────────────────────
 
-    def _handle_event(self, event_type: str, data: Dict[str, Any]) -> None:
+    def _accept_native_progress(self, value):
+        value = _native_progress(value)
+        if value is None:
+            return False
+        keys = ("run_id", "publication_scope_id", "policy_sha256")
+        if any(value[k] != v for k, v in self._native_binding.items()):
+            return False
+        old = self.native_recovery
+        if old is not None and (any(old[k] != value[k] for k in keys)
+                or value["sequence"] <= old["sequence"] or old["status"] in {"COMPLETED", "INCOMPLETE"}
+                or value["total"] != old["total"] or value["processed"] < old["processed"]):
+            return False
+        self._native_binding = {k: value[k] for k in keys}
+        self.native_recovery = value
+        return True
+
+    @staticmethod
+    def _search_counts(hits: Any, misses: Any) -> Optional[Dict[str, int]]:
+        if any(type(value) is not int or not 0 <= value <= 2**63 - 1
+               for value in (hits, misses)):
+            return None
+        return {"hits": hits, "misses": misses}
+
+    def _reset_search_stats(self) -> None:
+        self.search_hits = 0
+        self.search_misses = 0
+        self._search_stats_workers = None
+
+    def _sum_search_stats(self) -> None:
+        self.search_hits = sum(value["hits"] for value in self._search_stats_workers.values())
+        self.search_misses = sum(value["misses"] for value in self._search_stats_workers.values())
+
+    def _accept_search_stats(self, data: Dict[str, Any]) -> bool:
+        counts = self._search_counts(data.get("hits", 0), data.get("misses", 0))
+        if counts is None:
+            return False
+        worker = data.get("worker_id")
+        if worker is None:
+            # 기존 송신자의 값은 전체 스냅샷이다. 워커 합계와 더하지 않는다.
+            self._search_stats_workers = None
+            self.search_hits, self.search_misses = counts["hits"], counts["misses"]
+            return True
+        if not ((type(worker) is int and 0 <= worker <= 2**31 - 1)
+                or (type(worker) is str and 0 < len(worker) <= 128)):
+            return False
+        key = str(worker)
+        workers = self._search_stats_workers or {}
+        if key not in workers and len(workers) >= 4096:
+            return False
+        previous = workers.get(key)
+        if previous is not None and any(counts[name] < previous[name] for name in counts):
+            return False  # 재전송/스냅샷 뒤 늦게 도착한 누계로 되돌리지 않는다.
+        self._search_stats_workers = {**workers, key: counts}
+        self._sum_search_stats()
+        return True
+
+    def _restore_search_stats(self, snapshot: Dict[str, Any]) -> None:
+        if not any(key in snapshot for key in ("search_hits", "search_misses", "search_stats_workers")):
+            return
+        workers = snapshot.get("search_stats_workers")
+        if workers is None:
+            counts = self._search_counts(snapshot.get("search_hits", self.search_hits),
+                                         snapshot.get("search_misses", self.search_misses))
+            if counts is not None:
+                self._search_stats_workers = None
+                self.search_hits, self.search_misses = counts["hits"], counts["misses"]
+            return
+        if type(workers) is not dict or len(workers) > 4096:
+            return
+        validated = {}
+        for key, value in workers.items():
+            if (type(key) is not str or not 0 < len(key) <= 128 or type(value) is not dict
+                    or set(value) != {"hits", "misses"}):
+                return
+            counts = self._search_counts(value["hits"], value["misses"])
+            if counts is None:
+                return
+            validated[key] = counts
+        totals = self._search_counts(snapshot.get("search_hits"), snapshot.get("search_misses"))
+        if totals is None or any(totals[name] != sum(value[name] for value in validated.values())
+                                 for name in ("hits", "misses")):
+            return
+        merged = dict(self._search_stats_workers or {})
+        if len(set(merged) | set(validated)) > 4096:
+            return
+        for key, counts in validated.items():
+            previous = merged.get(key)
+            if previous is None or all(counts[name] >= previous[name] for name in counts):
+                merged[key] = counts
+        self._search_stats_workers = merged
+        self._sum_search_stats()
+
+    @staticmethod
+    def _output_key(value):
+        return os.path.normcase(os.path.abspath(value)) if isinstance(value, str) and value else ""
+
+    def ingest_failure(self, data, *, legacy_receipt_bound=False):
+        with self._lock:
+            accepted = self._accept_run_failure(data, legacy_receipt_bound=legacy_receipt_bound)
+            normalized = deepcopy(self.batch_failure) if accepted else None
+        if accepted:
+            self._broadcast({"type": "batch_failed", "data": normalized, "ts": datetime.now().isoformat()})
+        return accepted
+
+    def _accept_run_failure(self, data, *, legacy_receipt_bound=False):
+        if not isinstance(data, dict):
+            return False
+        if data.get("schema_version") == "expert_batch_failure_v1":
+            data = {**deepcopy(data), "schema_version": "dashboard_run_failure_v1"}
+        if data.get("schema_version") != "dashboard_run_failure_v1":
+            return False
+        run_id, output, scope = data.get("run_id"), data.get("output_file"), data.get("publication_scope_id")
+        counts, ref = data.get("manifest_counts"), data.get("receipt_ref")
+        core = data.get("failure_origin") == "CORE_EXCEPTION" and data.get("reason_code") == "CORE_EXCEPTION"
+        if core:
+            data = {**deepcopy(data), "invocation_exit_code": None}
+            if (data.get("shutdown_status") not in {"NOT_STARTED", "DRAINING", "DRAINED", "CLEANUP_ERROR"}
+                    or data.get("process_exited") is not False or data.get("exit_code") is not None
+                    or data.get("invocation_exit_code") is not None):
+                return False
+        else:
+            if (data.get("failure_origin") != "RUNNER_RECEIPT"
+                    or data.get("process_exited") is not True or type(data.get("exit_code")) is not int
+                    or type(data.get("invocation_exit_code")) is not int or data["invocation_exit_code"] == 0
+                    or data.get("reason_code") not in {"CHILD_EXIT_NONZERO", "ARTIFACT_VALIDATION_FAILED"}
+                    or (data["reason_code"] == "CHILD_EXIT_NONZERO" and data["exit_code"] == 0)
+                    or (data["reason_code"] == "ARTIFACT_VALIDATION_FAILED" and data["exit_code"] != 0)
+                    or not isinstance(ref, dict) or not isinstance(ref.get("path"), str) or not ref["path"]
+                    or type(ref.get("sha256")) is not str or re.fullmatch(r"[a-f0-9]{64}", ref["sha256"]) is None):
+                return False
+        if (type(run_id) is not str or not run_id or type(output) is not str or not os.path.isabs(output)
+                or "publication_scope_id" not in data
+                or (scope is not None and (type(scope) is not str or re.fullmatch(r"[a-f0-9]{64}", scope) is None))
+                or type(data.get("parallel_count")) is not int or data["parallel_count"] < 1
+                or type(data.get("message")) is not str or len(data["message"]) > 1000
+                or not isinstance(counts, dict)
+                or set(counts) != {"input_post_count", "completed_count", "flushed_count", "pending_count", "failed_count"}
+                or any(type(v) is not int or v < 0 for v in counts.values())
+                or any(v > counts["input_post_count"] for v in counts.values())):
+            return False
+        for key in ("started_at_epoch", "ended_at_epoch"):
+            v = data.get(key)
+            if type(v) not in (int, float) or not math.isfinite(v) or v <= 0:
+                return False
+        if data["ended_at_epoch"] < data["started_at_epoch"]:
+            return False
+        legacy = bool(legacy_receipt_bound and not core and not self.run_id)
+        if self.output_file:
+            if self._output_key(output) != self._output_key(self.output_file):
+                return False
+            if self.run_id != run_id and not legacy:
+                return False
+            if self.publication_scope_id != scope and not (legacy and self.publication_scope_id is None):
+                return False
+            if self.total_posts != counts["input_post_count"]:
+                return False
+        elif self.batch_running or self.run_id:
+            return False
+        else:
+            self.output_file = output
+            self.total_posts = counts["input_post_count"]
+            self.parallel_count = data["parallel_count"]
+            self.done_count = counts["completed_count"]
+        if self.batch_failure is not None:
+            if data == self.batch_failure:
+                return True
+            if self.batch_failure.get("process_exited") is not False:
+                return False
+            if data.get("process_exited") is False:
+                # Core drain observations do not prove OS exit and cannot regress.
+                order = {"NOT_STARTED": 0, "DRAINING": 1, "DRAINED": 2, "CLEANUP_ERROR": 2}
+                prior = self.batch_failure
+                if (order[data["shutdown_status"]] < order[prior.get("shutdown_status", "NOT_STARTED")]
+                        or {k:v for k,v in data.items() if k != "shutdown_status"}
+                        != {k:v for k,v in prior.items() if k != "shutdown_status"}):
+                    return False
+        self.run_id = run_id
+        self.publication_scope_id = scope
+        self.batch_failure = deepcopy(data)
+        self._failed_outputs[self._output_key(output)] = run_id
+        if len(self._failed_outputs) > 64:
+            self._failed_outputs.pop(next(iter(self._failed_outputs)))
+        self.batch_status = "FAILED"
+        self.batch_running = False
+        self.batch_start_time = data["started_at_epoch"]
+        self.batch_start_time_source = "CORE_EPOCH" if core else data.get("start_time_source", "UNSPECIFIED")
+        self.active_posts = {}
+        self._active_post_by_worker = {}
+        self.current_post_id = None
+        self.current_post_title = self.current_expert = self.current_expert_status = ""
+        self.llm_suspended = False
+        return True
+
+    def _handle_event(self, event_type: str, data: Dict[str, Any]) -> Optional[bool]:
         """이벤트 타입에 따라 내부 상태 갱신 (병렬 모드 대응)"""
         with self._lock:
-            if event_type == "batch_start":
-                self.batch_running = True
-                self.batch_start_time = time.time()
+            if event_type == "batch_failed":
+                return self._accept_run_failure(data)
+            if self.batch_failure is not None and event_type not in {"batch_start", "batch_prepare"}:
+                return False
+            if event_type in {"batch_start", "batch_prepare"}:
+                output_key = self._output_key(data.get("output_file"))
+                incoming_run = data.get("run_id") or ""
+                if event_type == "batch_prepare":
+                    # 시작 전 실패가 다른 활성 실행을 빼앗지 못한다.
+                    if self.batch_running:
+                        return False
+                    if incoming_run and incoming_run == self.run_id and (
+                            output_key != self._output_key(self.output_file)
+                            or data.get("publication_scope_id") != self.publication_scope_id):
+                        return False
+                failed_run = self._failed_outputs.get(output_key)
+                if failed_run and (not incoming_run or incoming_run == failed_run):
+                    return False
+                self.batch_failure = None
+                self.publication_scope_id = data.get("publication_scope_id")
+                self.batch_status = "IDLE" if event_type == "batch_prepare" else "RUNNING"
+                self.run_id = incoming_run or (self.run_id if output_key == self._output_key(self.output_file) else "")
+                self.native_recovery = None
+                self._native_binding = {k: data[k] for k in ("run_id", "publication_scope_id", "policy_sha256")
+                                        if data.get(k) is not None}
+                self.batch_running = event_type == "batch_start"
+                started = data.get("started_at_epoch")
+                self.batch_start_time = (float(started) if type(started) in (int, float)
+                    and math.isfinite(started) and started > 0 else time.time())
+                self.batch_start_time_source = "CORE_EPOCH" if self.batch_start_time == started else "MONITOR_START_OBSERVATION"
                 self.total_posts = data.get("total", 0)
                 self.input_file = data.get("input_file", "")
                 self.output_file = data.get("output_file", "")
                 self.parallel_count = data.get("parallel_count", 1)
                 self.current_index = 0
+                self.current_post_id = None
+                self.current_post_title = self.current_expert = self.current_expert_status = ""
                 self.post_summaries = []
                 self.done_count = 0
                 self.relevant_done_count = 0
@@ -440,8 +766,7 @@ class MonitorState:
                 self._summary_post_ids = set()
                 self.active_posts = {}
                 self.token_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
-                self.search_hits = 0
-                self.search_misses = 0
+                self._reset_search_stats()
                 self._flow_log = []
                 self._worker_log_lines = {}
                 self._post_log_lines = {}
@@ -453,6 +778,15 @@ class MonitorState:
                 self.llm_suspend_threshold = 0
                 self.llm_suspend_started_at = ""
                 self.llm_suspend_resumed_at = ""
+
+            elif event_type in {"native_recovery_progress", "native_recovery_complete"}:
+                if type(data.get("status")) is not str:
+                    return False
+                if event_type == "native_recovery_complete" and data.get("status") not in {"COMPLETED", "INCOMPLETE"}:
+                    return False
+                if event_type == "native_recovery_progress" and data.get("status") != "RUNNING":
+                    return False
+                return self._accept_native_progress(data)
 
             elif event_type == "post_start":
                 post_id = data.get("post_id")
@@ -577,8 +911,7 @@ class MonitorState:
                     self.token_usage["total_tokens"] += tu.get("total_tokens", 0)
 
             elif event_type == "search_stats":
-                self.search_hits = data.get("hits", 0)
-                self.search_misses = data.get("misses", 0)
+                return self._accept_search_stats(data)
 
             elif event_type == "llm_suspend":
                 self.llm_suspended = True
@@ -598,6 +931,7 @@ class MonitorState:
                 self.llm_suspend_resumed_at = str(data.get("resumed_at", "") or "")
 
             elif event_type == "batch_complete":
+                self.batch_status = "COMPLETED"
                 self.batch_running = False
                 self.active_posts = {}
                 self.llm_suspended = False
@@ -611,6 +945,13 @@ class MonitorState:
             "created_at": data.get("created_at"),
             "url": data.get("url"),
             "is_relevant": data.get("is_relevant"),
+            "identity_state": data.get("identity_state"),
+            "is_novel_related": data.get("is_novel_related"),
+            "is_resolved_work_discussion": data.get("is_resolved_work_discussion"),
+            "title_resolution_state": data.get("title_resolution_state"),
+            "title_resolution_allowed": data.get("title_resolution_allowed"),
+            "primary_subject_type": data.get("primary_subject_type"),
+            "primary_subject_text": data.get("primary_subject_text"),
             "official_title": data.get("official_title"),
             "confidence": data.get("confidence"),
             "discussion_type": data.get("discussion_type"),
