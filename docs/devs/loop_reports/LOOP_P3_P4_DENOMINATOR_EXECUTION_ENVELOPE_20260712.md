@@ -2,6 +2,8 @@
 
 작성일: 2026-07-12 KST
 
+> 2026-09-02 현재: 이 문서의 policy v3는 당시 분모 결속을 설명하는 역사적 정본이다. 신규 `FROZEN_ACTUAL` readiness/evaluation은 분모뿐 아니라 최소 독립 group 30개, bootstrap 2,000회, percentile interval method를 SHA에 결속한 `candidate_set_calibration_policy_v4`를 요구한다. v2/v3는 저장 정본 호환용이며 새 actual readiness를 열지 않는다.
+
 ## 결론
 
 P3와 P4의 두 측정 공백을 정적으로 닫았다. P3 actual policy v3는 `top_label_accuracy_denominator`를 정책 payload와 `policy_sha256`에 넣는다. P4 paired reader는 source-bound `DecisionCostTrace`에서 batch execution envelope를 재구성하고 full-expert comparable 행의 per-post E2E p50/p95와 paired bootstrap CI를 계산한다.
@@ -10,7 +12,7 @@ P3와 P4의 두 측정 공백을 정적으로 닫았다. P3 actual policy v3는 
 
 ## P3 정책 결속
 
-- 실제 사전등록 정책은 `candidate_set_calibration_policy_v3`여야 한다.
+- 2026-07-12 당시 사전등록 정책은 `candidate_set_calibration_policy_v3`였으며, 현재 신규 actual 사전등록은 `candidate_set_calibration_policy_v4`여야 한다.
 - `top_label_accuracy_denominator`는 `ALL_FROZEN_ROWS` 또는 `NON_ABSTAIN_ROWS` 중 하나여야 하며, policy SHA 재계산 대상이다.
 - v2는 저장된 P3 v18 synthetic/legacy 정본을 읽기 위한 호환 경로만 제공한다. `FROZEN_ACTUAL_PRE_REGISTERED`에는 v2를 허용하지 않는다.
 
@@ -44,7 +46,7 @@ flowchart LR
 
 ## 다음 actual 게이트
 
-1. 소유자가 P3 actual policy v3의 분모와 A/B 수치를 확정한다.
+1. 소유자가 P3 actual policy v4의 분모·interval protocol과 A/B 수치를 확정한다.
 2. source-backed DEV/CAL/FROZEN packet과 COMPLETE producer·immutable candidate ID를 만든다.
 3. active production 종료 뒤 별도 output에서 동일 RunSpec의 fresh BEFORE/AFTER를 `--parallel 16`, dashboard ON으로 실행한다.
 4. 독립 reader가 actual 정확도·후보 재현율·호출·token·full-expert comparable E2E p50/p95 CI를 재생한다.

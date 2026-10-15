@@ -4,6 +4,8 @@
 - 목적: 기존 정상 정답을 최대한 보존하면서 남은 의미 오류를 개선할 수 있는 다음 아키텍처와 검증 순서를 결정한다.
 - 작업 성격: 읽기 전용 연구·검토. production code, 실행 중인 `20260715_143806_848671`, public WAL, slang DB는 변경하지 않았다.
 
+> 2026-09-03 후속: 본 회의의 “공개 경로 불변·shadow 우선” 원칙에 따라 annotation packet/Windows/preauthorization/supervisor V2를 runtime 밖 additive component로 구현했다. 전체 P0 `836/836`, 보호 endpoint `6/6` 불변이며 실제 semantic/production gate는 계속 `NO_GO`다. 최신 판단은 [`P0_OWNER_ROOT_PREAUTHORIZATION_V2_SUPERVISOR_REVIEW_20260903_KO.md`](P0_OWNER_ROOT_PREAUTHORIZATION_V2_SUPERVISOR_REVIEW_20260903_KO.md)를 따른다.
+
 ## 참석자와 실제 실행 범위
 
 | 역할 | 실제 모델·추론 | 이번 회의 범위 | 결과 사용 범위 |
@@ -77,3 +79,17 @@
 ## 회의 결론
 
 현재 구조는 “잘못된 새 결정을 공개하지 않게 막고 관측하는 능력”이 크게 좋아졌다. 반면 “위험한 의미 오류를 반복적으로 고치면서 정상 정답을 보존하는 능력”은 아직 입증되지 않았다. 권고안은 `PublicationFinalizer` 동작 불변 추출과 공통 observation envelope를 P0로, shadow intervention simulator를 P1로, 모든 gate가 green인 뒤 188건 P2 canary를 수행하는 것이다.
+
+## 2026-09-02 P0 parser provenance 추가 재회의
+
+Windows identity·process 격리 관점과 Python import-candidate 관점의 독립 검토를 다시 합쳤다. 경로 SHA를 held-handle SHA/128-bit file ID로 바꾸고 ancestor namespace guard, suspended child PID·creation time·reported image reopen을 ResumeThread 전에 확인하는 안은 `ADOPT_COMPONENT_ONLY`로 채택했다.
+
+반면 고정 `.py` 4개를 source closure로 부르는 안은 기각했다. `-I -S -B`에서도 기존 `.pyc`가 load candidate이고, 같은 이름의 package directory·ABI `.pyd`·legacy `.pyc`, watcher arm 이전과 POST 이후의 swap 구간이 남기 때문이다. 다음 gate는 isolated empty pycache prefix, import collision exact inventory, source/parent/cache watcher continuity다. 상세 구현·검증은 [`P0_PARSER_PROCESS_HANDLE_PROVENANCE_REVIEW_20260902_KO.md`](P0_PARSER_PROCESS_HANDLE_PROVENANCE_REVIEW_20260902_KO.md)에 기록한다.
+
+## 2026-09-02 P0 pycache·source observation successor 재회의
+
+위 역사적 next gate는 후속 구현으로 좁게 닫혔다. local `LocalAppData` held anchor 아래 unique empty pycache, exact import collision inventory와 source parent·source/cache watcher를 결합해 `bounded_project_source_load_candidate_closure_verified=true`를 채택한다. 다만 MSIX redirection이 관측된 local anchor는 external owner pin이 아니고 watcher도 filesystem 비간섭 증명이 아니다. runtime/stdlib/native/loaded-image dependency closure, AppContainer/network/write deny, semantic parser와 actual 40+20은 미완료다. 판정은 `ADOPT_BOUNDED_PROJECT_SOURCE_LOAD_CANDIDATE_CLOSURE_COMPONENT_ONLY / PARSER_DEPENDENCY_CLOSURE_NO_GO / PARSER_SANDBOX_NO_GO`; 검증은 focused `48/48`, 전체 P0 `407/407`, 비간섭 `6/6`이다. 상세는 [`P0_PARSER_PROCESS_PYCACHE_SOURCE_OBSERVATION_REVIEW_20260902_KO.md`](P0_PARSER_PROCESS_PYCACHE_SOURCE_OBSERVATION_REVIEW_20260902_KO.md)를 따른다.
+
+## 2026-09-02 external owner asymmetric signature 재회의
+
+Windows CNG ECDSA P-256/SHA-256, RFC 5480 fingerprint, exact canonical preauthorization/domain/context와 low-S `r||s` 수학 검증을 좁은 컴포넌트로 채택했다. provider는 `Microsoft Primitive Provider`로 고정하지만 DLL/native provenance는 열지 않는다. pin·key·preauthorization 전체를 공격자가 일관되게 바꾸는 반례가 math true일 수 있으므로 external provisioning/owner authority는 기각한다. 판정은 `ASYMMETRIC_SIGNATURE_MATH_PASS / PRESENTED_PIN_ONLY / EXTERNAL_PROVISIONING_NO_GO / OWNER_STATE_NOT_YET_BOUND / TRUSTED_TIME_REVOCATION_DURABLE_NONCE_NO_GO / PARSER_SANDBOX_NO_GO`; 검증은 focused `15/15`, adjacent `78/78`, 전체 P0 `422/422`, 비간섭 `6/6`이다. 상세는 [`P0_EXTERNAL_OWNER_ASYMMETRIC_SIGNATURE_REVIEW_20260902_KO.md`](P0_EXTERNAL_OWNER_ASYMMETRIC_SIGNATURE_REVIEW_20260902_KO.md)를 따른다.

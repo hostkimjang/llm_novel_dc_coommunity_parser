@@ -4,7 +4,9 @@
 
 Goal `019f4f3f-4f46-78d1-8418-50834da44924`의 종료 판정은 `COMPLETE_SAFE_TERMINAL / ARCHITECTURE_V2_INTEGRATED / ACTUAL_EFFECT_WAITING_EXTERNAL_INPUT`이다. exact Git closure와 staged-tree clean export까지 통과했다. 과거 `M1_SHADOW_FOUNDATION_COMPLETE`는 역사적 기반이다. source-backed 자료 부재는 C 실제 효과만 `NOT_ESTIMABLE`로 남기며 운영은 `REVIEW-LOCKED / full_scan_approval=false`다. production `20260711_113712_379597`은 읽기 전용으로 유지했다.
 
-이 종료 판정의 범위는 Architecture V2 내부 통합이다. 실제 효과·M2 lane은 이후 동일 external blocker가 3회 확인되어 `ACTUAL_BLOCKED_HANDOFF / NOT_COMPLETE`로 이관됐다. 재개에는 owner policy v3, source-backed DEV/CAL/FROZEN, 10+6 actual packet, 별도 fresh BEFORE/AFTER가 필요하다. 최신 외부 입력 상태는 `ACTUAL_PACKET_INPUT_INVENTORY_KO_20260712.md`를 따른다.
+이 종료 판정의 범위는 Architecture V2 내부 통합이다. 실제 효과·M2 lane은 이후 동일 external blocker가 3회 확인되어 `ACTUAL_BLOCKED_HANDOFF / NOT_COMPLETE`로 이관됐다. 현재 재개에는 owner policy v4, source-backed DEV/CAL/FROZEN, 10+6 actual packet, 별도 fresh BEFORE/AFTER가 필요하다. 최신 외부 입력 상태는 `ACTUAL_PACKET_INPUT_INVENTORY_KO_20260712.md`를 따른다.
+
+2026-09-03에 추가된 annotation packet/Windows/preauthorization/supervisor V2는 기존 Architecture V2 runtime 그래프 밖의 additive component다. packet child15/member16, held-handle 관측, caller-presented signature math와 single-step wrapper를 검증하지만 external owner authority 또는 actual execution lane을 열지 않는다. 기존 V1/runtime/WAL/publication/Slang DB import·wiring은 0이며 전체 P0 `836/836`, 보호 endpoint `6/6` 불변이다.
 
 ## 실제 흐름 전·후
 
@@ -38,6 +40,6 @@ V2 목표: input -> AgenticPipeline -> [기본 OFF shadow adapter]
 | P2 | CandidateSet/NIL/producer와 typed confidence reader | `PASS` | source-less `NOT_ESTIMABLE`, actual artifact 의미 결속 |
 | P3 | intake validator, operator template, paired command plan | `PASS` | no-write, dashboard ON, requested `--parallel 16` |
 
-외부 C는 내부 순서가 아니다. source-backed DEV/CAL/FROZEN·policy v3·10+6 packet·fresh pair가 도착한 뒤에만 actual metric과 paired CI를 산출한다.
+외부 C는 내부 순서가 아니다. source-backed DEV/CAL/FROZEN·policy v4·10+6 packet·fresh pair가 도착한 뒤에만 actual metric과 paired CI를 산출한다.
 
 외부 input이 없는 지금 C 지표는 `null/NOT_ESTIMABLE`이다. `REVIEW-LOCKED / full_scan_approval=false`를 유지한다.

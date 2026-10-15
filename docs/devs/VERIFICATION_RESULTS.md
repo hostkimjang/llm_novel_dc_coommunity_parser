@@ -1,5 +1,710 @@
 # 검증 결과 (Verification Results)
 
+> 현재 상태는 [현재 상태 문서](CURRENT_STATUS_KO.md)를 따른다. 날짜별 기록과 `out/`·`logs/` 링크는 로컬 보존 자료이며 Git checkout에 포함되지 않을 수 있다.
+
+<!-- r5-resolution-current:start -->
+
+## 현재 상태 안내 — 2026-10-15
+
+현재80 범위 개발·검증과 Goal 완료 상태는 [현재 상태와 남은 작업](CURRENT_STATUS_KO.md)에서 관리한다. 전체 의미 `REVIEW`·기존5개 실패·독립 평가/R7 보류·새 분기 실측 미관측을 함께 확인한다. 아래 날짜별 실행·시험·미완료 표기는 당시 이력이다.
+
+<!-- r5-resolution-current:end -->
+
+## 2026-09-15 workflow-level 진단 보존 회귀
+
+- workflow partition summary가 child `metrics.json`의 `case_type_counts`, `expected_action_counts`, `failure_stage_counts`, `candidate_recall`, `conditional_selection`을 workflow manifest에 복사하도록 최소 수정했다. runner의 score semantics와 child validator는 변경하지 않았다.
+- 회귀 테스트는 challenge report에 `CANDIDATE_RECALL_MISS`, `NIL_MISCLASSIFICATION`, Recall@5 분수, 조건부 selection 분수가 나타나는지 확인한다. focused unittest는 `18 tests OK`, 수정 workflow/test 두 파일의 `py_compile`은 `PASS`다.
+- 최종 산출물: `out/research/research_workflow_20260915_diagnostics_manifest_vllm_v2/workflow_manifest.json`, `report_ko.md`, baseline/challenge child artifact.
+- 최종 baseline 전체 terminal은 `RESOLVED 56 / NIL 8 / ABSTAIN 0 / UNAVAILABLE 0 / ERROR 0`, requested/effective `16/16`이다. challenge는 `RESOLVED 14 / NIL 0 / ABSTAIN 2 / UNAVAILABLE 0 / ERROR 0`, requested/effective `16/4`이다.
+- 실제 workflow manifest self-hash와 두 child terminal validator는 `PASS`다. challenge `local_llm`의 failure stage 네 종류(`CANDIDATE_RECALL_MISS`, `SELECTION_FAILURE_WRONG_CANDIDATE`, `NIL_MISCLASSIFICATION`, `AMBIGUOUS_NON_ABSTAIN`)와 Recall@5 `2/3`, 조건부 selection `0/1`이 workflow-level에서 직접 확인된다.
+- dashboard는 `http://127.0.0.1:8765` `CONNECTED`, vLLM `/v1/models`는 `owned_by=vllm`을 반환했다. 모델 설치·`llama-server`·중앙 Slang DB·production/publication 쓰기는 없었다.
+
+## 2026-09-15 challenge-001 후보 회수 원인 확인
+
+- 새 분석 artifact `out/research/research_candidate_recall_20260915/analysis_ko.md`에서 `challenge-001`의 common BM25 top-5와 baseline top-10을 재계산했다.
+- gold `work-hidden-aurora-freighter`는 BM25 top-5 밖이고, query의 표면 토큰과 gold title/alias/text 사이에 현재 tokenizer가 사용할 lexical anchor가 없었다. 이는 selection prompt가 아니라 candidate-generation 경계의 강한 근거다.
+- 따라서 이번 단위에서는 score semantics나 selection prompt를 억지로 바꾸지 않았다. verified semantic candidate-generation arm은 별도 승인·별도 output으로 남겼다.
+
+## 2026-09-15 연구 workflow 재개·configured vLLM 재검증
+
+- 실행 전 dashboard `http://127.0.0.1:8765/api/health`는 `ok=true`, `standalone=true`였고, `http://10.20.0.101:8000/v1/models`는 `unsloth/gemma-4-26B-A4B-it-NVFP4`, `owned_by=vllm`을 반환했다.
+- workflow builder가 endpoint·model·fingerprint를 부분적으로 받거나 `--allow-configured-remote-vllm`만 받은 경우를 fail-closed로 거부하도록 보강했고 회귀 테스트를 추가했다.
+- 실행 명령:
+  `python -B tools/run_research_local_benchmark_workflow.py --output-root out/research/research_workflow_20260915_resume_vllm --dashboard-url http://127.0.0.1:8765 --parallel 16 --local-llm-endpoint http://10.20.0.101:8000 --local-llm-model unsloth/gemma-4-26B-A4B-it-NVFP4 --local-llm-fingerprint 0352dbc6a2c876e0756be70a3258a136d0dd375e824b2c89f713a5716e942ca5 --allow-configured-remote-vllm`
+- 산출물: `out/research/research_workflow_20260915_resume_vllm/workflow_manifest.json`, `report_ko.md`, baseline/challenge child artifact.
+- baseline: 입력 `16`, requested/effective `16/16`, 전체 terminal `RESOLVED 55 / NIL 8 / ABSTAIN 1 / UNAVAILABLE 0 / ERROR 0`; local_llm `RESOLVED 11 / NIL 4 / ABSTAIN 1`.
+- challenge: 입력 `4`, requested/effective `16/4`, 전체 terminal `RESOLVED 14 / NIL 0 / ABSTAIN 2 / UNAVAILABLE 0 / ERROR 0`; local_llm `RESOLVED 3 / ABSTAIN 1`.
+- dashboard `CONNECTED`, child validator `PASS`, workflow self-hash `PASS`, workflow focused test `PASS`를 확인했다. local_llm challenge의 `CANDIDATE_RECALL_MISS`, `SELECTION_FAILURE_WRONG_CANDIDATE`, `NIL_MISCLASSIFICATION`, `AMBIGUOUS_NON_ABSTAIN`은 보존했다.
+- baseline의 새 `ABSTAIN`은 이전 run과 다른 remote completion 관측이며 성능 향상·저하로 일반화하지 않는다. synthetic fixture 연구 증거로만 기록한다.
+- 별도 모델 설치·llama-server·중앙 Slang DB·production/publication 쓰기는 없었다.
+
+## 2026-09-14 expert_main configured vLLM research run
+
+- `expert_main.py` 정본 설정을 확인했다: `LLM_SERVER_TYPE=vllm`, endpoint `http://10.20.0.101:8000/`, model `unsloth/gemma-4-26B-A4B-it-NVFP4`.
+- `/v1/models`는 `owned_by=vllm`을 반환했고, benchmark 형식 request는 `enable_thinking=false` 계약으로 정상 content를 반환했다. server fingerprint는 `vllm-0.26.0-tp2-ep-d96fcb7f`다.
+- 실행 명령은 `python tools/run_research_local_benchmark_workflow.py --output-root out/research/research_workflow_20260914_expert_main_vllm --parallel 16 --local-llm-endpoint http://10.20.0.101:8000 --local-llm-model unsloth/gemma-4-26B-A4B-it-NVFP4 --local-llm-fingerprint 0352dbc6a2c876e0756be70a3258a136d0dd375e824b2c89f713a5716e942ca5 --allow-configured-remote-vllm`이다.
+- 산출물: `out/research/research_workflow_20260914_expert_main_vllm/workflow_manifest.json`, `report_ko.md`, baseline/challenge child manifest·metrics·predictions.
+- baseline: 입력 `16`, requested/effective `16/16`, local_llm `RESOLVED 12 / NIL 4 / UNAVAILABLE 0`, 정확 `16/16`; 전체 terminal `RESOLVED 56 / NIL 8 / ABSTAIN 0 / UNAVAILABLE 0 / ERROR 0`.
+- challenge: 입력 `4`, requested/effective `16/4`, local_llm `RESOLVED 3 / ABSTAIN 1 / UNAVAILABLE 0`, 정확 `1/4`; 전체 terminal `RESOLVED 14 / NIL 0 / ABSTAIN 2 / UNAVAILABLE 0 / ERROR 0`.
+- dashboard `http://127.0.0.1:8765` `CONNECTED`, child validator `PASS`, workflow self-hash `66d7efe9095e799b517685e17b6a74493346d61c5115ebf2a3d5f34a96b3cf9b`, focused `16 tests OK`.
+- `py_compile` 대상 코드·테스트 `PASS`; 기본 loopback guard, explicit remote-vLLM opt-in, vLLM no-thinking request 계약 회귀 `16 tests OK`로 검증했다.
+- 정본 실행은 별도 PC 로컬 `llama-server`를 사용하지 않았고 모델 설치·중앙 Slang DB·production/publication 쓰기를 하지 않았다. P0·production·publication·full-scan 승인 근거가 아니다.
+
+## 2026-09-14 실행·검증 workflow 실측
+
+- `tools/run_research_local_benchmark_workflow.py`가 dashboard 준비, baseline/challenge child runner, 독립 terminal manifest validator, focused unittest와 한국어 report를 순차 실행했다.
+- 산출물: `out/research/research_workflow_20260914_automated_e2e/workflow_manifest.json`, `report_ko.md` 및 baseline/challenge child artifact.
+- baseline: 입력 `16`, requested/effective `16/16`, terminal `RESOLVED 44 / NIL 4 / ABSTAIN 0 / UNAVAILABLE 16 / ERROR 0`.
+- challenge: 입력 `4`, requested/effective `16/4`, terminal `RESOLVED 11 / NIL 0 / ABSTAIN 1 / UNAVAILABLE 4 / ERROR 0`.
+- dashboard `http://127.0.0.1:8765` `CONNECTED`, child validator `PASS`, workflow manifest self-hash `PASS`, focused `14/14 PASS`.
+- local LLM 인자는 제공하지 않았고 모델 설치·fallback 없이 `UNAVAILABLE_MODEL_IDENTITY`를 유지했다. 기존 diagnostic output은 변경하지 않았다.
+- 판정: `RESEARCH_WORKFLOW_AUTOMATION_COMPLETE / RESEARCH_EVIDENCE_ONLY`; P0·production·publication·full-scan 승인 근거가 아니다.
+
+## 2026-09-14 후보 회수·선택 진단 실측
+
+- 웹 ChatGPT 오케스트레이션 헤드가 `Codex-kimjang-home` 앱의 실제 `6 Pro`·`pro` 실행으로 작업 패키지를 판정했다. 전체 결과는 `C:\Users\kimjang\.codex\state\chatgpt-oracle\ordinary\projects\fd17873b4a678ceb71f41b12\runs\20260914T122929Z-f576a8f56de8\output.md`에 보존했다.
+- 기존 16건과 challenge 4건을 별도 실행했다. baseline은 requested/effective `16/16`, challenge는 requested/effective `16/4`이며 두 manifest의 dashboard pre/post 상태는 `CONNECTED`다.
+- baseline artifact: `out/research/research_candidate_diagnostics_20260914_baseline`; challenge artifact: `out/research/research_candidate_diagnostics_20260914_challenge`.
+- baseline 핵심: lexical `14/16`, fixture BM25 `12/16`, reranker+NIL `14/16`, local LLM `UNAVAILABLE 16/16`; 모든 arm의 WORK Recall@5 `12/12`, 조건부 selection은 local LLM을 제외하고 `12/12`다.
+- challenge 핵심: 공통 WORK Recall@5는 모든 arm `2/3`; 조건부 selection은 lexical `1/2`, BM25·reranker `0/2`, local LLM은 weights 부재로 `NOT_ESTIMABLE`; 전체 terminal 분모 4를 유지했다.
+- challenge 실패 단계는 `SELECTION_FAILURE_WRONG_CANDIDATE`, `NIL_MISCLASSIFICATION`, `AMBIGUOUS_NON_ABSTAIN`, `CORRECT_ABSTAIN`, `UNAVAILABLE`로 분리했고, 후보 누락 행의 retrieval hit와 selection hit를 별도 보존했다.
+- `tests.test_research_local_benchmark` `10/10 PASS`, 변경 Python 파일 `py_compile PASS`, 두 manifest 독립 terminal validator와 artifact hash 검증 `PASS`.
+- 판정: `CANDIDATE_SELECTION_DIAGNOSTICS_COMPLETE / RESEARCH_EVIDENCE_ONLY`; synthetic fixture corpus의 진단 결과이며 P0·production·publication·full-scan 승인 근거가 아니다. 상세는 [진단 보고서](RESEARCH_CANDIDATE_SELECTION_DIAGNOSTICS_20260914_KO.md)를 따른다.
+
+## 2026-09-06 Astra 인계·목표 정리
+
+- 네 참조 작업과 현재 연구 코드, V10 report/metrics/manifest를 대조했다. 상세는 [인계 문서](GPT6_ASTRA_RESEARCH_HANDOFF_20260906_KO.md)를 따른다.
+- 첫 합성 tranche는 완료됐지만 실제 로컬 LLM은 `UNAVAILABLE 16/16`; 품질 비교는 미실시다. 아래 `80 PASS`·P0 테스트는 과거 검증 기록이다.
+- 기존 goal 870,401 bytes를 `goal.history.20260906.md`에 보존했다. SHA256 `b36b3302948bd3baaf77621b0c77bed238a05847625219e6704c2c03c0560f14` 일치를 확인했다.
+- 이번 변경은 문서 정리이며 신규 benchmark·모델 설치·전체 테스트 스위트를 실행하지 않았다. 현재 문서·갱신 진입부의 로컬 링크 32개 정상, V10 기록 회계 일치, 문서 diff 공백 검사 통과와 독립 읽기 전용 QA를 확인했다.
+
+## 2026-09-05 research-only scope supersession 및 구현 검증
+
+- 활성 판정: `RESEARCH_ONLY_LOCAL_LLM_BENCHMARK / ACTIVE`.
+- P0 외부 provisioning 판정은 `DEFERRED_P0_AUDIT_TRACK / NOT_A_RESEARCH_BLOCKER`로 적용 범위를 축소했다.
+- 권리 안전 synthetic fixture 16건, gold-lite 16건, blind recheck 4건을 검증했다.
+- focused `tests/test_research_local_benchmark.py`: `7/7 PASS`; 구현·runner·test 세 Python 파일 `py_compile PASS`.
+- actual V10 run: `out/research/research_local_benchmark_20260905_v10`; manifest self-hash `e0e1a726d675ee0652a844f5f69e7ea184764c3533754845411527339b077b0c` 독립 validator 검증 PASS.
+- dashboard `http://127.0.0.1:8765` pre/post `ok=true / standalone=true`; requested/effective parallel `16/16`; dashboard final `64/64`, `batch_running=false`.
+- fingerprint: input `4220f5fe…ec057`, gold `1cb87a69…bdcc0`, config `dba0165f…fd7b5`, prompt `877226bb…99a9`, implementation `e251bb3d…7123`, runner `c76f6be3…d165`, Git commit `007c9d40…ba24` + dirty 상태를 명시했다.
+- arm 결과: lexical `14/16 (0.875)`, fixture-corpus BM25 `12/16 (0.75, WORK truth Hit@3 12/12)`, reranker+NIL `14/16 (0.875)`, local LLM `UNAVAILABLE 16/16`, A/B `NOT_ESTIMABLE`.
+- 전체 terminal: `RESOLVED 44 / NIL 4 / ABSTAIN 0 / UNAVAILABLE 16 / ERROR 0`; 모든 arm denominator `16`.
+- 동일 bytes/seed/config V9/V10 semantic output SHA `13bbe5b8fd1ffcaaa0608204b49e3647324f410c4143fb3191fc5da95a09d83c` 일치.
+- focused+adjacent: `80 passed, 2 subtests passed`; N=3 병렬 계약 `16/3`, 5종 terminal conservation, terminal self/artifact/metrics/semantic hash 변조 거부, namespace/overwrite 거부를 포함한다. dashboard는 실제 integration run으로 검증했다(`.venv312`에는 pytest가 없어 해당 env의 pytest suite는 N/A).
+- 중앙 Slang DB 1개와 publication journal 5개는 `6/6` byte/SHA 불변, receipt `6033c6d0…204e`.
+- 결론: `FIRST_TRANCHE_COMPLETE / RESEARCH_EVIDENCE_ONLY`; P0 phase exit, production, publication, full scan authority는 모두 false.
+
+## 2026-09-04 P0 외부 provisioning 3차 blocked 감사
+
+- exact V3/V4 fixed store path 두 곳 모두 `Test-Path=false`였다.
+- workspace에는 새 owner-signed policy, complete actual 40+20 census, reviewer/trust/runtime/rights package가 없었다.
+- fresh zero-input compiler: receipt `f3537ed24ed3c8a897ef252e218ae7b492ebae62ee9a823aef2d0c143eb18d42`, `FIXED_STORE / NO_GO`, actual `0/40·0/20`, endpoint projection match.
+- `tests.test_p0_actual_readiness_blocker_compiler_v2` → `12/12 PASS` (`2.235s`).
+- 중앙 Slang DB 1개와 publication journal 5개 → `6/6` byte/SHA 불변, receipt `6033c6d0c648175f255c10042b9104d4ccc183d94a76901ed44a1649fd98204e`.
+- 통계·MLOps 독립 감사 모두 안전한 추가 내부 구현이 없다고 판정했다.
+- 결론: `BLOCKED_EXTERNAL_PROVISIONING_REQUIRED`; P0 Exit·production·full scan false.
+- read-only/unit 범위이므로 dashboard와 `--parallel 16`은 `N/A`다.
+
+상세는 [`P0_EXTERNAL_PROVISIONING_BLOCKED_HANDOFF_20260904_KO.md`](P0_EXTERNAL_PROVISIONING_BLOCKED_HANDOFF_20260904_KO.md)를 따른다.
+
+## 2026-09-04 P0 lineage V2 다음 gate current-state 재검증
+
+- zero-input `compile_fixed_p0_actual_readiness_blockers_v2()`를 현재 checkout에서 재실행했다.
+- receipt `f3537ed24ed3c8a897ef252e218ae7b492ebae62ee9a823aef2d0c143eb18d42`, `transition_status=VALID_COMPONENT_NO_GO`, `failure_stage=FIXED_STORE`, `decision=NO_GO`를 재현했다.
+- protected endpoint point-in-time projection은 전후 일치했다. 이는 runtime write-deny나 external authority 증거가 아니다.
+- observed/credited actual source·A-context는 `0/40·0/20`; P0 Exit·production·full scan은 false다.
+- 통계·MLOps read-only 재회의는 새 wrapper 구현을 보류하고 external package를 선행 gate로 확정했다.
+- Claude Fable native route는 `unreadable_encrypted_agent_task`, 기존 task override는 약 90초 뒤 completed였지만 turn items가 비어 있어 검토 증거 0이다.
+- read-only current-state 확인이라 dashboard와 `--parallel 16`은 `N/A`다.
+
+상세는 [`P0_LINEAGE_V2_NEXT_GATE_EXPERT_COUNCIL_20260904_KO.md`](P0_LINEAGE_V2_NEXT_GATE_EXPERT_COUNCIL_20260904_KO.md)를 따른다.
+
+## 2026-09-04 P0 presented A-context lineage-capped full-frame V2
+
+- focused: `tests.test_p0_presented_a_context_lineage_capped_full_frame_v2` → `24/24 PASS`.
+- A V1·source V2·bridge·subject V2·temporal V2를 포함한 인접 6모듈 → `132/132 PASS`.
+- 전체 P0: 승인된 Windows host 권한에서 `1037/1037 PASS` (`114.815s`). 최초 workspace sandbox 실행의 LocalAppData pycache `CreateDirectoryW` error 5와 restricted-token 파생 실패는 환경 오류로 분리해 코드 회귀 수치로 채택하지 않았다.
+- child·parent·test `py_compile PASS`.
+- component manifest `c1080b53622b1b1bb93b127361e333cadeddf664c44a94d329257a6a918d250b`, parent receipt `a4b890eeefd9fd4612b75cb5fe867c7c8b30a7ffacba531efc8d3ed3e1ef9c76`를 확인했다.
+- fixture frame/seed/plan raw SHA-256은 각각 `d0cc0a9b…e0e16`, `1093941f…ffda`, `4bba654e…202a`다.
+- fixture accounting은 `80 contexts→40 lineages→20 selected`, context surplus `60`, lineage surplus `20`이고 전역 lineage cap 위반이 없다.
+- 독립 red-team의 predecessor callable/receipt, bridge parity, content/surface/time, chronology, resource/Unicode/huge-int, runtime helper/constant와 mutable manifest 변조를 최종 모두 거부했다.
+- 중앙 Slang DB 1개와 publication journal 5개는 `6/6` bytes/SHA 불변이고 noninterference receipt는 `6033c6d0c648175f255c10042b9104d4ccc183d94a76901ed44a1649fd98204e`다.
+- downstream wiring `0`, actual `0/40·0/20`, metric `NOT_ESTIMABLE_LINEAGE_CAPPED_PRESENTED_FRAME_ONLY`, P0 Exit·production·full scan `NO_GO`다.
+- Claude Fable 시도는 unreadable/empty output이라 검토 근거에서 제외했다. pure unit/static/read-only 검증이므로 dashboard와 `--parallel 16`은 `N/A`다.
+- 후속 current-state 재실행에서도 zero-input readiness compiler는 receipt `f3537ed2…8d42`, `failure_stage=FIXED_STORE`, `decision=NO_GO`였고 보호 endpoint projection은 전후 일치했다.
+
+상세는 [`P0_PRESENTED_A_CONTEXT_LINEAGE_CAPPED_FULL_FRAME_V2_REVIEW_20260904_KO.md`](P0_PRESENTED_A_CONTEXT_LINEAGE_CAPPED_FULL_FRAME_V2_REVIEW_20260904_KO.md)를 따른다.
+
+## 2026-09-04 P0 presented HTTP temporal evidence V2
+
+- focused: `tests.test_p0_presented_http_capture_temporal_evidence_v2` → `25/25 PASS`.
+- seed inventory·capture V1·temporal V2·actual registry·raw/profile parser 인접 6모듈 → `135/135 PASS`.
+- 전체 P0: 필요한 Windows LocalAppData 격리 권한에서 `1013/1013 PASS` (`102.983s`). 앞선 workspace sandbox 실행의 pycache ACL error 1건과 파생 failure 1건은 코드 회귀 수치로 채택하지 않았다.
+- child·parent·test `py_compile PASS`; manifest `8961fb8c…cb8b`, parent pin parity와 predecessor V1 `e115cd8c…7339` 불변을 확인했다.
+- 독립 red-team의 임의/nested/swapped JSON marker, decoy/cropped wrong attribute, span overlap, future/unknown time, pre-hash/resource, helper/external callable 변조를 최종 모두 거부했다.
+- `git diff --check PASS`이며 기존 줄바꿈 경고만 있었다.
+- 중앙 Slang DB 1개와 publication journal 5개는 `6/6` bytes/SHA 불변이고 noninterference receipt는 `6033c6d0c648175f255c10042b9104d4ccc183d94a76901ed44a1649fd98204e`다.
+- actual `0/40·0/20`, metric `NOT_ESTIMABLE`, P0 Exit·production·full scan `NO_GO`; pure unit/static/read-only이므로 dashboard와 `--parallel 16`은 `N/A`다.
+
+상세는 [`P0_PRESENTED_HTTP_CAPTURE_TEMPORAL_EVIDENCE_V2_REVIEW_20260904_KO.md`](P0_PRESENTED_HTTP_CAPTURE_TEMPORAL_EVIDENCE_V2_REVIEW_20260904_KO.md)를 따른다.
+
+## 2026-09-04 P0 presented A-context census bounded validation hardening
+
+- 최초 2026-09-03 tranche의 focused `18/18`, adjacent `73/73`, 전체 P0 `723/723`은 당시 component 채택 기록으로 보존한다.
+- 최종 latest-code focused: `tests.test_p0_presented_a_context_full_frame_v1` → `24/24 PASS` (`1.361s`; 독립 재검토 `1.388s`).
+- A-frame·annotation subject/event·packet·Windows packet·actual A-context/packet·source frame 인접 8모듈: `158/158 PASS` (`47.908s`).
+- 전체 P0: 올바른 `src` import path와 Windows sandbox의 LocalAppData 격리 권한 아래 `988/988 PASS` (`102.825s`). 앞선 무효 실행의 import/ACL 오류는 코드 회귀 수치로 채택하지 않았다.
+- producer·parent·test `py_compile PASS`; `git diff --check PASS`이며 줄바꿈 경고만 있었다.
+- builder는 candidate retain 전 conservative lower-bound와 post-sort exact pre-append 검사를 사용하고, parser는 전체 `64,000,000` bytes·행 `64,000` bytes·행 수 `1,000,000` 상한 및 pre-slice/append 전 검증을 적용한다.
+- 독립 공격에서 deceptive sequence, malformed 100,000행, oversized-first-row, conservative/final cap, actual count·authority·production·denominator 재봉인을 모두 거부했다.
+- 중앙 Slang DB 1개와 publication journal 5개는 `6/6` bytes/SHA 불변이며 noninterference receipt는 `6033c6d0c648175f255c10042b9104d4ccc183d94a76901ed44a1649fd98204e`다.
+- 완전한 constant-memory streaming은 아니며 유효 corpus의 deterministic sort와 validated row list를 유지한다. actual `0/40·0/20`, metric `NOT_ESTIMABLE`, P0 Exit·production·full scan `NO_GO`는 그대로다.
+- pure unit/static/read-only 검증이므로 dashboard와 `--parallel 16`은 `N/A`다.
+
+상세는 [`P0_PRESENTED_A_CONTEXT_FULL_FRAME_V1_REVIEW_20260903_KO.md`](P0_PRESENTED_A_CONTEXT_FULL_FRAME_V1_REVIEW_20260903_KO.md)의 2026-09-04 hardening delta를 따른다.
+
+## 2026-09-04 P0 V3→V4 transition과 readiness compiler V2
+
+- transition parent·fixed-store observer·readiness compiler V2 focused: `40/40 PASS`.
+- 관련 adjacent: `149/149 PASS`.
+- component manifest: parent `467bf7cd295640846c61405d18b7711fa426c45b1b96612cbd3d68951917ba4d`, observer `58b7c10801e95a11c322457e3286a228435f50128336eb75dc2e143251420ae2`, compiler V2 `0c13c08c46850f6e2288b001b03b448b6460a8b8e9d82e70cd9379a7ce24060e`.
+- 독립 red-team의 supplied V4 parent replay, V3 10-field pin, signed V3/live identity, Known Folder class·`ntpath`·Win32 constants, endpoint exact path/backslash traversal, watch scope, exact int 공격을 보강했다.
+- raw marshal 기반 실행순서 오판을 code-object identity+stable digest 검증으로 교체하고, public store boundary와 compiler 외부 pin으로 transition integrity checker no-op 변조를 거부했다.
+- stable-digest 1,000회 스트레스 뒤 store와 compiler를 각각 2회 실행해 byte-deterministic 결과를 확인했다.
+- 최종 store receipt: `1012a6b351b7b8ae2c035704461108b7bd33b45fc5b2cc3d57ee68877f7b5475`.
+- 최종 compiler receipt: `f3537ed24ed3c8a897ef252e218ae7b492ebae62ee9a823aef2d0c143eb18d42`.
+- 전체 P0: `982/982 PASS`.
+- endpoint `6/6` stable, 중앙 Slang DB 1개+publication journal 5개는 변경되지 않았고 noninterference receipt는 `6033c6d0c648175f255c10042b9104d4ccc183d94a76901ed44a1649fd98204e`다.
+- current host에는 fixed store가 없어 observer는 `failure_stage=FIXED_STORE`, `decision=NO_GO`; 21-role success 경로는 미실증이다.
+- actual·credited source/context `0/40·0/20`, `p0_phase_exit=false`, `production_approval=false`, `full_scan_approval=false`다.
+- serialized receipt/self-hash는 authority가 아니며 Fable-5 시도는 empty output이라 검토 근거에서 제외했다.
+- unit test·static contract·read-only host observation이므로 dashboard와 `--parallel 16` 적용 대상이 아니다.
+
+상세는 [`P0_WINDOWS_OWNER_POLICY_V4_TRANSITION_AND_READINESS_COMPILER_V2_REVIEW_20260904_KO.md`](P0_WINDOWS_OWNER_POLICY_V4_TRANSITION_AND_READINESS_COMPILER_V2_REVIEW_20260904_KO.md)를 따른다.
+
+## 2026-09-03 P0 capture-intake와 V4 epoch2 fixed-store
+
+- capture focused `31/31 PASS`, 인접 seed/raw-parser/profile-parser 포함 `84/84 PASS`, component `e115cd8c8da2b7f4b09c0ff252055656ac206da062afc0fb9edbc517a8a77339`.
+- V4 epoch2 store focused `19/19 PASS`와 공격 subtest `14 PASS`, 인접 5-module `104/104 PASS`, store component `6bfe0e80c26c707db3e0634700ad9d60574670179b33b610a10695e186ca0697`, parent component `36eec436b81138357b87d5368029754ac846c901db75e640a0889adaadc209e8`.
+- 전체 P0: `$env:PYTHONPATH='src'; python -m unittest discover -s tests -p 'test_p0_*.py' -q` → `942/942 PASS` (`99.079s`).
+- 신규 6파일 `py_compile PASS`; capture·store focused/adjacent를 root가 재실행했다.
+- current zero-input은 두 번 byte-deterministic, 91 fields, `failure_stage=FIXED_STORE`, `gate_status=NO_GO_OWNER_POLICY_V4_EPOCH2_FIXED_STORE_COMPONENT_ONLY`, receipt `06474b801d115e97be20ce7e845a57145ba9cd95130b2b1ea7d08fa5c9a5eecd`다.
+- read-only noninterference audit: 중앙 Slang DB 1개+publication journal 5개 byte/SHA `6/6` 불변, receipt `6033c6d0…204e`.
+- 실제 source/context `0/40·0/20`, live V3 continuity/bootstrap math, trusted time/revocation/nonce, external root/code, OS write deny, runtime noninterference는 false다.
+- `p0_phase_exit=false`, `full_scan_approval=false`; pure unittest·static/hash·read-only 감사이므로 dashboard·`--parallel 16` 적용 대상이 아니다.
+
+상세는 [`P0_PRESENTED_HTTP_CAPTURE_INTAKE_V1_REVIEW_20260903_KO.md`](P0_PRESENTED_HTTP_CAPTURE_INTAKE_V1_REVIEW_20260903_KO.md), [`P0_WINDOWS_OWNER_POLICY_V4_EPOCH2_FIXED_STORE_REVIEW_20260903_KO.md`](P0_WINDOWS_OWNER_POLICY_V4_EPOCH2_FIXED_STORE_REVIEW_20260903_KO.md)를 따른다.
+
+## 2026-09-03 P0 seed inventory와 owner policy V4 packet-V2 profile
+
+- seed focused: `24/24 PASS`; exact URL `8`, A/B `3/5`, lineage family `4`, component `52dcabd17c6d512643648e535f07cea4ab36e0af4f506da2a436150f356f219d`.
+- owner V4 focused: `32/32 PASS`; adjacent owner/V2 `109/109 PASS`, component `9224e3c69c2748a882b81d5ccd29d02f3a9ad689e29a20ea6de6f100edbb9fc7`.
+- 두 focused 합계 `56/56 PASS`; 신규 5개 module/parent/test `py_compile PASS`, test allowlist/discovery PASS.
+- 전체 P0: `$env:PYTHONPATH='src'; python -m unittest discover -s tests -p 'test_p0_*.py' -q` → `892/892 PASS`.
+- seed legacy raw 재계산: golden18 `18/9/6/3`, refresh `39/87`, judge `1,505`, 빈 P01/P02; 서로 다른 pool grain 합산·metric denominator는 0이다.
+- owner receipt는 exact 78 fields, positive structural flags `20/20`, denial flags `22/22`, actual credit `0/0`이다.
+- 독립 red-team의 coordinated reseal·허위 통계·forged receipt·constant/helper/module alias/attribute/TOCTOU 반례를 모두 수정 후 재검증했다.
+- read-only noninterference audit: 중앙 Slang DB 1개+publication journal 5개 byte/SHA `6/6` 불변, receipt `6033c6d0…204e`.
+- actual source/context `0/40·0/20`, `p0_phase_exit=false`, `full_scan_approval=false`다.
+- pure unittest·static/hash 감사이므로 dashboard·`--parallel 16` 적용 대상이 아니다.
+
+상세는 [`P0_PRESENTED_SOURCE_SEED_CANDIDATE_INVENTORY_V1_REVIEW_20260903_KO.md`](P0_PRESENTED_SOURCE_SEED_CANDIDATE_INVENTORY_V1_REVIEW_20260903_KO.md), [`P0_WINDOWS_OWNER_POLICY_V4_PACKET_V2_PROFILE_REVIEW_20260903_KO.md`](P0_WINDOWS_OWNER_POLICY_V4_PACKET_V2_PROFILE_REVIEW_20260903_KO.md)를 따른다.
+
+## 2026-09-03 P0 packet V2·Windows·owner preauthorization supervisor
+
+- packet V2 focused `15/15 PASS`, component `2a4b63518b8d80522469753191c9879af6f85f55828f28318a149911e564d59f`.
+- Windows V2 focused `26/26 PASS`, 인접 `59/59 PASS`, component `4e4e5c76fd3fd210a5e3c381243dccec623f2c0a48afbba6e52667d38afaae02`.
+- preauthorization V2 focused `16/16 PASS`, component `07ae0af427112978ba3cb5f5a0ae8713a25837cbb9ae65ac0b7993da7d44876e`.
+- supervisor V2 focused `18/18 PASS`, combined red-team `75/75 PASS`, component `239b595763bf1bef0d5ab925d51f864f1c1c3090123f6ca540a225e4f9c4fddf`.
+- 전체 P0: `$env:PYTHONPATH='src'; python -m unittest discover -s tests -p 'test_p0_*.py' -q` → `836/836 PASS` (`93.083s`).
+- 신규 V2 4단계 `py_compile PASS`; 신규 파일과 `.gitignore` allowlist `git diff --check PASS`.
+- read-only noninterference audit: 중앙 Slang DB 1개+publication journal 5개 byte/SHA `6/6` 불변, receipt `6033c6d0…204e`.
+- manifest split-view, path-input collision, step receipt 변조와 callable check/use swap 공격을 수정 후 재검증했다.
+- external authority/time/revocation/replay/root/code/write-deny/runtime/metric/production/full-scan/P0/action은 모두 false다.
+- pure unittest·static scan·read-only hash 감사이므로 dashboard·`--parallel 16` 적용 대상이 아니다.
+
+상세는 [`P0_OWNER_ROOT_PREAUTHORIZATION_V2_SUPERVISOR_REVIEW_20260903_KO.md`](P0_OWNER_ROOT_PREAUTHORIZATION_V2_SUPERVISOR_REVIEW_20260903_KO.md)를 따른다.
+
+## 2026-09-03 P0 presented A-context annotation-event V2 target precommit
+
+- focused: `$env:PYTHONPATH=(Resolve-Path 'src').Path; python -m unittest -q tests.test_p0_presented_a_context_annotation_event_v2_target_precommit` → `19/19 PASS` (`8.677s`).
+- predecessor subject + 신규: `38/38 PASS`.
+- adjacent 7-suite: source/A frame·subject·신규·actual A-context/packet → `133/133 PASS` (`19.067s`).
+- 전체 P0: `$env:PYTHONPATH=(Resolve-Path 'src').Path; python -m unittest discover -s tests -p 'test_p0_*.py' -q` → `761/761 PASS` (`65.262s`).
+- producer·composed parent·test `py_compile PASS`; material red-team finding `6/6` 수정, 명시적 attack/reseal variant 최소 48개 거부.
+- manifest producer/parent parity `ac99ac5544bbfa5d5e264eb93bc2086eb9eed2271e18534c173df1be0dc86ecd`; response taxonomy `3728334be85d5b53fd1b8f403c8471bad78817735271a301bab07590c063dd41`.
+- exact 15-role raw pins/receipt, strict RFC3339, timestamp-bound precommit ID, iid false/source cluster policy를 확인했다.
+- 기존 actual packet `CHILD_FILES=13`, 기존 runtime reference `0`; 중앙 Slang DB 1개와 publication journal 5개 bytes/SHA `6/6` exact 일치.
+- actual event/review/credit 0, source/context `0/40·0/20`, metric `NOT_ESTIMABLE`, P0/P1/production/full scan `NO_GO`다.
+- pure unittest·static scan·read-only hash 감사이므로 dashboard·`--parallel 16` 적용 대상이 아니다.
+
+상세는 [`P0_PRESENTED_A_CONTEXT_ANNOTATION_EVENT_V2_TARGET_PRECOMMIT_REVIEW_20260903_KO.md`](P0_PRESENTED_A_CONTEXT_ANNOTATION_EVENT_V2_TARGET_PRECOMMIT_REVIEW_20260903_KO.md)를 따른다.
+
+## 2026-09-03 P0 presented A-context annotation subject V2 precommit
+
+- focused: `$env:PYTHONPATH='src'; python -m unittest -v tests.test_p0_presented_a_context_annotation_subject_v2_precommit` → `19/19 PASS` (`3.365s`).
+- adjacent: source-frame V2 + batch bridge + A-frame V1 + 신규 subject + actual A-context/packet → `114/114 PASS` (`10.613s`).
+- 전체 P0: `$env:PYTHONPATH='src'; python -m unittest discover -s tests -p 'test_p0_*.py'` → `742/742 PASS` (`57.281s`).
+- producer·parent·test `py_compile PASS`; manifest producer/parent parity `4f8e70e08f153886576fad2dbaa2a35e298a1e7438e58a047bdf00105a8f01b6`.
+- 최종 coherent red-team 공격 `13/13 REJECT`; offset precommit/fractional A time/300자 A ID producer-valid parity `PASS`.
+- 신규 schema/runtime reference는 신규 producer·parent 2파일뿐이며 기존 actual packet `CHILD_FILES=13`이다.
+- 중앙 Slang DB 1개와 publication journal 5개 bytes/SHA는 기존 기준과 `6/6` exact 일치했다.
+- actual source/context `0/40·0/20`, event/review/credit 0, metric `NOT_ESTIMABLE`, P0/P1/production/full scan `NO_GO`다.
+- pure unittest·static scan·read-only hash 감사이므로 dashboard·`--parallel 16` 적용 대상이 아니다.
+
+상세는 [`P0_PRESENTED_A_CONTEXT_ANNOTATION_SUBJECT_V2_PRECOMMIT_REVIEW_20260903_KO.md`](P0_PRESENTED_A_CONTEXT_ANNOTATION_SUBJECT_V2_PRECOMMIT_REVIEW_20260903_KO.md)를 따른다.
+
+## 2026-09-03 P0 presented A-context full frame V1
+
+- focused: `$env:PYTHONPATH=(Resolve-Path 'src').Path; python -m unittest tests.test_p0_presented_a_context_full_frame_v1 -v` → `18/18 PASS` (`0.960s`; 독립 재감사 `0.974s`).
+- adjacent: 신규 A-frame + source-frame V2 + actual A-context + packet → `73/73 PASS` (`4.618s`).
+- 전체 P0: `$env:PYTHONPATH=(Resolve-Path 'src').Path; .\.venv312\Scripts\python.exe -m unittest discover -s tests -p 'test_p0_*.py' -q` → `723/723 PASS` (`51.644s`).
+- producer·parent·test `py_compile PASS`; scoped `git diff --check PASS`.
+- component manifest SHA `5b38f560cbe6c2af9294e79ad6298b798e7256426c2e1ca353162e7531c47aa9`.
+- 검색/annotation은 scalar·cross-binding 수정 뒤 `ADOPT_COMPONENT_ONLY`; MLOps는 parent frame cap을 1MB로 통일한 뒤 `ADOPT_COMPONENT_ONLY`로 판정했다.
+- 중앙 Slang DB와 publication journal 5개는 bytes/SHA `6/6` 기존 기준과 exact 일치했다.
+- actual A review `0/20`, surplus review `0`, metric `NOT_ESTIMABLE`, 기존 packet/runtime wiring `0`; P0/P1/production/full scan은 `NO_GO`다.
+- pure unittest·read-only hash 감사이므로 dashboard·`--parallel 16` 적용 대상이 아니다.
+
+상세는 [`P0_PRESENTED_A_CONTEXT_FULL_FRAME_V1_REVIEW_20260903_KO.md`](P0_PRESENTED_A_CONTEXT_FULL_FRAME_V1_REVIEW_20260903_KO.md)를 따른다.
+
+## 2026-09-03 P0 dual-blind external authority·dispatch readiness
+
+- zero-input owner policy v3 preflight: `decision=NO_GO`, `failure_stage=FIXED_STORE`, receipt `da914d27db0f1694c6d1fc65953bd74e8b93e186693847b493ab6c4196a1b1ad`.
+- zero-input provisioning preflight: `decision=NO_GO`, `failure_stage=FIXED_STORE`, receipt `bbed3cdd9d309f22db22fe9607b9000f31d924b8ed3c677b9dbbfadf2351a172`.
+- fixed-store observer는 watched directory `CreateFileW` Windows error 2로 fail-closed 됐다.
+- actual readiness blocker compiler: `decision=NO_GO`, receipt `104d7c58271c7d7ae20d00badeb09185023eff344f37fe05eef1867d2c93a501`, source/context `0/40·0/20`, endpoint pre/post exact match.
+- service/store/ACL/policy 변경과 nonce-consuming external trust/runtime execution은 수행하지 않았다.
+- dual-blind/signature/owner/external-trust/Windows preflight 관련 10개 suite: `195/195 PASS` (`16.853s`).
+- 검색·통계·MLOps 사후 반대심사는 ordering/store-CAS/pair algebra/final-gold/expiry origin/lease linearization 수정을 요구했고, 반영 뒤 세 분과 모두 `ADOPT`했다. 구현 판정은 `DOCUMENT_EXTERNAL_PROVISIONING_BLOCKER / DISPATCH_SUCCESSOR_DESIGN_ADOPTED / IMPLEMENTATION_DEFERRED`다.
+- current actual state는 `P=0/80`, `T=0/40`, `J=0/40`, `D=null`, `R=0`, `F=0/40`; P0/P1/production/full scan은 `NO_GO`다.
+- 중앙 Slang DB 1개와 publication journal 5개는 기존 bytes/SHA와 `6/6` exact 일치했다.
+- read-only observer·unittest·문서 갱신은 actual grounding run이 아니므로 dashboard·`--parallel 16` 적용 대상이 아니다.
+
+상세는 [`P0_DUAL_BLIND_EXTERNAL_AUTHORITY_DISPATCH_READINESS_REVIEW_20260903_KO.md`](P0_DUAL_BLIND_EXTERNAL_AUTHORITY_DISPATCH_READINESS_REVIEW_20260903_KO.md)를 따른다.
+
+## 2026-09-03 P0 presented dual-blind review campaign precommit v1
+
+- focused campaign: `21/21 PASS`.
+- review accounting + signature math + campaign: `65/65 PASS`.
+- 전체 P0: `$env:PYTHONPATH=(Resolve-Path 'src').Path; python -m unittest discover -s tests -p "test_p0_*.py"` → `705/705 PASS` (`51.639s`, 최종 재실행).
+- 최초 전체 실행의 3건 실패는 `PYTHONPATH` 누락에 따른 환경 오선택이며, 정본 재실행은 모두 통과했다.
+- producer·independent parent·test `py_compile PASS`; scoped `git diff --check PASS`.
+- manifest `9b48da05a67eae4db3190c6443cb949462c53a799309a862818693cd9366c302`, parent literal exact.
+- 검색·통계·MLOps 최종 `ADOPT_COMPONENT_ONLY`; `P=0/80`, `T=0/40`, `J=0/40`, `D=null`, `F=0/40`, 통계 기여 `NONE`.
+- runtime reference `0`, actual packet `CHILD_FILES=13`; central Slang DB 1개와 publication journal 5개 bytes/SHA `6/6` 불변.
+- pure unittest·read-only hash 감사이므로 actual-run dashboard·`--parallel 16` 적용 대상이 아니다.
+
+상세는 [`P0_PRESENTED_DUAL_BLIND_REVIEW_CAMPAIGN_PRECOMMIT_V1_REVIEW_20260903_KO.md`](P0_PRESENTED_DUAL_BLIND_REVIEW_CAMPAIGN_PRECOMMIT_V1_REVIEW_20260903_KO.md)를 따른다.
+
+## 2026-09-03 P0 presented neutral review signature math v1
+
+- focused signature math: `19/19 PASS`.
+- external-owner signature + review accounting + 신규 signature math: `69/69 PASS`.
+- 전체 P0: `$env:PYTHONPATH='src'; python -m unittest discover -s tests -p 'test_p0_*.py' -q` → `684/684 PASS` (`48.977s`, 최종 재실행).
+- producer·parent·test `py_compile PASS`; scoped `git diff --check PASS`.
+- 검색·통계·MLOps 최종 `ADOPT_COMPONENT_ONLY`; external review authority·semantic·metric은 `NO_GO`.
+- runtime reference `0`, actual packet `CHILD_FILES=13`; central Slang DB 1개와 publication journal 5개 bytes/SHA `6/6` 불변.
+- actual review `0/40`, context credit `0/20`, statistical denominator contribution `NONE`; P0/production/full scan false.
+- pure unittest·정적 hash 감사이므로 actual-run dashboard·`--parallel 16` 적용 대상이 아니다.
+
+상세는 [`P0_PRESENTED_NEUTRAL_REVIEW_SIGNATURE_MATH_V1_REVIEW_20260903_KO.md`](P0_PRESENTED_NEUTRAL_REVIEW_SIGNATURE_MATH_V1_REVIEW_20260903_KO.md)를 따른다.
+
+## 2026-09-03 P0 presented neutral review accounting v1
+
+- focused review accounting: `25/25 PASS`.
+- parser core+predecessor batch+review accounting: `62/62 PASS`.
+- 전체 P0:
+  - `$env:PYTHONPATH='src'; python -m unittest discover -s tests -p 'test_p0_*.py' -q`
+  - `665/665 PASS` (`49.260s`).
+- producer·standalone parent·test `py_compile PASS`.
+- producer/parent manifest: `05ea2cf7301c770b6f3ead9e894df59d447523a1964b85a72bb68f0f1a63ef76` exact.
+- 전문가 3인: `ADOPT_COMPONENT_ONLY`; actual human review·metric·runtime·production은 `NO_GO`.
+- 기존 runtime successor token `0`, packet `CHILD_FILES=13`.
+- 중앙 Slang DB 1개와 publication journal 5개 bytes/SHA `6/6` 불변.
+- pure unittest·정적 hash 감사이므로 actual-run dashboard·`--parallel 16` 적용 대상이 아니다.
+
+상세는 [`P0_PRESENTED_NEUTRAL_REVIEW_ACCOUNTING_V1_REVIEW_20260903_KO.md`](P0_PRESENTED_NEUTRAL_REVIEW_ACCOUNTING_V1_REVIEW_20260903_KO.md)를 따른다.
+
+## 2026-09-03 actual readiness blocker compiler
+
+- compiler+preflight focused: `22/22 PASS`.
+- 전체 P0:
+  - `$env:PYTHONPATH='src'; python -m unittest discover -s tests -p 'test_p0*.py'`
+  - `531/531 PASS` (`40.466s`).
+- current-host compiler 2회: 동일 receipt `104d7c58271c7d7ae20d00badeb09185023eff344f37fe05eef1867d2c93a501`.
+- child preflight: `FIXED_STORE / NO_GO`, receipt `bbed3cdd9d309f22db22fe9607b9000f31d924b8ed3c677b9dbbfadf2351a172`, blocker 13개.
+- endpoint: 중앙 Slang DB 1개+publication journal 5개 `6/6` path/bytes/mtime/SHA pre/post projection 일치. 범위는 `POINT_IN_TIME_PRE_POST_ONLY`다.
+- 좁은 fixture noninterference audit: `6033c6d0c648175f255c10042b9104d4ccc183d94a76901ed44a1649fd98204e`, `6/6` SHA 불변.
+- 관련 module/test `py_compile PASS`; scoped `git diff --check PASS` (`.gitignore` CRLF 경고만 있음).
+- actual selected source unit `0/40`, A sampling unit `0/20`; `p0_phase_exit=false`, production/full scan false.
+- component unittest/read-only audit이므로 actual-run dashboard·`--parallel 16` 적용 대상이 아니다.
+
+상세는 [`P0_ACTUAL_READINESS_BLOCKER_COMPILER_REVIEW_20260903_KO.md`](P0_ACTUAL_READINESS_BLOCKER_COMPILER_REVIEW_20260903_KO.md)를 따른다.
+
+## 2026-09-02 Windows owner provisioning preflight candidate
+
+- focused preflight: `11/11 PASS`.
+- deployment/policy/bootstrap/fixed-store/preflight direct adjacent: `67/67 PASS`.
+- 전체 P0:
+  - `$env:PYTHONPATH='src'; python -m unittest discover -s tests -p 'test_p0*.py' -q`
+  - `520/520 PASS`.
+- current-host public preflight:
+  - `decision=NO_GO`, `failure_stage=FIXED_STORE`
+  - receipt `bbed3cdd9d309f22db22fe9607b9000f31d924b8ed3c677b9dbbfadf2351a172`
+  - fixed store/service/image/token/resource/Authenticode/WDAC·UMCI/provider/time·revocation/native observer/external provisioning 미검증
+- compile: 관련 module/test `py_compile` PASS.
+- scoped `git diff --check`: PASS. `.gitignore` 기존 CRLF 변환 경고만 출력됨.
+- 종료 시 중앙 Slang DB 1개와 publication journal 5개 `6/6` SHA는 직전 기준과 일치한다.
+- 좁은 fixture validator noninterference receipt: `6033c6d0c648175f255c10042b9104d4ccc183d94a76901ed44a1649fd98204e`, fixture `d94e1de3c5b4f8cd801804467fe82efed68ead1ecb1abb986f48861a734545c`.
+- 이 audit 도구는 전체 P0 suite wrapper가 아니므로 전체 suite 비간섭으로 확대하지 않는다.
+- gate: `WINDOWS_OWNER_PROVISIONING_PREFLIGHT_CANDIDATE_EXECUTED_HOST_AND_EXTERNAL_PROVISIONING_NO_GO`.
+- actual·credited `0/40`, `0/20`; `p0_phase_exit=false`, production/full scan false.
+- component unittest/read-only host audit이므로 actual-run dashboard·`--parallel 16` 적용 대상이 아니다.
+
+## 2026-09-02 Windows owner deployment projection v2
+
+- fixed native service name·결정적 SID·LocalSystem, verifier image/resource identity, embedded Authenticode SPKI, WDAC policy/base/hash·UMCI, ordered CNG provider identity/catalog projection을 strict 검증했다.
+- v2 body/signature/owner-anchor/receipt domain과 exact body SHA를 교차 결속하고 v1 receipt exact 필드 호환을 유지했다.
+- 두 독립 감사가 policy ACL verifier account SID와 fixed service SID split을 재현했다. v2 body와 8-role ACL을 service SID에 묶은 뒤 동일 공격은 contract error로 닫혔다.
+- downgrade, missing projection, signature cross-pair, self-hash·anchor tamper, service/path/WDAC/provider/signature/SPKI 대체, nil UUID/GUID와 self-consistent attacker 회귀를 확인했다.
+- deployment+owner-policy `34/34 PASS`, bootstrap/fixed-store 포함 `56/56 PASS`, 전체 `test_p0*.py` `509/509 PASS`, compile·scoped diff check PASS다.
+- 중앙 Slang DB 1개+publication journal 5개 `6/6` byte·SHA 불변이다. receipt `6033c6d0c648175f255c10042b9104d4ccc183d94a76901ed44a1649fd98204e`다.
+- `sc.exe showsid llm-novel-dc-p0-owner-verifier-v2`와 고정 SID는 일치한다. 서비스/WDAC/loaded module을 설치·관측한 positive는 없고 현재 host는 external provisioning NO-GO다.
+- component unittest·read-only audit이므로 dashboard/`--parallel 16` actual manifest 대상이 아니다. actual·credited `0/40`, `0/20`, authority/P0/production/full scan은 false다.
+
+상세는 [`P0_WINDOWS_OWNER_DEPLOYMENT_PROJECTION_V2_REVIEW_20260902_KO.md`](P0_WINDOWS_OWNER_DEPLOYMENT_PROJECTION_V2_REVIEW_20260902_KO.md)를 따른다.
+
+## 2026-09-02 Windows bootstrap policy 서명 수학 후보
+
+- exact 9-field transcript, held raw body SHA, canonical low-S P1363, single SHA-256와 `Microsoft Primitive Provider` CNG P-256 검증을 확인했다.
+- 정책/envelope key ID·fingerprint의 self-selection, attacker key 대체, body tamper, LF transcript, double hash, zero/high-S signature를 거부했다.
+- CNG call Python 예외는 전용 오류로 닫히고 key/provider cleanup은 모두 시도한다. 실제 컴파일 공개키는 invalid-signature canary에서 import 성공 뒤 mismatch에 도달했다.
+- fixed-store child receipt의 schema/self-hash/필수 true/authority false/raw SHA/contract/key/provider 변조를 거부하고 top success를 child 결과에서만 전달한다.
+- focused `47/47 PASS`, Windows owner-policy 인접 `117/117 PASS`, 전체 `test_p0*.py` `497/497 PASS` (`32.981s`), compile 및 scoped diff check PASS다.
+- 중앙 Slang DB 1개+publication journal 5개 `6/6` byte·SHA 불변이다. receipt `6033c6d0c648175f255c10042b9104d4ccc183d94a76901ed44a1649fd98204e`다.
+- owner-approved key/signed golden, trusted code/provider deployment, live external ACL positive, time/revocation/rollback/durable nonce가 없으므로 authority/P0/production/full scan은 false다.
+- component unittest·read-only audit이므로 dashboard/`--parallel 16` actual manifest 대상이 아니다.
+
+상세는 [`P0_WINDOWS_BOOTSTRAP_POLICY_SIGNATURE_CANDIDATE_REVIEW_20260902_KO.md`](P0_WINDOWS_BOOTSTRAP_POLICY_SIGNATURE_CANDIDATE_REVIEW_20260902_KO.md)를 따른다.
+
+## 2026-09-02 Windows external public-key pin candidate tranche
+
+- public API는 store/run/packet/protected paths와 signature/preauthorization/context만 받고 raw pin, receipt, expected owner SID·hash·file identity, trusted callback/state는 받지 않는다.
+- fixed-name held read, effective-token AccessCheck, signed packet/protected parent/category binding, store/parent watcher, same-call CNG/`OWNER_STATE`와 cleanup fail-close를 확인했다.
+- packet path/serial/file ID, protected parent file ID, category path/volume, candidate receipt preauth/root/token 변조와 signed-parent sibling store를 모두 거부했다.
+- focused `14/14 PASS` (`3.791s`), asymmetric·fixed-directory·watch adjacent `73/73 PASS` (`11.993s`), 전체 `test_p0*.py` `453/453 PASS` (`32.457s`), `compileall PASS`다.
+- 중앙 Slang DB 1개+publication journal 5개 `6/6` byte·SHA 불변이다. receipt `6033c6d0c648175f255c10042b9104d4ccc183d94a76901ed44a1649fd98204e`, fixture aggregate `d94e1de3c5b4f8cd801804467fe82efed68ead1ec1b1abb986f48861a734545c`다.
+- positive 경로는 low-level hold mock의 controlled contract다. 실제 Windows evidence는 current-user-owned store와 signed protected parent 내부 store의 fail-close이며, 실제 externally provisioned positive store/key는 없다.
+- exact owner SID/ACE policy, external provisioning, trusted time/revocation/durable nonce, authority/P0/production/full scan은 false이고 actual·credited는 `0/40`, `0/20`이다.
+- component unittest·read-only audit이므로 dashboard/`--parallel 16` actual manifest 대상이 아니다.
+
+상세는 [`P0_WINDOWS_EXTERNAL_PUBLIC_KEY_PIN_CANDIDATE_REVIEW_20260902_KO.md`](P0_WINDOWS_EXTERNAL_PUBLIC_KEY_PIN_CANDIDATE_REVIEW_20260902_KO.md)를 따른다.
+
+## 2026-09-02 external-trust state object-identity hardening tranche
+
+- legacy seal-id registry의 exact dataclass clone key-consume 공격을 재현한 뒤 state를 object-identity+weakref registry로 교체했다.
+- recursive receipt freeze, lock 내부 identity 확인+atomic pop, issuer PID·별도 seal·critical context digest·expected receipt/nonce·key fingerprint를 교차검증한다.
+- clone/namespace는 genuine entry를 소모하지 않는다. genuine malformed expected, forced receipt/seal, PID mismatch는 pop 뒤 fail-close하며 success/failure/discard/GC에서 private key/seal buffer가 0이 된다.
+- 16-way state race는 정확히 `1 success / 15 already-consumed`다.
+- focused `37/37 PASS` (`2.974s`), trust+runtime+결합 `62/62 PASS` (`6.605s`), authority 75개 포함 direct adjacent `137/137 PASS` (`10.436s`), 전체 `test_p0*.py` `439/439 PASS` (`28.243s`), 변경 모듈·테스트 `py_compile PASS`다.
+- 중앙 Slang DB 1개+publication journal 5개 `6/6` byte·SHA 불변이다. receipt `6033c6d0c648175f255c10042b9104d4ccc183d94a76901ed44a1649fd98204e`, fixture aggregate `d94e1de3c5b4f8cd801804467fe82efed68ead1ec1b1abb986f48861a734545c`, 중앙 DB `a8c3fb9b083f6914e24bbede5adbbce73372f834dee4271611eefaaeeebcf10a`다.
+- state는 process-local key handoff뿐이다. caller-selected store/time/revocation, immutable external ledger, crash/reboot durability, owner authority/P0/production/full scan은 false이고 actual·credited는 `0/40`, `0/20`이다.
+- component unittest·read-only audit이므로 dashboard/`--parallel 16` actual manifest 대상이 아니다.
+
+상세는 [`P0_EXTERNAL_TRUST_STATE_IDENTITY_HARDENING_REVIEW_20260902_KO.md`](P0_EXTERNAL_TRUST_STATE_IDENTITY_HARDENING_REVIEW_20260902_KO.md)를 따른다.
+
+## 2026-09-02 external owner one-shot `OWNER_STATE` tranche
+
+- public supervisor는 exact raw pin/signature/preauthorization과 fixed expected context만 받고 serialized receipt/state/seal/callback 입력을 받지 않는다.
+- fresh CNG validation 뒤에만 object-identity state를 발급하며 lock 내부 atomic pop으로 exact-once 소비한다. exact clone·namespace·serialized receipt는 원본 state를 소모하지 못한다.
+- raw 역할 swap·bit tamper, context relabel/malformed, forced seal/PID tamper는 pop 뒤 fail-close·burn하고 올바른 재시도도 already-consumed다. 16-way race는 정확히 `1 success / 15 already-consumed`다.
+- focused `25/25 PASS` (`6.688s`), direct adjacent `91/91 PASS` (`10.531s`), 전체 `test_p0*.py` `432/432 PASS` (`27.928s`), 변경 모듈·테스트 `py_compile PASS`다.
+- 중앙 Slang DB 1개+publication journal 5개 `6/6` byte·SHA 불변이다. receipt `6033c6d0c648175f255c10042b9104d4ccc183d94a76901ed44a1649fd98204e`, fixture aggregate `d94e1de3c5b4f8cd801804467fe82efed68ead1ec1b1abb986f48861a734545c`, 중앙 DB `a8c3fb9b083f6914e24bbede5adbbce73372f834dee4271611eefaaeeebcf10a`다.
+- 같은 raw3 재검증으로 새 state가 발급되므로 `signature_artifact_replay_prevented=false`, `single_use_replay_consumed=false`다. external provisioning/time/revocation/durable nonce/owner authority/P0/production/full scan도 false, actual·credited `0/40`, `0/20`이다.
+- component unittest·read-only audit이므로 dashboard/`--parallel 16` actual manifest 대상이 아니다.
+
+상세는 [`P0_EXTERNAL_OWNER_ONESHOT_STATE_REVIEW_20260902_KO.md`](P0_EXTERNAL_OWNER_ONESHOT_STATE_REVIEW_20260902_KO.md)를 따른다.
+
+## 2026-09-02 external owner asymmetric signature math tranche
+
+- Windows CNG ECDSA P-256/SHA-256을 명시적 `Microsoft Primitive Provider`로 고정하고 X/Y exact 32-byte, RFC 5480 DER-SPKI fingerprint, raw 64-byte low-S `r||s`를 검증했다.
+- signature material은 domain/context, nonce commitment, key id/epoch, owner principal/anchor와 owner preauthorization exact raw-byte/artifact SHA를 결속한다.
+- complete attacker pin+key+preauthorization substitution도 self-consistent signature math는 true일 수 있음을 확인했다. 따라서 `asymmetric_signature_math_verified=true`를 external provisioning/owner authority로 승격하지 않는다.
+- focused `15/15 PASS` (`3.970s`), adjacent `78/78 PASS` (`9.240s`), 전체 `test_p0*.py` `422/422 PASS` (`25.454s`), 신규 모듈·테스트 `py_compile PASS`다.
+- 중앙 Slang DB 1개+publication journal 5개 `6/6` byte·SHA 불변이다. receipt `6033c6d0c648175f255c10042b9104d4ccc183d94a76901ed44a1649fd98204e`, fixture aggregate `d94e1de3c5b4f8cd801804467fe82efed68ead1ec1b1abb986f48861a734545c`, 중앙 DB `a8c3fb9b083f6914e24bbede5adbbce73372f834dee4271611eefaaeeebcf10a`다.
+- 판정은 `ASYMMETRIC_SIGNATURE_MATH_PASS / PRESENTED_PIN_ONLY / EXTERNAL_PROVISIONING_NO_GO / OWNER_STATE_NOT_YET_BOUND / TRUSTED_TIME_REVOCATION_DURABLE_NONCE_NO_GO / ACTUAL_0_OF_40_0_OF_20 / PARSER_SANDBOX_NO_GO`다.
+- component unittest이므로 dashboard/`--parallel 16` manifest 대상이 아니다.
+
+상세는 [`P0_EXTERNAL_OWNER_ASYMMETRIC_SIGNATURE_REVIEW_20260902_KO.md`](P0_EXTERNAL_OWNER_ASYMMETRIC_SIGNATURE_REVIEW_20260902_KO.md)를 따른다.
+
+## 2026-09-02 isolated pycache·source collision·directory watch tranche
+
+- per-execution empty pycache, exact source collision inventory/import graph, source parent·source subtree·cache subtree watcher와 child runtime guard를 Windows component E2E로 결합했다.
+- 정상 경로에서 `bounded_project_source_load_candidate_closure_verified=true`; `project_source_load_candidate_closure_verified=false`, `parser_dependency_closure_verified=false`와 runtime/stdlib/native/loaded-image/external-owner closure false를 함께 확인했다.
+- `LocalAppData` anchor는 held volume/file identity를 가진 local observation이며 external owner pin이 아니다. MSIX redirection은 `known_folder_redirection_observed=true`로 보존한다.
+- watcher는 pre-inventory부터 post-inventory까지 pending request를 유지하고 event·overflow·gap·취소/drain/close 실패를 거부한다. `filesystem_noninterference_inferred=false`다.
+- 최종 focused는 protocol `12` + directory watch `16` + Windows sandbox `20` = `48/48 PASS` (`4.500s`), 전체 `test_p0_*.py`는 `407/407 PASS` (`22.218s`), 변경 Python compile은 PASS다.
+- 비간섭은 중앙 Slang DB 1개+publication journal 5개 `6/6` byte·SHA 불변, receipt `6033c6d0c648175f255c10042b9104d4ccc183d94a76901ed44a1649fd98204e`, fixture receipt `d94e1de3c5b4f8cd801804467fe82efed68ead1ec1b1abb986f48861a734545c`, 중앙 DB SHA `a8c3fb9b083f6914e24bbede5adbbce73372f834dee4271611eefaaeeebcf10a`, cache anchor `item_count=0`이다.
+- 판정은 `ADOPT_BOUNDED_PROJECT_SOURCE_LOAD_CANDIDATE_CLOSURE_COMPONENT_ONLY / PARSER_DEPENDENCY_CLOSURE_NO_GO / PARSER_SANDBOX_NO_GO / ACTUAL_0_OF_40_0_OF_20 / METRICS_NOT_ESTIMABLE / REVIEW_LOCKED`다.
+- component unittest·Windows E2E이므로 dashboard/`--parallel 16` manifest 대상이 아니다.
+
+상세는 [`P0_PARSER_PROCESS_PYCACHE_SOURCE_OBSERVATION_REVIEW_20260902_KO.md`](P0_PARSER_PROCESS_PYCACHE_SOURCE_OBSERVATION_REVIEW_20260902_KO.md)를 따른다.
+
+## 2026-09-02 parser process handle provenance tranche
+
+- path `_sha_file`을 제거하고 launch file 6개를 held `HANDLE`의 bytes/SHA, volume serial, 128-bit file ID, volume-GUID final path·metadata에 결속했다. ancestor directory handle은 root부터 즉시 부모까지 실행 종료 시점까지 유지한다.
+- Create 직전, Job assign 뒤 Resume 직전, child 종료 뒤 held hash와 lexical reopen identity를 검증한다. suspended child PID·creation FILETIME과 `QueryFullProcessImageNameW` 경로 reopen identity/SHA가 pinned base executable과 같아야 resume한다.
+- reported image mismatch, assignment failure, unexpected suspend count는 resume 없이 child 종료·wait로 닫힌다. held leaf rename은 handle close 전 실패한다.
+- protocol+Windows sandbox `25 PASS` (`1.776s`), 전체 `test_p0_*.py` `384 PASS` (`19.836s`), 변경 모듈·테스트 `py_compile PASS`, `git diff --check PASS`다.
+- 비간섭 감사: 중앙 Slang DB 1개+publication journal 5개 `6/6` before/after byte·SHA 불변, gate `GO_EXISTING_STATE_READONLY_AUDIT`, receipt `6033c6d0…204e`다.
+- 필수 project-source 후보 4개 manifest는 exact지만 `.pyc`/collision/watcher 공백 때문에 `bounded_project_source_load_candidate_closure_verified=false`, `parser_dependency_closure_verified=false`다. actual·credited `0/40`, `0/20`, P0/production/full scan false다. unittest/component E2E이므로 dashboard/`--parallel 16` actual manifest는 없다.
+
+## 2026-09-02 parser process·Job component tranche
+
+- protocol `10 PASS`, Windows sandbox component `10 PASS`, focused `20 PASS` (`0.946s`).
+- 전체 `test_p0_*.py`는 `379 PASS` (`17.670s`), 신규 3개 모듈·2개 테스트 `py_compile PASS`다.
+- actual Windows E2E는 fixed `sys._base_executable`, `-I -S -B`, restricted primary token readback, Job limit roundtrip, assign-before-resume, stdio 3-handle list, exit `0`, stderr `0`, parent exact cross-binding `true`다.
+- red-team의 unassigned suspended orphan과 child-controlled zero-SID retry는 제거했다. forged child response는 self-hash를 다시 계산해도 parent request cross-binding에서 거부한다.
+- 중앙 Slang DB 1개+publication journal 5개 `6/6` before/after byte·SHA 불변, audit receipt `6033c6d0…204e`다.
+- worker는 `CAPTURE_HASH_PROBE`뿐이다. AppContainer/network/protected-root write deny·sealed dependency closure·실제 source-profile parser는 없으므로 `ADOPT_COMPONENT_ONLY / PARSER_SANDBOX_NO_GO`다.
+- actual·credited `0/40`, `0/20`; `parser_runtime_execution_verified=false`, `runtime_noninterference_verified=false`, `p0_phase_exit=false`, production/full scan false다. unittest/read-only audit이므로 dashboard/`--parallel 16` actual manifest는 없다.
+
+## 2026-09-02 external trust·Windows runtime witness tranche
+
+### 구현·경계
+
+- external trust executor는 exact two-file store+nonce ledger, canonical bytes, store-key HMAC, held directory namespace guard, `O_EXCL`·file flush/readback과 one-shot key state를 직접 실행한다. `single_use_replay_consumed=true`는 caller-selected pinned store scope이고 external trust/time/revocation authority는 false다.
+- Windows witness는 exact 6 category의 parent/root watcher를 PRE 전에 arm하고 QPC·identity/inventory·USN·current-thread write-open probe·POST를 감싼다. rename-aside→replacement→restore를 NO_GO로 닫는다. `os_write_deny_verified=false`, `runtime_noninterference_verified=false`, `parser_runtime_execution_verified=false`다.
+- 결합 supervisor는 nonce burn→trust state consume→runtime-wrapped 7단계 combined validator→runtime state consume 순서를 고정한다. fake/copied/tampered/reused state, child self-hash/schema 변조, root projection 모순, presented envelope 필드 누락·가짜 authority를 거부한다.
+
+### fresh 명령·결과
+
+- `python -m unittest -q tests.test_p0_external_owner_trust_execution tests.test_p0_windows_runtime_evidence tests.test_p0_external_authority_runtime_supervisor_execution`: `Ran 55 tests in 6.233s / OK`.
+- external trust `30 PASS`, runtime witness `14 PASS`, integration `11 PASS`.
+- 기존 packet/authority direct 실행 4개 모듈을 더한 direct-adjacent: `Ran 130 tests in 9.870s / OK`.
+- selected-adjacent는 core P0/authority 13개 모듈 `260 PASS`와 observation/ledger/publication/Slang/calibration/new 12개 모듈 `180 PASS`, 합계 `440 PASS`다.
+- 신규 3개 모듈과 3개 테스트 `py_compile PASS`.
+- `python tools/audit_p0_grounding_noninterference.py`: 중앙 Slang DB 1개+publication journal 5개, `watched_file_count=6`, before/after bytes·SHA `6/6` 불변, gate `GO_EXISTING_STATE_READONLY_AUDIT`; 이 결과도 P0 Exit은 false다.
+- 현 Windows probe-only 진단: `qpc=true`, `continuous_watch=true`, `usn_interval=false`, `pre_usn.error_code=5×6`, `current_thread_probe=false`, `bounded=false`, `os_write_deny=false`, `runtime_noninterference=false`, gate `NO_GO_RUNTIME_EVIDENCE_INCOMPLETE`.
+
+### 판정
+
+`EXTERNAL_STORE_KEY_AND_NONCE_EXECUTED / BOUNDED_WINDOWS_WITNESS_COMPONENT_ONLY / EXTERNAL_OWNER_TIME_REVOCATION_NO_GO / PARSER_JOB_RUNTIME_NO_GO`다. actual source/A review와 credited count는 `0/40`, `0/20`; `actual_authority_granted=false`, `p0_phase_exit=false`, `production_approval=false`, `full_scan_approval=false`다. 실제 runner를 시작하지 않았으므로 dashboard/`--parallel 16` manifest는 없다.
+
+## 2026-09-02 authority raw·결합 supervisor tranche
+
+### 구현·레드팀 경계
+
+- `p0_actual_authority_raw_execution.py`는 authority v2 exact 14개 JSON과 annotation event 원문을 한 번 snapshot하고 strict UTF-8·duplicate/non-finite/trailing/object·role/order·bytes/SHA를 검사한 뒤 foundation/event validator를 직접 호출한다. frozen pretty JSON은 raw SHA를 보존하며 canonical이라고 재해석하지 않는다.
+- packet/authority executor는 공개 receipt와 분리된 private frozen execution state를 사용한다. raw snapshot, parsed row, full child result를 공개 입력으로 받지 않으며 public wrapper는 detached ordinary `dict/list`만 반환한다.
+- `p0_actual_authority_supervisor_execution.py`는 owner preauth→packet private supervisor→authority raw executor→parser bytes/SHA/parsed object exact 결속→provenance→terminal→final bridge의 7단계를 고정 순서로 직접 실행한다. final bridge는 같은 호출의 in-process 결과만 소비한다.
+- red-team은 fake GO, nested true, parser swap, preauth run/nonce mismatch, provenance swap, terminal replay swap, truncation·genesis·step reorder·raw projection 변조를 차단했다. 그러나 caller가 bundle·key·time·root pin을 모두 만들 수 있어 external code/owner/runtime trust, trusted time, revocation, single-use replay, OS witness, 실제 의미 증거는 모두 false다.
+
+### fresh 검증
+
+- authority raw executor: `19 PASS`.
+- packet supervisor private-state/실제 Windows handle e2e: `20 PASS`.
+- combined supervisor/실제 Windows handle e2e: `12 PASS`.
+- packet supervisor+authority raw+bridge+combined: `Ran 75 tests in 3.654s / OK`.
+- registry/authority/route/packet/observation/publication/Slang/calibration selected-adjacent: `Ran 385 tests in 32.665s / OK`.
+- 관련 `py_compile`, `git diff --check`: `PASS`.
+- authority v2 정본 SHA는 manifest `1a6e4af4…5ed`, final attestation `b21e0e6e…9a5b`, foundation receipt `3f692bc3…2d35`, event receipt `d62553a2…2dbe`로 불변이다.
+
+이번 실행은 unittest/contract 검증이라 `--parallel 16`·dashboard 대상 actual run을 시작하지 않았다. 기존 calibration readiness의 label-ledger 기대 SHA drift도 재생성·재결속하지 않았다.
+
+### 판정
+
+`DIRECT_LOCAL_AUTHORITY_BRIDGE_PASS_EXTERNAL_TRUST_NO_GO`다. actual·credited `0/40`, `0/20`; `external_trust_store_verified=false`, `revocation_current_verified=false`, `single_use_replay_consumed=false`, `runtime_noninterference_verified=false`, `p0_phase_exit=false`, `production_approval=false`, `full_scan_approval=false`다.
+
+## 2026-09-02 선행 owner preauth·packet supervisor tranche
+
+이 절은 authority raw·결합 supervisor 구현 전 packet-only tranche의 역사 기록이다. 최신 수치와 판정은 바로 위 절을 우선한다.
+
+### 구현·레드팀 경계
+
+- `p0_actual_owner_root_preauthorization.py`: 기존 authority v2를 수정하지 않는 pre-capture supplement다. packet/protected root tuple, exact 6 category map, parser/capture/input/source-plan/sampling provenance, 총 14개 fixed member와 watch/write-deny 요구를 self-hash/HMAC material에 결속한다. actual signature와 observation window 확인 성공도 external trust·revocation·replay consumption·root handle authority는 아니다.
+- owner red-team의 Unicode decimal identity 우회와 category ancestor overlap은 거부하도록 수정했다. `observed_at` 미제공은 `presented_observation_window_checked=false`, 8.3/namespace alias는 `filesystem_namespace_alias_resolution_verified=false`로 명시한다.
+- `p0_windows_fixed_directory_identity.py`의 capture observation/pure bind API와 `p0_actual_authority_event_bytes.py`의 bytes core를 추출했다. 기존 path wrapper·receipt 의미·authority v2 SHA는 불변이다.
+- `p0_actual_supervisor_execution_contract.py`: public executor는 serialized receipt/observation을 받지 않는다. 한 번의 Windows capture에서 packet bytes validator, Windows binder, A-event validator를 고정 순서로 직접 호출한다. 전체/A/선택/파생 claim projection은 `41/30/20/20`이며 derived A claim 20개는 A-context `source_claim_ids` union에서 canonical하게 만든다.
+- supervisor red-team은 presented trailing member, nested `true`, root/A receipt swap, session/run/nonce swap을 재현했다. exact 14-member 길이, recursive forbidden-true, root/member·A raw/result cross-binding, execution genesis로 닫았다.
+- 이 receipt는 local observation이다. `untrusted_local_execution_observation=true`, `caller_self_measurement_only=true`, `windows_handle_capture_execution_provenance_verified=false`, `handles_held_across_validator_execution=false`, external code/runtime/filesystem/owner trust와 authority는 false다.
+
+### fresh 검증
+
+- owner root preauthorization: `22 PASS`.
+- packet supervisor: 실제 Windows handle end-to-end 포함 `17 PASS`.
+- A-context+route+packet+A-event+Windows+bridge+owner+supervisor: `Ran 158 tests in 6.423s / OK`.
+- authority v2+authority event bytes+route+packet+A-event+Windows+bridge+owner+supervisor: `Ran 182 tests in 6.835s / OK`.
+- actual contract와 observation/framed WAL/publication/Slang/calibration contract expanded selected-adjacent: `Ran 351 tests in 29.853s / OK`.
+- calibration readiness 단독: `Ran 1 test / FAILED (errors=1)`. 기존 label-ledger 기대 SHA `717c6e…1102`와 현재 `b7e754…5998` drift에서 setup fail-close했으며 재생성·재결속하지 않았다.
+- authority v2 validator는 manifest `1a6e4af4…5ed`, final attestation `b21e0e6e…9a5b`, receipt `3f692bc3…2d35`를 그대로 반환했다.
+
+### 판정
+
+`DIRECT_PACKET_EXECUTION_TRACE_PASS / EXTERNAL_TRUST_NO_GO`다. authority-side direct execution, 외부 trust store/revocation/nonce ledger, OS write-deny·USN/watch·restricted parser token과 실제 capture/parser가 남아 있다. actual·credited `0/40`, `0/20`, `p0_phase_exit=false`, `production_approval=false`, `full_scan_approval=false`다.
+
+## 2026-09-02 A-event·authority bridge·Windows handle binding tranche
+
+### 구현·경계
+
+- `p0_actual_a_event_bytes.py`는 A source claim/context/event/subject seal의 canonical UTF-8/LF bytes와 event chain·latest head 20개를 원문에서 재구성한다. context는 정확히 20개, event는 최소 20개라 21번째 intra-rater recheck를 허용한다.
+- `p0_actual_packet_contract.py`의 receipt는 v2 self-hash이며 route/parser/A receipt·seal·source plan·sampling frame·parser manifest/version/launch/capture projection을 직접 가진다.
+- `p0_actual_authority_bridge_contract.py`는 기존 authority v2를 수정하지 않는 one-way bridge다. parser provenance preauthorization과 terminal attestation이 packet receipt v2, A-event receipt, authority manifest/final/event receipt, Windows composite receipt와 root identity tuple을 교차 결속한다.
+- `p0_windows_fixed_directory_identity.py`는 Windows ancestor/root/14개 member handle을 동시에 유지하고 volume-GUID final path, volume serial, 128-bit file ID, reparse/hardlink/ADS, directory entry↔open handle metadata, child/root before-after와 second inventory를 검증한다. handle member와 packet manifest의 14개 `{role,path,bytes,sha256}` projection도 exact-match한다.
+- 이 tranche의 성공 범위는 `filesystem_handle_binding_verified=true`다. caller root tuple은 외부 owner provision이 아니므로 `filesystem_handle_trust_verified=false`, `external_root_identity_pin_verified=false`; OS write-deny, USN/watch, runtime noninterference, actual authority도 false다.
+
+### fresh 검증
+
+- A-event raw verifier: `13 PASS`.
+- Windows handle/composite: 실제 Windows integration 포함 `14 PASS`.
+- authority bridge: receipt swap/reseal, A child/seal, parser provenance, Windows nested packet/root tuple/trust self-assertion, self-consistent fake receipt의 권한 비승격 포함 `24 PASS`.
+- A-context+route+packet+A-event+Windows+bridge current tranche focused: `Ran 115 tests in 5.001s / OK`.
+- authority v2+registry event bytes+route+packet+A-event+Windows+bridge: `Ran 134 tests in 5.315s / OK`.
+- actual registry/authority/A/route/packet/Windows/bridge와 observation, framed WAL, publication, Slang, calibration contract expanded selected-adjacent: `Ran 299 tests in 13.520s / OK`.
+- calibration dataset readiness까지 넣은 확대 시도는 `Ran 300 tests / FAILED (errors=1)`로 setup에서 fail-close했다. 원인은 기존 P1 run spec의 label-ledger 기대 SHA `717c6e…1102`와 현재 `b7e754…5998` drift이며 이번 tranche 변경으로 생긴 오류가 아니다. frozen artifact는 재생성·재결속하지 않았다.
+- `PRE_TRANCHE_SELECTED_ADJACENT_285_PASS`는 아래 key-less packet 시점의 역사적 결과다. 신규 test 수를 더한 최신 회귀로 재사용하지 않는다.
+
+### 판정
+
+`HANDLE_BINDING_PASS / EXTERNAL_TRUST_NO_GO`다. authority v2 manifest `1a6e4af4…5ed`, unsigned final attestation `b21e0e6e…9a5b`, authority receipt `3f692bc3…2d35`, registry event-byte receipt `d62553a2…2dbe`는 변경되지 않았다. external actual source/A review와 credited count는 `0/40`, `0/20`; gate는 `NO_GO_ACTUAL_P0_AUTHORITY_NOT_VERIFIED`, P0 Exit·production·full scan은 false다.
+
+## 2026-09-02 key-less actual packet structural contract
+
+### 구현·경계
+
+- `src/llm_batch/grounding/p0_actual_a_context_contract.py`: Track-A claim과 A truth `WORK_ID/NIL/UNRESOLVED`, candidate/evidence cutoff, 사람 review event/journal, no-write projection을 strict schema로 검증한다. validated context가 있어도 `actual_a_context_review_count=0`, authority는 `SHADOW_ONLY`다.
+- `src/llm_batch/grounding/p0_actual_route_contract.py`: capture 전 source input plan, label 확인 전 deterministic claim-selection seal, profile `10×4`, input별 `TYPED/GENERIC_PENDING/PARSER_ERROR` exact-one route와 parser receipt v2의 1:N 회계를 검증한다.
+- `src/llm_batch/grounding/p0_actual_packet_contract.py`: manifest 1개와 고정 child 13개의 canonical JSON/JSONL 바이트, caller-pinned manifest file SHA, controlled payload exact span, A-subject seal, candidate registry, stored route/A receipt를 원문에서 재계산한다. directory 경로는 exact inventory·symlink/hardlink·읽기 전후 stat을 검사하지만 Windows handle-level final path/volume/file ID/USN·junction/TOCTOU authority는 주장하지 않는다.
+- 영구 example fixture나 builder receipt는 새로 만들지 않았다. 검증 자료는 테스트가 메모리와 임시 디렉터리에 만드는 controlled example/test bytes뿐이므로 그 manifest SHA를 durable 증거로 기록하지 않는다. 기존 authority v2 SHA는 그대로 보존한다.
+
+### 검증
+
+- `python -m unittest tests.test_p0_actual_a_context_contract`: `18 PASS`.
+- `python -m unittest tests.test_p0_actual_route_contract`: `27 PASS`.
+- `python -m unittest tests.test_p0_actual_packet_contract`: `19 PASS`.
+- 세 모듈 focused: `64 PASS`.
+- `.venv312`에서 기존 authority/registry와 observation·WAL·publication·Slang·calibration 인접 선택 묶음을 함께 실행한 결과: `Ran 285 tests in 12.307s / OK`. 시스템 Python으로 잘못 실행했을 때의 `httpx` import error 1건은 의존성이 없는 환경을 선택한 오류이며 `.venv312` 정본 런에서는 재현되지 않았다.
+- controlled packet은 source profile `10×4`, input `40`, typed input `30`, parsed claim row `31`, generic `10`, error `0`, selected claim unit `40`, 전체 claim inventory `41`, A-context/event `20/20`을 재계산했다. actual-origin namespace branch도 complete parser receipt와 route accounting을 통과하지만 기존 example 자료를 재봉인한 테스트 branch일 뿐 외부 actual 증거가 아니다.
+
+### 최종 red-team과 남은 blocker
+
+- 같은 surface를 다른 offset으로 다시 자르는 span/source binding 우회는 A context가 각 claim의 exact `span_start/span_end/span_text`를 원문과 직접 대조하도록 닫았다.
+- A-subject seal이 context 관측보다 앞서는 chronology 우회와 candidate registry가 context evidence cutoff 뒤에 생기는 미래 근거 우회를 각각 시각 결속으로 차단했다.
+- actual parser가 source capture 전에 시작하는 우회는 모든 source `collected_at <= parser.started_at`을 요구해 차단했다. generic claim unit이 parser receipt의 output hash 밖에 남는 우회는 parser receipt가 typed claim과 generic claim을 포함한 전체 claim inventory 및 terminal queue에 결속되도록 닫았다.
+- claim row 일부만 다른 parser manifest/version으로 바꾸는 provenance substitution은 모든 parser claim row가 단일 `parser_manifest_sha256`과 `parser_version`을 공유하도록 차단했다. parser completion과 selection seal이 같은 시각인 모호한 chronology는 `completed_at < sealed_at`을 강제해 차단했다.
+- 모든 claim row를 동일한 새 parser manifest/version으로 재봉인하는 공격은 structural consistency상 통과한다. 이는 packet validator가 owner-authorized parser provenance를 갖지 않는 경계이며 `ACTUAL_LAUNCH_CAPTURE_BINDING_NOT_VERIFIED` blocker로 유지한다. authority step 6은 launch/capture witness의 `expected_parser_manifest_sha256`·`expected_parser_version`과 route receipt를 교차 결속해야 한다.
+- packet 구조 검증 성공 뒤에도 external actual source claim/A review는 `0/40`, `0/20`, credited count도 `0/40`, `0/20`이다. `filesystem_handle_trust_verified`, `external_owner_authority_verified`, `os_write_deny_verified`, `authority_journal_watch_bundle_verified`, `runtime_noninterference_verified`, `actual_authority_granted`, `p0_phase_exit`, production/full-scan 승인은 모두 false다. gate는 `NO_GO_ACTUAL_P0_AUTHORITY_NOT_VERIFIED`다.
+
+## 2026-09-02 actual owner authority v2·event-byte foundation
+
+### 구현·경계
+
+- `src/llm_batch/grounding/p0_actual_authority_contract.py`: 외부 owner anchor metadata, policy refs, protected watch spec/PRE/POST, predecessor/current checkpoint와 각 head map, launch, parser receipt v2, pre-capture detached HMAC authorization, manifest v2, domain-separated post-run final attestation을 strict·self-hashed·cross-bound schema로 검증한다. manifest가 attestation을 역참조하지 않는 terminal DAG라 해시 순환이 없다. ledger·Slang·runtime·recovery·Pyserini writer를 import하지 않는다.
+- `tests/fixtures/p0_actual_authority_contract_example_v2/`: active 14-file canonical JSON schema example이다. 기존 `example_v1` 12파일과 manifest artifact SHA `3ae3556a…b1e7`은 byte archive로 보존했지만 현재 CLI는 v2 전용이므로 v1 executable replay compatibility를 주장하지 않는다.
+- v2 manifest SHA는 `1a6e4af406dc687e5335773a443987703be0669478e4c4671bfe705f827985ed`, unsigned final-attestation SHA는 `b21e0e6ee2c180568d78bbda3602fccfad838c0ae873b67bdc4343e0146f9a5b`, receipt SHA는 `3f692bc338dfecf9f7f721c4872c6240e2b6817a88d42e7957e84f4855df2d35`다. fixture의 checkpoint 시각은 포함 event 이후로 재정렬했다.
+- `src/llm_batch/grounding/p0_actual_authority_event_bytes.py`와 `tools/validate_p0_actual_authority_event_bytes.py`는 annotation JSONL 원문에서 canonical framing, event hash/chain, 파일 append 순서의 prefix closure, predecessor/current byte prefix, 두 head map을 재계산한다. receipt SHA는 `d62553a2042902b65403543e265fff3b65604dedc73615ff9306598971082dbe`다.
+- receipt는 `PASS_ACTUAL_AUTHORITY_SCHEMA_EXAMPLE_ONLY / NO_GO_ACTUAL_P0_NOT_STARTED`, actual `0/40·0/20`, owner/policy/append-only/runtime authority false, P0 Exit·production·full scan false다. `detached_hmac_math_valid`와 `supplied_anchor_key_match`는 수학적 일치 projection일 뿐 owner authority가 아니다.
+
+### 검증
+
+- `python -m py_compile ...`: authority/event-byte module, builder, validator, focused test PASS.
+- `python tools/build_p0_actual_authority_contract_examples.py`: deterministic self-validation PASS. 같은 입력 재실행에서 artifact가 바뀌지 않았다.
+- `python tools/validate_p0_actual_authority_contract_examples.py`: PASS, gate와 blocker가 예상대로 닫혔다.
+- `python -m unittest tests.test_p0_actual_authority_contract -v`: `28 PASS`. actual-origin의 외부 key/preauth/final-attestation 수학 검증이 모두 참이어도 owner/runtime authority와 credited 40+20은 false/0인 full-bundle branch를 포함한다.
+- `python -m unittest tests.test_p0_actual_authority_event_bytes -v`: `9 PASS`.
+- synthetic source 44 + actual registry/B/event 26 + authority 28 + event-byte 9 결합: `107 PASS`.
+- `.venv312`의 P0 4종과 observation 8, framed WAL 5, publication decision 40, publication finalizer 7, Slang transaction 12, Slang governance 8, calibration actual-readback 15, calibration contract 19를 합친 selected adjacent: `221 PASS`.
+- 별도 publication exact-once 4건과 calibration harness setup 1건은 모두 선행 label-ledger SHA drift로 fail-close했다. frozen ledger를 자동 재생성하거나 현재 hash에 재결속하지 않았다.
+
+### 반대검토 결과와 남은 blocker
+
+- 세 차례 데이터·호환성·red-team 검토에서 run-local/self-created trust, misleading authority field, empty watch/minimum 0, path alias·Windows reserved name, unsafe glob, category-root 이탈, membership add/delete/replace, anchor/auth/watch 시간 경계, self-declared OS write-deny·append-only를 닫았다. 재회의 PoC에서 발견한 journal sequence의 파일 순서 역전과 terminal parser artifact hash 누락도 negative test와 함께 닫았다.
+- post-run final-attestation **schema와 unsigned example 검증은 구현**됐지만 실제 owner signature/key/외부 anchor가 없으므로 blocker는 `ACTUAL_FINAL_OWNER_ATTESTATION_NOT_VERIFIED`다. event-byte verifier도 path component·hardlink·symlink/reparse·stable descriptor를 방어하지만 스스로 `filesystem_handle_trust_verified=false`, `durable_predecessor_verified=false`를 반환한다.
+- 후속 tranche에서 Windows handle-level final path/volume/file ID와 fixed member inventory를 검증하는 bounded reader는 구현됐다. 다만 caller tuple은 외부 pin이 아니고 serialized bridge는 하위 validator 실행 provenance를 증명하지 않으므로 blocker는 `ACTUAL_OWNER_ROOT_IDENTITY_NOT_PREAUTHORIZED / UNDERLYING_VALIDATOR_EXECUTION_UNVERIFIED`; runtime noninterference도 false다.
+- 다음 tranche는 외부 owner category→root/root tuple preauthorization, 독립 OS write-deny와 USN/watch, 단조 runtime chronology를 결속하는 것이다. 실제 외부 owner policy·capture/parser runtime·source claim 40건(profile 10×4)·A context 20건은 미입력이며 Pyserini·gold-lite·semantic A/B는 시작하지 않는다.
+
+## 2026-09-02 P0 Windows owner-policy contract-only successor
+
+- focused:
+  - `$env:PYTHONPATH='src'; python -m unittest -v tests.test_p0_windows_owner_policy_contract`
+  - `22/22 PASS`, `0.124s`
+- adjacent:
+  - owner-policy, public-key pin candidate, asymmetric owner signature, fixed-directory identity, directory-change watch
+  - `95/95 PASS`, `11.974s`
+- 전체 P0:
+  - `$env:PYTHONPATH='src'; python -m unittest discover -s tests -p 'test_p0*.py' -q`
+  - `475/475 PASS`, `32.374s`
+- compile: 신규 module/test `python -m compileall -q` PASS
+- scoped `git diff --check`: PASS. `.gitignore`의 기존 CRLF 변환 경고만 출력됨.
+- noninterference: 중앙 Slang DB 1개와 publication journal 5개 `6/6` byte·SHA 불변
+  - receipt `6033c6d0c648175f255c10042b9104d4ccc183d94a76901ed44a1649fd98204e`
+  - fixture receipt `d94e1de3c5b4f8cd801804467fe82efed68ead1ec1b1abb986f48861a734545c`
+- Windows evidence: current-user-owned temp file의 binary ACL은 투영되지만 external owner-policy exact 비교에서 거부된다. invalid handle도 fail-close한다.
+
+## 2026-09-02 P0 Windows fixed owner-policy store candidate
+
+- gate: `OWNER_POLICY_FIXED_STORE_CANDIDATE_PASS_AUTHORITY_NO_GO`.
+- focused fixed-store: `10/10 PASS`.
+- owner-policy + fixed-store + fixed-directory: `50/50 PASS`.
+- 전체 `test_p0*.py`: loader count `485`, 실행 exit `0`, 약 31초.
+- 통제 positive: 8 role, exact five-directory inventory, exact handle-read 3 files, pin cross-binding, ACL pre/post `16` calls, parent/store watches, role·ancestor lexical reopen PASS.
+- 공격 회귀: ProgramData API failure cleanup, suffix/casing, pin/anchor/bytes, ACL drift, watcher partial-start cleanup, handle close failure, missing current-host suffix, non-Windows early gate PASS.
+- 실제 Windows: `C:\ProgramData\llm-novel-dc\p0-owner-policy-v1` 없음. directory/account/ACL 변경 없음.
+- noninterference: 중앙 Slang DB 1개+publication journal 5개 `6/6` 불변, receipt `6033c6d0c648175f255c10042b9104d4ccc183d94a76901ed44a1649fd98204e`, fixture `d94e1de3c5b4f8cd801804467fe82efed68ead1ec1b1abb986f48861a734545c`.
+- 해석: ACL API boundary를 사용한 controlled candidate test이며 externally provisioned live ACL positive가 아니다. successor에서 bootstrap signature math candidate는 true가 됐지만 독립 key/code authority와 owner/P0/production/full scan은 false다.
+- Gate: `BOOTSTRAP_POLICY_SIGNATURE_MATH_CANDIDATE_PASS_CODE_AUTHORITY_NO_GO`. fixed live store, external provisioning, linked-token/privilege, trusted code/provider, time/revocation/rollback/durable nonce는 false다.
+- 이번 작업은 component unittest/read-only audit라 actual-run dashboard와 `--parallel 16` 적용 대상이 아니다.
+
+## 2026-09-02 actual registry·B sense·annotation schema foundation
+
+### 구현·예제
+
+- `src/llm_batch/grounding/p0_actual_registry_contract.py`: actual/example origin 분리, source snapshot registry·1:N claim, capture/payload exact span, `TEMPORAL_REVISION` lineage, 권리 5축·retention/takedown, B truth/annotation/inference/publication, candidate/evidence cutoff, temporal/sensitive, annotation event chain을 fail-close한다.
+- `tests/fixtures/p0_actual_contract_example_v1/`: source snapshot 5행, claim 5행, B context 4행, annotation event 4행, controlled UTF-8 payload 5개의 schema-contract example이다.
+- builder/validator: `tools/build_p0_actual_contract_examples.py`, `tools/validate_p0_actual_contract_examples.py`.
+- manifest SHA `f8447c25f2e5da9216155bddc16c1e147a4e286d071994144dd4d0010bb2332d`, source/claim/B/event SHA는 각각 `2e91750ae8a4dc85ca028fdba02d9ed596153ffa4f90e056d93e08b3bb372d3e`, `4cbeba00e4a76dba13e61b2b5b5c9c49d2e577a2e715347a2018fc4d7e248e0c`, `9a9b2ecb4073636efd2f179c21c8d5022ef481700acd0126ff46b33d65fa9695`, `8d26ba8193e7491099a298823b3bb2ad0a0b96a1c58904c716b84b950a9b3855`, receipt SHA는 `86fb5689fe22b23e0f19e5c16d53233ee6172ddf96a1deccabd2624a62436992`다.
+
+### 검증
+
+- `python tools/build_p0_actual_contract_examples.py`: self-validation PASS, 동일 재실행 byte no-op, non-identical overwrite 거부.
+- `python tools/validate_p0_actual_contract_examples.py`: `schema_check_status=PASS_ACTUAL_SCHEMA_CONTRACT_EXAMPLE_ONLY`, `gate_status=NO_GO_ACTUAL_P0_NOT_STARTED`, artifact/payload binding true, actual source/A-context `0/40`, `0/20`, `p0_phase_exit=false`.
+- `python -m unittest tests.test_p0_actual_registry_contract -v`: `26 PASS`.
+- actual+synthetic focused: `70 PASS`.
+- actual/synthetic와 observation/WAL/publication/Slang/candidate/calibration 인접 green 묶음: `237 PASS`.
+- publication exact-once를 포함한 더 넓은 묶음: `241개 중 237 PASS, 4 ERROR`. 4건은 모두 이번 변경 전부터 알려진 P1 run spec의 label-ledger 기대 SHA `717c6e…1102`와 현재 `b7e754…5998` drift로 setup에서 fail-close했다. fixture 자동 재생성이나 현재 hash에 대한 재결속은 하지 않았다.
+- 공격 범위: actual/example URL·origin 혼입, duplicate JSON key, manifest path/hash, payload span offset, registry/claim/snapshot hash, missing/cyclic/temporal/mirror/repost lineage, 1:N vote inflation, unknown/revoked rights·takedown/deletion, generic typed claim, B claim-kind/surface/scope/sense/definition 의미 결속, definition exact span, truth/inference claim-set row SHA, sense·term type·discourse·validity·temporal·sensitivity decision payload, orphan event, candidate/novelty/future-evidence/temporal/sensitive/publication, claim/context sampling unit 중복, subject별 복수 journal, reviewer/guideline/event/supersedes chain, runtime writer·external retriever import를 fail-close했다.
+
+### 증거 경계
+
+- 예제 GO는 actual schema branch coverage일 뿐 실제 관측 source, 사람 정답, 정확도·독립성·publication 권한이 아니다.
+- receipt는 capture/rights/guideline/reviewer/candidate/novelty/annotation append-only/runtime/actual-pilot-manifest authority가 모두 false임을 명시한다.
+- 실제 source claim 40건과 A context 20건은 `0/40`, `0/20`; actual P0 Exit, Pyserini, gold-lite, semantic A/B, production/full scan은 계속 닫혀 있다.
+
+## 2026-09-02 P0 source/lineage/4축 합성 계약
+
+### 구현·fixture
+
+- `src/llm_batch/grounding/p0_grounding_contract.py`: source record/claim hash, 1:N claim 참조, 방향·span, 30 root+10 derivative lineage, temporal response snapshot, truth/annotation/inference/publication 4축을 strict schema로 검증한다.
+- `tests/fixtures/p0_grounding_contract_v1/`: `SYNTHETIC_CONTRACT_ONLY` source claim 40행, context 20행, manifest 1개다.
+- durable receipt: source SHA `5b71012a75d9f8c14d332b7b83d94183afa17ec646fd780560632b5bfb9a2795`, context SHA `a80dba214471de8ca192b27beea2060d4e84d34c0a279aaa3164bd85c56ff108`, manifest SHA `b0b2c9f8e5c1f47b6b63eef4113e2b133b2c06acdb647c7c35cd2b05d431b80f`, receipt SHA `d94e1de3c5b4f8cd801804467fe82efed68ead1ec1b1abb986f48861a734545c`다.
+
+### 검증
+
+- `\.\venv\Scripts\python.exe -m unittest tests.test_p0_grounding_contract -v`: `44 PASS`.
+- P0 focused와 WAL·publication·Slang·candidate·observation 인접 묶음: `192 PASS`.
+- `\.\venv\Scripts\python.exe tools/validate_p0_grounding_contract.py`: `GO_P0_CONTRACT_FIXTURE_ONLY / METRICS_NOT_ESTIMABLE / REVIEW_LOCKED / full_scan_approval=false / p0_phase_exit=false`.
+- `\.\venv\Scripts\python.exe tools/audit_p0_grounding_noninterference.py`: 중앙 Slang DB 1개와 publication journal 5개, 총 `6/6` before/after bytes·SHA 동일. `GO_EXISTING_STATE_READONLY_AUDIT`, receipt SHA `6033c6d0c648175f255c10042b9104d4ccc183d94a76901ed44a1649fd98204e`.
+- 공격 범위: stale content/candidate/universe hash, 빈-host·invalid-port·credential HTTPS, URL·canonical/relation/NIL receipt, wrong-work publish/HOLD, 무관한 official claim publish, profile/parser·claim kind/direction 위장, annotation·operational·HOLD reason family 혼합, unavailable→NIL, incomplete/unavailable ASSERT, context 중복, source track/snapshot, generic/restricted/404 publish, lineage vote·mirror/repost/quote, LLM 신규 문자열, caller-forged artifact binding을 fail-close했다.
+
+### 증거 경계
+
+- 40+20은 `example.invalid`와 `synthetic://`만 쓰는 계약 fixture다. 실제 source·사람 판정·정확도·독립성 근거가 아니다.
+- 실제 source claim 40건과 실제 A context 20건의 사람 검토는 `0/40`, `0/20`; B sense·독립 source registry와 authority는 schema-contract example까지만 구현됐고 authoritative actual artifact는 미구현이다.
+- 비간섭 감사는 P0 validator와 현재 존재하는 6개 파일에 한정된다. 실제 parser/runtime·새 WAL 범위는 승인하지 않는다.
+- P0 Exit `NOT_MET`, actual metrics `NOT_ESTIMABLE`, semantic `REVIEW-LOCKED`, `full_scan_approval=false`다.
+
 ## 2026-07-15 GitHub publish 선별 검증
 
 ### 업로드 범위
@@ -185,7 +890,7 @@
   - `tests.test_selective_compute_shadow_harness tests.test_selective_compute_shadow_contract tests.test_paired_measurement_readback`: `59 tests PASS` (`395.194s`).
   - 이는 lineage readback 회귀이며 source-backed actual packet, fresh runtime, 실제 효과 또는 운영 승인의 증거가 아니다.
 - DecisionLedgerV2 framed WAL v2 shadow foundation: `tests.test_framed_wal tests.test_decision_ledger_v2 tests.test_decision_ledger_v2_legacy_replay tests.test_decision_ledger_v2_mirror tests.test_decision_ledger_v2_mirror_canary tests.test_decision_ledger_binding`; `22 tests PASS` (`20.052s`, `EXITCODE:0`). torn/orphan/corruption/concurrent/replay/compaction/104,502 acceptance와 binding readback을 재확인했다. active `DecisionCallLedgerRegistry` writer 교체, production wiring, actual effect는 이 검증 범위 밖이다.
-- M1 acceptance 판정: 위 shadow/off-by-default evidence, P1→P4 lineage replay, launch wrapper/readback과 한국어 runbook으로 `ARCHITECTURE_INTEGRATION_COMPLETE`를 확인했다. `READY_FOR_NO_WRITE_PREFLIGHT` positive packet, policy v3, source-backed DEV/CAL/FROZEN, fresh BEFORE/AFTER, paired CI와 crash/restart는 M2에서 아직 증명되지 않았고 동일 외부 blocker가 `3/3`이므로 전체 Goal은 `BLOCKED / ACTUAL_BLOCKED_HANDOFF / NOT_COMPLETE`, `REVIEW-LOCKED / full_scan_approval=false`다.
+- M1 acceptance 판정: 위 shadow/off-by-default evidence, P1→P4 lineage replay, launch wrapper/readback과 한국어 runbook으로 `ARCHITECTURE_INTEGRATION_COMPLETE`를 확인했다. `READY_FOR_NO_WRITE_PREFLIGHT` positive packet, 신규 policy v4, source-backed DEV/CAL/FROZEN, fresh BEFORE/AFTER, paired CI와 crash/restart는 M2에서 아직 증명되지 않았고 동일 외부 blocker가 `3/3`이므로 전체 Goal은 `BLOCKED / ACTUAL_BLOCKED_HANDOFF / NOT_COMPLETE`, `REVIEW-LOCKED / full_scan_approval=false`다.
 - M2 first pending no-write audit: `tools/read_launch_readiness_manifest.py --manifest out/launch_packet_20260712_architecture_foundation/launch_readiness_manifest.json`은 `NOT_READY / GO_LAUNCH_MANIFEST_BOUND`, runtime/write false를 반환했다. 이어 `tools/run_launch_packet_preflight.py --manifest ... --artifact-root out/launch_packet_20260712_architecture_foundation`은 `NO_GO_LAUNCH_PACKET_PREFLIGHT`, exit `2`, engine/runtime/write false로 종료했다. policy는 `DECISION_REQUIRED`, readiness는 `ready_rows=0/18`·producer COMPLETE `0/18`이다. 이는 M2 actual 입력 부재의 첫 재확인이지 GO, 운영 승인 또는 `ACTUAL_BLOCKED_HANDOFF`가 아니다.
 - M2 second pending no-write audit: policy decision/readiness/manifest file SHA는 `650a41da...7fc3`/`77f96e51...d3466`/`62616f49...cc8b`이다. reader `NOT_READY / GO_LAUNCH_MANIFEST_BOUND`, preflight `NO_GO_LAUNCH_PACKET_PREFLIGHT`, exit `2`, engine/runtime/write false가 동일했다. external blocker streak는 `2/3`이며 Goal을 blocked로 전환하지 않았다.
 - M2 third pending no-write audit: 같은 SHA·reader `NOT_READY / GO_LAUNCH_MANIFEST_BOUND`·preflight `NO_GO_LAUNCH_PACKET_PREFLIGHT` exit `2`·engine/runtime/write false를 재현했다. M1 완료 뒤 안전한 내부 작업이 없고 같은 external blocker가 `3/3`이므로 Goal API status `blocked`와 strict terminal 상태 `BLOCKED / ARCHITECTURE_INTEGRATION_COMPLETE / ACTUAL_BLOCKED_HANDOFF / NOT_COMPLETE`를 확인했다. source-backed packet/policy/fresh runtime이 재개 조건이며 M2 GO·운영 승인은 아니다.
@@ -250,6 +955,7 @@
 
 - P3 v20 RunSpec self hash: `0c6f96ec37a591356589a339699066f0d412e07322d6e8b2b5e6f0749ff36f21`; P3 v18 legacy v2는 호환 readback을 유지한다.
 - actual policy v3는 `top_label_accuracy_denominator`를 명시하고 policy payload·`policy_sha256`에 결속한다. actual pre-registered policy에 v2 우회는 허용하지 않는다.
+- 2026-09-02 supersession: 위 v3는 2026-07-12 역사 검증이다. 신규 actual readiness/evaluation은 분모·최소 독립 group 30개·bootstrap 2,000회·percentile method를 결속한 policy v4만 허용하며 evaluation output schema는 dual receipt 추가로 v2다.
 - P4 v21 RunSpec self hash: `ebbdec02f9db4c8801f403a39515a589847ede2c7683e0fbd76e3c0a5bd4e406`; validator와 comparison readback이 `GO_P4_SHADOW_CONTRACT_FOUNDATION_ONLY`를 확인했다.
 - P4 reader는 RunSpec·arm·scope/run/index/post ID와 `DecisionCostTrace`를 대조해 batch envelope를 재생하고 full-expert comparable 행의 per-post p50/p95 paired bootstrap CI만 계산한다. `REFERENCE_COPY_COST_ONLY` 행은 production savings·latency 개선 수치에서 제외한다.
 - 집중 unittest `82/82 PASS`, 변경 Python `py_compile PASS`, `git diff --check PASS`다. 이는 계약 회귀이며 actual 성능 수치가 아니다.

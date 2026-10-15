@@ -1,5 +1,14 @@
 # Sampling And Parallel Test Guide
 
+> 현재 테스트·검증 기본은 요청 `--parallel 12`·대시보드 ON이다. 아래의 병렬16 명령은 당시 실행 이력이다. 현재 상태는 [현재 상태 문서](CURRENT_STATUS_KO.md)를 따른다. 날짜별 기록과 `out/`·`logs/` 링크는 로컬 보존 자료이며 Git checkout에 포함되지 않을 수 있다.
+
+## 2026-10-12 이후 expert_main 테스트 실행 기준
+
+- 2026-10-12 사용자 지시에 따라 새 테스트런·검증런의 기본 요청 병렬도는 `--parallel 12`다. 입력이 12건보다 적으면 `effective_parallel=min(input_count,12)`로 제한하며, manifest의 requested/effective parallel을 함께 확인한다.
+- 웹 대시보드는 계속 켠다. 새 런에 `--no-dashboard`를 사용하지 않으며, 필요하면 standalone 대시보드로 포워딩한다.
+- 이번 변경은 요청 병렬도에 한정한다. 프로세스 우선순위, CPU affinity, 수치 연산 스레드, 실행 프로필 및 검색 서비스 준비 조건을 별도로 바꾸라는 지시는 없다.
+- 아래 날짜별 문단의 병렬도 16 및 이미 수행한 P4 병렬도 1 기록은 당시 실행 근거로 보존한다. 이후 새 실행의 기본값은 이 절과 [저장소 실행 지침](../../AGENTS.md)의 병렬도 12를 따른다.
+
 ## 2026-07-10 bounded adjudication override
 
 - 아래 Loop639의 `adjusted_drift_count=0` 문구는 historical tool behavior이며 현재 완료 gate가 아니다.

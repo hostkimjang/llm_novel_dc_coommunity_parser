@@ -40,7 +40,7 @@
 ## M2 pending external gates
 
 - source-backed packet 10 required + 6 replay artifact가 없어 v2 launch manifest는 `NOT_READY`다. 이는 M1 implementation 결함이 아니라 M2 actual packet 입력 부재다.
-- actual 입력 인벤토리는 `docs/devs/ACTUAL_PACKET_INPUT_INVENTORY_KO_20260712.md`다. owner policy v3, DEV/CAL/FROZEN split/source, COMPLETE producer와 10+6 artifact가 모두 없어 actual preflight는 열지 않는다.
+- actual 입력 인벤토리는 `docs/devs/ACTUAL_PACKET_INPUT_INVENTORY_KO_20260712.md`다. 현재 신규 owner policy v4, DEV/CAL/FROZEN split/source, COMPLETE producer와 10+6 artifact가 모두 없어 actual preflight는 열지 않는다.
 - actual-readback 독립 감사 보정: receipt provenance는 같은 verified packet의 no-write preflight 재계산 결과와 exact-match해야 하며 self-hash만으로 GO를 만들 수 없다. output은 packet root의 직접 자식 새 directory로 제한해 nested symlink/junction parent 경로를 거부한다. source-less `NOT_READY` fail-close는 유지하며 actual source/effect 증거는 아니다.
 - P1 v8→P2 v8→P3 v20→P4 v21 historical parent replay는 stored RunSpec/비교표/label/Golden18 artifact bytes·self-hash와 implementation record aggregate를 재생한다. 과거 implementation SHA는 current working-tree와 같다고 요구하지 않으며 direct validator의 기본 current-source 검증은 별도로 유지한다. P3 `19 PASS`, P4/paired `59 PASS`로 M1 lineage replay 경계를 확인했으나 actual packet/M2 evidence는 아니다.
 - DecisionLedgerV2의 static shadow crash/scale foundation은 focused 6개 모듈 `22 PASS`로 재확인했다. 이는 P2 publication WAL을 바꾸거나 `DecisionCallLedgerRegistry` active writer를 교체한 것이 아니며, 해당 runtime-safe 접목은 M2 runtime gate다.
@@ -50,4 +50,4 @@
 
 ## M2 외부 게이트
 
-policy v3 owner decision, source-backed DEV/CAL/FROZEN, 동일 RunSpec fresh BEFORE/AFTER(`--parallel 16`, dashboard ON), paired readback/CI, hard regression 0과 crash/restart evidence가 필요하다. 그 전에는 `REVIEW-LOCKED`, `full_scan_approval=false`를 유지한다.
+policy v4 owner decision, source-backed DEV/CAL/FROZEN, 동일 RunSpec fresh BEFORE/AFTER(`--parallel 16`, dashboard ON), paired readback/CI, hard regression 0과 crash/restart evidence가 필요하다. 그 전에는 `REVIEW-LOCKED`, `full_scan_approval=false`를 유지한다.

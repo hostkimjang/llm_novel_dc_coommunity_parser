@@ -1,5 +1,590 @@
 # 개선 등록부 (Improvement Register)
 
+> 현재 상태는 [현재 상태 문서](CURRENT_STATUS_KO.md)를 따른다. 날짜별 기록과 `out/`·`logs/` 링크는 로컬 보존 자료이며 Git checkout에 포함되지 않을 수 있다.
+
+<!-- r5-resolution-current:start -->
+
+## 현재 상태 안내 — 2026-10-15
+
+현재80 범위 개발·검증과 Goal 완료 상태는 [현재 상태와 남은 작업](CURRENT_STATUS_KO.md)에서 관리한다. 전체 의미 `REVIEW`·기존5개 실패·독립 평가/R7 보류·새 분기 실측 미관측을 함께 확인한다. 아래 날짜별 실행·시험·미완료 표기는 당시 이력이다.
+
+<!-- r5-resolution-current:end -->
+
+<!-- research-completion-current:start -->
+
+## 2026-10-14 source462 단계 이력 — 최신 상태는 위 완료 기록 참조
+
+[최종 결과와 남은 수용 조건](../../out/research_completion_20261014_v1/REPORT_KO.md)는 당시 단계의 근거다. 기존80의 개발용 회수48관측,50번 수리·실제1건 검토, JSONL 댓글 생략 호환성·시작 전 실패·상대경로 이력·화면 전환 수리를 마쳤다. source462를 고정한 R6 실제1건은 원래 HOLD와 별도 native PUBLISH를 보존하며 HTTP9회·230.172초로 종료했고 원장 검산을 통과했다. 실제 화면과 관련 회귀도 확인했다.
+
+R5 기준3건은 정상 종료했으나 BEFORE에서64번 공개 판정이 PUBLISH→HOLD로 달라 strict 비교가 거절됐다. runner exit1·DRAINED, AFTER 미시작, formal KPI는 NOT_ESTIMABLE이다. 기존 실패·원문·참조는 보존했다. 현재 실행 정책 차단은 없었다.
+
+별도 자료가 없다는 사용자 답변에 따라 기존80으로 수행 가능한 DEV 연구를 끝냈다. MODEL_REFERENCE는 허용하지만 재사용 근거·미노출 평가 자료·TRAIN/CAL/FROZEN 조건은 미충족이다. R6 의미 검토는 원본 픽셀 미확인으로 HOLD/Medium이며 일반화 성능 승인이 아니다. **Goal 전체 완료 조건은 미충족으로, 조회된 blocked 상태를 complete로 바꾸지 않았다.** 요청 병렬12·대시보드 ON·저부하와 R7 보류를 유지한다. 아래 날짜별 기록은 당시 이력이다.
+
+- [x] 기존80 자료 연결·개발용48관측과 반례 판독.
+- [x] 50번 수리·실제 검토, 입력·대시보드 수리와 회귀·실제 화면 검증.
+- [x] R6 실제 복구1건의 실행·예산·원본 보존·별도 guard 검산.
+- [x] R5 실제 BEFORE 실패·AFTER 미시작·최종 종료 및 원인 판독.
+- [ ] 같은 공개 결정에 결속되는 실제 paired 비교와 정식 지표 산출.
+- [ ] 적격 자료에 근거한 정식 R2–R4 및 R6 일반화 품질 수용.
+
+<!-- research-completion-current:end -->
+
+## IMP-20260905-RESEARCH-LOCAL-BENCHMARK
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+|---|---|---|
+| 연구 scope | `ACTIVE` | `research.synthetic.offline_shadow`, production/publication write 0 |
+| 권리 안전 fixture | `IMPLEMENTED` | synthetic 16건, source·retention, gold-lite, blind recheck 4건 |
+| 비교 arm | `IMPLEMENTED` | lexical, BM25, reranker+NIL/ABSTAIN, local LLM optional |
+| 로컬 모델 | `UNAVAILABLE_MODEL_WEIGHTS` | 현재 host에 Ollama/GGUF 없음; 분모에서 제외하지 않음 |
+| 재현성 | `IMPLEMENTED` | data/gold/config/prompt/code/Git/model/runtime/dependency fingerprint |
+| runtime gate | `PASS_RESEARCH` | dashboard ON, requested/effective 16/16, 64/64 terminal accounting |
+| P0 외부 authority | `DEFERRED_P0_AUDIT_TRACK` | 향후 production 전환용; 현재 연구 blocker 아님 |
+
+Terminal manifest는 `out/research/research_local_benchmark_20260905_v10/manifest.json`이며 self-hash `e0e1a726…7b0c`, semantic hash `13bbe5b8…d83c`다. BM25는 fixture 전체 공통 corpus에서 회수하며 외부 open-corpus 성능은 주장하지 않는다. local LLM은 weights 부재로 품질 accuracy와 A/B가 `NOT_ESTIMABLE`, 운영 worst-case만 `0/16`으로 분리했으며 설치나 외부 모델 도입을 자동 수행하지 않는다.
+
+## IMP-20260904-P0-EXTERNAL-PROVISIONING-BLOCKED-HANDOFF
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| V3 fixed store | `ABSENT` | `C:\ProgramData\llm-novel-dc\p0-owner-policy-v1` 없음 |
+| V4 fixed store | `ABSENT` | `C:\ProgramData\llm-novel-dc\p0-owner-policy-v4-packet-v2` 없음 |
+| actual package | `ABSENT` | owner-signed numerical policy·40+20 census·review/trust/runtime/rights artifact 없음 |
+| fresh readiness | `FIXED_STORE / NO_GO` | receipt `f3537ed2…8d42`, actual `0/40·0/20`, endpoint match |
+| regression | `PASS` | readiness `12/12`, protected endpoint `6/6`, noninterference `6033c6d0…204e` |
+| blocked audit | `3/3 CONFIRMED` | 안전한 내부 구현 없음; 새 wrapper/V3 wiring은 contract laundering |
+| Goal | `BLOCKED_EXTERNAL_PROVISIONING_REQUIRED` | 외부 최소 package 제공 시 read-only observer부터 resume |
+
+상세: [`P0_EXTERNAL_PROVISIONING_BLOCKED_HANDOFF_20260904_KO.md`](P0_EXTERNAL_PROVISIONING_BLOCKED_HANDOFF_20260904_KO.md)
+
+## IMP-20260904-P0-LINEAGE-V2-NEXT-GATE
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| current readiness | `FIXED_STORE / NO_GO` | receipt `f3537ed2…8d42`, actual `0/40·0/20`, endpoint projection match |
+| numerical policy | `ADOPT_INTERFACE` | owner-signed 40+20 정책 SHA를 capture→selection→review→final attestation 전체에 prelabel 결속 |
+| new internal wrapper | `REJECT_NOW` | 외부 blocker 감소 0; compiler/receipt·V3 wiring은 contract laundering 위험 |
+| legacy raw/event ingress | `FUTURE_HARDENING_DEBT` | canonical/resource cap·incremental parsing을 owner-pinned 실제 역할 확정 뒤 재감사 |
+| capture-rights body | `FUTURE_HARDENING_DEBT` | source별 5축·retention·takedown 의미계약이 external policy에 필요 |
+| Fable evidence | `UNAVAILABLE` | native encrypted-task 오류, 기존 task completed/empty items |
+| 다음 gate | `PENDING_EXTERNAL` | fixed store·trust/runtime·rights/capture·actual policy/review authority 제공 |
+
+상세: [`P0_LINEAGE_V2_NEXT_GATE_EXPERT_COUNCIL_20260904_KO.md`](P0_LINEAGE_V2_NEXT_GATE_EXPERT_COUNCIL_20260904_KO.md)
+
+## IMP-20260904-P0-PRESENTED-A-CONTEXT-LINEAGE-CAPPED-V2
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| lineage frame·2단계 plan | `ADOPT_COMPONENT_ONLY` | source lineage 우선, lineage 내부 context 1개; manifest `c1080b53…250b` |
+| predecessor binding | `PASS` | source 5+bridge 1+A 5 exact raw와 predecessor parent/self-hash, content/surface/time/registry 재결속 |
+| strata·cap | `PASS` | 층별 `G_h`, `n_h=5`, global lineage cap 1, underfill hard fail, no spill/backfill/replacement |
+| fixture accounting | `PASS` | context `80`, lineage `40`, selected `20`, context surplus `60`, lineage surplus `20` |
+| 통계 계약 | `PRESENTED_ONLY` | `n_h/G_h`, `1/K_g`, marginal `n_h/(G_h*K_g)`, iid false, same-lineage joint `ZERO` |
+| red-team | `PASS_AFTER_HARDENING` | callable/receipt, bridge parity, cap/Unicode/huge-int, runtime helper/constant, manifest drift 폐쇄 |
+| 검증 | `PASS` | focused `24/24`, adjacent `132/132`, host P0 `1037/1037`, compile |
+| 비간섭·권위 | `6/6 STABLE / NO_GO` | receipt `6033c6d0…204e`; downstream wiring 0, actual `0/40·0/20` |
+| external handoff | `SPEC_SYNCED / PENDING` | owner intake에 lineage V2 결속과 V3→V4·trust/runtime·rights/capture·sampling·review 최소 증거를 추가; current `FIXED_STORE / NO_GO` |
+| Claude Fable | `NO_EVIDENCE_ADOPTED` | native route unreadable, existing task override empty; 본 판정 근거에서 제외 |
+| 다음 gate | `PENDING_EXTERNAL` | rights/capture/owner/runtime+actual review 뒤 별도 subject/target/packet V3 검토 |
+
+상세: [`P0_PRESENTED_A_CONTEXT_LINEAGE_CAPPED_FULL_FRAME_V2_REVIEW_20260904_KO.md`](P0_PRESENTED_A_CONTEXT_LINEAGE_CAPPED_FULL_FRAME_V2_REVIEW_20260904_KO.md)
+
+## IMP-20260904-P0-PRESENTED-HTTP-TEMPORAL-EVIDENCE-V2
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| temporal child·parent | `ADOPT_COMPONENT_ONLY` | V1 exact replay, transport/page-native 분리, producer-free parent; manifest `8961fb8c…cb8b` |
+| marker·locator | `PASS_AFTER_HARDENING` | flat top-level JSON-LD, bounded OG, `data-version` exact occurrence와 absolute payload 경계 |
+| chronology | `PASS_PRESENTED_ONLY` | `-00:00`, future HTTP/page time, `Last-Modified>Date`, published>modified 거부; trusted clock은 아님 |
+| exposure·identity | `BOUNDED` | normalized scalar 노출; observation hash는 capture-bound이며 stable revision/lineage key가 아님 |
+| replay key | `PURE_ONLY` | deterministic same-input key; durable nonce/external anti-replay/effect deduplication 아님 |
+| red-team | `PASS_AFTER_TWO_ROUNDS` | span overlap/swap, nested/decoy/crop, resource preflight, current/external callable 변조 폐쇄; material residual 0 |
+| 검증 | `PASS` | focused `25/25`, adjacent `135/135`, 전체 P0 `1013/1013`, compile/diff check |
+| 비간섭·권위 | `6/6 STABLE / NO_GO` | receipt `6033c6d0…204e`; actual `0/40·0/20`, metric/P0/production/full scan false |
+| 다음 gate | `PENDING` | A-context lineage-capped full-frame V2 → external rights/capture/owner → actual 40+20 |
+
+상세: [`P0_PRESENTED_HTTP_CAPTURE_TEMPORAL_EVIDENCE_V2_REVIEW_20260904_KO.md`](P0_PRESENTED_HTTP_CAPTURE_TEMPORAL_EVIDENCE_V2_REVIEW_20260904_KO.md)
+
+## IMP-20260904-P0-V3-V4-TRANSITION-READINESS-V2
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| transition parent | `ADOPT_COMPONENT_ONLY` | exact 9-role raw, V3 10-field pin·signed/live identity, supplied V4 child/parent replay; manifest `467bf7cd…ba4d` |
+| fixed-store observer | `ADOPT_COMPONENT_ONLY` | V3 8+V4 13=21 role, 9 file, 3 watch held interval; manifest `58b7c108…0ae2` |
+| readiness compiler V2 | `ADOPT_BLOCKER_ONLY` | observer 1회, endpoint 6개 point-in-time 전후 비교, always `NO_GO`; manifest `0c13c08c…060e` |
+| red-team | `PASS_AFTER_HARDENING` | supplied replay·10-field pin·identity·class/ntpath/constants·path traversal·watch scope·exact int, code-object stable digest와 public/compiler integrity pin 보강 |
+| 실행 결정성 | `PASS` | stable-digest 1,000회 뒤 store/compiler 각 2회; receipt `1012a6b3…b5475` / `f3537ed2…8d42` |
+| focused/adjacent | `40/40 · 149/149 PASS` | unit/static/read-only 검증; dashboard·`--parallel 16` N/A |
+| 전체 P0 | `982/982 PASS` | 마지막 red-team 회귀 포함 최종 재실행 통과 |
+| endpoint·비간섭 | `6/6 STABLE` | 중앙 DB/journal 6파일 불변, receipt `6033c6d0…204e` |
+| current host | `FIXED_STORE / NO_GO` | fixed store 없음; 21-role success 경로 미실증 |
+| authority·통계 | `NO_GO / NONE` | receipt/self-hash는 authority 아님; actual·credited `0/40·0/20`, production/full scan false |
+| 다음 gate | `PENDING_EXTERNAL` | exact V3/V4 store·trusted key/time/state/root/code/write deny/runtime 뒤 actual 40+20 |
+
+상세: [`P0_WINDOWS_OWNER_POLICY_V4_TRANSITION_AND_READINESS_COMPILER_V2_REVIEW_20260904_KO.md`](P0_WINDOWS_OWNER_POLICY_V4_TRANSITION_AND_READINESS_COMPILER_V2_REVIEW_20260904_KO.md)
+
+## IMP-20260903-P0-SEED8-RIGHTS-ACCESS
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| current access | `OBSERVED_HEADER_TITLE_ONLY` | 8 URL local 200/no redirect; body 비보존, crawler 429 신호 별도 |
+| operational capture | `NO_GO 0/8` | public/robots 접근을 재사용·AI·retention 권리로 승격하지 않음 |
+| Arca | `CONDITIONAL_CLEARANCE_CANDIDATE 1/8` | page CC BY-SA 4.0와 `/w/` robots 허용; TASL/share-alike/privacy/retention 미승인 |
+| DC | `PERMISSION_REQUIRED 2/8` | 현행 약관상 crawling·AI 이용 사전 서면 합의 필요 |
+| FMKorea | `PERMISSION_REQUIRED 1/8` | generic robots 차단, noarchive/no-store, 연구 재사용 라이선스 미확인 |
+| Tanma | `PERMISSION_REQUIRED 4/8` | robots 허용이나 owner 재사용 라이선스 미확인, one lineage |
+| 계약 보강 | `PENDING` | transport/page-native time 분리와 canonical rights/retention authorization artifact |
+| actual/P1 | `NO_GO` | actual `0/40·0/20`; 승인·이중맹검·P0 Exit 전 BM25/gold-lite/P2 금지 |
+
+상세: [`P0_SEED8_RIGHTS_ACCESS_READINESS_REVIEW_20260903_KO.md`](P0_SEED8_RIGHTS_ACCESS_READINESS_REVIEW_20260903_KO.md)
+
+## IMP-20260903-P0-CAPTURE-INTAKE-V4-EPOCH2-FIXED-STORE
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| HTTP capture intake | `ADOPT_COMPONENT_ONLY` | seed8 redirect/MIME/encoding/time/bytes locator/rights candidate, component `e115cd8c…7339`, `31/31` |
+| V4 epoch2 store observer | `ADOPT_COMPONENT_ONLY` | fixed zero-input suffix, 6 held members, inventory/identity/ACL/watch/reopen; component `6bfe0e80…0697`, `19/19` |
+| 독립·인접 검증 | `PASS` | capture `84/84`, store `104/104`, 전체 P0 `942/942`, compile PASS |
+| 반대검토 | `PASS_WITH_LIMITATIONS` | 공조 helper/base64, forged V4, malformed V3 ACL, frozenset/regex/UUID dependency 공격 폐쇄; residual high/material 0 |
+| current host | `FIXED_STORE / NO_GO` | deterministic 91-field receipt `06474b80…eecd`; V4 epoch2 store 없음 |
+| 비간섭 | `PASS` | 중앙 Slang DB·publication journal `6/6` byte/SHA 불변 |
+| authority·통계 | `NO_GO / NONE` | live V3 continuity/bootstrap math, trusted state/root/code/write-deny/runtime, actual `0/40·0/20` |
+| 다음 gate | `PENDING_EXTERNAL` | V4 store·predecessor 증거·trusted state와 실제 seed bytes/rights 뒤 40+20; 그 뒤에만 BM25/gold-lite/P2 |
+
+상세: [`P0_PRESENTED_HTTP_CAPTURE_INTAKE_V1_REVIEW_20260903_KO.md`](P0_PRESENTED_HTTP_CAPTURE_INTAKE_V1_REVIEW_20260903_KO.md), [`P0_WINDOWS_OWNER_POLICY_V4_EPOCH2_FIXED_STORE_REVIEW_20260903_KO.md`](P0_WINDOWS_OWNER_POLICY_V4_EPOCH2_FIXED_STORE_REVIEW_20260903_KO.md)
+
+## IMP-20260903-P0-SEED-INVENTORY-OWNER-POLICY-V4
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| seed inventory | `ADOPT_COMPONENT_ONLY` | exact URL 8, Track A/B `3/5`, lineage family `4`, component `52dcabd1…f219d` |
+| capture/parser/rights | `NO_GO / NOT_RUN` | rights unknown, 실행 capability·eligible independence·actual credit 0 |
+| legacy evidence | `PASS_BOUND_WITH_BLOCKER` | 7 artifact exact byte/SHA, label-ledger stale parent binding 1건, 5 pool grain 합산 금지 |
+| owner policy V4 | `ADOPT_COMPONENT_ONLY` | V2 pin/wire/5 component와 V3 body/signature/receipt 결속, component `9224e3c6…b9fc7` |
+| red-team | `PASS_AFTER_THREE_REVISIONS` | coordinated reseal, forged receipt, constants/helper/module alias/attribute/TOCTOU 공격 거부 |
+| 검증 | `PASS` | focused seed/owner `24/32`, owner adjacent `109/109`, 전체 P0 `892/892`, endpoint `6/6` |
+| authority·통계 | `NO_GO / NONE` | external store/time/revocation/nonce/root/code/write-deny/runtime/actual 40+20 부재 |
+| 다음 gate | `PENDING_EXTERNAL` | owner provisioning과 actual capture/adapter 뒤 40+20; P0 Exit 뒤에만 BM25/gold-lite/P2 |
+
+상세: [`P0_PRESENTED_SOURCE_SEED_CANDIDATE_INVENTORY_V1_REVIEW_20260903_KO.md`](P0_PRESENTED_SOURCE_SEED_CANDIDATE_INVENTORY_V1_REVIEW_20260903_KO.md), [`P0_WINDOWS_OWNER_POLICY_V4_PACKET_V2_PROFILE_REVIEW_20260903_KO.md`](P0_WINDOWS_OWNER_POLICY_V4_PACKET_V2_PROFILE_REVIEW_20260903_KO.md)
+
+## IMP-20260903-P0-ANNOTATION-PACKET-V2-OWNER-SUPERVISOR
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| packet V2 | `ADOPT_COMPONENT_ONLY` | child15/member16, exact external pins/caps, component `2a4b6351…d59f`, focused `15/15` |
+| Windows V2 | `ADOPT_BOUNDED` | all-handle-before-read, identity/inventory/ADS/hardlink fail-close, component `4e4e5c76…aae02`, focused `26/26` |
+| owner preauthorization V2 | `ADOPT_COMPONENT_ONLY` | canonical raw3, low-S CNG, ordered16/signed root, split-view 차단, component `07ae0af4…876e`, focused `16/16` |
+| one-step supervisor | `ADOPT_COMPONENT_ONLY` | checked same callable 1회, lexical path/raw3/child step seal, component `239b5957…fddf`, focused `18/18` |
+| 전체 회귀·비간섭 | `PASS` | P0 `836/836`, compile/diff check, 중앙 DB/journal `6/6` exact 불변 |
+| actual/metrics/운영 | `NO_GO` | 외부 key/time/revocation/nonce/root/code/write-deny/runtime/semantic evidence 부재; credit `0/40·0/20` |
+
+상세: [`P0_OWNER_ROOT_PREAUTHORIZATION_V2_SUPERVISOR_REVIEW_20260903_KO.md`](P0_OWNER_ROOT_PREAUTHORIZATION_V2_SUPERVISOR_REVIEW_20260903_KO.md)
+
+## IMP-20260903-P0-PRESENTED-A-CONTEXT-ANNOTATION-EVENT-V2-TARGET-PRECOMMIT
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| result-free target | `ADOPT_COMPONENT_ONLY` | subject20→primary target20, `NO_EVENT_RECORDED`, event/result/review/credit 0 |
+| raw lineage | `PASS_STRUCTURAL` | input13+output2=15, exact caller SHA map·role caps·receipt aggregate |
+| parent replay | `PASS_COMPOSED` | current producer import 0, predecessor parent 1회 실행/strict receipt, current projection 독립 replay |
+| response/통계 | `PASS_PRECOMMIT_ONLY` | exact status-decision/null/NIL/reason, denominator NONE, iid false, source cluster |
+| label blindness | `PASS` | generic 5 포함, per-target profile/disposition와 label/reviewer/result/event 없음 |
+| red-team/회귀 | `PASS` | material finding `6/6` 수정, focused `19/19`, adjacent `133/133`, P0 `761/761` |
+| 비간섭 | `PASS` | packet 13-child, runtime refs 0, protected DB/journal `6/6` exact |
+| 남은 gate | `PENDING` | packet V2 inventory 회의 → V2 reader/preauth/supervisor → external actual authority |
+
+상세: [`P0_PRESENTED_A_CONTEXT_ANNOTATION_EVENT_V2_TARGET_PRECOMMIT_REVIEW_20260903_KO.md`](P0_PRESENTED_A_CONTEXT_ANNOTATION_EVENT_V2_TARGET_PRECOMMIT_REVIEW_20260903_KO.md)
+
+## IMP-20260903-P0-PRESENTED-A-CONTEXT-ANNOTATION-SUBJECT-V2-PRECOMMIT
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| subject 계약 | `ADOPT_COMPONENT_ONLY` | source selected40·bridge40·A selected20 → label-blind subject20+precommit |
+| raw lineage | `PASS_STRUCTURAL` | upstream 11 + output 2 = 13, source/A frame domain 분리, caller output raw SHA pin |
+| parent replay | `PASS_STANDALONE` | stdlib-only/no-I/O, 구조적 derived ID·group·selection/partition·payload/span 독립 재생 |
+| label blindness | `PASS` | top-level/nested truth·work·NIL·reviewer·result/model prediction 금지, generic 5 unresolved |
+| authority/statistics | `NO_GO / NONE` | event/review/credit 0, denominator NONE, metrics not estimable, full-frame factual replay false |
+| 회귀 | `PASS` | red-team `13/13 REJECT`, focused `19/19`, adjacent `114/114`, P0 `742/742` |
+| 비간섭 | `PASS` | packet 13-child, runtime refs 0, protected DB/journal `6/6` exact |
+| 다음 gate | `PENDING` | A-event V2 → packet V2 version bump → external authority/runtime/human review |
+
+상세: [`P0_PRESENTED_A_CONTEXT_ANNOTATION_SUBJECT_V2_PRECOMMIT_REVIEW_20260903_KO.md`](P0_PRESENTED_A_CONTEXT_ANNOTATION_SUBJECT_V2_PRECOMMIT_REVIEW_20260903_KO.md)
+
+## IMP-20260903-P0-PRESENTED-A-CONTEXT-FULL-FRAME-V1
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| A-context 모집단 frame | `ADOPT_COMPONENT_ONLY` | scope·full census·frame·seed·selected20+surplus raw chain |
+| selection | `PASS_PRESENTED_DESIGN` | profile `5×4`, hard underfill, no spill/replacement, exact partition·기약 `n_h/N_h` |
+| identity/label blindness | `PASS_STRUCTURAL_ONLY` | registry+content+span unit, truth/work/NIL/annotation/reviewer/result schema 금지 |
+| parent replay | `PASS_SEPARATE_IMPLEMENTATION` | producer/`llm_batch` import 0, raw predecessor·rank·partition 독립 재계산 |
+| actual/statistics | `NO_GO / NONE` | actual A review 0/20, surplus review 0, metric `NOT_ESTIMABLE`, denominator contribution `NONE` |
+| packet wiring | `COMPLETED_BY_ADDITIVE_PACKET_V2` | source/A frame SHA와 annotation subject/target 1:1 결속 완료; 기존 packet V1은 변경하지 않음 |
+| 검증 | `PASS` | focused `18/18`, adjacent `73/73`, P0 `723/723`, endpoint `6/6` |
+| 2026-09-04 census bounded validation | `PASS / FOCUSED_24_OF_24 / ADJACENT_158_OF_158 / P0_988_OF_988` | total `64,000,000` bytes, per-row `64,000` bytes, enumerate-loop row guard, conservative pre-retain lower bound, post-sort exact cap, pre-slice/append 전 row 검증. 완전 streaming은 아니며 deterministic sort/list 메모리는 유지 |
+| 다음 gate | `PENDING_EXTERNAL_RUNTIME` | actual source capture → profile adapter/parser·rights·attestation·code identity → external authority/runtime/human review |
+
+상세: [`P0_PRESENTED_A_CONTEXT_FULL_FRAME_V1_REVIEW_20260903_KO.md`](P0_PRESENTED_A_CONTEXT_FULL_FRAME_V1_REVIEW_20260903_KO.md)
+
+## IMP-20260903-P0-DUAL-BLIND-EXTERNAL-AUTHORITY-DISPATCH-READINESS
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| current host | `NO_GO / FIXED_STORE` | v3 `da914d27…a1b1ad`, provisioning `bbed3cdd…1a172` |
+| wrapper 구현 | `REJECT_NOW` | external store/time/revocation/durable CAS 없이 새 권위 사실 없음 |
+| 기존 queue | `REJECT_DIRECT_REUSE` | payload triad linking 및 registry/parser/expected-title 누출 |
+| successor 설계 | `ADOPT_REVISED_ORDER` | CSPRNG task-ID 재결속 → read-only preflight → inactive staging → lease issue → capability+fetch CAS → result freeze |
+| 결과 회계 | `PRECOMMITTED / NONE_ACTUAL` | `P=0/80`, `T=0/40`, `J=0/40`, `D=null`, `R=0`, `F=0/40` |
+| 외부 blocker | `PENDING_OWNER` | immutable trust store와 별도 mutable durable CAS/principal/dispatcher provisioning |
+| 검증 | `PASS` | 관련 10-suite `195/195`, protected DB/journal `6/6` exact |
+| semantic/P1 | `NO_GO` | actual authority와 final attestation 전 metric·BM25/gold-lite/reranker/NIL 금지 |
+| Goal | `ACTIVE / NOT_COMPLETE` | 외부 state provision 뒤 zero-result opaque-ID rebinding precommit부터 재개 |
+
+상세: [`P0_DUAL_BLIND_EXTERNAL_AUTHORITY_DISPATCH_READINESS_REVIEW_20260903_KO.md`](P0_DUAL_BLIND_EXTERNAL_AUTHORITY_DISPATCH_READINESS_REVIEW_20260903_KO.md)
+
+## IMP-20260903-P0-PRESENTED-DUAL-BLIND-CAMPAIGN-PRECOMMIT-V1
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| result-free precommit | `ADOPT_COMPONENT_ONLY` | 새 campaign 40×3, primary 80·reserve 40·total 120; 과거 result 입력 0 |
+| blind projection | `PASS_STRUCTURAL_ONLY` | fixed guideline, private map 분리, opaque-ID order·strict task allowlist; 실제 dispatch isolation은 false |
+| reviewer/key separation | `PASS_DECLARED_STRUCTURE` | global actor/key/fingerprint/principal/pin distinct, input별 3-way group distinct; 외부 사실성은 미검증 |
+| disagreement/statistics | `PRECOMMITTED / NOT_ESTIMABLE` | ITT40·pair40·final40, `D=null`; primary `80/80` 동결 뒤 canonical 불일치만 D |
+| parent replay | `PASS_SEPARATE_IMPLEMENTATION` | producer import 0, manifest literal, upstream 16/32/32 MiB, child receipt·signature math 재생 |
+| actual/authority | `NO_GO / NONE` | `P=0/80`, `T=0/40`, `J=0/40`, `F=0/40`, source/context credit 0/40·0/20 |
+| 검증 | `PASS` | focused `21/21`, adjacent `65/65`, P0 `705/705`, runtime refs 0, endpoint `6/6` |
+| 다음 gate | `PENDING` | external keys/trust/lease → isolated dispatch → primary80 → D adjudication → final40 |
+
+상세: [`P0_PRESENTED_DUAL_BLIND_REVIEW_CAMPAIGN_PRECOMMIT_V1_REVIEW_20260903_KO.md`](P0_PRESENTED_DUAL_BLIND_REVIEW_CAMPAIGN_PRECOMMIT_V1_REVIEW_20260903_KO.md)
+
+## IMP-20260903-P0-PRESENTED-NEUTRAL-REVIEW-SIGNATURE-MATH-V1
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| signature math | `ADOPT_COMPONENT_ONLY` | 네 role/purpose/domain, exact P-256 low-S와 provider-fixed CNG |
+| raw binding | `PASS_PRESENTED_INPUT_ONLY` | pin→subject→payload raw/artifact SHA와 envelope projection |
+| parent replay | `PASS_SEPARATE_IMPLEMENTATION` | producer import 0, child receipt 전체 재구성, CNG 재실행 |
+| semantic payload | `NO_PROMOTION` | work/sense/alias/metric/gate/actual/action 필드 recursive 거부; payload 의미 자체는 미검증 |
+| key/authority | `NO_GO` | 같은 물리 키 4역할 가능, external provisioning·identity·independence·time/revocation/replay 미검증 |
+| review/statistics | `NO_GO / NONE` | single signature는 review evidence 아님, quorum/adjudication/accounting 미결속, actual 0/40 |
+| 검증 | `PASS` | focused `19/19`, adjacent `69/69`, P0 `684/684`, runtime refs 0, endpoint `6/6` |
+| 다음 gate | `PENDING` | external distinct keys/roster → trusted state/lease → 새 dual-blind precommit → actual 40/40 |
+
+상세: [`P0_PRESENTED_NEUTRAL_REVIEW_SIGNATURE_MATH_V1_REVIEW_20260903_KO.md`](P0_PRESENTED_NEUTRAL_REVIEW_SIGNATURE_MATH_V1_REVIEW_20260903_KO.md)
+
+## IMP-20260903-P0-PRESENTED-NEUTRAL-REVIEW-ACCOUNTING-V1
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| terminal accounting | `ADOPT_COMPONENT_ONLY` | 40 input exactly-once `JUDGED/UNAVAILABLE/UNJUDGED` |
+| upstream lineage | `PASS_PRESENTED_BINDING` | expected plan/precommit pins, producer predecessor replay, standalone plan→unreviewed 독립 결속 |
+| gold/span | `PASS_STRUCTURAL_ONLY` | whole-line dual span·exact relation, definition 4,096, 65 수용, 5,041 review-domain 상한 |
+| null semantics | `PASS` | unavailable/unjudged gold·TP·FP·FN null, JUDGED empty gold만 0 |
+| denominators | `PASS_PRESENTED_ACCOUNTING` | ITT/context/full-payload/judged-subset/all-input exact; partial all-input null |
+| human/gold truth | `NO_GO` | reviewer identity·독립성·blinding·판정·gold factuality는 모두 false |
+| 검증 | `PASS` | focused `25/25`, adjacent `62/62`, P0 `665/665`, manifest exact, endpoint `6/6` |
+| actual 연결 | `NO_GO` | actual review 0/40, credit 0/40·0/20, metrics/P0/production/full scan 금지 |
+
+상세: [`P0_PRESENTED_NEUTRAL_REVIEW_ACCOUNTING_V1_REVIEW_20260903_KO.md`](P0_PRESENTED_NEUTRAL_REVIEW_ACCOUNTING_V1_REVIEW_20260903_KO.md)
+
+## IMP-20260903-P0-PRESENTED-BATCH-EXACT-ACCOUNTING-V1
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| exact 40 accounting | `ADOPT_COMPONENT_ONLY` | V2 order→bridge→precommit→one-attempt result/receipt→unreviewed inventory |
+| ITT·disposition | `PASS_PRESENTED_ACCOUNTING` | 40 고정, profile 10×4, 5-state 합 40, `CORE_ERROR` 포함, retry/replacement/backfill/spill false |
+| independent replay | `PASS_NON_ERROR_ONLY` | standalone parent가 payload부터 neutral core 1:N 결과를 재생; producer/core import 0 |
+| error truth | `PRESENTED_ONLY / NO_GO` | fully resealed reported error는 회계만 수용, factuality·runtime authority false |
+| review | `SEALED_UNREVIEWED_ONLY` | observation unit + 모든 40개 full-payload missed-span unit, human reviewed 0 |
+| metrics | `NOT_ESTIMABLE_PRESENTED_ACCOUNTING_ONLY` | sampling unit lineage, inferential/complete-case/observation-row metric 금지 |
+| 검증 | `PASS` | focused `22/22`, adjacent `150/150`, P0 `640/640`, manifest exact, endpoint `6/6` |
+| actual 연결 | `NO_GO` | external owner/frame/runtime/code authority와 exhaustive review 전 credit·route·packet·ledger 금지 |
+
+상세: [`P0_PRESENTED_BATCH_EXACT_ACCOUNTING_V1_REVIEW_20260903_KO.md`](P0_PRESENTED_BATCH_EXACT_ACCOUNTING_V1_REVIEW_20260903_KO.md)
+
+## IMP-20260903-P0-FULL-ELIGIBLE-SAMPLING-FRAME-V2
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| full census serialization | `ADOPT_COMPONENT_ONLY` | scope/census/frame/seed/plan canonical bytes와 별도 self-hash binding |
+| stratification | `PASS_PRESENTED_INPUT_ONLY` | derived profile×platform×UTC day, quota 10×4, hard underfill/no spill/no replacement |
+| lineage | `PASS_STRUCTURAL_REPLAY` | root canonical minimum, same-root commitment, cross-stratum·mixed rootless 거부 |
+| semantics | `ABSENT_BY_CONTRACT` | title/body/surface/alias/`아생갤`/gold/target/parser extra field 거부 |
+| nominal probability | `CONDITIONAL_ONLY / NOT_ESTIMABLE_ACTUAL` | gcd-reduced `n_h/N_h`; external population completeness·factual eligibility 미검증 |
+| parent replay | `PASS_SEPARATE_IMPLEMENTATION` | producer/`llm_batch` import 0, raw-byte independent recomputation, monkeypatch 비영향 |
+| 검증 | `PASS` | focused `18/18`, adjacent `128/128`, P0 `618/618`, manifest exact, endpoint `6/6` |
+| actual 연결 | `NO_GO` | batch accounting은 별도 component로 구현; signed owner precommit·external enumeration/beacon·A frame·review/protocol/ledger 필요 |
+
+상세: [`P0_FULL_ELIGIBLE_SAMPLING_FRAME_V2_REVIEW_20260903_KO.md`](P0_FULL_ELIGIBLE_SAMPLING_FRAME_V2_REVIEW_20260903_KO.md)
+
+## IMP-20260903-P0-PRESENTED-CAPTURE-NEUTRAL-OBSERVATION-CORE
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| COMMUNITY presented text core | `ADOPT_COMPONENT_ONLY` | exact capture contract와 all-line definition grammar, neutral 0:N observation |
+| official/OCR/generic | `UNSUPPORTED_PROFILE` | owner-pinned adapter·wire/media/engine/transcript lineage 미구현 |
+| semantic safety | `PASS_NEUTRAL_ONLY` | 아생갤 포함 claim·work/sense/alias target·route·credit field 없음 |
+| scope/Unicode defense | `PASS` | mixed context, 문장부호, Cc/Cf/Cs/Zl/Zp, NFD/BOM/NUL/CR 거부 |
+| parent replay | `PASS_SEPARATE_IMPLEMENTATION_ONLY` | core import 0, independent manifest pin, scalar/reseal/inventory mutation 거부 |
+| code/runtime truth | `NO_GO` | behavior manifest일 뿐 code identity·same-process isolation·dependency closure 아님 |
+| 검증 | `PASS` | focused `15/15`, adjacent `80/80`, P0 `600/600`, compile, endpoint `6/6` |
+| actual 연결 | `NOT_IMPLEMENTED` | full frame·batch/exhaustive review·protocol/sandbox/ledger/packet successor 필요 |
+
+상세: [`P0_PRESENTED_CAPTURE_NEUTRAL_OBSERVATION_CORE_REVIEW_20260903_KO.md`](P0_PRESENTED_CAPTURE_NEUTRAL_OBSERVATION_CORE_REVIEW_20260903_KO.md)
+
+## IMP-20260903-P0-EXACT-ENVELOPE-PROJECTOR-SELECTION-V2
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| exact-envelope projection | `ADOPT_COMPONENT_ONLY` | 정확히 1개 전체 문서 explicit-definition 또는 generic UNKNOWN만 허용 |
+| semantic overclaim | `CLOSED` | mention·`아생갤` 작품/갤러리 추정·target ID는 claim 없이 `PARSER_ERROR` |
+| surrounding-context laundering | `CLOSED` | producer/parent가 각각 `start=0`, `end=len(document)`, entry 1개 검증 |
+| parent replay | `PASS_PRESENTED_PAYLOAD_ONLY` | claim·terminal·dual span witness·class·order 독립 재계산; code/runtime authority 아님 |
+| selection V1 | `ARCHIVAL_COMPATIBLE_ONLY` | v1 schema/algorithm과 direct helper 기본 의미 보존, route completion 금지 |
+| selection V2 | `PASS_SOURCE_FIRST_ONE_CREDIT` | source별 대표 1개 후 rank, 1:N quota inflation과 swap/downgrade 거부 |
+| 검증 | `PASS` | focused `44/44`, adjacent `120/120`, P0 `585/585`, compile, endpoint `6/6` |
+| actual source parser | `NOT_IMPLEMENTED / NO_GO` | external source·sandbox·closure·ledger·owner authority 뒤 별도 successor 필요 |
+
+상세: [`P0_EXACT_ENVELOPE_PROJECTOR_AND_SELECTION_V2_REVIEW_20260903_KO.md`](P0_EXACT_ENVELOPE_PROJECTOR_AND_SELECTION_V2_REVIEW_20260903_KO.md)
+
+## IMP-20260903-P0-WINDOWS-OWNER-POLICY-V3-CNG-REEXECUTION
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| baseline attack | `REPRODUCED_THEN_CLOSED` | coordinated low-S raw envelope+all receipt reseal이 수정 전 `POSITIVE_PROFILE` 통과 |
+| same-snapshot CNG | `PASS_TWO_EXECUTION_CONSISTENCY` | canonical body/raw signature로 fixed bootstrap verifier와 Windows CNG 재실행 |
+| fresh receipt | `PASS_EXACT_CONTRACT_AND_MATCH` | exact keys/self-hash/type/credit/effect 후 producer canonical bytes equality |
+| truth table | `PASS_AFTER_REDTEAM` | attempted/receipt-contract/succeeded/exact-match/composite math 분리 |
+| actual Windows CNG | `PASS_CONTROLLED_AND_ATTACK` | ephemeral signed v3 통과, compiled-key `(r=3,s=4)` coordinated reseal 거부 |
+| current host | `FIXED_STORE / NO_GO` | receipt v2 `da914d27…a1b1ad`, CNG 재실행 미호출, action·mutation 없음 |
+| 검증 | `RELATED_48_PASS / ALL_P0_568_PASS / ENDPOINT_6_OF_6` | compile, deterministic receipts, 중앙 DB·journal 불변 |
+| 잔여 trust | `EXTERNAL_BOUNDARY_REQUIRED` | same-process producer+verifier code, provider provenance, owner provisioning, time/replay/single interval 미검증 |
+
+상세: [`P0_WINDOWS_OWNER_POLICY_V3_CNG_REEXECUTION_REVIEW_20260903_KO.md`](P0_WINDOWS_OWNER_POLICY_V3_CNG_REEXECUTION_REVIEW_20260903_KO.md)
+
+## IMP-20260903-P0-WINDOWS-OWNER-POLICY-V3-SUCCESSOR
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| v3-only preflight | `PASS_REJECTION_ONLY` | v1/v2 hard reject, valid v3도 `POSITIVE_PROFILE / NO_GO` |
+| component predicate | `POSITIVE_REJECTED` | negative와 selected no-explicit-negative presented transcript 모두 거부 |
+| raw signature binding | `PASS_PRIVATE_SAME_CALL` | held raw bytes length/SHA/envelope/artifact를 fixed/bootstrap/contract receipt와 교차검증 |
+| v2/public 호환 | `PASS_UNCHANGED` | 기존 private pair wrapper와 public fixed-store receipt 의미 불변 |
+| red-team debt | `CLOSED_CURRENT_SCOPE` | receipt-only coordinated reseal 차단; same-process producer 교체는 future-positive 선결 debt |
+| 현재 host | `FIXED_STORE / NO_GO` | v3 receipt `1323f951…a2ac`, action·SCM·IPC·launch·mutation 없음 |
+| 검증 | `ALL_P0_564_PASS / ENDPOINT_6_OF_6` | compile, 2회 deterministic receipt, 중앙 DB·journal bytes/SHA 불변 |
+| actual·P1 | `BLOCKED_BY_P0` | credited `0/40`, `0/20`; P0 Exit·production·full scan·Pyserini/reranker/NIL false |
+
+상세: [`P0_WINDOWS_OWNER_POLICY_V3_SUCCESSOR_PREFLIGHT_REVIEW_20260903_KO.md`](P0_WINDOWS_OWNER_POLICY_V3_SUCCESSOR_PREFLIGHT_REVIEW_20260903_KO.md)
+
+## IMP-20260903-P0-ACTUAL-READINESS-BLOCKER-COMPILER
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| zero-input boundary | `PASS` | same-call public preflight 1회, caller receipt/path/key/callback/env selector 없음 |
+| child receipt | `PASS_FAIL_CLOSED` | exact field/type/stage/blocker/projection/hash; forged/resealed/exception outer blocker 반영 |
+| authority 의미 | `PERMANENT_NO_GO_V1` | all-green/self-hash/synthetic도 authority·P0·production·action false, credit 0 |
+| 40+20 grain | `PASS_CONTRACT` | source selected unit 40(profile 10×4), A sampling unit 20; raw row/event와 분리 |
+| denominator | `PASS_CONTRACT` | coverage all-20, terminal accuracy JUDGED-only, worst-case all-20 |
+| endpoint 보호 | `POINT_IN_TIME_PRE_POST_ONLY` | 중앙 DB 1+publication journal 5 inventory/bytes/mtime/SHA 일치; transient/continuous/runtime 증거 아님 |
+| red-team debt | `CLOSED_CURRENT_SCOPE` | service projection 유실, v1 오표기, empty snapshot/mtime false-positive, child 원인 누락 수정 |
+| 검증 | `FOCUSED_22_PASS / ALL_P0_531_PASS / ENDPOINT_6_OF_6` | compile, deterministic receipt, narrow noninterference audit PASS |
+| 다음 gate | `EXTERNAL_OWNER_PROVISIONING_REQUIRED` | signed native observer·six-category watch·OS write deny·policy/annotation authority 필요 |
+| actual·P1 | `BLOCKED` | credited `0/40`, `0/20`; actual 40+20과 Pyserini/gold-lite/reranker/NIL 미시작 |
+
+상세: [`P0_ACTUAL_READINESS_BLOCKER_COMPILER_REVIEW_20260903_KO.md`](P0_ACTUAL_READINESS_BLOCKER_COMPILER_REVIEW_20260903_KO.md)
+
+## IMP-20260902-P0-WINDOWS-OWNER-PROVISIONING-PREFLIGHT-CANDIDATE
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| zero-input API | `PASS` | path/key/SID/PID/receipt 입력과 environment/shell selector 없음 |
+| fixed-store/v2 binding | `PASS_COMPONENT` | outer/contract/bootstrap truth table·raw/body/projection 교차검증, v1 SCM-before reject |
+| SCM configuration | `PASS_COMPONENT` | own-process, demand-start, normal error, LocalSystem, restricted SID type, exact quoted no-argv ImagePath |
+| held image identity | `PASS_COMPONENT` | final volume-GUID path, volume/file ID, SHA, single-link/non-reparse/unnamed stream, pre/post stability |
+| current host | `NO_GO_FIXED_STORE` | fixed store/service/PE 부재, UMCI off; receipt `bbed3cdd…51a172` |
+| native/code-integrity/provider/time | `NOT_VERIFIED` | process token/resource/Authenticode/active WDAC/loaded module/catalog/time/revocation/signed observer 필요 |
+| authority·운영 | `NO_GO / NONE_SHADOW_ONLY` | actual `0/40`, `0/20`; P0 Exit·production·full scan false |
+
+상세: [`P0_WINDOWS_OWNER_PROVISIONING_PREFLIGHT_CANDIDATE_REVIEW_20260902_KO.md`](P0_WINDOWS_OWNER_PROVISIONING_PREFLIGHT_CANDIDATE_REVIEW_20260902_KO.md)
+
+## IMP-20260902-P0-WINDOWS-OWNER-DEPLOYMENT-PROJECTION-V2
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| v1 호환 | `PASS` | v1 body/signature/receipt exact 의미 보존, v2 body/signature/anchor/receipt 별도 domain |
+| native verifier projection | `ADOPT_CONTRACT_ONLY` | fixed service name+결정적 SID+LocalSystem, PE path/volume/file/hash, bootstrap resource, Authenticode SPKI |
+| code integrity | `ADOPT_CONTRACT_ONLY` | WDAC policy/base ID·policy SHA·UMCI required, 실제 active enforcement는 미관측 |
+| CNG provider | `ADOPT_CONTRACT_ONLY` | ordered loaded bcrypt/bcryptprimitives identity·catalog signer projection, 실제 process module handle 미관측 |
+| red-team 수정 | `CLOSED` | policy ACL verifier SID와 deployment service SID split, v1 downgrade, self-rehash, signature/catalog 혼동 |
+| receipt 의미 | `PRESENTED_MATERIAL_ONLY` | 공개 self-hash는 observer authenticity/freshness가 아니며 live/authority/actual/approval은 false |
+| 검증 | `FOCUSED_34_PASS / ADJACENT_56_PASS / ALL_P0_509_PASS / NONINTERFERENCE_6_OF_6` | compile/diff check PASS, 결정적 service SID OS 명령 일치 |
+| 다음 tranche | `ZERO_INPUT_HOST_PREFLIGHT` | SCM/token/held image/resource/WDAC/UMCI/loaded module/catalog membership/revocation을 fail-close 관측 |
+| actual·측정 | `ACTUAL_0_OF_40_0_OF_20 / METRICS_NOT_ESTIMABLE / REVIEW_LOCKED` | external signed v2 provisioning 전 actual/P0/P1 이후 금지 |
+
+상세는 [`P0_WINDOWS_OWNER_DEPLOYMENT_PROJECTION_V2_REVIEW_20260902_KO.md`](P0_WINDOWS_OWNER_DEPLOYMENT_PROJECTION_V2_REVIEW_20260902_KO.md)를 따른다.
+
+## IMP-20260902-P0-WINDOWS-BOOTSTRAP-POLICY-SIGNATURE-CANDIDATE
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| transcript | `PASS_COMPONENT` | 9개 strict envelope field, exact held body SHA, canonical JSON, single SHA-256 |
+| signature math | `BOOTSTRAP_POLICY_SIGNATURE_MATH_CANDIDATE_PASS` | Windows CNG P-256, raw 64-byte low-S P1363, 컴파일 X/Y·SPKI fingerprint exact 비교 |
+| key source | `CANDIDATE_ONLY` | 정책이 key를 선택하지 못하지만 컴파일 후보도 owner 승인·독립 provision된 trust root는 아님 |
+| fixed-store binding | `PASS_COMPONENT` | 같은 held body/signature raw를 호출하고 child receipt self-hash·truth table·raw/key/provider/contract 재검증 |
+| red-team 수정 | `CLOSED` | BCrypt Python 예외 raw 누출, forged child receipt 상위 math success 승격, exact GUID assertion 누락 |
+| 잔여 신뢰 | `CODE_AUTHORITY_NO_GO` | trusted binary/service/TPM key deployment, Authenticode/WDAC, native provider provenance, rollback state 없음 |
+| 검증 | `FOCUSED_47_PASS / ADJACENT_117_PASS / ALL_P0_497_PASS / NONINTERFERENCE_6_OF_6` | 전체 P0 `32.981s`, compile/diff check PASS |
+| actual·측정 | `ACTUAL_0_OF_40_0_OF_20 / METRICS_NOT_ESTIMABLE / REVIEW_LOCKED` | math component를 owner authority나 semantic evidence로 승격하지 않음 |
+
+상세는 [`P0_WINDOWS_BOOTSTRAP_POLICY_SIGNATURE_CANDIDATE_REVIEW_20260902_KO.md`](P0_WINDOWS_BOOTSTRAP_POLICY_SIGNATURE_CANDIDATE_REVIEW_20260902_KO.md)를 따른다. 다음 gate는 실제 owner 승인 key와 signed genesis policy의 독립 trusted deployment다.
+
+## IMP-20260902-P0-WINDOWS-EXTERNAL-PUBLIC-KEY-PIN-CANDIDATE
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| public API 주입면 | `PASS` | raw pin/receipt/expected SID·hash·file identity/trusted callback·state를 받지 않고 fixed-name store path만 연다 |
+| fixed inventory·held bytes | `ADOPT_COMPONENT_ONLY` | pin/store/all ancestors, exact inventory, single-link/non-reparse/ADS 거부, same-call handle bytes→CNG/`OWNER_STATE` |
+| effective-token ACL | `CANDIDATE_PASS` | thread token 우선, `ERROR_NO_TOKEN` 한정 process fallback, file/store mutation right별 deny와 owner membership false. exact ACE owner policy는 아님 |
+| signed root binding | `PASS_COMPONENT` | packet 및 protected parent path·serial·file ID exact, category effective path·parent volume, pre/post held identity와 parent overlap 거부 |
+| cleanup·watch | `PASS_COMPONENT` | store/parent watcher clean invariant, token·watch·`LocalFree` 모두 정리 시도, primary 오류 보존 |
+| evidence | `CONTROLLED_SUCCESS / ACTUAL_FAIL_CLOSE` | 정상 success는 low-level hold mock. 실제 Windows는 current-user-owned store와 signed-parent sibling store를 거부 |
+| external authority | `NO_GO` | independent owner SID/ACE policy, verifier 밖 key, external positive provisioning, time/revocation/durable nonce가 없음 |
+| 검증 | `FOCUSED_14_PASS / ADJACENT_73_PASS / ALL_P0_453_PASS / NONINTERFERENCE_6_OF_6` | focused `3.791s`, adjacent `11.993s`, 전체 `32.457s`, compile PASS |
+| actual·측정 | `ACTUAL_0_OF_40_0_OF_20 / METRICS_NOT_ESTIMABLE / REVIEW_LOCKED` | component unittest를 actual semantic evidence나 owner authority로 승격하지 않음 |
+
+상세는 [`P0_WINDOWS_EXTERNAL_PUBLIC_KEY_PIN_CANDIDATE_REVIEW_20260902_KO.md`](P0_WINDOWS_EXTERNAL_PUBLIC_KEY_PIN_CANDIDATE_REVIEW_20260902_KO.md)를 따른다. 다음 gate는 독립 owner SID/ACE policy와 verifier 밖 key로 실제 read-only store를 provision한 positive OS fixture다.
+
+## IMP-20260902-P0-EXTERNAL-TRUST-STATE-IDENTITY
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| exact-clone exploit | `REPRODUCED / CLOSED` | 기존 `seal_id → secret` private registry에서 `dataclasses.replace(state)` clone이 genuine 57-byte store key를 소비하는 반례를 재현하고 제거 |
+| state identity | `TRUST_STATE_OBJECT_IDENTITY_PASS` | `dict[id(state)] + weakref(original)`, exact type·object identity 확인, 별도 random seal과 issuer PID·receipt/context/key/nonce 결속 |
+| exact-once | `ADOPT_COMPONENT_ONLY` | lock 내부 identity 확인+atomic pop-before-validate, genuine 실패도 burn, clone/fake miss는 genuine state를 소모하지 않음 |
+| lifecycle | `BEST_EFFORT_COMPONENT_ONLY` | success/failure/discard/GC에서 registry 제거와 internal key/seal bytearray zeroing. 반환 bytes와 Python allocator 전체 secure erasure 주장은 false |
+| external trust | `PROCESS_LOCAL_KEY_HANDOFF_ONLY / EXTERNAL_TRUST_AUTHORITY_NO_GO` | caller-presented store/nonce 범위만 검증. immutable external pin, trusted time/revocation, rollback·power-loss durable nonce는 미검증 |
+| 검증 | `FOCUSED_37_PASS / ADJACENT_137_PASS / ALL_P0_439_PASS / NONINTERFERENCE_6_OF_6` | focused `2.974s`, trust/runtime `62/62` (`6.605s`), direct adjacent `137/137` (`10.436s`), 전체 P0 `439/439` (`28.243s`) |
+| actual·측정 | `ACTUAL_0_OF_40_0_OF_20 / METRICS_NOT_ESTIMABLE / REVIEW_LOCKED` | component unittest를 actual evidence나 owner authority로 승격하지 않음 |
+
+상세는 [`P0_EXTERNAL_TRUST_STATE_IDENTITY_HARDENING_REVIEW_20260902_KO.md`](P0_EXTERNAL_TRUST_STATE_IDENTITY_HARDENING_REVIEW_20260902_KO.md)를 따른다. 다음 P0은 verifier 밖 owner signing key와 immutable read-only public-key pin·owner SID/ACL, 이어 rollback-resistant trusted time/revocation/durable nonce state plane이다.
+
+## IMP-20260902-P0-EXTERNAL-OWNER-ONESHOT-STATE
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| raw3→state 발급 | `ADOPT_COMPONENT_ONLY` | canonical parse·self-hash·cross-binding·CNG 검증 성공 뒤에만 private state를 발급 |
+| state identity | `OWNER_STATE_PROCESS_LOCAL_HANDOFF_PASS` | `dict[id] + weakref(original)`, recursive freeze, random seal, issuer PID와 fixed context projection 결속 |
+| exact-once | `ADOPT_COMPONENT_ONLY` | lock 내부 identity 확인+atomic pop, 16-way `1 success / 15 already-consumed`; genuine 실패도 burn |
+| public receipt 재입력 | `REJECTED` | public supervisor에 receipt/state/seal 입력 없음. clone·namespace·serialized receipt가 genuine state를 소비하지 못함 |
+| replay·authority | `ARTIFACT_REPLAY_NO_GO / EXTERNAL_PROVISIONING_NO_GO` | 동일 raw 재검증은 새 state 발급 가능. process-local handoff를 durable replay나 external owner authority로 승격하지 않음 |
+| lifecycle | `BEST_EFFORT_COMPONENT_ONLY` | success/failure/discard/GC buffer zero 확인. Python allocator 전체 secure erasure 주장은 false |
+| 발견 debt | `CLOSED_BY_TRUST_STATE_IDENTITY_SUCCESSOR` | 기존 external-trust seal-id state의 exact dataclass clone 소비를 재현한 뒤 [`P0_EXTERNAL_TRUST_STATE_IDENTITY_HARDENING_REVIEW_20260902_KO.md`](P0_EXTERNAL_TRUST_STATE_IDENTITY_HARDENING_REVIEW_20260902_KO.md)에서 object identity로 교체 |
+| 검증 | `FOCUSED_25_PASS / ADJACENT_91_PASS / ALL_P0_432_PASS / NONINTERFERENCE_6_OF_6` | `6.688s / 10.531s / 27.928s`, compile PASS, receipt `6033c6d0…98204e` |
+| actual·측정 | `ACTUAL_0_OF_40_0_OF_20 / METRICS_NOT_ESTIMABLE / REVIEW_LOCKED` | component unittest를 actual evidence로 승격하지 않음 |
+
+상세는 [`P0_EXTERNAL_OWNER_ONESHOT_STATE_REVIEW_20260902_KO.md`](P0_EXTERNAL_OWNER_ONESHOT_STATE_REVIEW_20260902_KO.md)를 따른다.
+
+## IMP-20260902-P0-EXTERNAL-OWNER-ASYMMETRIC-SIGNATURE
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| ECDSA 수학 | `ASYMMETRIC_SIGNATURE_MATH_PASS` | CNG P-256/SHA-256, exact X/Y·raw low-S `r||s`, signature mismatch/tamper fail-close |
+| provider 선택 | `ADOPT_COMPONENT_ONLY` | `Microsoft Primitive Provider` 고정·receipt 기록. DLL/native provider provenance는 false |
+| pin fingerprint | `ADOPT_COMPONENT_ONLY` | RFC 5480 DER-SPKI SHA-256을 X/Y에서 재계산 |
+| preauthorization 결속 | `ADOPT_COMPONENT_ONLY` | exact canonical bytes SHA, artifact SHA, domain/context/nonce/owner principal·anchor를 서명 material에 결속 |
+| external owner trust | `PRESENTED_PIN_ONLY / EXTERNAL_PROVISIONING_NO_GO` | complete attacker pin+key+preauth substitution도 math true 가능. immutable pin ACL/owner SID와 verifier 밖 key 미제공 |
+| 다음 통합 | `SUPERSEDED_BY_OWNER_STATE_HANDOFF_PASS` | raw 3종 same-call/private object-identity state는 후속 tranche에서 구현. artifact replay와 external authority는 여전히 NO-GO |
+| 상위 gate | `TRUSTED_TIME_REVOCATION_DURABLE_NONCE_NO_GO / PARSER_SANDBOX_NO_GO` | trusted time, rollback 방지, owner root/USN, sandbox/native/semantic parser 미완료 |
+| 검증 | `FOCUSED_15_PASS / ADJACENT_78_PASS / ALL_P0_422_PASS / NONINTERFERENCE_6_OF_6` | `3.970s / 9.240s / 25.454s`, compile PASS, receipt `6033c6d0…98204e` |
+| actual·측정 | `ACTUAL_0_OF_40_0_OF_20 / METRICS_NOT_ESTIMABLE / REVIEW_LOCKED` | component unittest를 actual evidence로 승격하지 않음 |
+
+상세는 [`P0_EXTERNAL_OWNER_ASYMMETRIC_SIGNATURE_REVIEW_20260902_KO.md`](P0_EXTERNAL_OWNER_ASYMMETRIC_SIGNATURE_REVIEW_20260902_KO.md)를 따른다.
+
+## IMP-20260902-P0-PARSER-PYCACHE-SOURCE-OBSERVATION
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| isolated pycache | `ADOPT_COMPONENT_ONLY` | local held `LocalAppData` anchor 아래 unique empty root, create/resume/exit empty inventory, handle disposition cleanup. MSIX redirection observed; external owner pin은 아님 |
+| source collision inventory | `ADOPT_COMPONENT_ONLY` | `src`/`llm_batch`/`grounding`, source/bytecode/extension suffix와 fixed import graph를 exact fail-close |
+| directory watch | `ADOPT_COMPONENT_ONLY` | source parent·source subtree·cache subtree pending request를 pre→post에 유지하고 event/overflow/gap/cleanup failure를 거부. filesystem 비간섭 추론은 false |
+| 좁은 closure | `ADOPT_BOUNDED_PROJECT_SOURCE_LOAD_CANDIDATE_CLOSURE_COMPONENT_ONLY` | 정상 component E2E에서 `bounded_project_source_load_candidate_closure_verified=true` |
+| 상위 closure·sandbox | `PARSER_DEPENDENCY_CLOSURE_NO_GO / PARSER_SANDBOX_NO_GO` | runtime/stdlib/native/loaded-image/external-owner pin, AppContainer/network/write deny와 semantic parser가 없음 |
+| 검증 | `FOCUSED_48_PASS / ALL_P0_407_PASS / NONINTERFERENCE_6_OF_6` | focused `48/48` (`4.500s`), 전체 P0 `407/407` (`22.218s`), compile PASS, receipt `6033c6d0…98204e`, fixture `d94e1de3…545c`, cache anchor `item_count=0` |
+| actual·측정 | `ACTUAL_0_OF_40_0_OF_20 / METRICS_NOT_ESTIMABLE / REVIEW_LOCKED` | component unittest를 actual evidence나 의미 품질로 승격하지 않음 |
+
+상세는 [`P0_PARSER_PROCESS_PYCACHE_SOURCE_OBSERVATION_REVIEW_20260902_KO.md`](P0_PARSER_PROCESS_PYCACHE_SOURCE_OBSERVATION_REVIEW_20260902_KO.md)를 따른다.
+
+## IMP-20260902-P0-PARSER-HANDLE-PROVENANCE
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| launch file identity | `ADOPT / HANDLE_BOUND` | 6개 launch file의 held-handle bytes/SHA, volume serial, 128-bit file ID, volume-GUID final path·metadata를 v2 launch material에 결속 |
+| parent namespace | `ADOPT_COMPONENT_ONLY` | drive root→즉시 부모 directory handle을 유지하고 reparse·volume/직접-descendant 이탈을 거부. watcher 없는 swap/restore 전체 증명은 아님 |
+| suspended process | `ADOPT_COMPONENT_ONLY` | PID·creation FILETIME, reported image path reopen file ID/SHA, Job membership, launch revalidation을 ResumeThread 전에 확인 |
+| project source | `CANDIDATE_MANIFEST_EXACT / CLOSURE_NO_GO` | 필수 `.py` 4개는 exact이나 정상 `.pyc`, import collision inventory, namespace watch continuity가 없어 load candidate closure는 false |
+| red-team·회귀 | `GO_COMPONENT_CONTRACT_ONLY` | image mismatch·suspend count·rename lock·call order 차단, sandbox `15 PASS`, 전체 P0 `384 PASS`, compile/diff check PASS, DB/journal `6/6` 불변 |
+| actual/P0 | `NO_GO / 0_OF_40 / 0_OF_20` | semantic parser, AppContainer/network/write deny, external owner/runtime authority와 dependency closure가 없음 |
+| 다음 조치 | `OPEN` | isolated empty pycache prefix → collision inventory → source/parent/cache watcher → AppContainer/LPAC → 실제 parser |
+
+상세는 [`P0_PARSER_PROCESS_HANDLE_PROVENANCE_REVIEW_20260902_KO.md`](P0_PARSER_PROCESS_HANDLE_PROVENANCE_REVIEW_20260902_KO.md)를 따른다.
+
+## IMP-20260902-P0-PARSER-PROCESS-JOB-COMPONENT
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| capture byte protocol | `ADOPT / 10 PASS` | path-less canonical JSON+LF, 40개/byte/base64/SHA bounds, child diagnostic-only, parent exact cross-binding |
+| Windows child process | `ADOPT_COMPONENT_ONLY / 10 PASS` | fixed base Python·worker·protocol, restricted primary token readback, Job assign-before-resume, stdio 3-handle list, timeout cleanup |
+| red-team | `P0_FINDINGS_CLOSED` | stdout self-claim, unassigned suspended orphan, child-controlled weaker-token retry를 제거. generic post-create failure receipt도 broad false로 고정 |
+| 회귀·비간섭 | `GO_COMPONENT_CONTRACT_ONLY` | focused `20 PASS`, 전체 P0 `379 PASS`, 신규 compile PASS, 중앙 DB/journal `6/6` 불변 |
+| actual parser/runtime | `PARSER_SANDBOX_NO_GO / 0_OF_40 / 0_OF_20` | worker는 hash probe이고 AppContainer/network/write deny·sealed dependency closure·실제 source-profile parser가 없음 |
+| 다음 조치 | `OPEN` | frozen bundle/image identity → AppContainer/LPAC → network/root deny → broker/handle/namespace E2E → 실제 parser v3 provenance |
+
+상세는 [`P0_PARSER_PROCESS_JOB_COMPONENT_REVIEW_20260902_KO.md`](P0_PARSER_PROCESS_JOB_COMPONENT_REVIEW_20260902_KO.md)를 따른다.
+
+## IMP-20260902-P0-EXTERNAL-TRUST-RUNTIME-WITNESS
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| external trust-store executor | `ADOPT_COMPONENT_ONLY / 30 PASS` | exact store·store-key HMAC·held ledger·`O_EXCL` nonce·one-shot key state 구현. caller-selected HMAC anchor라 external trust/time/revocation authority는 false |
+| Windows runtime witness | `ADOPT_COMPONENT_ONLY / 14 PASS` | parent/root watcher PRE-first, QPC·identity/inventory·USN·current-thread probe·swap/restore 차단. 현 호스트 USN `error_code=5×6`; process/job runtime은 false |
+| external/runtime 결합 supervisor | `ADOPT_COMPONENT_ONLY / 11 PASS` | trust/runtime one-shot state, child self-hash/known schema, nonce burn, 7단계 combined cross-binding. gate `EXTERNAL_STORE_AND_RUNTIME_WITNESS_EXECUTED_AUTHORITY_NO_GO` |
+| 회귀·비간섭 | `GO_COMPONENT_CONTRACT_ONLY` | 신규 `55 PASS`, direct adjacent `130 PASS`, selected adjacent `440 PASS`, 기존 중앙 DB/journal `6/6` 불변 |
+| actual evidence·credit | `NOT_STARTED / 0_OF_40 / 0_OF_20` | test fixture·local store·Windows observer를 actual/credited로 세지 않음 |
+| P0/운영 | `NO_GO` | owner public-key pin, trusted time/revocation rollback, durable nonce broker, owner root/USN, parser job sandbox 전 `p0_phase_exit=false`, `full_scan_approval=false` |
+
+채택된 다음 순서는 비대칭 owner trust root → trusted time/revocation rollback 방지 → crash/reboot durable cross-process nonce broker → owner-signed root identity/USN broker → parser process Job/AppContainer sandbox → adversarial Windows E2E → owner policy 사전 결속 → actual 40+20이다. Pyserini·gold-lite·retrieval/reranker/NIL A/B는 계속 보류한다. 상세는 [`P0_EXTERNAL_TRUST_AND_RUNTIME_WITNESS_REVIEW_20260902_KO.md`](P0_EXTERNAL_TRUST_AND_RUNTIME_WITNESS_REVIEW_20260902_KO.md)를 따른다.
+
+## IMP-20260901-GROUNDING-RESEARCH-PLAN - 전문가 회의 기반 A/B grounding 개선
+
+| 항목 | 상태 | 근거 / 다음 조치 |
+| --- | --- | --- |
+| 전문가 회의 | `COMPLETE` | 검색·평가, lexicon·데이터, 시스템·MLOps 1·2차 회의와 2026-09-02 공식 프로젝트 최신성·통계 코드 반대검토 완료 |
+| 설계 판정 | `ARCHITECTURE_PLAN_ADOPTED / ACTUAL_POLICY_PENDING` | 규칙 parser+generic fallback, hybrid candidate union, immutable-ID reranker, truth·annotation·inference·publication 4축, temporal snapshot 채택. 실제 accuracy/risk 숫자는 owner 미확정 |
+| 외부 프로젝트 | `ADOPT / ADOPT_COMPONENT_ONLY / DEFER / REJECT` | llama.cpp 기준선 유지, Pyserini P1 offline adapter, ColBERT P2 shadow, BLINKout/Snorkel/Cleanlab component-only. SPLADE·W&B 기각, vLLM/SGLang defer |
+| 데이터 전략 | `CONTRACT_FIXTURE_GO / ACTUAL_P0_NOT_STARTED / GOLD_LITE_PLANNED` | 합성 P0 40 claim+20 context 계약은 완료했으나 실제 40+20 사람 검토는 `0/40`, `0/20`. P1 `50/30/70+challenge30`, production 전 `120/120/200`·다중 주석·299 auto-publish 분모는 미시작 |
+| Deep Research | `DEVSPACE_READY / USER_CONFIRMED_NO_SUBMISSION / HARNESS_SETTLEMENT_BLOCKED` | exact root·MCP/Funnel·Oracle 로그인은 준비됐다. 사용자는 미제출을 확인했지만 automation signature 호환성 repair가 dirty 정본 때문에 중단돼 새 제출 금지 |
+| 구현 | `P0_MEASUREMENT_CONTRACT_PATCHED / FOCUSED_34_PASS` | top-label point/CI 분모 동기화와 전체행/non-abstain 이중 receipt를 구현했다. actual policy v4가 group 최소 30·bootstrap 최소 2,000·interval method를 SHA에 결속하며 미달은 fail-close한다. 두 분모 fixture 성공 경로와 malformed/zero-covered 경로를 검증했다. broader는 선행 label-ledger SHA drift로 테스트 진입 전 blocked |
+| P0 source 계약 | `GO_P0_CONTRACT_FIXTURE_ONLY / FOCUSED_44_PASS / ADJACENT_192_PASS / p0_phase_exit=false` | 합성 source/claim·lineage·방향·4축·fingerprint·receipt·publication source-to-work eligibility·profile/parser·claim kind/direction·status/reason·manifest binding을 구현했다. actual schema와 key-less 구조는 후속 foundation으로 구현됐지만 외부 actual source/parser runtime과 실제 40+20은 미완료 |
+| actual P0 schema foundation | `PASS_ACTUAL_SCHEMA_CONTRACT_EXAMPLE_ONLY / gate_status=ACTUAL_NO_GO / FOCUSED_26_PASS / ADJACENT_237_PASS / AUTHORITY_TRANCHE_DESIGN_ADOPTED` | actual origin의 source snapshot/claim, capture/payload exact span, temporal lineage, 권리 5축, B 4축·candidate cutoff·sensitive/temporal, annotation subject/event chain의 strict contract와 deterministic example을 구현했다. 두 차례 반대검토로 의미 결속·미래 cutoff·중복 sampling unit·subject별 journal 유일성·claim-set 및 전체 annotation decision payload 결속·orphan event 차단을 닫았다. actual source·A context는 `0/40`, `0/20`이라 P0 Exit은 false다. |
+| actual authority v2 foundation | `PASS_ACTUAL_AUTHORITY_SCHEMA_EXAMPLE_ONLY / AUTHORITY_28_PASS / EVENT_BYTES_9_PASS / COMBINED_107_PASS / SELECTED_ADJACENT_221_PASS / gate_status=NO_GO_ACTUAL_P0_NOT_STARTED` | v1 12파일을 archive 보존하고 active 14-file v2에 predecessor head map, parser/checkpoint/manifest v2, 순환 없는 post-run final attestation을 추가했다. event 원문에서 canonical JSONL·file-order prefix closure·rows/bytes/SHA·checkpoint/event chronology·두 head map을 재계산한다. 재회의 PoC의 역전 journal prefix, terminal parser null hash, 과거 checkpoint를 닫았다. HMAC/anchor 수학이 모두 참인 actual-origin bundle도 owner/runtime authority와 credited 40+20을 열지 않는다. |
+| key-less actual packet | `STRUCTURAL_CONTRACT_IMPLEMENTED / A_CONTEXT_18_PASS / ROUTE_27_PASS / PACKET_19_PASS / FOCUSED_64_PASS / SELECTED_ADJACENT_285_PASS / EXAMPLE_BYTES_ONLY / gate_status=NO_GO_ACTUAL_P0_AUTHORITY_NOT_VERIFIED` | 별도 A event, pre-capture input plan, label-blind claim/A-subject seal, exact-one route, profile `10×4`, 13-child+manifest byte inventory와 receipt 재계산을 구현했다. 최종 red-team의 기존 5축과 parser manifest/version provenance substitution, completion=seal equal-timestamp 우회를 닫았다. 구조상 observed 40+20은 controlled test packet일 뿐이며 external actual과 credited count는 `0/40`, `0/20`이다. |
+| A-event raw bytes | `STRUCTURAL_PASS / 13_PASS / CREDIT_0` | A source claim/context/event/seal의 canonical bytes, event chain과 20-head projection을 재계산한다. 21번째 recheck event를 허용하지만 handle/durable/owner/runtime authority는 false다. |
+| packet receipt v2 | `SELF_HASH_AND_PROVENANCE_PASS` | packet receipt가 route/parser/A receipt·seal·source plan·sampling frame·parser manifest/version/launch/capture projection을 직접 노출하고 self-hash한다. authority 승격 필드는 모두 false다. |
+| authority one-way bridge | `STRUCTURAL_PRESENTED_RECEIPT_BINDINGS_ONLY / BRIDGE_24_PASS / AUTHORITY_GRANT_FALSE` | authority v2를 수정하지 않고 parser preauth와 terminal attestation으로 packet v2, A-event, registry event, authority final, Windows composite/root tuple을 결속한다. 하위 validator 실행 provenance는 false이며 HMAC 수학 검증 성공도 external trust나 credit이 아니다. |
+| Windows handle binding | `HANDLE_BINDING_PASS / EXTERNAL_TRUST_NO_GO / WINDOWS_18_PASS` | ancestor/root/총 14개 member handle, volume-GUID final path·volume serial·128-bit file ID·reparse/hardlink/ADS·before/after inventory와 manifest projection exact equality를 확인한다. capture observation/pure bind helper를 분리했으며 caller pin은 외부 owner pin이 아니므로 handle trust는 false다. |
+| owner root preauthorization supplement | `PRESENTED_INTERNAL_STRUCTURE_PASS / OWNER_PREAUTH_22_PASS / EXTERNAL_TRUST_NO_GO` | exact 6 category map, packet/protected root tuple, parser/capture/input/source-plan/sampling provenance, fixed 14-member contract와 watch/write-deny 요구를 pre-capture HMAC material에 결속한다. Unicode serial·category ancestor overlap을 거부하고 observation window/namespace alias는 별도 false projection으로 둔다. caller key/HMAC은 external trust·revocation·nonce 소비가 아니다. |
+| packet-side supervisor execution | `DIRECT_PACKET_EXECUTION_TRACE_PASS / SUPERVISOR_20_PASS / PRIVATE_STATE_BOUND / UNTRUSTED_LOCAL_OBSERVATION` | serialized observation/receipt 없이 Windows capture→packet validate→observation bind→A-event validate를 직접 호출하고 exact 14 raw, A claim `41/30/20/20`, result/step/genesis를 결속한다. raw/result는 private frozen state에 남고 공개 receipt는 detached 사본이다. caller-self measurement와 외부 code/runtime authority 부재 때문에 actual authority는 false다. |
+| authority raw execution | `DIRECT_LOCAL_VALIDATION_PASS / AUTHORITY_RAW_19_PASS / EXTERNAL_TRUST_NO_GO` | authority v2 고정 14 raw와 registry event를 strict parse·exact SHA로 snapshot한 뒤 foundation/event validator를 직접 호출한다. fake GO·nested true·bool-as-int와 presented receipt 승격을 거부한다. |
+| authority-side combined supervisor execution | `DIRECT_LOCAL_AUTHORITY_BRIDGE_PASS / COMBINED_12_PASS / DIRECT_ADJACENT_75_PASS / SELECTED_ADJACENT_385_PASS / EXTERNAL_TRUST_NO_GO` | owner preauth→packet→authority→parser byte 결속→provenance→terminal→final bridge를 같은 호출의 private result로 고정 실행한다. controlled ACTUAL 40+20 fixture와 Windows e2e는 test-only이며 actual·credited count는 0이다. |
+| external P0 filesystem authority | `COMPONENT_IMPLEMENTED / AUTHORITY_PENDING / NO_GO` | caller-selected store key/atomic nonce와 QPC/root-parent watch/USN probe는 신규 tranche에서 구현됐다. independent owner public-key/time/revocation/root pin, durable broker, elevated USN, process/job write deny와 실제 parser runtime은 남아 있다. actual `0/40`, `0/20`이다. |
+| P0 비간섭 | `GO_EXISTING_STATE_READONLY_AUDIT / 6 OF 6 UNCHANGED` | 중앙 Slang DB 1개와 기존 publication journal 5개를 validator 전후 byte/SHA로 비교했다. 실제 parser/runtime 비간섭은 아직 미검증 |
+| 실제 지표 | `null / NOT_ESTIMABLE` | actual gold·fresh pair 미존재. 외부 benchmark와 LLM judge는 production truth가 아님 |
+| 승인 경계 | `UNCHANGED` | 중앙 Slang DB 자동 write, semantic activation, full scan은 `NO-GO / full_scan_approval=false` |
+
+상세 계획: [로컬 LLM grounding 연구 개선 실행 계획](LOCAL_LLM_GROUNDING_RESEARCH_IMPROVEMENT_PLAN_20260901_KO.md)
+
 ## IMP-20260715-SOURCE-LAYOUT - 기능별 패키지·프롬프트 정리
 
 | 항목 | 상태 | 근거 / 다음 조치 |
@@ -101,7 +686,7 @@
 
 | 항목 | 구현 | 실측 | 운영 적용 | 다음 증거 |
 | --- | --- | --- | --- | --- |
-| P3 분모 정책 | actual policy v3가 `top_label_accuracy_denominator`를 payload/SHA에 결속, P3 v18 legacy v2는 호환 유지 | actual policy·자료 없음 | 정확도 수치 생성 금지 | 소유자 정책 확정과 source-backed packet |
+| P3 분모 정책 | 2026-07-12 policy v3 분모 결속은 역사 정본으로 유지하고, 신규 actual은 policy v4에 분모·최소 group·bootstrap 반복·interval method를 결속한다. v2/v3는 저장 정본 호환용이다. | actual policy·자료 없음 | 정확도 수치 생성 금지 | 소유자 v4 정책 확정과 source-backed packet |
 | P4 execution envelope | source-bound trace를 RunSpec·arm·scope/run/index/post와 대조해 batch envelope 재생 | fixture 계약만 | reference-copy 행 KPI 제외 | fresh pair full-expert E2E p50/p95·paired CI |
 | latency 해석 | full-expert 같은 행만 paired bootstrap 비교 | actual p50/p95 `null` | `physical_call_wall_ms_sum`을 E2E로 승격 금지 | 동일 RunSpec runtime readback |
 | 정본 계보 | P2 v8 → P3 v20 → P4 v21 | 집중 회귀 `82/82 PASS` | `REVIEW-LOCKED`, `full_scan_approval=false` | actual DEV/CAL/FROZEN·fresh pair |
@@ -19486,3 +20071,34 @@ Gate: search accounting repair `GO`, Loop617 runtime `GO`, row-level search reco
 | 라이브 반영 | NOT_WIRED | 게이트는 opt-in(기본 no-op). 진행 중 대형 런/판정 비침습 | P1 이후 또는 명시적 승인 시 배선 |
 
 Gate: P0 typed 검색 fail-close `GO(gate-only)`, 라이브 배선 `NOT_WIRED`, `semantic_quality=REVIEW-LOCKED`, `full_scan_approval=false`.
+
+## IMP-20260902-P0-WINDOWS-OWNER-POLICY - exact policy contract·binary ACL
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| policy body/envelope | `verified_component_only` | strict canonical bytes, epoch/predecessor, body/signature artifact와 low-S canonical P1363 구조 | independently pinned bootstrap key로 CNG math 검증 |
+| object identity/layout | `verified_contract_only` | 같은 volume의 fixed 8 role, path/serial/file ID exact, intermediate dirs 포함 | fixed ProgramData/HKLM discovery와 held handle 결속 |
+| exact ACL profile | `verified_contract_only` | standard explicit two-ACE, concrete owner/read masks, generic/inherited/callback/object/extra 거부 | live 8-role+ancestor binary ACL positive fixture |
+| binary ACL reader | `candidate_pass` | held Windows file handle에서 owner/group/control/GetAce projection, current-user fixture는 policy 비교 reject | actual external owner fixture와 watcher 생명주기 통합 |
+| owner anchor | `verified_contract_only` | scope/bootstrap/verifier/object identity/ACL/key/revocation/lifecycle hash-bound | policy→pin→preauth same-call cross-binding |
+| adversarial review | `pass` | 초기 우회축을 회귀로 고정, focused `22/22` | fixed-store/token/broker 단계마다 독립 재회의 |
+| actual provisioning | `no_go` | current limited token, linked elevated token, no external artifact/broker, C: repair needed | 2-account VM/CI 또는 elevated one-time provisioner 필요 |
+| time/revocation/durable nonce | `not_implemented` | signed file만으로 disk rollback 불가 | TPM/LocalSystem/remote broker high-watermark |
+| regression/noninterference | `pass` | adjacent `95/95`, P0 `475/475`, DB/journal `6/6` 불변 | successor integration 뒤 재실행 |
+
+Gate: `OWNER_POLICY_CONTRACT_PASS_BOOTSTRAP_AND_PROVISIONING_NO_GO / ACTUAL_0_OF_40_0_OF_20 / P0_PHASE_EXIT_FALSE / PRODUCTION_NO_GO / full_scan_approval=false`.
+
+## IMP-20260902-P0-WINDOWS-FIXED-STORE - zero-input ProgramData/genesis observer
+
+| 항목 | 상태 | 근거 | 다음 조치 |
+| --- | --- | --- | --- |
+| known-folder selection | `verified_candidate_only` | exact ProgramData GUID, flags 0, null token, no env/registry/caller selector | service/TPM bootstrap과 known-folder state를 독립 provision |
+| fixed layout | `verified_candidate_only` | exact lowercase suffix, compiled genesis, 8 held roles, five exact inventories | signed rotation selector/high-watermark 별도 설계 |
+| path contract | `repaired` | actual `ProgramData` casing 허용, app suffix exact lowercase, live handle exact string binding | 2-account case-sensitive/adversarial VM 추가 |
+| pin/anchor DAG | `repaired_component_only` | stable key core anchor + signed pin bytes/artifact, constructible controlled fixture | anchor 단독 full policy identity 사용 금지; body SHA 사용 |
+| ACL/watch/reopen | `verified_candidate_only` | role ACL 16회, two watches, role+ancestor reopen, drift fail-close | actual ancestor ACL/delete-child와 linked token 검사 |
+| cleanup | `verified_component_only` | known-folder failure free call, partial watch cleanup, CloseHandle fail-close | cleanup ExceptionGroup/telemetry는 후속 hardening |
+| current OS actual | `no_go` | fixed suffix absent, ProgramData child creation possible, C: repair needed | privileged atomic provisioner 또는 isolated VM |
+| regression | `pass` | focused `50/50`, 전체 P0 `485/485` | external positive integration 뒤 재실행 |
+
+Gate: `OWNER_POLICY_FIXED_STORE_CANDIDATE_PASS_AUTHORITY_NO_GO / ACTUAL_0_OF_40_0_OF_20 / P0_PHASE_EXIT_FALSE / PRODUCTION_NO_GO / full_scan_approval=false`.

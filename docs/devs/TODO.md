@@ -1,5 +1,736 @@
 # Developer TODO Index
 
+> 현재 상태는 [현재 상태 문서](CURRENT_STATUS_KO.md)를 따른다. 날짜별 기록과 `out/`·`logs/` 링크는 로컬 보존 자료이며 Git checkout에 포함되지 않을 수 있다.
+
+<!-- r5-resolution-current:start -->
+
+## 현재 상태 안내 — 2026-10-15
+
+현재80 범위 개발·검증과 Goal 완료 상태는 [현재 상태와 남은 작업](CURRENT_STATUS_KO.md)에서 관리한다. 전체 의미 `REVIEW`·기존5개 실패·독립 평가/R7 보류·새 분기 실측 미관측을 함께 확인한다. 아래 날짜별 실행·시험·미완료 표기는 당시 이력이다.
+
+<!-- r5-resolution-current:end -->
+
+<!-- research-completion-current:start -->
+
+## 2026-10-14 source462 단계 이력 — 최신 상태는 위 완료 기록 참조
+
+[최종 결과와 남은 수용 조건](../../out/research_completion_20261014_v1/REPORT_KO.md)는 당시 단계의 근거다. 기존80의 개발용 회수48관측,50번 수리·실제1건 검토, JSONL 댓글 생략 호환성·시작 전 실패·상대경로 이력·화면 전환 수리를 마쳤다. source462를 고정한 R6 실제1건은 원래 HOLD와 별도 native PUBLISH를 보존하며 HTTP9회·230.172초로 종료했고 원장 검산을 통과했다. 실제 화면과 관련 회귀도 확인했다.
+
+R5 기준3건은 정상 종료했으나 BEFORE에서64번 공개 판정이 PUBLISH→HOLD로 달라 strict 비교가 거절됐다. runner exit1·DRAINED, AFTER 미시작, formal KPI는 NOT_ESTIMABLE이다. 기존 실패·원문·참조는 보존했다. 현재 실행 정책 차단은 없었다.
+
+별도 자료가 없다는 사용자 답변에 따라 기존80으로 수행 가능한 DEV 연구를 끝냈다. MODEL_REFERENCE는 허용하지만 재사용 근거·미노출 평가 자료·TRAIN/CAL/FROZEN 조건은 미충족이다. R6 의미 검토는 원본 픽셀 미확인으로 HOLD/Medium이며 일반화 성능 승인이 아니다. **Goal 전체 완료 조건은 미충족으로, 조회된 blocked 상태를 complete로 바꾸지 않았다.** 요청 병렬12·대시보드 ON·저부하와 R7 보류를 유지한다. 아래 날짜별 기록은 당시 이력이다.
+
+- [x] 기존80 자료 연결·개발용48관측과 반례 판독.
+- [x] 50번 수리·실제 검토, 입력·대시보드 수리와 회귀·실제 화면 검증.
+- [x] R6 실제 복구1건의 실행·예산·원본 보존·별도 guard 검산.
+- [x] R5 실제 BEFORE 실패·AFTER 미시작·최종 종료 및 원인 판독.
+- [ ] 같은 공개 결정에 결속되는 실제 paired 비교와 정식 지표 산출.
+- [ ] 적격 자료에 근거한 정식 R2–R4 및 R6 일반화 품질 수용.
+
+<!-- research-completion-current:end -->
+
+<!-- source-quality-current:start -->
+
+## 2026-10-14 최신 실측: 실제12 정상 종료·의미 품질 REVIEW
+
+**현재 정책 거절은 없었다.** 검색3354 중지로 사전점검이 멈췄으나 기존 컨테이너3개를 기동한 뒤 `20261014_144947_200849`가 current source454·parallel12/12·대시보드ON·저부하 조건으로 정상 종료했다. completed/flushed12·failed/pending0·exit0, 결과/체크포인트12/12와 보호소스454/454 불변을 확인했다. [최종 실행·협업 평가](../../out/source_remaining12_actual_20261014_search_restored01/RUN_STATUS_KO.md)가 현재 상태다. 아래의 정책차단/미시작/실행중 문장은 당시 이력으로 보존한다.
+
+새12 평가: Sol A7/H4/R1, Opus A9/H2/R1.24 무관참조 제거·44 self/own 및 embedded 상태 교정을 관측했다.65는 후보가 회복됐지만 High 경로라 Low 보존분기 효과는 미입증이다. **50번은 양측 REPROCESS**로 분류·후보 소실 원인 판독이 남는다.13·33은 검토 범위 차이가 있고 전체 의미는 REVIEW다. 전체80 승인·R5 paired·R2–R6 실제 연구 품질·사람정답/권리/holdout은 미완료이며 formal KPI는 NOT_ESTIMABLE이다. 제품코드 변경0.
+
+- [x] 현재 코드 실제12 실행·종료·원본 결속·두 모델 전행 평가 완료.
+- [x] 과거 정책거절과 이번 검색 서비스 중지의 구분 및 복구 확인.
+- [ ] 50번 분류/후보 소실 원인 판독과 남은 작품 근거·실제 연구 수용.
+
+
+
+## 2026-10-14 실행 재확인: 정책 거절 없이 실제12 분석 시작
+
+**현재 실행 명령은 허용됐다.** 첫 호출은 검색3354 연결 거부로 사전점검에서 멈췄고, 기존 중지 검색 컨테이너3개를 시작해 query probe1/1·degraded0을 확인했다. 이후 `20261014_144947_200849`가 현재source454·parallel12/12·대시보드ON·저부하 조건으로 시작했다. [현재 실행 상태와 근거](../../out/source_remaining12_actual_20261014_search_restored01/RUN_STATUS_KO.md)를 따른다. 아래 과거 정책차단·미시작 기록은 당시 이력이며 현재 진행 상태가 아니다. 최종 품질·R5paired·연구 수용 완료는 아직 주장하지 않는다.
+
+- [x] 현재 도구 호출·프로세스 기동·검색 복구·실모델 응답 확인.
+- [ ] 실제12 종료·결과 결속·수정 효과 판독.
+
+
+
+## 2026-10-14 후속: Opus 5.5·Sol 6.1 협업 평가 완료
+
+[저장80 협업 평가와 최종 검증 상태](../../out/collaborative_final_eval_20261014_v1/root/REPORT_KO.md)가 이번 후속의 통합 결론이다. Opus 5.5 새 채팅과 Sol 6.1 서브에이전트가 각각80행을 독립 평가한 뒤 교차검토했다. 초기 판정은 Opus A60/H18/R1/I1, Sol A33/H37/R6/I4이며 일치50·불일치30이다. 일치율은 정확도가 아니다. 71의 Sol REPROCESS와 후보 URL·역할 누락 관련 과장된 근거를 정정했고 최초 라벨은 보존했다.
+
+과거24·44·55·57·65 문제의 기존 수리를 확인했으며 **새롭게 확정한 현재 코드의 미수리 결함은0건**이다. 보호소스454/454·release253/253은 마지막 적용 SHA와 같다. 기존754 PASS·하위22, Node94 PASS·선택3 SKIP 및 저장 이력 화면 확인을 유지하되 이번에 새 시험이나 expert_main 모델 실행은 하지 않았다. 55/57의 과거 직접 시험을 최신754에 포함된 것으로 소급하지 않는다.
+
+**의미 품질 REVIEW·최신 source454 모델 효과 NOT_OBSERVED·formal KPI NOT_ESTIMABLE**이다. 최신 실측, R5 paired, 실제 corpus/정답/권리/holdout·R2–R6 품질 수용은 남아 있다. 네이티브 Goal 조회값은 blocked이며 완료로 변경하지 않았다. 이전 실행 차단의 세부 이유는 미제공이고 콘텐츠 검열로 확정하지 않는다. 사용자 승인·parallel12·대시보드 ON·저부하 정책과 R7 보류를 유지한다.
+
+- [x] 두 모델80행 결속·독립 평가·교차검토와 과거 문제/현재 수리 분리 완료.
+- [x] 평가자 오류 정정, 원본 보존, 연구 지표 산출 범위와 다음 조건 기록 완료.
+- [ ] 최신 코드 실제 모델 효과·R5 대조실행·실자료 연구 품질 수용.
+
+아래 구현·시험·차단 기록은 원래 근거와 함께 보존한다.
+
+
+
+## 2026-10-14 현재: 최종 754 PASS·19파일 적용·source454·저장 이력 화면 확인
+
+**44번 화자/부정·65번 후보 보존·사건 카드/진단 저장·캐시 이력 탐색 수리를 적용했다.** [29개 전체 파일 754 PASS·하위22 PASS](../../out/r5_attempt_failure_validation_v1/run_final44_65_ui_history_v4_001/receipt.json) 후 [검증 바이트 19파일](../../out/source_final_application_v1/application_001/receipt.json)을 정확 적용했다. 제품6(기존5·신규1)·시험9(Python8·Node1)·fixture4이며 신규14파일, 기존5파일 백업, gitignore 시험 예외9와 기존 prefix·index 보존을 확인했다. [적용 후 검사](../../out/source_final_application_v1/application_001/post_apply_check.json)는 diff check0·신규 무시 없음이다. 현재 보호 소스는 **454개**다. [적용 보고서](../../out/source_final_application_v1/application_001/REPORT_KO.md)에 구현·적용·화면 확인 범위를 모았다.
+
+| 적용 범위 | 검증된 동작과 범위 |
+|---|---|
+| 44번 내용절·부정 | [원문·바깥 주체와 부정 범위](../../out/source44_compound_speaker_review_v1/REPORT_KO.md)를 결속해 내용절 명사를 화자로 올리지 않는다. 긍정 어휘·원문 좌표를 남기며 최종 근거 채택과 구분한다. |
+| 65번 후보 회수 | [F1–F4와 동일 문서 encoded URL 반증 경계](../../out/source65_candidate_preservation_review_v4/REPORT_KO.md)를 수리했다. 검산된 인물-작품 관계만 Low/noURL/noalias 후보로 보존하며 후단에서 같은 원자료를 재검산한다. 공개·학습 권한을 만들지 않는다. |
+| 사건 카드·exporter | [성립 상태·성립 근거·평가 방향·최종 채택](../../out/source_context_event_state_ui_repair_v2/HANDOFF_KO.md)을 저장값으로 표시한다. native 근거 필드 하나를 기존 상한 안에서 저장하고 과거 미기록을 추정하지 않는다. |
+| 실행 이력 탐색 | [전용 URL 캐시의 50,000항목 예산 선점](../../out/history_latest_discovery_audit_v1/REPORT_KO.md)을 분리했다. [root 직계 캐시 하위만 제외](../../out/history_cache_scan_review_v1/REPORT_KO.md)하며 디렉터리 자체 집계·깊은 동명·안전한 current-output·기존 상한을 유지한다. |
+
+동일 presentation 제품의 [Node 97수집·94 PASS·기존 선택3 SKIP](../../out/source_context_event_state_ui_validation_v2/node_001/receipt.json)에서 새 카드6은 모두 PASS다. [74번 시험 후손](../../out/source_context_event_state_test_repair_v3/HANDOFF_KO.md)은 구·신 exporter에 공통인 graph edge1건 생략(`TRUNCATED/FIELD_LIMIT`)을 정확히 요구하고 사건 전체/native/bytes 상한 검사를 유지한다. 중간566·610·100과 최종754 및 Node 수를 합산해 고유 시험 수나 모델 정답률로 쓰지 않는다. **이 결과는 명시 파일의 오프라인 기능 검증이며 실제 모델 개선 효과·전체80 품질 승인이 아니다.**
+
+[현재 디스크 source 결속](../../out/source_final_application_v1/application_001/source_binding.json)의 release는 `19de4b231ece83ec9c780f722433cdda501be12d7a450232eefc2a919e52df6d`, selected runtime source는 `c6065808971154a0ce6023776b78e8facbfa88d8888a2729968d43601a31c1bf`다. 모델 runtime generation 실측은 없다. [적용 후 실제 화면 확인](../../out/source_final_ui_validation_v1/receipt.json)은 로컬18868(PID51484, BelowNormal·affinity2)에서 최근80·24 이력 복구, 80건 상세와 저장 병렬12/12를 확인했다. 목록75·전체 탐색 상한 안내는 유지돼 무제한 전체 이력 복구를 뜻하지 않는다. 과거44 카드는 `actual / 성립 근거 미기록 / pos / 최종 근거 채택 false`와 저장 당시 화자 `마무리`를 그대로 표시한다. 새 코드의 모델 재실행 결과가 아니다. 콘솔 오류·경고 관측0이며 CUA 캡처는 도구로 관측했지만 파일로 저장하지 않았다. 제공 presentation은 적용 바이트와 같고 실제80 원본 SHA는 변하지 않았다.
+
+**실제12는 미시작이다.** [자동 승인 검토가 실행 명령을 `blocked by policy`로 거절](../../out/source_remaining12_launch_prep_v1/rejected_attempt_001.json)했고 세부 이유는 제공되지 않았다. 기존 사용자 승인은 유지되며 재승인 요청·우회·재시도는 하지 않았다. [과거 source440 실행 ready](../../out/source_remaining12_launch_prep_v1/launch_plan.ready.json)는 당시 준비물로 보존하며 현재 source454의 실행 명세가 아니다. requested parallel12·dashboard ON·저부하 원칙은 유지하지만 새 actual run/scope·모델 결과는 없다.
+
+이전80 `20261013_181711_146907`의 [A39/H33/R8/I0·END44·history842](../../out/p4_quality_followup_20261013/actual80_current_followup_parallel12_v1/final_review_80_v1/REPORT_KO.md)와 의미 **REVIEW**를 유지한다. 이번 적용으로 과거 라벨을 바꾸지 않는다. [R5 BEFORE exit1·FAILED/DRAINED](../../out/r5_actual24_pair_after_failure_repair_001/end_observation_001/receipt.json)·AFTER 미시작·동일 reference/WAL 결정 계약의 paired 미완료도 유지한다. guard 완화·참조 재봉인·실행 반복으로 완료를 주장하지 않는다.
+
+준비80 관측192·HUMAN_GOLD0·권리UNKNOWN·training ready0·독립 holdout0, 실제 연구 품질·R2–R6 수용 미확정, 49번 full-context 진단2·69번10 미완료를 보존한다. **Goal blocked·formal KPI NOT_ESTIMABLE·R7 보류**다. 전체80 ACCEPT나 새 전체80 자동 재실행을 완료 조건으로 추가하지 않는다.
+
+- [x] 29전체파일754 PASS·하위22 PASS와 source454 정확 적용을 확인했다.
+- [x] Node94 PASS·기존 선택3 SKIP, 원형 실패와 시험 기대 정정 근거를 구분했다.
+- [x] 저장80·24 이력, 80건 상세와 과거44 사건 카드의 실제 표시를 확인했다.
+- [ ] 실제12 모델 효과·R5 paired·사람 정답/권리/실자료 품질은 미완료다.
+
+[v33 후속 원형](../../out/p4_quality_followup_20261013/docs_integration_update_v33_followup_v1/REPORT_KO.md)을 보존하고 [v34 갱신 보고서](../../out/p4_quality_followup_20261013/docs_integration_update_v34/REPORT_KO.md)에 CURRENT 전후와 검산을 기록한다.
+
+2026-10-14 같은 미해결 실행 차단과 자료 조건을 세 목표 턴 연속 확인해 Goal을 blocked로 전환했다. 추가로 진행할 확정 로컬 수리는 확인되지 않았다. 사용자 승인은 유지하며, [재개 조건과 보존 근거](../../out/goal_blocked_20261014_v1/HANDOFF_KO.md)를 따른다. 구현·로컬 시험·저장 화면 확인과 실제 모델·연구 평가의 미완료를 구분한다.
+
+<!-- source-quality-current:end -->
+
+## 직전 단계 기록: 191128 실행 종료와 첫 통합 후보 시험
+
+> 아래 후보 미완료·실패 원인·진행 문장은 그때의 기록이다. 최신 수리 및 검증 상태는 위 현재 구역을 따른다.
+
+실행 `20261012_191128_106718`은 **exit0·80/80 저장·실패0·대기0·terminal 확정**, 요청·실효 병렬도 **12/12**로 종료했다. [종료 검산](../../out/p4_quality_followup_20261012/actual80_parallel12_v1/end_check_prep_v1/end_verification_02.json)은 **44개 PASS_TECHNICAL_ONLY**이며 실제 Python·venv launcher·supervisor 세 PID 종료를 확인했다. 실행 소스288개와 보호 목록6,279개의 보존은 해당 수령증 범위다. 시작 전 PREPARED 및 실행 중 RUNNING 기록은 당시 이력으로 보존한다.
+
+[이력 API](../../out/p4_quality_followup_20261012/actual80_parallel12_v1/history_check_prep_v1/run_first/receipt.json)는 **80행·11 GET·820개 검사 PASS**로 저장 원시 필드·BOUND·새 NSFW 상태·parallel12를 대조했다. [실제 화면](../../out/p4_quality_followup_20261012/actual80_parallel12_v1/browser_final_readback_v1/receipt.json)은 **PASS_SCOPED_FINAL_LIVE_HISTORY_UI**다. live 100%·80/80·활성0, 최종 이력80건·12/12와 74번 live/history, 10·15·49·61번 history의 선택된 상세를 확인했다. NSFW 미평가/모델 false/규칙 양성 표시와 메모·댓글 귀속을 구분했고, 74번의 행별 장부 상태와 종료 manifest 요약을 덮어쓰지 않았다. 관측 콘솔 오류·경고0이며 이력 탐색 상한 경고는 유지한다. API 검사 수와 UI 관측·과거 Python/Node 시험 수를 합산하지 않는다.
+
+[최종 행 결속·59행 리뷰 재사용](../../out/p4_quality_followup_20261012/actual80_parallel12_v1/final_review_prep_v1/run_first/final_reconciliation_receipt.json)은 기존 **ACCEPT20·HOLD31·REPROCESS2·INFO_MISSING6**을 보존했다. [남은21행 리뷰](../../out/p4_quality_followup_20261012/actual80_parallel12_v1/final_review_remaining21_v1/REVIEW_KO.md)와 [21행 결속 수령증](../../out/p4_quality_followup_20261012/actual80_parallel12_v1/final_review_remaining21_v1/reviewer_receipt.json)은 **ACCEPT10·HOLD9·REPROCESS1·INFO_MISSING1**이다. **80행 검토는 완료했으며 인계용 합계는 ACCEPT30·HOLD40·REPROCESS3·INFO_MISSING7**이다. [전행 통합 결속](../../out/p4_quality_followup_20261012/actual80_parallel12_v1/final_review_reconciled_v1/receipt.json)은 80행 원문·typed ID·전체 결과 SHA와 중복·누락0을 확인했고 [최종 종합](../../out/p4_quality_followup_20261012/actual80_parallel12_v1/final_review_reconciled_v1/SUMMARY_KO.md)에 남겼다. REPROCESS는 **8·55·57번**이다. 55번 [정적 원인 조사](../../out/p4_quality_followup_20261012/semantic_state55_followup_v1/REPORT_KO.md)는 초기 제목 힌트와 작품성을 부정한 표면 anchor가 별도 제목 상태 계산에 남는 경로를 확인했다. 57번과 같은 질문 규칙이 아니며, 동일 문맥 동작 재현·수리는 미실행이고 신규 코드 회귀 귀속도 미확정이다. 74번 SOURCE_RULE_POSITIVE는 원문 댓글에 결속된 좁은 수리 효과를 ACCEPT로 검토했으며 전체 NSFW 정답으로 확대하지 않는다. 픽셀을 보지 않은 49번의 규칙 양성도 이미지 정답을 뜻하지 않는다. 전체 품질은 REVIEW다. [직전80 대비 공개 값 목록](../../out/p4_quality_followup_20261012/actual80_parallel12_v1/publication_delta_inventory_v1/REPORT_KO.md)은 145104→191128의 공식 제목·URL 변경0·동일80(제목+URL10·제목만1·null69)을 확인했다. 1·12·14번도 직전과 같으며, 더 오래된 변화와 구분한다. 값 동일성은 오공개0이나 공개 적격성 증명이 아니다.
+
+8번 [명명 표현 v3 후보](../../out/p4_quality_followup_20261012/slang_role_expression_candidate_v3/SOURCE_FROZEN.json)와 57번 [제목 상태 후보](../../out/p4_quality_followup_20261012/semantic_state57_candidate_v1/SOURCE_FROZEN.json)는 AST·독립 정적 검토를 거쳐 [통합 후보 동결](../../out/p4_quality_followup_20261012/source_quality_bundle_validation_v1/SOURCE_FROZEN.json)에 결합됐다. [통합 후보 첫 시험](../../out/p4_quality_followup_20261012/source_quality_bundle_validation_v1/run_first/validation_receipt.json)은 **13파일 411 PASS·104 subtest PASS·2 FAIL, 오류·스킵0**이다. 정상57 serializer·main wrapper·WAL과 역할3 경로는 통과했지만, 57번 payload 제목 상태 및 candidate ledger의 입력 fingerprint 변조를 거절하지 못한 두 시험이 실패했다. **57번 optional scope seal을 별도 v2 후보에서 수리 중이며 통합 후보는 primary 미적용**이다. 실패 원본은 보존한다. 기존 pipeline `ee9088f6…`로 끝난 이번80은 이 두 후보의 실측 증거가 아니다. 이후 후보가 적용되면 이번 결과는 수리 전 기준 실행으로 남기며, 새 코드의 실측 여부를 별도로 표시해야 한다. 기존 수리 Python12파일251 PASS·104 subtest와 별도 Node87 PASS는 당시 로컬 증거로 유지한다.
+
+R2/R3/R4 candidate 기능·community knowledge·native recovery는 OFF였으므로 연구 기능 ON 실측을 대체하지 않는다. 사람 정답0·학습 준비0·권리 UNKNOWN·formal KPI **NOT_ESTIMABLE**·품질 **REVIEW**·Goal active·R7 보류를 유지한다. 이후 Expert-main 실행 기본은 `--parallel 12`·대시보드 ON·기존 저부하 정책이다.
+
+- [x] 이번80 기술 종료 및 source/result/manifest/WAL/API 결속, 요청·실효12와 세 실행 PID 종료 확인.
+- [x] 현재 run의 80행 이력 API와 선택된 최종 live/history 표시 확인.
+- [x] 기존59행 리뷰와 최종 저장 행 전체 SHA의 일치 확인.
+- [x] 남은21행 원문·댓글·전체 결과 리뷰 완료. 인계용80행 합계 A30/H40/R3/I7.
+- [x] 전행 통합 최종 결속 수령증으로 고유80행·원문·전체 결과 SHA·라벨 보존 확인.
+- [ ] 8·55·57 후속 조치 및 품질 수용.
+- [ ] 8번 역할 표현 v3와 57번 제목 상태 통합 후보의 첫 격리 시험의57 seal 실패2건 수리·영향 검증·적용 판단. 55번은 별도 정적 조사 결과를 따른다.
+- [ ] 최종 코드 실측 범위, 이미지·권리·사람 정답·적격 데이터 및 P4 의미 수용 조건 충족.
+
+## 2026-10-12 이전 단계: 병렬12 전체80 정상 종료·전행 검토 완료, 품질 수용 REVIEW
+
+실행 `20261012_145104_574531`은 **요청12·실효12·대시보드 ON**, exit0·80/80 저장·실패0·대기0·terminal 확정으로 종료했다. [종료 검산](../../out/development_plan_20261010/p4_reapproval_v1/final80_parallel12_v1/end_verification.json)27개와 [이력 API 대조](../../out/development_plan_20261010/p4_reapproval_v1/final80_parallel12_v1/history_api_receipt.json)499개가 통과했고 실행 종료 시점의 보호 파일4,718개에 변경이 없었다. 최종 코드의 토큰·검색 집계는 실제 검증을 마쳤다. 문맥 이벤트 토큰6,288,623과 검색74 hits/395 misses가 저장 trace·CLI·12워커 합계에 일치한다. manifest 관측9,059,040토큰은 별도 범위이며 모두 정식 KPI·전체 청구 비용이 아니다.
+
+[실제 화면](../../out/development_plan_20261010/p4_reapproval_v1/final80_parallel12_v1/browser_receipt.json)은 live100%·80/80·활성0, 최종 이력80건·병렬12/12, 메모·NSFW·구조화 문맥·유효 설정·주변 관련 배지와 원시 진단 구분을 확인했다. 관측 콘솔 오류·경고0이며 이력 탐색 상한 경고는 유지한다. 현재 renderer의 [합성 저장자료84 PASS·0 FAIL·0 SKIP](../../out/development_plan_20261010/p4_reapproval_v1/ui_final_optional_readback_v1/receipt.json)은 별도 시험이며 검사 수를 합산하지 않는다. [대시보드](http://127.0.0.1:18864/)는 완료 결과를 표시한다.
+
+[80행 최종 리뷰](../../out/development_plan_20261010/p4_reapproval_v1/final80_parallel12_v1/review_reconciled_v1/review_receipt.json)는 원문·댓글·최종 행 전체 SHA에 결속됐으며 **ACCEPT32·HOLD33·REPROCESS8·INFO_MISSING7**, gate **REVIEW**다. 나머지48건을 오류율로 계산하지 않는다. 새 제목 공개12·14번은 HOLD다.74번은 전문가 최초 응답부터 NSFW가 달랐으며, 새 저장 코드 회귀는 입증되지 않았다. 댓글 NSFW 검산 공백으로 REPROCESS를 유지한다. 미판정 근거를 두고 전체80의 새 오공개0이나 품질 통과를 선언하지 않는다. [종합 인계와 후속 개발](../../out/development_plan_20261010/p4_reapproval_v1/final80_parallel12_v1/REVIEW_SUMMARY_KO.md)에 근거·범위·미완료 조건을 정리했다.
+
+[새80 snapshot](../../out/development_plan_20261010/p4_reapproval_v1/final80_parallel12_v1/final_snapshot_v1/receipt.json)은 저장 관측80·고유 원문80, VERIFIED / COMPLETE_WITH_LIMITS다. 기존80·실제12·112관측 준비물은 보존했다. 사람 정답0·학습 준비0·권리 UNKNOWN·독립 holdout 없음·formal KPI **NOT_ESTIMABLE**을 유지한다. R2/R3/R4/native는 OFF였으므로 실제 연구 기능 검증을 대체하지 않는다. **P4 기술 검증과 전행 리뷰 수행은 완료, 의미 품질 수용과 R2~R6 실제 평가 조건은 미완료이며 Goal은 active**다. 이후 Expert-main 테스트는 `--parallel 12`·대시보드 ON을 따른다.
+
+- [x] 최종 코드80건을 병렬12로 실행하고 정상 종료·저장·원본 보존·WAL/장부를 검산했다.
+- [x] 토큰 trace/API와 검색 CLI/12워커 합계 및 실제 화면을 대조했다.
+- [x] 최종80 전행 의미 리뷰를 원문·댓글·전체 결과 SHA에 결속하고 별도 snapshot을 준비했다.
+- [ ] 새 공개의 미확인 근거와 분류·NSFW·역할 문제를 해소하고 P4 의미 수용을 확정한다.
+- [ ] 사람 판정·권리·적격 자료·R5 paired·R6 실제 복구 평가 조건을 충족한다.
+
+아래 실제12·차단·미실행 등 설명은 해당 시점 이력이다. 이전 RUNNING 구역의 바이트는 이번 문서 갱신 백업에 보존했다.
+
+## 이전 2026-10-12 단계: 병렬12 기술 종료·12행 리뷰와 제한된 UI 확인
+
+실행 `20261012_134614_949602`는 **exit0·12/12 저장·실패0·대기0·terminal=true**, 요청12·실효12로 종료했다. [종료 기술 검산](../../out/development_plan_20261010/p4_reapproval_v1/parallel12_regression_v1/end_verification_v2.json)은 **PASS_TECHNICAL_ONLY·21개 검사**, [이력 API](../../out/development_plan_20261010/p4_reapproval_v1/parallel12_regression_v1/history_api_receipt.json)는 **84개 검사·12행 원시 저장값 일치·BOUND·병렬12/12**다. 초기 검산 실패는 병렬 체크포인트의 완료 순서를 입력 순서로 가정한 것으로, 원본 기록을 보존하고 v2에서 고유행·최종 입력 순서·WAL 결속을 확인했다. 이력 탐색 상한 경고는 유지한다.
+
+[3개 에이전트 리뷰 종합](../../out/development_plan_20261010/p4_reapproval_v1/parallel12_regression_v1/REVIEW_SUMMARY_KO.md)은 고유 12행에 중복·누락 없이 **ACCEPT9·HOLD3**, gate **REVIEW**다. 약먹마의 비교 역할·별칭 source 연결, 회모장의 이미지·작품 결속, 추천 글의 구조화된 비교·추천 표면 보존이 남아 있다. CF01 및 의미 상태 v3의 독립 검토는 각 수리 당시 소스 범위에서 통과했다. CF03은 새 Decoder가 이전 오염 제목을 만들지 않아 이번 실측만으로 필터의 직접 효과를 입증하지 않는다.
+
+[실제 화면 확인](../../out/development_plan_20261010/p4_reapproval_v1/related_label_fix_v1/browser_receipt.json)은 **PASS_SCOPED_UI_WITH_METRICS_PENDING**이다. root가 18863의 live 100%·12/12·활성 worker0, 이력의 현재 run 최상단·최종 저장12건, 11718092의 NSFW true·메모·진단 STORED·BOUND 및 8670967의 adjacent 상태를 확인했다. 11663522는 live/history 모두 **주변 관련**과 원래 `is_relevant=false` 진단을 보존하면서 중복 무관 배지를 제거했다. 관측 콘솔 오류·경고는 0이며 로컬 스크린샷 파일은 만들지 않았다. [Node 판독](../../out/development_plan_20261010/p4_reapproval_v1/related_label_fix_v1/node_readback.json)은 **81 PASS·3 SKIP·실패0·총84**로, native/provider/inference 환경 자료 미설정 선택 시험 3개는 이번에 실행되지 않았다. JavaScript 캐시 때문에 자산 버전 한 줄을 갱신한 뒤 실제 화면을 확인했으며 [최종 자산](../../out/development_plan_20261010/p4_reapproval_v1/related_label_fix_v1/final_static_receipt.json)과 [독립 검토 v2](../../out/development_plan_20261010/p4_reapproval_v1/related_label_fix_v1/independent_review_v2.json)는 기능 코드 동일성을 결속한다. 전체 UI·전체 기능 검증 PASS로 확대하지 않는다.
+
+[토큰 context 수리](../../out/development_plan_20261010/p4_reapproval_v1/token_context_fix_v1/SOURCE_FROZEN.json)는 7파일 **104개·하위59개**, [검색 통계 worker 합산](../../out/development_plan_20261010/p4_reapproval_v1/cache_stats_fix_v1/validation_receipt.json)은 7파일 **115개·하위54개** 로컬 통과다. [토큰 독립 리뷰](../../out/development_plan_20261010/p4_reapproval_v1/token_context_fix_v1/independent_review.json)와 [캐시 독립 리뷰](../../out/development_plan_20261010/p4_reapproval_v1/cache_stats_fix_v1/independent_review.json)도 PASS이며 두 집계 상태는 **LOCAL_VERIFIED_ACTUAL_PENDING**이다. **18863의 Python 프로세스는 집계 수리 전 코드이고 정적 UI만 갱신했다.** 실제12의 token 965.2K·cache 0% 및 CLI hits20/misses96 관측을 소급 보정하지 않는다. 실제12 자체도 token/cache/UI 최종 수정 전 소스다. [후속 조치](../../out/development_plan_20261010/p4_reapproval_v1/parallel12_regression_v1/action_queue.json)에 남은 범위를 구분했으며 서로 겹치는 시험·기술 검사 수를 합산하지 않는다.
+
+기존80의 기술 종료와 전행 리뷰는 보존하며 **최종 코드의 새 전체80 재실행은 아직 하지 않았다.** 실제12는 개발 노출80의 부분집합이고 독립 holdout·R5 paired 실측이 아니다. R2/R3/R4/native OFF였으므로 해당 기능의 실제 성공 근거로 쓰지 않는다. 사람 정답0·학습 준비0·권리 UNKNOWN·formal KPI **NOT_ESTIMABLE**·Goal **active**를 유지한다. 새 Expert-main 실행 기본은 요청12·실효 `min(input_count,12)`·대시보드 ON이다. 아래 단계별 기록은 당시 이력이며 현재 운영은 [P4 인계](P4_REAPPROVAL_RUN_20261010_KO.md)를 따른다.
+
+- [x] 실제12 종료21검사·이력 API84검사 및 고유12행 리뷰를 결속했다.
+- [x] 11663522 live/history의 중복 무관 표시 제거와 raw false 보존을 확인했다.
+- [x] 토큰·검색 집계의 로컬 검증 및 독립 리뷰를 마쳤다.
+- [ ] 두 집계 수리 뒤 실제 실행 관측 및 최종 코드 전체80 검증을 완료한다.
+- [ ] HOLD 3행과 기존80의 남은 의미·시각 근거 문제를 처리한다.
+- [ ] 사람 판정·권리·적격 분할 자료·R5 실측 조건을 충족한다.
+
+## 이전 차단 이력: 2026-10-10 blocked 전환 당시
+
+같은 실행 차단과 자료 선행 조건 미충족을 세 차례 연속 확인해 Goal을 **blocked**로 전환했다. 실제80·최신 브라우저·사람 판정과 사용 권리·실자료 품질·R5 실측은 미완료이며, formal KPI는 NOT_ESTIMABLE, R7은 보류다. [재개 조건과 인계](GOAL_BLOCKED_HANDOFF_20261010_KO.md)를 따른다. 아래 Goal active 표기와 전달 문서 SHA는 각 단계 작성 당시 기록이다.
+
+## 2026-10-10 최신 진행: 전체 진입점과 완료 표시
+
+80건 검토 자료 준비를 유지하면서 일반 `expert_main` 전체 진입점의 합성 입력 OFF·재생 ON·최초 분석 ON을 검증했다. 최초 ON은 provider1회·native7회를 거쳐 원래 HOLD와 별도 결과를 보존했다. 대시보드의 완료 상태·부분집합·실패·저장 대기와 이력 건수 표시를 수리했다.
+
+관련 Python 3파일은 **71 passed, 40 subtests passed in 10.17s**, **Node 84개 통과·실패 0개·skip 0개**다. 일반 CLI 검증과 이후 UI/API 변경의 시험 범위를 분리한다. [현재 검증·남은 개발](EXPERT_ENTRY_COMPLETION_REVIEW_20261010_KO.md)을 따른다. 아래 수치와 당시 미완료 설명은 이전 단계 기록이다.
+
+후속으로 semantic NIL/CAL→actual readback·baseline 연결을 구현하고 합성 로컬 검증을 마쳤다. **271 passed, 9 subtests passed in 167.12s (0:02:47)**이며 [R4 연결 검증](R4_ACTUAL_BRIDGE_20261010_KO.md)에 범위와 한계를 기록했다. 적격 실제 자료의 전체 성공 경로, 실제80·새 브라우저·사람 판정·실자료 품질·R5 실측은 미완료다. Goal active·formal KPI NOT_ESTIMABLE·R7 보류를 유지한다.
+
+- [x] 80건의 원문·관측·참조 검토 자료를 준비하고 원본을 보존했다.
+- [x] 일반 전체 진입점과 복구 재생/최초 실행을 합성 HTTP로 검증했다.
+- [x] 대시보드 완료 상태·건수 표시와 고정 payload 3종을 검증했다.
+- [x] 최신 semantic NIL/CAL→actual readback·baseline 연결을 구현하고 합성 구조 왕복·기존 준비도 거절을 검증했다.
+- [ ] 적격 실제 입력으로 bound actual 전체 성공과 품질 수용을 검증한다.
+- [ ] 실제80·후속 브라우저·사람 판정·실자료 품질·R5 계측을 완료한다.
+
+## 이전 검증: 기존 회귀 수리와 80건 검토 준비
+
+기존 rework 실패 33개는 이름 변경 대응표와 실제 JUnit을 대조해 모두 통과했다. 마지막 3개 파일 실행은 **494 passed, 55 subtests passed in 181.10s (0:03:01)**다. 앞선 9개 파일 실행의 **5 failed, 578 passed, 64 subtests passed in 572.95s (0:09:32)**에서 시험 의존 파일 누락 4건과 최종 후보 단계의 기대 불일치 1건을 확인하고 보완했다. 제품 소스는 두 실행 사이에 그대로이며, 앞선 나머지 6개 파일의 통과를 따로 보존한다. 서로 다른 실행 수치를 합산하지 않으며 전체 저장소 회귀나 전체 CLI 검증 완료로 해석하지 않는다. [현재 수리 기록](LEGACY_REWORK_REPAIR_20261010_KO.md)과 [최종 실행 검산](../../out/development_plan_20261010/r6_rework_phase4_reconciled.json)을 따른다.
+
+원형 본문에 결속된 별칭은 비권한 후보로 보존하고, 일반 화자 발화는 명시적인 작성자 복귀 전까지 보류한다. URL·시각 예외, OCR 작가 검색, 추천 보류와 최종 설명 봉인을 검증했다. 후보 제목·URL 보존과 최종 공개 title/URL을 따로 확인하며, 검색 후보만으로 공개 권한을 만들지 않는다.
+
+[80건 검토 자료](../../out/development_plan_20261010/actual80_review_queue_v1/review_guide.md)는 원문·저장 관측 112개와 참조를 연결했고 [독립 재판독](../../out/development_plan_20261010/r6_rework_actual80_preparation_readback_v1_KO.md)에서 원문·참조 52개 파일의 존재와 SHA 일치를 확인했다. 사람 정답 0건·학습 준비 0건·전 행 개발 노출·권한 UNKNOWN이며 후보 누락 3행, 미검토 이미지 25개는 남아 있다.
+
+현재 상태는 **REWORK_LOCAL_VERIFIED_ACTUAL_PENDING**이다. 아래 자동 복구 수치와 33개 실패·NOT_PASS 표기는 이전 단계 이력이다. 실제80 모델 실행·새 브라우저는 자동 승인 검토의 `blocked by policy` 거절 이후 재시도하지 않았다. 실제 품질·사람 판정·적격 분할 자료·R5 실측·formal KPI는 미완료이며 formal KPI는 NOT_ESTIMABLE, Goal은 active, R7은 보류다.
+
+## 완료한 로컬 회귀 수리의 단계별 기록
+
+- [x] 기존 33개 실패를 근거별로 분류하고, 시험의 mock 인자 계약·미인증 작성자 귀속 전제 4개를 정정했다. 공개 guard·원문·기존 최종 판정 검산은 유지한다.
+- [x] 빈 캐시의 현재 소스 고정 사본에서 회귀 파일 전체를 실행했다. 첫 결과는 **452개 통과·31개 실패·하위 시험 10개 통과**다. 이전 33개 중 2개가 통과하고, 2개는 후속 검산 지점으로 이동했다. 신규 실패 node는 없다. [실행 근거](../../out/development_plan_20261010/r6_rework_phase1/run_first/receipt.json)와 [비교](../../out/development_plan_20261010/r6_rework_phase1_comparison.json)를 보존한다.
+- [x] 후속 mock 계약·진단·등급 기대를 정합화하고, 추천/OCR·다작품·별칭·fetch 경로를 수리해 묶음 검증한다. 제품 정상 여부가 확정되지 않은 항목은 기대값만 바꾸어 닫지 않는다.
+- [x] 7개 파일 묶음 `phase2b`를 실행했다. 원문 수치는 **556개 통과·10개 실패·하위 시험 45개 통과**다. rework 실패 case 9개와 격리 사본의 의존 파일 누락 1개를 분리해 [수리 기록](LEGACY_REWORK_REPAIR_20261010_KO.md)에 남겼다.
+- [x] 일반 화자 라벨의 본문 후보 귀속 P2, 남은 별칭/후보 원장 검산, 누락 의존 파일을 포함한 native capture 검증을 완료한다.
+
+이전 자동 복구 단계의 최종 검증과 전달 수령증은 보존한다. 아래 33개 실패와 후속 첫 실행의 31개는 당시 이력이며 그때의 측정은 rework 9개였다. `phase2b` 이후 추가 정정은 최종 phase4에서 통과했다. 자동 복구 연결의 로컬 통과가 기존 회귀 전체 통과를 뜻하지 않는다.
+
+## 이전 자동 연결 단계: 일반 main 자동 복구의 로컬 검증 (2026-10-10)
+
+일반 `expert_main`의 같은 호출 문맥을 원래 guard·commit·AUDIT·최종 저장 이후 제한된 복구로 연결하고, 별도 결과를 대시보드 live/history API와 표시까지 로컬 검증했다. 기본값은 OFF이며 ON에는 고정 정책·예산과 대시보드가 필요하다. 원래 결과·manifest·WAL은 보존하며 공개 적용·권한·중앙 DB 쓰기는 false다.
+
+현재 상태는 **AUTOMATIC_NATIVE_LOCAL_VERIFIED_ACTUAL_AND_LEGACY_REWORK_PENDING**이다. [운영 계약](NATIVE_RECOVERY_AUTOMATION_20261010_KO.md)과 [실행별 검증·수리 기록](../../out/development_plan_20261010/r6_auto_reconciled_receipt.json)을 따른다. 검증은 합성 HTTP 응답으로 실제 전문가·guard·AST로 추출한 실제 main 함수 본문·원장·API·Node 표시를 통과한 범위다. 전체 CLI 기동과 실제 브라우저 통과를 뜻하지 않는다. 실행별 시험 수는 합산하지 않으며 마지막 수리 뒤 최초 전체 파일을 모두 다시 실행한 결과도 아니다.
+
+최종 HOLD의 OCR 근거 누락은 새 `strict_evidence_v2` 검토 규칙으로 수리했고 기존 v1 영수증 판독은 보존했다. 실제80 모델 실행·새 브라우저·사람 정답·적격 실제 TRAIN/CAL/FROZEN 품질·R5 실측과 기존 rework 33개 실패는 남아 있다. 전체 회귀는 NOT_PASS, formal KPI는 NOT_ESTIMABLE, Goal은 active, R7은 보류다. 아래 단계별 수치와 미완료 설명은 당시 이력이며 현재 범위는 이 절을 따른다.
+
+- [x] 기본 OFF·명시 정책·same-call capture·최종 저장 뒤 직렬 복구·별도 결과와 API→Node 표시를 로컬 검증했다.
+- [x] 재생 행 표시와 최종 원본/제어 실패 보존을 독립 검토하고, OCR 검토 누락·구버전 영수증 호환을 검증했다.
+- [ ] 실제80·브라우저·실제 품질·기존 rework 33개 실패를 완료한다. [분류와 수리 순서](../../out/development_plan_20261010/r6_auto_legacy_rework_triage_KO.md)를 따른다.
+- [ ] 준비된80건의 사용 권리·작품·역할·NIL 사람 판정을 확정한다. 기존 참조를 정답으로 승격하지 않는다.
+
+## 이전 단계: 명시 native 복구 연결과 당시 남은 자동화
+
+R6의 **명시 same-call native 복구 연결을 합성 응답·HTTP mock으로 로컬 검증했다**. 현재 검증 상태는 `PASS_NATIVE_EXISTING_REWORK_FAILURES_PENDING`이며 기존 rework 시험 실패는 미해결이다. `run_native_recovery`는 같은 분석 호출에서 보존한 pre-final 문맥을 원래 입력·저장 provider 근거에 결속하고, 실제 Decoder·Verifier·Synthesizer·Arbiter와 기존 native 공개 guard를 호출한다. 원래 결과·manifest·WAL을 덮어쓰지 않고 별도 scope의 새 publication WAL과 결과를 저장·재판독한다. guard 판정 기록은 공개 반영이 아니며 `public_apply`, `publication_authority`, `central_db_write`는 false다.
+
+native 추가 LLM·검색·fetch는 하나의 영속 호출·byte·시간 예산을 공유하며 먼저 예약하고 전송한다. 완료 job만 저장 결과를 0회 호출로 재생하고, 미완료·불확실 요청은 재시작 후 재발송하지 않는다. upstream provider 수집은 별도 앞 단계로 합계에 표시하며, MCP 내부 원격 검색 횟수·취소·가격은 확정하지 않는다. 과거 actual80/32 저장 JSON을 살아 있는 native 문맥으로 복원하는 기능은 없다.
+
+최초 Python 16개 파일의 원시 결과는 시험 893개 통과·32개 실패와 하위 시험 21개 통과다 (`32 failed, 893 passed, 21 subtests passed in 1228.60s (0:20:28)`, [최초 전체 수령증](../../out/development_plan_20261010/r6_native_final_receipt.json)). 합성 응답 fixture만 보정한 뒤 workflow 1개 파일의 시험 7개가 통과하고 실패는 1개, 하위 시험은 0개다 (`1 failed, 7 passed in 657.84s (0:10:57)`, [보정 후 수령증](../../out/development_plan_20261010/r6_native_repair_receipt.json)). 그 뒤 실제 fetch 응답의 identity 캐시를 복제하는 제품 코드를 수리하고 context·workflow 2개 파일을 재검증해 시험 67개와 하위 시험 0개가 통과했고 실패는 0개다 (`67 passed in 701.00s (0:11:41)`, [캐시 수리 후 수령증](../../out/development_plan_20261010/r6_native_capture_final_receipt.json)). **세 실행의 시험은 겹치므로 합산하지 않는다. 마지막 수리 뒤 전체 16파일을 다시 실행한 결과도 아니다.** [재조정 수령증](../../out/development_plan_20261010/r6_native_reconciled_receipt.json)은 새 native 경로의 실패가 수리됐음을 기록하며 최초 전체 실행을 PASS로 바꾸지 않는다.
+
+기존 rework 시험은 전체 실행에서 31개가 실패했다. 동일한 빈 캐시·단일 파일 격리 조건의 이전 baseline과 현재 소스에서는 각각 33개 실패가 재현됐고, 33개의 예외 종류·정규화 메시지가 같았다. 비교상 남은 차이는 0개지만 시험 상태는 `FAILED`다 ([격리 비교 근거](../../out/development_plan_20261010/r6_native_isolated_rework_comparison_v1.json)). **실패 33건은 해결되지 않았으며 전체 회귀 통과나 모든 OFF 동작의 동등성을 뜻하지 않는다.** [API·검증 범위](../../out/development_plan_20261010/r6_native_api_KO.md), [현재 코드·캐시 수리 독립 검토](../../out/development_plan_20261010/r6_native_capture_cache_review.json)와 [I/O 독립 검토](../../out/development_plan_20261010/r6_native_io_closure_review.json)를 따른다. [fixture 수정 독립 검토](../../out/development_plan_20261010/r6_native_fixture_repair_review.json)는 앞선 수리 이력으로 보존한다. 이번에는 Node·브라우저 시험을 실행하지 않았다. 화면 소스는 이전 provider 단계의 [Node 66개 통과 기록](../../out/development_plan_20261010/r6_provider_node_receipt.json)과 같으며, 그 기록은 새 native 화면이나 브라우저 통과 증거가 아니다. 이전 probe 실패와 simulation/provider 시험도 별도 이력으로 보존한다.
+
+[80건 검토 큐](../../out/development_plan_20261010/actual80_review_queue_v1/review_guide.md)는 그대로 보존했다. 입력 80행·저장 관측 112개·중복 게시물 32개이며, 사람 정답과 학습 준비는 모두 0건이다. 기존 WORK/NIL 참조를 사람 정답으로 승격하거나 새 독립 분모로 세지 않았다.
+
+**일반 main의 자동 복구 스케줄과 native 결과의 대시보드 live/history 연결은 아직 미완료다.** 실제 외부 모델·검색 호출은 0회이며 실제 복구 품질·비용·formal KPI는 `NOT_ESTIMABLE`이다. P4 실제80 실행과 새 Chrome 검증은 기존 자동정책 차단을 재시도하지 않았다. 실제 자료·사람 판정·R4 학습/교정 품질·R5 실측도 남아 있다. R6 전체 완료로 처리하지 않으며 Goal은 active, R7은 보류다.
+
+- [x] 같은 호출의 원문·provider 근거를 실제 native 전문가·guard·별도 WAL·완료 재생에 연결하고 로컬 검증했다.
+- [ ] 비교 환경에서 재현된 기존 rework 실패 33건을 해결한다. 새 native 경로의 로컬 통과와 구분한다.
+- [ ] 일반 main 자동 복구 스케줄과 native 결과의 API·대시보드 연결을 구현한다.
+- [ ] 원문·사용 권리·사람 판정·수용 기준을 확보하고 실제 복구 품질·비용을 평가한다.
+
+## 이전 단계: provider 근거 수집과 80건 검토 준비 (2026-10-10)
+
+당시 R6 상태는 **PROVIDER_EVIDENCE_LOCAL_VERIFIED_NATIVE_GUARD_AND_ACTUAL_RECOVERY_PENDING**였다. 원본 HOLD·AUDIT에 결속한 명시 계획 → 영속 예약 → 단일 HTTP → 원시 응답 저장·독립 판독 → `expert_main`·대시보드 연결을 구현했다. 완료된 요청은 0회 전송으로 재생하고, 완료 여부가 불명확한 요청은 재발송하지 않는다. 최초 fresh source 검사부터 응답 저장·재판독까지 같은 시간 제한을 적용한다. 마지막 `REQUEST_FINALIZED` 자체의 저장은 이 시간 범위에서 제외한다. 저장 성공은 `PROVIDER_EVIDENCE_STORED`, 공개 guard는 `GUARD_NOT_EVALUATED`이며 일반 실행의 자동 복구는 아직 연결하지 않았다.
+
+이전 provider 단계의 변경 영향 Python 23파일 `779 passed, 163 subtests passed in 654.67s (0:10:54)`, Node 66개 PASS다. 실제 파일 원장과 HTTP mock, 저장 결과의 API·Node 표시를 확인했다. 실제 외부 모델·검색 호출과 새 브라우저 검증은 0회다. [실행 계약·한계](../../out/development_plan_20261010/r6_provider_api_KO.md), [Python 검증](../../out/development_plan_20261010/r6_provider_final_receipt.json), [Node 검증](../../out/development_plan_20261010/r6_provider_node_receipt.json)을 따른다. 아래 이전 단계의 수치는 당시 증거이며 이번 수치와 합산하지 않는다.
+
+[80건 검토 큐](../../out/development_plan_20261010/actual80_review_queue_v1/review_guide.md)를 준비했다. 원래 입력 순서 80행에 112관측·관측별 후보 기록 121개를 연결했고 중복 게시물 32개를 별도 표본으로 세지 않았다. WORK 2·NIL 6은 기존 모델 참조, UNJUDGED는 72건이다. 사람 정답·학습 준비는 모두 0건이며 전 행이 개발에 노출됐다. 후보 결손 3행과 미검토 이미지 21행을 검토 순서에 반영했지만 정답·역할·사용 권리를 채우지 않았다. [검산 수령증](../../out/development_plan_20261010/actual80_review_queue_v1/verification_receipt.json)에 원본 46개·이전 준비 파일 5개의 보존 근거를 남겼다.
+
+당시 남은 범위는 P4 실제80·새 브라우저, 실제 corpus·사람 판정·TRAIN/CAL/FROZEN 품질, R5 실측, R6 native 공개 guard·자동 복구·실제 품질이었다. 현재 native 연결과 미완료 범위는 위 최신 기록을 따른다. 당시 R6 후속 계획은 [native guard 개발 메모](../../out/development_plan_20261010/r6_native_guard_next_steps_KO.md)를 따른다. 기존 자동 승인 차단을 재시도하지 않았으며 formal KPI는 `NOT_ESTIMABLE`, Goal은 active, R7은 보류다.
+
+- [x] 원본에 결속한 provider 근거 수집·영속 예산·재시작·독립 판독·명시 main/API/화면을 로컬 검증했다.
+- [x] 현재 80건의 원문·저장 후보·기존 참조를 보존한 검토 큐를 만들고 바이트 결속을 검산했다.
+- [ ] 원문 근거와 사용 권리를 검토하고 작품 ID·역할·NIL 사람 판정을 별도 자료로 확정한다.
+- [x] R6 일반 main 자동 복구와 native 대시보드의 로컬 연결을 검증했다.
+- [ ] R6 적격 실제 자료의 복구 품질·비용을 평가한다. 로컬 합성 검증은 실제 품질 수용이 아니다.
+
+- [x] [R5 저부하 paired 계측](PAIRED_LOW_LOAD_MEASUREMENT_20261010_KO.md)의 버전별 계약·실행 연결·저장·독립 판독·화면을 구현했다. Python51파일·1147개 시험·210개 하위 시험과 Node26개 PASS, reader 행 결속 보강 후 영향9파일·269개 시험·97개 하위 시험 PASS, 독립18개와 합성 화면 PASS.
+- [ ] R5 적격 원본과 실제 BEFORE/AFTER를 실행하고 비용·품질 비교 조건을 검산한다. 현재 실측0·NOT_ESTIMABLE이다.
+
+## 2026-10-10 개발 계획
+
+- [x] [R4 로컬 계약과 연결](CANDIDATE_RERANKER_SHADOW_20261010_KO.md)을 검증했다. 초기 v1 Python44파일·916개 시험·139개 하위 시험, Node25개·독립 검토·브라우저 PASS. 당시 상태는 LOCAL_CONTRACTS_VERIFIED_MODEL_AND_ACTUAL_DATA_PENDING이었으며 이후 일반 입력 추론을 연결했다. 현재는 [actual bridge 로컬 검증](R4_ACTUAL_BRIDGE_20261010_KO.md)까지 완료한 ACTUAL_BRIDGE_LOCAL_VERIFIED_ACTUAL_END_TO_END_AND_DATA_PENDING이다. 적격 실자료의 전체 성공·품질 수용은 미검증이다.
+- [x] R4 원문 preselection·고정 후보 ID·OFF 무동작·SHADOW 비개입·오류 시 보류, split/role/ID bridge 검산을 구현했다. 회귀시험/helper13개의 Git 제외 예외를 추가했다.
+- [x] R4 pairwise 선형 학습·새 후보 점수화·CLI 저장/재판독·CAL 원시 점수 임계값·FROZEN 평가기를 구현했다. 변경 영향 Python 11파일의 403개 시험·10개 하위 시험과 Node 38개를 통과했다.
+- [x] R4 NIL head TRAIN 학습·manifest v3·일반 SHADOW 저장·대시보드 표시와 명시적 FROZEN event bridge를 구현했다. Python 14파일 603개·하위10개, Node40개 PASS. [NIL 운영 기록](CANDIDATE_RERANKER_SHADOW_20261010_KO.md)을 따른다.
+- [x] R4 CAL 전체 행 온도 학습·v2 근거 저장/재판독·명시적 bundle CLI·기존 FROZEN SHADOW 소비를 구현했다. Python22파일 833개·하위21개와 별도 CLI 합성 검증 PASS. [CAL 운영 기록](CANDIDATE_RERANKER_SHADOW_20261010_KO.md)을 따른다.
+- [x] R4 명시적 FROZEN 재관측의 expert_main 교정·capture 저장과 live/history 표시를 연결하고 합성 통합 검증을 완료했다.
+- [x] R4 일반 R2의 원문·후보 ID·graph 자동 공급과 새 입력의 고정 교정 추론을 연결하고 로컬 검증했다. 실제 자료의 품질·브라우저 검증은 아래 미완료 항목으로 유지한다.
+- [ ] R4 실제 source-backed TRAIN/CAL/FROZEN과 NIL 실제 학습·확률 교정·품질 평가를 완료한다. 현재 합성 학습 검증이며 formal KPI는 NOT_ESTIMABLE이다.
+- [x] R4 일반 R2 경로의 exact-title MENTIONED 관측·metadata 저장·화면 표시를 연결했다. Python 12파일494개·하위10개와 Node39개 PASS. 전체 의미 역할과 실제 품질은 아래 미완료 항목으로 유지한다.
+- [x] R4 명시 원문 관계와 검증 자료의 별칭 관측을 expert_main·capture·화면 소스에 연결하고 Python·Node 합성 회귀로 검증했다.
+- [x] R4 합성 저장 의미 관측 3사례의 live/history 6화면을 현재 IAB에서 확인했다. 정상 관측·미실행·capture 실패, API=저장값과 콘솔 오류·경고0을 검산했다. [새 화면 근거](../../out/development_plan_20261010/p4_reapproval_v1/semantics_browser_v1/receipt.json). 이전 Chrome 차단은 이력으로 보존하며 의미 모델 소비 성공·실자료 품질은 별도다.
+- [x] R4 새 의미 정책을 pairwise/NIL 학습·실제 점수·전체 CAL·고정 FROZEN·실행 저장에 연결하고 합성 로컬 회귀로 검증했다.
+- [ ] R4 실제 자료의 별칭·역할과 TRAIN/CAL/FROZEN 품질 수용을 완료한다. 합성 로컬 소비 검증으로 품질 목표를 완료하지 않는다.
+
+[expert_main 통합과 대시보드 후속 개발 계획](EXPERT_DASHBOARD_DEVELOPMENT_PLAN_20261010_KO.md)을 개발 기준으로 사용한다. 첫 묶음은 P0~P4 통합·표시·설정·검증이며 연구 기능 R1~R6은 별도 단계로 진행한다.
+
+- [x] 통합 순서, 대시보드 계약, 실행 프로필, 진단 저장과 연구 기능 수용 기준을 정리한다.
+- [x] P0 적용 파일과 백업 명세 확정 후 P1 최신 실행 코드를 기본 폴더에 통합했다. 연구 변경6개와 원본 worktree를 보존했다.
+- [x] P2 사유·메모·NSFW·중첩 이력·행별/실행별 R08 표시를 보완하고 원본32 화면을 확인했다.
+- [x] P3 유효 설정과 문맥·발화 진단의 저장 계약을 추가하고 producer→API→화면 연결을 확인했다.
+- [x] Python25파일468개＋subtests84개와 표시22개, 실제 브라우저 검증을 통과했다. [구현 기록](EXPERT_DASHBOARD_IMPLEMENTATION_20261010_KO.md)에 근거를 남겼다.
+- [ ] P4 최종 소스의 시험·브라우저·실제80 검증을 각각 기록한다.
+
+2026-10-10 당시 P4는 시험·브라우저 PASS와 서비스 준비 확인까지 마쳤으나 새80 실행은 자동 승인 검토의 `blocked by policy`로 미시작이었다. 당시 차단 수령증은 보존한다. 이후 재승인 실행·최신 소스 및 설정 지문·실제 화면 관측과 남은 종료/의미 검토는 [현재 P4 운영 인계](P4_REAPPROVAL_RUN_20261010_KO.md)를 따른다. 과거 차단을 현재 미실행 판정으로 재사용하지 않는다.
+
+- [x] [R1 읽기 전용 snapshot](RESEARCH_EVALUATION_SNAPSHOT_20261010_KO.md)을 구현하고 시험28개와 기존80/32 자료 검산을 통과했다.
+- [x] [R2 후보 회수 SHADOW](CANDIDATE_RETRIEVAL_SHADOW_20261010_KO.md)의 adapter·pipeline·저장·표시·평가기를 구현했다. 통합608개＋subtests122개·표시23개와 실제 화면 검증을 통과했다.
+- [ ] R2 실제 corpus·참조 ID 대응과 성능 평가를 준비한다. 현재 실제 회수 성능은 NOT_ESTIMABLE이다.
+- [x] [R3 커뮤니티 지식 READ_ONLY](COMMUNITY_KNOWLEDGE_READ_ONLY_20261010_KO.md)의 로컬 저장·조회·실제 Decoder 소비·저장·화면을 구현했다. Python 37개 파일의 시험 726개와 하위 시험 132개, 화면 표시 시험 24개와 브라우저·독립 검토 PASS.
+- [ ] R3 실제 source-backed corpus·sense 참조와 품질 평가를 완료한다. 현재 실제 품질은 NOT_ESTIMABLE이다.
+- [x] [R5 저부하 paired 준비 계약](../../out/development_plan_20261010/r5_implementation_contract_KO.md)을 읽기 전용으로 작성했다.
+- [x] [R6 제한 복구 실행기](BOUNDED_RECOVERY_EXECUTION_20261010_KO.md)의 합성 계획 결속·별도 원장·예산·취소·최종화·판독을 구현·검증했다. Python 15파일의 405개 시험·179개 하위 시험을 저부하 조건에서 통과했다.
+- [x] R6 별도 main 합성 실행·보고서 참조·live/history 연결과 단일 HTTP 요청 제어를 구현했다. 당시 검증은 Python13파일 382개·하위45개와 Node37개, 브라우저·main 프로세스 합성 PASS다. 후속 [일반 main 전체 CLI 검증](EXPERT_ENTRY_COMPLETION_REVIEW_20261010_KO.md)에서 provider→native 동일 guard·별도 저장까지 로컬 연결을 확인했다. 실자료 복구 품질·비용은 미검증이다.
+- [x] R6 일반 main 자동 복구와 native 대시보드의 로컬 연결을 검증했다.
+- [ ] R6 적격 실제 자료의 복구 품질·비용을 평가한다. 로컬 합성 검증은 실제 품질 수용이 아니다.
+
+아래 적용 누락 목록은 이 계획의 같은 작업을 가리키며 별도 중복 개발 범위가 아니다.
+
+## 2026-10-10 적용 누락 확인 후속
+
+[대시보드·expert_main 점검](DASHBOARD_EXPERT_MAIN_COVERAGE_AUDIT_20261010_KO.md)에서 최신 코드의 실행 연결과 현재 화면 누락을 구분했다.
+
+- [x] 기본 폴더와 `233b` 변경을 보존하며 최신 실행 코드를 통합했다.
+- [x] 분석 메모를 판정 사유와 별도로 보여주고 명시된 실행 모드를 표시한다. 미기록 모드는 UNKNOWN이다.
+- [x] 중첩 결과 manifest를 실행 이력에서 조회하도록 연결했다.
+- [x] R08 호출·저장 연결·formal KPI 미추정을 일반 토큰 카드와 구분해 표시했다.
+
+## 2026-10-10 통합 인계 후속
+
+- [x] 주요 채팅11개, 완료·미완료 이력과 두 작업 폴더 차이를 [통합 인계](PROJECT_CHAT_HANDOFF_20261010_KO.md)에 정리했다.
+- [x] 최신 `233b`의 10월8일 G1~G7 완료와 formal KPI `NOT_ESTIMABLE`, 마지막 B14 후 새 전체80 미실행을 구분했다.
+- [x] 최신 worktree의 미커밋 코드·시험·증거와 이 폴더의 변경을 보존하며 통합 계획을 수립하고 선별 적용했다.
+- [ ] 후속 개선은 인계 문서의 남은 한계 중 하나를 골라 목표·분모를 정한다. 과거 미완료 상태를 최신 상태로 되돌리지 않는다.
+
+## 2026-09-14 현재 범위와 진단 완료
+
+- [x] 네 작업의 문제·회의·실행 결과를 [Astra 인계 문서](GPT6_ASTRA_RESEARCH_HANDOFF_20260906_KO.md)로 연결하고 기존 goal 원본을 보존한다.
+- [x] 합성 첫 tranche 완료와 실제 로컬 모델 품질 미측정, 보류 P0를 구분한다.
+- [x] 다음 단위: 기존 연구 runner에서 후보 회수 실패·선택 실패·실제 NIL·ABSTAIN을 구분한다. 입력·산출물·종료조건은 [현재 goal](../../goal.md)을 따른다.
+- [x] 기존 16건과 challenge 4건의 분모·행별 retrieval/selection trace·failure stage를 분리 보존한다.
+- [x] dashboard ON과 요청 `--parallel 16`으로 baseline `16/16`, challenge `16/4`를 실행하고 독립 terminal validator를 통과시킨다.
+- [x] focused `10/10`, 세 Python 파일 `py_compile PASS`, baseline/challenge artifact integrity를 기록한다.
+- [x] 검증된 `expert_main.py` configured vLLM endpoint로 `local_llm` A/B를 실행하고, 이전 `UNAVAILABLE` run과 별도 산출물로 보존한다.
+
+상세 결과와 게이트 상태는 [후보 회수·선택 진단 보고서](RESEARCH_CANDIDATE_SELECTION_DIAGNOSTICS_20260914_KO.md)를 따른다.
+
+## 2026-09-14 실행·검증 workflow
+
+- [x] dashboard 준비부터 baseline/challenge 실행, child terminal validator, focused unittest, 한국어 report까지 묶는 얇은 wrapper를 추가한다.
+- [x] 실제 end-to-end workflow를 새 `out/research/research_workflow_20260914_automated_e2e`에서 실행한다.
+- [x] requested/effective `16/16`, `16/4`, dashboard `CONNECTED`, child validator `PASS`, focused `14/14 PASS`를 기록한다.
+- [x] 기존 diagnostic artifact를 보존하고 local LLM 부재를 `UNAVAILABLE`으로 유지한다.
+- [ ] 별도 후속: weights 또는 검증된 loopback endpoint가 준비되면 같은 workflow에 `local_llm` A/B 인자를 넣어 실행한다.
+
+아래 날짜별 완료 내역은 보존한다. 과거의 active/다음 단계/반복 지시는 현행 범위를 덮어쓰지 않는다. 새 발견을 현재 완료조건에 자동 추가하지 않는다.
+
+## 2026-09-14 expert_main vLLM 연결 후속
+
+- [x] `expert_main.py`의 endpoint `http://10.20.0.101:8000/`, model `unsloth/gemma-4-26B-A4B-it-NVFP4`와 `/v1/models` vLLM 응답을 확인한다.
+- [x] benchmark request에 `enable_thinking=false` 계약을 반영하고 configured remote vLLM opt-in을 추가한다.
+- [x] `out/research/research_workflow_20260914_expert_main_vllm`에서 dashboard ON, requested `--parallel 16`, effective `16/4`, child validator PASS로 baseline/challenge를 완료한다.
+- [x] local_llm terminal `UNAVAILABLE=0`: baseline `16/16`, challenge `1/4`; terminal 분모의 `NIL/ABSTAIN/ERROR` 보존을 확인한다.
+- [x] llama-server를 정본 경로로 사용하지 않았고, 모델 설치·central Slang DB·production/publication 쓰기를 하지 않는다.
+- [x] 2026-09-15 재개에서 새 configured vLLM workflow를 `--parallel 16`, fingerprint 포함 명시적 opt-in으로 실행하고 새 output에 보존한다.
+- [x] workflow builder가 endpoint·model·fingerprint 부분 조합과 opt-in 단독 사용을 fail-closed로 거부하는 회귀 테스트를 추가한다.
+- [ ] challenge 4건 이후 추가 seed/repeat 또는 rights-safe 데이터 확대는 별도 연구 단위로 승인한 뒤 진행한다.
+
+## 2026-09-15 workflow-level 진단 보존
+
+- [x] child metrics의 `case_type_counts`, `expected_action_counts`, `failure_stage_counts`, `candidate_recall`, `conditional_selection`을 workflow manifest/report에 보존한다.
+- [x] 최종 output `out/research/research_workflow_20260915_diagnostics_manifest_vllm_v2`에서 challenge 네 failure stage, Recall@5 `2/3`, 조건부 selection `0/1`을 workflow-level로 검증한다.
+- [x] focused `18 tests OK`, child validator, workflow self-hash, dashboard `CONNECTED`, requested/effective `16/16`·`16/4`를 재확인한다.
+- [x] `challenge-001`의 BM25 top-5와 gold lexical anchor 부재를 재확인하고, selection prompt를 후보 회수 수정으로 오인하지 않는다.
+- [ ] challenge failure stage별 실제 개선은 score semantics를 바꾸지 않는 별도 연구 단위로 진행한다.
+- [ ] verified semantic candidate-generation arm은 별도 승인 후 기존 BM25 arm과 분리해 비교한다.
+
+## 2026-09-05 활성 연구 트랙
+
+- [x] 16건 self-created synthetic fixture와 source·retention·single-curator gold-lite·4건 blind recheck를 추가한다.
+- [x] lexical baseline, pure-Python BM25, reranker+NIL/ABSTAIN, optional loopback local LLM arm을 분리 구현한다.
+- [x] `ERROR/UNAVAILABLE/ABSTAIN/NIL`을 headline 분모에서 유지하고 evaluable-only 수치를 진단으로 분리한다.
+- [x] input/gold/config/prompt/code/Git/model/runtime/dependency fingerprint를 manifest에 기록한다.
+- [x] output을 `out/research/`로 제한하고 중앙 Slang DB·publication/P0 authority를 false로 고정한다.
+- [x] dashboard ON, `--parallel 16` actual validation과 manifest/metric 검증을 실행한다.
+- [x] focused test·재현성·protected endpoint 비간섭 감사 후 문서에 terminal artifact를 기록한다.
+- [ ] 별도 후속: 실제 weights SHA 또는 endpoint/model metadata SHA가 있는 로컬 모델이 준비되면 local LLM arm을 비교한다.
+- [ ] 별도 후속: 권리 확인 사용자 제공/라이선스 데이터의 평가 범위를 정한다.
+- [ ] 별도 후속: 실제 후보 누락 진단이 요구할 때 open-corpus/dense/RRF 또는 학습 reranker 하나를 비교한다.
+
+이 세 후속은 현재 후보 회수·선택·NIL 진단의 완료조건이 아니다.
+
+외부 fixed store·서명·trusted runtime·owner numerical policy·review authority 관련 미완료 항목은 `DEFERRED_P0_AUDIT_TRACK`이다. 완료 처리하지 않지만 현재 연구 순서나 acceptance를 막지 않는다.
+
+## 2026-09-04 P0 A-context lineage-capped full-frame V2 후속
+
+- [x] 기존 A-context V1을 바꾸지 않는 additive lineage frame·seed·2단계 plan과 producer-free parent를 구현한다.
+- [x] source lineage를 먼저 층별 `5`개 선택하고 lineage 내부 context를 `1`개만 선택해 동일 lineage의 span/revision/mirror 표본 독점을 막는다.
+- [x] source 5+bridge 1+A 5의 11 raw, content/surface/time/registry cross-binding, strict chronology와 no spill/backfill/replacement를 결속한다.
+- [x] fixture `80 contexts→40 lineages→20 selected`, context surplus `60`, lineage surplus `20`, exact 확률·weight와 iid false를 검증한다.
+- [x] focused `24/24`, 인접 `132/132`, host 전체 P0 `1037/1037`, compile, 중앙 DB/journal `6/6` 비간섭을 확인한다.
+- [x] component manifest `c1080b53…250b`, downstream wiring `0`, actual `0/40·0/20`, metric/P0/production/full scan `NO_GO`를 고정한다.
+- [x] owner intake template에 lineage V2 exact raw/manifest/chronology/cap과 V3→V4·rights·sampling·review 최소 handoff 증거를 반영하고 current receipt `f3537ed2…8d42`를 재확인한다.
+- [x] 통계·MLOps 다음-gate 재회의에서 owner-signed numerical policy interface를 채택하고 새 compiler/receipt·V3 wiring은 `IMPLEMENTATION_DEFERRED`로 판정한다.
+- [x] 3차 current-state 감사에서 두 ProgramData fixed store와 workspace external package 부재, fresh receipt `f3537ed2…8d42`, focused `12/12`, endpoint `6/6` 불변을 재확인한다.
+- [x] 동일 외부 blocker 3회 반복과 안전한 내부 작업 부재를 근거로 `BLOCKED_EXTERNAL_PROVISIONING_REQUIRED` handoff를 확정한다.
+- [ ] 외부 rights/retention·capture·owner/runtime authority와 actual 이중맹검 검토 전에는 subject/target/packet V3나 Pyserini·gold-lite를 열지 않는다.
+- [ ] 외부 owner가 exact V3/V4 store·trust/runtime·rights/capture·label 전 actual 40+20 numerical policy·review authority를 provision한다.
+
+상세: [`P0_PRESENTED_A_CONTEXT_LINEAGE_CAPPED_FULL_FRAME_V2_REVIEW_20260904_KO.md`](P0_PRESENTED_A_CONTEXT_LINEAGE_CAPPED_FULL_FRAME_V2_REVIEW_20260904_KO.md), [`P0_LINEAGE_V2_NEXT_GATE_EXPERT_COUNCIL_20260904_KO.md`](P0_LINEAGE_V2_NEXT_GATE_EXPERT_COUNCIL_20260904_KO.md), [`P0_EXTERNAL_PROVISIONING_BLOCKED_HANDOFF_20260904_KO.md`](P0_EXTERNAL_PROVISIONING_BLOCKED_HANDOFF_20260904_KO.md). pure unit/static/read-only 검증이라 dashboard와 `--parallel 16`은 적용하지 않는다.
+
+## 2026-09-04 P0 HTTP temporal evidence V2 후속
+
+- [x] capture-intake V1을 변경하지 않는 additive temporal child와 producer-free parent를 구현한다.
+- [x] HTTP `Date`·`Last-Modified`를 page revision과 분리하고 limited JSON-LD/Open Graph/`data-version` exact marker span만 presented observation으로 수용한다.
+- [x] 미래·unknown-offset·chronology, locator swap/overlap/crop, nested marker, wrong attribute suffix, pre-hash budget과 runtime callable 변조 공격을 닫는다.
+- [x] normalized scalar 노출, capture-bound observation identity, pure replay idempotency의 비권위 경계를 명시한다.
+- [x] focused `25/25`, 인접 `135/135`, 전체 P0 `1013/1013`, compile, 중앙 DB/journal `6/6` 비간섭을 확인한다.
+- [x] A-context full frame V2에서 동일 source lineage가 nominal 20을 중복 점유하지 못하도록 lineage cap과 surplus 규칙을 고정한다.
+- [ ] 외부 rights/retention·trusted capture/runtime·owner·actual `40+20` 전 metric/P0/Pyserini/gold-lite/production/full scan을 열지 않는다.
+
+상세: [`P0_PRESENTED_HTTP_CAPTURE_TEMPORAL_EVIDENCE_V2_REVIEW_20260904_KO.md`](P0_PRESENTED_HTTP_CAPTURE_TEMPORAL_EVIDENCE_V2_REVIEW_20260904_KO.md). pure unit/static/read-only 검증이라 dashboard와 `--parallel 16`은 적용하지 않는다.
+
+## 2026-09-04 P0 V3→V4 transition/readiness V2 후속
+
+- [x] 9-role transition parent, 21-role·9-file·3-watch fixed-store observer, always-NO_GO readiness compiler V2를 additive component로 구현한다.
+- [x] supplied V4 replay·V3 10-field pin·signed/live identity·class/`ntpath`/Win32 constants·endpoint path/traversal·watch scope·exact int red-team을 닫는다.
+- [x] raw marshal 실행순서 오판을 code-object identity+stable digest로 교체하고 public store boundary+compiler 외부 pin으로 integrity checker no-op 변조를 거부한다.
+- [x] stable-digest 1,000회, store/compiler 각 2회 결정성, focused `40/40`, adjacent `149/149`, 전체 P0 `982/982`를 확인한다.
+- [x] 최종 store/compiler receipt `1012a6b3…b5475` / `f3537ed2…8d42`, endpoint `6/6` stable, 6파일 noninterference receipt `6033c6d0…204e`를 기록한다.
+- [x] current host `FIXED_STORE / NO_GO`, actual `0/40·0/20`을 확인한다.
+- [ ] 외부 owner가 exact V3/V4 store, 독립 key/pin, trusted time/revocation/durable nonce, root/code authority, OS write deny와 signed runtime witness를 provision한다.
+- [ ] 21-role success 경로와 실제 source40/context20을 검증하기 전 P0 Exit·Pyserini·gold-lite·reranker/NIL·production/full scan을 열지 않는다.
+
+상세: [`P0_WINDOWS_OWNER_POLICY_V4_TRANSITION_AND_READINESS_COMPILER_V2_REVIEW_20260904_KO.md`](P0_WINDOWS_OWNER_POLICY_V4_TRANSITION_AND_READINESS_COMPILER_V2_REVIEW_20260904_KO.md). unit/static/read-only 검증이라 dashboard와 `--parallel 16`은 적용하지 않는다.
+
+## 2026-09-03 P0 seed8 권리·접근 후속
+
+- [x] seed8 current access/robots/terms/license 신호를 재조사하고 자동 capture 승인 `0/8`을 기록한다.
+- [x] Arca 1건을 조건부 clearance 후보, DC2/FMK1/Tanma4를 permission-required로 분리한다.
+- [ ] exact policy/robots bytes snapshot과 site·author·owner가 서명한 rights/retention authorization artifact를 받는다.
+- [x] transport time과 page-native published/modified/version evidence를 분리하는 additive presented-only schema를 구현한다. actual capture 권위는 계속 별도 gate다.
+- [ ] 승인된 행만 text/article 최소 범위로 capture하고, 403/429/challenge·no-store/noarchive 미승인 시 즉시 중단한다.
+- [ ] source40/context20 이중맹검과 P0 Exit 전 BM25/gold-lite/reranker/NIL·production을 열지 않는다.
+
+상세: [`P0_SEED8_RIGHTS_ACCESS_READINESS_REVIEW_20260903_KO.md`](P0_SEED8_RIGHTS_ACCESS_READINESS_REVIEW_20260903_KO.md)
+
+## 2026-09-03 P0 capture-intake·V4 epoch2 fixed-store 후속
+
+- [x] presented HTTP capture-intake child/독립 parent와 공격 회귀를 구현하고 actual/semantic/index/publication/metric credit을 0으로 고정한다.
+- [x] V4 packet-V2 fixed-store의 zero-input held-handle observer와 strict parent replay를 구현하고 다단계 red-team을 통과한다.
+- [x] focused `31+19`, 인접 `84+104`, 전체 P0 `942/942`, compile, endpoint `6/6` 비간섭을 재검증한다.
+- [ ] external owner가 정확한 V4 store와 live V3 continuity 또는 동등한 predecessor 증거, trusted state/root/code/write-deny/runtime witness를 공급한다.
+- [ ] 승인된 전용 raw root와 실제 seed 8개 bytes·capture/rights/retention evidence를 공급한다.
+- [ ] 위 gate와 actual `40 claims + 20 contexts` 이중맹검 검토 전 Pyserini BM25·gold-lite·reranker/NIL A/B를 시작하지 않는다.
+
+상세: [`P0_PRESENTED_HTTP_CAPTURE_INTAKE_V1_REVIEW_20260903_KO.md`](P0_PRESENTED_HTTP_CAPTURE_INTAKE_V1_REVIEW_20260903_KO.md), [`P0_WINDOWS_OWNER_POLICY_V4_EPOCH2_FIXED_STORE_REVIEW_20260903_KO.md`](P0_WINDOWS_OWNER_POLICY_V4_EPOCH2_FIXED_STORE_REVIEW_20260903_KO.md)
+
+## 2026-09-03 P0 seed inventory·owner policy V4 후속
+
+- [x] exact seed URL 8개, Track A/B `3/5`, lineage family `4`의 candidate inventory와 producer-free parent를 완료한다.
+- [x] legacy 7-artifact identity·raw 통계·stale binding·서로 다른 pool grain의 합산 금지를 봉인한다.
+- [x] signed owner policy V4에서 packet V2 pin/algorithm/domain/5 component pin과 V3 predecessor body/signature/receipt를 결속한다.
+- [x] owner red-team의 세 차례 `REJECT` 반례를 수정하고 최종 component-only 재심을 통과한다.
+- [ ] 권위 있는 별도 root에 actual source bytes를 capture한 뒤 profile adapter/parser·rights·attestation·code identity를 검증한다.
+- [ ] 외부 owner가 V4 fixed store·key/pin·trusted time/revocation·durable nonce·root/code authority·OS write deny를 provision한다.
+- [ ] 위 두 gate와 human-review frame 전 actual 40+20, Pyserini BM25, gold-lite, reranker/NIL A/B를 시작하지 않는다.
+
+상세: [`P0_PRESENTED_SOURCE_SEED_CANDIDATE_INVENTORY_V1_REVIEW_20260903_KO.md`](P0_PRESENTED_SOURCE_SEED_CANDIDATE_INVENTORY_V1_REVIEW_20260903_KO.md), [`P0_WINDOWS_OWNER_POLICY_V4_PACKET_V2_PROFILE_REVIEW_20260903_KO.md`](P0_WINDOWS_OWNER_POLICY_V4_PACKET_V2_PROFILE_REVIEW_20260903_KO.md)
+
+## 2026-09-03 P0 packet/Windows/preauthorization/supervisor V2 후속
+
+- [x] packet V2의 `upstream11 + subject2 + target2 = child15`, manifest 포함 member16 계약을 확정한다.
+- [x] held-handle Windows V2를 별도 구현하고 packet parent·독립 target-parent 실행 횟수와 bounded truth를 정확히 기록한다.
+- [x] owner preauthorization V2에서 raw3·P-256 low-S·ordered16·signed root를 결속하고 manifest split-view를 차단한다.
+- [x] supervisor V2가 동일 child callable 1회와 packet-dir/raw3/child output의 exact step receipt를 봉인하도록 한다.
+- [x] 독립 암호·MLOps·red-team, focused `15/26/16/18`, 전체 P0 `836/836`, 보호 endpoint `6/6`을 확인한다.
+- [ ] externally provisioned owner key policy, trusted clock/revocation, durable nonce, root/code authority, OS write deny와 isolated runtime witness를 마련한다.
+- [ ] 실제 source40/context20과 dual-blind review authority 전에는 metric, Pyserini BM25, gold-lite, reranker/NIL A/B, P0/production/full scan을 시작하지 않는다.
+
+상세: [`P0_OWNER_ROOT_PREAUTHORIZATION_V2_SUPERVISOR_REVIEW_20260903_KO.md`](P0_OWNER_ROOT_PREAUTHORIZATION_V2_SUPERVISOR_REVIEW_20260903_KO.md)
+
+## 2026-09-03 P0 A-context annotation-event V2 후속
+
+- [x] subject20 전용 result-free target/precommit을 additive component로 구현한다.
+- [x] fixed response semantics, exact 15-role pins, strict chronology, iid false/source cluster 경계를 봉인한다.
+- [x] producer-free composed parent와 red-team 6건을 닫고 focused `19/19`, adjacent `133/133`, P0 `761/761`을 확인한다.
+- [x] packet V2 inventory를 `upstream11 + subject2 + target2 = child15`, manifest 포함 member16으로 전문가 재회의에서 확정했다.
+- [x] packet/Windows/preauth/supervisor V2를 같은 version boundary로 추가하고 V1 13-child/14-member/4-step을 보존했다.
+- [ ] external authority와 actual annotation 전 actual `0/40·0/20`, metric/P1/production/full scan `NO_GO`를 유지한다.
+
+상세: [`P0_PRESENTED_A_CONTEXT_ANNOTATION_EVENT_V2_TARGET_PRECOMMIT_REVIEW_20260903_KO.md`](P0_PRESENTED_A_CONTEXT_ANNOTATION_EVENT_V2_TARGET_PRECOMMIT_REVIEW_20260903_KO.md)
+
+## 2026-09-03 P0 A-context annotation subject V2 후속
+
+- [x] source40·bridge40·A selected20을 결과 없는 subject20/precommit에 결속한다.
+- [x] producer-import 없는 parent에서 11 upstream raw의 구조적 파생값과 2 output을 독립 재생한다.
+- [x] 전문가 회의와 coherent red-team 공격 13종, producer-valid parity 3종을 통과한다.
+- [x] focused `19/19`, adjacent `114/114`, P0 `742/742`, manifest parity와 protected endpoint `6/6`을 확인한다.
+- [x] subject20 전용 A-event V2 target/precommit을 label-blind additive component로 설계·반대검토한다.
+- [x] 별도 packet V2에서 upstream 11 raw pin, output 4 child, fixed-member/Windows/preauth/supervisor를 같은 V2 경계로 추가했다.
+- [ ] external capture/owner/human authority 전 actual `0/40·0/20`, metric/P1/production/full scan `NO_GO`를 유지한다.
+
+상세: [`P0_PRESENTED_A_CONTEXT_ANNOTATION_SUBJECT_V2_PRECOMMIT_REVIEW_20260903_KO.md`](P0_PRESENTED_A_CONTEXT_ANNOTATION_SUBJECT_V2_PRECOMMIT_REVIEW_20260903_KO.md)
+
+## 2026-09-03 P0 presented A-context full frame 후속
+
+- [x] caller-supplied A frame SHA만 검증하던 공백과 기존 packet의 coordinated reseal 반례를 재현한다.
+- [x] pre-label full census, profile `5×4`, future-seed selected 20과 exact surplus partition을 별도 component로 구현한다.
+- [x] producer-import 없는 parent, exact scalar/raw bounds, chronology/cross-binding 공격을 검증한다.
+- [x] 전문가 최종 `ADOPT_COMPONENT_ONLY`, focused `18/18`, adjacent `73/73`, P0 `723/723`, protected endpoint `6/6` 불변을 확인한다.
+- [x] packet V2에서 source/A frame SHA와 annotation subject/target을 결속하고 Windows/preauthorization/supervisor V2까지 완료한다.
+- [x] 8개 exact seed URL candidate inventory와 lineage/status shadow schema를 component-only로 완료한다.
+- [ ] actual source bytes를 별도 root에 capture한 뒤 profile adapter/parser·rights·attestation·code identity를 검증한다.
+- [x] 2026-09-04 hardening에서 census builder에 exact `64,000,000`-byte 전체 상한, `64,000`-byte 행 상한과 실제 enumerate-loop `1,000,000`행 상한을 적용했다. candidate retain 전 sequence=1 canonical row lower bound로 명백한 초과를 조기 거부하고, deterministic sort 뒤 실제 sequence 기준 pre-append 검사로 exact 경계를 재확인한다. producer·독립 parent parser는 offset/newline 증분 scan과 append 전 shape/semantic callback 검증을 사용한다. focused `24/24`, 인접 8모듈 `158/158`, 전체 P0 `988/988` PASS다. 완전한 constant-memory streaming은 아니며 유효 모집단 정렬·결과 목록 메모리는 유지한다.
+- [ ] actual `0/40·0/20`, metric/P0/P1/production/full scan `NO_GO`를 외부 권위와 실제 검토 전 유지한다.
+
+상세: [`P0_PRESENTED_A_CONTEXT_FULL_FRAME_V1_REVIEW_20260903_KO.md`](P0_PRESENTED_A_CONTEXT_FULL_FRAME_V1_REVIEW_20260903_KO.md)
+
+## 2026-09-03 P0 dual-blind external authority·dispatch readiness 후속
+
+- [x] fixed owner-policy store 부재와 v3/provisioning preflight의 `FIXED_STORE / NO_GO`를 current-host receipt로 재확인한다.
+- [x] 검색·통계·MLOps 회의에서 기존 bulk queue·owner key·public receipt/process-local state 직접 재사용을 기각한다.
+- [x] immutable trust store/mutable CAS 경계, CSPRNG task-ID 재결속 우선 순서와 `P/T/J/D/E/R/A/F` 결과 상태기계를 문서로 동결한다.
+- [ ] 외부 운영자가 immutable fixed store에 distinct campaign/lease/lease-expiry-terminal/final/reviewer/encryption pins와 root identity를 provision한다.
+- [ ] 별도 mutable service가 monotonic epoch·signed revocation·trusted time과 rollback-resistant uniqueness/nonce/lease/fetch CAS를 제공한다.
+- [ ] reviewer principal/SID와 dispatcher service image/token/ACL/WDAC 단일 interval 증거를 제공한다.
+- [ ] 위 상태가 실제로 존재한 뒤 먼저 `P0_EXTERNAL_OPAQUE_TASK_REBINDING_PRECOMMIT_V1`을 구현·재회의하고, 그 다음 read-only lease preflight를 구현한다.
+- [ ] lease issuance `ABSENT→ISSUED`, staged-object 비노출, fetch+capability activation `ISSUED→FETCHED_ONCE`를 transactional outbox/단일 linearization point와 crash tests로 구현한다.
+- [ ] 그 전에는 actual primary `P=0/80`, pair `T=0/40`, both-judged `J=0/40`, `D=null`, final `F=0/40`, P0/P1/production/full scan NO-GO를 유지한다.
+
+상세: [`P0_DUAL_BLIND_EXTERNAL_AUTHORITY_DISPATCH_READINESS_REVIEW_20260903_KO.md`](P0_DUAL_BLIND_EXTERNAL_AUTHORITY_DISPATCH_READINESS_REVIEW_20260903_KO.md)
+
+## 2026-09-03 P0 presented dual-blind campaign precommit 후속
+
+- [x] 새 campaign의 input 40, primary 80, pair 40, reserve capacity 40, total assignment 120을 결과 입력 없이 봉인한다.
+- [x] fixed guideline·response schema, evaluator-private map과 opaque-ID 정렬 reviewer task를 분리하고 과거 presented result import를 금지한다.
+- [x] reviewer/key/fingerprint/principal/group 분리, common presented anchor, canonical gold-set disagreement, nonjudged primary 비대체와 `D=null` derivation을 고정한다.
+- [x] producer-import 없는 parent, manifest literal anchor, 16/32/32 MiB accept-set과 계약 예외 정규화를 검증한다.
+- [x] 전문가 최종 `ADOPT_COMPONENT_ONLY`, focused `21/21`, adjacent `65/65`, P0 `705/705`, runtime refs `0`, packet 13-child, endpoint `6/6` 불변을 확인한다.
+- [ ] 외부 fixed key store, principal/group 사실성, trusted time/revocation/key epoch와 durable nonce/lease를 provision한다.
+- [ ] 암호학적 opaque ID와 reviewer별 단일-task ACL/dispatch receipt로 실제 blinding을 증명한 뒤 primary terminal `80/80`을 수집한다.
+- [ ] canonical disagreement `D`건만 adjudicate하고 final judged `40/40`·final attestation 전에는 metric·credit·BM25/gold-lite/reranker/NIL·P0/production을 열지 않는다.
+
+상세: [`P0_PRESENTED_DUAL_BLIND_REVIEW_CAMPAIGN_PRECOMMIT_V1_REVIEW_20260903_KO.md`](P0_PRESENTED_DUAL_BLIND_REVIEW_CAMPAIGN_PRECOMMIT_V1_REVIEW_20260903_KO.md)
+
+## 2026-09-03 P0 presented neutral review signature math v1 후속
+
+- [x] campaign policy, review lease, human result, final attestation의 role·purpose·signature domain을 기존 owner 서명과 분리한다.
+- [x] canonical pin/subject/payload/envelope raw binding, RFC 5480 fingerprint, P-256 low-S와 Windows CNG 검증을 구현한다.
+- [x] producer import 없는 parent가 원문과 child receipt 전체를 재구성하고 CNG 검증을 반복한다.
+- [x] semantic/operational promotion payload, kind replay, coordinated substitution, malformed SHA/type, invalid time, replay·same-key 4-role와 receipt 승격 공격을 회귀로 고정한다.
+- [x] 세 전문가 최종 `ADOPT_COMPONENT_ONLY`, focused `19/19`, adjacent `69/69`, P0 `684/684`, runtime refs `0`, packet 13-child, endpoint `6/6` 불변을 확인한다.
+- [ ] 외부 fixed store/roster와 역할별 distinct key, trusted time/revocation/durable nonce/lease를 실제 provision한다.
+- [ ] 새 campaign precommit 아래 입력별 blind primary 2인과 불일치 제3 adjudicator, authority-qualified 40/40 accounting을 별도 successor로 구현·실증한다.
+- [ ] 그 전에는 기존 presented 40건의 사후 actual 승격, metric·credit·BM25/gold-lite/reranker/NIL A/B, P0/production/full scan을 금지한다.
+
+상세: [`P0_PRESENTED_NEUTRAL_REVIEW_SIGNATURE_MATH_V1_REVIEW_20260903_KO.md`](P0_PRESENTED_NEUTRAL_REVIEW_SIGNATURE_MATH_V1_REVIEW_20260903_KO.md)
+
+## 2026-09-03 P0 presented neutral review accounting 후속
+
+- [x] 40개 review unit, pseudonymous roster, exactly-one assignment, precommit과 terminal result/receipt를 구현한다.
+- [x] predecessor plan/precommit expected raw pin과 full replay, standalone plan→unreviewed 계보 검증을 추가한다.
+- [x] JUDGED subset과 all-input 분모를 분리하고 `UNAVAILABLE/UNJUDGED` null semantics를 회귀로 고정한다.
+- [x] exact relation·UTF-8 dual span과 64 Ki-char review domain, 65 span 수용, 5,042-line overlong 거부를 검증한다.
+- [x] focused `25/25`, adjacent `62/62`, P0 `665/665`, compile, manifest exact, endpoint `6/6` 불변을 확인한다.
+- [ ] 외부 owner가 reviewer 신원·독립성·blinding·trusted time·signed assignment/result와 gold completeness를 제공한다.
+- [ ] actual human review 40/40과 외부 frame/runtime authority 전에는 metric·credit·BM25/gold-lite/reranker/NIL A/B를 시작하지 않는다.
+
+상세: [`P0_PRESENTED_NEUTRAL_REVIEW_ACCOUNTING_V1_REVIEW_20260903_KO.md`](P0_PRESENTED_NEUTRAL_REVIEW_ACCOUNTING_V1_REVIEW_20260903_KO.md)
+
+## 2026-09-03 P0 presented neutral batch exact-accounting 후속
+
+- [x] V2 plan 40개와 caller-presented registry/capture/payload를 exact bridge와 precommit으로 결속한다.
+- [x] 입력별 1회 실행, exact 40 result, 고정 ITT와 5-state disposition, no retry/replacement/backfill을 구현한다.
+- [x] non-error core 독립 replay, `CORE_ERROR` presented-only/factuality false, 통계 non-estimable 경계를 parent가 재생한다.
+- [x] observation review unit과 모든 40개 입력의 missed-span unit을 미검토 inventory로 봉인한다.
+- [x] focused `22/22`, adjacent `150/150`, P0 `640/640`, compile, manifest exact, endpoint `6/6` 불변을 확인한다.
+- [x] 정확히 40개 입력을 `JUDGED/UNAVAILABLE/UNJUDGED`로 닫고 neutral gold span·missed span exact set을 재생하는 presented review-accounting successor를 설계·재회의한다. 실제 human review 권위는 아직 없다.
+- [ ] `unreviewed=0` 전에는 metric을 계산하지 않고, external enumeration/owner/beacon/A-frame/runtime/code authority 전에는 actual credit과 기존 route/packet/ledger 연결을 금지한다.
+
+상세: [`P0_PRESENTED_BATCH_EXACT_ACCOUNTING_V1_REVIEW_20260903_KO.md`](P0_PRESENTED_BATCH_EXACT_ACCOUNTING_V1_REVIEW_20260903_KO.md)
+
+## 2026-09-03 P0 full eligible sampling frame V2 후속
+
+- [x] 제출된 full census를 canonical bytes로 봉인하고 profile/platform/UTC-day 층별 deterministic selection을 재생하는 pure V2를 구현한다.
+- [x] producer import 없는 parent가 census·frame·seed·plan과 lineage/eligibility/quota를 원문부터 독립 검증한다.
+- [x] V1 route/protocol/worker/sandbox/packet 13-child 의미를 보존하고 V2 actual 연결을 금지한다.
+- [x] focused `18/18`, adjacent `128/128`, 전체 P0 `618/618`, compile, manifest exact, endpoint `6/6` 불변을 확인한다.
+- [ ] external cursor/page/snapshot/high-watermark closure와 signed owner precommit·trusted time/revocation/durable nonce를 마련한다.
+- [x] 별도 presented A-context full frame component를 만든다.
+- [ ] external beacon/owner receipt와 additive A-context packet successor를 만든다.
+- [x] 별도 component에서 input/result exactly-one, `CORE_ERROR` ITT, no replacement와 sealed 1:N/missed-span unreviewed inventory를 구현한다.
+- [x] presented terminal review-accounting successor를 별도 구현한다.
+- [ ] 외부 reviewer 권위 아래 실제 exhaustive human review와 권위 있는 `unreviewed=0`을 달성한다.
+- [ ] 모든 authority/frame gate 뒤에만 새 protocol/worker/sandbox/route/packet/parent-ledger successor와 dashboard ON·`--parallel 16` actual 40+20을 검토한다.
+
+상세: [`P0_FULL_ELIGIBLE_SAMPLING_FRAME_V2_REVIEW_20260903_KO.md`](P0_FULL_ELIGIBLE_SAMPLING_FRAME_V2_REVIEW_20260903_KO.md)
+
+## 2026-09-03 P0 neutral observation core 후속
+
+- [x] caller-presented COMMUNITY text bytes를 claim/target 없이 파싱하는 pure core와 separate-implementation parent replay를 구현한다.
+- [x] exact capture allowlist, 4-state taxonomy, all-line grammar, 64개 bound, Unicode·scope-laundering 공격을 회귀로 닫는다.
+- [x] core manifest를 behavior contract로 완성하되 code identity가 아님을 고정하고 parent shared-constant 의존을 제거한다.
+- [x] focused `15/15`, adjacent `80/80`, 전체 P0 `600/600`, compile, endpoint `6/6` 불변을 확인한다.
+- [x] full eligible sampling frame V2의 presented-census conditional component를 구현한다. 외부 모집단 완전성·실제 inclusion probability·signed owner precommit은 미완료다.
+- [x] batch input/result exactly-one과 고정 ITT, sealed surplus/missed-span unreviewed denominator를 구현한다.
+- [x] presented surplus-human-review terminal 회계 구조를 별도 successor로 구현한다.
+- [ ] 실제 reviewer/gold 권위로 exhaustive review와 권위 있는 `unreviewed=0`을 달성한다.
+- [ ] 별도 protocol/worker/sandbox successor와 official/OCR adapter 뒤에만 route/packet/ledger 연결을 검토한다.
+
+상세: [`P0_PRESENTED_CAPTURE_NEUTRAL_OBSERVATION_CORE_REVIEW_20260903_KO.md`](P0_PRESENTED_CAPTURE_NEUTRAL_OBSERVATION_CORE_REVIEW_20260903_KO.md)
+
+## 2026-09-03 P0 exact-envelope projector 후속
+
+- [x] 실제 parser라고 과장하지 않는 pure exact-envelope projector와 parent independent replay를 구현한다.
+- [x] exact 1문장·전체 span grammar, generic UNKNOWN, capture-profile 결속과 dual span witness를 고정한다.
+- [x] mention/target/label injection, surrounding negation, multi-statement, reseal/order/span 공격을 회귀로 닫는다.
+- [x] V1 archival selection과 secure V2 source-first selection을 분리하고 V1 direct-caller 호환성을 보존한다.
+- [x] focused `44/44`, adjacent `120/120`, 전체 P0 `585/585`, compile, endpoint `6/6` 불변을 확인한다.
+- [ ] actual source bytes를 읽는 parser와 외부 pin된 code/dependency closure, subprocess sandbox, process-wide deny, parent-only ledger를 별도 successor로 설계·재회의한다.
+- [ ] 그 전에는 actual·credited `0/40`, `0/20`, P0/production/full scan NO-GO를 유지한다.
+
+상세: [`P0_EXACT_ENVELOPE_PROJECTOR_AND_SELECTION_V2_REVIEW_20260903_KO.md`](P0_EXACT_ENVELOPE_PROJECTOR_AND_SELECTION_V2_REVIEW_20260903_KO.md)
+
+## 2026-09-03 P0 Windows native observer v3 component 후속
+
+- [x] v1/v2 receipt SHA를 보존한 별도 owner policy v3 body/signature/anchor/receipt branch를 구현한다.
+- [x] bootstrap·operational preauthorization·observer TPM·owner-state key 역할/ID/fingerprint/domain을 분리한다.
+- [x] exact profile/request/ticket/raw receipt/detached signature와 CNG P-256 low-S 수학을 component-only로 검증한다.
+- [x] MSVC `/MT` service-shaped PE와 zero-arg diagnostic PE를 offline `/Brepro` 빌드하고 서비스 설치·시작·SCM/WDAC write 없이 현 호스트를 `NO_GO`로 관측한다.
+- [x] `service_exact_candidate_config` overclaim을 `service_shape_candidate_config_matches`로 낮추고, v3 receipt의 future eligibility/profile completeness를 false로 고정한다.
+- [x] focused `77/77`, 전체 P0 `552/552`, native PE/import smoke, endpoint `6/6` 불변, blocker receipt 결정성을 확인한다.
+- [x] v3-only successor preflight와 negative/no-explicit-negative transcript rejection predicate를 별도 구현했다. 기존 v2 preflight와 blocker compiler는 묵시 확장하지 않았다.
+- [x] same-snapshot raw signature CNG 재실행, fresh receipt exact 계약·producer equality와 별도 `BOOTSTRAP_CNG_REEXECUTION` truth table을 구현해 producer-only coordinated reseal을 닫았다.
+- [ ] external owner가 Authenticode·exact SCM/WDAC·TPM/KSP·trusted time/revocation/durable nonce와 full loaded-code/catalog closure를 provision한다.
+- [ ] six-category single interval·OS write deny·actual parser/capture·per-unit signed 40+20 전에는 credit/P0/production/full scan을 열지 않는다.
+
+상세: [`P0_WINDOWS_NATIVE_OBSERVER_V3_COMPONENT_REVIEW_20260903_KO.md`](P0_WINDOWS_NATIVE_OBSERVER_V3_COMPONENT_REVIEW_20260903_KO.md), [`P0_WINDOWS_OWNER_POLICY_V3_SUCCESSOR_PREFLIGHT_REVIEW_20260903_KO.md`](P0_WINDOWS_OWNER_POLICY_V3_SUCCESSOR_PREFLIGHT_REVIEW_20260903_KO.md), [`P0_WINDOWS_OWNER_POLICY_V3_CNG_REEXECUTION_REVIEW_20260903_KO.md`](P0_WINDOWS_OWNER_POLICY_V3_CNG_REEXECUTION_REVIEW_20260903_KO.md)
+
+## 2026-09-03 P0 actual readiness blocker compiler 후속
+
+- [x] zero-input same-call owner preflight를 exact 검증하고 항상 `NO_GO`인 blocker-only compiler를 구현한다.
+- [x] all-green/resealed/bool-int/stage/blocker/projection 공격과 child exception을 fail-close로 고정한다.
+- [x] 중앙 Slang DB 1개와 publication journal 5개의 point-in-time pre/post projection을 비교하되 transient/continuous/runtime 비간섭으로 승격하지 않는다.
+- [x] 40을 selected source unit, 20을 A sampling unit으로 고정하고 raw claim row/event 및 coverage/accuracy/worst-case 분모를 분리한다.
+- [x] focused `22/22`, 전체 P0 `531/531`, compile, endpoint `6/6` 불변을 확인한다.
+- [ ] external signed v3 successor provisioning과 native signed observer positive gate를 완료한다. v2는 positive에 부족하다.
+- [ ] six-category protected watch·process-wide write deny·owner numerical policy·annotation predecessor/append-only를 닫는다.
+- [ ] 위 gate 뒤 별도 positive readiness version을 구현한다. 현재 blocker compiler를 GO gate로 재사용하지 않는다.
+- [ ] 모든 gate 통과 뒤 dashboard ON·`--parallel 16` actual 40+20을 시작하고 post-run credit compiler를 별도 재회의한다.
+- [ ] actual P0 Exit 뒤에만 Pyserini/gold-lite/retrieval/reranker/NIL shadow를 시작한다.
+
+상세: [`P0_ACTUAL_READINESS_BLOCKER_COMPILER_REVIEW_20260903_KO.md`](P0_ACTUAL_READINESS_BLOCKER_COMPILER_REVIEW_20260903_KO.md)
+
+## 2026-09-02 P0 Windows owner provisioning preflight 후속
+
+- [x] zero-input fixed-store/v2 receipt+body/projection→SCM exact config→held image identity candidate를 구현한다.
+- [x] v1·forged/resealed child receipt를 SCM 전에 거부하고 all-green Python mock도 `NO_GO`·authority false로 유지한다.
+- [x] 현재 Windows에서 fixed store 부재를 structured deterministic `NO_GO`로 관측한다.
+- [x] unsigned native diagnostic에서 token/self+service image/resource/bcrypt/WLDP/service shape 후보를 실제 관측하되 `candidate_only / NO_GO`로 유지한다.
+- [ ] service running/PID/creation time과 LocalSystem user SID·enabled restricted service SID·linked-token 부재를 native observer에서 검증한다.
+- [ ] embedded resource·Authenticode·active WDAC/UMCI·loaded CNG/catalog digest membership·trusted time/revocation을 결속한다.
+- [ ] nonce·policy/projection digest와 single-interval evidence를 서명하는 native observer 및 external owner provisioning을 완료한다.
+- [x] 위 항목 뒤 blocker-only actual readiness compiler를 구현·재회의했다. actual selected unit `0/40`, A sampling unit `0/20`과 production/full scan NO-GO를 유지한다.
+
+상세: [`P0_WINDOWS_OWNER_PROVISIONING_PREFLIGHT_CANDIDATE_REVIEW_20260902_KO.md`](P0_WINDOWS_OWNER_PROVISIONING_PREFLIGHT_CANDIDATE_REVIEW_20260902_KO.md)
+
+## 2026-09-02 P0 Windows owner deployment projection v2 후속
+
+- [x] v1 호환을 보존한 별도 owner-policy v2 body/signature/anchor/receipt 계약을 구현한다.
+- [x] native service·결정적 SID·LocalSystem, PE/resource identity, Authenticode, WDAC/UMCI, ordered loaded CNG provider projection을 owner anchor와 body bytes에 결속한다.
+- [x] ACL verifier/service SID split과 v1 downgrade, self-rehash, provider/catalog 혼동을 공격 회귀로 고정한다.
+- [x] focused `34/34`, bootstrap/fixed-store 포함 `56/56`, 전체 P0 `509/509`, compile/diff check, DB/journal `6/6` 불변을 확인한다.
+- [x] 공개 인자 없는 Windows host preflight의 fixed store/v2/SCM config/held-image candidate를 구현하고 현 호스트를 deterministic NO-GO로 관측한다.
+- [x] candidate consumer에서 v1 receipt와 v2 eligibility false를 SCM 전에 hard reject한다.
+- [x] v3 presented profile/request/ticket/receipt signature 계약을 nonce·projection·observer/owner-state key 역할에 결속했다. stateless component이며 durable consumption은 false다.
+- [x] host preflight 뒤 blocker-only actual readiness compiler를 구현했다. external signed v3 positive provisioning 전에는 actual 40+20과 P1 이후를 시작하지 않는다.
+
+상세는 [`P0_WINDOWS_OWNER_DEPLOYMENT_PROJECTION_V2_REVIEW_20260902_KO.md`](P0_WINDOWS_OWNER_DEPLOYMENT_PROJECTION_V2_REVIEW_20260902_KO.md)를 따른다.
+
+## 2026-09-02 P0 Windows bootstrap policy 서명 수학 후보 후속
+
+- [x] 컴파일 공개키 후보로 exact owner-policy detached signature 수학을 CNG 검증한다.
+- [x] fixed-store consumer가 child receipt를 권위로 재생하지 못하도록 self-hash·필수 boolean·false truth table·same-call raw/key/provider를 재검증한다.
+- [x] BCrypt call exception 정규화, forged receipt matrix, exact GUID, production compiled-key import canary를 회귀로 고정한다.
+- [x] focused `47/47`, 인접 `117/117`, 전체 P0 `497/497`, DB/journal `6/6` 불변을 확인한다.
+- [ ] 실제 owner key와 signed policy golden을 외부 provision하고 Authenticode/WDAC·service/TPM 등 실행 코드·key source 권위를 별도 증명한다.
+- [ ] mock 없는 ACL E2E와 cleanup 복합 실패 진단을 강화하고 trusted time/revocation/epoch/durable nonce plane을 닫는다.
+- [ ] 위 gate 전에는 actual·credited `0/40`, `0/20`, `p0_phase_exit=false`, `production_approval=false`, `full_scan_approval=false`를 유지한다.
+
+상세는 [`P0_WINDOWS_BOOTSTRAP_POLICY_SIGNATURE_CANDIDATE_REVIEW_20260902_KO.md`](P0_WINDOWS_BOOTSTRAP_POLICY_SIGNATURE_CANDIDATE_REVIEW_20260902_KO.md)를 따른다.
+
+## 2026-09-02 P0 Windows external public-key pin candidate 후속
+
+- [x] public API의 raw pin/receipt/expected SID·hash·identity 주입면을 제거하고 fixed-name held-handle candidate를 구현한다.
+- [x] effective token ACL deny, signed packet/protected parent/category root binding, parent-overlap 거부, same-call CNG/`OWNER_STATE`와 cleanup failure-burn을 회귀로 고정한다.
+- [x] focused `14/14`, adjacent `73/73`, 전체 P0 `453/453`, compile PASS, DB/journal `6/6` 불변을 확인한다. component unittest라 dashboard/`--parallel 16` 대상이 아니다.
+- [x] 실제 Windows evidence는 current-user-owned store와 signed-parent sibling store의 fail-close이고, positive success는 low-level hold mock인 controlled contract임을 유지한다.
+- [ ] verifier 밖 owner key와 독립 owner SID/ACE policy로 실제 read-only pin store를 provision하고 positive OS fixture를 확보한다.
+- [ ] trusted time/revocation/key epoch, rollback-resistant durable nonce와 parser sandbox를 완료하기 전 actual·credited `0/40`, `0/20`, P0/production/full scan NO-GO를 유지한다.
+
+상세는 [`P0_WINDOWS_EXTERNAL_PUBLIC_KEY_PIN_CANDIDATE_REVIEW_20260902_KO.md`](P0_WINDOWS_EXTERNAL_PUBLIC_KEY_PIN_CANDIDATE_REVIEW_20260902_KO.md)를 따른다.
+
+## 2026-09-02 P0 external-trust state identity 후속
+
+- [x] exact private clone이 legacy seal id로 genuine store key를 소비하는 결함을 재현한다.
+- [x] object-identity+weakref registry, recursive freeze, atomic pop-before-validate, PID/seal/context 결속과 failure-burn으로 교체한다.
+- [x] clone/copy/discard, receipt/seal/PID/malformed expected, GC와 16-way race 회귀를 추가한다.
+- [x] focused `37/37`, linked `62/62`, direct adjacent `137/137`, 전체 P0 `439/439`, compile PASS, DB/journal `6/6` 불변을 확인한다. component unittest라 dashboard/`--parallel 16` 대상이 아니다.
+- [ ] process-local key handoff를 external trust로 승격하지 않는다. 다음 gate는 immutable asymmetric pin/owner key와 rollback-resistant trusted time/revocation/durable nonce다.
+- [ ] actual·credited `0/40`, `0/20`, `p0_phase_exit=false`, `full_scan_approval=false`를 유지한다.
+
+## 2026-09-02 P0 external owner one-shot state 후속
+
+- [x] raw pin/signature/preauthorization same-call fresh 검증과 private object-identity state exact-once 소비를 구현한다.
+- [x] public receipt 재입력·exact private clone·raw/context/seal/PID tamper를 거부하고 16-way exact-one 소비를 확인한다.
+- [x] focused `25/25`, adjacent `91/91`, 전체 P0 `432/432`, compile PASS, DB/journal `6/6` 불변을 확인한다. component unittest라 dashboard/`--parallel 16` 대상이 아니다.
+- [x] 기존 `p0_external_owner_trust_execution`의 seal-id state가 exact dataclass clone에 소비되는 문제를 object-identity registry로 교체하고 회귀를 추가했다.
+- [ ] process-local state를 artifact replay 방지로 승격하지 않는다. immutable pin·owner key와 rollback-resistant trusted time/revocation/durable nonce가 다음 owner state plane gate다.
+- [ ] actual·credited `0/40`, `0/20`, `p0_phase_exit=false`, `full_scan_approval=false`를 유지한다.
+
+## 2026-09-02 P0 external owner asymmetric signature 후속
+
+- [x] Windows CNG `Microsoft Primitive Provider` ECDSA P-256/SHA-256, RFC 5480 fingerprint, exact X/Y와 canonical low-S `r||s` 검증을 구현했다.
+- [x] exact canonical preauthorization bytes와 domain/context의 교차 결속, attacker full-substitution truthfulness test를 추가했다.
+- [x] focused `15/15`, adjacent `78/78`, 전체 P0 `422/422`, compile PASS, DB/journal `6/6` 불변을 확인했다. component unittest라 dashboard/`--parallel 16` 대상이 아니다.
+- [x] public receipt가 아니라 같은 호출의 pin/signature/preauth raw 3종을 새로 검증하고 one-shot private state를 소비하는 `OWNER_STATE` supervisor를 구현했다.
+- [ ] run/protected root 밖 immutable read-only pin, owner SID/ACL과 verifier 밖 signing key를 실제 provision한다.
+- [ ] signed revocation high-watermark·key epoch·trusted time·durable nonce를 하나의 rollback-resistant owner state plane에 결속한다.
+- [ ] owner root/USN·AppContainer/LPAC·network/write deny·trusted CPython/stdlib/native provider provenance와 semantic parser를 닫는다.
+- [ ] authority/P0/actual/production을 열지 않는다. actual·credited는 `0/40`, `0/20`이다.
+
+## 2026-09-02 P0 parser process·Job component 후속
+
+- [x] path-less canonical `CAPTURE_HASH_PROBE` protocol과 부모 exact request/response cross-binding을 구현하고 `10 PASS`를 확인한다.
+- [x] fixed base interpreter/worker/protocol, enabled-SID projection restricted primary token, Job active limit 1/KILL_ON_CLOSE, assign-before-resume, stdio 3-handle allowlist와 bounded timeout cleanup을 구현하고 `10 PASS`를 확인한다.
+- [x] unassigned suspended orphan, forged stdout+self-hash, child-controlled weaker-token retry와 generic post-create receipt 유실을 red-team 뒤 닫는다.
+- [x] 전체 P0 `379 PASS`, 신규 compile PASS, 중앙 DB/journal `6/6` 불변을 확인한다.
+- [x] held-handle derived final path/volume serial/128-bit file ID/`ReadFile` SHA, ancestor namespace guard, suspended process PID·creation time·reported image reopen을 구현한다. Create 직전·Resume 직전·종료 후 identity 재검증을 포함해 sandbox `15 PASS`, 전체 P0 `384 PASS`다.
+- [x] local `FOLDERID_LocalAppData` held anchor 아래 per-execution empty pycache, source/import collision exact inventory, source parent·source/cache watcher continuity와 exact-handle cleanup을 구현했다. 좁은 `bounded_project_source_load_candidate_closure_verified=true`만 채택하며 MSIX redirection 관측을 보존한다.
+- [x] focused `48/48`, 전체 P0 `407/407`, compile PASS, 중앙 DB/journal `6/6` 불변과 cache anchor `item_count=0`을 확인했다. 이 component unittest에는 dashboard/`--parallel 16`을 적용하지 않는다.
+- [ ] 이 local anchor를 external owner pin으로 승격하지 않는다. trusted CPython/stdlib/native DLL/loaded-image closure와 external owner project-source identity pin을 별도 구현한다.
+- [ ] sealed/frozen Python runtime·stdlib·native DLL dependency bundle을 별도 설계한다. project source 후보 관측을 parser dependency closure로 확대하지 않는다.
+- [ ] AppContainer/LPAC no-capability와 전용 output root ACL을 적용해 controlled network deny와 보호 root write/rename/ADS/reparse deny를 actual child에서 검증한다.
+- [ ] direct/BREAKAWAY·WMI/Task Scheduler/COM broker escape, sensitive handle/parent duplication, pipe flood, parent hard-kill을 Windows E2E로 닫는다.
+- [ ] 실제 source-profile parser entrypoint와 v3/supplemental process provenance receipt를 구현한다. 그 전 `parser_runtime_execution_verified=false`, actual·credited `0/40`, `0/20`이다.
+
+## 2026-09-02 P0 external trust·runtime witness 후속
+
+- [x] caller-keyless trust-store HMAC, held nonce ledger, `O_EXCL` single-use nonce와 one-shot trust state를 구현하고 `30 PASS`를 확인한다.
+- [x] QPC·6개 root/parent watcher·identity/inventory·USN·restricted current-thread probe와 one-shot runtime state를 구현하고 swap/restore 회귀 포함 `14 PASS`를 확인한다.
+- [x] 기존 7단계 combined validator를 같은 호출에서 감싸 child self-hash/known schema·session/run/nonce/preauth bytes·final-path projection을 결속하고 `11 PASS`를 확인한다.
+- [x] 신규 `55 PASS`, direct adjacent `130 PASS`, selected adjacent `440 PASS`, 중앙 DB/journal `6/6` 불변을 확인한다.
+- [ ] verifier 밖 비대칭 owner signing key와 독립 read-only public-key fingerprint pin을 provision한다.
+- [ ] trusted time, signed revocation monotonic sequence·rollback 방지와 crash/reboot durable cross-process nonce broker를 구현한다.
+- [ ] owner-signed 6개 root identity, elevated/root별 USN broker, held handle interval을 결속한다.
+- [ ] 별도 parser process의 Job component는 구현됐지만 AppContainer·network/write deny·sealed provenance와 adversarial Windows E2E를 계속 닫는다.
+- [ ] owner numerical policy SHA 사전 결속 뒤에만 dashboard ON·`--parallel 16` actual 40+20을 시작한다. 그 전 actual·credited는 `0/40`, `0/20`, P0/production/full scan은 NO-GO다.
+
 ## 2026-07-15 소스 구조 정리 후속
 
 - [x] `src/llm_batch`를 `domain/grounding/ledger/runtime/measurement/slang/pipelines` 책임 경계로 재배치한다.
@@ -98,7 +829,7 @@
   - 근거: `src/llm_batch/grounding/confidence_report.py`, `tools/read_typed_confidence_metrics.py`, `tests/test_confidence_report.py`, `tests/fixtures/typed_confidence_source_less_contract_v1.jsonl` (`NOT_ESTIMABLE_NOT_FROZEN_ACTUAL`).
 - [x] `P3_PACKET_OPERATIONS` 로컬 구현: packet intake validator와 operator template, no-write 상태, 동일 frozen input의 BEFORE/AFTER, `--parallel 16`, dashboard ON 전제, recovery 명령을 versioned artifact로 고정했다. 실제 packet은 `WAITING_EXTERNAL_INPUT`이다.
 - [x] `INTERNAL_A_CLOSURE`: P0~P3, public 비간섭, crash/restart/rollback, confidence 근거 결속, packet operator contract와 문서 정합성을 닫아 `ARCHITECTURE_V2_INTEGRATED`로 판정했다.
-- [ ] `C_ACTUAL_EFFECT`: source-backed DEV/CAL/FROZEN·policy v3·10+6 packet과 fresh BEFORE/AFTER가 도착한 뒤에만 실제 정확도/recall/NIL/CI/cost/E2E를 산출한다. 그 전 숫자는 `null/NOT_ESTIMABLE`이다.
+- [ ] `C_ACTUAL_EFFECT`: source-backed DEV/CAL/FROZEN·policy v4·10+6 packet과 fresh BEFORE/AFTER가 도착한 뒤에만 실제 정확도/recall/NIL/CI/cost/E2E를 산출한다. 그 전 숫자는 `null/NOT_ESTIMABLE`이다.
 
 ## 2026-07-12 M1/M2 이전 handoff 체크리스트 — 역사 기록
 
@@ -161,8 +892,8 @@
 - [ ] source-backed 10 required + 6 replay artifact packet을 만들어 `READY_FOR_NO_WRITE_PREFLIGHT` positive path와 actual readback을 검증한다.
   - 2026-07-13 no-write recheck: canonical manifest `NOT_READY / GO_LAUNCH_MANIFEST_BOUND`, preflight `NO_GO_LAUNCH_PACKET_PREFLIGHT` (engine/runtime/write false)다. policy `DECISION_REQUIRED`, readiness `ready_rows=0/18`·producer COMPLETE `0/18`이므로 입력을 만들기 전까지 이 상태를 fail-close로 유지한다.
   - 2026-07-13 두 번째 recheck도 policy/readiness/manifest SHA가 각각 `650a41da...7fc3`/`77f96e51...d3466`/`62616f49...cc8b`인 같은 입력에서 동일 NO-GO를 재현했다. external blocker streak는 `2/3`이며 runtime은 열지 않는다.
-  - 2026-07-13 세 번째 recheck도 같은 SHA·reader/preflight gate·exit `2`를 재현해 external blocker streak `3/3`을 충족했다. M1 완료·안전 작업 0 조건에서 `ACTUAL_BLOCKED_HANDOFF`로 전환하며, source-backed 10+6 packet·policy v3·DEV/CAL/FROZEN·fresh runtime이 제공될 때만 재개한다.
-- [ ] policy v3 owner decision과 source-backed DEV/CAL/FROZEN을 고정한다.
+  - 2026-07-13 세 번째 recheck도 같은 SHA·reader/preflight gate·exit `2`를 재현해 external blocker streak `3/3`을 충족했다. M1 완료·안전 작업 0 조건에서 `ACTUAL_BLOCKED_HANDOFF`로 전환하며, source-backed 10+6 packet·policy v4·DEV/CAL/FROZEN·fresh runtime이 제공될 때만 재개한다.
+- [ ] policy v4 owner decision과 source-backed DEV/CAL/FROZEN을 고정한다.
 - [ ] 같은 RunSpec fresh BEFORE/AFTER를 `--parallel 16`, dashboard ON으로 실행한다.
 - [ ] accuracy·candidate recall·NIL·Brier/log loss/ECE·selective risk/AURC·calls/tokens·batch E2E p50/p95 paired CI를 독립 readback한다.
 - [ ] hard regression 0, public/CandidateSet 비간섭, crash/restart recovery를 확인한다.
@@ -175,7 +906,7 @@ M1 완료 후 M2 외부 조건만 남은 최초 2회 audit까지는 `ACTIVE / AC
 - [x] blocked Goal을 거짓 complete로 우회하지 않고 새 작업의 active Goal로 이관했다.
 - [x] 최초 아키텍처 아이디어 대비 P0~P4 구현·시험·actual 증거를 한국어 중간점검 보고서로 정리했다.
 - [ ] P3 실제 정책을 확정하고 source-backed DEV/CAL/FROZEN packet을 만든다.
-- [x] P3 actual policy v3가 `top_label_accuracy`의 ABSTAIN 포함/제외 분모를 명시하고 hash-bind하도록 구현했다. P3 v18 legacy v2 정본은 유지한다.
+- [x] 2026-07-12 actual policy v3가 `top_label_accuracy`의 ABSTAIN 포함/제외 분모를 hash-bind한 역사 정본을 유지한다. 신규 actual은 policy v4에 최소 group·bootstrap 반복·interval method까지 결속하며 v2/v3는 저장 호환용이다.
 - [ ] `--parallel 16`, dashboard ON fresh BEFORE/AFTER와 강제 중단·재시작을 별도 경로에서 실행한다.
 - [x] P4 paired reader가 source-bound `DecisionCostTrace`에서 batch execution envelope와 full-expert comparable E2E p50/p95·paired bootstrap CI를 계산하도록 구현했다. reference-copy 행은 KPI에서 제외한다.
 - [ ] static shadow foundation, explicit search observer와 synthetic replay canary는 구현됐지만, source-backed actual packet과 fresh runtime evidence를 만들고 slang/단계 제어/DecisionLedgerV2의 다음 runtime-safe 접목 범위를 검증한다.
@@ -210,7 +941,7 @@ M1 완료 후 M2 외부 조건만 남은 최초 2회 audit까지는 `ACTIVE / AC
 - [x] P2 v8 → P3 v20 → P4 v21 불변 계약 산출물을 새 구현 SHA로 재봉인하고 부모·구현 SHA를 검증했다. P3 v18/v19·P4 v19/v20은 legacy 정본으로 보존한다.
 - [x] P3/P4 집중 회귀 `82/82 PASS`와 변경 Python `py_compile`을 확인했다. 이는 actual 성능 수치가 아니다.
 - [ ] immutable-frame v1의 전역 reload·small-file 구조를 framed WAL v2로 교체하고 crash/scale 검증 전에는 104k production enable을 금지한다.
-- [ ] 소유자가 P3 actual policy v3의 `top_label_accuracy_denominator`와 A/B 수치를 확정한 뒤 source-backed policy JSON을 만든다. 구현된 hash-binding 자체는 완료됐다.
+- [ ] 소유자가 P3 actual policy v4의 `top_label_accuracy_denominator`·interval protocol과 A/B 수치를 확정한 뒤 source-backed policy JSON을 만든다. 구현된 protocol hash-binding 자체는 완료됐다.
 - [ ] fresh paired runtime에서 execution envelope의 실제 full-expert comparable p50/p95·paired CI를 만든다. `physical_call_wall_ms_sum`은 계속 모델 호출 누적시간으로만 읽는다.
 - [ ] 실제 DEV/CALIBRATION/FROZEN 자료·정책·split/source manifest·producer/AFTER/baseline JSONL을 만들고 bound runner를 통과한 뒤 실제 보정 객체로 paired CI output을 생성한다.
 - [ ] active production 종료 후 동일 RunSpec으로 fresh BEFORE와 fresh AFTER를 각각 새로 실행한다. `--parallel 16`, dashboard ON, search/VLM/OCR/slang 조건을 고정한다.
@@ -12181,3 +12912,39 @@ M1 완료 후 M2 외부 조건만 남은 최초 2회 audit까지는 `ACTIVE / AC
 - [x] loader focused regression test와 검증 문서/checklist를 동기화했다.
 - [ ] 입력 생성기에서 페이지 경계 중복이 생기는 경로를 추적하고 source manifest에 `physical_post_rows`, `unique_post_ids`, `identical_duplicate_rows`, `conflicting_duplicate_rows`를 기록한다.
 - [ ] 104,502건 실제 런을 재개할 때 manifest의 requested/effective parallel과 dashboard attach 상태를 확인한다.
+
+## 2026-09-02 P0 Windows owner-policy 후속
+
+- [x] presented-byte strict owner-policy body·detached envelope와 exact 8-role ACE 계약을 구현한다.
+- [x] binary ACL reader와 current-user-owned Windows negative fixture를 구현한다.
+- [x] 독립 red-team 반례를 회귀 테스트로 고정하고 전체 P0 `475/475`를 확인한다.
+- [x] `SHGetKnownFolderPath(FOLDERID_ProgramData, 0, NULL)` 기반 public path/key/SID injection 없는 fixed-store candidate를 구현한다.
+- [ ] verifier/current-user 밖 owner가 bootstrap-signed policy와 operational pin을 provision한 2-account VM/CI positive fixture를 준비한다.
+- [x] candidate 범위에서 8 role identity·binary ACL 전후 비교와 모든 lexical ancestor identity·parent/store watch를 held handle 구간에 결속한다.
+- [ ] actual authority 범위에서 lexical ancestor owner/ACL·parent delete-child와 8 role externally provisioned ACL을 2-account VM/CI로 증명한다.
+- [ ] actual effective/primary/linked token user·group·dangerous privilege와 mutator membership을 fail-close한다.
+- [ ] independently pinned bootstrap key로 detached policy signature를 CNG 검증하고 policy→pin→preauthorization owner anchor/key epoch를 결속한다.
+- [ ] trusted time, revocation·policy/key epoch high-watermark, crash/reboot durable nonce를 TPM/LocalSystem/remote broker state plane에 결속한다.
+- [ ] 모든 preflight를 nonce reserve보다 앞에 두고 reserve 이후 실패는 영구 burn하는 private authority lease successor를 구현한다.
+- [ ] 위 gate 전 legacy runtime supervisor 또는 actual 40+20에 연결하지 않는다.
+
+## 2026-10-10 R4 평가 연결 잔여 작업
+
+- [x] R4 최신 NIL 모델의 순위·전체 terminal 분모와 고정 CAL의 FROZEN 평가 API·보고서 CLI를 연결하고 합성 회귀를 통과했다.
+- [ ] R4 실제 고정 자료·정책·독립 readback·동일 행 baseline에 따른 품질 수용 판정을 완료한다.
+
+## 명시 FROZEN 재관측 연결 후속
+
+R4 상태는 **GENERAL_INFERENCE_LOCAL_VERIFIED_BROWSER_AND_ACTUAL_DATA_PENDING**다. 일반 입력의 실제 R2 원문·후보 ID·작품/판본·출처 bytes를 고정 semantic NIL 모델 및 CAL 온도에 연결하고 expert_main 저장·API·대시보드 표시를 구현했다. 현재 원문·R2·모델 점수를 재생 검산하며, FROZEN 배정이나 정답을 만들지 않는다. 이번 로컬 회귀는 Python 38파일 `1440 passed, 42 subtests passed in 229.37s (0:03:49)`, Node 58개 PASS다. 실제 pipeline에서 저장한 live/history 자료를 Node 표시 시험으로 연결했다. 실제80 준비 묶음은 112관측/80고유행을 원문과 연결했으나 사람 정답0·학습 준비0이며 전 행이 개발 노출 자료다. 실제 TRAIN/CAL/FROZEN 품질, 새80 모델 실행, 새 화면의 브라우저 검증과 R6 실제 provider 복구는 남았다. 실제 모델 API·검색·source-backed 학습은 0회다. 실제80·Chrome의 자동 승인 검토가 blocked by policy로 차단한 실행은 재시도하지 않았다. formal KPI는 NOT_ESTIMABLE, Goal은 active다.
+
+
+## 일반 입력 교정 연결과 실제 80건 준비
+
+- [x] 일반 R2 graph와 고정 NIL/CAL 소비를 연결하고 현재 source·model 수치 재생·원자 저장·API·표시를 검증했다.
+- [x] 미배정 두 입력, 빈 후보·생략·변경된 원문·저장 실패·다른 실행 행·OFF/ON 공개 결과와 호출 수를 검증했다.
+- [x] 기존80의 원문·참조를 112관측/80고유행으로 보존했다. WORK2·NIL6·UNJUDGED72이며 HUMAN 정답과 학습 준비 행은 0이다.
+- [ ] 권리·계보 확인 corpus와 검토된 후보/NIL/역할 정답, 개발 노출 밖 독립 holdout을 확보하고 실제 품질을 평가한다.
+- [ ] 자동 승인 차단이 해결된 후 새80 모델 실행과 새 화면의 실제 브라우저 검증을 수행한다.
+- [ ] R6 정규 자동 복구와 native 결과의 화면 연결을 완료한다. 명시 provider와 same-call native guard 재판정·영속 예산은 위 로컬 검증 범위를 따른다. R7 production 적용은 보류한다.
+
+[일반 입력 API·실행 조건](../../out/development_plan_20261010/r4_general_inference_api_KO.md) · [실제80 준비 보고서](../../out/development_plan_20261010/actual80_preparation_v1/report_ko.md)

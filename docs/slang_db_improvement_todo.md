@@ -1,5 +1,32 @@
 # Slang DB Improvement TODO
 
+<!-- r5-resolution-current:start -->
+
+## 현재 상태 안내 — 2026-10-15
+
+현재80 범위 개발·검증과 Goal 완료 상태는 [현재 상태와 남은 작업](devs/CURRENT_STATUS_KO.md)에서 관리한다. 전체 의미 `REVIEW`·기존5개 실패·독립 평가/R7 보류·새 분기 실측 미관측을 함께 확인한다. 아래 날짜별 실행·시험·미완료 표기는 당시 이력이다.
+
+<!-- r5-resolution-current:end -->
+
+<!-- research-completion-current:start -->
+
+## 2026-10-14 source462 단계 이력 — 최신 상태는 위 완료 기록 참조
+
+[최종 결과와 남은 수용 조건](../out/research_completion_20261014_v1/REPORT_KO.md)는 당시 단계의 근거다. 기존80의 개발용 회수48관측,50번 수리·실제1건 검토, JSONL 댓글 생략 호환성·시작 전 실패·상대경로 이력·화면 전환 수리를 마쳤다. source462를 고정한 R6 실제1건은 원래 HOLD와 별도 native PUBLISH를 보존하며 HTTP9회·230.172초로 종료했고 원장 검산을 통과했다. 실제 화면과 관련 회귀도 확인했다.
+
+R5 기준3건은 정상 종료했으나 BEFORE에서64번 공개 판정이 PUBLISH→HOLD로 달라 strict 비교가 거절됐다. runner exit1·DRAINED, AFTER 미시작, formal KPI는 NOT_ESTIMABLE이다. 기존 실패·원문·참조는 보존했다. 현재 실행 정책 차단은 없었다.
+
+별도 자료가 없다는 사용자 답변에 따라 기존80으로 수행 가능한 DEV 연구를 끝냈다. MODEL_REFERENCE는 허용하지만 재사용 근거·미노출 평가 자료·TRAIN/CAL/FROZEN 조건은 미충족이다. R6 의미 검토는 원본 픽셀 미확인으로 HOLD/Medium이며 일반화 성능 승인이 아니다. **Goal 전체 완료 조건은 미충족으로, 조회된 blocked 상태를 complete로 바꾸지 않았다.** 요청 병렬12·대시보드 ON·저부하와 R7 보류를 유지한다. 아래 날짜별 기록은 당시 이력이다.
+
+- [x] 기존80 자료 연결·개발용48관측과 반례 판독.
+- [x] 50번 수리·실제 검토, 입력·대시보드 수리와 회귀·실제 화면 검증.
+- [x] R6 실제 복구1건의 실행·예산·원본 보존·별도 guard 검산.
+- [x] R5 실제 BEFORE 실패·AFTER 미시작·최종 종료 및 원인 판독.
+- [ ] 같은 공개 결정에 결속되는 실제 paired 비교와 정식 지표 산출.
+- [ ] 적격 자료에 근거한 정식 R2–R4 및 R6 일반화 품질 수용.
+
+<!-- research-completion-current:end -->
+
 ## 2026-07-14 exact alias-pair write/seed fail-close
 
 - [x] Run `20260714_160355_054970` work artifact의 신규 term `14`개 중 일반명사·동사 조각·플랫폼명 등 명확한 오염 `8`개를 source row와 결속했다.

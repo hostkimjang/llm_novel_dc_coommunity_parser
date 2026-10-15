@@ -1,12 +1,24 @@
 # 실제 입력 준비와 출시 판정 런북
 
+> 적용 범위: production/P3 actual launch 전용. 2026-09-05에 활성화된 권리 안전 research-only benchmark에는 이 런북의 external authority gate를 적용하지 않는다.
+
 상태: `NOT_READY / ACTUAL_BLOCKED_HANDOFF / NOT_COMPLETE / REVIEW-LOCKED / full_scan_approval=false`.
 
-이 runbook은 active production `20260711_113712_379597`에 쓰거나 중지하지 않는다. 현재 policy v3, source-backed DEV/CAL/FROZEN, complete 10+6 packet, fresh pair가 없으므로 1단계 결과는 `NOT_READY`가 정상이다. 같은 external blocker가 3회 확인된 최신 actual lane은 `ACTUAL_BLOCKED_HANDOFF`다. `READY_FOR_NO_WRITE_PREFLIGHT`도 runtime·정확도·운영 승인 증거가 아니다.
+2026-09-03 presented HTTP capture-intake와 V4 epoch2 fixed-store observer가 component-only로 추가됐다. 전자는 실제 network/rights 증거가 없고, 후자는 current zero-input이 `FIXED_STORE / NO_GO`이며 distinct store의 live V3 continuity·bootstrap math를 증명하지 않는다. 두 receipt를 이 runbook의 source manifest, owner 결정 또는 launch authority로 재사용하지 않는다.
+
+외부 operator는 별도 권위 root에 정확한 V4 store와 predecessor 연속성 또는 동등한 증거, key/pin·trusted time/revocation/nonce·root/code·write deny·runtime witness를 provision해야 한다. 이어 승인된 raw root에 seed8의 실제 bytes·capture receipt·rights/retention evidence를 준비한다. 그 전 actual source/context는 `0/40·0/20`이며 아래 0단계는 충족되지 않는다.
+
+이 runbook은 active production `20260711_113712_379597`에 쓰거나 중지하지 않는다. 현재 policy v4, source-backed DEV/CAL/FROZEN, complete 10+6 packet, fresh pair가 없으므로 1단계 결과는 `NOT_READY`가 정상이다. 같은 external blocker가 3회 확인된 최신 actual lane은 `ACTUAL_BLOCKED_HANDOFF`다. `READY_FOR_NO_WRITE_PREFLIGHT`도 runtime·정확도·운영 승인 증거가 아니다. v4는 분모·최소 독립 group 30개·bootstrap 2,000회·percentile method를 hash-bound하며 v2/v3 저장 정본은 신규 actual readiness를 열지 않는다.
+
+2026-09-03의 annotation packet V2 → Windows V2 → owner preauthorization V2 → supervisor V2 통과는 별도 component-only shadow 증거다. 해당 supervisor receipt가 있어도 externally provisioned key/time/revocation/nonce/root/code/write-deny/runtime witness와 actual source/context가 없으면 이 runbook의 0단계 입력이 충족된 것으로 간주하지 않는다. serialized receipt나 component self-hash를 launch authority로 재사용하지 않는다.
+
+presented source seed candidate inventory V1의 URL 8개도 이 runbook의 source manifest가 아니다. source bytes를 fetch·capture·parse·attest하지 않았고 rights와 actual credit이 없으므로 0단계 source-backed DEV/CAL/FROZEN 입력을 충족하지 않는다.
+
+이 runbook의 `<actual-policy-v4.json>`은 P3 numerical measurement policy다. 별도 Windows owner policy V4 packet-V2 profile과 이름만 같을 뿐 상호 대체하지 않는다. 후자는 component-only로 통과했지만 externally provisioned fixed store·trusted state·owner authority를 대신하지 않는다.
 
 ## 0. 외부 입력을 별도 packet 경로에 준비
 
-동결 input, source manifest, P1 parent, label ledger, policy v3, split/source manifest, expected/producer/BEFORE/AFTER prediction, replay 6종을 production output과 다른 새 directory에 둔다. policy owner 결정과 source-backed DEV/CAL/FROZEN 없이는 2단계 이후로 진행하지 않는다.
+동결 input, source manifest, P1 parent, label ledger, policy v4, split/source manifest, expected/producer/BEFORE/AFTER prediction, replay 6종을 production output과 다른 새 directory에 둔다. policy owner 결정과 source-backed DEV/CAL/FROZEN 없이는 2단계 이후로 진행하지 않는다.
 
 ## 1. launch manifest 생성
 
@@ -14,7 +26,7 @@
 .\.venv312\Scripts\python.exe tools\build_launch_readiness_manifest.py `
   --output out\launch_packet\<packet-id>\launch_readiness_manifest.json `
   --p1-run-spec <p1-run-spec.json> --p1-comparison <p1-comparison.json> `
-  --label-ledger <label-ledger.json> --policy <actual-policy-v3.json> `
+  --label-ledger <label-ledger.json> --policy <actual-policy-v4.json> `
   --split-manifest <split.json> --source-manifest <source.json> `
   --expected-universe <frozen-expected.jsonl> --producer <producer.jsonl> `
   --after-prediction <after.jsonl> --before-prediction <before.jsonl> `

@@ -1,5 +1,7 @@
 # 로컬 LLM 커뮤니티·웹소설 grounding 벤치마크 연구
 
+> 2026-09-05 실행 갱신: 권리 안전 synthetic fixture에서는 single-curator gold-lite+최대 25% blind recheck를 허용하고, dashboard ON·`--parallel 16`으로 연구 benchmark를 실행한다. owner-signed numerical policy와 외부 review authority는 production/confirmatory 승격에만 필요하다. 실행 정본은 [`RESEARCH_ONLY_LOCAL_LLM_BENCHMARK_PLAN_20260905_KO.md`](RESEARCH_ONLY_LOCAL_LLM_BENCHMARK_PLAN_20260905_KO.md)다.
+
 작성일: 2026-09-01 KST
 
 대상: 로컬/self-hosted LLM 기반 커뮤니티 게시글 정제·수집·웹소설 작품/약칭/주작품 판정 파이프라인
@@ -15,6 +17,10 @@
 지금 가장 큰 공백은 평가 공식을 새로 만드는 일이 아니다. **실제 DEV/CALIBRATION/FROZEN 정답 자료와 producer `COMPLETE` 증거가 없는 것**이다. Golden18은 actual ready `0/18`이라 정확도 지표가 `null`이고, 최신 고위험 32행은 회귀 challenge 신호일 뿐 모집단 정확도가 아니다.
 
 따라서 권고 순서는 `도메인 gold 구축 → 후보 회수 측정 → role-aware reranking → calibrated abstention → 동일 frozen A/B`다. 프롬프트나 모델부터 바꾸면 어느 단계가 정답을 잃었는지 계속 알 수 없다.
+
+이 연구의 후속 전문가 회의에서 채택·component-only·보류·기각 판정과 P0~P3 실행 gate를 구체화한 정본은 [로컬 LLM grounding 연구 개선 실행 계획](LOCAL_LLM_GROUNDING_RESEARCH_IMPROVEMENT_PLAN_20260901_KO.md)이다.
+
+2026-09-03 후속 구현은 P0의 presented annotation packet V2, Windows held-handle reader, owner preauthorization와 one-step supervisor까지 component-only로 닫았다. 전체 P0 `836/836`과 보호 endpoint `6/6` 불변을 확인했지만 actual source/context와 외부 authority는 여전히 `0/40·0/20`이다. 따라서 이 성과를 후보 recall·정확도·gold 품질 개선으로 계산하지 않으며, Pyserini BM25·gold-lite·reranker/NIL A/B의 데이터 gate도 아직 열지 않는다. 상세는 [owner preauthorization V2 supervisor 검토](P0_OWNER_ROOT_PREAUTHORIZATION_V2_SUPERVISOR_REVIEW_20260903_KO.md)를 따른다.
 
 ## 현재 결과를 새 기준으로 다시 읽기
 
@@ -290,3 +296,5 @@ B 트랙은 A 트랙에 음성·문맥 feature만 제공한다. 예를 들어 `�
 - `tools/run_candidate_generation_completeness_harness.py`
 - `tools/run_calibration_dataset_readiness.py`
 - `tools/run_candidate_set_calibration_shadow_harness.py`
+
+2026-09-02 최신 프로젝트·license 재검증, 통계 분모 반대검토와 첫 P0 측정 수정은 [로컬 LLM grounding 연구 개선 전문가 회의](LOCAL_LLM_GROUNDING_EXPERT_COUNCIL_20260902_KO.md)를 따른다. 이 후속 수정은 실제 semantic 개선을 주장하지 않으며 `REVIEW-LOCKED / full_scan_approval=false`를 유지한다.
