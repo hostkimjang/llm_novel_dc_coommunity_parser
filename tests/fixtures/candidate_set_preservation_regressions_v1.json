@@ -1,0 +1,486 @@
+{
+  "schema_version": "candidate_preservation_regression_fixture_v1",
+  "data_kind": "SAVED_MODEL_OUTPUT_NOT_GOLD",
+  "source_sha256": "c4e963ef9783a99a306f3b6a68b8de9f9ac07ba273058e3cd963bd5e1e6dc01b",
+  "source_path": "out/p4_primary_actual80_20261010/run/result.json",
+  "cases": [
+    {
+      "post_id": 11383108,
+      "source_pointer": "/23",
+      "source_title": "뭔가 실뜨기하는 주인공이 땡김",
+      "target": "스테이크",
+      "candidate_preservation_sources": [
+        {
+          "confidence": "High",
+          "negative_evidence": [
+            "candidate_source_missing_url"
+          ],
+          "official_title": "스테이크",
+          "preservation_role": "title_candidate",
+          "reference_role": "mentioned",
+          "source_tier": "llm_only"
+        },
+        {
+          "alias_or_mention": "약먹마",
+          "confidence": "Medium",
+          "negative_evidence": [
+            "candidate_preservation_only_no_official_detail"
+          ],
+          "official_title": "약먹는 천재마법사",
+          "preservation_role": "title_candidate",
+          "reference_role": "candidate",
+          "source_tier": "mixed"
+        },
+        {
+          "confidence": "High",
+          "negative_evidence": [
+            "candidate_source_missing_url"
+          ],
+          "official_title": "스테이크",
+          "preservation_role": "mentioned_work",
+          "reference_role": "mentioned",
+          "source_tier": "llm_only"
+        }
+      ],
+      "stored_shadow": {
+        "action": "NOT_EVALUATED",
+        "action_applied": false,
+        "baseline_decision_fingerprint": "e784564df7c9a9a25e399310ad32a4cb6b9740c0f73970e105ad80b2c5d769bc",
+        "baseline_selected_candidate_id": null,
+        "candidate_set": {
+          "candidate_inventory_count_hint": 2,
+          "candidate_set_fingerprint": "2e7670b1a16e70734cb0ded3c4913eeb7dc1521ec0d0eaacffd200a9ddda5b34",
+          "candidate_set_recall_status": "NOT_EVALUABLE_GENERATION_UNKNOWN",
+          "candidates": [
+            {
+              "aliases": [],
+              "baseline_selected": false,
+              "candidate_id": "cand_005dfd2efd33d8ea1d42a7703f637cddd051f18d906c1c3f7d05804aef0e8017",
+              "event_eligible": true,
+              "evidence_kinds": [
+                "candidate_preservation"
+              ],
+              "identity_conflict": false,
+              "local_preservation_types": [],
+              "negative_evidence": [
+                "candidate_source_missing_url"
+              ],
+              "option_kind": "WORK_CANDIDATE",
+              "preservation_roles": [
+                "mentioned_work",
+                "title_candidate"
+              ],
+              "promotion_policies": [],
+              "publish_support_present": false,
+              "reason_codes": [
+                "candidate_inventory_preserved_without_selection"
+              ],
+              "reference_roles": [
+                "mentioned"
+              ],
+              "source_fields": [
+                "candidate_preservation_sources",
+                "promotion_gate_evidence"
+              ],
+              "source_tiers": [
+                "llm_only"
+              ],
+              "titles": [
+                "스테이크"
+              ],
+              "urls": []
+            },
+            {
+              "aliases": [
+                "약먹마"
+              ],
+              "baseline_selected": false,
+              "candidate_id": "cand_70bd5755dc517c66de7283a6bd7b651fb1a5d58895b8a94c0b8af482f29b0ddb",
+              "event_eligible": true,
+              "evidence_kinds": [
+                "candidate_preservation"
+              ],
+              "identity_conflict": false,
+              "local_preservation_types": [],
+              "negative_evidence": [
+                "candidate_preservation_only_no_official_detail"
+              ],
+              "option_kind": "WORK_CANDIDATE",
+              "preservation_roles": [
+                "title_candidate"
+              ],
+              "promotion_policies": [],
+              "publish_support_present": false,
+              "reason_codes": [
+                "candidate_inventory_preserved_without_selection"
+              ],
+              "reference_roles": [
+                "candidate"
+              ],
+              "source_fields": [
+                "candidate_preservation_sources",
+                "promotion_gate_evidence"
+              ],
+              "source_tiers": [
+                "mixed"
+              ],
+              "titles": [
+                "약먹는 천재마법사"
+              ],
+              "urls": []
+            }
+          ],
+          "event_candidate_count": 2,
+          "generation_cap": 6,
+          "generation_status": "UNKNOWN",
+          "integrity_status": "GO",
+          "nil_label": "__NIL__",
+          "observation_fingerprint": "47b27b58ab4bd9ce67f490db171735998f0f93b633c6b4d52beb0b6dccb3cfce",
+          "observation_signatures": [
+            "1c344018e9812211a2d1195c904ad622e7e1fa01fd1f4d5aedc291c0c5f69744",
+            "3939f9d8809f16ae019422b37bca2dd6476a1f8587c81614d13cecf3bb097fc0",
+            "8b6bd82f21f15bf3465fc94e5d0eff2c21e956f01e505e4b512d4064eef5d5fc",
+            "ab0eb397e4e0e80968fdd89cc73599ad94ed700a93210b7600c1dd8d641ccd0b",
+            "b9b9bb9cc384f0de5dc3d3890fe560c118827b403023e0bd25c6f99484fa7dd8"
+          ],
+          "observed_late_surface_count": 0,
+          "reason_codes": [
+            "candidate_generation_completeness_unknown",
+            "multiple_candidates_present",
+            "multiple_work_candidates_present"
+          ],
+          "schema_version": "candidate_set_v1",
+          "source_candidate_pair_count": 2,
+          "source_record_count": 5,
+          "typed_inventory_pair_count": 2,
+          "unlinked_surface_count": 0,
+          "work_candidate_count": 2
+        },
+        "event_probabilities": [
+          {
+            "label": "cand_005dfd2efd33d8ea1d42a7703f637cddd051f18d906c1c3f7d05804aef0e8017",
+            "probability": null
+          },
+          {
+            "label": "cand_70bd5755dc517c66de7283a6bd7b651fb1a5d58895b8a94c0b8af482f29b0ddb",
+            "probability": null
+          },
+          {
+            "label": "__NIL__",
+            "probability": null
+          }
+        ],
+        "input_fingerprint": "92bfce1ea63ca6f4b21c685bd0627e9dcc0530dced80564509ac4ca50a5711a8",
+        "operational_effect": "NONE_SHADOW_ONLY",
+        "probability_status": "NOT_AVAILABLE_UNCALIBRATED",
+        "reason_codes": [
+          "candidate_generation_completeness_unknown",
+          "candidate_selection_not_scored",
+          "multiple_candidates_present",
+          "multiple_work_candidates_present",
+          "probability_uncalibrated",
+          "shadow_action_not_applied"
+        ],
+        "schema_version": "candidate_set_nil_shadow_v1",
+        "selected_label": null,
+        "shadow_fingerprint": "af0e4db832cee7e9351657a3dd43b9d9c7521159dcecd3da817ef11d4a764d44"
+      }
+    },
+    {
+      "post_id": 10564672,
+      "source_pointer": "/34",
+      "source_title": "개장빙들 댓글대문에 몰입안대 ㅡㅡ",
+      "target": "회귀/빙의/모험/장르 등의 약칭 가능성",
+      "candidate_preservation_sources": [
+        {
+          "confidence": "None",
+          "negative_evidence": [
+            "candidate_source_missing_url"
+          ],
+          "official_title": "회귀/빙의/모험/장르 등의 약칭 가능성",
+          "preservation_role": "title_candidate",
+          "reference_role": "candidate",
+          "source_tier": "llm_only"
+        },
+        {
+          "alias_or_mention": "회모장",
+          "confidence": "Low",
+          "local_preservation_type": "local_surface_diagnostic_hold",
+          "negative_evidence": [
+            "raw_source_work_surface_unresolved"
+          ],
+          "official_title": "회모장",
+          "preservation_role": "local_surface_diagnostic_hold",
+          "promotion_policy": "hold_without_promotion",
+          "reference_role": "candidate",
+          "source_tier": "llm_only"
+        }
+      ],
+      "stored_shadow": {
+        "action": "NOT_EVALUATED",
+        "action_applied": false,
+        "baseline_decision_fingerprint": "ded9cc8986f38509ae336852f0357871bca6e1c2bc5734ef84fa14884d08aa8f",
+        "baseline_selected_candidate_id": null,
+        "candidate_set": {
+          "candidate_inventory_count_hint": 2,
+          "candidate_set_fingerprint": "321dc35630b96600ac84c858d5ac27165945372a86f3cf0356fef0a1ede1b490",
+          "candidate_set_recall_status": "NOT_EVALUABLE_GENERATION_UNKNOWN",
+          "candidates": [
+            {
+              "aliases": [],
+              "baseline_selected": false,
+              "candidate_id": "cand_05716dcb1ac7d17a30c6dc985ebec7c026d3bd9afcdea2359d364258d12bd073",
+              "event_eligible": true,
+              "evidence_kinds": [
+                "candidate_preservation"
+              ],
+              "identity_conflict": false,
+              "local_preservation_types": [],
+              "negative_evidence": [
+                "candidate_source_missing_url"
+              ],
+              "option_kind": "WORK_CANDIDATE",
+              "preservation_roles": [
+                "title_candidate"
+              ],
+              "promotion_policies": [],
+              "publish_support_present": false,
+              "reason_codes": [
+                "candidate_inventory_preserved_without_selection"
+              ],
+              "reference_roles": [
+                "candidate"
+              ],
+              "source_fields": [
+                "candidate_preservation_sources",
+                "promotion_gate_evidence",
+                "title_candidates"
+              ],
+              "source_tiers": [
+                "llm_only"
+              ],
+              "titles": [
+                "회귀/빙의/모험/장르 등의 약칭 가능성"
+              ],
+              "urls": []
+            },
+            {
+              "aliases": [
+                "회모장"
+              ],
+              "baseline_selected": false,
+              "candidate_id": "cand_6ce68fb720263826b9d0811b012ce7b5d8eb10b787a9f13062676e5fca6be6a3",
+              "event_eligible": false,
+              "evidence_kinds": [
+                "candidate_preservation"
+              ],
+              "identity_conflict": false,
+              "local_preservation_types": [
+                "local_surface_diagnostic_hold"
+              ],
+              "negative_evidence": [
+                "raw_source_work_surface_unresolved"
+              ],
+              "option_kind": "UNLINKED_SURFACE",
+              "preservation_roles": [
+                "local_surface_diagnostic_hold"
+              ],
+              "promotion_policies": [
+                "hold_without_promotion"
+              ],
+              "publish_support_present": false,
+              "reason_codes": [
+                "candidate_inventory_preserved_without_selection"
+              ],
+              "reference_roles": [
+                "candidate"
+              ],
+              "source_fields": [
+                "candidate_preservation_sources",
+                "promotion_gate_evidence"
+              ],
+              "source_tiers": [
+                "llm_only"
+              ],
+              "titles": [
+                "회모장"
+              ],
+              "urls": []
+            }
+          ],
+          "event_candidate_count": 1,
+          "generation_cap": 6,
+          "generation_status": "UNKNOWN",
+          "integrity_status": "GO",
+          "nil_label": "__NIL__",
+          "observation_fingerprint": "2341b8e1af1e5d7b29100e248de9a83844e9e84cc9d8a24621cbbd3ee1abe689",
+          "observation_signatures": [
+            "531cdff973ce79419656dee2cb4c4d4ab1490cc498bd96ab8a8c52c44cb820e4",
+            "8147fe23bb7642162fb17364de18729c741d42a10932401258b6eaef37e429f2",
+            "c6daef00f59dcd918b54355813905da5d46a56fc2a4327b1c6da6a9999523987",
+            "df6f96b6636de0745970c2b5719e1746e34130c7e9aa70fcdd1b6e765f15583b",
+            "fbe4cef927c2da2d2ada9f67f3bf6f0776d222d8748c2b58068936f7ae36aa2d"
+          ],
+          "observed_late_surface_count": 0,
+          "reason_codes": [
+            "candidate_generation_completeness_unknown",
+            "multiple_candidates_present",
+            "unlinked_surfaces_preserved_outside_event_space"
+          ],
+          "schema_version": "candidate_set_v1",
+          "source_candidate_pair_count": 2,
+          "source_record_count": 5,
+          "typed_inventory_pair_count": 2,
+          "unlinked_surface_count": 1,
+          "work_candidate_count": 1
+        },
+        "event_probabilities": [
+          {
+            "label": "cand_05716dcb1ac7d17a30c6dc985ebec7c026d3bd9afcdea2359d364258d12bd073",
+            "probability": null
+          },
+          {
+            "label": "__NIL__",
+            "probability": null
+          }
+        ],
+        "input_fingerprint": "5b60c56a3519fe2f2f658baaf54b7026bb32bfacf10847e5441116b7e7053b36",
+        "operational_effect": "NONE_SHADOW_ONLY",
+        "probability_status": "NOT_AVAILABLE_UNCALIBRATED",
+        "reason_codes": [
+          "candidate_generation_completeness_unknown",
+          "multiple_candidates_present",
+          "probability_uncalibrated",
+          "shadow_action_not_applied",
+          "unlinked_surfaces_preserved_outside_event_space"
+        ],
+        "schema_version": "candidate_set_nil_shadow_v1",
+        "selected_label": null,
+        "shadow_fingerprint": "d4e8b41d8f03b684a4baa1784535847b7cf398d589ef93a1f70f0a8b5c4a54e9"
+      }
+    },
+    {
+      "post_id": 8362499,
+      "source_pointer": "/76",
+      "source_title": "근데 NTR 좋아하는 애들은 NTL도 잘퍼먹는 게 보통임",
+      "target": "좋아하지도 않으면서",
+      "candidate_preservation_sources": [
+        {
+          "alias_or_mention": "좋아하",
+          "confidence": "Medium",
+          "heretic_url": "https://novelpia.com/novel/50",
+          "local_preservation_type": "blocked_batch_alias_hold",
+          "negative_evidence": [
+            "batch_alias_nonwork_context_hold_without_promotion"
+          ],
+          "official_title": "좋아하지도 않으면서",
+          "preservation_role": "recommendation_candidate",
+          "promotion_policy": "hold_without_promotion",
+          "reference_role": "candidate",
+          "source_tier": "official_detail"
+        }
+      ],
+      "stored_shadow": {
+        "action": "NOT_EVALUATED",
+        "action_applied": false,
+        "baseline_decision_fingerprint": "96527c49131097741174c2c3f5fadcd18756e9422c693ca232b26c7f7de961ab",
+        "baseline_selected_candidate_id": null,
+        "candidate_set": {
+          "candidate_inventory_count_hint": 1,
+          "candidate_set_fingerprint": "caf35e4d80da4b972929b77cb619fa044d97503fb60ff227b8eb1a236e841720",
+          "candidate_set_recall_status": "NOT_EVALUABLE_GENERATION_UNKNOWN",
+          "candidates": [
+            {
+              "aliases": [
+                "좋아하"
+              ],
+              "baseline_selected": false,
+              "candidate_id": "cand_d049828aa42a9503b937478daa9256aa74205ca0c1c631af1cb132651f81edd6",
+              "event_eligible": true,
+              "evidence_kinds": [
+                "candidate_preservation"
+              ],
+              "identity_conflict": false,
+              "local_preservation_types": [
+                "blocked_batch_alias_hold"
+              ],
+              "negative_evidence": [
+                "batch_alias_nonwork_context_hold_without_promotion"
+              ],
+              "option_kind": "WORK_CANDIDATE",
+              "preservation_roles": [
+                "recommendation_candidate"
+              ],
+              "promotion_policies": [
+                "hold_without_promotion"
+              ],
+              "publish_support_present": false,
+              "reason_codes": [
+                "candidate_inventory_preserved_without_selection"
+              ],
+              "reference_roles": [
+                "candidate"
+              ],
+              "source_fields": [
+                "candidate_preservation_sources",
+                "promotion_gate_evidence",
+                "recommendation_candidates"
+              ],
+              "source_tiers": [
+                "official_detail"
+              ],
+              "titles": [
+                "좋아하지도 않으면서"
+              ],
+              "urls": [
+                "https://novelpia.com/novel/50"
+              ]
+            }
+          ],
+          "event_candidate_count": 1,
+          "generation_cap": 6,
+          "generation_status": "UNKNOWN",
+          "integrity_status": "GO",
+          "nil_label": "__NIL__",
+          "observation_fingerprint": "fea1608c17f7c45be2bb5cafd856768b593436e01cb658402962b322425a3d63",
+          "observation_signatures": [
+            "2a7f1a290af58af01f3fa08a4611c0e488e9718ff94342722c254bae9ca00678",
+            "6d7297759a3755b8ff27f10b282472cf8b494ea63382487f6d88d2f98d7e3e45",
+            "a64ee934b1276c96d597f1e653542fa0fc3a5b8365fe4dd53fbc911e228a8838"
+          ],
+          "observed_late_surface_count": 0,
+          "reason_codes": [
+            "candidate_generation_completeness_unknown"
+          ],
+          "schema_version": "candidate_set_v1",
+          "source_candidate_pair_count": 1,
+          "source_record_count": 3,
+          "typed_inventory_pair_count": 1,
+          "unlinked_surface_count": 0,
+          "work_candidate_count": 1
+        },
+        "event_probabilities": [
+          {
+            "label": "cand_d049828aa42a9503b937478daa9256aa74205ca0c1c631af1cb132651f81edd6",
+            "probability": null
+          },
+          {
+            "label": "__NIL__",
+            "probability": null
+          }
+        ],
+        "input_fingerprint": "f9e6c7d2cb24e6f9769e0c41991a94b0e7dd8cddea5a5c68c2cd59a95f41662b",
+        "operational_effect": "NONE_SHADOW_ONLY",
+        "probability_status": "NOT_AVAILABLE_UNCALIBRATED",
+        "reason_codes": [
+          "candidate_generation_completeness_unknown",
+          "probability_uncalibrated",
+          "shadow_action_not_applied"
+        ],
+        "schema_version": "candidate_set_nil_shadow_v1",
+        "selected_label": null,
+        "shadow_fingerprint": "536bb2519c3b35dba07de93c4abdbca15aeab5c3c277b4d822f5b0ae02fcc89a"
+      }
+    }
+  ]
+}

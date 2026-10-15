@@ -17,7 +17,10 @@ from typing import Any, Mapping
 SEMANTIC_REVIEW_ROUTER_SCHEMA = "semantic_review_router_receipt_v1"
 SEMANTIC_REVIEW_ROUTER_MODE = "REVIEW_ONLY"
 SEMANTIC_REVIEW_ROUTER_AUTHORITY = "attempt_local_result_evidence"
-SEMANTIC_REVIEW_ROUTER_RULE_VERSION = "strict_evidence_v1"
+SEMANTIC_REVIEW_ROUTER_LEGACY_RULE_VERSION = "strict_evidence_v1"
+SEMANTIC_REVIEW_ROUTER_RULE_VERSION = "strict_evidence_v2"
+_RULE_VERSIONS = (SEMANTIC_REVIEW_ROUTER_LEGACY_RULE_VERSION, SEMANTIC_REVIEW_ROUTER_RULE_VERSION)
+_MAX_DIRECT_OCR_ITEMS = 128
 
 REVIEW_REQUIRED = "REVIEW_REQUIRED"
 NO_REVIEW = "NO_REVIEW"
@@ -427,6 +430,101 @@ def _route(source_view: Mapping[str, Any], errors: list[str]) -> tuple[str, list
     return NO_REVIEW, [], []
 
 
+def _direct_ocr_evidence(result: Mapping[str, Any]) -> dict[str, Any]:
+    """최종 catalog를 기존 제안 추출기로 검산하고 제목 없는 요약만 반환한다."""
+    from ..ledger.recovery_activation import extract_direct_ocr_review_proposals
+
+    identity = result["analysis_result"]["identity"]
+    catalog = identity.get("image_evidence_catalog")
+    if catalog is None:
+        catalog = []
+    if not isinstance(catalog, list) or not all(isinstance(item, Mapping) for item in catalog):
+        raise SemanticReviewRouterError("direct OCR catalog is invalid")
+    if len(catalog) > _MAX_DIRECT_OCR_ITEMS:
+        raise SemanticReviewRouterError("direct OCR catalog limit exceeded")
+    # v1의 canonical/hash 동작은 바꾸지 않고 새 evidence만 JSON wire로 제한한다.
+    json.dumps(catalog, ensure_ascii=False, allow_nan=False)
+    proposals = [item.to_dict() for item in extract_direct_ocr_review_proposals(result)]
+    proposals.sort(key=_canonical_sha256)
+    return {
+        "proposal_count": len(proposals),
+        "catalog_sha256": _canonical_sha256(catalog),
+        "proposal_set_sha256": _canonical_sha256(proposals),
+        "source_payload_sha256": sorted(item["source_payload_sha256"] for item in proposals),
+    }
+
+
+def _source_view_for_rule(result: Any, rule_version: str):
+    source, errors = _source_view(result)
+    if rule_version == SEMANTIC_REVIEW_ROUTER_LEGACY_RULE_VERSION or errors:
+        return source, errors
+    try:
+        evidence = _direct_ocr_evidence(result)
+    except (TypeError, ValueError):
+        errors = ["INVALID_DIRECT_OCR_EVIDENCE"]
+        return _unknown_view(errors), errors
+    return {**source, "direct_ocr_evidence": evidence}, []
+
+
+def _validate_source_view_for_rule(value: Any, rule_version: str):
+    if (rule_version == SEMANTIC_REVIEW_ROUTER_LEGACY_RULE_VERSION
+            or not isinstance(value, Mapping) or value.get("evidence_status") == "INVALID"):
+        return _validate_source_view(value)
+    if set(value) != _COMPLETE_SOURCE_VIEW_FIELDS | {"direct_ocr_evidence"}:
+        raise SemanticReviewRouterError("complete v2 source_view fields mismatch")
+    legacy = {key: item for key, item in value.items() if key != "direct_ocr_evidence"}
+    _validate_source_view(legacy)
+    evidence = value["direct_ocr_evidence"]
+    if not isinstance(evidence, Mapping) or set(evidence) != {
+            "proposal_count", "catalog_sha256", "proposal_set_sha256", "source_payload_sha256"}:
+        raise SemanticReviewRouterError("direct OCR evidence fields mismatch")
+    count = evidence["proposal_count"]
+    if type(count) is not int or not 0 <= count <= _MAX_DIRECT_OCR_ITEMS:
+        raise SemanticReviewRouterError("direct OCR proposal count is invalid")
+    pins = evidence["source_payload_sha256"]
+    if (not isinstance(pins, list) or len(pins) != count
+            or any(type(pin) is not str or _HEX64.fullmatch(pin) is None for pin in pins)
+            or pins != sorted(set(pins))):
+        raise SemanticReviewRouterError("direct OCR source pins are invalid")
+    for key in ("catalog_sha256", "proposal_set_sha256"):
+        if type(evidence[key]) is not str or _HEX64.fullmatch(evidence[key]) is None:
+            raise SemanticReviewRouterError("direct OCR evidence hash is invalid")
+    if count == 0 and evidence["proposal_set_sha256"] != _canonical_sha256([]):
+        raise SemanticReviewRouterError("empty direct OCR proposal hash mismatch")
+    return dict(value), []
+
+
+def _route_for_rule(source_view, errors, rule_version):
+    state, triggers, unknown = _route(source_view, errors)
+    if (rule_version == SEMANTIC_REVIEW_ROUTER_LEGACY_RULE_VERSION or errors
+            or source_view["publish_allowed"] or source_view["work_resolution"] == "resolved"):
+        return state, triggers, unknown
+    count = source_view["direct_ocr_evidence"]["proposal_count"]
+    if count:
+        code = "DIRECT_OCR_HOLD_CANDIDATE" if count == 1 else "MULTIPLE_DIRECT_OCR_HOLD_CANDIDATES"
+        return REVIEW_REQUIRED, sorted({*triggers, code}), []
+    return state, triggers, unknown
+
+
+def _validate_v2_result_binding(result, receipt):
+    # source_view까지 재봉인해도 원래 WAL의 공개/안정 payload 지문은 대체할 수 없다.
+    from ..ledger.publication_commit import compute_publication_decision_commit
+
+    try:
+        actual = compute_publication_decision_commit(
+            result, publication_scope_id=receipt["publication_scope_id"],
+            attempt_run_id=receipt["attempt_run_id"], input_index=receipt["input_index"],
+            post_id=receipt["post_id"],
+        )
+        binding = _publication_binding(actual)
+    except (TypeError, ValueError) as exc:
+        raise SemanticReviewRouterError("v2 result publication binding is invalid") from exc
+    for key in ("publication_decision_id", "public_projection_sha256", "stable_result_sha256"):
+        if receipt[key] != binding[key]:
+            raise SemanticReviewRouterError("v2 result publication binding mismatch: " + key)
+
+
+
 def _router_decision_material(receipt: Mapping[str, Any]) -> dict[str, Any]:
     return {
         key: receipt[key]
@@ -456,9 +554,12 @@ def build_semantic_review_router_receipt(
     publication_receipt: Any,
     *,
     attempt_run_id: str,
+    rule_version: str = SEMANTIC_REVIEW_ROUTER_RULE_VERSION,
 ) -> dict[str, Any]:
     """Build a self-hashed, no-public-write receipt from result evidence only."""
 
+    if rule_version not in _RULE_VERSIONS:
+        raise SemanticReviewRouterError("receipt rule version mismatch")
     binding = _publication_binding(publication_receipt)
     requested_attempt = _nonempty_text(attempt_run_id, field="attempt_run_id")
     if requested_attempt != binding["attempt_run_id"]:
@@ -467,8 +568,8 @@ def build_semantic_review_router_receipt(
         raise SemanticReviewRouterError("result must be an object")
     if str(_post_id(result.get("post_id"), field="result post_id")) != str(binding["post_id"]):
         raise SemanticReviewRouterError("result post_id does not match publication receipt")
-    source_view, errors = _source_view(result)
-    state, trigger_codes, unknown_reason_codes = _route(source_view, errors)
+    source_view, errors = _source_view_for_rule(result, rule_version)
+    state, trigger_codes, unknown_reason_codes = _route_for_rule(source_view, errors, rule_version)
     material = {
         "schema_version": SEMANTIC_REVIEW_ROUTER_SCHEMA,
         "publication_scope_id": binding["publication_scope_id"],
@@ -478,7 +579,7 @@ def build_semantic_review_router_receipt(
         "authority": SEMANTIC_REVIEW_ROUTER_AUTHORITY,
         "mode": SEMANTIC_REVIEW_ROUTER_MODE,
         "public_apply": False,
-        "rule_version": SEMANTIC_REVIEW_ROUTER_RULE_VERSION,
+        "rule_version": rule_version,
         "source_view": source_view,
         "source_view_sha256": _canonical_sha256(source_view),
         "trigger_codes": trigger_codes,
@@ -516,7 +617,8 @@ def validate_semantic_review_router_receipt(
         raise SemanticReviewRouterError("receipt mode mismatch")
     if value.get("public_apply") is not False:
         raise SemanticReviewRouterError("receipt cannot apply publicly")
-    if value.get("rule_version") != SEMANTIC_REVIEW_ROUTER_RULE_VERSION:
+    rule_version = value.get("rule_version")
+    if rule_version not in _RULE_VERSIONS:
         raise SemanticReviewRouterError("receipt rule version mismatch")
 
     normalized = dict(value)
@@ -549,15 +651,18 @@ def validate_semantic_review_router_receipt(
     if state not in _STATES:
         raise SemanticReviewRouterError("receipt state is invalid")
     normalized["state"] = state
+    if rule_version == SEMANTIC_REVIEW_ROUTER_RULE_VERSION and result is not None:
+        # 원문과 값이 같더라도 True == 1 같은 타입 치환은 먼저 거절한다.
+        _validate_source_view_for_rule(normalized["source_view"], rule_version)
     if result is not None:
         if str(_post_id(result.get("post_id"), field="result post_id")) != str(normalized["post_id"]):
             raise SemanticReviewRouterError("result post_id mismatch")
-        source_view, errors = _source_view(result)
+        source_view, errors = _source_view_for_rule(result, rule_version)
     else:
-        source_view, errors = _validate_source_view(normalized["source_view"])
+        source_view, errors = _validate_source_view_for_rule(normalized["source_view"], rule_version)
     if result is not None and normalized["source_view"] != source_view:
         raise SemanticReviewRouterError("source_view does not match result")
-    expected_state, expected_triggers, expected_unknown = _route(source_view, errors)
+    expected_state, expected_triggers, expected_unknown = _route_for_rule(source_view, errors, rule_version)
     if (
         state != expected_state
         or normalized["trigger_codes"] != expected_triggers
@@ -583,4 +688,6 @@ def validate_semantic_review_router_receipt(
         raise SemanticReviewRouterError("post_id mismatch")
     if expected_attempt_run_id is not None and normalized["attempt_run_id"] != _nonempty_text(expected_attempt_run_id, field="expected_attempt_run_id"):
         raise SemanticReviewRouterError("attempt_run_id mismatch")
+    if rule_version == SEMANTIC_REVIEW_ROUTER_RULE_VERSION and result is not None:
+        _validate_v2_result_binding(result, normalized)
     return normalized

@@ -1,0 +1,2907 @@
+{
+  "scope": "SAVED_PACKET_AND_E001_WITH_EXPLICIT_SYNTHETIC_403_CONTEXT",
+  "packet": {
+    "checkpoint_result": {
+      "analysis_result": {
+        "analysis": {
+          "detected_titles": [
+            {
+              "alias_or_mention": "괴담동",
+              "confidence": "High",
+              "content_status": null,
+              "heretic_url": "https://novelpia.com/novel/305463",
+              "locked": false,
+              "negative_evidence": [
+                "url_deleted_or_unavailable",
+                "candidate_source_search_title_conflict",
+                "candidate_source_missing_url",
+                "weak_alias_surface_public_title_bridge"
+              ],
+              "official_title": "괴담 동아리",
+              "page_type": "novel_page",
+              "reference_role": "candidate",
+              "resolved_recall_anchor": null,
+              "source_tier": "official_detail"
+            },
+            {
+              "alias_or_mention": null,
+              "confidence": "High",
+              "content_status": null,
+              "heretic_url": null,
+              "locked": false,
+              "negative_evidence": [
+                "candidate_source_missing_url"
+              ],
+              "official_title": "괴담동아리 if",
+              "page_type": null,
+              "reference_role": "candidate",
+              "resolved_recall_anchor": null,
+              "source_tier": "llm_only"
+            }
+          ],
+          "is_nsfw": false,
+          "micro_tags": [
+            "연참",
+            "팬심"
+          ],
+          "notes": "[작성자 발화·원문 귀속]\n- 작성자 발화: 「괴담동 5연참!!!!!!」\n- 작성자 발화: 「사랑해 오직재미!!!!!!」\n[원문] 괴담동 5연참!!!!!! / 사랑해 오직재미!!!!!!",
+          "nsfw_assessment_reason": "MODEL_BOOLEAN_REPORTED",
+          "nsfw_assessment_status": "MODEL_REPORTED",
+          "sentiment_profile": {
+            "drift_risk": "Unknown",
+            "pacing": "Unknown",
+            "sentiment": "Positive"
+          },
+          "user_segment": null
+        },
+        "batch_context_learning_envelope": {
+          "decoded_terms": [],
+          "identified_author": null,
+          "identified_characters": [],
+          "schema_version": "batch_context_learning_envelope_v1"
+        },
+        "identity": {
+          "anchor_strength": "high",
+          "anchor_type": "title_exact",
+          "blocked_official_title": null,
+          "blocked_official_title_url": null,
+          "candidate_audit_lint": [],
+          "candidate_generation_miss": false,
+          "candidate_ledger": {
+            "candidate_audit_lint_reasons": [],
+            "candidate_generation": {
+              "cap": 24,
+              "count_basis": "normalized_title_url_role_unique",
+              "emitted_source_count": 2,
+              "metadata_fingerprint": "4db90bea766b87a00fd891f7b92d7188ba7588c7dc962cc8a100626b8c75d1bd",
+              "observed_sources_fingerprint": "5977497155f6d426eabef2490635bdda34d31a14128d02c185afbf801a014066",
+              "reason_codes": [
+                "upstream_completeness_unknown"
+              ],
+              "retained_sources_fingerprint": "5977497155f6d426eabef2490635bdda34d31a14128d02c185afbf801a014066",
+              "schema_version": "candidate_generation_v1",
+              "scope": "serializer_preservation_inventory",
+              "source_key_fingerprint": "851328658d9c16d3fb998bb4b71255c3634372b8cc2ec7643361a82a98961033",
+              "status": "UNKNOWN",
+              "unique_valid_source_count": 2,
+              "upstream_completeness": "UNKNOWN"
+            },
+            "candidate_generation_proof": {
+              "complete_receipt_count": 3,
+              "extra_receipt_count": 0,
+              "local_snapshot_count": 2,
+              "local_truncated_count": 0,
+              "metadata_fingerprint": "a9cfba692b60a5c9c694e9e1cfba1b653563d77ae1da05d0fe129f1bb87b4b69",
+              "missing_receipt_count": 30,
+              "observed_producers": [
+                "fetch",
+                "search"
+              ],
+              "plan_count": 10,
+              "plan_set_fingerprint": "0b3009e0c84594200ffc8f5dfdb74540bde660d4defd6ed0646ca2394a3a4449",
+              "planned_operation_count": 40,
+              "reason_codes": [
+                "bounded_plan_unfinished",
+                "bounded_producer_proof_truncated",
+                "planned_operation_receipt_missing",
+                "producer_receipt_truncated",
+                "producer_receipt_unknown"
+              ],
+              "receipt_count": 10,
+              "receipt_set_fingerprint": "066b0e1c96565fad81422a6adbdabf813fa5ea78cb725589edd27a41968e199e",
+              "required_producers": [
+                "fetch",
+                "search"
+              ],
+              "schema_version": "candidate_generation_proof_v1",
+              "scope": "bounded_candidate_generation_proof",
+              "status": "TRUNCATED",
+              "truncated_receipt_count": 3,
+              "unfinished_plan_count": 7,
+              "unknown_receipt_count": 4,
+              "upstream_completeness": "UNKNOWN"
+            },
+            "candidate_ledger_status": "promotion_blocked",
+            "candidate_producer_plans": [
+              {
+                "enumeration_finished": false,
+                "metadata_fingerprint": "20eb01cfbaae23d42bc502ff641083081dea1aa8b9c4196b8d77606123a08093",
+                "occurrence": 1,
+                "plan_fingerprint": "fd432f61fcae6f5138e16f648b99b27bd76d9fc74574d492eeb1e551b178934c",
+                "planned_operation_count": 25,
+                "planned_operation_fingerprints": [
+                  "1a078712b042c1e70342c8333305b0c694f293341130e393d9b3fe0bc74d0086",
+                  "375f3d94da6291fa26de43715a0d610c85f8c7e32e2d57818a6b7ea49683e21c",
+                  "595ff7ad1761aefc411d1032a81426890e730f16a63f47853b433d529454dc34",
+                  "e1f9ad01bd5a6a90841baf13ce1da3b8ed04a7a9f37cfd0a99c0d8e8a2ba7077",
+                  "0d570b4c4766ec049e331070219ea2a3e9311a6d256fad53bb6684f4fe151066",
+                  "9d6a829bdbff73142ddef06b60bdd5ff2e311e667f1c82fdf299c5a4790b1fdd",
+                  "d13673dce6db2ddc6be1e341b796e18dc60d1e8aec2c0d705def50e91875beb5",
+                  "e963d4956a8ce6434866c4aed919f736d0aa6f77c8c38ddb68fdda26767b8ba1",
+                  "0a549888764700b3beb76cf6e96b9e9ca513b802964cd019d096c27727caad35",
+                  "006018e42d4e8a1ceda6b45dacf831040c07c70d6834a6be1f17f41a2dd59fb3",
+                  "28ab5c546995e7fc5bbbb8319b181d038b16e5ad865164bf3b1eb4fdec81daea",
+                  "498f172801b6036ae9d6364b102142c086063b3cd456a02dd44bbadda7c631f3",
+                  "3166792ffc3537a4600236716c5b9fbdb2c9dbf7dde861383de53c4567223746",
+                  "29466fbac3f9fa033e0811e00e9261f676c313ad4a4c39c3012ac410ebfee8f6",
+                  "da2db4a9f527a50313d839384772ab56a5eb57d46596e1ff990bb739ef019c95",
+                  "528b6c414963851968734126f9559eec62486c6e6b5b23554388bea4273fca70",
+                  "bedd5ec513a364c11f4dc5df8bf25a328a0fd46aaae91c54ad1dc0de3a73469b",
+                  "c6be8ed245be0c5730e582579ea62846c9a71af977d6b11ab62e1254ad30dca8",
+                  "f79392e8bad20d5eeb8892d90fd4e3675e8bd2247f5e34df31846c7a5e67e630",
+                  "acd82611c6f451002d086ef6659192735fcaaec63c875711b1b27d66567f1f0f",
+                  "dc89684189079d76a13b79452ef3a462be7df0622ba3a642b00dcd8e99b9f628",
+                  "0b485a9f460375c2a9446995512cd15fc306efc328416c6180cb559eca69c622",
+                  "2a6a4109339307af9f4c897c1dc002cd3e455cd3d4cdf3b6ab0fc602059fa2eb",
+                  "029a21cbbf73359d8e5c28184b37662455ffe6f9ac2aa810a82f4a18444573a1",
+                  "bb7b6bc3cc1fd6d4e7a29b4366e18b97093ea468f1289d7abb15841c1b81a441"
+                ],
+                "producer": "search",
+                "reason_codes": [
+                  "bounded_plan_unfinished"
+                ],
+                "schema_version": "candidate_producer_plan_v1",
+                "scope": "bounded_candidate_producer_plan"
+              },
+              {
+                "enumeration_finished": false,
+                "metadata_fingerprint": "3b075d5d5f5037c2d4a7a44773551749b01d34e8818ed1feb10a1cc0dea9e9f1",
+                "occurrence": 2,
+                "plan_fingerprint": "ae8089cc936b4c7efd8ffc880de7a2e142e77c276b7492df341e2b581a8967f0",
+                "planned_operation_count": 3,
+                "planned_operation_fingerprints": [
+                  "840b7443cd09b2c11eac03382758267c24512e5806aee64233aa2493a9e77b5a",
+                  "c3c65e16d3b55ba8e446cf4a778719abdc5a0edb0ebf476045ccfc17a67520c3",
+                  "56150d45a215add87c7085b6241f037d5537f68d09699c744d6fceedde70ba88"
+                ],
+                "producer": "search",
+                "reason_codes": [
+                  "bounded_plan_unfinished"
+                ],
+                "schema_version": "candidate_producer_plan_v1",
+                "scope": "bounded_candidate_producer_plan"
+              },
+              {
+                "enumeration_finished": true,
+                "metadata_fingerprint": "f2e65eacad105d8310d34e2e48ce170c9d9129ac2dea451b0e364e74e2da5af1",
+                "occurrence": 1,
+                "plan_fingerprint": "01b900cd998265dd9c3474e4a0170857573c2d4399dd174783a9a77b3a1b28b9",
+                "planned_operation_count": 1,
+                "planned_operation_fingerprints": [
+                  "f251b059cd6b6b906b2b91ac8ade5d632d2d253ff49f623385bbde0f305bb40b"
+                ],
+                "producer": "fetch",
+                "reason_codes": [
+                  "bounded_plan_finished"
+                ],
+                "schema_version": "candidate_producer_plan_v1",
+                "scope": "bounded_candidate_producer_plan"
+              },
+              {
+                "enumeration_finished": false,
+                "metadata_fingerprint": "7948085f98c56ad05305c069202b2d267e04bf509e7ad34a118013cede129073",
+                "occurrence": 3,
+                "plan_fingerprint": "847fe6d7fbd5fb74391819cd66c9380ea3f7d16ab71f750390895c1930e170c1",
+                "planned_operation_count": 3,
+                "planned_operation_fingerprints": [
+                  "b60b1744870b8b348fe20cb956d95e4d87c37edaa1e69839482873a062dabee1",
+                  "fbc3f6f26dd57ac138a46e389704eb4c2dfe6b92aa30cb32207ecbc77be15ad8",
+                  "6ac20a1def77205339cd2d0d000386a3ce0dddb2366ebdfbcd86682eb77f5002"
+                ],
+                "producer": "search",
+                "reason_codes": [
+                  "bounded_plan_unfinished"
+                ],
+                "schema_version": "candidate_producer_plan_v1",
+                "scope": "bounded_candidate_producer_plan"
+              },
+              {
+                "enumeration_finished": false,
+                "metadata_fingerprint": "854257328608c5563b7d3cfcbf114a9c87b705d3ac9a7271327257b51fbd26f3",
+                "occurrence": 4,
+                "plan_fingerprint": "ed937841c2b5f7f8708a0716d4108cbb2825e19eabcc61794e097435e5beefc3",
+                "planned_operation_count": 3,
+                "planned_operation_fingerprints": [
+                  "aa366cd1793a86127efdd61f0640d1ba8cb66f76161e08bba8c539ac2bb2f5a2",
+                  "a98bb2a7b2ae79112ab14c04071fce71839d295489a225df56ab65c42d550242",
+                  "6a0b176eebcd19ffbc6c4db1954eb8dd9fd2c60168d20137b72affb118ddb624"
+                ],
+                "producer": "search",
+                "reason_codes": [
+                  "bounded_plan_unfinished"
+                ],
+                "schema_version": "candidate_producer_plan_v1",
+                "scope": "bounded_candidate_producer_plan"
+              },
+              {
+                "enumeration_finished": true,
+                "metadata_fingerprint": "7665f5f0bbeb2c96cbbd343fbc8c8f51481500b4726da0c169c6120e0e6a308d",
+                "occurrence": 2,
+                "plan_fingerprint": "0b0b82eed5dd1b413120034245165633556feae23cbfba3013253d3d8cc0eaec",
+                "planned_operation_count": 1,
+                "planned_operation_fingerprints": [
+                  "1a88e7940aa69ba2c1345a0b81a39ffc724d2c2d0da05d0f8cc783239d8f24b9"
+                ],
+                "producer": "fetch",
+                "reason_codes": [
+                  "bounded_plan_finished"
+                ],
+                "schema_version": "candidate_producer_plan_v1",
+                "scope": "bounded_candidate_producer_plan"
+              },
+              {
+                "enumeration_finished": true,
+                "metadata_fingerprint": "8cb406ee42216e8f3e7a3aabd09bfedf6b43b91c74b4202c6cb839b12e4782f3",
+                "occurrence": 3,
+                "plan_fingerprint": "a9c4b0670a47cd60e4fa9cc0d8642d87ac2f2653eefb5a81eb808b182eea107f",
+                "planned_operation_count": 1,
+                "planned_operation_fingerprints": [
+                  "b8d05ed53b7ec5fbcdd1a1e8c2a48f26716864c49668728d6b40c6f5029e2b9a"
+                ],
+                "producer": "fetch",
+                "reason_codes": [
+                  "bounded_plan_finished"
+                ],
+                "schema_version": "candidate_producer_plan_v1",
+                "scope": "bounded_candidate_producer_plan"
+              },
+              {
+                "enumeration_finished": false,
+                "metadata_fingerprint": "9bdee96987c9194f6840b20b5b1456247acef0db6c94aff1ef620998db985b2e",
+                "occurrence": 4,
+                "plan_fingerprint": "58afa6f1fe30b98e78a5dce3ba1a88b177274cef97f559debaffc75b0dba3fc2",
+                "planned_operation_count": 1,
+                "planned_operation_fingerprints": [
+                  "3bd3e95149e222c68568b3e530574cdff55e936f3d63e6f911ba048ce32bedf1"
+                ],
+                "producer": "fetch",
+                "reason_codes": [
+                  "bounded_plan_unfinished"
+                ],
+                "schema_version": "candidate_producer_plan_v1",
+                "scope": "bounded_candidate_producer_plan"
+              },
+              {
+                "enumeration_finished": false,
+                "metadata_fingerprint": "67060557b25f0cfc5c349f6b7e454321d0d8a34b5fa950643d6620d1a834d71e",
+                "occurrence": 5,
+                "plan_fingerprint": "5a5dd18da86189428b0db0d6dcd81036b9b6b281a7533a1d2abb1d4d05f9fa53",
+                "planned_operation_count": 1,
+                "planned_operation_fingerprints": [
+                  "3eb80322a288a7a1de9f5a067d1c6b7921a155ee1fde6c5557e3c61ca855c954"
+                ],
+                "producer": "fetch",
+                "reason_codes": [
+                  "bounded_plan_unfinished"
+                ],
+                "schema_version": "candidate_producer_plan_v1",
+                "scope": "bounded_candidate_producer_plan"
+              },
+              {
+                "enumeration_finished": false,
+                "metadata_fingerprint": "a6f2b28652338c759a9153d7ebe47cd9aa6ec96686af19d99767c7e560a705ed",
+                "occurrence": 6,
+                "plan_fingerprint": "f4c275879537c34f3e99a3f55facc910328c5ebed9d9ec669eb87dd65d9a7df8",
+                "planned_operation_count": 1,
+                "planned_operation_fingerprints": [
+                  "94dfa7cbe0c0d8d3b0541c024f48f627a46e9514e54a881f50efa20e0a104d1a"
+                ],
+                "producer": "fetch",
+                "reason_codes": [
+                  "bounded_plan_unfinished"
+                ],
+                "schema_version": "candidate_producer_plan_v1",
+                "scope": "bounded_candidate_producer_plan"
+              }
+            ],
+            "candidate_producer_receipts": [
+              {
+                "accepted_count": 10,
+                "attempted_count": 1,
+                "degraded": false,
+                "enumeration_finished": true,
+                "error_status": "NONE",
+                "from_cache": false,
+                "input_fingerprint": "1a078712b042c1e70342c8333305b0c694f293341130e393d9b3fe0bc74d0086",
+                "metadata_fingerprint": "2611c336043f3cedf4948f83b4c6633a5f91864cb557b909ec6b9cf85f51ce60",
+                "occurrence": 1,
+                "operation_id": "10ae821b06b8afd89806fcd650d5b12238a0386f803d803c5f5c3761a382916c",
+                "output_fingerprint": "f5d789faafb358ed264d54869dacc80206cece56790abb7dca7878673259274d",
+                "plan_fingerprint": "fd432f61fcae6f5138e16f648b99b27bd76d9fc74574d492eeb1e551b178934c",
+                "possible_throttle": false,
+                "producer": "search",
+                "raw_count": 25,
+                "reason_codes": [
+                  "bounded_operation_finished",
+                  "producer_output_truncated"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "TRUNCATED"
+              },
+              {
+                "accepted_count": 10,
+                "attempted_count": 1,
+                "degraded": false,
+                "enumeration_finished": true,
+                "error_status": "NONE",
+                "from_cache": false,
+                "input_fingerprint": "840b7443cd09b2c11eac03382758267c24512e5806aee64233aa2493a9e77b5a",
+                "metadata_fingerprint": "4c11071718277e963c248b70e8d0bea5a899aa30ab004c77b1d137f32dac48b8",
+                "occurrence": 2,
+                "operation_id": "677c0917f86f005c941a40a131a00455f3159681227f5f1160f95881c6502460",
+                "output_fingerprint": "237a3d44334df9a144eef1442960d099a4aa9706da243dd6756ed8baa4b2ead3",
+                "plan_fingerprint": "ae8089cc936b4c7efd8ffc880de7a2e142e77c276b7492df341e2b581a8967f0",
+                "possible_throttle": false,
+                "producer": "search",
+                "raw_count": 25,
+                "reason_codes": [
+                  "bounded_operation_finished",
+                  "producer_output_truncated"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "TRUNCATED"
+              },
+              {
+                "accepted_count": 1,
+                "attempted_count": 0,
+                "degraded": false,
+                "enumeration_finished": false,
+                "error_status": "MISSING_META",
+                "from_cache": true,
+                "input_fingerprint": "f251b059cd6b6b906b2b91ac8ade5d632d2d253ff49f623385bbde0f305bb40b",
+                "metadata_fingerprint": "08be7bead2507322103d1b0eeec1fa5593b7be9d884a7e0a8bb394b4e4d8f70f",
+                "occurrence": 3,
+                "operation_id": "d823f4ab49f3f587ff0f8444be9a836a9cae5e1a11307d43a331afd22238cc6c",
+                "output_fingerprint": "63953af8bef0ba84d37e95c6329e5f62abfe16732ce59df97dbfd42eda2b093d",
+                "plan_fingerprint": "01b900cd998265dd9c3474e4a0170857573c2d4399dd174783a9a77b3a1b28b9",
+                "possible_throttle": false,
+                "producer": "fetch",
+                "raw_count": 1,
+                "reason_codes": [
+                  "bounded_operation_unfinished",
+                  "cache_origin_proof_missing",
+                  "cache_replay",
+                  "producer_meta_missing"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "UNKNOWN"
+              },
+              {
+                "accepted_count": 6,
+                "attempted_count": 1,
+                "degraded": false,
+                "enumeration_finished": true,
+                "error_status": "NONE",
+                "from_cache": false,
+                "input_fingerprint": "b60b1744870b8b348fe20cb956d95e4d87c37edaa1e69839482873a062dabee1",
+                "metadata_fingerprint": "987df6cfd1e64feae56e701e62b37557eb287aa84ee97daabc0f880437061370",
+                "occurrence": 4,
+                "operation_id": "6b017eede4df94b805dbc354150d1393d748a4930ac7e984ba8b72b6bdf57de3",
+                "output_fingerprint": "9e9b64f51fdd3b049a20321ce7868785011ee2567eade2f39db5c8cf306bd7b0",
+                "plan_fingerprint": "847fe6d7fbd5fb74391819cd66c9380ea3f7d16ab71f750390895c1930e170c1",
+                "possible_throttle": false,
+                "producer": "search",
+                "raw_count": 25,
+                "reason_codes": [
+                  "bounded_operation_finished",
+                  "producer_output_truncated"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "TRUNCATED"
+              },
+              {
+                "accepted_count": 10,
+                "attempted_count": 1,
+                "degraded": false,
+                "enumeration_finished": true,
+                "error_status": "NONE",
+                "from_cache": false,
+                "input_fingerprint": "aa366cd1793a86127efdd61f0640d1ba8cb66f76161e08bba8c539ac2bb2f5a2",
+                "metadata_fingerprint": "6d9e7d3a9b80d4178ea3d5ef987cea99248a62abf9141adc3ba3fd9642daddd6",
+                "occurrence": 5,
+                "operation_id": "bc04d074d78d570a5be4190a3852ad0e8d7729d03e7794d2e6c4e8995673ee15",
+                "output_fingerprint": "69f5e7ac0f6dc88781fd0312a83e887317a916437f95843861434ff2a4377cc1",
+                "plan_fingerprint": "ed937841c2b5f7f8708a0716d4108cbb2825e19eabcc61794e097435e5beefc3",
+                "possible_throttle": false,
+                "producer": "search",
+                "raw_count": 10,
+                "reason_codes": [
+                  "bounded_operation_finished"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "COMPLETE"
+              },
+              {
+                "accepted_count": 1,
+                "attempted_count": 0,
+                "degraded": false,
+                "enumeration_finished": false,
+                "error_status": "MISSING_META",
+                "from_cache": true,
+                "input_fingerprint": "1a88e7940aa69ba2c1345a0b81a39ffc724d2c2d0da05d0f8cc783239d8f24b9",
+                "metadata_fingerprint": "dbb5585c8777414ca22f9add0ec35903b0b054590c3776b4afeaf204754aac41",
+                "occurrence": 6,
+                "operation_id": "06ca2db7d4215064b030d299bf68136768aa757dcb15b9b79cb4a3c3b682ccb8",
+                "output_fingerprint": "dce98d089dbb16bca4f57231fcb1b319ed2a650aff7a61075b1d71967b36d010",
+                "plan_fingerprint": "0b0b82eed5dd1b413120034245165633556feae23cbfba3013253d3d8cc0eaec",
+                "possible_throttle": false,
+                "producer": "fetch",
+                "raw_count": 1,
+                "reason_codes": [
+                  "bounded_operation_unfinished",
+                  "cache_origin_proof_missing",
+                  "cache_replay",
+                  "producer_meta_missing"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "UNKNOWN"
+              },
+              {
+                "accepted_count": 1,
+                "attempted_count": 0,
+                "degraded": false,
+                "enumeration_finished": false,
+                "error_status": "MISSING_META",
+                "from_cache": true,
+                "input_fingerprint": "b8d05ed53b7ec5fbcdd1a1e8c2a48f26716864c49668728d6b40c6f5029e2b9a",
+                "metadata_fingerprint": "b965647d31271f090a99a599ed96fd3c6d39257335362fca5d3c45d463331feb",
+                "occurrence": 7,
+                "operation_id": "2ff5c0a2540377a50847a3c485205986704f574e56e2b5deec4ca7ad22821641",
+                "output_fingerprint": "895e7f299b59bacf077f6f72da35d5ea87e2774a4229519dfbc00e5dc8300def",
+                "plan_fingerprint": "a9c4b0670a47cd60e4fa9cc0d8642d87ac2f2653eefb5a81eb808b182eea107f",
+                "possible_throttle": false,
+                "producer": "fetch",
+                "raw_count": 1,
+                "reason_codes": [
+                  "bounded_operation_unfinished",
+                  "cache_origin_proof_missing",
+                  "cache_replay",
+                  "producer_meta_missing"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "UNKNOWN"
+              },
+              {
+                "accepted_count": 1,
+                "attempted_count": 0,
+                "degraded": false,
+                "enumeration_finished": false,
+                "error_status": "MISSING_META",
+                "from_cache": true,
+                "input_fingerprint": "3bd3e95149e222c68568b3e530574cdff55e936f3d63e6f911ba048ce32bedf1",
+                "metadata_fingerprint": "d834461088df02306793e4b24d2c5cc93d8f23dbcce135b3ff558e7cd0ba38c4",
+                "occurrence": 8,
+                "operation_id": "765facb1a44067250c2254253eb6b32d750d32434ffa1f8fa74c8af2997922ee",
+                "output_fingerprint": "83cb092a8aac39936921779f69acac42411cfaae38fe9089736cbbae65cc16cc",
+                "plan_fingerprint": "58afa6f1fe30b98e78a5dce3ba1a88b177274cef97f559debaffc75b0dba3fc2",
+                "possible_throttle": false,
+                "producer": "fetch",
+                "raw_count": 1,
+                "reason_codes": [
+                  "bounded_operation_unfinished",
+                  "cache_origin_proof_missing",
+                  "cache_replay",
+                  "producer_meta_missing"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "UNKNOWN"
+              },
+              {
+                "accepted_count": 1,
+                "attempted_count": 1,
+                "degraded": false,
+                "enumeration_finished": true,
+                "error_status": "NONE",
+                "from_cache": false,
+                "input_fingerprint": "3eb80322a288a7a1de9f5a067d1c6b7921a155ee1fde6c5557e3c61ca855c954",
+                "metadata_fingerprint": "bd0ac2090ea41afe5f4288df7dbea1d1f32544b0b1572c86163b9abe91d1e740",
+                "occurrence": 9,
+                "operation_id": "1bee14a643a7fa31589a4d268e8cd3c8cb0535682d14638a8fae3635b1f4a2db",
+                "output_fingerprint": "cb941a710e49017a4e9b5d002e3ce88271618d3c298329e42d139f5dddf55a8e",
+                "plan_fingerprint": "5a5dd18da86189428b0db0d6dcd81036b9b6b281a7533a1d2abb1d4d05f9fa53",
+                "possible_throttle": false,
+                "producer": "fetch",
+                "raw_count": 1,
+                "reason_codes": [
+                  "bounded_operation_finished"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "COMPLETE"
+              },
+              {
+                "accepted_count": 1,
+                "attempted_count": 1,
+                "degraded": false,
+                "enumeration_finished": true,
+                "error_status": "NONE",
+                "from_cache": false,
+                "input_fingerprint": "94dfa7cbe0c0d8d3b0541c024f48f627a46e9514e54a881f50efa20e0a104d1a",
+                "metadata_fingerprint": "17106b280a2918b41065f738b322b38c39dbeee031760eebcb1ea4d0e813f577",
+                "occurrence": 10,
+                "operation_id": "a70448341ac19ad4895f002a59aca0107a1abcf35c293314582b47d7561c5565",
+                "output_fingerprint": "92bf12f6753083ec71832b731cbdbcc791f3c75be7fe5923a1f236bf47aa7b94",
+                "plan_fingerprint": "f4c275879537c34f3e99a3f55facc910328c5ebed9d9ec669eb87dd65d9a7df8",
+                "possible_throttle": false,
+                "producer": "fetch",
+                "raw_count": 1,
+                "reason_codes": [
+                  "bounded_operation_finished"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "COMPLETE"
+              }
+            ],
+            "candidate_set_shadow": {
+              "action": "NOT_EVALUATED",
+              "action_applied": false,
+              "baseline_decision_fingerprint": "d891f481a26a3fecfb2ab5e49014018131546e0e7902e61ef4ef7704f98417d5",
+              "baseline_selected_candidate_id": null,
+              "candidate_set": {
+                "candidate_inventory_count_hint": 2,
+                "candidate_set_fingerprint": "2638a63224a1c2f4054a7a8bd43c84b7460020c87c9c2ec8f406f73d3e9358a1",
+                "candidate_set_recall_status": "NOT_EVALUABLE_GENERATION_UNKNOWN",
+                "candidates": [
+                  {
+                    "aliases": [
+                      "괴담동"
+                    ],
+                    "baseline_selected": false,
+                    "candidate_id": "cand_12811bc88e194df1e0aab3dc312885404af407365e8e510879877b9b4e50754a",
+                    "event_eligible": true,
+                    "evidence_kinds": [
+                      "candidate_preservation"
+                    ],
+                    "identity_conflict": false,
+                    "local_preservation_types": [],
+                    "negative_evidence": [
+                      "candidate_source_missing_url",
+                      "candidate_source_search_title_conflict",
+                      "url_deleted_or_unavailable",
+                      "weak_alias_surface_public_title_bridge"
+                    ],
+                    "option_kind": "WORK_CANDIDATE",
+                    "preservation_roles": [
+                      "title_candidate"
+                    ],
+                    "promotion_policies": [],
+                    "publish_support_present": false,
+                    "reason_codes": [
+                      "candidate_inventory_preserved_without_selection"
+                    ],
+                    "reference_roles": [
+                      "candidate"
+                    ],
+                    "source_fields": [
+                      "candidate_preservation_sources",
+                      "promotion_gate_evidence",
+                      "title_candidates"
+                    ],
+                    "source_tiers": [
+                      "official_detail"
+                    ],
+                    "titles": [
+                      "괴담 동아리"
+                    ],
+                    "urls": [
+                      "https://novelpia.com/novel/305463"
+                    ]
+                  },
+                  {
+                    "aliases": [],
+                    "baseline_selected": false,
+                    "candidate_id": "cand_2b75d970ea2fa17b13b683580c64e2007bed0097ba110de984935a30b251a4bb",
+                    "event_eligible": false,
+                    "evidence_kinds": [
+                      "candidate_preservation"
+                    ],
+                    "identity_conflict": false,
+                    "local_preservation_types": [],
+                    "negative_evidence": [
+                      "candidate_source_missing_url"
+                    ],
+                    "option_kind": "OBSERVED_LATE_SURFACE",
+                    "preservation_roles": [
+                      "title_candidate"
+                    ],
+                    "promotion_policies": [],
+                    "publish_support_present": false,
+                    "reason_codes": [
+                      "candidate_inventory_preserved_without_selection"
+                    ],
+                    "reference_roles": [
+                      "candidate"
+                    ],
+                    "source_fields": [
+                      "candidate_preservation_sources",
+                      "promotion_gate_evidence",
+                      "title_candidates"
+                    ],
+                    "source_tiers": [
+                      "llm_only"
+                    ],
+                    "titles": [
+                      "괴담동아리 if"
+                    ],
+                    "urls": []
+                  }
+                ],
+                "event_candidate_count": 1,
+                "generation_cap": 6,
+                "generation_status": "UNKNOWN",
+                "integrity_status": "GO",
+                "nil_label": "__NIL__",
+                "observation_fingerprint": "b16e0c92f751ad9c993ae617567881a3af9e26ccc8fee77bc72e5ff508a76183",
+                "observation_signatures": [
+                  "2f0b2bb22f2e304f1f4dbf4b60faeeedd9c9cc0e9d1e98bbf7ba5497d188d6f9",
+                  "3c835622d922732e588411b9d464f0794f0070a20e3213a2cfcfb272f041f7e7",
+                  "9b4054c11329e6d4f0cb0d1ff1da1cd09b48557945e670241a2c7f66782495b8",
+                  "b3ff2fd951ba449649b9f1adadbd4cb6f55c013d81cda8da424d8f9914f5614c",
+                  "d2c12c782f7ada9285ed3035211a0ca1f753044a8ff362a82f49c00ed482efa7",
+                  "e1f3a26642b90c59b0a04f1ed710435809a7a8e20cc236c6261261f27bf0ab55"
+                ],
+                "observed_late_surface_count": 1,
+                "reason_codes": [
+                  "candidate_generation_completeness_unknown",
+                  "late_surfaces_preserved_outside_authoritative_event_space",
+                  "multiple_candidates_present"
+                ],
+                "schema_version": "candidate_set_v1",
+                "source_candidate_pair_count": 2,
+                "source_record_count": 6,
+                "typed_inventory_pair_count": 2,
+                "unlinked_surface_count": 0,
+                "work_candidate_count": 1
+              },
+              "event_probabilities": [
+                {
+                  "label": "cand_12811bc88e194df1e0aab3dc312885404af407365e8e510879877b9b4e50754a",
+                  "probability": null
+                },
+                {
+                  "label": "__NIL__",
+                  "probability": null
+                }
+              ],
+              "input_fingerprint": "11a83063e64fa4d9ac2c7b19ffff29cc3421441285323db57b63d113b6c7f4eb",
+              "operational_effect": "NONE_SHADOW_ONLY",
+              "probability_status": "NOT_AVAILABLE_UNCALIBRATED",
+              "reason_codes": [
+                "candidate_generation_completeness_unknown",
+                "late_surfaces_preserved_outside_authoritative_event_space",
+                "multiple_candidates_present",
+                "probability_uncalibrated",
+                "shadow_action_not_applied"
+              ],
+              "schema_version": "candidate_set_nil_shadow_v1",
+              "selected_label": null,
+              "shadow_fingerprint": "45ffd1e173398128232eb54f6608ac35ef8a15ec245c257e803bd9839f7c5b39"
+            },
+            "candidate_stage_receipts": [
+              {
+                "cap": 5,
+                "count_basis": "normalized_title_unique_before_stage_row_cap",
+                "emitted_source_count": 1,
+                "metadata_fingerprint": "f295bdbdb1891e404ef7a5970e55b68ca2d8dc2342152abec26d37ed4acdcfeb",
+                "observed_source_count": 1,
+                "observed_sources_fingerprint": "ca18f343f69ed2f1074821cff9d1a5086a26620238fd9e8ffece181c4c273f20",
+                "occurrence": 1,
+                "producer": "decoder",
+                "reason_codes": [
+                  "upstream_completeness_unknown"
+                ],
+                "retained_source_count": 1,
+                "retained_sources_fingerprint": "ca18f343f69ed2f1074821cff9d1a5086a26620238fd9e8ffece181c4c273f20",
+                "schema_version": "candidate_stage_receipt_v1",
+                "scope": "expert_stage_candidate_inventory",
+                "source_key_fingerprint": "ca18f343f69ed2f1074821cff9d1a5086a26620238fd9e8ffece181c4c273f20",
+                "stage": "new_suspected_titles",
+                "status": "UNKNOWN",
+                "unique_valid_source_count": 1,
+                "upstream_completeness": "UNKNOWN"
+              },
+              {
+                "cap": 5,
+                "count_basis": "normalized_title_unique_before_stage_row_cap",
+                "emitted_source_count": 2,
+                "metadata_fingerprint": "2039513dfa68e7450ed1fab6c50fe831211938c95763a12fa3ad4de989a96d50",
+                "observed_source_count": 2,
+                "observed_sources_fingerprint": "4cc7e8645b596f0bc2f33dbf84aa89f0d1ecbae15a991b45132fa943328336a0",
+                "occurrence": 1,
+                "producer": "verifier",
+                "reason_codes": [
+                  "upstream_completeness_unknown"
+                ],
+                "retained_source_count": 2,
+                "retained_sources_fingerprint": "4cc7e8645b596f0bc2f33dbf84aa89f0d1ecbae15a991b45132fa943328336a0",
+                "schema_version": "candidate_stage_receipt_v1",
+                "scope": "expert_stage_candidate_inventory",
+                "source_key_fingerprint": "3fa3c8160f1e412275cab92646d1aef1d096d302215ea8f55db9956eec7b08e1",
+                "stage": "ranked_update",
+                "status": "UNKNOWN",
+                "unique_valid_source_count": 2,
+                "upstream_completeness": "UNKNOWN"
+              },
+              {
+                "cap": 5,
+                "count_basis": "normalized_title_unique_before_stage_row_cap",
+                "emitted_source_count": 2,
+                "metadata_fingerprint": "dc2624a001fe239ce8a21619685dd6ebd8f511892b401e51c191604c7adf5c1f",
+                "observed_source_count": 2,
+                "observed_sources_fingerprint": "4cc7e8645b596f0bc2f33dbf84aa89f0d1ecbae15a991b45132fa943328336a0",
+                "occurrence": 1,
+                "producer": "arbiter",
+                "reason_codes": [
+                  "upstream_completeness_unknown"
+                ],
+                "retained_source_count": 2,
+                "retained_sources_fingerprint": "4cc7e8645b596f0bc2f33dbf84aa89f0d1ecbae15a991b45132fa943328336a0",
+                "schema_version": "candidate_stage_receipt_v1",
+                "scope": "expert_stage_candidate_inventory",
+                "source_key_fingerprint": "3fa3c8160f1e412275cab92646d1aef1d096d302215ea8f55db9956eec7b08e1",
+                "stage": "critic_filter",
+                "status": "UNKNOWN",
+                "unique_valid_source_count": 2,
+                "upstream_completeness": "UNKNOWN"
+              },
+              {
+                "cap": 5,
+                "count_basis": "normalized_title_unique_before_stage_row_cap",
+                "emitted_source_count": 2,
+                "metadata_fingerprint": "6f0ddeac6eb83bc317ddcb11f62c0282882f7a2085d64f95367b29643850f120",
+                "observed_source_count": 2,
+                "observed_sources_fingerprint": "4cc7e8645b596f0bc2f33dbf84aa89f0d1ecbae15a991b45132fa943328336a0",
+                "occurrence": 1,
+                "producer": "arbiter",
+                "reason_codes": [
+                  "upstream_completeness_unknown"
+                ],
+                "retained_source_count": 2,
+                "retained_sources_fingerprint": "4cc7e8645b596f0bc2f33dbf84aa89f0d1ecbae15a991b45132fa943328336a0",
+                "schema_version": "candidate_stage_receipt_v1",
+                "scope": "expert_stage_candidate_inventory",
+                "source_key_fingerprint": "3fa3c8160f1e412275cab92646d1aef1d096d302215ea8f55db9956eec7b08e1",
+                "stage": "candidate_merge",
+                "status": "UNKNOWN",
+                "unique_valid_source_count": 2,
+                "upstream_completeness": "UNKNOWN"
+              },
+              {
+                "cap": 5,
+                "count_basis": "normalized_title_unique_before_stage_row_cap",
+                "emitted_source_count": 2,
+                "metadata_fingerprint": "3cb1e6534c35f223036b4145d96732de402fd6750e4af52de265d2be6d895407",
+                "observed_source_count": 2,
+                "observed_sources_fingerprint": "4cc7e8645b596f0bc2f33dbf84aa89f0d1ecbae15a991b45132fa943328336a0",
+                "occurrence": 1,
+                "producer": "arbiter",
+                "reason_codes": [
+                  "upstream_completeness_unknown"
+                ],
+                "retained_source_count": 2,
+                "retained_sources_fingerprint": "4cc7e8645b596f0bc2f33dbf84aa89f0d1ecbae15a991b45132fa943328336a0",
+                "schema_version": "candidate_stage_receipt_v1",
+                "scope": "expert_stage_candidate_inventory",
+                "source_key_fingerprint": "3fa3c8160f1e412275cab92646d1aef1d096d302215ea8f55db9956eec7b08e1",
+                "stage": "llm_candidate_merge",
+                "status": "UNKNOWN",
+                "unique_valid_source_count": 2,
+                "upstream_completeness": "UNKNOWN"
+              }
+            ],
+            "hold_without_candidates": false,
+            "identity_consistency_lint_reasons": [],
+            "official_title_lint_reasons": [],
+            "output_consistency_lint_reasons": [],
+            "promotion_blocked": true,
+            "promotion_decision": {
+              "bypassed_gate": false,
+              "candidate_preserved": true,
+              "contract_version": "promotion_contract_v2",
+              "input_fingerprint": "49e5e2763f278d128f9ecac1a024a41e73150a21fa3ea5b69e1a99552a61bf81",
+              "official_title": null,
+              "official_url": null,
+              "publish_allowed": false,
+              "reason_codes": [
+                "no_public_candidate_title",
+                "candidate_inventory_preserved_without_selection",
+                "row_discussion_missing",
+                "title_resolution_state_not_publishable",
+                "work_resolution_not_publishable",
+                "scope_unknown",
+                "scope_not_current_work",
+                "serializer_candidate_inventory_hold",
+                "candidate_inventory_unselected"
+              ],
+              "scope": {
+                "competing_candidates": [],
+                "confidence": "low",
+                "conflict_reason_codes": [
+                  "serializer_candidate_inventory_hold",
+                  "candidate_inventory_unselected"
+                ],
+                "direct_bridge_sources": [],
+                "scope_kind": "unknown"
+              },
+              "status": "candidate_only"
+            },
+            "promotion_gate_evidence": [
+              {
+                "candidate_title": "괴담 동아리",
+                "candidate_url": "https://novelpia.com/novel/305463",
+                "kind": "candidate_preservation",
+                "reason_code": "candidate_inventory_preserved_without_selection",
+                "source_path_or_snippet": "괴담 동아리",
+                "strength": "medium",
+                "supports_publish": false,
+                "title_url_match": null
+              },
+              {
+                "candidate_title": "괴담동아리 if",
+                "candidate_url": "",
+                "kind": "candidate_preservation",
+                "reason_code": "candidate_inventory_preserved_without_selection",
+                "source_path_or_snippet": "괴담동아리 if",
+                "strength": "medium",
+                "supports_publish": false,
+                "title_url_match": null
+              }
+            ],
+            "promotion_gate_state": {
+              "candidate_inventory_count": 2,
+              "candidate_title": "",
+              "candidate_url": "",
+              "caveated_alias_boundary": false,
+              "discussion_type": "anticipation",
+              "official_title_exists": false,
+              "post_id": 8608886,
+              "prior_variance_quarantine": false,
+              "row_discusses_work_as_work": false,
+              "same_title_source_movement": false,
+              "scope": {
+                "competing_candidates": [],
+                "confidence": "low",
+                "conflict_reason_codes": [
+                  "serializer_candidate_inventory_hold",
+                  "candidate_inventory_unselected"
+                ],
+                "direct_bridge_sources": [],
+                "scope_kind": "unknown"
+              },
+              "source": "serializer_candidate_inventory_preserved",
+              "title_resolution_state": "unresolved_matchable",
+              "work_resolution": "unresolved"
+            },
+            "publish_contract_input_fingerprint": "49e5e2763f278d128f9ecac1a024a41e73150a21fa3ea5b69e1a99552a61bf81",
+            "publish_contract_trace": {
+              "bypassed_gate": false,
+              "contract_version": "promotion_contract_v2",
+              "gate_decision": {
+                "bypassed_gate": false,
+                "candidate_preserved": true,
+                "contract_version": "promotion_contract_v2",
+                "input_fingerprint": "49e5e2763f278d128f9ecac1a024a41e73150a21fa3ea5b69e1a99552a61bf81",
+                "official_title": null,
+                "official_url": null,
+                "publish_allowed": false,
+                "reason_codes": [
+                  "no_public_candidate_title",
+                  "candidate_inventory_preserved_without_selection",
+                  "row_discussion_missing",
+                  "title_resolution_state_not_publishable",
+                  "work_resolution_not_publishable",
+                  "scope_unknown",
+                  "scope_not_current_work",
+                  "serializer_candidate_inventory_hold",
+                  "candidate_inventory_unselected"
+                ],
+                "scope": {
+                  "competing_candidates": [],
+                  "confidence": "low",
+                  "conflict_reason_codes": [
+                    "serializer_candidate_inventory_hold",
+                    "candidate_inventory_unselected"
+                  ],
+                  "direct_bridge_sources": [],
+                  "scope_kind": "unknown"
+                },
+                "status": "candidate_only"
+              },
+              "input_fingerprint": "49e5e2763f278d128f9ecac1a024a41e73150a21fa3ea5b69e1a99552a61bf81",
+              "post_gate_identity": {
+                "candidate_ledger_status": "promotion_blocked",
+                "official_title": null,
+                "official_url": null,
+                "title_resolution_allowed": false,
+                "title_resolution_state": "unresolved_matchable",
+                "work_resolution": "unresolved"
+              },
+              "pre_gate_candidate": {
+                "candidate_ledger_status": null,
+                "official_title": null,
+                "official_url": null,
+                "title_resolution_allowed": null,
+                "title_resolution_state": null,
+                "work_resolution": null
+              },
+              "reason_codes": [
+                "no_public_candidate_title",
+                "candidate_inventory_preserved_without_selection",
+                "row_discussion_missing",
+                "title_resolution_state_not_publishable",
+                "work_resolution_not_publishable",
+                "scope_unknown",
+                "scope_not_current_work",
+                "serializer_candidate_inventory_hold",
+                "candidate_inventory_unselected"
+              ],
+              "scope_state": {
+                "competing_candidates": [],
+                "confidence": "low",
+                "conflict_reason_codes": [
+                  "serializer_candidate_inventory_hold",
+                  "candidate_inventory_unselected"
+                ],
+                "direct_bridge_sources": [],
+                "scope_kind": "unknown"
+              }
+            },
+            "publish_contract_version": "promotion_contract_v2",
+            "publish_ledger": {
+              "candidate_preservation": {
+                "candidate_ledger_status": null,
+                "official_title": null,
+                "official_url": null,
+                "title_resolution_allowed": null,
+                "title_resolution_state": null,
+                "work_resolution": null
+              },
+              "gate_decision": {
+                "bypassed_gate": false,
+                "candidate_preserved": true,
+                "contract_version": "promotion_contract_v2",
+                "input_fingerprint": "49e5e2763f278d128f9ecac1a024a41e73150a21fa3ea5b69e1a99552a61bf81",
+                "official_title": null,
+                "official_url": null,
+                "publish_allowed": false,
+                "reason_codes": [
+                  "no_public_candidate_title",
+                  "candidate_inventory_preserved_without_selection",
+                  "row_discussion_missing",
+                  "title_resolution_state_not_publishable",
+                  "work_resolution_not_publishable",
+                  "scope_unknown",
+                  "scope_not_current_work",
+                  "serializer_candidate_inventory_hold",
+                  "candidate_inventory_unselected"
+                ],
+                "scope": {
+                  "competing_candidates": [],
+                  "confidence": "low",
+                  "conflict_reason_codes": [
+                    "serializer_candidate_inventory_hold",
+                    "candidate_inventory_unselected"
+                  ],
+                  "direct_bridge_sources": [],
+                  "scope_kind": "unknown"
+                },
+                "status": "candidate_only"
+              },
+              "public_publish": {
+                "candidate_ledger_status": "promotion_blocked",
+                "official_title": null,
+                "official_url": null,
+                "title_resolution_allowed": false,
+                "title_resolution_state": "unresolved_matchable",
+                "work_resolution": "unresolved"
+              }
+            },
+            "safe_resolved": false,
+            "source_bound_full_title_weak_bridge_receipt": {
+              "candidate_competition": [
+                {
+                  "reference_role": "primary",
+                  "title": "괴담 동아리",
+                  "url": "https://novelpia.com/novel/305463"
+                },
+                {
+                  "reference_role": "candidate",
+                  "title": "괴담동아리 if",
+                  "url": null
+                }
+              ],
+              "candidate_title": "괴담 동아리",
+              "candidate_url": "https://novelpia.com/novel/305463",
+              "eligible": false,
+              "fetched_pair_observations": [
+                {
+                  "author": null,
+                  "content_status": "unavailable",
+                  "final_url": null,
+                  "official_detail_transport_provenance": null,
+                  "page_type": "novel_page",
+                  "title": "403 Forbidden",
+                  "transport_provenance": null,
+                  "url": "https://novelpia.com/novel/305463"
+                },
+                {
+                  "author": null,
+                  "content_status": null,
+                  "final_url": null,
+                  "official_detail_transport_provenance": null,
+                  "page_type": "wiki",
+                  "title": null,
+                  "transport_provenance": null,
+                  "url": "https://namu.wiki/w/%EA%B4%B4%EB%8B%B4"
+                },
+                {
+                  "author": null,
+                  "content_status": null,
+                  "final_url": null,
+                  "official_detail_transport_provenance": null,
+                  "page_type": "community_post",
+                  "title": "괴담미스터리 채널",
+                  "transport_provenance": null,
+                  "url": "https://arca.live/b/spooky"
+                },
+                {
+                  "author": "회빙환희망자",
+                  "content_status": "active",
+                  "final_url": "",
+                  "official_detail_transport_provenance": null,
+                  "page_type": "novel_page",
+                  "title": "유희생활 들고 괴담동 속으로",
+                  "transport_provenance": null,
+                  "url": "https://novelpia.com/novel/354434"
+                },
+                {
+                  "author": null,
+                  "content_status": "unavailable",
+                  "final_url": "https://www.munpia.com/error/novel?case=private",
+                  "official_detail_transport_provenance": null,
+                  "page_type": "novel_page",
+                  "title": "웹소설의 유토피아, 글세상 문피아",
+                  "transport_provenance": {
+                    "final_url": "https://www.munpia.com/error/novel?case=private",
+                    "method": "crawl4ai",
+                    "redirected": true,
+                    "requested_url": "https://www.munpia.com/novel/detail/593785",
+                    "status_code": 200
+                  },
+                  "url": "https://www.munpia.com/novel/detail/593785"
+                },
+                {
+                  "author": null,
+                  "content_status": "active",
+                  "final_url": "https://ridibooks.com/books/734002350",
+                  "official_detail_transport_provenance": null,
+                  "page_type": "novel_page",
+                  "title": null,
+                  "transport_provenance": {
+                    "final_url": "https://ridibooks.com/books/734002350",
+                    "method": "crawl4ai",
+                    "redirected": false,
+                    "requested_url": "https://ridibooks.com/books/734002350",
+                    "status_code": 200
+                  },
+                  "url": "https://ridibooks.com/books/734002350"
+                }
+              ],
+              "image_observations": [
+                {
+                  "explicit_author_name": "",
+                  "explicit_work_title": "",
+                  "focus_role": "incidental_visual",
+                  "index": 0,
+                  "promotion_eligible": false,
+                  "screen_type": "scene_or_reaction_image",
+                  "source_url": "https://dcimg1.dcinside.com/viewimage.php?id=2ab8de34e0dc37b06bb3&no=24b0d769e1d32ca73ce983fa11d0283107ab5cf91d66c5d1ce22a4f13c0060fd82b85544c9fbece6768c6fa454043bb125eb6ae00a99cf25041cb0bc386535c708acd8f6488d54390838725013b79ecbf714e4866b56",
+                  "surface_type": "fanart_or_character_illustration",
+                  "title_role": "unknown"
+                },
+                {
+                  "explicit_author_name": "",
+                  "explicit_work_title": "",
+                  "focus_role": "background_catalog",
+                  "index": 1,
+                  "promotion_eligible": false,
+                  "screen_type": "platform_catalog_ui",
+                  "source_url": "https://dcimg1.dcinside.com/viewimage.php?id=2ab8de34e0dc37b06bb3&no=24b0d769e1d32ca73ce983fa11d0283107ab5cf91d66c5d1ce22a4f13c0060fd82b85544c9fbece6768c6fa454043bb125eb6ae00a99cf250441b8ed3d3e34c88ce6e1af42d4d68f949a737e5022d39e4efe5f863429d54d121be9f4b19f65c7",
+                  "surface_type": "platform_listing_page",
+                  "title_role": "background_listing"
+                }
+              ],
+              "reason_code": "alias_not_complete_title",
+              "relation_observation": {
+                "confidence": "high",
+                "discussion_target": "specific_work",
+                "post_direct_grounding": false,
+                "promotion_decision": "allow",
+                "relation_type": "explicit_alias"
+              }
+            },
+            "title_candidate_generation": {
+              "cap": 6,
+              "count_basis": "normalized_title_unique_after_policy_prune",
+              "emitted_source_count": 2,
+              "metadata_fingerprint": "2506a1bac4ef334c7c05846455888b33f3e68b3d29df631d872b7d17065b8450",
+              "observed_sources_fingerprint": "3b5bfd07f6ab28da992d8208d1b0e96cb59c077a3a2a9543b88a1711e69ecf2c",
+              "reason_codes": [
+                "upstream_completeness_unknown"
+              ],
+              "retained_sources_fingerprint": "3b5bfd07f6ab28da992d8208d1b0e96cb59c077a3a2a9543b88a1711e69ecf2c",
+              "schema_version": "title_candidate_generation_v1",
+              "scope": "title_candidate_ranked_inventory",
+              "source_key_fingerprint": "24e13dec683c23848cff4aeeaec33834bccfd4ef065d43ba2c516858476b8bc3",
+              "status": "UNKNOWN",
+              "unique_valid_source_count": 2,
+              "upstream_completeness": "UNKNOWN"
+            },
+            "title_candidate_generation_retained_sources": [
+              {
+                "alias_or_mention": "괴담동",
+                "confidence": "High",
+                "locked": true,
+                "negative_evidence": [
+                  "url_deleted_or_unavailable",
+                  "candidate_source_search_title_conflict"
+                ],
+                "official_title": "괴담 동아리",
+                "preservation_role": "ranked_title_candidate",
+                "reference_role": "primary",
+                "source_tier": "llm_only"
+              },
+              {
+                "confidence": "High",
+                "locked": false,
+                "negative_evidence": [
+                  "candidate_source_missing_url"
+                ],
+                "official_title": "괴담동아리 if",
+                "preservation_role": "ranked_title_candidate",
+                "reference_role": "candidate",
+                "source_tier": "llm_only"
+              }
+            ],
+            "title_resolution_allowed": false,
+            "title_resolution_state": "unresolved_matchable",
+            "work_resolution": "unresolved"
+          },
+          "candidate_ledger_status": "promotion_blocked",
+          "candidate_preservation_sources": [
+            {
+              "alias_or_mention": "괴담동",
+              "confidence": "High",
+              "heretic_url": "https://novelpia.com/novel/305463",
+              "negative_evidence": [
+                "url_deleted_or_unavailable",
+                "candidate_source_search_title_conflict",
+                "candidate_source_missing_url",
+                "weak_alias_surface_public_title_bridge"
+              ],
+              "official_title": "괴담 동아리",
+              "page_type": "novel_page",
+              "preservation_role": "title_candidate",
+              "reference_role": "candidate",
+              "source_tier": "official_detail"
+            },
+            {
+              "confidence": "High",
+              "negative_evidence": [
+                "candidate_source_missing_url"
+              ],
+              "official_title": "괴담동아리 if",
+              "preservation_role": "title_candidate",
+              "reference_role": "candidate",
+              "source_tier": "llm_only"
+            }
+          ],
+          "comparison_target": null,
+          "consistency_flags": [
+            "official_detail_url_repaired_from_search",
+            "weak_alias_surface_public_title_bridge"
+          ],
+          "context_sources": [
+            "title",
+            "body",
+            "search",
+            "image"
+          ],
+          "discussion_type": "anticipation",
+          "entity_mentions": [
+            {
+              "canonical_value": null,
+              "confidence": "High",
+              "entity_type": "author",
+              "role": "author_focus",
+              "source": "verifier",
+              "text": "오직재미"
+            }
+          ],
+          "evidence": null,
+          "future_watch_target": null,
+          "hold_unresolved": false,
+          "hold_without_candidates": false,
+          "identity_consistency_lint": [],
+          "identity_state": "unresolved_title",
+          "image_enrichment_limitations": [
+            "vlm_ocr_retry_no_text",
+            "첫 번째 이미지 자체만으로는 작품명을 특정할 수 없으나, 두 번째 이미지의 텍스트를 통해 게시글 제목과 연관된 작품이 '괴담 동아리'임을 명확히 알 수 있습니다."
+          ],
+          "image_evidence_catalog": [
+            {
+              "block_index": 0,
+              "eid": "IMG001",
+              "evidence_type": "character_visual_only",
+              "promotion_eligible": false,
+              "rank": 1,
+              "source_url": "https://dcimg1.dcinside.com/viewimage.php?id=2ab8de34e0dc37b06bb3&no=24b0d769e1d32ca73ce983fa11d0283107ab5cf91d66c5d1ce22a4f13c0060fd82b85544c9fbece6768c6fa454043bb125eb6ae00a99cf25041cb0bc386535c708acd8f6488d54390838725013b79ecbf714e4866b56",
+              "title_role": "unknown",
+              "visual_summary": "금발의 여성 캐릭터와 강아지가 함께 있는 일러스트"
+            },
+            {
+              "block_index": 1,
+              "eid": "IMG002",
+              "evidence_type": "unknown",
+              "promotion_eligible": false,
+              "rank": 2,
+              "source_url": "https://dcimg1.dcinside.com/viewimage.php?id=2ab8de34e0dc37b06bb3&no=24b0d769e1d32ca73ce983fa11d0283107ab5cf91d66c5d1ce22a4f13c0060fd82b85544c9fbece6768c6fa454043bb125eb6ae00a99cf250441b8ed3d3e34c88ce6e1af42d4d68f949a737e5022d39e4efe5f863429d54d121be9f4b19f65c7",
+              "title_role": "background_listing",
+              "visual_summary": "웹소설 플랫폼 앱 목록/홈 화면 캡처로 보입니다. 노출된 작품 제목들은 배경 목록이며 메인 화제는 아이콘·콘·UI 요소일 가능성이 높습니다."
+            }
+          ],
+          "image_fetch_count": 2,
+          "image_fetch_success": 2,
+          "inference": null,
+          "is_novel_related": true,
+          "is_relevant": true,
+          "is_resolved_work_discussion": false,
+          "mentioned_works": null,
+          "novel_identity": {
+            "heretic_url": null,
+            "official_title": null
+          },
+          "ocr_enabled": true,
+          "official_title_lint": [],
+          "output_consistency_lint": [],
+          "primary_subject_text": "연속 연재 소식에 대한 환호와 애정 표현.",
+          "primary_subject_type": "work_discussion",
+          "primary_work": null,
+          "promotion_blocked": true,
+          "promotion_decision": {
+            "bypassed_gate": false,
+            "candidate_preserved": true,
+            "contract_version": "promotion_contract_v2",
+            "input_fingerprint": "49e5e2763f278d128f9ecac1a024a41e73150a21fa3ea5b69e1a99552a61bf81",
+            "official_title": null,
+            "official_url": null,
+            "publish_allowed": false,
+            "reason_codes": [
+              "no_public_candidate_title",
+              "candidate_inventory_preserved_without_selection",
+              "row_discussion_missing",
+              "title_resolution_state_not_publishable",
+              "work_resolution_not_publishable",
+              "scope_unknown",
+              "scope_not_current_work",
+              "serializer_candidate_inventory_hold",
+              "candidate_inventory_unselected"
+            ],
+            "scope": {
+              "competing_candidates": [],
+              "confidence": "low",
+              "conflict_reason_codes": [
+                "serializer_candidate_inventory_hold",
+                "candidate_inventory_unselected"
+              ],
+              "direct_bridge_sources": [],
+              "scope_kind": "unknown"
+            },
+            "status": "candidate_only"
+          },
+          "promotion_gate_evidence": [
+            {
+              "candidate_title": "괴담 동아리",
+              "candidate_url": "https://novelpia.com/novel/305463",
+              "kind": "candidate_preservation",
+              "reason_code": "candidate_inventory_preserved_without_selection",
+              "source_path_or_snippet": "괴담 동아리",
+              "strength": "medium",
+              "supports_publish": false,
+              "title_url_match": null
+            },
+            {
+              "candidate_title": "괴담동아리 if",
+              "candidate_url": "",
+              "kind": "candidate_preservation",
+              "reason_code": "candidate_inventory_preserved_without_selection",
+              "source_path_or_snippet": "괴담동아리 if",
+              "strength": "medium",
+              "supports_publish": false,
+              "title_url_match": null
+            }
+          ],
+          "promotion_gate_state": {
+            "candidate_inventory_count": 2,
+            "candidate_title": "",
+            "candidate_url": "",
+            "caveated_alias_boundary": false,
+            "discussion_type": "anticipation",
+            "official_title_exists": false,
+            "post_id": 8608886,
+            "prior_variance_quarantine": false,
+            "row_discusses_work_as_work": false,
+            "same_title_source_movement": false,
+            "scope": {
+              "competing_candidates": [],
+              "confidence": "low",
+              "conflict_reason_codes": [
+                "serializer_candidate_inventory_hold",
+                "candidate_inventory_unselected"
+              ],
+              "direct_bridge_sources": [],
+              "scope_kind": "unknown"
+            },
+            "source": "serializer_candidate_inventory_preserved",
+            "title_resolution_state": "unresolved_matchable",
+            "work_resolution": "unresolved"
+          },
+          "publish_contract_input_fingerprint": "49e5e2763f278d128f9ecac1a024a41e73150a21fa3ea5b69e1a99552a61bf81",
+          "publish_contract_trace": {
+            "bypassed_gate": false,
+            "contract_version": "promotion_contract_v2",
+            "gate_decision": {
+              "bypassed_gate": false,
+              "candidate_preserved": true,
+              "contract_version": "promotion_contract_v2",
+              "input_fingerprint": "49e5e2763f278d128f9ecac1a024a41e73150a21fa3ea5b69e1a99552a61bf81",
+              "official_title": null,
+              "official_url": null,
+              "publish_allowed": false,
+              "reason_codes": [
+                "no_public_candidate_title",
+                "candidate_inventory_preserved_without_selection",
+                "row_discussion_missing",
+                "title_resolution_state_not_publishable",
+                "work_resolution_not_publishable",
+                "scope_unknown",
+                "scope_not_current_work",
+                "serializer_candidate_inventory_hold",
+                "candidate_inventory_unselected"
+              ],
+              "scope": {
+                "competing_candidates": [],
+                "confidence": "low",
+                "conflict_reason_codes": [
+                  "serializer_candidate_inventory_hold",
+                  "candidate_inventory_unselected"
+                ],
+                "direct_bridge_sources": [],
+                "scope_kind": "unknown"
+              },
+              "status": "candidate_only"
+            },
+            "input_fingerprint": "49e5e2763f278d128f9ecac1a024a41e73150a21fa3ea5b69e1a99552a61bf81",
+            "post_gate_identity": {
+              "candidate_ledger_status": "promotion_blocked",
+              "official_title": null,
+              "official_url": null,
+              "title_resolution_allowed": false,
+              "title_resolution_state": "unresolved_matchable",
+              "work_resolution": "unresolved"
+            },
+            "pre_gate_candidate": {
+              "candidate_ledger_status": null,
+              "official_title": null,
+              "official_url": null,
+              "title_resolution_allowed": null,
+              "title_resolution_state": null,
+              "work_resolution": null
+            },
+            "reason_codes": [
+              "no_public_candidate_title",
+              "candidate_inventory_preserved_without_selection",
+              "row_discussion_missing",
+              "title_resolution_state_not_publishable",
+              "work_resolution_not_publishable",
+              "scope_unknown",
+              "scope_not_current_work",
+              "serializer_candidate_inventory_hold",
+              "candidate_inventory_unselected"
+            ],
+            "scope_state": {
+              "competing_candidates": [],
+              "confidence": "low",
+              "conflict_reason_codes": [
+                "serializer_candidate_inventory_hold",
+                "candidate_inventory_unselected"
+              ],
+              "direct_bridge_sources": [],
+              "scope_kind": "unknown"
+            }
+          },
+          "publish_contract_version": "promotion_contract_v2",
+          "publish_ledger": {
+            "candidate_preservation": {
+              "candidate_ledger_status": null,
+              "official_title": null,
+              "official_url": null,
+              "title_resolution_allowed": null,
+              "title_resolution_state": null,
+              "work_resolution": null
+            },
+            "gate_decision": {
+              "bypassed_gate": false,
+              "candidate_preserved": true,
+              "contract_version": "promotion_contract_v2",
+              "input_fingerprint": "49e5e2763f278d128f9ecac1a024a41e73150a21fa3ea5b69e1a99552a61bf81",
+              "official_title": null,
+              "official_url": null,
+              "publish_allowed": false,
+              "reason_codes": [
+                "no_public_candidate_title",
+                "candidate_inventory_preserved_without_selection",
+                "row_discussion_missing",
+                "title_resolution_state_not_publishable",
+                "work_resolution_not_publishable",
+                "scope_unknown",
+                "scope_not_current_work",
+                "serializer_candidate_inventory_hold",
+                "candidate_inventory_unselected"
+              ],
+              "scope": {
+                "competing_candidates": [],
+                "confidence": "low",
+                "conflict_reason_codes": [
+                  "serializer_candidate_inventory_hold",
+                  "candidate_inventory_unselected"
+                ],
+                "direct_bridge_sources": [],
+                "scope_kind": "unknown"
+              },
+              "status": "candidate_only"
+            },
+            "public_publish": {
+              "candidate_ledger_status": "promotion_blocked",
+              "official_title": null,
+              "official_url": null,
+              "title_resolution_allowed": false,
+              "title_resolution_state": "unresolved_matchable",
+              "work_resolution": "unresolved"
+            }
+          },
+          "reason": "[최종 판정]\n- 글 분류: anticipation\n- 제목 판정: unresolved_matchable\n- 공식 제목: 미확정\n[원문에 근거한 설명]\n글쓴이는 제목의 연속 연재 횟수에 환호하고 본문에서 애정을 표현한다. 이미지 내용이나 호명된 사람의 공식 역할은 이 문장만으로 확정하지 않는다. 근거가 된 제목 표현은 「괴담동 5연참!!!!!!」이다.\n[작성자 발화·원문 귀속]\n- 작성자 발화: 「괴담동 5연참!!!!!!」\n- 작성자 발화: 「사랑해 오직재미!!!!!!」\n[원문] 괴담동 5연참!!!!!! / 사랑해 오직재미!!!!!!",
+          "reason_lines": [
+            "[최종 판정]",
+            "- 글 분류: anticipation",
+            "- 제목 판정: unresolved_matchable",
+            "- 공식 제목: 미확정",
+            "[원문에 근거한 설명]",
+            "글쓴이는 제목의 연속 연재 횟수에 환호하고 본문에서 애정을 표현한다. 이미지 내용이나 호명된 사람의 공식 역할은 이 문장만으로 확정하지 않는다. 근거가 된 제목 표현은 「괴담동 5연참!!!!!!」이다.",
+            "[작성자 발화·원문 귀속]",
+            "- 작성자 발화: 「괴담동 5연참!!!!!!」",
+            "- 작성자 발화: 「사랑해 오직재미!!!!!!」",
+            "[원문] 괴담동 5연참!!!!!! / 사랑해 오직재미!!!!!!"
+          ],
+          "recommendation_candidates": null,
+          "relevance_scope": "core",
+          "safe_resolved": false,
+          "search_evidence_catalog": [
+            {
+              "domain": "novelpia.com",
+              "eid": "E001",
+              "purpose": "title_anchor_official_probe",
+              "query": "괴담동 노벨피아",
+              "rank": 1,
+              "snippet": "주식회사 메타크래프트 대표 유정석 사업자등록번호 210-81-79781 통신판매업 제2022-서울구로-2494호 [확인] 주소 서울특별시 구로구 디지털로26길 38, 7층(구로동, G-Tower)",
+              "source_rank": 1,
+              "source_tier": "novel_platform",
+              "title": "괴담동아리 if",
+              "url": "https://novelpia.com/novel/305463"
+            },
+            {
+              "domain": "novelpia.com",
+              "eid": "E002",
+              "purpose": "title_anchor_official_probe",
+              "query": "괴담동 노벨피아",
+              "rank": 2,
+              "snippet": "커뮤니티에서 투표글을 봤다 유희생활 들고 괴담동 속으로 빙의하면 하냐? 난 한다에 투표했고 그대로 괴담동 속으로 떨어졌다. 아... 하지말껄",
+              "source_rank": 2,
+              "source_tier": "novel_platform",
+              "title": "유희생활 들고 괴담동 속으로",
+              "url": "https://novelpia.com/novel/354434"
+            },
+            {
+              "domain": "namu.wiki",
+              "eid": "E003",
+              "purpose": "title_anchor_official_probe",
+              "query": "괴담동 노벨피아",
+              "rank": 3,
+              "snippet": "2025 노벨피아 어워드 작품 부문 1위를 수상했다. 10. 기타 표지 제목이 괴담 호텔 탈출기인데 괴담 동아리에서 따온 것으로 추측된다. 다만 괴담은 초반부의 101호 기묘한 가족과 102호 공포의 저택 탈출 파트에만 등장한다. 이후부터는 코즈믹 호러나 크리처물에 가까우며, 나중에는 호러물적인 성격이 사라지고 이능력 배틀물 및 성장물 요소가 강해진다. 그래도 종종...",
+              "source_rank": 3,
+              "source_tier": "wiki",
+              "title": "괴담 호텔 탈출기",
+              "url": "https://namu.wiki/w/%EA%B4%B4%EB%8B%B4%20%ED%98%B8%ED%85%94%20%ED%83%88%EC%B6%9C%EA%B8%B0"
+            },
+            {
+              "domain": "namu.wiki",
+              "eid": "E004",
+              "purpose": "title_anchor_official_probe",
+              "query": "괴담동 노벨피아",
+              "rank": 4,
+              "snippet": "2019년 수상 결과 출처 총 참여자 934명 올해 최고의 장르소설 1위 - 망겜의 성기사 2위 - 괴담 동아리 3위 - 납골당의... 2위 - 괴담 동아리 3위 - 게임 속 전사가 되었다 특별상: 올해의 우산 & 경훈 1위 - 소설 속 엑스트라 2위 - 회귀도 13번이면... 2020년 수상 결과 출처 총 참여자 896명 올해의 장르소설 상 1위 - 괴담 동아리 2위 - 나의 악당들 3위 - 전생하고 보니...",
+              "source_rank": 4,
+              "source_tier": "wiki",
+              "title": "장르소설 마이너 갤러리/어워드",
+              "url": "https://namu.wiki/w/%EC%9E%A5%EB%A5%B4%EC%86%8C%EC%84%A4%20%EB%A7%88%EC%9D%B4%EB%84%88%20%EA%B0%A4%EB%9F%AC%EB%A6%AC/%EC%96%B4%EC%9B%8C%EB%93%9C"
+            },
+            {
+              "domain": "www.fmkorea.com",
+              "eid": "E005",
+              "purpose": "title_anchor_official_probe",
+              "query": "괴담동 노벨피아",
+              "rank": 5,
+              "snippet": "2026.08.10.괴담동? 싶을 정도로 괴담동에서 모티브를 강하게 가져온 느낌이다. 다만 캐릭터성이 괴담동과는 확연히 다르고 더블 주인공 느낌이라 나쁘진 않음. 괴담동만한 필력과 흡입력은 아니지만 그래도 적당히 볼만한 소설 어반 판타지에 빙의했다 초반 40화 정도가 프롤로그다. 프롤로그 후 재미가 꽤 상승해서 앞 부분를 좀 단축시켰다면 좋았을텐데 싶은 소설. 웅장하고...",
+              "source_rank": 5,
+              "source_tier": "web",
+              "title": "오랜만에 노벨피아 소설 추천 - 웹툰/웹소설/만화",
+              "url": "https://www.fmkorea.com/10195782796"
+            },
+            {
+              "domain": "bbs.ruliweb.com",
+              "eid": "E006",
+              "purpose": "title_anchor_official_probe",
+              "query": "괴담동 노벨피아",
+              "rank": 6,
+              "snippet": "2026.06.19.만화만 보고 사람들이 괴담동 파쿠리 소설이라느니 캐빨할 캐릭 하나도 없는 소설이라느니 읽지도 않고 지랄하는 거 좀 그럼...",
+              "source_rank": 6,
+              "source_tier": "web",
+              "title": "노벨피아 난 괴담텔 재밌게 읽고 있는데",
+              "url": "https://bbs.ruliweb.com/community/board/300143/read/75632175"
+            },
+            {
+              "domain": "gall.dcinside.com",
+              "eid": "E007",
+              "purpose": "title_anchor_official_probe",
+              "query": "괴담동 노벨피아",
+              "rank": 7,
+              "snippet": "2026.08.05.웃기는 소리. 괴담동을 발굴해 천만 뷰 작으로 만들고 노벨피아 영근 콘이 탄생한 기원이며 노벨피아 하꼬쯤은 고로시 해서 쥐도 새도 모르게 묻어 버릴 수 있고 힐집악 같은 대형 작품도 고로시 해서 연중 시켰으며 노펠피아",
+              "source_rank": 7,
+              "source_tier": "community",
+              "title": "참나ㅋㅋ 장갤이 한 줌이라고? - 장르소설 마이너 갤러리",
+              "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=12688914"
+            },
+            {
+              "domain": "gall.dcinside.com",
+              "eid": "E008",
+              "purpose": "title_anchor_official_probe",
+              "query": "괴담동 노벨피아",
+              "rank": 8,
+              "snippet": "2025.08.01.벌써 다봄 지금까지 읽은소설이 시천살 광마회귀 괴담동뿐이라 40몇화밖에 안나온 소설읽은게 첨임 그래서 다음화 나올때까지 불안 초조해서 아무것도 못하겠음 노벨피아에 괴담동 김괴라리랑 비슷하고 재밌는소설추천좀.. 제발 살",
+              "source_rank": 8,
+              "source_tier": "community",
+              "title": "갤에 김괴라리 글많아서 노벨피아 처음 결제했는데 - 장르소설 마이너 갤러리",
+              "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=10814022"
+            },
+            {
+              "domain": "gall.dcinside.com",
+              "eid": "E009",
+              "purpose": "title_anchor_official_probe",
+              "query": "괴담동 노벨피아",
+              "rank": 9,
+              "snippet": "2025.09.18.노벨피아 - 웹소설로 꿈꾸는 세상! - 미연시인데 괴담 갤러리가 보임 플러스작품 - 미연시에 빙의했다. 근데 어느 날부터 괴담 갤러리가 보이기 시작했다. novelpia.com 이 작품의 중요한 반전이 포함된 리뷰입니다. 평소에 김괴라리 괴담텔 괴담동 괴담갤 재밌게 읽던 장붕이면 리뷰 읽지말고 바로 ㄱㄱ혓! 미연시에 빙의해서 일본의 남자 고등학생이 된 주인공. 어느날...",
+              "source_rank": 9,
+              "source_tier": "community",
+              "title": "스포주의) 빠르게쓰는 미연시갤 리뷰 - 장르소설 마이너 갤러리",
+              "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11075928"
+            },
+            {
+              "domain": "gall.dcinside.com",
+              "eid": "E010",
+              "purpose": "title_anchor_official_probe",
+              "query": "괴담동 노벨피아",
+              "rank": 10,
+              "snippet": "2025.09.15.어그로 ㅈㅅ커뮤에 질문할땐 이렇게 하래서... 혹시 노벨피아에서 볼만한 괴담류좀 추천해줄 수 있음? 갤괴라리 회차 너무 적어서 ㅈㄴ감질나네 현재 괴담텔, 김괴라리, 갤괴라리, 심야십담 이렇게 봤음 다른 플랫폼도 재밌으면 상관 없음(괴담동은 봄)",
+              "source_rank": 10,
+              "source_tier": "community",
+              "title": "괴담류는 괴담출이 댱 압도적인듯? - 장르소설 마이너 갤러리",
+              "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11062821"
+            },
+            {
+              "domain": "www.munpia.com",
+              "eid": "E011",
+              "purpose": "official_title_verify",
+              "query": "괴담 동아리 웹소설 문피아",
+              "rank": 11,
+              "snippet": "공포의 학교 소설 박동s 자유연재 〉 판타지 #판타지 #현대판타지 #공포_미스터리 조회수: 2 | 선호작: 1 | 좋아요: 0 | 연재글: 1 괴담 동아리 회장인 강찬희는 자신을 포함한 5명의 괴담 동아리 멤버들과 동아리 활동을 하던 도중 점점 학교가 이상해지는 이유를 찾게 된다. 과연 강찬희는 학교가 이상해지는 이유를 찾을 수 있을까? 선호작 보기 로그인 자유연재...",
+              "source_rank": 11,
+              "source_tier": "novel_platform",
+              "title": "공포의 학교 소설",
+              "url": "https://www.munpia.com/novel/detail/593785"
+            },
+            {
+              "domain": "namu.wiki",
+              "eid": "E012",
+              "purpose": "official_title_verify",
+              "query": "괴담 동아리 웹소설 문피아",
+              "rank": 12,
+              "snippet": "개요 한국의 현대 판타지 소설. 작가는 오직재미. 2. 줄거리 ［낙성고 300인(人) 집단 머리 폭발 사건!］ 평범한 고등학생... 특징 괴담이라는 00년대 소재에 상태창, 회귀 등 웹소설 문법을 접목하여 예측불허의 전개를 보여준다. 특히 이미지 뷰어라는 카카오페이지의 문제를 장점으로 승화시키는 연출은 괴담 동아리의 전매특허다. 주요 줄거리는 주인공과 동아리...",
+              "source_rank": 12,
+              "source_tier": "wiki",
+              "title": "괴담 동아리 - 나무위키",
+              "url": "https://namu.wiki/w/%EA%B4%B4%EB%8B%B4%20%EB%8F%99%EC%95%84%EB%A6%AC"
+            },
+            {
+              "domain": "namu.wiki",
+              "eid": "E013",
+              "purpose": "official_title_verify",
+              "query": "괴담 동아리 웹소설 문피아",
+              "rank": 13,
+              "snippet": "2026년 10월 1일 · 괴담 클리셰 중에는 어느 허름한 모텔이나 펜션에 갔는데, 밤새 악몽에 시달리다가 다음날 체크아웃 후 나오면서 …",
+              "source_rank": 13,
+              "source_tier": "wiki",
+              "title": "괴담 - 나무위키",
+              "url": "https://namu.wiki/w/%EA%B4%B4%EB%8B%B4"
+            },
+            {
+              "domain": "gall.dcinside.com",
+              "eid": "E014",
+              "purpose": "official_title_verify",
+              "query": "괴담 동아리 웹소설 문피아",
+              "rank": 14,
+              "snippet": "2026.09.14.장르는 상관없고 인생웹소설 추천해주세요... 본건 세상의 끝에서 클리어를 외치다(29권에서 하차) 게임 속 바바리안이 되었다 SSS급 죽어야사는 헌터(연애편에서 하차) 괴담동 만한게 없다.. - dc official",
+              "source_rank": 14,
+              "source_tier": "community",
+              "title": "괴담동 업로드전까지 볼 웹소설 추천부탁드립니다. - 괴담 동아리 마이너 갤러....",
+              "url": "https://gall.dcinside.com/mgallery/board/view/?id=scaryclub&no=2906"
+            },
+            {
+              "domain": "ssn.so",
+              "eid": "E015",
+              "purpose": "official_title_verify",
+              "query": "괴담 동아리 웹소설 문피아",
+              "rank": 15,
+              "snippet": "🤖 AI 리뷰 요약 ; 👍 이런 분께학교괴담·오싹한 공포물 좋아하고 신선한 연출 즐기는 분 👎 이런 분은 글쎄라노벨식 말투나 오글거리는 캐릭터가 힘든 분 평범한 고등학생이 입학식 날 괴현상에 휘말려 죽었다가 다시 시작하게 되고, 졸업 전까지 학교에 얽힌 괴담들과 맞서며 동료를 모아 마왕 부활을 막는 이야기예요. 제일 많이들 감탄하는 건 카카오페이지 이미지 뷰어를 ....",
+              "source_rank": 15,
+              "source_tier": "web",
+              "title": "괴담 동아리 - 미스터리 웹소설 리뷰·평점",
+              "url": "https://ssn.so/series/95769/"
+            },
+            {
+              "domain": "moabom.kr",
+              "eid": "E016",
+              "purpose": "official_title_verify",
+              "query": "괴담 동아리 웹소설 문피아",
+              "rank": 16,
+              "snippet": "〈괴담 동아리〉는 오직재미 작가의 현대판타지 웹소설이다. 카카오페이지에서 연재 중이며 출판사는 제이플러스다. [낙성고 300인(人) 집단 머리 폭발 사건!] 평범한 고등학생 이준. 입학식 도중, 괴현상에 휘말려 죽음을 맞게 되는데. [당신은 죽었습니다.] [체크 포인트에서 다…",
+              "source_rank": 16,
+              "source_tier": "web",
+              "title": "괴담 동아리 (오직재미) 현대판타지 웹소설 리뷰·정보 - 모아봄",
+              "url": "https://moabom.kr/contents/contents-c-43284"
+            },
+            {
+              "domain": "jinsee.tistory.com",
+              "eid": "E017",
+              "purpose": "official_title_verify",
+              "query": "괴담 동아리 웹소설 문피아",
+              "rank": 17,
+              "snippet": "2022년 7월 26일 · 이 이야기는 지인 C군이 고등학교 때 겪었던 다소 기묘한 이야기입니다. 가끔 살다보면 정신없이 뭔가를 찾는 사람을 …",
+              "source_rank": 17,
+              "source_tier": "web",
+              "title": "무조건 모르는 척 하세요. / 레전드 현실 실화 공포 괴담 무서운 썰",
+              "url": "https://jinsee.tistory.com/4"
+            },
+            {
+              "domain": "jinsee.tistory.com",
+              "eid": "E018",
+              "purpose": "official_title_verify",
+              "query": "괴담 동아리 웹소설 문피아",
+              "rank": 18,
+              "snippet": "2024년 10월 25일 · #1. XX구 중고 거래 서울 XX구에서 중고거래를 위해 지하철역으로 간 이 군은 거래 당사자와 만나 인사를 하고 …",
+              "source_rank": 18,
+              "source_tier": "web",
+              "title": "짧은 괴담 몇가지 / 무서운 이야기",
+              "url": "https://jinsee.tistory.com/935"
+            },
+            {
+              "domain": "m.blog.naver.com",
+              "eid": "E019",
+              "purpose": "official_title_verify",
+              "query": "괴담 동아리 웹소설 문피아",
+              "rank": 19,
+              "snippet": "2021년 12월 29일 · ※이 글은 가장 마음에 들었던 추천 괴담 목록을 정리해 둔 게시물입니다. 순서는 위에서부터 게시날짜가 오래된 순이며, …",
+              "source_rank": 19,
+              "source_tier": "web",
+              "title": "[26.09.13] 번역자 추천 괴담 목록 : 네이버 블로그",
+              "url": "https://m.blog.naver.com/bookwrom/222607938932"
+            },
+            {
+              "domain": "0300am.tistory.com",
+              "eid": "E020",
+              "purpose": "official_title_verify",
+              "query": "괴담 동아리 웹소설 문피아",
+              "rank": 20,
+              "snippet": "2021년 1월 16일 · 무서운이야기 썰 [귀신보는 친구와 있었던 공포썰#2, 공포, 귀신, 괴담] 무서운이야기, 공포썰 [귀신 보는 친구와 겪었던 …",
+              "source_rank": 20,
+              "source_tier": "web",
+              "title": "공포. 괴담. 무서운이야기 [익명 게시판에 올라온 짧은 공포썰 모음]",
+              "url": "https://0300am.tistory.com/entry/%EA%B3%B5%ED%8F%AC-%EA%B4%B4%EB%8B%B4-%EB%AC%B4%EC%84%9C%EC%9A%B4%EC%9D%B4%EC%95%BC%EA%B8%B0-%EC%9D%B5%EB%AA%85-%EA%B2%8C%EC%8B%9C%ED%8C%90%EC%97%90-%EC%98%AC%EB%9D%BC%EC%98%A8-%EC%A7%A7%EC%9D%80-%EA%B3%B5%ED%8F%AC%EC%8D%B0-%EB%AA%A8%EC%9D%8C"
+            },
+            {
+              "domain": "ridibooks.com",
+              "eid": "E021",
+              "purpose": "author_works_search",
+              "query": "오직재미 작가 작품",
+              "rank": 21,
+              "snippet": "개정판｜닥치는 대로 끌리는 대로 오직 재미있게 이동진 독서법 작품소개: 2만 3천여 권의 책을 갖고 있는 장서가이자 책 읽기가 세상에서 가장 재미있다고 설파하는 못 말리는 애서가 이동진의 독서법을 담은 책. ‘1부 생각_ 그럼에도 불구하고, 책’에서는 이동진 작가가 책을 읽는 방법과 책을 사랑하는 방법을 이야기하고 있고, ‘2부 대화_ 읽었고, 읽고,...",
+              "source_rank": 21,
+              "source_tier": "novel_platform",
+              "title": "개정판｜닥치는 대로 끌리는 대로 오직 재미있게 이동진 독서법 - 에세이/시",
+              "url": "https://ridibooks.com/books/734002350"
+            },
+            {
+              "domain": "www.fmkorea.com",
+              "eid": "E022",
+              "purpose": "author_works_search",
+              "query": "오직재미 작가 작품",
+              "rank": 22,
+              "snippet": "2025.06.27.오직 만화책 기준임. 완결 못낸 만화책은 평가가 떨어질수밖에 없고 고르게 재미유지할수록 고점 줬음. 어느 부분만재밌고... 나는 이작가 최고작은 20세기 소년으로 보고 나한테 없는 옜날 일본 어린이의 어린시절을 생각나게함. 없는 추억 생성. 향수가 느껴지는 작품. 스토리 전개도 생각보다 탄탄한편) B - 원피스 (나는 최고점이 쵸파랑 하늘섬임. 정상대전도 재미있지만...",
+              "source_rank": 22,
+              "source_tier": "web",
+              "title": "나 애니싫어하고 오직 만화책만 보는데 작품 순위 정렬 - 스타크래프트",
+              "url": "https://www.fmkorea.com/8578476138"
+            },
+            {
+              "domain": "britg.kr",
+              "eid": "E023",
+              "purpose": "author_works_search",
+              "query": "오직재미 작가 작품",
+              "rank": 23,
+              "snippet": "“보이는 현실 너머, 숨겨진 X를 찾아서.” 익숙한 세상의 틈새를 비집고 들어가 낯선 이야기를 꺼내옵니다. 장르의 공식에 갇히지 않고, 오직 재미라는 변수만을 쫓습니다.",
+              "source_rank": 23,
+              "source_tier": "web",
+              "title": "미지수 X – 브릿G",
+              "url": "https://britg.kr/novel-author/11108"
+            },
+            {
+              "domain": "pedia.watcha.com",
+              "eid": "E024",
+              "purpose": "author_works_search",
+              "query": "오직재미 작가 작품",
+              "rank": 24,
+              "snippet": "1만 7천 권의 책을 갖고 있는 장서가이자 책 읽기가 세상에서 가장 재미있다고 설파하는 못 말리는 애서가 이동진의 독서법을 담은 책. ‘1부 생각_ 그럼에도 불구하고, 책’에서는 이동진 작가가 책을 읽는 방법과 책을 사랑하는 방법을 이야기하고 있다. ‘2부 대화_ 읽었고, 읽고, 읽을 것이다’에서는 『씨네21』 이다혜 기자와의 대화를 담고 있다. ‘3부 목록_ 이동진 추천도......",
+              "source_rank": 24,
+              "source_tier": "web",
+              "title": "닥치는 대로 끌리는 대로 오직 재미있게 이동진 독서법 (2017)",
+              "url": "https://pedia.watcha.com/ko/contents/byzq1xW"
+            }
+          ],
+          "search_health": {
+            "accepted": 36,
+            "cache_hits": 0,
+            "degraded": 0,
+            "degraded_recovered": 0,
+            "degraded_zero": 0,
+            "degraded_zero_suppressed": 0,
+            "direct_search_results": 0,
+            "direct_search_used": 0,
+            "fallback_recovered": 0,
+            "filtered": 0,
+            "headless_used": 0,
+            "queries_issued": 4,
+            "raw": 85,
+            "retried": 0,
+            "status": "ok",
+            "unrecovered_degraded": 0,
+            "upstream_zero": 0
+          },
+          "secondary_reference_works": [],
+          "slang_insight": null,
+          "subtype": "support_cheer",
+          "system_state": "clean",
+          "title_candidates": [
+            {
+              "alias_or_mention": "괴담동",
+              "confidence": "High",
+              "content_status": null,
+              "heretic_url": "https://novelpia.com/novel/305463",
+              "locked": false,
+              "negative_evidence": [
+                "url_deleted_or_unavailable",
+                "candidate_source_search_title_conflict",
+                "candidate_source_missing_url",
+                "weak_alias_surface_public_title_bridge"
+              ],
+              "official_title": "괴담 동아리",
+              "page_type": "novel_page",
+              "reference_role": "candidate",
+              "resolved_recall_anchor": null,
+              "source_tier": "official_detail"
+            },
+            {
+              "alias_or_mention": null,
+              "confidence": "High",
+              "content_status": null,
+              "heretic_url": null,
+              "locked": false,
+              "negative_evidence": [
+                "candidate_source_missing_url"
+              ],
+              "official_title": "괴담동아리 if",
+              "page_type": null,
+              "reference_role": "candidate",
+              "resolved_recall_anchor": null,
+              "source_tier": "llm_only"
+            }
+          ],
+          "title_resolution_allowed": false,
+          "title_resolution_state": "unresolved_matchable",
+          "topicality": "core_relevant",
+          "vlm_chunks_sent": 1,
+          "vlm_enabled": true,
+          "vlm_enrichment_used": true,
+          "vlm_total_bytes": 123638,
+          "work_resolution": "unresolved"
+        },
+        "post_id": 8608886
+      },
+      "author": "ㅇㅇ",
+      "author_ip": null,
+      "comment_context_lines": [
+        "#1 speaker=user1 author=뭉치애비 comment_id=29419551",
+        "#2 speaker=user2 author=ㅇㅇ role=author_match_unverified comment_id=29419554"
+      ],
+      "comment_dialogue_context_lines": [],
+      "comment_metadata": [
+        {
+          "author": "뭉치애비",
+          "comment_id": "29419551",
+          "created_at": "2024.04.29 15:09:49",
+          "gallery_id": "genrenovel",
+          "index": 0,
+          "ip": null,
+          "is_post_author": false,
+          "post_author_match_unverified": false,
+          "reply_level": 0,
+          "reply_to_comment_id": null,
+          "speaker": "user1"
+        },
+        {
+          "author": "ㅇㅇ",
+          "comment_id": "29419554",
+          "created_at": "2024.04.29 15:10:37",
+          "gallery_id": "genrenovel",
+          "index": 1,
+          "ip": null,
+          "is_post_author": false,
+          "post_author_match_unverified": true,
+          "reply_level": 0,
+          "reply_to_comment_id": null,
+          "speaker": "user2"
+        }
+      ],
+      "comments": [
+        "",
+        ""
+      ],
+      "content": [
+        "사랑해 오직재미!!!!!!"
+      ],
+      "content_blocks": [
+        {
+          "type": "image",
+          "url": "https://dcimg1.dcinside.com/viewimage.php?id=2ab8de34e0dc37b06bb3&no=24b0d769e1d32ca73ce983fa11d0283107ab5cf91d66c5d1ce22a4f13c0060fd82b85544c9fbece6768c6fa454043bb125eb6ae00a99cf25041cb0bc386535c708acd8f6488d54390838725013b79ecbf714e4866b56"
+        },
+        {
+          "type": "image",
+          "url": "https://dcimg1.dcinside.com/viewimage.php?id=2ab8de34e0dc37b06bb3&no=24b0d769e1d32ca73ce983fa11d0283107ab5cf91d66c5d1ce22a4f13c0060fd82b85544c9fbece6768c6fa454043bb125eb6ae00a99cf250441b8ed3d3e34c88ce6e1af42d4d68f949a737e5022d39e4efe5f863429d54d121be9f4b19f65c7"
+        },
+        {
+          "text": "사랑해 오직재미!!!!!!",
+          "type": "text"
+        }
+      ],
+      "created_at": "2024-04-29 15:07:41",
+      "gallery_id": "genrenovel",
+      "image_count": 2,
+      "image_urls": [
+        "https://dcimg1.dcinside.com/viewimage.php?id=2ab8de34e0dc37b06bb3&no=24b0d769e1d32ca73ce983fa11d0283107ab5cf91d66c5d1ce22a4f13c0060fd82b85544c9fbece6768c6fa454043bb125eb6ae00a99cf25041cb0bc386535c708acd8f6488d54390838725013b79ecbf714e4866b56",
+        "https://dcimg1.dcinside.com/viewimage.php?id=2ab8de34e0dc37b06bb3&no=24b0d769e1d32ca73ce983fa11d0283107ab5cf91d66c5d1ce22a4f13c0060fd82b85544c9fbece6768c6fa454043bb125eb6ae00a99cf250441b8ed3d3e34c88ce6e1af42d4d68f949a737e5022d39e4efe5f863429d54d121be9f4b19f65c7"
+      ],
+      "ip": null,
+      "post_author": "ㅇㅇ",
+      "post_id": 8608886,
+      "post_ip": null,
+      "run_meta": {
+        "config_hash": "15ad54d962d7",
+        "decision_call_attempt_receipt": {
+          "closure_frame_sha256": "4f61a1bad7603f237879f466bfe9191e332fbe37e8a32bbebadfa95a1bfdd265",
+          "event_root_sha256": "f72d30924bff8c0a181aa5a2fd816f68c5736b1a735a0c7bd7ca34847c704961",
+          "publication_decision_id_preview": "59ab2d208a8f8b1f9b4e83aad2e1ed07f3300bf1726913aeeab8a9ca1cfea1b6",
+          "publication_link_decision_id": null,
+          "publication_link_frame_sha256": null,
+          "publication_link_status": "PENDING_EXTERNAL_LEDGER_LINK",
+          "publication_shadow_observation": null,
+          "row": {
+            "attempt_run_id": "20261013_181711_146907",
+            "input_index": 72,
+            "post_id": 8608886,
+            "publication_scope_id": "c4b9d6d290ef318d58a68b1243790dc00cd90cb17d8508c01b08aca7dce7f001",
+            "row_attempt_id": "21d706a3ec578ebf9485dd14d9c98ad0739692a9904c1c7ad8e63873fba22d68",
+            "schema_version": "decision_call_row_attempt_v1"
+          },
+          "schema_version": "decision_call_attempt_receipt_v1"
+        },
+        "decision_call_ledger": {
+          "closure_frame_sha256": "4f61a1bad7603f237879f466bfe9191e332fbe37e8a32bbebadfa95a1bfdd265",
+          "closure_kind": "ROW_SEAL",
+          "event_frame_count": 38,
+          "event_root_sha256": "f72d30924bff8c0a181aa5a2fd816f68c5736b1a735a0c7bd7ca34847c704961",
+          "ledger_scope_sha256": "56a28ef6a97a94dfb3c3b03a289802f4df215d54215148a5a2c5e06057779701",
+          "path": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\p4_current_followup_actual80_parallel12_20261013\\run\\result_decision_call_ledger",
+          "publication_scope_id": "c4b9d6d290ef318d58a68b1243790dc00cd90cb17d8508c01b08aca7dce7f001",
+          "row": {
+            "attempt_run_id": "20261013_181711_146907",
+            "input_index": 72,
+            "post_id": 8608886,
+            "publication_scope_id": "c4b9d6d290ef318d58a68b1243790dc00cd90cb17d8508c01b08aca7dce7f001",
+            "row_attempt_id": "21d706a3ec578ebf9485dd14d9c98ad0739692a9904c1c7ad8e63873fba22d68",
+            "schema_version": "decision_call_row_attempt_v1"
+          },
+          "schema_version": "decision_call_row_ledger_ref_v1"
+        },
+        "decision_call_ledger_summary": {
+          "actual_kpi_status": "PENDING_INDEPENDENT_READBACK",
+          "actual_metrics": {
+            "completion_tokens": null,
+            "expert_calls": null,
+            "prompt_tokens": null,
+            "total_tokens": null
+          },
+          "derived_observation": {
+            "completion_tokens": 12023,
+            "expert_calls": 19,
+            "prompt_tokens": 174786,
+            "retry_count": 0,
+            "text_calls": 17,
+            "total_tokens": 186809,
+            "vlm_calls": 2
+          },
+          "reason_codes": [
+            "INDEPENDENT_READBACK_NOT_BOUND"
+          ],
+          "schema_version": "decision_call_row_summary_v1",
+          "trace_errors": [],
+          "usage_status": "COMPLETE_PROVIDER_REPORTED",
+          "writer_complete": true
+        },
+        "decision_call_measurement": {
+          "actual_kpi_eligible": false,
+          "arm": null,
+          "binding_status": "UNBOUND",
+          "central_slang_db_write_allowed": null,
+          "early_route_enable_status": "DISABLED",
+          "early_route_enabled": false,
+          "early_route_mode": "OFF",
+          "execution_mode": "NORMAL",
+          "fresh_execution_required": false,
+          "mode": "SHADOW",
+          "mutable_context_binding": {
+            "batch_context_enabled": true,
+            "central_slang_db_write_allowed": null,
+            "mutable_context_mode": "NORMAL",
+            "schema_version": "paired_measurement_mutable_context_binding_v1",
+            "slang_access_mode": "OFF"
+          },
+          "mutable_context_binding_sha256": "ec8befe89c6308a5ad19c6535d44726ce2c227aaa41985d6f010c19ab8749812",
+          "mutable_context_frozen": false,
+          "mutable_context_mode": "NORMAL",
+          "pair_id": null,
+          "publication_decision_equivalence_required": false,
+          "run_spec_sha256": null,
+          "semantic_drift_observation": false,
+          "slang_access_mode": "OFF"
+        },
+        "decision_cost_trace": {
+          "action_applied": false,
+          "completion_tokens": 3137,
+          "expert_calls": null,
+          "input_index": 72,
+          "measurement_status": "PARTIAL_AGGREGATE_NO_CALL_EVENTS",
+          "model_tier": "nvidia/Gemma-4-26B-A4B-NVFP4",
+          "operational_effect": "NONE_SHADOW_ONLY",
+          "post_id": "8608886",
+          "processing_finished_at": "2026-10-13T19:48:50.798+09:00",
+          "processing_started_at": "2026-10-13T19:16:40.598+09:00",
+          "prompt_tokens": 57385,
+          "publication_scope_id": "c4b9d6d290ef318d58a68b1243790dc00cd90cb17d8508c01b08aca7dce7f001",
+          "retry_count": null,
+          "run_id": "20261013_181711_146907",
+          "schema_version": "decision_cost_trace_v1",
+          "search_calls": 4,
+          "total_tokens": 60522,
+          "trace_sha256": "6258f4a899d1884d2c1fff4c5aa604135db678a5262b240e396426ce83d6c29b",
+          "vlm_chunks": 1,
+          "wall_ms": 1930200
+        },
+        "effective_parallel": 12,
+        "execution_config": {
+          "compression": {
+            "scope": "artifact_generation",
+            "status": "OFF_NOT_REQUESTED"
+          },
+          "dashboard": {
+            "enabled": true,
+            "mode": "standalone_forward",
+            "url": "http://127.0.0.1:18866"
+          },
+          "effective_parallel": 12,
+          "image_review": {
+            "image_post_count": 21,
+            "ready": true,
+            "skip_reason_codes": []
+          },
+          "measurement": {
+            "execution_mode": "NORMAL",
+            "formal_kpi_status": "NOT_ESTIMABLE"
+          },
+          "output_file": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\p4_current_followup_actual80_parallel12_20261013\\run\\result.json",
+          "profile": "low-load-validation",
+          "profile_source": "CLI",
+          "requested_parallel": 12,
+          "resources": {
+            "affinity_mask": 2,
+            "logical_cpu_count": 1,
+            "numeric_threads": {
+              "MKL_NUM_THREADS": "1",
+              "NUMEXPR_NUM_THREADS": "1",
+              "OMP_NUM_THREADS": "1",
+              "OPENBLAS_NUM_THREADS": "1",
+              "VECLIB_MAXIMUM_THREADS": "1"
+            },
+            "pid": 101484,
+            "priority_class": 16384,
+            "status": "LOW_LOAD_VERIFIED"
+          },
+          "schema_version": "expert_execution_config_v1",
+          "settings": {
+            "context_diagnostics": {
+              "source": "CLI",
+              "value": true
+            },
+            "ledger_mode": {
+              "source": "CLI",
+              "value": "SHADOW"
+            },
+            "ocr": {
+              "source": "CLI",
+              "value": true
+            },
+            "requested_parallel": {
+              "source": "CLI",
+              "value": 12
+            },
+            "vlm": {
+              "source": "CLI",
+              "value": true
+            }
+          },
+          "source": {
+            "entry_point": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\expert_main.py",
+            "entry_sha256": "6719cdea9b06e663989f864807c2f100e390dfa661e4ed2d00101994cadd322c",
+            "runtime_source_files": {
+              "expert_main.py": "6719cdea9b06e663989f864807c2f100e390dfa661e4ed2d00101994cadd322c",
+              "src/llm_batch/agentic_pipeline.py": "34136a11d74957178a4ea5bcd02914c21630414b91cf2a8f1a6b9340b836a8e8",
+              "src/llm_batch/experts/arbiter.py": "65f10436f1a21c3e5351135a773d133c26a3ee7083a63a23bf882aee1641956d",
+              "src/llm_batch/experts/decoder.py": "61d2116bfbdfd99ff6d0da81ecb20a905cac48ecf86e10dfa4e743bf7949c26f",
+              "src/llm_batch/experts/orchestrator.py": "1af96f5eb2e5fe1d7dc53d71e8804b7fd364a7f01364c3c5ae54852c54f04568",
+              "src/llm_batch/experts/synthesizer.py": "ba42dc34381209ba2a1ce4166805d64d56482198b37ec5a52504be5e1b57c1dd",
+              "src/llm_batch/experts/verifier.py": "ad175467a03b3addadbfb31c644569ee6b2f300a67c548df62c8d62a297c20e2",
+              "src/llm_batch/grounding/candidate_reranker_alias_evidence.py": "7b054d52e4e41d3a71a0ecfccb539d22f36d29414cdaebd52d697774146aa619",
+              "src/llm_batch/grounding/candidate_reranker_calibration.py": "adef55d267ad681963e14bfc80ba13b2dd598084f28d85d82ae094fcb5571aac",
+              "src/llm_batch/grounding/candidate_reranker_calibration_data.py": "d1f243490cf1e166cf4506659c1146a9e9b3e3608e903302c239ef1869018dca",
+              "src/llm_batch/grounding/candidate_reranker_calibration_inference.py": "f543a371f075c1e84790eba964912b97d73a02596f751b1e9c25aa0e967938b0",
+              "src/llm_batch/grounding/candidate_reranker_capture.py": "6b8bb2e01470e2450269e0e4d2a8f6ca4cf04844cf744109beef7eb213ca3de4",
+              "src/llm_batch/grounding/candidate_reranker_event_bridge.py": "c9bf880e0eb6a86be7598722cb3cd07956892ef6c22b95c2acde556872d04754",
+              "src/llm_batch/grounding/candidate_reranker_inference_graph.py": "fc62f68a2f7fcbd2a7d133b64671f4fefb7b3a5fef22c3da2708934f9cb96304",
+              "src/llm_batch/grounding/candidate_reranker_learned.py": "14a3c9052699293c7b76e4fa16725212355d1a2726a5f7f017b250e2e76905ac",
+              "src/llm_batch/grounding/candidate_reranker_nil_learned.py": "968609fd573e9857a1993bc321ecce180e180354cd942cff817781a5e48db3a5",
+              "src/llm_batch/grounding/candidate_reranker_roles.py": "4ed5182a14974e72979db57d559615ebd7643bd6a8c6a02b2779742a51b0a56b",
+              "src/llm_batch/grounding/candidate_reranker_semantic_input.py": "7168ab0ee24214cd518b8dbbb9f935ced0397af175bbd786253df1ee26fbd32e",
+              "src/llm_batch/grounding/candidate_reranker_semantics.py": "00ba2e3d1acffc05af8e9ceced860250944801cc4aab444ceddb32bdbd1cbb53",
+              "src/llm_batch/grounding/candidate_reranker_shadow.py": "1d110a652a2501d64b3f98925386018d789249301b1d3c80336bde09a0e15229",
+              "src/llm_batch/grounding/candidate_retrieval_shadow.py": "0f7e4893d26d9dd4115fe6e63fffce8cd0e6919a8a8deebe5bd749bffe758010",
+              "src/llm_batch/grounding/candidate_set_calibration_shadow.py": "365cb609699e81013fda40f730861bdeb2b93bf18bfc97e931b8ace550e8e5ff",
+              "src/llm_batch/grounding/candidate_set_shadow.py": "0a87e724eb78e5c0a636d17cb1598861bd24d80f15e9be1817b6ecf3b04b05e1",
+              "src/llm_batch/grounding/claim_scope_contract.py": "284afabb86e5bef4dd0b7c53b19b136c1faa35fab91f5843e2bb1de2ecb4620e",
+              "src/llm_batch/grounding/community_knowledge.py": "8142d2f6be7cb29971aedc6eba9cd89e1a1ffde13b74fa3d391931ef11b463c4",
+              "src/llm_batch/grounding/context_projection_contract.py": "ccc5d93e46488168ce89504ad9db77fdf60df222c3dc30f34df65e39c167355f",
+              "src/llm_batch/grounding/reranker_training_split.py": "1e4453ed08eb4213a57363c10d0e4e610fd3076d209fc0a66295f68143523cb8",
+              "src/llm_batch/grounding/source_context_diagnostics.py": "dc474fa74ed40982c702bfc50a0f50a881727f1c259fea38ffbed9d62bb9475c",
+              "src/llm_batch/grounding/source_context_explanation.py": "9927c304ed3ef62e8e9414e55894f85972ce9551919ff09583e00cb1654a9dff",
+              "src/llm_batch/grounding/source_speech_structure.py": "70059e67306151d9ba0cf91eb48eb8e5b610e46594ef5d8439759c4f9ea8eae9",
+              "src/llm_batch/ledger/recovery_native_journal.py": "36e68618b168ad063def750a21a95c8fa1f338b32ab834a47ca4297abf950bb0",
+              "src/llm_batch/ledger/recovery_provider_journal.py": "2a4d921922c9a7082d653acd2c7b1b11928fe430e99d129f6b530f459756913a",
+              "src/llm_batch/llm/client.py": "7ef656f68c8cc5c76b604dc1f99f800c679825dc84042bfc3a73628a37df1085",
+              "src/llm_batch/measurement/paired_execution_policy.py": "e94ba5ff5c54d1c127c33a585320a50142efb0cf22da378d40d281b186542181",
+              "src/llm_batch/measurement/paired_measurement_readback.py": "1c4adba5e19f7a8378ca5e45689dd0e55ee45b17bc4a12259e21fa5cdf8a3733",
+              "src/llm_batch/measurement/recovery_input_projection.py": "cf5617377ee99fce9f59dc27498a9885f64ca68936e08f2ff5d5047875b96591",
+              "src/llm_batch/measurement/recovery_native_source.py": "1f3fd174052d588a46e73ff0f9b787e94c4866d67fa225ae64f52e19e25df94c",
+              "src/llm_batch/measurement/recovery_provider_contract.py": "14841df266d5b19be2f904e81da8f6b06bf78e34e19e4ca169902e2a23c464e6",
+              "src/llm_batch/measurement/recovery_provider_readback.py": "2ef340c8f6c2e493b70c8117ce94ee0a016074c1a424627461d4c23ca7b8ec7b",
+              "src/llm_batch/monitor/recovery_native_view.py": "2be6d9030216c311fc92d4912b5683f2c79237126d63d4dc08a70b9adcbabbd3",
+              "src/llm_batch/monitor/recovery_provider_view.py": "3573a1fd1175b0d77efa58515c4e9bb38235b60466bd28bd5ba58f0cca2cd164",
+              "src/llm_batch/prompts/expert_prompts.py": "691e13a01a3fe2e61390d3b801aa8df791007bef02982be80045bc29ecddce74",
+              "src/llm_batch/runtime/candidate_calibration.py": "2f5d79c26980dee48351194618b3873da075ba0b873f17907007fd55062ba767",
+              "src/llm_batch/runtime/candidate_capture.py": "55ab630bfaba9a2297369f7f533f7c073e8a9c4ebbde100578d1ca5d392e5201",
+              "src/llm_batch/runtime/candidate_inference.py": "25ebe6a716a681d37b1233dae54e0ecf37d504b80673791aab09d505c07634a9",
+              "src/llm_batch/runtime/candidate_reranker.py": "df132311100ba1e906e9dc804a07276e7411f09bf38d5d22a35f407f5cfaea3e",
+              "src/llm_batch/runtime/candidate_retrieval.py": "61077f2f9e1785bd3efffec262a95f202f427cff065666fbb1b3a6b03700f45e",
+              "src/llm_batch/runtime/candidate_semantics.py": "89c63be4036a2fa9fb80a76ed294980c7ac278ef0891d91db8dbb5c37054841e",
+              "src/llm_batch/runtime/community_knowledge.py": "36ea0fb0d2f90b1566e2fd5b357bbf1dc023a90534f25c2c3cb87f8f8a3d9823",
+              "src/llm_batch/runtime/execution_config.py": "b195fa5152bc033b393b3df542d06cc64810670647f6e8b2cc5f12b7885f59aa",
+              "src/llm_batch/runtime/paired_execution.py": "2ae2794fc091ac18385c58f776c6f3879165feb864a0caee99e8b6e72183a5f5",
+              "src/llm_batch/runtime/recovery_native_batch.py": "0f224f08834bdaf97b4af05d3376e3fae8a6bbc45b8fab6c3468de87aff02428",
+              "src/llm_batch/runtime/recovery_native_context.py": "26d15f140119fe930d2d8f22e80d851706d189639bae44b654c7a53faa786fe5",
+              "src/llm_batch/runtime/recovery_native_io.py": "1ec5645dfa26aac3fecb9e3ce3b0e62d9586157b8cfd5caa41371253670fcc87",
+              "src/llm_batch/runtime/recovery_native_workflow.py": "fb2181c4e8c6025caf13b4e87c5785f0052b7a812187dae955863ad0e837b78b",
+              "src/llm_batch/runtime/recovery_provider_transport.py": "49cabbca7740c6ade64eb0a8a8e7cd5084ad236abf0a503e5f3d8cde129c6e05",
+              "src/llm_batch/runtime/recovery_transport.py": "cae8ecfa319e9d430356a270f290a8d2ff26414c9673116f26c20c365843e6e7",
+              "tools/build_candidate_inference_bundle.py": "f17b915011aaf29d9dc322531b3f685d5a7f020e68b1365f7924d5afde5e98af",
+              "tools/run_candidate_reranker_calibration.py": "30f189ce7943069c1d15e94ff5e68963fd03c2f1f8097c58691b8b331571cf30",
+              "tools/run_candidate_reranker_training.py": "d92441d1d1bb4266fd9b5ad0b8e8733da1170dc7714fde779ad46177e1050292",
+              "tools/run_recovery_provider.py": "9986d5104d6ab1083387f71508761737b181049166927b9bee9cfedaa82be938"
+            },
+            "runtime_source_sha256": "3aec8f3e5c47c09510bbe060b04f7c4855ce39f74d6bc3d2c37ce5a237dd4b9b",
+            "source_scope": "SELECTED_RUNTIME_FILES"
+          }
+        },
+        "llm_endpoint": "http://10.20.0.101:8000/",
+        "llm_mode": "remote",
+        "main_log_file": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\logs\\expert_run_20261013_181711_146907.log",
+        "mcp_endpoint_count_after_health_filter": 1,
+        "mcp_goal_run_health_filtered": false,
+        "mcp_health_attempts": 1,
+        "mcp_health_checked_endpoint_count": 1,
+        "mcp_health_failure_count": 0,
+        "mcp_health_include_search": true,
+        "mcp_health_light_mode": false,
+        "mcp_health_ok_count": 1,
+        "mcp_health_probe_batch_size": 1,
+        "mcp_health_probe_stopped_after_required_ok": false,
+        "mcp_health_required_ok_count": 1,
+        "mcp_health_search_max_latency_ms": 8000.0,
+        "mcp_health_search_min_results": 1,
+        "mcp_health_timeout_sec": 8.0,
+        "mcp_health_workers": 1,
+        "mcp_healthy_autogen_endpoint_filter": false,
+        "mcp_healthy_autogen_endpoint_filter_reason": "reuse_shards_only",
+        "mcp_healthy_endpoint_count": 1,
+        "mcp_healthy_endpoint_filter": false,
+        "mcp_healthy_endpoint_filter_autogen": false,
+        "mcp_healthy_endpoint_filter_reason": "reuse_shards_only",
+        "mcp_parallel_after_health_filter": 12,
+        "mcp_parallel_before_health_filter": 12,
+        "mcp_requested_endpoint_count_before_health_filter": 1,
+        "mcp_reuse_shards_only_health_filtered": false,
+        "measurement_execution_source": "NORMAL_PUBLICATION_OWNER",
+        "model": "nvidia/Gemma-4-26B-A4B-NVFP4",
+        "model_parallel_cap_applied": false,
+        "model_parallel_cap_model": "nvidia/Gemma-4-26B-A4B-NVFP4",
+        "model_parallel_max": null,
+        "parallel_policy": "effective_parallel=min(requested_parallel,input_post_count)",
+        "prompt_version": "2026-03-30-semantic-contract-v1",
+        "requested_parallel": 12,
+        "requested_parallel_raw": 12,
+        "run_id": "20261013_181711_146907",
+        "search_health": {
+          "accepted": 36,
+          "cache_hits": 0,
+          "degraded": 0,
+          "degraded_recovered": 0,
+          "degraded_zero": 0,
+          "degraded_zero_suppressed": 0,
+          "direct_search_results": 0,
+          "direct_search_used": 0,
+          "fallback_recovered": 0,
+          "filtered": 0,
+          "headless_used": 0,
+          "queries_issued": 4,
+          "raw": 85,
+          "retried": 0,
+          "status": "ok",
+          "unrecovered_degraded": 0,
+          "upstream_zero": 0
+        },
+        "semantic_recovery_plan_receipt": {
+          "attempt_run_id": "20261013_181711_146907",
+          "authority": "attempt_local_completed_result_evidence",
+          "input_index": 72,
+          "mode": "PLAN_ONLY",
+          "plan": {
+            "blocker_codes": [
+              "MISSING_PRIMARY",
+              "OFFICIAL_DETAIL_ID_UNAVAILABLE"
+            ],
+            "canonical_bindings": [],
+            "media_action": "NO_MEDIA_ACTION",
+            "network_calls_executed": 0,
+            "primary_identity_count": 0,
+            "query_plan": {
+              "max_queries": 2,
+              "purposes": [
+                "RESOLVE_PRIMARY_RELATION",
+                "VERIFY_OFFICIAL_DETAIL_ID"
+              ],
+              "query_execution_allowed": true,
+              "search_health": "ok"
+            },
+            "raw_ocr_evidence_count": 0,
+            "relationship_counts": {
+              "comparison": 0,
+              "mentioned": 2,
+              "previous": 0,
+              "primary": 0
+            },
+            "search_calls_executed": 0,
+            "state": "HOLD"
+          },
+          "plan_sha256": "535fdd50ebd40fc880b8e83a2ed6801482db4f9ed2fc1a5f077f71610dc0be42",
+          "post_id": 8608886,
+          "public_apply": false,
+          "public_projection_sha256": "b0f71b0e130008016b5b017f3abffa5bc7acab72da3d196ae561752ebe459364",
+          "publication_decision_id": "59ab2d208a8f8b1f9b4e83aad2e1ed07f3300bf1726913aeeab8a9ca1cfea1b6",
+          "publication_scope_id": "c4b9d6d290ef318d58a68b1243790dc00cd90cb17d8508c01b08aca7dce7f001",
+          "receipt_sha256": "48d2737f4d5cc06638a90905a853a26fa08f87c35d22bf3e60d484fe4385ea36",
+          "rule_version": "p1_review_recovery_plan_v1",
+          "schema_version": "semantic_recovery_plan_receipt_v1",
+          "source_view": {
+            "candidate_evidence": [
+              {
+                "canonical_url": null,
+                "canonical_work_id": null,
+                "content_status": "",
+                "display_key_sha256": "b4c376a52cfb343ece1bcea85c16164da6a1a4829fae0003018aa991d20d6205",
+                "has_display_title": true,
+                "page_type": "",
+                "relation_role": "mentioned",
+                "source_tier": "llm_only",
+                "stable_identity_status": "UNVERIFIED_RAW_EVIDENCE",
+                "verified_display_title": null
+              },
+              {
+                "canonical_url": null,
+                "canonical_work_id": null,
+                "content_status": "",
+                "display_key_sha256": "fcb76b7def917c2b67c6d4699ed78afee8a715aac5f39a18ab01081078a9f81f",
+                "has_display_title": true,
+                "page_type": "novel_page",
+                "relation_role": "mentioned",
+                "source_tier": "official_detail",
+                "stable_identity_status": "MALFORMED_OR_LISTING_OFFICIAL_DETAIL",
+                "verified_display_title": null
+              }
+            ],
+            "decision_reason_codes": [
+              "candidate_inventory_preserved_without_selection",
+              "candidate_inventory_unselected",
+              "no_public_candidate_title",
+              "row_discussion_missing",
+              "scope_not_current_work",
+              "scope_unknown",
+              "serializer_candidate_inventory_hold",
+              "title_resolution_state_not_publishable",
+              "work_resolution_not_publishable"
+            ],
+            "evidence_status": "COMPLETE",
+            "is_relevant": true,
+            "publish_allowed": false,
+            "raw_ocr_evidence_count": 0,
+            "search_health": "ok",
+            "semantic_publication": {
+              "evidence_status": "",
+              "media_domain_class": "",
+              "primary_work_status": ""
+            },
+            "work_resolution": "unresolved"
+          },
+          "source_view_sha256": "0fe127ee6a04aefd5defd69bc4911f90f5678a013f3efb02752bb67112cb8028",
+          "stable_result_sha256": "4fb8520097cb8398720e9e9e86e49bd8f623f4c85d92e7bab4ee7350cdca8d0e"
+        },
+        "semantic_review_router_receipt": {
+          "attempt_run_id": "20261013_181711_146907",
+          "authority": "attempt_local_result_evidence",
+          "input_index": 72,
+          "mode": "REVIEW_ONLY",
+          "post_id": 8608886,
+          "public_apply": false,
+          "public_projection_sha256": "b0f71b0e130008016b5b017f3abffa5bc7acab72da3d196ae561752ebe459364",
+          "publication_decision_id": "59ab2d208a8f8b1f9b4e83aad2e1ed07f3300bf1726913aeeab8a9ca1cfea1b6",
+          "publication_scope_id": "c4b9d6d290ef318d58a68b1243790dc00cd90cb17d8508c01b08aca7dce7f001",
+          "receipt_sha256": "2a93796f41f5a71596f982ca5349ddd116e560ef4b2232aeb1e3ba89d05c4e1a",
+          "router_decision_sha256": "72f390c213c512a5b4ddde6613f203461a13a9f430774cc7684e7228f0f489e4",
+          "rule_version": "strict_evidence_v2",
+          "schema_version": "semantic_review_router_receipt_v1",
+          "source_view": {
+            "candidate_preservation_present": true,
+            "comments_count": 2,
+            "consistency_flags": [
+              "official_detail_url_repaired_from_search",
+              "weak_alias_surface_public_title_bridge"
+            ],
+            "direct_ocr_evidence": {
+              "catalog_sha256": "6f057337d885b9981d236ff1b5f47130b947fe5190c259f1aa0044e968f4394e",
+              "proposal_count": 0,
+              "proposal_set_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "source_payload_sha256": []
+            },
+            "evidence_status": "COMPLETE",
+            "image_count": 2,
+            "is_relevant": true,
+            "output_consistency_lint": [],
+            "publish_allowed": false,
+            "reason_codes": [
+              "candidate_inventory_preserved_without_selection",
+              "candidate_inventory_unselected",
+              "no_public_candidate_title",
+              "row_discussion_missing",
+              "scope_not_current_work",
+              "scope_unknown",
+              "serializer_candidate_inventory_hold",
+              "title_resolution_state_not_publishable",
+              "work_resolution_not_publishable"
+            ],
+            "scope_confidence": "low",
+            "title_candidates": [
+              {
+                "has_title": true,
+                "locked": false,
+                "page_type": "novel_page",
+                "reference_role": "candidate",
+                "source_tier": "official_detail",
+                "title_relation": "UNBOUND"
+              },
+              {
+                "has_title": true,
+                "locked": false,
+                "page_type": null,
+                "reference_role": "candidate",
+                "source_tier": "llm_only",
+                "title_relation": "UNBOUND"
+              }
+            ],
+            "work_resolution": "unresolved"
+          },
+          "source_view_sha256": "f4479d6987df529392d9b8fc3dec45a8152bcfdac9b6964cf6060bad3060adff",
+          "stable_result_sha256": "4fb8520097cb8398720e9e9e86e49bd8f623f4c85d92e7bab4ee7350cdca8d0e",
+          "state": "REVIEW_REQUIRED",
+          "trigger_codes": [
+            "UNRESOLVED_OFFICIAL_DETAIL"
+          ],
+          "unknown_reason_codes": []
+        },
+        "source_context_diagnostics": {
+          "byte_count_basis": "UTF8_CANONICAL_JSON",
+          "capture_status": "single_binder",
+          "channels": [
+            {
+              "channel": "speech_act",
+              "field": "speech_act",
+              "index": -1,
+              "locations": [],
+              "rule": "opinion_cue_kind",
+              "value": "opinion",
+              "value_kind": "parser_label"
+            },
+            {
+              "channel": "target",
+              "field": "target_kind",
+              "index": -1,
+              "locations": [],
+              "rule": "opinion_cue_kind",
+              "value": "unknown",
+              "value_kind": "parser_label"
+            }
+          ],
+          "explanation": {
+            "input_fingerprint": "450b6e2afdda0023ea1b97cab503d58770dca6a2542fc186110b049bd98077e0",
+            "proofs": [
+              {
+                "claim_id": "author:clause:0:claim:0",
+                "claim_kind": "own",
+                "claim_view": "claim",
+                "claimant": "self",
+                "event_ids": [],
+                "final_support": true,
+                "predicate_spans": [],
+                "raw_path": "/title",
+                "raw_span": [
+                  0,
+                  13
+                ],
+                "rule": "source_exact_headline_speech",
+                "source_id": "author:clause:0",
+                "source_sha256": "8f1c33654283832583070e0fda569ebd6b6ee31bac181c6be1000fb697deed71",
+                "sourcequote": "괴담동 5연참!!!!!!"
+              },
+              {
+                "claim_id": "author:clause:1:claim:1",
+                "claim_kind": "own",
+                "claim_view": "claim",
+                "claimant": "self",
+                "event_ids": [
+                  "author:clause:1:0:3:cue:0",
+                  "author:clause:1:4:14:cue:6"
+                ],
+                "final_support": true,
+                "predicate_spans": [
+                  [
+                    0,
+                    3
+                  ],
+                  [
+                    4,
+                    14
+                  ]
+                ],
+                "raw_path": "/content_blocks/2/text",
+                "raw_span": [
+                  0,
+                  14
+                ],
+                "rule": "source_exact_headline_speech",
+                "source_id": "author:clause:1",
+                "source_sha256": "973d7841e39100f7b3f64e7686c74c9ee183a09e7336f15aacb50c57d97fdb21",
+                "sourcequote": "사랑해 오직재미!!!!!!"
+              }
+            ],
+            "source_kind": "deterministic_source_context",
+            "supported": true,
+            "unresolved": []
+          },
+          "ledgers": [
+            {
+              "claims": [
+                {
+                  "attribution": "direct_clause",
+                  "claim_id": "author:clause:0:claim:0",
+                  "evaluation_event_ids": [],
+                  "final_support": true,
+                  "initial_support": true,
+                  "kind": "own",
+                  "source_id": "author:clause:0",
+                  "span": [
+                    0,
+                    13
+                  ],
+                  "speaker": "self",
+                  "speaker_source": "unit_speaker",
+                  "support_attribution": "unit_speaker_direct",
+                  "text": "괴담동 5연참!!!!!!"
+                },
+                {
+                  "attribution": "direct_clause",
+                  "claim_id": "author:clause:1:claim:1",
+                  "evaluation_event_ids": [
+                    "author:clause:1:0:3:cue:0",
+                    "author:clause:1:4:14:cue:6"
+                  ],
+                  "final_support": true,
+                  "initial_support": true,
+                  "kind": "own",
+                  "source_id": "author:clause:1",
+                  "span": [
+                    0,
+                    14
+                  ],
+                  "speaker": "self",
+                  "speaker_source": "unit_speaker",
+                  "support_attribution": "unit_speaker_direct",
+                  "text": "사랑해 오직재미!!!!!!"
+                }
+              ],
+              "evaluations": [
+                {
+                  "actor": "self",
+                  "assertion_span": [
+                    -1,
+                    -1
+                  ],
+                  "attribution": "unit_speaker_default",
+                  "claim_id": "author:clause:1:claim:1",
+                  "evaluation_polarity": "pos",
+                  "event_id": "author:clause:1:0:3:cue:0",
+                  "evidence_text": "사랑해 오직재미!!!!!!",
+                  "final_support": true,
+                  "grammatical_subject": {
+                    "actor": "self",
+                    "explicit": false,
+                    "span": [
+                      -1,
+                      -1
+                    ],
+                    "text": ""
+                  },
+                  "kind": "evaluate",
+                  "objects": [],
+                  "parent_event_id": "author:clause:1:claim:1",
+                  "polarity": "positive",
+                  "predicate": "사랑해",
+                  "predicate_span": [
+                    0,
+                    3
+                  ],
+                  "realization": "actual",
+                  "source_id": "author:clause:1",
+                  "speaker": "self",
+                  "support_attribution": "unit_speaker_direct",
+                  "temporal_scope": "unmarked"
+                },
+                {
+                  "actor": "self",
+                  "assertion_span": [
+                    -1,
+                    -1
+                  ],
+                  "attribution": "unit_speaker_default",
+                  "claim_id": "author:clause:1:claim:1",
+                  "evaluation_polarity": "pos",
+                  "event_id": "author:clause:1:4:14:cue:6",
+                  "evidence_text": "사랑해 오직재미!!!!!!",
+                  "final_support": true,
+                  "grammatical_subject": {
+                    "actor": "self",
+                    "explicit": false,
+                    "span": [
+                      -1,
+                      -1
+                    ],
+                    "text": ""
+                  },
+                  "kind": "evaluate",
+                  "objects": [],
+                  "parent_event_id": "author:clause:1:claim:1",
+                  "polarity": "positive",
+                  "predicate": "오직재미!!!!!!",
+                  "predicate_span": [
+                    4,
+                    14
+                  ],
+                  "realization": "actual",
+                  "source_id": "author:clause:1",
+                  "speaker": "self",
+                  "support_attribution": "unit_speaker_direct",
+                  "temporal_scope": "unmarked"
+                }
+              ],
+              "graph_edges": [
+                {
+                  "recorded_by": "sources[0].parent_source_id",
+                  "relation": "source_in_unit",
+                  "source_id": "author:clause:0",
+                  "target_id": "author"
+                },
+                {
+                  "recorded_by": "sources[1].parent_source_id",
+                  "relation": "source_in_unit",
+                  "source_id": "author:clause:1",
+                  "target_id": "author"
+                },
+                {
+                  "recorded_by": "claims[0].source_id",
+                  "relation": "claim_in_source",
+                  "source_id": "author:clause:0:claim:0",
+                  "target_id": "author:clause:0"
+                },
+                {
+                  "recorded_by": "claims[0].initial_support",
+                  "relation": "direct_support_of",
+                  "source_id": "author:clause:0:claim:0:direct",
+                  "target_id": "author:clause:0:claim:0"
+                },
+                {
+                  "recorded_by": "claims[0].active_adoption_event_ids[0]",
+                  "relation": "claim_active_support",
+                  "source_id": "author:clause:0:claim:0",
+                  "target_id": "author:clause:0:claim:0:direct"
+                },
+                {
+                  "recorded_by": "claims[1].source_id",
+                  "relation": "claim_in_source",
+                  "source_id": "author:clause:1:claim:1",
+                  "target_id": "author:clause:1"
+                },
+                {
+                  "recorded_by": "claims[1].initial_support",
+                  "relation": "direct_support_of",
+                  "source_id": "author:clause:1:claim:1:direct",
+                  "target_id": "author:clause:1:claim:1"
+                },
+                {
+                  "recorded_by": "claims[1].evaluation_event_ids[0]",
+                  "relation": "claim_evaluation",
+                  "source_id": "author:clause:1:claim:1",
+                  "target_id": "author:clause:1:0:3:cue:0"
+                },
+                {
+                  "recorded_by": "claims[1].evaluation_event_ids[1]",
+                  "relation": "claim_evaluation",
+                  "source_id": "author:clause:1:claim:1",
+                  "target_id": "author:clause:1:4:14:cue:6"
+                },
+                {
+                  "recorded_by": "claims[1].active_adoption_event_ids[0]",
+                  "relation": "claim_active_support",
+                  "source_id": "author:clause:1:claim:1",
+                  "target_id": "author:clause:1:claim:1:direct"
+                },
+                {
+                  "recorded_by": "evaluations[0].source_id",
+                  "relation": "evaluation_in_source",
+                  "source_id": "author:clause:1:0:3:cue:0",
+                  "target_id": "author:clause:1"
+                },
+                {
+                  "recorded_by": "evaluations[0].parent_event_id",
+                  "relation": "evaluation_parent",
+                  "source_id": "author:clause:1:0:3:cue:0",
+                  "target_id": "author:clause:1:claim:1"
+                },
+                {
+                  "recorded_by": "evaluations[0].claim_id",
+                  "relation": "evaluation_claim",
+                  "source_id": "author:clause:1:0:3:cue:0",
+                  "target_id": "author:clause:1:claim:1"
+                },
+                {
+                  "recorded_by": "evaluations[0].support_adoption_event_ids[0]",
+                  "relation": "evaluation_support",
+                  "source_id": "author:clause:1:0:3:cue:0",
+                  "target_id": "author:clause:1:claim:1:direct"
+                },
+                {
+                  "recorded_by": "evaluations[1].source_id",
+                  "relation": "evaluation_in_source",
+                  "source_id": "author:clause:1:4:14:cue:6",
+                  "target_id": "author:clause:1"
+                },
+                {
+                  "recorded_by": "evaluations[1].parent_event_id",
+                  "relation": "evaluation_parent",
+                  "source_id": "author:clause:1:4:14:cue:6",
+                  "target_id": "author:clause:1:claim:1"
+                },
+                {
+                  "recorded_by": "evaluations[1].claim_id",
+                  "relation": "evaluation_claim",
+                  "source_id": "author:clause:1:4:14:cue:6",
+                  "target_id": "author:clause:1:claim:1"
+                },
+                {
+                  "recorded_by": "evaluations[1].support_adoption_event_ids[0]",
+                  "relation": "evaluation_support",
+                  "source_id": "author:clause:1:4:14:cue:6",
+                  "target_id": "author:clause:1:claim:1:direct"
+                }
+              ],
+              "input_alignment": "caller_clauses_equal_parts",
+              "native_version": "context_projection_native_v33",
+              "source_id": "author",
+              "source_index": -1,
+              "source_role": "author",
+              "sources": [
+                {
+                  "carrier_alignment": "exact_enumeration",
+                  "original_index": 0,
+                  "parent_source_id": "author",
+                  "raw_path": "/title",
+                  "raw_text_span": [
+                    0,
+                    13
+                  ],
+                  "source_id": "author:clause:0",
+                  "source_index": 0,
+                  "source_origin": "post_title",
+                  "source_role": "author",
+                  "span": [
+                    0,
+                    13
+                  ],
+                  "text": "괴담동 5연참!!!!!!"
+                },
+                {
+                  "carrier_alignment": "exact_enumeration",
+                  "original_index": 2,
+                  "parent_source_id": "author",
+                  "raw_path": "/content_blocks/2/text",
+                  "raw_text_span": [
+                    0,
+                    14
+                  ],
+                  "source_id": "author:clause:1",
+                  "source_index": 0,
+                  "source_origin": "body_line",
+                  "source_role": "author",
+                  "span": [
+                    0,
+                    14
+                  ],
+                  "text": "사랑해 오직재미!!!!!!"
+                }
+              ]
+            }
+          ],
+          "max_bytes": 65536,
+          "native_verification_status": "NATIVE_CALLBACK_TRUE",
+          "omitted_counts": {},
+          "projection": {
+            "excluded_works": [],
+            "fallback": false,
+            "reasons": [
+              "discourse_express_opinion",
+              "core_drop:title_not_in_source",
+              "core_drop:title_not_in_source",
+              "core_drop:title_not_in_source",
+              "core_hold:certainty_added"
+            ],
+            "reference_works": [],
+            "request_conditions": [],
+            "scope_hint": null,
+            "speech_act": "opinion",
+            "target_kind": "unknown",
+            "target_media": "unknown",
+            "target_span": null,
+            "target_surface": null,
+            "work_relation_evidence": [],
+            "work_roles": []
+          },
+          "publication_authority": false,
+          "reason_codes": [],
+          "schema_version": "source_context_diagnostics_v1",
+          "scope_state_guards": [
+            {
+              "applied": false,
+              "calls": 0,
+              "code": "FINAL_NONWORK_PRECONDITIONS_NOT_MET",
+              "first_rejection": null,
+              "gate": "surface_title_anchor",
+              "publication_authority": false,
+              "status": "SKIPPED"
+            },
+            {
+              "applied": false,
+              "calls": 1,
+              "code": "FINAL_IDENTITY_OR_CONTRACT",
+              "first_rejection": "FINAL_IDENTITY_OR_CONTRACT",
+              "gate": "propriety_question_scope",
+              "publication_authority": false,
+              "status": "REJECTED"
+            },
+            {
+              "applied": false,
+              "calls": 1,
+              "code": "GUARD_RETURNED_NO_PROOF",
+              "first_rejection": null,
+              "gate": "propriety_callback",
+              "publication_authority": false,
+              "status": "NOT_APPLIED"
+            }
+          ],
+          "status": "STORED"
+        },
+        "worker_id": 4,
+        "worker_log_file": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\logs\\expert_run_20261013_181711_146907_W4.log"
+      },
+      "title": "괴담동 5연참!!!!!!",
+      "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=8608886"
+    },
+    "index1": 72,
+    "post_id": 8608886,
+    "post_id_type": "int",
+    "publication_scope_id": "c4b9d6d290ef318d58a68b1243790dc00cd90cb17d8508c01b08aca7dce7f001",
+    "result_canonical_sha256": "188dbf6c6d37172137a89706b4ad0c5b955489c7abab61851d35314e995d78cd",
+    "result_origin": "FINAL_RESULT_JSON",
+    "result_source_path": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\p4_current_followup_actual80_parallel12_20261013\\run\\result.json",
+    "review_scope": "FINAL_BOUND_SOURCE_RESULT",
+    "review_status": "UNREVIEWED",
+    "run_id": "20261013_181711_146907",
+    "source_canonical_sha256": "0fbc7fd27c1ce744670c4ce116817a5796a3bba4756c8d01b45df03980d21fd1",
+    "source_comments": [
+      {
+        "author": "뭉치애비",
+        "comment_id": "29419551",
+        "content": "",
+        "content_html": "<img class=\"written_dccon \" src=\"https://dcimg5.dcinside.com/dccon.php?no=62b5df2be09d3ca567b1c5bc12d46b394aa3b1058c6e4d0ca41648b651e3246e755175e568d50f5ac7cbb477840d0367d0e9ebec3587e7198225618657789fd0426e5678303395\" conalt=\"6\" alt=\"6\" title=\"6\" data-dcconoverstatus=\"false\">",
+        "created_at": "2024.04.29 15:09:49",
+        "ip": "",
+        "post_id": 8608886,
+        "reply_level": 0,
+        "reply_to_comment_id": null
+      },
+      {
+        "author": "ㅇㅇ",
+        "comment_id": "29419554",
+        "content": "",
+        "content_html": "<img class=\"written_dccon \" src=\"https://dcimg5.dcinside.com/dccon.php?no=62b5df2be09d3ca567b1c5bc12d46b394aa3b1058c6e4d0ca41648b65cee246e202bb859bb9a761755446dd242bb393737a267bd6c9b785d4b447a9cbf166f4c21b427f15e8d4722345c\" conalt=\"익\" alt=\"익\" title=\"익\" data-dcconoverstatus=\"false\">",
+        "created_at": "2024.04.29 15:10:37",
+        "ip": "",
+        "post_id": 8608886,
+        "reply_level": 0,
+        "reply_to_comment_id": null
+      }
+    ],
+    "source_post": {
+      "author": "ㅇㅇ",
+      "content_blocks": [
+        {
+          "type": "image",
+          "url": "https://dcimg1.dcinside.com/viewimage.php?id=2ab8de34e0dc37b06bb3&no=24b0d769e1d32ca73ce983fa11d0283107ab5cf91d66c5d1ce22a4f13c0060fd82b85544c9fbece6768c6fa454043bb125eb6ae00a99cf25041cb0bc386535c708acd8f6488d54390838725013b79ecbf714e4866b56"
+        },
+        {
+          "type": "image",
+          "url": "https://dcimg1.dcinside.com/viewimage.php?id=2ab8de34e0dc37b06bb3&no=24b0d769e1d32ca73ce983fa11d0283107ab5cf91d66c5d1ce22a4f13c0060fd82b85544c9fbece6768c6fa454043bb125eb6ae00a99cf250441b8ed3d3e34c88ce6e1af42d4d68f949a737e5022d39e4efe5f863429d54d121be9f4b19f65c7"
+        },
+        {
+          "text": "사랑해 오직재미!!!!!!",
+          "type": "text"
+        }
+      ],
+      "created_at": "2024-04-29 15:07:41",
+      "gallery_id": "genrenovel",
+      "page_no": 55680,
+      "post_id": 8608886,
+      "title": "괴담동 5연참!!!!!!",
+      "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=8608886"
+    }
+  },
+  "e001": {
+    "domain": "novelpia.com",
+    "eid": "E001",
+    "purpose": "title_anchor_official_probe",
+    "query": "괴담동 노벨피아",
+    "rank": 1,
+    "snippet": "주식회사 메타크래프트 대표 유정석 사업자등록번호 210-81-79781 통신판매업 제2022-서울구로-2494호 [확인] 주소 서울특별시 구로구 디지털로26길 38, 7층(구로동, G-Tower)",
+    "source_rank": 1,
+    "source_tier": "novel_platform",
+    "title": "괴담동아리 if",
+    "url": "https://novelpia.com/novel/305463"
+  },
+  "fixture_limits_ko": "packet과 E001은 원형 canonical 지문에 결속. tests의 403 fetched_page_info는 worker 로그 관측에 맞춘 명시 합성 최소 입력이며 원래 runtime argument/full context가 아니다. 픽셀 미검토, runtime 이미지 바이트 동일성 UNKNOWN.",
+  "worker_log": {
+    "path": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\logs\\expert_run_20261013_181711_146907_W4.log",
+    "sha256": "8eec1caaf77975fac5cbf77508b927532ed2923405da28cc279bfc9d0f625986",
+    "first_line1": 5464,
+    "last_line1": 7273,
+    "excerpt_sha256": "b80f9a927b0d3023f6dca26a1e8dfef16b9a2d6687187430996c2e28dde1c409",
+    "note": "원형 worker 로그에서 동일 post 시작부터 다음 post 시작 직전까지; worker 로그 UTF-8 원문 줄바꿈 보존"
+  }
+}

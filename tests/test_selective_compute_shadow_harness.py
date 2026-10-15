@@ -4,8 +4,11 @@ import copy
 import json
 from pathlib import Path
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
+
+from tests import candidate_shadow_graph_fixture as graph_fixture
 
 from tools.run_selective_compute_shadow_harness import (
     DEFAULT_P1_COMPARISON,
@@ -36,12 +39,116 @@ from src.llm_batch.measurement.selective_compute_shadow import canonical_hash
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def _build_synthetic_cost_graph(root: Path) -> SimpleNamespace:
+    """공유 합성 그래프에서 비용 로그를 붙인 새 그래프를 실제 builder로 만든다.
+
+    로그의 시간·토큰·호출 수는 parser 계약용 값이며 실제 실행 관측이 아니다.
+    기존 그래프와 역사 저장본은 수정하지 않고 모든 raw 참조를 새로 결속한다.
+    """
+    seed = graph_fixture.build_current_shadow_graph(root / "seed")
+    graph = SimpleNamespace(root=root / "with-cost", **{
+        name: root / "with-cost" / path.relative_to(seed.root)
+        for name, path in vars(seed).items() if name != "root"
+    })
+    write = graph_fixture.write_json
+    ref = graph_fixture.artifact_ref
+    p0, p1, producer, p2, p3 = (
+        graph_fixture.p0, graph_fixture.p1, graph_fixture.producer,
+        graph_fixture.p2, graph_fixture.p3,
+    )
+    worker = graph.root / "source" / "synthetic-worker.log"
+    worker.parent.mkdir(parents=True, exist_ok=True)
+    rows = _read_json(seed.baseline)
+    lines = ["# SYNTHETIC_CONTRACT_ONLY: 실제 모델 호출 및 비용 측정 없음"]
+    for row in rows:
+        post_id = row["post_id"]
+        row["run_meta"]["worker_log_file"] = worker.relative_to(ROOT).as_posix()
+        lines.extend([
+            f"[01:00:00.000|W0] Orchestrator 시작: post_id={post_id}",
+            "[01:00:00.100|W0] [llm-context] Decoder 프롬프트:",
+            "[01:00:00.200|W0] [llm-context] Verifier 프롬프트:",
+            f"[01:00:01.000|W0] 📊 Post {post_id} token usage",
+            "  prompt_tokens: 9", "  completion_tokens: 1", "  total_tokens: 10",
+            f"[01:00:02.000|W0] ✅ Post {post_id} 완료 (2.0s, 0 iterations)",
+        ])
+    with worker.open("x", encoding="utf-8", newline="\n") as stream:
+        stream.write("\n".join(lines) + "\n")
+    write(graph.input, _read_json(seed.input))
+    write(graph.baseline, rows)
+    write(graph.manifest, _read_json(seed.manifest))
+    plan = _read_json(seed.plan)
+    plan["source_input"] = ref(graph.input)
+    plan["output_contract"] = {
+        "output_json": str(graph.baseline), "manifest_json": str(graph.manifest),
+    }
+    write(graph.plan, plan)
+    integrity = _read_json(seed.integrity)
+    integrity["artifact_sha256"] = {
+        name: ref(path)["sha256"] for name, path in (
+            ("input", graph.input), ("result", graph.baseline), ("manifest", graph.manifest),
+        )
+    }
+    write(graph.integrity, integrity)
+    gate = _read_json(seed.gate)
+    gate["artifact_provenance"] = {"result": ref(graph.baseline), "manifest": ref(graph.manifest)}
+    write(graph.gate, gate)
+    spec0 = p0.create_run_spec(
+        input_path=graph.input, baseline_path=graph.baseline,
+        baseline_manifest_path=graph.manifest, runtime_plan_path=graph.plan,
+        integrity_artifact_path=graph.integrity, retrieval_gate_path=graph.gate,
+    )
+    p0.write_run_spec(spec0, graph.p0)
+    audit = _read_json(seed.audit)
+    audit["after_result_sha256"] = ref(graph.baseline)["sha256"]
+    write(graph.audit, audit)
+    ledger = _read_json(seed.ledger)
+    ledger["source_expected_audit"] = ref(graph.audit)
+    ledger["source_baseline_result"] = ref(graph.baseline)
+    write(graph.ledger, ledger)
+    p1.write_run_spec(p1.create_run_spec(
+        parent_p0_run_spec_path=graph.p0, expected_audit_path=graph.audit,
+        label_ledger_path=graph.ledger,
+    ), graph.p1)
+    write(graph.p1_comparison, p1.build_saved_artifact_comparison(graph.p1))
+    producer.write_run_spec(producer.create_run_spec(parent_p1_run_spec_path=graph.p1), graph.producer)
+    p2.write_run_spec(p2.create_run_spec(
+        parent_p1_run_spec_path=graph.p1, parent_producer_run_spec_path=graph.producer,
+    ), graph.p2)
+    write(graph.p2_comparison, p2.build_comparison(graph.p2))
+    write(graph.readiness, graph_fixture.readiness_tool.build_current_readiness(
+        p1_run_spec_path=graph.p1, p1_comparison_path=graph.p1_comparison,
+        label_ledger_path=graph.ledger,
+    ))
+    p3.write_run_spec(p3.create_run_spec(
+        parent_p1_run_spec_path=graph.p1, parent_p1_comparison_path=graph.p1_comparison,
+        parent_p2_run_spec_path=graph.p2, parent_p2_comparison_path=graph.p2_comparison,
+        label_ledger_path=graph.ledger, dataset_readiness_path=graph.readiness,
+    ), graph.p3)
+    write(graph.p3_comparison, p3.build_comparison(graph.p3))
+    write(graph.root / "fixture_manifest.json", {
+        "evidence_scope": "SYNTHETIC_CONTRACT_ONLY", "model_calls": 0,
+        "actual_cost_measurement": False, "copied_historical_rows": False,
+        "source_validation_mocks": False, "seed_fixture": ref(seed.root / "fixture_manifest.json"),
+        "worker_log": ref(worker),
+        "artifacts": {name: ref(path) for name, path in vars(graph).items() if name != "root"},
+    })
+    return graph
+
+
 class SelectiveComputeShadowHarnessUnitTests(unittest.TestCase):
+    def _new_parent_graph(self) -> SimpleNamespace:
+        directory = graph_fixture.new_graph_directory()
+        self.addCleanup(directory.cleanup)
+        return graph_fixture.build_current_shadow_graph(Path(directory.name))
+
     def test_canonical_defaults_point_to_v19_chain(self) -> None:
         self.assertEqual("v8", DEFAULT_P2_RUN_SPEC.parent.name)
         self.assertEqual("v18", DEFAULT_P3_RUN_SPEC.parent.name)
         self.assertEqual("v18", DEFAULT_P3_COMPARISON.parent.name)
         self.assertEqual("v19", DEFAULT_OUTPUT_DIR.name)
+        self.assertEqual("v8", DEFAULT_P1_RUN_SPEC.parent.name)
+        self.assertEqual("v8", DEFAULT_P1_COMPARISON.parent.name)
+        self.assertEqual("v8", DEFAULT_P2_COMPARISON.parent.name)
 
     def test_implementation_contract_is_materialized_without_parent_chain(self) -> None:
         implementation = _implementation_contract()
@@ -49,6 +156,8 @@ class SelectiveComputeShadowHarnessUnitTests(unittest.TestCase):
         self.assertEqual(set(implementation), {"artifacts", "sha256"})
         self.assertIn("routing_contract", implementation["artifacts"])
         self.assertIn("future_runtime_instrumentation", implementation["artifacts"])
+        for ref in implementation["artifacts"].values():
+            self.assertEqual(ref, graph_fixture.artifact_ref(ROOT / ref["path"]))
         for name in (
             "physical_call_ledger_contract",
             "physical_call_independent_reader",
@@ -115,8 +224,9 @@ class SelectiveComputeShadowHarnessUnitTests(unittest.TestCase):
             duplicated = parse_sidecar_cost_logs([first, second])
             self.assertEqual(duplicated["9001"]["attribution_status"], "AMBIGUOUS_MULTI_LOG")
 
-    def test_forged_parent_comparison_is_rejected_without_full_chain_setup(self) -> None:
-        forged = _read_json(DEFAULT_P1_COMPARISON)
+    def test_forged_parent_comparison_is_rejected_with_synthetic_chain(self) -> None:
+        graph = self._new_parent_graph()
+        forged = _read_json(graph.p1_comparison)
         forged["gates"]["probability"] = "FORGED_GO"
         with tempfile.TemporaryDirectory() as temp_dir:
             path = Path(temp_dir) / "forged-p1-comparison.json"
@@ -124,22 +234,23 @@ class SelectiveComputeShadowHarnessUnitTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "semantic replay mismatch"):
                 _validate_parent_comparison_semantics(
                     stage="P1",
-                    run_spec_path=DEFAULT_P1_RUN_SPEC,
+                    run_spec_path=graph.p1,
                     comparison_path=path,
                 )
 
     def test_p3_parent_chain_and_label_ledger_are_exactly_bound(self) -> None:
-        p1_spec = _read_json(DEFAULT_P1_RUN_SPEC)
-        p2_spec = _read_json(DEFAULT_P2_RUN_SPEC)
-        p3_spec = _read_json(DEFAULT_P3_RUN_SPEC)
+        graph = self._new_parent_graph()
+        p1_spec = _read_json(graph.p1)
+        p2_spec = _read_json(graph.p2)
+        p3_spec = _read_json(graph.p3)
         label_ref = _validate_p3_parent_chain(
             p1_spec=p1_spec,
             p2_spec=p2_spec,
             p3_spec=p3_spec,
-            p1_run_spec_path=DEFAULT_P1_RUN_SPEC,
-            p1_comparison_path=DEFAULT_P1_COMPARISON,
-            p2_run_spec_path=DEFAULT_P2_RUN_SPEC,
-            p2_comparison_path=DEFAULT_P2_COMPARISON,
+            p1_run_spec_path=graph.p1,
+            p1_comparison_path=graph.p1_comparison,
+            p2_run_spec_path=graph.p2,
+            p2_comparison_path=graph.p2_comparison,
         )
         self.assertEqual(p3_spec["artifacts"]["label_ledger"], label_ref)
 
@@ -150,10 +261,10 @@ class SelectiveComputeShadowHarnessUnitTests(unittest.TestCase):
                 p1_spec=p1_spec,
                 p2_spec=p2_spec,
                 p3_spec=wrong_parent,
-                p1_run_spec_path=DEFAULT_P1_RUN_SPEC,
-                p1_comparison_path=DEFAULT_P1_COMPARISON,
-                p2_run_spec_path=DEFAULT_P2_RUN_SPEC,
-                p2_comparison_path=DEFAULT_P2_COMPARISON,
+                p1_run_spec_path=graph.p1,
+                p1_comparison_path=graph.p1_comparison,
+                p2_run_spec_path=graph.p2,
+                p2_comparison_path=graph.p2_comparison,
             )
 
         wrong_ledger = copy.deepcopy(p3_spec)
@@ -165,25 +276,41 @@ class SelectiveComputeShadowHarnessUnitTests(unittest.TestCase):
                 p1_spec=p1_spec,
                 p2_spec=p2_spec,
                 p3_spec=wrong_ledger,
-                p1_run_spec_path=DEFAULT_P1_RUN_SPEC,
-                p1_comparison_path=DEFAULT_P1_COMPARISON,
-                p2_run_spec_path=DEFAULT_P2_RUN_SPEC,
-                p2_comparison_path=DEFAULT_P2_COMPARISON,
+                p1_run_spec_path=graph.p1,
+                p1_comparison_path=graph.p1_comparison,
+                p2_run_spec_path=graph.p2,
+                p2_comparison_path=graph.p2_comparison,
             )
 
 
 class SelectiveComputeShadowHarnessTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        directory = graph_fixture.new_graph_directory()
+        cls.addClassCleanup(directory.cleanup)
+        cls.graph = _build_synthetic_cost_graph(Path(directory.name))
         cls.spec = create_run_spec(
-            parent_p1_run_spec_path=DEFAULT_P1_RUN_SPEC,
-            parent_p1_comparison_path=DEFAULT_P1_COMPARISON,
-            parent_p2_run_spec_path=DEFAULT_P2_RUN_SPEC,
-            parent_p2_comparison_path=DEFAULT_P2_COMPARISON,
-            parent_p3_run_spec_path=DEFAULT_P3_RUN_SPEC,
-            parent_p3_comparison_path=DEFAULT_P3_COMPARISON,
+            parent_p1_run_spec_path=cls.graph.p1,
+            parent_p1_comparison_path=cls.graph.p1_comparison,
+            parent_p2_run_spec_path=cls.graph.p2,
+            parent_p2_comparison_path=cls.graph.p2_comparison,
+            parent_p3_run_spec_path=cls.graph.p3,
+            parent_p3_comparison_path=cls.graph.p3_comparison,
         )
         cls.comparison = build_comparison(cls.spec)
+
+    def test_cost_graph_is_synthetic_with_exact_source_references(self) -> None:
+        manifest = _read_json(self.graph.root / "fixture_manifest.json")
+        self.assertEqual("SYNTHETIC_CONTRACT_ONLY", manifest["evidence_scope"])
+        self.assertEqual(0, manifest["model_calls"])
+        for name in ("actual_cost_measurement", "copied_historical_rows", "source_validation_mocks"):
+            self.assertIs(False, manifest[name])
+        for ref in [manifest["seed_fixture"], manifest["worker_log"], *manifest["artifacts"].values()]:
+            self.assertEqual(ref, graph_fixture.artifact_ref(ROOT / ref["path"]))
+        self.assertEqual(
+            list(range(840001, 840019)),
+            [row["post_id"] for row in _read_json(self.graph.baseline)],
+        )
 
     def test_run_spec_and_parent_cost_evidence_validate(self) -> None:
         implementation = _implementation_contract()
@@ -260,7 +387,7 @@ class SelectiveComputeShadowHarnessTests(unittest.TestCase):
         self.assertIn('measurement_status=COST_STATUS_PARTIAL_RUNTIME', source)
         self.assertIn('"decision_cost_trace": _decision_cost_trace.to_dict()', source)
 
-    def test_saved_golden_fails_closed_and_actual_metrics_stay_null(self) -> None:
+    def test_saved_synthetic_fixture_fails_closed_and_actual_metrics_stay_null(self) -> None:
         validate_comparison(self.comparison, self.spec)
         actual = self.comparison["actual_saved_golden"]
         evaluation = actual["evaluation"]

@@ -1,0 +1,620 @@
+{
+  "schema_version": "source44_native_ui_fixture_v1",
+  "scope": "ROOT_REAL_FUNCTION_PARTIAL_SOURCE_CONSUMER_NOT_MODEL_RUN",
+  "source_canonical_sha256": "60ab6de7e4b07bce90299a45f1ddddb59a1e733e87669630e26a84f984948b51",
+  "diagnostic": {
+    "schema_version": "source_context_diagnostics_v1",
+    "status": "STORED",
+    "publication_authority": false,
+    "max_bytes": 65536,
+    "byte_count_basis": "UTF8_CANONICAL_JSON",
+    "reason_codes": [],
+    "omitted_counts": {},
+    "projection": {
+      "speech_act": "unknown",
+      "target_kind": "unknown",
+      "target_surface": null,
+      "target_span": null,
+      "target_media": "unknown",
+      "request_conditions": [],
+      "reference_works": [],
+      "excluded_works": [],
+      "work_roles": [],
+      "work_relation_evidence": [
+        [
+          "해리포터",
+          "current_work",
+          "named_mention",
+          "해리포터도 중반부터 폼 나락갔잖아"
+        ]
+      ],
+      "scope_hint": null,
+      "fallback": true,
+      "reasons": []
+    },
+    "channels": [
+      {
+        "channel": "speech_act",
+        "field": "speech_act",
+        "index": -1,
+        "value": "unknown",
+        "value_kind": "parser_label",
+        "rule": "unknown",
+        "locations": []
+      },
+      {
+        "channel": "target",
+        "field": "target_kind",
+        "index": -1,
+        "value": "unknown",
+        "value_kind": "parser_label",
+        "rule": "unknown",
+        "locations": []
+      },
+      {
+        "channel": "work_relation",
+        "field": "work_relation_evidence",
+        "index": 0,
+        "value": [
+          "해리포터",
+          "current_work",
+          "named_mention",
+          "해리포터도 중반부터 폼 나락갔잖아"
+        ],
+        "value_kind": "derived_relation",
+        "rule": "relation_representative_occurrence",
+        "locations": [
+          {
+            "raw_path": "/title",
+            "raw_text_span": [
+              0,
+              4
+            ],
+            "raw_span": null,
+            "source_origin": "post_title",
+            "source_index": 0,
+            "original_index": 0,
+            "selection_key": "title",
+            "carrier_alignment": "exact_enumeration",
+            "kind": "author_clause",
+            "span": [
+              0,
+              4
+            ],
+            "line_span": [
+              0,
+              4
+            ]
+          }
+        ]
+      }
+    ],
+    "ledgers": [
+      {
+        "source_id": "author",
+        "source_role": "author",
+        "source_index": -1,
+        "native_version": "context_projection_native_v33",
+        "input_alignment": "caller_clauses_equal_parts",
+        "sources": [
+          {
+            "source_id": "author:clause:0",
+            "parent_source_id": "author",
+            "text": "해리포터도 중반부터 폼 나락갔잖아",
+            "span": [
+              0,
+              18
+            ],
+            "source_role": "author",
+            "source_origin": "post_title",
+            "source_index": 0,
+            "original_index": 0,
+            "raw_path": "/title",
+            "raw_text_span": [
+              0,
+              18
+            ],
+            "carrier_alignment": "exact_enumeration"
+          },
+          {
+            "source_id": "author:clause:1",
+            "parent_source_id": "author",
+            "text": "스타워즈보다 낫다고 해서",
+            "span": [
+              0,
+              13
+            ],
+            "source_role": "author",
+            "source_origin": "body_line",
+            "source_index": 0,
+            "original_index": 0,
+            "raw_path": "/content_blocks/0/text",
+            "raw_text_span": [
+              0,
+              13
+            ],
+            "carrier_alignment": "exact_enumeration"
+          },
+          {
+            "source_id": "author:clause:2",
+            "parent_source_id": "author",
+            "text": "다 좋은 마무리는 아니라고 생각해요",
+            "span": [
+              0,
+              19
+            ],
+            "source_role": "author",
+            "source_origin": "body_line",
+            "source_index": 1,
+            "original_index": 1,
+            "raw_path": "/content_blocks/1/text",
+            "raw_text_span": [
+              0,
+              19
+            ],
+            "carrier_alignment": "exact_enumeration"
+          }
+        ],
+        "claims": [
+          {
+            "claim_id": "author:clause:0:claim:0",
+            "source_id": "author:clause:0",
+            "speaker": "self",
+            "kind": "own",
+            "text": "해리포터도 중반부터 폼 나락갔잖아",
+            "span": [
+              0,
+              18
+            ],
+            "evaluation_event_ids": [],
+            "initial_support": true,
+            "final_support": true,
+            "attribution": "direct_clause",
+            "speaker_source": "unit_speaker",
+            "support_attribution": "unit_speaker_direct"
+          },
+          {
+            "claim_id": "author:clause:1:claim:1",
+            "source_id": "author:clause:1",
+            "speaker": "self",
+            "kind": "own",
+            "text": "스타워즈보다 낫다고 해서",
+            "span": [
+              0,
+              13
+            ],
+            "evaluation_event_ids": [],
+            "initial_support": true,
+            "final_support": true,
+            "attribution": "direct_clause",
+            "speaker_source": "unit_speaker",
+            "support_attribution": "unit_speaker_direct"
+          },
+          {
+            "claim_id": "author:clause:2:claim:2",
+            "source_id": "author:clause:2",
+            "speaker": "self",
+            "kind": "own",
+            "text": "다 좋은 마무리는 아니라고 생각해요",
+            "span": [
+              0,
+              19
+            ],
+            "evaluation_event_ids": [
+              "author:clause:2:2:4:cue:2"
+            ],
+            "initial_support": true,
+            "final_support": true,
+            "attribution": "direct_clause",
+            "speaker_source": "unit_speaker",
+            "support_attribution": "unit_speaker_direct"
+          }
+        ],
+        "evaluations": [
+          {
+            "source_id": "author:clause:2",
+            "event_id": "author:clause:2:2:4:cue:2",
+            "parent_event_id": "author:clause:2:claim:2",
+            "predicate": "좋은",
+            "predicate_span": [
+              2,
+              4
+            ],
+            "actor": "self",
+            "speaker": "self",
+            "polarity": "positive",
+            "evaluation_polarity": "pos",
+            "realization": "embedded",
+            "assertion_span": [
+              -1,
+              -1
+            ],
+            "kind": "evaluate",
+            "claim_id": "author:clause:2:claim:2",
+            "evidence_text": "다 좋은 마무리는 아니라고 생각해요",
+            "final_support": false,
+            "temporal_scope": "unmarked",
+            "attribution": "governing_subject_default_self",
+            "support_attribution": "none",
+            "objects": [],
+            "grammatical_subject": {
+              "actor": "self",
+              "text": "",
+              "span": [
+                -1,
+                -1
+              ],
+              "explicit": false
+            }
+          }
+        ],
+        "graph_edges": [
+          {
+            "source_id": "author:clause:0",
+            "relation": "source_in_unit",
+            "target_id": "author",
+            "recorded_by": "sources[0].parent_source_id"
+          },
+          {
+            "source_id": "author:clause:1",
+            "relation": "source_in_unit",
+            "target_id": "author",
+            "recorded_by": "sources[1].parent_source_id"
+          },
+          {
+            "source_id": "author:clause:2",
+            "relation": "source_in_unit",
+            "target_id": "author",
+            "recorded_by": "sources[2].parent_source_id"
+          },
+          {
+            "source_id": "author:clause:0:claim:0",
+            "relation": "claim_in_source",
+            "target_id": "author:clause:0",
+            "recorded_by": "claims[0].source_id"
+          },
+          {
+            "source_id": "author:clause:0:claim:0:direct",
+            "relation": "direct_support_of",
+            "target_id": "author:clause:0:claim:0",
+            "recorded_by": "claims[0].initial_support"
+          },
+          {
+            "source_id": "author:clause:0:claim:0",
+            "relation": "claim_active_support",
+            "target_id": "author:clause:0:claim:0:direct",
+            "recorded_by": "claims[0].active_adoption_event_ids[0]"
+          },
+          {
+            "source_id": "author:clause:1:claim:1",
+            "relation": "claim_in_source",
+            "target_id": "author:clause:1",
+            "recorded_by": "claims[1].source_id"
+          },
+          {
+            "source_id": "author:clause:1:claim:1:direct",
+            "relation": "direct_support_of",
+            "target_id": "author:clause:1:claim:1",
+            "recorded_by": "claims[1].initial_support"
+          },
+          {
+            "source_id": "author:clause:1:claim:1",
+            "relation": "claim_active_support",
+            "target_id": "author:clause:1:claim:1:direct",
+            "recorded_by": "claims[1].active_adoption_event_ids[0]"
+          },
+          {
+            "source_id": "author:clause:2:claim:2",
+            "relation": "claim_in_source",
+            "target_id": "author:clause:2",
+            "recorded_by": "claims[2].source_id"
+          },
+          {
+            "source_id": "author:clause:2:claim:2:direct",
+            "relation": "direct_support_of",
+            "target_id": "author:clause:2:claim:2",
+            "recorded_by": "claims[2].initial_support"
+          },
+          {
+            "source_id": "author:clause:2:claim:2",
+            "relation": "claim_evaluation",
+            "target_id": "author:clause:2:2:4:cue:2",
+            "recorded_by": "claims[2].evaluation_event_ids[0]"
+          },
+          {
+            "source_id": "author:clause:2:claim:2",
+            "relation": "claim_active_support",
+            "target_id": "author:clause:2:claim:2:direct",
+            "recorded_by": "claims[2].active_adoption_event_ids[0]"
+          },
+          {
+            "source_id": "author:clause:2:2:4:cue:2",
+            "relation": "evaluation_in_source",
+            "target_id": "author:clause:2",
+            "recorded_by": "evaluations[0].source_id"
+          },
+          {
+            "source_id": "author:clause:2:2:4:cue:2",
+            "relation": "evaluation_parent",
+            "target_id": "author:clause:2:claim:2",
+            "recorded_by": "evaluations[0].parent_event_id"
+          },
+          {
+            "source_id": "author:clause:2:2:4:cue:2",
+            "relation": "evaluation_claim",
+            "target_id": "author:clause:2:claim:2",
+            "recorded_by": "evaluations[0].claim_id"
+          },
+          {
+            "source_id": "author:clause:2:2:4:cue:2",
+            "relation": "evaluation_support",
+            "target_id": "author:clause:2:claim:2:direct",
+            "recorded_by": "evaluations[0].support_adoption_event_ids[0]"
+          }
+        ]
+      },
+      {
+        "source_id": "comment:0",
+        "source_role": "comment",
+        "source_index": 0,
+        "native_version": "context_projection_native_v33",
+        "input_alignment": "caller_clauses_equal_parts",
+        "sources": [
+          {
+            "source_id": "comment:0:clause:0",
+            "parent_source_id": "comment:0",
+            "text": "혼혈왕자 책으로 봤는데 굳이 있어야하나 싶은 챕터였음",
+            "span": [
+              0,
+              29
+            ],
+            "source_role": "comment",
+            "source_origin": "comment",
+            "source_index": 0,
+            "original_index": 0,
+            "raw_path": "/comments/0/content",
+            "raw_text_span": [
+              0,
+              29
+            ],
+            "carrier_alignment": "exact_enumeration"
+          }
+        ],
+        "claims": [
+          {
+            "claim_id": "comment:0:clause:0:claim:0",
+            "source_id": "comment:0:clause:0",
+            "speaker": "self",
+            "kind": "own",
+            "text": "혼혈왕자 책으로 봤는데 굳이 있어야하나 싶은 챕터였음",
+            "span": [
+              0,
+              29
+            ],
+            "evaluation_event_ids": [],
+            "initial_support": true,
+            "final_support": true,
+            "attribution": "direct_clause",
+            "speaker_source": "unit_speaker",
+            "support_attribution": "unit_speaker_direct"
+          }
+        ],
+        "evaluations": [],
+        "graph_edges": [
+          {
+            "source_id": "comment:0:clause:0",
+            "relation": "source_in_unit",
+            "target_id": "comment:0",
+            "recorded_by": "sources[0].parent_source_id"
+          },
+          {
+            "source_id": "comment:0:clause:0:claim:0",
+            "relation": "claim_in_source",
+            "target_id": "comment:0:clause:0",
+            "recorded_by": "claims[0].source_id"
+          },
+          {
+            "source_id": "comment:0:clause:0:claim:0:direct",
+            "relation": "direct_support_of",
+            "target_id": "comment:0:clause:0:claim:0",
+            "recorded_by": "claims[0].initial_support"
+          },
+          {
+            "source_id": "comment:0:clause:0:claim:0",
+            "relation": "claim_active_support",
+            "target_id": "comment:0:clause:0:claim:0:direct",
+            "recorded_by": "claims[0].active_adoption_event_ids[0]"
+          }
+        ]
+      }
+    ],
+    "explanation": {
+      "supported": true,
+      "input_fingerprint": "90158892adf5e16ead4ba12b49956cfeb0872e5ea1b629aefacddad2cf423440",
+      "unresolved": [],
+      "source_kind": "deterministic_source_context",
+      "proofs": [
+        {
+          "rule": "reading_experience_not_completion",
+          "source_id": "comment:0:clause:0",
+          "claim_id": "comment:0:clause:0:claim:0",
+          "raw_path": "/comments/0/content",
+          "raw_span": [
+            0,
+            29
+          ],
+          "sourcequote": "혼혈왕자 책으로 봤는데 굳이 있어야하나 싶은 챕터였음",
+          "source_sha256": "0eecccfeccadb5b8cd33e2192f3f759fcfad72c380ba6f2225ef8163fc2d210f",
+          "claimant": "self",
+          "claim_kind": "own",
+          "final_support": true,
+          "predicate_spans": [],
+          "event_ids": [],
+          "claim_view": "claim"
+        },
+        {
+          "rule": "source_comparison_not_sufficient_structure",
+          "source_id": "author:clause:1",
+          "claim_id": "author:clause:1:claim:1",
+          "raw_path": "/content_blocks/0/text",
+          "raw_span": [
+            0,
+            13
+          ],
+          "sourcequote": "스타워즈보다 낫다고 해서",
+          "source_sha256": "aac7e4809dcaf1799fd5b236a021ba6d8a3c9d8c2f92e817b94fbbac2804684e",
+          "claimant": "self",
+          "claim_kind": "own",
+          "final_support": true,
+          "predicate_spans": [],
+          "event_ids": [],
+          "claim_view": "claim"
+        },
+        {
+          "rule": "source_comparison_not_sufficient_structure",
+          "source_id": "author:clause:2",
+          "claim_id": "author:clause:2:claim:2",
+          "raw_path": "/content_blocks/1/text",
+          "raw_span": [
+            0,
+            19
+          ],
+          "sourcequote": "다 좋은 마무리는 아니라고 생각해요",
+          "source_sha256": "17d4b5db612674f5f3e9952791121d7f27f34728c7e6a689c22806b634dee725",
+          "claimant": "self",
+          "claim_kind": "own",
+          "final_support": true,
+          "predicate_spans": [
+            [
+              2,
+              4
+            ]
+          ],
+          "event_ids": [
+            "author:clause:2:2:4:cue:2"
+          ],
+          "claim_view": "claim"
+        }
+      ]
+    },
+    "scope_state_guards": [],
+    "capture_status": "single_binder",
+    "native_verification_status": "NATIVE_CALLBACK_TRUE"
+  },
+  "identity": {
+    "is_relevant": false,
+    "is_novel_related": null,
+    "is_resolved_work_discussion": null,
+    "title_resolution_state": null,
+    "title_resolution_allowed": null,
+    "novel_identity": null,
+    "discussion_type": "general",
+    "evidence": null,
+    "slang_insight": null,
+    "inference": null,
+    "title_candidates": [
+      {
+        "official_title": "[해리포터] 호그와트 먼치킨의 마법생활",
+        "heretic_url": "https://novelpia.com/novel/179863",
+        "confidence": "High",
+        "alias_or_mention": "해리포터",
+        "source_tier": "official_detail",
+        "page_type": "novel_page",
+        "content_status": null,
+        "locked": false,
+        "resolved_recall_anchor": null,
+        "negative_evidence": [
+          "weak_alias_surface_public_title_bridge"
+        ],
+        "reference_role": "candidate"
+      }
+    ],
+    "primary_work": null,
+    "mentioned_works": null,
+    "future_watch_target": null,
+    "comparison_target": null,
+    "recommendation_candidates": null,
+    "primary_subject_type": null,
+    "primary_subject_text": "스타워즈와의 비교와 다 좋은 마무리의 관계에 관한 평가.",
+    "secondary_reference_works": null,
+    "entity_mentions": null,
+    "topicality": null,
+    "relevance_scope": null,
+    "subtype": null,
+    "work_resolution": null,
+    "anchor_type": null,
+    "anchor_strength": null,
+    "context_sources": null,
+    "consistency_flags": null,
+    "search_evidence_catalog": null,
+    "search_health": null,
+    "image_evidence_catalog": null,
+    "vlm_enabled": null,
+    "ocr_enabled": null,
+    "vlm_enrichment_used": null,
+    "image_fetch_count": null,
+    "image_fetch_success": null,
+    "vlm_chunks_sent": null,
+    "vlm_total_bytes": null,
+    "image_enrichment_limitations": null,
+    "candidate_preservation_sources": null,
+    "candidate_ledger": null,
+    "promotion_decision": null,
+    "promotion_gate_state": null,
+    "promotion_gate_evidence": null,
+    "publish_contract_trace": null,
+    "publish_ledger": null,
+    "publish_contract_input_fingerprint": null,
+    "publish_contract_version": null,
+    "blocked_official_title": null,
+    "blocked_official_title_url": null,
+    "candidate_ledger_status": null,
+    "candidate_generation_miss": null,
+    "promotion_blocked": null,
+    "hold_unresolved": null,
+    "hold_without_candidates": null,
+    "safe_resolved": null,
+    "official_title_lint": null,
+    "identity_consistency_lint": null,
+    "output_consistency_lint": null,
+    "reason": "[최종 판정]\n- 글 분류: general\n- 공식 제목: 미확정\n[원문에 근거한 설명]\n글쓴이는 스타워즈보다 낫다는 비교가 다 좋은 마무리를 보장하지 않는다고 평가한다. 비교 우위와 최종 평가를 구분한다.\n[작성자 발화·원문 귀속]\n- 작성자 발화: 「해리포터도 중반부터 폼 나락갔잖아」\n- 작성자 발화: 「스타워즈보다 낫다고 해서」\n- 작성자 발화: 「다 좋은 마무리는 아니라고 생각해요」\n[댓글 발화·원문 귀속]\n- 댓글 작성자 ㅇㅇ: 「혼혈왕자 책으로 봤는데 굳이 있어야하나 싶은 챕터였음」\n[원문] 해리포터도 중반부터 폼 나락갔잖아 / 스타워즈보다 낫다고 해서 / 다 좋은 마무리는 아니라고 생각해요",
+    "reason_lines": [
+      "[최종 판정]",
+      "- 글 분류: general",
+      "- 공식 제목: 미확정",
+      "[원문에 근거한 설명]",
+      "글쓴이는 스타워즈보다 낫다는 비교가 다 좋은 마무리를 보장하지 않는다고 평가한다. 비교 우위와 최종 평가를 구분한다.",
+      "[작성자 발화·원문 귀속]",
+      "- 작성자 발화: 「해리포터도 중반부터 폼 나락갔잖아」",
+      "- 작성자 발화: 「스타워즈보다 낫다고 해서」",
+      "- 작성자 발화: 「다 좋은 마무리는 아니라고 생각해요」",
+      "[댓글 발화·원문 귀속]",
+      "- 댓글 작성자 ㅇㅇ: 「혼혈왕자 책으로 봤는데 굳이 있어야하나 싶은 챕터였음」",
+      "[원문] 해리포터도 중반부터 폼 나락갔잖아 / 스타워즈보다 낫다고 해서 / 다 좋은 마무리는 아니라고 생각해요"
+    ],
+    "system_state": null,
+    "identity_state": null
+  },
+  "notes": "[문맥과 댓글 역할]\n댓글 1의 화자는 읽어본 경험을 언급하며 완독 여부는 확인되지 않는다.\n[작성자 발화·원문 귀속]\n- 작성자 발화: 「해리포터도 중반부터 폼 나락갔잖아」\n- 작성자 발화: 「스타워즈보다 낫다고 해서」\n- 작성자 발화: 「다 좋은 마무리는 아니라고 생각해요」\n[댓글 발화·원문 귀속]\n- 댓글 작성자 ㅇㅇ: 「혼혈왕자 책으로 봤는데 굳이 있어야하나 싶은 챕터였음」\n[원문] 해리포터도 중반부터 폼 나락갔잖아 / 스타워즈보다 낫다고 해서 / 다 좋은 마무리는 아니라고 생각해요",
+  "native_verify": true,
+  "product_module_sha256": "a71a6d26fe072bf866c4f59aa325675b58bf8bcda634643a7a173ee73ace1877",
+  "root_test_receipt_sha256": "8fcb614968db02a38e1e724620d42336ff3b391694d201719dc2ac227203e8ef",
+  "resources": {
+    "pid": 7132,
+    "priority_class": 16384,
+    "affinity_mask": 2,
+    "numeric_threads": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1",
+      "VECLIB_MAXIMUM_THREADS": "1"
+    },
+    "dont_write_bytecode": true
+  },
+  "audit": {
+    "network_attempts": [],
+    "process_attempts": [],
+    "outside_write_attempts": []
+  }
+}

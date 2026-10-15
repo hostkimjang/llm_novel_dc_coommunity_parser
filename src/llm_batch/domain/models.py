@@ -371,6 +371,15 @@ class PickvelAnalysis(BaseModel):
     micro_tags: List[str] = Field(default_factory=list)
     sentiment_profile: Optional[SentimentProfile] = None
     is_nsfw: bool = False
+    # 평가 수행 범위다. false나 MODEL_REPORTED는 이미지 전체의 안전 확인을 뜻하지 않는다.
+    nsfw_assessment_status: Optional[Literal[
+        "MODEL_REPORTED", "SOURCE_RULE_POSITIVE", "NOT_EVALUATED",
+    ]] = None
+    nsfw_assessment_reason: Optional[Literal[
+        "MODEL_BOOLEAN_REPORTED", "SOURCE_TEXT_RULE_POSITIVE", "SOURCE_IMAGE_RULE_POSITIVE",
+        "NOISE_EARLY_RETURN_NO_MODEL_ASSESSMENT", "NOISE_OUTPUT_WITHOUT_MODEL_ASSESSMENT",
+        "MODEL_ASSESSMENT_MISSING_OR_INVALID",
+    ]] = None
     user_segment: Optional[str] = None
     notes: Optional[str] = None
 
@@ -386,7 +395,8 @@ class PickvelOutputItemV2(BaseModel):
     identity: PickvelIdentity
     analysis: Optional[PickvelAnalysis] = None
     # Internal, bounded semantic channels for post-publication BatchContext learning.
-    # Raw prompts, snippets, content, and fetched page bodies are never stored here.
+    # Arbitrary prompts/pages are omitted. Qualified alias witnesses may retain
+    # bounded allowlisted source-row fields for exact consumer re-verification.
     batch_context_learning_envelope: Optional[Dict[str, Any]] = None
 
     @field_validator("batch_context_learning_envelope", mode="before")

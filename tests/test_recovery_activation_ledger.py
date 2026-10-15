@@ -6,7 +6,6 @@ from dataclasses import replace
 import inspect
 import json
 from pathlib import Path
-import stat
 import subprocess
 import sys
 import tempfile
@@ -33,6 +32,7 @@ from src.llm_batch.ledger.recovery_activation import (
     load_or_create_recovery_activation_hmac_key,
     verify_recovery_capability,
 )
+from src.llm_batch.ledger.private_file import private_file_permissions_ok
 from src.llm_batch.promotion_gate import (
     EvidenceRecord,
     GroundingState,
@@ -555,7 +555,7 @@ class RecoveryActivationLedgerTest(unittest.TestCase):
         self.assertTrue(all(len(key) == 32 for key in keys))
         payload = key_path.read_text(encoding="ascii")
         self.assertRegex(payload, r"^[0-9a-f]{64}\n$")
-        self.assertEqual(stat.S_IMODE(key_path.stat().st_mode), 0o600)
+        self.assertTrue(private_file_permissions_ok(key_path))
 
     def test_self_consistent_forged_base_event_is_rejected_on_authoritative_replay(self) -> None:
         proposal = _proposal()

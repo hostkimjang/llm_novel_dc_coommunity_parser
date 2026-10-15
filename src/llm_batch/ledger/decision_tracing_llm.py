@@ -487,16 +487,17 @@ class DecisionTracingLLMClient(LLMClient):
                         pending["usage"], pending["usage_provenance"]
                     )
                     if not valid or response_sha in empty_hashes:
+                        # 응답 해석 실패와 이미 관측한 호출 비용은 별개다.
                         self.decision_call_ledger.record_terminal(
                             row,
                             call_id=call_id,
                             terminal_status="FAILED",
                             resolved_model=pending["model"] or None,
                             response_sha256=None,
-                            usage_provenance="UNAVAILABLE",
-                            prompt_tokens=None,
-                            completion_tokens=None,
-                            total_tokens=None,
+                            usage_provenance=usage_prov,
+                            prompt_tokens=prompt,
+                            completion_tokens=completion,
+                            total_tokens=total,
                             error_type="InvalidProviderResponse",
                             error_message_sha256=hashlib.sha256(
                                 b"invalid provider response"

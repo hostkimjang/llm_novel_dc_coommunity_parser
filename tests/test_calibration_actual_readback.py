@@ -144,8 +144,75 @@ class CalibrationActualReadbackTests(unittest.TestCase):
         self.assertEqual("NON_ABSTAIN_ROWS", covered_rows["top_label_accuracy_denominator"])
         self.assertEqual(0.5, all_rows["point_estimate"]["top_label_accuracy"])
         self.assertEqual(1.0, covered_rows["point_estimate"]["top_label_accuracy"])
+        for report in (all_rows, covered_rows):
+            self.assertEqual(
+                0.5,
+                report["point_estimate"]["top_label_accuracy_all_rows"],
+            )
+            self.assertEqual(
+                1.0,
+                report["point_estimate"]["top_label_accuracy_non_abstain"],
+            )
+            self.assertIn("top_label_accuracy_all_rows", report["intervals"])
+            self.assertIn("top_label_accuracy_non_abstain", report["intervals"])
         with self.assertRaisesRegex(ValueError, "top_label_accuracy_denominator"):
             cluster_bootstrap(rows, seed=7, replicates=100, top_label_accuracy_denominator="AUTO")
+
+        insufficient = cluster_bootstrap(
+            rows,
+            seed=7,
+            replicates=2_000,
+            min_group_count=30,
+        )
+        self.assertFalse(insufficient["estimable"])
+        self.assertEqual("INSUFFICIENT_GROUPS_OR_REPLICATES", insufficient["reason"])
+        self.assertEqual(30, insufficient["min_group_count"])
+        self.assertEqual(
+            "CLUSTER_BOOTSTRAP_PERCENTILE", insufficient["interval_method"]
+        )
+
+    def test_cluster_bootstrap_requires_explicit_abstain_and_strict_replicate_type(self):
+        row = {
+            "example_id": "e1",
+            "group": "g1",
+            "correct": True,
+            "brier": 0.1,
+            "log_loss": 0.2,
+            "confidence": 0.9,
+            "risk_score": 0.1,
+        }
+        with self.assertRaisesRegex(ValueError, "required actual row shape"):
+            cluster_bootstrap([row], seed=7, replicates=100)
+        for invalid in (None, "2000", True, 2000.0):
+            with self.subTest(replicates=invalid), self.assertRaisesRegex(
+                ValueError, "types invalid"
+            ):
+                cluster_bootstrap(
+                    [dict(row, abstain=False)], seed=7, replicates=invalid
+                )
+
+    def test_non_abstain_accuracy_is_not_estimable_when_every_row_abstains(self):
+        rows = [
+            {
+                "example_id": f"e{index}",
+                "group": f"g{index}",
+                "correct": False,
+                "abstain": True,
+                "brier": 0.5,
+                "log_loss": 0.7,
+                "confidence": 0.5,
+                "risk_score": 0.5,
+            }
+            for index in range(2)
+        ]
+        report = cluster_bootstrap(
+            rows,
+            seed=7,
+            replicates=100,
+            top_label_accuracy_denominator="NON_ABSTAIN_ROWS",
+        )
+        self.assertFalse(report["estimable"])
+        self.assertFalse(report["intervals"]["top_label_accuracy"]["estimable"])
 
     def test_duplicate_and_baseline_mismatch_rejected(self):
         dup = producer(); dup[1]["example_id"] = dup[0]["example_id"]

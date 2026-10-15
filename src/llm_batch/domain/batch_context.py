@@ -16,6 +16,8 @@ from difflib import SequenceMatcher
 from datetime import datetime
 from typing import Any, Dict, List, Mapping, Optional
 
+from .alias_learning import eligible_alias_confidence, normalize_alias_learning_evidence
+
 
 BATCH_CONTEXT_LEARNING_ENVELOPE_SCHEMA = "batch_context_learning_envelope_v1"
 BATCH_CONTEXT_LEARNING_MAX_DECODED_TERMS = 24
@@ -79,6 +81,12 @@ def normalize_batch_context_learning_envelope(value: Any) -> Optional[Dict[str, 
                 )
                 if matched_title:
                     term["best_match"] = {"title": matched_title}
+                    confidence = raw_best_match.get("confidence")
+                    if isinstance(confidence, str) and confidence.strip().lower() in {"max", "high", "medium", "mid", "low"}:
+                        term["best_match"]["confidence"] = confidence.strip().lower()
+            proof = normalize_alias_learning_evidence(raw_term.get("learning_evidence"))
+            if proof is not None:
+                term["learning_evidence"] = proof
             if term:
                 decoded_terms.append(term)
 
@@ -105,11 +113,19 @@ def normalize_batch_context_learning_envelope(value: Any) -> Optional[Dict[str, 
             if len(identified_characters) >= BATCH_CONTEXT_LEARNING_MAX_CHARACTERS:
                 break
 
+    extra_author_binding = {}
+    if "identified_author_work" in value:
+        from ..grounding.munpia_author_byline import normalize_author_work_binding
+        binding = normalize_author_work_binding(value.get("identified_author_work"))
+        extra_author_binding["identified_author_work"] = binding
+        if binding is None or binding["name"] != identified_author:
+            identified_author = None
     return {
         "schema_version": BATCH_CONTEXT_LEARNING_ENVELOPE_SCHEMA,
         "decoded_terms": decoded_terms,
         "identified_author": identified_author,
         "identified_characters": identified_characters,
+        **extra_author_binding,
     }
 
 
@@ -875,31 +891,50 @@ class BatchContextMemory:
             str(confidence_str).strip().lower(), 1
         )
         slang_insight = identity.get("slang_insight") or {}
-        preferred_aliases: List[str] = []
-        blocked_surface_norms: set[str] = set()
+        # 공개 작품의 신뢰도나 slang_insight의 단어만으로 별칭을 생성하지 않는다.
+        # store_in_slang_db는 다른 저장소 정책이며 이 메모리의 일괄 차단 스위치가 아니다.
         canonical_alias_norm = ""
+        blocked_surface_norms: set[str] = set()
+        final_alias_denied = isinstance(slang_insight, dict) and slang_insight.get("decode_verified") is False
         if isinstance(slang_insight, dict):
-            canonical_alias = str(slang_insight.get("canonical_work_alias") or "").strip()
-            detected_term = str(slang_insight.get("detected_term") or "").strip()
-            store_in_db = slang_insight.get("store_in_slang_db")
-            if canonical_alias:
-                preferred_aliases.append(canonical_alias)
-                canonical_alias_norm = self._normalize(canonical_alias)
-                if detected_term and self._normalize(detected_term) != self._normalize(canonical_alias):
-                    blocked_surface_norms.add(self._normalize(detected_term))
-            elif detected_term and store_in_db is not False:
-                preferred_aliases.append(detected_term)
+            canonical_alias_norm = self._normalize(slang_insight.get("canonical_work_alias") or "")
+            detected = self._normalize(slang_insight.get("detected_term") or "")
+            if canonical_alias_norm and detected != canonical_alias_norm:
+                blocked_surface_norms.add(detected)
 
-        # 약칭 학습
-        if conf_rank >= 2:
-            for alias in preferred_aliases:
-                self.register_abbreviation(
-                    alias,
-                    official_title,
-                    confidence=conf_rank,
-                    fast_promote=(conf_rank >= 3),
-                )
-        if decoded_terms and conf_rank >= 2:
+        # 학습 자격과 거절 관측을 분리한다. source proof가 없어도 확정적으로 등록하지 않을
+        # exact-title/기존 비소설 쌍은 집계하되 register_abbreviation에는 넘기지 않는다.
+        rejected_pairs = set()
+        if conf_rank >= 2 and not final_alias_denied:
+            observations = []
+            if (isinstance(slang_insight, dict)
+                    and slang_insight.get("alias_scope") in {"pure_work_alias", "work_plus_character"}):
+                observations.append((slang_insight.get("canonical_work_alias") or slang_insight.get("detected_term"),
+                                     slang_insight.get("decoded_term")))
+            for term in decoded_terms or ():
+                if (isinstance(term, dict) and isinstance(term.get("best_match"), dict)
+                        and not self._decoded_term_is_author_like(term, identified_author=identified_author)):
+                    observations.append((term.get("original"), term["best_match"].get("title")))
+            for alias, title in observations:
+                if not isinstance(alias, str) or not isinstance(title, str):
+                    continue
+                alias_key, title_key = self._normalize(alias), self._normalize(title)
+                pair = (alias_key, title_key)
+                if (not alias_key or title_key != self._normalize(official_title) or pair in rejected_pairs
+                        or (canonical_alias_norm and alias_key != canonical_alias_norm)
+                        or alias_key in blocked_surface_norms):
+                    continue
+                stat = ("abbreviation_exact_title_skipped" if alias_key == title_key else
+                        "abbreviation_seed_quarantined" if self._should_quarantine_abbreviation_seed(alias, title) else None)
+                if stat:
+                    rejected_pairs.add(pair)
+                    with self._lock:
+                        self.stats[stat] = int(self.stats.get(stat) or 0) + 1
+        if decoded_terms and conf_rank >= 2 and not final_alias_denied:
+            # 지연 import: models의 envelope validator와 import 순환을 만들지 않는다.
+            from .rules import SLANG_DICTIONARY
+            from ..experts.utils import KNOWN_TITLE_ABBREVIATIONS
+
             for term in decoded_terms:
                 if not isinstance(term, dict):
                     continue
@@ -920,6 +955,9 @@ class BatchContextMemory:
                 matched_title = str(best_match.get("title") or "").strip()
                 if not original or not matched_title:
                     continue
+                if (self._normalize(original), self._normalize(matched_title)) in rejected_pairs:
+                    continue
+                # 등록 없는 확정 거절 관측은 source proof 자격보다 먼저 기록한다.
                 if image_surface_realigned and self._normalize(original) != self._normalize(matched_title):
                     with self._lock:
                         self.stats["abbreviation_image_surface_skipped"] = (
@@ -932,11 +970,20 @@ class BatchContextMemory:
                             int(self.stats.get("abbreviation_title_variant_surface_skipped") or 0) + 1
                         )
                     continue
+                alias_confidence = eligible_alias_confidence(
+                    result, term, official_title,
+                    registries=(KNOWN_TITLE_ABBREVIATIONS, SLANG_DICTIONARY),
+                )
+                if alias_confidence < 2:
+                    with self._lock:
+                        self.stats["abbreviation_learning_evidence_rejected"] = int(self.stats.get("abbreviation_learning_evidence_rejected") or 0) + 1
+                    continue
                 self.register_abbreviation(
                     original,
                     matched_title,
-                    confidence=conf_rank,
-                    fast_promote=(conf_rank >= 3),
+                    confidence=alias_confidence,
+                    fast_promote=(alias_confidence >= 3),
+                    allow_pending_promotion=False,
                 )
 
         # 작가 학습

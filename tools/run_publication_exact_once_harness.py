@@ -139,12 +139,12 @@ def _assert_contract(left: Mapping[str, Any], right: Mapping[str, Any], label: s
 def _implementation_contract() -> dict[str, Any]:
     refs = {
         "harness_tool": _artifact_ref(Path(__file__)),
-        "publication_commit": _artifact_ref(ROOT / "src/llm_batch/publication_commit.py"),
+        "publication_commit": _artifact_ref(ROOT / "src/llm_batch/ledger/publication_commit.py"),
         "expert_main": _artifact_ref(ROOT / "expert_main.py"),
         "promotion_gate": _artifact_ref(ROOT / "src/llm_batch/promotion_gate.py"),
         "recovery_tool": _artifact_ref(ROOT / "tools/recover_expert_run_from_checkpoint.py"),
         "decision_call_independent_reader": _artifact_ref(
-            ROOT / "src/llm_batch/decision_call_readback.py"
+            ROOT / "src/llm_batch/ledger/decision_call_readback.py"
         ),
         "decision_call_reader_tests": _artifact_ref(
             ROOT / "tests/test_decision_call_readback.py"

@@ -15,7 +15,6 @@ import json
 import os
 from pathlib import Path
 import re
-import stat
 import threading
 import time
 from typing import Any, Dict, Mapping, Optional, Tuple
@@ -26,6 +25,8 @@ from .publication_commit import (
     PublicationDecisionCommit,
     validate_publication_result_commit,
 )
+from ..grounding.image_title_conflict import projected_unresolved_ocr_alias_conflict_authority_blocked
+from .private_file import create_private_file, restrict_private_file
 
 
 RECOVERY_ACTIVATION_LEDGER_SCHEMA = "recovery_activation_ledger_v2"
@@ -134,7 +135,7 @@ def _fsync_directory(path: Path) -> None:
 
 
 def load_or_create_recovery_activation_hmac_key(path: Path | str) -> bytes:
-    """Load or atomically create a scope-local 0600 HMAC key.
+    """Load or atomically create a scope-local private HMAC key.
 
     The key is never placed in the result, publication WAL, checkpoint,
     recovery journal, or manifest. Losing the key disables proposal
@@ -146,15 +147,11 @@ def load_or_create_recovery_activation_hmac_key(path: Path | str) -> bytes:
         key_path.parent.mkdir(parents=True, exist_ok=True)
         with _exclusive_file_lock(key_path):
             if key_path.exists():
+                restrict_private_file(key_path)
                 raw = key_path.read_text(encoding="ascii").strip().lower()
                 if not re.fullmatch(r"[0-9a-f]{64}", raw):
                     raise RecoveryActivationError(
                         "recovery activation HMAC key file is invalid"
-                    )
-                os.chmod(key_path, 0o600)
-                if stat.S_IMODE(key_path.stat().st_mode) != 0o600:
-                    raise RecoveryActivationError(
-                        "recovery activation HMAC key mode must be 0600"
                     )
                 return bytes.fromhex(raw)
 
@@ -166,11 +163,10 @@ def load_or_create_recovery_activation_hmac_key(path: Path | str) -> bytes:
             )
             descriptor = None
             try:
-                descriptor = os.open(
-                    str(temporary),
-                    os.O_WRONLY | os.O_CREAT | os.O_EXCL,
-                    0o600,
-                )
+                descriptor = create_private_file(temporary)
+                # Windows는 chmod의 POSIX mode 대신 실제 DACL을 검증한다.
+                # 비밀 바이트를 쓰기 전에 임시 파일부터 제한한다.
+                restrict_private_file(temporary)
                 written = 0
                 while written < len(payload):
                     count = os.write(descriptor, payload[written:])
@@ -180,11 +176,7 @@ def load_or_create_recovery_activation_hmac_key(path: Path | str) -> bytes:
                 os.fsync(descriptor)
                 os.close(descriptor)
                 descriptor = None
-                os.chmod(temporary, 0o600)
-                if stat.S_IMODE(temporary.stat().st_mode) != 0o600:
-                    raise RecoveryActivationError(
-                        "temporary recovery HMAC key mode must be 0600"
-                    )
+                restrict_private_file(temporary)
                 os.replace(temporary, key_path)
                 _fsync_directory(key_path.parent)
             finally:
@@ -194,11 +186,7 @@ def load_or_create_recovery_activation_hmac_key(path: Path | str) -> bytes:
                     temporary.unlink(missing_ok=True)
                 except OSError:
                     pass
-            os.chmod(key_path, 0o600)
-            if stat.S_IMODE(key_path.stat().st_mode) != 0o600:
-                raise RecoveryActivationError(
-                    "recovery activation HMAC key mode must be 0600"
-                )
+            restrict_private_file(key_path)
             return key
     except RecoveryActivationError:
         raise
@@ -658,6 +646,8 @@ def extract_direct_ocr_review_proposals(
     distinct_keys: set[str] = set()
     for item in image_catalog:
         if not isinstance(item, Mapping):
+            continue
+        if projected_unresolved_ocr_alias_conflict_authority_blocked(item):
             continue
         if item.get("background_listing_only") is True:
             continue

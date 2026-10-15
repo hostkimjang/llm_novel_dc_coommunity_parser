@@ -1,0 +1,19 @@
+{
+  "schema_version": "recommendation_reply_execution_v1",
+  "origin_root": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser",
+  "end_receipt_path": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\p4_quality_followup_20261013\\actual80_followup_parallel12_v1\\end_check_prep_v1\\end_verification.json",
+  "end_receipt_sha256": "ffb509bcb46bf22e9b0ad960443dba295d923bacaafb2a1f972fc9cf22ac03d5",
+  "fixture_sha256": {
+    "recommendation26_saved_source.json": "dd8c83fdcfa1255dd298c6b7b38eb8423048c67b16ed632a50b61dddc2193f15",
+    "recommendation71_source_packet.json": "6bc4d799e2e7b9c062e32981aaecdc04bb073a76c3cc562cab4fdfb39fa7478a"
+  },
+  "original_support_sha256": {
+    "tests/test_source_bound_propriety_question_state.py": "55ad2e7f0910c929ed0f49f3aecda1089e16710b29e7263d54fad5a99498d055",
+    "tests/test_comment_answer_original_recall.py": "2c76e6f63f088859aca503e163b9bcaaf91a041458b0c788d19cdc652fb07d82"
+  },
+  "runtime_product_sha256": {
+    "src/llm_batch/agentic_pipeline.py": "75230d42159e230d2fc542b93a922df66afc93896a52f881ead7230f2fd9bf6b",
+    "src/llm_batch/grounding/comment_request_scope.py": "58f1b9e6339dfefb82d1fee15e4ab7b28872e4b3a009c54c49c3dae64e21df27",
+    "expert_main.py": "e92b5d9033bedfc77f28b8973da44db18e1dcc21c9f142e63901bf52b8e3afdc"
+  }
+}

@@ -1,0 +1,1044 @@
+{
+  "scope": "SAVED_EXPERTS_AND_CATALOG_PARTIAL_CONTEXT_NOT_ORIGINAL_MEMORY",
+  "rows": [
+    {
+      "arm": "final55",
+      "post_id": 9426461,
+      "post": {
+        "gallery_id": "genrenovel",
+        "post_id": 9426461,
+        "title": "장수풍뎅이vs사슴벌레",
+        "author": "ㅇㅇ",
+        "created_at": "2024-10-15 22:33:43",
+        "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=9426461",
+        "content_blocks": [
+          {
+            "type": "text",
+            "text": "- dc official App"
+          }
+        ],
+        "page_no": 41490
+      },
+      "comments": [],
+      "experts": {
+        "gatekeeper": {
+          "is_noise": false,
+          "noise_reason": null,
+          "post_type": "short_reaction",
+          "detected_entities": {
+            "possible_titles": [
+              "장수풍뎅이vs사슴벌레"
+            ],
+            "possible_authors": [],
+            "possible_characters": [],
+            "platforms_mentioned": []
+          },
+          "key_terms": [
+            "장수풍뎅이vs사슴벌레"
+          ],
+          "context_clues": {
+            "short_post_fast_path": true,
+            "body_length": 17,
+            "body_text": "- dc official App",
+            "short_post_title_surface": "장수풍뎅이vs사슴벌레"
+          },
+          "search_requests": [],
+          "confidence": "medium",
+          "notes": "Short-post Fast-Path: body=17자, 제목 기반 판정 위임"
+        },
+        "discourse": {
+          "discourse_analysis": {
+            "primary_domain": "other",
+            "domain_confidence": "high",
+            "domain_evidence": [
+              "장수풍뎅이",
+              "사슴벌레"
+            ],
+            "secondary_domains": [],
+            "intent": "make_joke",
+            "intent_confidence": "medium",
+            "speech_act": "other",
+            "target_kind": "none",
+            "is_coherent": false,
+            "coherence_reason": "제목은 곤충 간의 대결을 다루고 있으나, 본문은 디시인사이드 공식 앱 문구만 포함된 무의미한 내용(noise)이며 댓글도 없어 담론이 형성되지 않음.",
+            "title_novel_terms": [],
+            "title_body_consistency": false,
+            "consistency_note": "제목은 곤충 주제이나 본문은 플랫폼 시스템 문구임.",
+            "is_association_not_discussion": true,
+            "association_evidence": null,
+            "search_suggestions": [
+              {
+                "query": "장수풍뎅이 사슴벌레 비교",
+                "purpose": "To check if this is a common meme or a specific topic of discussion in the community.",
+                "priority": 2
+              }
+            ],
+            "real_subject": "장수풍뎅이와 사슴벌레 중 무엇이 더 나은지에 대한 단순 질문 또는 뻘글",
+            "author_question_span": null,
+            "author_question_target": null,
+            "author_recommendation_span": null,
+            "author_recommendation_is_direct": false,
+            "reasoning": "제목은 곤충(장수풍뎅이 vs 사슴벌레)을 언급하고 있으나, 본문은 플랫폼 기본 문구만 있는 전형적인 '뻘글' 형태입니다. 특정 작품이나 전문적인 지식을 논하는 담론이 아니며, 커뮤니티 내에서 가벼운 투표나 장난을 목적으로 작성된 것으로 보입니다.",
+            "source_bound_recommendation_request": false,
+            "image_topic_relation": {
+              "state": "no_image",
+              "source": "author_spans"
+            }
+          }
+        },
+        "decoder": {
+          "decoded_terms": [
+            {
+              "original": "장수풍뎅이vs사슴벌레",
+              "morphemes": [
+                "장수풍뎅이",
+                "vs",
+                "사슴벌레"
+              ],
+              "interpretations": [
+                {
+                  "type": "general_noun",
+                  "value": "곤충(장수풍뎅이와 사슴벌레) 간의 대결",
+                  "evidence": "나무위키의 곤충 관련 설명 및 충왕전 결과(E001, E002, E003)",
+                  "context_fit": "high"
+                },
+                {
+                  "type": "novel_title",
+                  "value": "장수풍뎅이 VS 사슴벌레 (도서)",
+                  "evidence": "도서관 검색 결과에 존재하는 아동용 도서 제목(E009)",
+                  "context_fit": "low"
+                }
+              ],
+              "candidates": [
+                {
+                  "official_novel_title": "충왕전/결과/ 장수풍뎅이, 사슴벌레 시리즈",
+                  "url": null,
+                  "platform": "title_pool",
+                  "decode_logic": "코드 레벨 rescue: abbreviation_match_score=0.90",
+                  "morphological_score": 0.9,
+                  "search_evidence": "rescue from title_pool"
+                },
+                {
+                  "official_novel_title": null,
+                  "url": null,
+                  "platform": null,
+                  "decode_logic": "검색 결과에서 곤충 대결 또는 아동용 도서는 발견되었으나, 웹소설/장르소설로서의 작품 정보는 없음. 본문 내용('- dc official App') 또한 소설과 무관한 커뮤니티 앱 관련 문구임.",
+                  "morphological_score": 0.0,
+                  "genre_match": {
+                    "source_genre": null,
+                    "target_genre": null,
+                    "is_match": false
+                  },
+                  "search_evidence": "검색 결과는 주로 생물학적 정보나 아동용 도서를 가리킴"
+                }
+              ],
+              "best_match": {
+                "title": "충왕전/결과/ 장수풍뎅이, 사슴벌레 시리즈",
+                "confidence": "low"
+              },
+              "grounding": {
+                "is_grounded": true,
+                "anchor_type": "title_mention",
+                "anchor_evidence": "게시글 제목에 '장수풍뎅이vs사슴벌레' 직접 존재"
+              },
+              "is_author_name": false,
+              "author_info": null
+            }
+          ],
+          "unresolved_terms": [],
+          "self_questions": [
+            "'장수풍뎅이vs사슴벌레'가 특정 웹소설의 약칭인가?",
+            "본문의 '- dc official App'이 소설과 연결될 고리가 있는가?"
+          ],
+          "needs_verification": true,
+          "verification_search": [
+            "장수풍뎅이vs사슴벌레 웹소설",
+            "장수풍뎅이 사슴벌레 작가"
+          ],
+          "overall_confidence": "low",
+          "notes": "치환 읽기 : '장수풍뎅이 vs 사슴벌레'라는 키워드는 검색 결과에서 실제 곤충 대결이나 아동용 도서로 나타남 : 맥락 추론 : 게시글의 의도는 소설 토론이 아닌 곤충 대결 혹은 단순 유머/밈으로 판단됨 : 결론 : 웹소설 관련 증거가 전혀 없으므로 title=null 처리함"
+        },
+        "verifier": {
+          "verification_result": {
+            "is_relevant": false,
+            "is_novel_discussion": false,
+            "novel_identity": null,
+            "grounding_check": {
+              "decoder_grounded": true,
+              "anchor_found": "title_mention",
+              "anchor_text": "장수풍뎅이vs사슴벌레",
+              "grounding_issue": "Decoder가 제목을 기반으로 '충왕전'이라는 작품을 매칭했으나, 본문에는 해당 작품을 지칭하는 고유 정보(캐릭터명, 줄거리, 작가 등)가 전혀 없음"
+            },
+            "counter_arguments": [
+              {
+                "issue": "본문 내 작품 고유 증거 전무 (Keyword Coincidence)",
+                "severity": "critical",
+                "action": "reject"
+              },
+              {
+                "issue": "Discourse Domain 불일치",
+                "severity": "major",
+                "action": "reject"
+              }
+            ],
+            "author_info": null,
+            "rejection_reason": "제목의 키워드('장수풍뎅이', '사슴벌레')는 일반 명사이며, 검색 결과에서 '충왕전' 등의 작품이 발견되나 본문 및 댓글에 해당 작품을 특정할 수 있는 고유 정보(캐릭터, 줄거리, 작가 등)가 전혀 없습니다. 따라서 이는 단순한 곤충 관련 유머나 키워드 우연 일치로 판단됩니다.",
+            "evidence_chain": [
+              {
+                "source": "Discourse Analysis",
+                "content": "Primary Domain: other, Intent: make_joke",
+                "supports": "글의 의도가 소설 토론이 아닌 유머/잡담임을 시사함"
+              },
+              {
+                "source": "Search Results",
+                "content": "검색 결과에 '충왕전' 등이 나타나지만, 이는 제목의 일반 명사와 우연히 겹친 것임",
+                "supports": "본문 앵커 부재로 인한 키워드 우연 일치 판정"
+              }
+            ],
+            "slang_insight": null,
+            "unresolved_from_decoder": [],
+            "inference": {
+              "type": "community_banter",
+              "topic": "insect battle joke"
+            }
+          },
+          "final_confidence": "high",
+          "reason": "제목의 키워드가 국어사전에 존재하는 일반 명사이며, Decoder가 매칭한 '충왕전'과 연결될 만한 본문 내 고유 정보(캐릭터명, 줄거리, 회차 등)가 단 하나도 존재하지 않습니다. DiscourseAnalyzer가 도메인을 'other' 및 'make_joke'로 분류한 점과 일치하며, 이는 전형적인 키워드 우연 일치(Keyword Coincidence) 사례입니다."
+        },
+        "synthesizer": {
+          "reinterpretation": {
+            "post_intent": "곤충(장수풍뎅이와 사슴벌레)의 대결 구도를 주제로 한 단순 질문 또는 유희적 게시글",
+            "text_analysis": [
+              {
+                "segment": "장수풍뎅이vs사슴벌레",
+                "interpretation": "특정 작품의 캐릭터 대결이 아닌, 실제 곤충인 장수풍뎅이와 사슴벌레 중 어느 쪽이 더 강한지에 대한 일반적인 대결 구도를 의미함",
+                "evidence_source": "search"
+              },
+              {
+                "segment": "- dc official App",
+                "interpretation": "디시인사이드 공식 앱을 통해 작성되었음을 나타내는 시스템 문구로, 게시글의 내용과는 무관함",
+                "evidence_source": "search"
+              }
+            ],
+            "comment_insights": []
+          },
+          "hidden_references": [],
+          "evidence_alignment": {
+            "decoder_match": "weak",
+            "decoder_reason": "Decoder는 '충왕전'이라는 특정 웹소설 시리즈를 후보로 제시했으나, 본문에는 해당 작품을 지칭할 수 있는 고유 명사나 맥락이 전혀 존재하지 않음",
+            "verifier_match": "strong",
+            "verifier_reason": "Verifier는 본문 내 작품 고유 증거가 전무하며, 키워드 일치(Keyword Coincidence)일 뿐이라고 정확히 판정함",
+            "overall_coherence": "low"
+          },
+          "confidence_assessment": {
+            "is_about_identified_work": false,
+            "confidence": "Low",
+            "reasoning": "제목의 키워드가 검색 결과에서 '충왕전'과 같은 웹소설 시리즈와 일부 일치하지만, 본문 및 댓글에 이를 뒷받침할 어떠한 문맥적 증거도 없음. 따라서 특정 작품에 대한 논의라기보다 일반적인 곤충 대결에 대한 단순 제목일 가능성이 매우 높음",
+            "alternative_interpretation": "실제 곤충의 생태적 대결에 대한 질문 또는 커뮤니티 내에서의 가벼운 논쟁 거리(Joke/Meme)"
+          },
+          "synthesis_summary": "본 포스트는 '장수풍뎅이vs사슴벌레'라는 제목만을 포함하고 있으며, 이는 특정 웹소설이나 캐릭터를 지칭하는 구체적 근거가 없는 상태입니다. Decoder가 제안한 '충왕전' 시리즈와의 연관성은 검색 결과상의 키워드 중복에 의한 우연한 일치로 판단됩니다. 따라서 이 글은 특정 작품에 대한 리뷰나 토론이 아닌, 일반적인 곤충 대결 주제를 던진 단순 게시글로 해석됩니다.",
+          "elapsed": 10.974643468856812
+        },
+        "arbiter": {
+          "final_decision": {
+            "is_relevant": false,
+            "is_novel_discussion": false,
+            "official_novel_title": null,
+            "suspected_titles": [
+              {
+                "title": "충왕전/결과/ 장수풍뎅이, 사슴벌레 시리즈",
+                "confidence": "Low",
+                "reason": "제목의 키워드가 검색 결과와 음절 매칭되나, 본문 내 작품을 뒷받침할 고유 정보가 전혀 없음"
+              }
+            ],
+            "heretic_url": null,
+            "confidence": "High",
+            "discussion_type": "off_topic",
+            "_raw_llm_relevant": false,
+            "_raw_llm_title": null,
+            "_raw_llm_confidence": "Low",
+            "_raw_llm_discussion_type": "off_topic",
+            "_forced_upgrade_score": 0.0,
+            "_forced_upgrade_threshold": 0.62,
+            "_forced_upgrade_title": "충왕전/결과/ 장수풍뎅이, 사슴벌레 시리즈",
+            "official_title": null,
+            "notes": "[Verifier 거부권] 제목의 키워드('장수풍뎅이', '사슴벌레')는 일반 명사이며, 검색 결과에서 '충왕전' 등의 작품이 발견되나 본문 및 댓글에 해당 작품을 특정할 수 있는 고유 정보(캐릭터, 줄거리, 작가 등)가 전혀 없습니다. 따라서 이는 단순한 곤충 관련 유머나 키워드 우연 일치로 판단됩니다.",
+            "final_reasoning": "[거부권] 게시글 제목: '장수풍뎅이vs사슴벌레', 본문: '- dc official App'\nDecoder: '장수풍뎅이vs사슴벌레'을(를) '충왕전/결과/ 장수풍뎅이, 사슴벌레 시리즈'(low)로 식별 | Verifier: 비관련 판정 — 제목의 키워드('장수풍뎅이', '사슴벌레')는 일반 명사이며, 검색 결과에서 '충왕전' 등의 작품이 발견되나 본문 및 댓글에 해당 작품을 특정할 수 있는 고유 정보(캐릭터, 줄거리, 작가 등)가 전혀 없습니다. 따라서 이는 단순한 곤충 관련 유머나 키워드 우연 일치로 판단됩니다. | 핵심 반론: 본문 내 작품 고유 증거 전무 (Keyword Coincidence) | Discourse 경고: non_novel(other,high)\n검색 증강 분석: 검색 쿼리 5건 수행('장수풍뎅이vs사슴벌레 웹소설', '장수풍뎅이 사슴벌레 캐릭터', '장수풍뎅이 사슴벌레 작가', '사슴벌레 웹소설 노벨피아', '사슴벌레 웹소설 문피아'). 소설플랫폼 결과 2건(E001 namu.wiki: '사슴벌레 - 나무위키'; E020 novelpia.com: '(포켓몬스터) 세계챔피언하고 칼로스퀸의 ....').\n판단: 검색에서 키워드가 겹치는 소설을 찾았으나, 글쓴이가 해당 소설에 대해 쓴 것이 아님.\n이 글은 특정 소설에 대한 토론이 아닌 것으로 판정됨.",
+            "_hypothesis_top": "noise",
+            "_hypothesis_margin": 0.38,
+            "_title_deliberately_null": true
+          },
+          "expert_consensus": {
+            "unanimous": false,
+            "agreeing_experts": [
+              "Verifier"
+            ],
+            "dissenting_experts": [
+              "Decoder"
+            ]
+          },
+          "conflict_resolution": [
+            {
+              "issue": "작품 식별 여부 및 관련성 판단",
+              "expert_opinions": {
+                "gatekeeper": "short_reaction으로 분류",
+                "decoder": "충왕전 시리즈로 추정 (low confidence)",
+                "verifier": "is_relevant=false (VETO 발동)"
+              },
+              "arbiter_decision": "is_relevant=false 채택",
+              "reasoning": "Decoder는 키워드 매칭을 통해 특정 작품을 후보로 올렸으나, Verifier가 본문 내 작품 고유 증거(캐릭터명, 줄거리 등)가 전무함을 지적하며 거부권을 행사함. 검색 결과의 키워드 중복은 우연한 일치일 가능성이 높으므로 Verifier의 판단을 우선함."
+            }
+          ],
+          "metadata_synthesis": {
+            "detected_author": null,
+            "detected_characters": [],
+            "micro_tags": [
+              "곤충",
+              "대결"
+            ],
+            "sentiment": "Neutral",
+            "is_nsfw": false,
+            "spoiler_level": "none"
+          },
+          "final_reasoning": "[Multi-Expert Deliberation] 투표: 관련=0/비관련=9, 증거점수=-4.0, 최종=비관련(confidence=High).\n[Primary] [거부권] 게시글 제목: '장수풍뎅이vs사슴벌레', 본문: '- dc official App'\nDecoder: '장수풍뎅이vs사슴벌레'을(를) '충왕전/결과/ 장수풍뎅이, 사슴벌레 시리즈'(low)로 식별 | Verifier: 비관련 판정 — 제목의 키워드('장수풍뎅이', '사슴벌레')는 일반 명사이며, 검색 결과에서 '충왕전' 등의 작품이 발견되나 본문 및 댓글에 해당 작품을 특정할 수 있는 고유 정보(캐릭터, 줄거리, 작가 등)가 전혀 없습니다. 따라서 이는 단순한 곤충 관련 유머나 키워드 우연 일치로 판단됩니다. | 핵심 반론: 본문 내 작품 고유 증거 전무 (Keyword Coincidence) | Discourse 경고: non_novel(other,high)\n검색 증강 분석: 검색 쿼리 5건 수행('장수풍뎅이vs사슴벌레 웹소설', '장수풍뎅이 사슴벌레 캐릭터', '장수풍뎅이 사슴벌레 작가', '사슴벌레 웹소설 노벨피아', '사슴벌레 웹소설 문피아'). 소설플랫폼 결과 2건(E001 namu.wiki: '사슴벌레 - 나무위키'; E020 novelpia.com: '(포켓몬스터) 세계챔피언하고 칼로스퀸의 ....').\n판단: 검색에서 키워드가 겹치는 소설을 찾았으나, 글쓴이가 해당 소설에 대해 쓴 것이 아님.\n이 글은 특정 소설에 대한 토론이 아닌 것으로 판정됨.\n[Jury majority] 1. [본문 이해] 이 게시글은 '장수풍뎅이vs사슴벌레'라는 제목과 '- dc official App'이라는 매우 짧은 본문으로 구성되어 있습니다. 글쓴이는 두 곤충 중 무엇이 더 우세한지 묻는 단순한 비교 질문을 던진 것으로 보이며, 웹소설과 관련된 구체적인 맥락은 전혀 찾아볼 수 없습니다.\n\n2. [핵심 키워드 해독] 제목의 핵심 키워드인 '장수풍뎅이'와 '사슴벌레'는 일반 명사입니다. 검색 엔진을 통해 해당 단어들이 포함된 웹소설 '충왕전' 등이 검색 결과에 나타날 수는 있으나, 이는 제목의 단어가 작품의 소재와 겹칠 뿐입니다.\n\n3. [검색/증거 분석] Decoder는 검색 결과를 바탕으로 '충왕전'을 후보로 제시하였으나, Verifier는 본문 내에 캐릭터 이름, 줄거리, 작가명, 혹은 해당 작품을 특정할 수 있는 플랫폼 URL 등 '작품 고유의 앵커(Anchor)'가 전무하다는 점을 근거로 강력하게 반박하였습니다. 검색 결과에서 소설 플랫폼의 흔적이 일부 발견되더라도, 그것이 본문의 질문과 직접적으로 결속되지 않는다면 이를 작품 토론으로 간주할 수 없습니다.\n\n4. [전문가 합의/충돌] Gatekeeper는 이를 단순 반응으로 보았고 Decoder는 검색 매칭을 시도했으나, 맥락 검증 전문가인 Verifier가 '키워드 우연 일치'를 이유로 거부권을 행사하였습니다. Arbiter는 증거의 우선순위에 따라, 검색 결과보다 본문의 담론 영역(Domain)을 우선시하는 Verifier의 판단을 채택합니다.\n\n5. [판단 근거 종합] 본 게시글은 제목과 본문 모두에서 웹소설의 서사 요소(캐릭터, 전개, 설정 등)를 전혀 다루고 있지 않습니다. 단순히 곤충에 대한 비교를 수행하는 게시글이거나 커뮤니티의 가벼운 잡담(noise)에 해당하며, 특정 작품을 주제로 삼아 리뷰하거나 기대하는 담론 형성이 이루어지지 않았습니다.\n\n6. [결론] 따라서 이 글은 특정 웹소설 작품에 대한 유의미한 정보를 담고 있지 않으므로, is_relevant=false 및 discussion_type='off_topic'으로 최종 판정합니다.\n[Judge] 옹호자는 Decoder가 식별한 '충왕전'이라는 작품과의 소재적 유사성을 근거로 이를 팬덤 내의 메타적 유희(Inside Joke)로 해석해야 한다고 주장합니다. 그러나 Skeptic이 지적했듯이, '장수풍뎅이'와 '사슴벌레'는 웹소설의 소재이기 이전에 매우 보편적인 일반 명사입니다. 판결의 핵심 기준인 'Strong direct evidence(작가명, 구체적 줄거리, 플랫폼 URL 등)'가 본문 어디에도 존재하지 않으며, Decoder의 식별 결과 또한 신뢰도가 낮음(low confidence)을 명시하고 있습니다. 단순히 키워드가 특정 작품의 소재와 일치한다는 사실만으로 관련성을 부여하는 것은 'Generic trope/concept mistaken for a specific title' 오류에 해당하며, Verifier의 'Keyword Coincidence(키워드 우연 일치)' 반론이 매우 타당합니다. 따라서 본 게시글은 작품과 무관한 일반적인 곤충 관련 유머 또는 단순 게시글로 판단됩니다.",
+          "evidence_chain": [
+            {
+              "source": "Decoder",
+              "content": "장수풍뎅이vs사슴벌레 -> 충왕전/결과/ 장수풍뎅이, 사슴벌레 시리즈 (score=0.90)",
+              "weight": "low"
+            },
+            {
+              "source": "Verifier",
+              "content": "본문 내 작품 고유 증거 전무 (Keyword Coincidence)",
+              "weight": "high"
+            }
+          ],
+          "_deliberation": {
+            "method": "full_deliberation_ABC",
+            "evidence_score": {
+              "total_score": -4.0,
+              "relevance_probability": "very_low",
+              "positive_signals": [
+                {
+                  "signal": "verifier_anchor",
+                  "detail": "anchor found"
+                }
+              ],
+              "negative_signals": [
+                {
+                  "signal": "decoder_low",
+                  "detail": "title=None"
+                },
+                {
+                  "signal": "verifier_irrelevant",
+                  "detail": "conf="
+                },
+                {
+                  "signal": "verifier_critical_counter",
+                  "detail": "본문 내 작품 고유 증거 전무 (Keyword Coincidence)"
+                }
+              ],
+              "expert_agreement": 0.33,
+              "conflict_detected": true,
+              "conflict_details": [
+                "Verifier critical counter: 본문 내 작품 고유 증거 전무 (Keyword Coincidence)"
+              ],
+              "recommendation": "UNLIKELY_RELEVANT: 관련성 증거가 매우 약하거나 반증이 강합니다."
+            },
+            "conflict_detected": true,
+            "jury_votes": {
+              "relevant": 0,
+              "irrelevant": 3
+            },
+            "debate_advocate_conf": "Low",
+            "debate_skeptic_conf": "High",
+            "elapsed": 68.7
+          }
+        }
+      },
+      "catalog": [
+        {
+          "domain": "namu.wiki",
+          "eid": "E001",
+          "purpose": "abbreviation_verification",
+          "query": "장수풍뎅이 사슴벌레 캐릭터",
+          "rank": 1,
+          "snippet": "개요 딱정벌레목(Coleoptera) 풍뎅이상과(Scarabaeoidea) 사슴벌렛과(Lucanidae)에 속하는 딱정벌레들의 총칭. 가장 오래된 개체의 표본은 쥐라기 중기 지층에서 발견되었다. 몸 색깔은 종류에... 몸, 높은 살상력을 지닌 큰턱까지 가지고 있어서 자연에서 이기거나 대항할 수 있는 곤충이 장수풍뎅이와 장수말벌 외에는 전무하다. 저 둘마저도 사슴벌레가 큰턱으로 잘 잡기만 하면",
+          "source_rank": 1,
+          "source_tier": "wiki",
+          "title": "사슴벌레 - 나무위키",
+          "url": "https://namu.wiki/w/%EC%82%AC%EC%8A%B4%EB%B2%8C%EB%A0%88"
+        },
+        {
+          "domain": "namu.wiki",
+          "eid": "E002",
+          "purpose": "abbreviation_verification",
+          "query": "장수풍뎅이 사슴벌레 캐릭터",
+          "rank": 2,
+          "snippet": "사슴벌레와는 다르게 알을 무더기로 낳는 습성이 있기 때문에 썩은 나무 밑둥이나 발효된 톱밥을 파헤쳐 보면 종종 장수풍뎅이 애벌레를 발견할 수 있다. 3. 분류 장수풍뎅이의 분류에 대한 자세한 내용은 딱정벌레목 생물 목록 문서의 풍뎅이... 곤충이 사슴벌레와 장수말벌 외에는 전무하다. 사슴벌레 장수풍뎅이의 라이벌 하면 거의 대부분 가장 먼저 떠올리는...",
+          "source_rank": 2,
+          "source_tier": "wiki",
+          "title": "장수풍뎅이 - 나무위키",
+          "url": "https://namu.wiki/w/%EC%9E%A5%EC%88%98%ED%92%8D%EB%8E%85%EC%9D%B4"
+        },
+        {
+          "domain": "namu.wiki",
+          "eid": "E003",
+          "purpose": "abbreviation_verification",
+          "query": "장수풍뎅이vs사슴벌레 웹소설",
+          "rank": 3,
+          "snippet": "-11차전: 라미레스코끼리장수풍뎅이 (102mm) VS 케이론청동장수풍뎅이 (115mm) 케이론청동장수풍뎅이가 라미레스코끼리장수풍뎅이를 뿔 사이에 끼워서 밀어 떨어뜨리며 케이론청동장수풍뎅이가 우승. 2.2. 제2회 사슴벌레 토너먼트 2.2.1. A조 -1차전: 톱사슴벌레(아마미섬산) (64mm) VS 사슴벌레 (66mm) 사슴벌레가 톱사슴벌레를 뒤집어버린다. -2차전...",
+          "source_rank": 3,
+          "source_tier": "wiki",
+          "title": "충왕전/결과/ 장수풍뎅이, 사슴벌레 시리즈",
+          "url": "https://namu.wiki/w/%EC%B6%A9%EC%99%95%EC%A0%84/%EA%B2%B0%EA%B3%BC/%20%EC%9E%A5%EC%88%98%ED%92%8D%EB%8E%85%EC%9D%B4%2C%20%EC%82%AC%EC%8A%B4%EB%B2%8C%EB%A0%88%20%EC%8B%9C%EB%A6%AC%EC%A6%88"
+        },
+        {
+          "domain": "namu.wiki",
+          "eid": "E004",
+          "purpose": "abbreviation_verification",
+          "query": "장수풍뎅이vs사슴벌레 웹소설",
+          "rank": 4,
+          "snippet": "2026년 10월 2일 · 진짜 장수의 비결은 생활습관보다는 타고난 유전이 장수 유전자여야 한다. 일부 지방자치단체들은 장수 노인들을 …자세히 읽기",
+          "source_rank": 4,
+          "source_tier": "wiki",
+          "title": "장수 - 나무위키",
+          "url": "https://namu.wiki/w/%EC%9E%A5%EC%88%98"
+        },
+        {
+          "domain": "namu.wiki",
+          "eid": "E005",
+          "purpose": "abbreviation_verification",
+          "query": "장수풍뎅이vs사슴벌레 웹소설",
+          "rank": 5,
+          "snippet": "2026년 10월 6일 · 장수읍 누리파크와 의암공원 일원에서는 장수 한우랑 사과랑 축제가 열리며, 여름에는 방화동자연휴양림 일원에서 …",
+          "source_rank": 5,
+          "source_tier": "wiki",
+          "title": "장수군 - 나무위키",
+          "url": "https://namu.wiki/w/%EC%9E%A5%EC%88%98%EA%B5%B0"
+        },
+        {
+          "domain": "kmong.com",
+          "eid": "E006",
+          "purpose": "abbreviation_verification",
+          "query": "장수풍뎅이 사슴벌레 캐릭터",
+          "rank": 6,
+          "snippet": "사슴벌레·장수풍뎅이 캐릭터 · 블로그 메인용 · 손그림 외곽선 · 블랙 중심 · 참여기간: 2024년 11월 - 2024년 11월 · 업종: 일반·기타 · 스타일: 단순한, 따뜻한, 사랑스러운",
+          "source_rank": 6,
+          "source_tier": "web",
+          "title": "사슴벌레, 장수풍뎅이 캐릭터 작업, 블로그·카페 디자인 포트폴리오",
+          "url": "https://kmong.com/portfolio/view/154419"
+        },
+        {
+          "domain": "ko.accio.com",
+          "eid": "E007",
+          "purpose": "abbreviation_verification",
+          "query": "장수풍뎅이 사슴벌레 캐릭터",
+          "rank": 7,
+          "snippet": "장수 풍뎅이 캐릭터 별점 5점의 인기 비결을 확인하세요. 우직한 힘과 무사 이미지로 사랑받는 캐릭터, 다양한 창작물에서의 등장, 특히 장수풍뎅이와 사슴벌레의 대결에서 평균 9.7/10의 높은 평가를 받았습니다. 클릭해 지금 확인하세요!",
+          "source_rank": 7,
+          "source_tier": "web",
+          "title": "장수 풍뎅이 캐릭터 별점 5점 인기 이유는?",
+          "url": "https://ko.accio.com/business/%EC%9E%A5%EC%88%98%ED%92%8D%EB%8E%85%EC%9D%B4%EC%BA%90%EB%A6%AD%ED%84%B0%EB%B3%84%EC%A0%905%EC%A0%90"
+        },
+        {
+          "domain": "blog.naver.com",
+          "eid": "E008",
+          "purpose": "abbreviation_verification",
+          "query": "장수풍뎅이 사슴벌레 캐릭터",
+          "rank": 8,
+          "snippet": "2026.07.01.장수풍뎅이와 사슴벌레 구별하기 초보자분들은 장수풍뎅이의 뿔과 사슴벌레의 턱을 헷갈려하시기도 합니다. 하지만 신체 구조의 시작 위치를 보면 아주 쉽게 구별할 수 있습니다. 장수풍뎅이: 뿔이 머리나 가슴 등판에서 앞으로 뻗어 나옵니다. 몸통이 전체적으로 둥글고 위로 볼록한 형태입니다. 사슴벌레: 뿔처럼 보이는 부분은 사실 입에 달린 좌우로 벌어진...",
+          "source_rank": 8,
+          "source_tier": "web",
+          "title": "장수풍뎅이 종류 구별법 헤라클레스 코카서스 사슴벌레 암수 구별 총정리",
+          "url": "https://blog.naver.com/webleaders/224333351468"
+        },
+        {
+          "domain": "lib.iksan.go.kr",
+          "eid": "E009",
+          "purpose": "abbreviation_verification",
+          "query": "장수풍뎅이vs사슴벌레 웹소설",
+          "rank": 9,
+          "snippet": "도서관 : 동산작은도서관, 표제/책임표시사항 : 장수풍뎅이 VS 사슴벌레 / 이수영 글. 사진, 발행처 : 글송이, 2007, ISBN : 89557231487340015000, 가격 : 0, 한국십진분류 : 자연과학 > 동물학 > 절지동물, 곤충류, 매체구분 : 인쇄자료(책자형)",
+          "source_rank": 9,
+          "source_tier": "web",
+          "title": "장수풍뎅이 VS 사슴벌레",
+          "url": "https://lib.iksan.go.kr/main/site/search/bookSearch.do?manage_code=SB&book_type=BOOK&species_key=170073563&reckey=170073565"
+        },
+        {
+          "domain": "www.incheonlib.go.kr",
+          "eid": "E010",
+          "purpose": "abbreviation_verification",
+          "query": "장수풍뎅이vs사슴벌레 웹소설",
+          "rank": 10,
+          "snippet": "발행연도 - 2018 / 지음: 슬라이움 , 피비 ; 그림: 블랙 잉크 팀 / 학산문화사 ; 도서관 청라호수도서관 · 자료실 [청라호수]어린이자료실 · 부록 부록없음 · 등록번호 CL0000092184 · ISBN 9791162870013 · 형태 156 p. 26 cm",
+          "source_rank": 10,
+          "source_tier": "web",
+          "title": "최강왕 배틀 : [만화]강한 뿔 장수풍뎅이 VS 큰 턱 사슴벌레",
+          "url": "https://www.incheonlib.go.kr/mch/sch/bkdt/1530580727/1530580725/9791162870013.do?mnidx=817"
+        },
+        {
+          "domain": "lib.yongin.go.kr",
+          "eid": "E011",
+          "purpose": "abbreviation_verification",
+          "query": "장수풍뎅이vs사슴벌레 웹소설",
+          "rank": 11,
+          "snippet": "자료유형 : 도서, 판사항 : 2판, 발행사항 : 고양 : 위즈덤하우스 미디어그룹 : 스콜라, 2019, 형태사항 : 311 p.: 천연색삽화 ; 27 cm, 총서사항 : 곤충 이야기 도감, 주기사항 : 참고문헌과 색인 수록, 초등학생, 표준번호 : ISBN: 9788962473384 16490: \\20000, 분류기호 : 한국십진분류법: 495.7, 소장기관 : 중앙도서관, 마크보기 : MARC",
+          "source_rank": 11,
+          "source_tier": "web",
+          "title": "큰턱 사슴벌레 VS 큰뿔 장수풍뎅이 - 방학특강신청조회",
+          "url": "https://lib.yongin.go.kr/gugal/menu/10529/program/30016/plusSearchResultDetail.do?recKey=353583756&bookKey=353583758&publishFormCode=BO"
+        },
+        {
+          "domain": "www.hscitylib.or.kr",
+          "eid": "E012",
+          "purpose": "abbreviation_verification",
+          "query": "장수풍뎅이vs사슴벌레 웹소설",
+          "rank": 12,
+          "snippet": "책소개 ; 곤충계의 영원한 라이벌 장수풍뎅이와 사슴벌레의 만남부터, 갈등, 대결, 결말까지 과정을 위트 있는 만화로 전개해 큰 웃음을 선사한다. 책을 읽다보면 곤충의 구조는 물론 큰턱과 머리뿔을 이용한 싸움의 기술을 자연스레 알게 된다.",
+          "source_rank": 12,
+          "source_tier": "web",
+          "title": "장수풍뎅이와 사슴벌레의 대결 - 통합검색",
+          "url": "https://www.hscitylib.or.kr/dwlib/menu/11470/program/30001/searchResultDetail.do?bookKey=2122309071&speciesKey=2122309067&pubFormCode=MO"
+        },
+        {
+          "domain": "www.jangsu.go.kr",
+          "eid": "E013",
+          "purpose": "abbreviation_verification",
+          "query": "장수풍뎅이vs사슴벌레 웹소설",
+          "rank": 13,
+          "snippet": "장수는 지금 최훈식 장수군수, 추석맞이 사회복지시설 위문 나서 2026-09-21 최훈식 장수군수, 제20회 장수한우랑사과랑축제 현장점검 …",
+          "source_rank": 13,
+          "source_tier": "web",
+          "title": "장수군청 누리집 - JANGSU",
+          "url": "https://www.jangsu.go.kr/index.jangsu"
+        },
+        {
+          "domain": "lunara.tistory.com",
+          "eid": "E014",
+          "purpose": "abbreviation_verification",
+          "query": "장수풍뎅이vs사슴벌레 웹소설",
+          "rank": 14,
+          "snippet": "2025년 5월 7일 · 장수 가볼만한곳 베스트10 (+명소 추천) 전라북도 장수군은 '오래 살 장 (長), 목숨 수 (壽)'라는 이름처럼 맑은 공기와 청정 …",
+          "source_rank": 14,
+          "source_tier": "web",
+          "title": "장수 가볼만한곳 베스트10 (+명소 추천)",
+          "url": "https://lunara.tistory.com/entry/%EC%9E%A5%EC%88%98-%EA%B0%80%EB%B3%BC%EB%A7%8C%ED%95%9C%EA%B3%B3-%EB%B2%A0%EC%8A%A4%ED%8A%B810"
+        },
+        {
+          "domain": "www.jangsugolf.com",
+          "eid": "E015",
+          "purpose": "abbreviation_verification",
+          "query": "장수풍뎅이vs사슴벌레 웹소설",
+          "rank": 15,
+          "snippet": "EXCITING MOMENT 해발 500m 무공해 청정지역에서 즐기는 익사이팅한 도전! 천혜의 자연 경관 속 건강한 공존을 지향하는 …",
+          "source_rank": 15,
+          "source_tier": "web",
+          "title": "장수골프리조트",
+          "url": "https://www.jangsugolf.com/"
+        },
+        {
+          "domain": "www.kobic.net",
+          "eid": "E016",
+          "purpose": "decoder_recall_verification",
+          "query": "장수풍뎅이 사슴벌레 작가",
+          "rank": 16,
+          "snippet": "도서소개 ; 장수풍뎅이와 사슴벌레는 여름 숲을 대표하는 곤충이자, 아이들이 가장 좋아하는 곤충이에요. 생생한 사진으로 두 곤충의 신비로운 성장 과정과 힘겨루기 모습 등 생태를 관찰하다 보면 자연스럽게 관찰력과 탐구하는 힘을 키울 수 있어요. 《유치원 큰 뿔 장수풍뎅이 큰 턱 사슴벌레 백과》는 알에서 애벌레, 번데기를 거쳐 어른벌레가 되는 놀라운 성장 과정과 우......",
+          "source_rank": 16,
+          "source_tier": "web",
+          "title": "유치원 큰 뿔 장수풍뎅이 큰 턱 사슴벌레백과 - KOBIC 신간도서정보서비스 - 한국....",
+          "url": "https://www.kobic.net/book/bookInfo/view.do?isbn=9791170186687"
+        },
+        {
+          "domain": "omny.fm",
+          "eid": "E017",
+          "purpose": "decoder_recall_verification",
+          "query": "장수풍뎅이 사슴벌레 작가",
+          "rank": 17,
+          "snippet": "-어린이 사랑 1, 2위! 사슴벌레와 장수풍뎅이 -사슴벌레의 집게는 무슨 용도일까? -똥수저 잘만날수록 잘 성장하는 쇠똥구리 -세상에서 가장 비싼 사슴벌레의 가격은? -제주에서 발견된 알락하늘소 최초 발견자 중 한 명이 갈로아 작가..?",
+          "source_rank": 17,
+          "source_tier": "web",
+          "title": "[9/21(목)] 곤충 선호도 1, 2위! 사슴벌레와 장수풍뎅이, 가장 비싸게 팔린 사슴벌....",
+          "url": "https://omny.fm/shows/program-c470e99f-4e78-42d3-9d9b-90ba30c8fdc6/9-21-1-2?in_playlist=podcast"
+        },
+        {
+          "domain": "lib.jge.go.kr",
+          "eid": "E018",
+          "purpose": "decoder_recall_verification",
+          "query": "장수풍뎅이 사슴벌레 작가",
+          "rank": 18,
+          "snippet": "도서관 : 전남광주통합특별시교육청송정다가치문화도서관, 발행처 : 글송이, 2015, 형태사항 : 172 p. ; 21 cm ; 총서명 : 어린이 과학백과 시리즈; ISBN : 9791170181170, 가격 : 10000, 분류기호 : 한국십진분류법 -> 408, 매체구분 : 인쇄자료(책자형)",
+          "source_rank": 18,
+          "source_tier": "web",
+          "title": "(신기한) 장수풍뎅이 사슴벌레 백과 - 전남광주통합특별시교육청 광주통합도서....",
+          "url": "https://lib.jge.go.kr/songjung/site/search/bookSearchNew.do?manage_code=ME&book_type=BOOK&reckey=2055987923"
+        },
+        {
+          "domain": "lib.changwon.go.kr",
+          "eid": "E019",
+          "purpose": "decoder_recall_verification",
+          "query": "장수풍뎅이 사슴벌레 작가",
+          "rank": 19,
+          "snippet": "저자사항 : 조은선 글;김태우 감수, 발행사항 : 파주:키즈김영사, 형태사항 : 35p. 25cm, ISBN : 7480010000, 주제어/키워드 : 장수풍뎅이와사슴벌레, 소장기관 : 천주평생학습센터",
+          "source_rank": 19,
+          "source_tier": "web",
+          "title": "장수풍뎅이와 사슴벌레 - 자료검색/예약",
+          "url": "https://lib.changwon.go.kr/book/dataView2.php?lib_code=hp&book_key=1102541367&species_key=1102541365&pub_form_code=MO&page_type=search"
+        },
+        {
+          "domain": "novelpia.com",
+          "eid": "E020",
+          "purpose": "platform_title_search",
+          "query": "사슴벌레 웹소설 노벨피아",
+          "rank": 20,
+          "snippet": "내서재 알림 × 잘못된 접근입니다. 확인",
+          "source_rank": 20,
+          "source_tier": "novel_platform",
+          "title": "(포켓몬스터) 세계챔피언하고 칼로스퀸의 ....",
+          "url": "https://novelpia.com/novel/451543"
+        },
+        {
+          "domain": "novelpia.com",
+          "eid": "E021",
+          "purpose": "platform_title_search",
+          "query": "사슴벌레 웹소설 노벨피아",
+          "rank": 21,
+          "snippet": "내서재 알림 × 삭제된 소설 입니다. 확인",
+          "source_rank": 21,
+          "source_tier": "novel_platform",
+          "title": "[슬라임 300년X벤 10] 옴니트릭스를 얻고 벤....",
+          "url": "https://novelpia.com/novel/381781"
+        },
+        {
+          "domain": "novelpia.com",
+          "eid": "E022",
+          "purpose": "platform_title_search",
+          "query": "사슴벌레 웹소설 노벨피아",
+          "rank": 22,
+          "snippet": "내서재 알림 × 삭제된 소설 입니다. 확인",
+          "source_rank": 22,
+          "source_tier": "novel_platform",
+          "title": "이무기가 떨어진 곳은 이세계였습니다.",
+          "url": "https://novelpia.com/novel/337354"
+        },
+        {
+          "domain": "novelpia.com",
+          "eid": "E023",
+          "purpose": "platform_title_search",
+          "query": "사슴벌레 웹소설 노벨피아",
+          "rank": 23,
+          "snippet": "기생 생물 [모지리]하고 세계평화를 위해 세계정복 하는 이야기인류를 향한 300년의 억압, 종의 보존을 위한 전쟁, 이제야 마지막 장에 도달했다괴물들이 득시글거리는 은하 속에서 살아남기 위해서는, 괴물이 되어야한다.",
+          "source_rank": 23,
+          "source_tier": "web",
+          "title": "웹소설로 꿈꾸는 세상!",
+          "url": "https://novelpia.com/freestory/view/0/95/SF/"
+        },
+        {
+          "domain": "novelpia.com",
+          "eid": "E024",
+          "purpose": "platform_title_search",
+          "query": "사슴벌레 웹소설 노벨피아",
+          "rank": 24,
+          "snippet": "재앙급 진조는 방구석에서 꿀 빱니다 · 레잇나잇 · 플러스 UP 독점 ; 주술사들이 집착하는 천재 대장장이가 되었다 · 고죠고 · 플러스 UP 독점",
+          "source_rank": 24,
+          "source_tier": "web",
+          "title": "전체",
+          "url": "https://novelpia.com/top100/all/%ED%98%84%EB%8C%80/vote/all/all"
+        }
+      ],
+      "candidate_provenance": {
+        "candidate_producer_plans": [
+          {
+            "enumeration_finished": false,
+            "metadata_fingerprint": "82273097fc665a5001e48fc6ffb76c30f88ceed8efce9957ec8e1bafe4e89db0",
+            "occurrence": 1,
+            "plan_fingerprint": "c085e456e1dc75e10eaa9528c03c3fbf6c4444b2274be8750fb9da4b6d33fea8",
+            "planned_operation_count": 2,
+            "planned_operation_fingerprints": [
+              "0cdd01ac1df3d12d2eb261cf5ee56a67bdc0576b839159b327b70ac6ce4077dc",
+              "a1146cdbbabcf5ef02ed8e298e19eaf6c58dbc232ba6be755db80010f5884ae1"
+            ],
+            "producer": "search",
+            "reason_codes": [
+              "bounded_plan_unfinished"
+            ],
+            "schema_version": "candidate_producer_plan_v1",
+            "scope": "bounded_candidate_producer_plan"
+          },
+          {
+            "enumeration_finished": true,
+            "metadata_fingerprint": "4b18dfbc9f120b4fde2e1382009245904e634764f22f21e98126114f87364462",
+            "occurrence": 2,
+            "plan_fingerprint": "d56a5363e03b9866eac3261d73c17f1562232ce5b73c4ed7832703781cefab6d",
+            "planned_operation_count": 1,
+            "planned_operation_fingerprints": [
+              "6ee27419301ae6bd058261e71787f9c2521469e6d735a482a8837a288d3c820a"
+            ],
+            "producer": "search",
+            "reason_codes": [
+              "bounded_plan_finished"
+            ],
+            "schema_version": "candidate_producer_plan_v1",
+            "scope": "bounded_candidate_producer_plan"
+          },
+          {
+            "enumeration_finished": false,
+            "metadata_fingerprint": "280b326400be65f58bd9e61f77584de722179f22f3a50d70c76d7fd4b8aa1bd8",
+            "occurrence": 3,
+            "plan_fingerprint": "5f19a6cc40c4a0df8f1326485148feaba3fd2b5e58547a052f8c37680033dd00",
+            "planned_operation_count": 2,
+            "planned_operation_fingerprints": [
+              "9fde4616d94edcfed223fc70c30489362758f353897bb298e3519e78ee75a0f7",
+              "3e4503bfdebe2b35fda0aa8b89d5846b45af00865fccc42e21985bc4bcdd8561"
+            ],
+            "producer": "search",
+            "reason_codes": [
+              "bounded_plan_unfinished"
+            ],
+            "schema_version": "candidate_producer_plan_v1",
+            "scope": "bounded_candidate_producer_plan"
+          },
+          {
+            "enumeration_finished": false,
+            "metadata_fingerprint": "b2036b24c59c05b93f48635d36c5f9c53ddd360c43de7355db091e2e2000c183",
+            "occurrence": 1,
+            "plan_fingerprint": "2e503284464480500354538d9584babe1269d475b13425086af33580bd407dd7",
+            "planned_operation_count": 1,
+            "planned_operation_fingerprints": [
+              "1943fb772737717fd71ca237aed658de809539bfb1493a16637215357a9687ac"
+            ],
+            "producer": "fetch",
+            "reason_codes": [
+              "bounded_plan_unfinished"
+            ],
+            "schema_version": "candidate_producer_plan_v1",
+            "scope": "bounded_candidate_producer_plan"
+          },
+          {
+            "enumeration_finished": false,
+            "metadata_fingerprint": "82ea74d004f81f21059d12bb323c0a8c7e5034d1ddb8ad154a5607224b3e989e",
+            "occurrence": 2,
+            "plan_fingerprint": "21d1d7c4c9e91dbd73a2376fdd2187f93855421d4b196ef7e1e648cc163c7163",
+            "planned_operation_count": 1,
+            "planned_operation_fingerprints": [
+              "0a8caf079006601bffba1bdd5f6ac72e68b792d47e87f2c505047542433ea497"
+            ],
+            "producer": "fetch",
+            "reason_codes": [
+              "bounded_plan_unfinished"
+            ],
+            "schema_version": "candidate_producer_plan_v1",
+            "scope": "bounded_candidate_producer_plan"
+          },
+          {
+            "enumeration_finished": false,
+            "metadata_fingerprint": "82142d0c2d3ca87c9b5285ddfdee7314638ac7b7139ca5de073d67ff5cb0a1bc",
+            "occurrence": 3,
+            "plan_fingerprint": "5f806c78307eee6748d9bc459cb04aae7eb762afca41c796f7a68f338b602603",
+            "planned_operation_count": 1,
+            "planned_operation_fingerprints": [
+              "8e06c174a35ed425ae47492c74822013b55c9abf13dba2e810c8bae790409c7e"
+            ],
+            "producer": "fetch",
+            "reason_codes": [
+              "bounded_plan_unfinished"
+            ],
+            "schema_version": "candidate_producer_plan_v1",
+            "scope": "bounded_candidate_producer_plan"
+          }
+        ],
+        "candidate_producer_receipts": [
+          {
+            "accepted_count": 10,
+            "attempted_count": 1,
+            "degraded": false,
+            "enumeration_finished": true,
+            "error_status": "NONE",
+            "from_cache": false,
+            "input_fingerprint": "0cdd01ac1df3d12d2eb261cf5ee56a67bdc0576b839159b327b70ac6ce4077dc",
+            "metadata_fingerprint": "2a793eda8290a199fdbcb1f45e95709e72cb156a868fad003631c1ec217b3ce8",
+            "occurrence": 1,
+            "operation_id": "864cdcd6b4ad0bb0f64c597b72e9e881a56c3c9b38727f7531aad06b332ae4f9",
+            "output_fingerprint": "df317807f547642747fd13fd67d32171fcc09564d2e0f297a8fd2735f343fb8b",
+            "plan_fingerprint": "c085e456e1dc75e10eaa9528c03c3fbf6c4444b2274be8750fb9da4b6d33fea8",
+            "possible_throttle": false,
+            "producer": "search",
+            "raw_count": 25,
+            "reason_codes": [
+              "bounded_operation_finished",
+              "producer_output_truncated"
+            ],
+            "schema_version": "candidate_producer_receipt_v1",
+            "scope": "bounded_candidate_producer_operation",
+            "status": "TRUNCATED"
+          },
+          {
+            "accepted_count": 10,
+            "attempted_count": 1,
+            "degraded": false,
+            "enumeration_finished": true,
+            "error_status": "NONE",
+            "from_cache": false,
+            "input_fingerprint": "a1146cdbbabcf5ef02ed8e298e19eaf6c58dbc232ba6be755db80010f5884ae1",
+            "metadata_fingerprint": "c49da2b730c5ea5260e83c0b96b6e199417821f8b1b9de43a15ff449089b40ca",
+            "occurrence": 2,
+            "operation_id": "2cfad9e637e3874f0ed1ecf71a52ba2c1646b8ae5ea611c5e91446177b30dddd",
+            "output_fingerprint": "7f2fb8d96e9a0764bba7289161ef7c5a57b4a1f63ed8dd9210e7800d72d24632",
+            "plan_fingerprint": "c085e456e1dc75e10eaa9528c03c3fbf6c4444b2274be8750fb9da4b6d33fea8",
+            "possible_throttle": false,
+            "producer": "search",
+            "raw_count": 25,
+            "reason_codes": [
+              "bounded_operation_finished",
+              "producer_output_truncated"
+            ],
+            "schema_version": "candidate_producer_receipt_v1",
+            "scope": "bounded_candidate_producer_operation",
+            "status": "TRUNCATED"
+          },
+          {
+            "accepted_count": 10,
+            "attempted_count": 1,
+            "degraded": false,
+            "enumeration_finished": true,
+            "error_status": "NONE",
+            "from_cache": false,
+            "input_fingerprint": "6ee27419301ae6bd058261e71787f9c2521469e6d735a482a8837a288d3c820a",
+            "metadata_fingerprint": "88c6eacef5c501666895d268a53df3795fa021ba31711239532b7c6139b015dc",
+            "occurrence": 3,
+            "operation_id": "9cc5aadbc5f6b4c3881e8df17bcef5f4aa583338d92dbbd0fa9fdda8b3f1c4b0",
+            "output_fingerprint": "001a8d03e6445f2a3648bf3f8110a0b080b49a67840ece4dbea2fcda1d3e5ed5",
+            "plan_fingerprint": "d56a5363e03b9866eac3261d73c17f1562232ce5b73c4ed7832703781cefab6d",
+            "possible_throttle": false,
+            "producer": "search",
+            "raw_count": 25,
+            "reason_codes": [
+              "bounded_operation_finished",
+              "producer_output_truncated"
+            ],
+            "schema_version": "candidate_producer_receipt_v1",
+            "scope": "bounded_candidate_producer_operation",
+            "status": "TRUNCATED"
+          },
+          {
+            "accepted_count": 10,
+            "attempted_count": 1,
+            "degraded": false,
+            "enumeration_finished": true,
+            "error_status": "NONE",
+            "from_cache": false,
+            "input_fingerprint": "9fde4616d94edcfed223fc70c30489362758f353897bb298e3519e78ee75a0f7",
+            "metadata_fingerprint": "6151558402bfff191f071fb40d81e9e533cdb55389fd713ac86c8601a69d5f7a",
+            "occurrence": 4,
+            "operation_id": "20e6295475b7937f26b86221c8c00a7c980375daf2e71b5b6d760b01523e249c",
+            "output_fingerprint": "82097ee62b7978725cc9c25bff0dabbbe1ffdcd9ccce888bd57a8ced18f28b19",
+            "plan_fingerprint": "5f19a6cc40c4a0df8f1326485148feaba3fd2b5e58547a052f8c37680033dd00",
+            "possible_throttle": false,
+            "producer": "search",
+            "raw_count": 25,
+            "reason_codes": [
+              "bounded_operation_finished",
+              "producer_output_truncated"
+            ],
+            "schema_version": "candidate_producer_receipt_v1",
+            "scope": "bounded_candidate_producer_operation",
+            "status": "TRUNCATED"
+          },
+          {
+            "accepted_count": 1,
+            "attempted_count": 1,
+            "degraded": false,
+            "enumeration_finished": true,
+            "error_status": "NONE",
+            "from_cache": false,
+            "input_fingerprint": "1943fb772737717fd71ca237aed658de809539bfb1493a16637215357a9687ac",
+            "metadata_fingerprint": "9d3d28abb9dac2a9ac29fbdc6686ebad0ee156c12200a58e542721b2c21b7112",
+            "occurrence": 5,
+            "operation_id": "991cd53f7823e49e65d4f6e1f7d2e35d380d7d57662d066842d16b23603ee291",
+            "output_fingerprint": "c0b6ef9c225bfe5a04eaa3f7b94beddd3614b8a79014196c62ee354cc7b2da12",
+            "plan_fingerprint": "2e503284464480500354538d9584babe1269d475b13425086af33580bd407dd7",
+            "possible_throttle": false,
+            "producer": "fetch",
+            "raw_count": 1,
+            "reason_codes": [
+              "bounded_operation_finished"
+            ],
+            "schema_version": "candidate_producer_receipt_v1",
+            "scope": "bounded_candidate_producer_operation",
+            "status": "COMPLETE"
+          },
+          {
+            "accepted_count": 1,
+            "attempted_count": 1,
+            "degraded": false,
+            "enumeration_finished": true,
+            "error_status": "NONE",
+            "from_cache": false,
+            "input_fingerprint": "0a8caf079006601bffba1bdd5f6ac72e68b792d47e87f2c505047542433ea497",
+            "metadata_fingerprint": "0d72de94a2f0b66e446e5630c2557c7c3fa3828910c072907fc637a717a348d9",
+            "occurrence": 6,
+            "operation_id": "ed63bad75f6f07cc3c088c1b14e0ecf8446c216ce38dddaf892a447908f52f45",
+            "output_fingerprint": "6b9c9553193eff0660959300aab82cf40d63ca47d8093d42fae0c63794fbc30e",
+            "plan_fingerprint": "21d1d7c4c9e91dbd73a2376fdd2187f93855421d4b196ef7e1e648cc163c7163",
+            "possible_throttle": false,
+            "producer": "fetch",
+            "raw_count": 1,
+            "reason_codes": [
+              "bounded_operation_finished"
+            ],
+            "schema_version": "candidate_producer_receipt_v1",
+            "scope": "bounded_candidate_producer_operation",
+            "status": "COMPLETE"
+          },
+          {
+            "accepted_count": 1,
+            "attempted_count": 1,
+            "degraded": false,
+            "enumeration_finished": true,
+            "error_status": "NONE",
+            "from_cache": false,
+            "input_fingerprint": "8e06c174a35ed425ae47492c74822013b55c9abf13dba2e810c8bae790409c7e",
+            "metadata_fingerprint": "cc9dd008bed77fa4172c67479111acc15f0a84e992541c71d067796ed2b5a311",
+            "occurrence": 7,
+            "operation_id": "85e86b91502f6726827d15875deba68e9a9056ac6cbb384344503f456bc026ba",
+            "output_fingerprint": "4ccaa76feae714b12681a5edc6ce4dfc12df4fba886d0af79a4d9e7d586239d7",
+            "plan_fingerprint": "5f806c78307eee6748d9bc459cb04aae7eb762afca41c796f7a68f338b602603",
+            "possible_throttle": false,
+            "producer": "fetch",
+            "raw_count": 1,
+            "reason_codes": [
+              "bounded_operation_finished"
+            ],
+            "schema_version": "candidate_producer_receipt_v1",
+            "scope": "bounded_candidate_producer_operation",
+            "status": "COMPLETE"
+          }
+        ],
+        "candidate_stage_receipts": [
+          {
+            "cap": 5,
+            "count_basis": "normalized_title_unique_before_stage_row_cap",
+            "emitted_source_count": 0,
+            "metadata_fingerprint": "ba485e8391970c44e1c5682179f0356ba42eed142bd6ba0b591637f2c9f152ca",
+            "observed_source_count": 0,
+            "observed_sources_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "occurrence": 1,
+            "producer": "decoder",
+            "reason_codes": [
+              "upstream_completeness_unknown"
+            ],
+            "retained_source_count": 0,
+            "retained_sources_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "schema_version": "candidate_stage_receipt_v1",
+            "scope": "expert_stage_candidate_inventory",
+            "source_key_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "stage": "new_suspected_titles",
+            "status": "UNKNOWN",
+            "unique_valid_source_count": 0,
+            "upstream_completeness": "UNKNOWN"
+          },
+          {
+            "cap": 5,
+            "count_basis": "normalized_title_unique_before_stage_row_cap",
+            "emitted_source_count": 0,
+            "metadata_fingerprint": "79cce728da5ae87deee38292e4587bec4ba4b4b9e27bcdc06d4a481f918e39e8",
+            "observed_source_count": 0,
+            "observed_sources_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "occurrence": 2,
+            "producer": "decoder",
+            "reason_codes": [
+              "upstream_completeness_unknown"
+            ],
+            "retained_source_count": 0,
+            "retained_sources_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "schema_version": "candidate_stage_receipt_v1",
+            "scope": "expert_stage_candidate_inventory",
+            "source_key_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "stage": "new_suspected_titles",
+            "status": "UNKNOWN",
+            "unique_valid_source_count": 0,
+            "upstream_completeness": "UNKNOWN"
+          },
+          {
+            "cap": 5,
+            "count_basis": "normalized_title_unique_before_stage_row_cap",
+            "emitted_source_count": 1,
+            "metadata_fingerprint": "f60211f8cb2836dd746b0ef8bc11297b43a59fa20367c7f5c79685a74f32c44c",
+            "observed_source_count": 1,
+            "observed_sources_fingerprint": "c46c6c1c89b76976e00e4aba33c7d6cd48f5a525b7b5c3a0966620e4286c9170",
+            "occurrence": 1,
+            "producer": "arbiter",
+            "reason_codes": [
+              "upstream_completeness_unknown"
+            ],
+            "retained_source_count": 1,
+            "retained_sources_fingerprint": "c46c6c1c89b76976e00e4aba33c7d6cd48f5a525b7b5c3a0966620e4286c9170",
+            "schema_version": "candidate_stage_receipt_v1",
+            "scope": "expert_stage_candidate_inventory",
+            "source_key_fingerprint": "c46c6c1c89b76976e00e4aba33c7d6cd48f5a525b7b5c3a0966620e4286c9170",
+            "stage": "candidate_merge",
+            "status": "UNKNOWN",
+            "unique_valid_source_count": 1,
+            "upstream_completeness": "UNKNOWN"
+          },
+          {
+            "cap": 5,
+            "count_basis": "normalized_title_unique_before_stage_row_cap",
+            "emitted_source_count": 1,
+            "metadata_fingerprint": "abc13d15766b7c8e740d3fe79c6cea809976d3044f67234fe78a2e6b02f272b4",
+            "observed_source_count": 1,
+            "observed_sources_fingerprint": "c46c6c1c89b76976e00e4aba33c7d6cd48f5a525b7b5c3a0966620e4286c9170",
+            "occurrence": 1,
+            "producer": "arbiter",
+            "reason_codes": [
+              "upstream_completeness_unknown"
+            ],
+            "retained_source_count": 1,
+            "retained_sources_fingerprint": "c46c6c1c89b76976e00e4aba33c7d6cd48f5a525b7b5c3a0966620e4286c9170",
+            "schema_version": "candidate_stage_receipt_v1",
+            "scope": "expert_stage_candidate_inventory",
+            "source_key_fingerprint": "c46c6c1c89b76976e00e4aba33c7d6cd48f5a525b7b5c3a0966620e4286c9170",
+            "stage": "llm_candidate_merge",
+            "status": "UNKNOWN",
+            "unique_valid_source_count": 1,
+            "upstream_completeness": "UNKNOWN"
+          }
+        ]
+      },
+      "log_ref": {
+        "path": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\logs\\expert_run_20261015_000103_787111.log",
+        "sha256": "f2ea6c0d6600ad68e41c7fa879ad6d983ecd0559a58bb985408b8d6ea40b0cf6",
+        "bytes": 175143
+      },
+      "source_canonical_sha256": "532abafa3ef2bc01d10af245b58ee73b3cf202bc5fbc967d1097c061c141cfdd",
+      "experts_canonical_sha256": "109c7bf0ceef5020bb168ffaf084742ca2761d0c30ff77a9362791aed3d19435",
+      "catalog_canonical_sha256": "53af84f1d3d54ee166c0e64bcf90eca71ae51a85033f2abd4d3668f71fd0447d"
+    }
+  ],
+  "references": {
+    "source": {
+      "path": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\src\\llm_batch\\agentic_pipeline.py",
+      "sha256": "4c14332dca3bc184759003128d1f2699595405f5c73e3f83c5ee983a2384282c",
+      "bytes": 4664248
+    },
+    "freeze": {
+      "path": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\r5_resolution_20261014_v2\\source_frozen_final55.json",
+      "sha256": "61115258d62d85c27e6a162b44d5e55d9bc2b5495fb82e905e6cb80ca060b1bb",
+      "bytes": 60613
+    },
+    "result": {
+      "path": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\r5_resolution_20261014_v2\\final55_001\\run\\result.json",
+      "sha256": "5d09b2ad10b3bae3bb2b34ded9d4d30805b6a2aeb9fc90e8184ece75f5032ce5",
+      "bytes": 93773
+    },
+    "input": {
+      "path": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\r5_resolution_20261014_v2\\final55_input.jsonl",
+      "sha256": "a46938101b08c82d716b96e837f06bd43c19a51a57abb5cb164ea0a8f6da32a1",
+      "bytes": 316
+    }
+  },
+  "compaction": {
+    "original_fixture_sha256": "5d277a8c09409b5ab0772d2bf157ccd32c21eb9c72d259544bf92566c3692027",
+    "preserved": "source/comments/expert/catalog/provenance and original references"
+  }
+}

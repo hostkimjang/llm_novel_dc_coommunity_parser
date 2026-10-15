@@ -413,6 +413,7 @@ def validate_dataset_readiness_against_sources(
         if not isinstance(actual_evaluation_policy, Mapping):
             raise ValueError("actual evaluation policy source is required")
         from src.llm_batch.grounding.candidate_set_calibration_shadow import (
+            CALIBRATION_POLICY_SCHEMA_V4,
             CalibrationEvaluationPolicy,
         )
 
@@ -422,6 +423,7 @@ def validate_dataset_readiness_against_sources(
             raise ValueError(f"invalid actual evaluation policy source: {exc}") from exc
         if (
             policy.policy_scope != "FROZEN_ACTUAL_PRE_REGISTERED"
+            or policy.schema_version != CALIBRATION_POLICY_SCHEMA_V4
             or policy.policy_sha256 != policy_sha
         ):
             raise ValueError("actual evaluation policy semantic binding mismatch")

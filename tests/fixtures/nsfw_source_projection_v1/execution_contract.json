@@ -1,0 +1,22 @@
+{
+  "schema_version": "nsfw_source_projection_execution_v1",
+  "origin_root": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser",
+  "end_receipt_path": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\p4_quality_followup_20261013\\actual80_followup_parallel12_v1\\end_check_prep_v1\\end_verification.json",
+  "end_receipt_sha256": "ffb509bcb46bf22e9b0ad960443dba295d923bacaafb2a1f972fc9cf22ac03d5",
+  "run_id": "20261013_060126_882644",
+  "fixture_sha256": "961bec1140fe45123aa10f550409a9638869883eec725995dd02922ba7f94704",
+  "pipeline_role": "NSFW_CARRIER_REPAIR_REQUIRED_NOT_PRIMARY_BASELINE",
+  "candidate_product_sha256": {
+    "src/llm_batch/agentic_pipeline.py": "9f481b13e55273a20e52b4971dae192bdde302ba71d198bd28a4a0e55ad029e3",
+    "src/llm_batch/domain/models.py": "3747c35824ccbd43ee967aa2356d4e6e4fee2bab7ac069fe71e73508fefd625e",
+    "src/llm_batch/experts/orchestrator.py": "7bc17c4ee7ff7b0623f43eb064012bce0bf1f8d1c966e58eb71941dc2dd241d7"
+  },
+  "process_path": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\p4_followup_actual80_parallel12_20261013\\PROCESS.json",
+  "startup_path": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\p4_quality_followup_20261013\\actual80_followup_parallel12_v1\\start_validation.json",
+  "runtime_version": [
+    3,
+    12
+  ],
+  "required_requested_parallel": 12,
+  "scope": "SOURCE_PROJECTION_FUNCTION_CONTROL_NOT_FULL_CONTEXT_MAIN_WAL"
+}

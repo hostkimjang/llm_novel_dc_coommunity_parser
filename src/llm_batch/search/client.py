@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import os
+import json
+import sys
 import time
 import random
 import threading
+from contextlib import contextmanager
 from typing import Any, Dict, List, Optional
 from urllib.parse import urlsplit, urlunsplit
 
@@ -14,6 +17,68 @@ _ENDPOINT_SELECT_LOCK = threading.Lock()
 _ENDPOINT_SELECT_NEXT = 0
 _CLIENT_ENDPOINT_BACKOFF_LOCK = threading.Lock()
 _CLIENT_ENDPOINT_BACKOFF_UNTIL: Dict[str, float] = {}
+_SEARCH_ENDPOINT_STATES_LOCK = threading.Lock()
+_SEARCH_ENDPOINT_STATES: Dict[str, "_SearchEndpointState"] = {}
+
+
+class _SearchEndpointState:
+    def __init__(self) -> None:
+        self.condition = threading.Condition()
+        self.active = 0
+
+
+def _client_search_concurrency_limit() -> int:
+    try:
+        return max(1, min(int(os.getenv("MCP_CLIENT_SEARCH_CONCURRENCY", "2")), 64))
+    except (TypeError, ValueError):
+        return 2
+
+
+@contextmanager
+def _shared_search_request_slot(endpoint: str, query: str, purpose: str, attempt: int):
+    """같은 프로세스의 client들이 endpoint별 HTTP 전송 상한을 공유한다."""
+    key = _normalize_endpoint(endpoint)
+    with _SEARCH_ENDPOINT_STATES_LOCK:
+        state = _SEARCH_ENDPOINT_STATES.get(key)
+        if state is None:
+            state = _SearchEndpointState()
+            _SEARCH_ENDPOINT_STATES[key] = state
+    queued_at = time.monotonic()
+    with state.condition:
+        while True:
+            limit = _client_search_concurrency_limit()
+            if state.active < limit:
+                break
+            state.condition.wait()
+        state.active += 1
+        admission = {
+            "schema_version": "mcp_search_admission_v1",
+            "endpoint": key,
+            "query": query,
+            "purpose": purpose,
+            "attempt": attempt + 1,
+            "limit": limit,
+            "active_at_start": state.active,
+            "queue_wait_ms": round((time.monotonic() - queued_at) * 1000, 3),
+            "http_status": None,
+            "error_type": None,
+        }
+    started_at = time.monotonic()
+    try:
+        yield admission
+    except BaseException as exc:
+        admission["error_type"] = type(exc).__name__
+        raise
+    finally:
+        admission["http_elapsed_ms"] = round((time.monotonic() - started_at) * 1000, 3)
+        with state.condition:
+            state.active -= 1
+            state.condition.notify_all()
+        try:
+            sys.stderr.write("[mcp_search_admission] " + json.dumps(admission, ensure_ascii=False) + "\n")
+            sys.stderr.flush()
+        except Exception:
+            pass
 
 
 def _parse_endpoints(raw: str) -> List[str]:
@@ -171,25 +236,55 @@ class MCPClient:
             return active
         return endpoints
 
-    def search(self, query: str, num_results: Optional[int] = None, purpose: str = "") -> Dict[str, Any]:
+    def search(
+        self, query: str, num_results: Optional[int] = None, purpose: str = "",
+        *, source_binding: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         payload = {
             "query": query,
             "num_results": num_results or self.default_num_results,
             "purpose": purpose or "",
         }
+        source_receipt_digest = ""
+        if source_binding is not None:
+            if (not isinstance(source_binding, dict)
+                    or set(source_binding) != {"run_id", "post_id", "source_receipt"}
+                    or not isinstance(source_binding.get("source_receipt"), dict)
+                    or purpose != "official_title_verify"
+                    or not str(source_binding.get("run_id") or "").strip()
+                    or not str(source_binding.get("post_id") or "").strip()):
+                raise ValueError("invalid source-bound direct-search request")
+            from hashlib import sha256
+
+            source_receipt_digest = sha256(json.dumps(
+                source_binding["source_receipt"], ensure_ascii=False,
+                sort_keys=True, separators=(",", ":"),
+            ).encode("utf-8")).hexdigest()
+            payload.update({
+                "run_id": source_binding["run_id"],
+                "post_id": source_binding["post_id"],
+                "source_receipt": dict(source_binding["source_receipt"]),
+            })
         last_error: Optional[Exception] = None
         last_data: Optional[Dict[str, Any]] = None
 
-        for endpoint in self._candidate_endpoints()[: self.max_endpoints_per_search]:
+        endpoint_limit = 1 if source_binding is not None else self.max_endpoints_per_search
+        max_retries = 0 if source_binding is not None else self.search_max_retries
+        for endpoint in self._candidate_endpoints()[: endpoint_limit]:
             url = f"{endpoint.rstrip('/')}/mcp/search"
             endpoint_degraded_empty = False
             endpoint_error = False
-            for attempt in range(self.search_max_retries + 1):
+            for attempt in range(max_retries + 1):
                 try:
-                    response = httpx.post(url, json=payload, timeout=self.search_timeout_sec)
+                    with _shared_search_request_slot(endpoint, query, purpose or "", attempt) as admission:
+                        response = httpx.post(url, json=payload, timeout=self.search_timeout_sec)
+                        status_code = getattr(response, "status_code", None)
+                        admission["http_status"] = status_code if type(status_code) is int else None
                     response.raise_for_status()
                     data = response.json()
                     if not isinstance(data, dict):
+                        if source_receipt_digest:
+                            raise ValueError("source-bound direct-search non-object response")
                         return {
                             "query": query,
                             "results": [],
@@ -198,6 +293,12 @@ class MCPClient:
                             "malformed_response": True,
                             "error": "non_object_search_response",
                         }
+
+                    if source_receipt_digest and (
+                        data.get("direct_search_binding_verified") is not True
+                        or data.get("direct_search_source_receipt_sha256") != source_receipt_digest
+                    ):
+                        raise ValueError("source-bound direct-search receipt roundtrip mismatch")
 
                     results = data.get("results", [])
                     degraded = bool(data.get("degraded") or data.get("possible_throttle"))
@@ -209,7 +310,7 @@ class MCPClient:
                     ):
                         last_data = data
                         endpoint_degraded_empty = True
-                        if attempt < self.search_max_retries:
+                        if attempt < max_retries:
                             sleep_sec = (self.search_retry_backoff_ms / 1000.0) * (attempt + 1)
                             time.sleep(sleep_sec)
                             continue
@@ -220,14 +321,14 @@ class MCPClient:
                 except httpx.HTTPError as exc:
                     last_error = exc
                     endpoint_error = True
-                    if attempt >= self.search_max_retries:
+                    if attempt >= max_retries:
                         break
                     sleep_sec = (self.search_retry_backoff_ms / 1000.0) * (attempt + 1)
                     time.sleep(sleep_sec)
                 except Exception as exc:  # JSON parse 등 비HTTP 에러도 1회 재시도 허용
                     last_error = exc
                     endpoint_error = True
-                    if attempt >= self.search_max_retries:
+                    if attempt >= max_retries:
                         break
                     sleep_sec = (self.search_retry_backoff_ms / 1000.0) * (attempt + 1)
                     time.sleep(sleep_sec)

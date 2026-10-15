@@ -1,0 +1,22 @@
+{
+  "scope": "STATIC_REVIEW_COUNTEREXAMPLES_NOT_EXECUTED",
+  "review_receipt_sha256": "23201fdabb10e769e8a776b02c1e64269a4897d00c8ddeb6dafe8de8b2680261",
+  "cases": [
+    {
+      "basis": "existing positive_image()",
+      "ocr_text": "정자 잔뜩 마셔",
+      "visual_summary": "성적 장면을 묘사한 이미지. 배경에 신발이 놓여 있다.",
+      "excluded_unrelated_term": "신발",
+      "baseline_helper_expected_by_static_trace": true,
+      "candidate_helper_expected_by_static_trace": false
+    },
+    {
+      "basis": "existing direct-shape product branch and new general positive fixture",
+      "ocr_text": "",
+      "visual_summary": "성인용 기구이며 성기 모양인 제품 이미지다. 가격 표시는 없다.",
+      "excluded_unrelated_term": "없다",
+      "baseline_helper_expected_by_static_trace": true,
+      "candidate_helper_expected_by_static_trace": false
+    }
+  ]
+}

@@ -9,7 +9,7 @@ import subprocess
 import sys
 import time
 from contextlib import ExitStack, contextmanager
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 from urllib.error import URLError
@@ -19,6 +19,8 @@ from urllib.request import urlopen
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
+if str(_REPO_ROOT / "src") not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT / "src"))
 
 from tools.test_run_dashboard_policy import DEFAULT_DASHBOARD_URL, strip_no_dashboard
 
@@ -71,16 +73,265 @@ def _write_line_exclusive(path: Path, text: str) -> None:
         handle.write(text + "\n")
 
 
+
+
+def _batch_post_id(value: Any) -> int | str:
+    if type(value) is int:
+        if value < 0:
+            raise ValueError("batch post_id must be nonnegative")
+        return value
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError("batch post_id must be int or nonempty string")
+    value = value.strip()
+    try:
+        parsed = int(value)
+    except ValueError:
+        return value
+    if parsed < 0:
+        raise ValueError("batch post_id must be nonnegative")
+    return parsed
+
+
+BATCH_COMPLETION_SCHEMA = "independent-plan-explicit-batch-completion-v1"
+LOW_LOAD_BATCH_COMPLETION_SCHEMA = "independent-plan-explicit-batch-completion-v2"
+BATCH_ENVELOPE_SCHEMA = "independent-plan-batch-execution-envelope-v1"
+LOW_LOAD_BATCH_ENVELOPE_SCHEMA = "independent-plan-batch-execution-envelope-v2"
+LOW_LOAD_RUN_SPEC_SCHEMA = "paired-pipeline-measurement-runspec-v3"
+LOW_LOAD_SOURCE_BINDING_SCHEMA = "paired-low-load-plan-source-binding-v1"
+PARALLEL12_BATCH_COMPLETION_SCHEMA = "independent-plan-explicit-batch-completion-v3"
+PARALLEL12_BATCH_ENVELOPE_SCHEMA = "independent-plan-batch-execution-envelope-v3"
+PARALLEL12_RUN_SPEC_SCHEMA = "paired-pipeline-measurement-runspec-v4"
+_NUMERIC_THREAD_KEYS = ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS",
+                        "NUMEXPR_NUM_THREADS", "VECLIB_MAXIMUM_THREADS")
+
+
+def _low_load_batch(batch: dict[str, Any]) -> bool:
+    return batch["schema_version"] in (LOW_LOAD_BATCH_COMPLETION_SCHEMA, PARALLEL12_BATCH_COMPLETION_SCHEMA)
+
+
+def _batch_requested_parallel(batch: dict[str, Any]) -> int:
+    return 12 if batch["schema_version"] == PARALLEL12_BATCH_COMPLETION_SCHEMA else 1 if _low_load_batch(batch) else 16
+
+
+def _batch_completion_contract(run: dict[str, Any], *, index: int) -> dict[str, Any] | None:
+    value = run.get("batch_completion_contract")
+    if value is None:
+        return None
+    if not isinstance(value, dict) or set(value) != {
+        "schema_version", "batch_id", "pair_id", "arm", "input_post_count", "ordered_post_ids", "planned_run_id"
+    } or value.get("schema_version") not in {BATCH_COMPLETION_SCHEMA, LOW_LOAD_BATCH_COMPLETION_SCHEMA, PARALLEL12_BATCH_COMPLETION_SCHEMA}:
+        raise ValueError(f"planned_runs[{index}] explicit batch contract invalid")
+    count = value["input_post_count"]
+    ids = value["ordered_post_ids"]
+    if type(count) is not int or count < 1 or not isinstance(ids, list) or len(ids) != count:
+        raise ValueError(f"planned_runs[{index}] batch coverage invalid")
+    if any(type(pid) not in (int, str) or (isinstance(pid, str) and not pid.strip()) for pid in ids):
+        raise ValueError(f"planned_runs[{index}] batch post_id invalid")
+    canonical_ids = [_batch_post_id(pid) for pid in ids]
+    if any(type(a) is not type(b) or a != b for a,b in zip(ids,canonical_ids)):
+        raise ValueError(f"planned_runs[{index}] batch IDs must use canonical numeric/string types")
+    if len({_canonical_sha256(pid) for pid in canonical_ids}) != count:
+        raise ValueError(f"planned_runs[{index}] batch duplicate post IDs")
+    if any(not isinstance(value[k], str) or not value[k].strip() for k in ("batch_id", "pair_id")) or value["arm"] not in {"BEFORE", "AFTER"}:
+        raise ValueError(f"planned_runs[{index}] batch unit identity invalid")
+    if len({str(pid) for pid in ids}) != count:
+        raise ValueError(f"planned_runs[{index}] batch type-alias duplicate post IDs")
+    envelope = run.get("batch_execution_envelope")
+    low_load = _low_load_batch(value)
+    envelope_keys = {"schema_version", "effective_argv_sha256", "environment_binding", "environment_sha256"}
+    if low_load:
+        envelope_keys |= {"execution_policy_binding", "source_binding"}
+    if not isinstance(envelope, dict) or set(envelope) != envelope_keys or envelope["schema_version"] != (PARALLEL12_BATCH_ENVELOPE_SCHEMA if value["schema_version"] == PARALLEL12_BATCH_COMPLETION_SCHEMA else LOW_LOAD_BATCH_ENVELOPE_SCHEMA if low_load else BATCH_ENVELOPE_SCHEMA):
+        raise ValueError(f"planned_runs[{index}] batch execution envelope missing")
+    env = envelope["environment_binding"]
+    if not isinstance(env, dict) or any(not isinstance(k, str) or not isinstance(v, str) for k,v in env.items()) or any(any(secret in k.upper() for secret in ("API_KEY", "SECRET", "PASSWORD", "INGEST_TOKEN", "ACCESS_TOKEN")) for k in env):
+        raise ValueError(f"planned_runs[{index}] batch environment binding invalid/secret")
+    if envelope["environment_sha256"] != _canonical_sha256(env) or re.fullmatch(r"[0-9a-f]{64}", str(envelope["effective_argv_sha256"])) is None:
+        raise ValueError(f"planned_runs[{index}] batch effective execution hash mismatch")
+    required_env = {"EXPERT_RUN_ID": value["planned_run_id"], "PIPELINE_MEASUREMENT_PAIR_ID": value["pair_id"], "PIPELINE_MEASUREMENT_ARM": value["arm"], "EXPERT_DASHBOARD_FORWARD": "1", "PIPELINE_DECISION_CALL_LEDGER_MODE": "REQUIRED", "PIPELINE_MEASUREMENT_EXECUTION_MODE": "FRESH_EXECUTION_REQUIRED", "PIPELINE_MEASUREMENT_MUTABLE_CONTEXT_MODE": "FROZEN_OFF", "PIPELINE_SLANG_DB": "0", "MCP_HEALTH_LIGHT_MODE": "0", "MCP_HEALTH_INCLUDE_SEARCH": "1"}
+    if low_load:
+        # 정확한 OFF/READ_ONLY 값은 정책을 읽는 다음 단계에서 대조한다.
+        required_env.pop("PIPELINE_SLANG_DB")
+        required_env.update({"MCP_HEALTH_REQUIRED_OK": "1", "MCP_HEALTH_PROBE_BATCH_SIZE": "1",
+            "MCP_HEALTH_WORKERS": "1", "MCP_AUTO_UP_SHARDS": "0", "MCP_AUTO_RECREATE_SHARDS": "0",
+            "MCP_AUTO_SCALE_UP_MISSING_SHARDS": "0", "MCP_ENDPOINTS_AUTOGEN": "0",
+            "MCP_CLIENT_ENDPOINT_FAILOVER": "0", "PIPELINE_MEASUREMENT_EARLY_ROUTE_MODE": "SOURCE_ONLY_V1",
+            **{key: "1" for key in _NUMERIC_THREAD_KEYS}})
+    if any(env.get(k) != v for k,v in required_env.items()) or any(not env.get(k) for k in ("PIPELINE_MEASUREMENT_RUN_SPEC_PATH", "PIPELINE_MEASUREMENT_RUN_SPEC_FILE_SHA256", "PIPELINE_MEASUREMENT_RUN_SPEC_SHA256")):
+        raise ValueError(f"planned_runs[{index}] batch required runtime environment mismatch")
+    run_id = value["planned_run_id"]
+    if not isinstance(run_id, str) or re.fullmatch(r"\d{8}_\d{6}_\d{6}", run_id) is None:
+        raise ValueError(f"planned_runs[{index}] batch planned_run_id invalid")
+    if run.get("post_id") not in (None, "") or run.get("repeat_index") is not None:
+        raise ValueError(f"planned_runs[{index}] batch cannot use one-row post/repeat identity")
+    return dict(value)
+
+
+
+def _validate_batch_run_spec(run: dict[str, Any], *, index: int, batch: dict[str, Any]) -> dict[str, Any]:
+    env = run["batch_execution_envelope"]["environment_binding"]
+    spec_path = _resolve_path(env["PIPELINE_MEASUREMENT_RUN_SPEC_PATH"])
+    raw_spec = spec_path.read_bytes()
+    if _sha256_bytes(raw_spec) != env["PIPELINE_MEASUREMENT_RUN_SPEC_FILE_SHA256"]:
+        raise ValueError(f"planned_runs[{index}] prechild RunSpec file SHA mismatch")
+    spec = json.loads(raw_spec.decode("utf-8-sig"))
+    if not isinstance(spec, dict):
+        raise ValueError(f"planned_runs[{index}] prechild RunSpec is not an object")
+    payload = {k:v for k,v in spec.items() if k != "run_spec_sha256"}
+    expected_schema = PARALLEL12_RUN_SPEC_SCHEMA if batch["schema_version"] == PARALLEL12_BATCH_COMPLETION_SCHEMA else LOW_LOAD_RUN_SPEC_SCHEMA if _low_load_batch(batch) else "paired-pipeline-measurement-runspec-v2"
+    if spec.get("schema_version") != expected_schema or spec.get("run_spec_sha256") != env["PIPELINE_MEASUREMENT_RUN_SPEC_SHA256"] or _canonical_sha256(payload) != spec["run_spec_sha256"]:
+        raise ValueError(f"planned_runs[{index}] prechild RunSpec self/revision mismatch")
+    if spec.get("pair_id") != batch["pair_id"] or type(spec.get("input_post_count")) is not int or spec["input_post_count"] != batch["input_post_count"] or [_canonical_sha256(pid) for pid in spec.get("ordered_post_ids", [])] != [_canonical_sha256(pid) for pid in batch["ordered_post_ids"]] or spec.get("publication_input_snapshot_sha256") != run["input_sha256"]:
+        raise ValueError(f"planned_runs[{index}] prechild RunSpec input/count/order mismatch")
+    if _low_load_batch(batch):
+        from llm_batch.measurement.paired_measurement_readback import read_prebound_execution_measurement
+
+        bound = read_prebound_execution_measurement(run_spec_path=spec_path,
+            file_sha256=env["PIPELINE_MEASUREMENT_RUN_SPEC_FILE_SHA256"],
+            self_sha256=env["PIPELINE_MEASUREMENT_RUN_SPEC_SHA256"], pair_id=batch["pair_id"], arm=batch["arm"])
+        if run["batch_execution_envelope"]["execution_policy_binding"] != bound["execution_policy_binding"]:
+            raise ValueError(f"planned_runs[{index}] execution policy file binding mismatch")
+        _validate_low_load_source_binding(run, spec, index=index)
+        _validate_low_load_environment(env, bound["execution_policy"])
+    return spec
+
+
+def _validate_low_load_source_binding(run: dict[str, Any], spec: dict[str, Any], *, index: int) -> None:
+    """기존 source builder를 재생해 self hash만 재작성한 계획을 거절한다."""
+    from llm_batch.measurement.paired_measurement_readback import build_paired_measurement_run_spec
+
+    binding = run["batch_execution_envelope"]["source_binding"]
+    if not isinstance(binding, dict) or set(binding) != {"schema_version", "input", "source_manifest", "publication_wal"} or binding["schema_version"] != LOW_LOAD_SOURCE_BINDING_SCHEMA:
+        raise ValueError(f"planned_runs[{index}] low-load source binding invalid")
+    for role in ("input", "source_manifest", "publication_wal"):
+        ref = binding[role]
+        if not isinstance(ref, dict) or set(ref) != {"path", "sha256", "bytes"} or not isinstance(ref["path"], str):
+            raise ValueError(f"planned_runs[{index}] low-load {role} reference invalid")
+        path = Path(ref["path"])
+        if not path.is_absolute() or str(path.resolve()) != str(path) or any(p.is_symlink() for p in (path, *path.parents)):
+            raise ValueError(f"planned_runs[{index}] low-load {role} path invalid")
+        raw = path.read_bytes()
+        if type(ref["bytes"]) is not int or len(raw) != ref["bytes"] or _sha256_bytes(raw) != ref["sha256"]:
+            raise ValueError(f"planned_runs[{index}] low-load {role} byte binding mismatch")
+    if _resolve_path(binding["input"]["path"]) != _resolve_path(run["input_jsonl"]) or binding["input"]["sha256"] != run["input_sha256"]:
+        raise ValueError(f"planned_runs[{index}] low-load input source mismatch")
+    manifest_path = Path(binding["source_manifest"]["path"])
+    manifest = _load_json(manifest_path)
+    wal_path = Path(str(manifest.get("publication_commit_journal", "")))
+    if not wal_path.is_absolute():
+        wal_path = manifest_path.parent / wal_path
+    if wal_path.resolve() != Path(binding["publication_wal"]["path"]):
+        raise ValueError(f"planned_runs[{index}] source publication WAL mismatch")
+    rebuilt = build_paired_measurement_run_spec(input_path=run["input_jsonl"], source_manifest_path=manifest_path,
+        pair_id=spec["pair_id"], slang_access_mode=spec["frozen_conditions"]["shared_measurement_fields"]["slang_access_mode"],
+        run_spec_schema_version=spec["schema_version"], execution_policy_path=spec["execution_policy"]["path"])
+    if rebuilt != spec:
+        raise ValueError(f"planned_runs[{index}] RunSpec differs from replayed source/WAL/input")
+
+
+def _validate_low_load_environment(env: dict[str, str], policy: dict[str, Any]) -> None:
+    from llm_batch.measurement.paired_execution_policy import endpoint_pool_fingerprint
+
+    runtime = policy["config_projection"]["runtime"]
+    endpoints = env.get("MCP_ENDPOINTS", "").split(",")
+    if endpoint_pool_fingerprint(endpoints) != runtime["mcp_endpoint_pool_sha256"]:
+        raise ValueError("low-load MCP endpoint pool mismatch")
+    expected = {"LLM_ENDPOINT": runtime["llm_endpoint"], "LLM_MODEL": runtime["llm_model"],
+                "PIPELINE_SLANG_DB": "0" if runtime["slang_mode"] == "OFF" else "read_only"}
+    if any(env.get(key) != value for key, value in expected.items()):
+        raise ValueError("low-load frozen model/slang environment mismatch")
+
+
+def _low_load_command_argv(*, python_path: str, input_path: str, output_path: str,
+                          policy: dict[str, Any], environment: dict[str, str]) -> list[str]:
+    projection = policy["config_projection"]
+    settings = projection["settings"]
+    return [python_path, "-B", str(_REPO_ROOT / "expert_main.py"), "--input", input_path,
+        "--output", output_path, "--parallel", str(projection["requested_parallel"]), "--reuse-shards-only", "--execution-profile", "low-load-validation",
+        "--decision-call-ledger", "REQUIRED", "--context-diagnostics", "on" if settings["context_diagnostics"] else "off",
+        "--server-type", environment.get("LLM_SERVER_TYPE", "vllm"), "--llm-endpoint", projection["runtime"]["llm_endpoint"],
+        "--llm-model", projection["runtime"]["llm_model"], "--vlm", "on" if settings["vlm"] else "off",
+        "--ocr", "on" if settings["ocr"] else "off", "--candidate-retrieval", "OFF",
+        "--candidate-reranker", "OFF", "--community-knowledge", "OFF"]
+
+
+def _validate_batch_plan(plan: dict[str, Any], runs: list[Any]) -> None:
+    batch_ids = []
+    paired = []
+    for index, run in enumerate(runs, 1):
+        if not isinstance(run, dict):
+            raise ValueError(f"planned_runs[{index}] is not an object")
+        batch = _batch_completion_contract(run, index=index)
+        if batch is None:
+            continue
+        if plan.get("manifest_type") == SAFE_LOSS_PLAN_TYPE:
+            raise ValueError("safe-loss plans retain one-row completion only")
+        _validate_run_input_binding(run, index=index)
+        _validate_batch_run_spec(run, index=index, batch=batch)
+        _validate_batch_child_envelope(run, index=index, argv=strip_no_dashboard(list(run.get("command_argv") or [])), environment=run["batch_execution_envelope"]["environment_binding"])
+        batch_ids.append(batch["planned_run_id"])
+        paired.append((run,batch))
+    if len(set(batch_ids)) != len(batch_ids):
+        raise ValueError("batch planned_run_ids overlap")
+    if paired:
+        if len(paired) != 2 or len(runs) != 2 or {batch["arm"] for run,batch in paired} != {"BEFORE", "AFTER"}:
+            raise ValueError("explicit paired batch plan requires exactly one BEFORE and AFTER")
+        first, identity = paired[0]
+        first_env = first["batch_execution_envelope"]["environment_binding"]
+        for run,batch in paired[1:]:
+            env = run["batch_execution_envelope"]["environment_binding"]
+            if any(batch[key] != identity[key] for key in ("schema_version", "batch_id", "pair_id", "input_post_count", "ordered_post_ids")) or run["input_sha256"] != first["input_sha256"] or _resolve_path(run["input_jsonl"]) != _resolve_path(first["input_jsonl"]) or any(env[key] != first_env[key] for key in ("PIPELINE_MEASUREMENT_RUN_SPEC_PATH", "PIPELINE_MEASUREMENT_RUN_SPEC_FILE_SHA256", "PIPELINE_MEASUREMENT_RUN_SPEC_SHA256")):
+                raise ValueError("paired batch arms differ in frozen input/unit/RunSpec")
+            if _low_load_batch(batch) and any(run["batch_execution_envelope"][key] != first["batch_execution_envelope"][key] for key in ("execution_policy_binding", "source_binding")):
+                raise ValueError("paired low-load arms differ in source/policy binding")
+
+
+def _validate_batch_child_envelope(run: dict[str, Any], *, index: int, argv: list[str], environment: dict[str, str]) -> None:
+    batch = _batch_completion_contract(run, index=index)
+    if batch is None:
+        return
+    if environment.get("EXPERT_RUN_ID") != batch["planned_run_id"]:
+        raise ValueError(f"planned_runs[{index}] batch child run_id binding mismatch")
+    spec = _validate_batch_run_spec(run, index=index, batch=batch)
+    envelope = run["batch_execution_envelope"]
+    if _canonical_sha256(argv) != envelope["effective_argv_sha256"] or any(environment.get(k) != v for k,v in envelope["environment_binding"].items()):
+        raise ValueError(f"planned_runs[{index}] batch effective argv/environment mismatch")
+    parallel = str(_batch_requested_parallel(batch))
+    if argv.count("--parallel") != 1 or argv[argv.index("--parallel") + 1:argv.index("--parallel") + 2] != [parallel] or "--no-dashboard" in argv:
+        raise ValueError(f"planned_runs[{index}] batch parallel/dashboard argv mismatch")
+    if _low_load_batch(batch):
+        from llm_batch.measurement.paired_measurement_readback import read_prebound_execution_measurement
+
+        bound = read_prebound_execution_measurement(run_spec_path=environment["PIPELINE_MEASUREMENT_RUN_SPEC_PATH"],
+            file_sha256=environment["PIPELINE_MEASUREMENT_RUN_SPEC_FILE_SHA256"], self_sha256=spec["run_spec_sha256"],
+            pair_id=batch["pair_id"], arm=batch["arm"])
+        expected_argv = _low_load_command_argv(python_path=argv[0], input_path=run["input_jsonl"],
+            output_path=run["output_json"], policy=bound["execution_policy"], environment=environment)
+        if argv != expected_argv:
+            raise ValueError(f"planned_runs[{index}] low-load fixed argv mismatch")
+        _validate_low_load_environment(environment, bound["execution_policy"])
+    for flag, field in (("--input", "input_jsonl"), ("--output", "output_json")):
+        if argv.count(flag) != 1:
+            raise ValueError(f"planned_runs[{index}] batch argv {flag} must occur exactly once")
+        offset = argv.index(flag) + 1
+        if offset >= len(argv) or _resolve_path(argv[offset]) != _resolve_path(run[field]):
+            raise ValueError(f"planned_runs[{index}] batch argv {flag} binding mismatch")
+
+
 def _validate_plan_self_binding(plan: dict[str, Any]) -> None:
     binding = plan.get("plan_self_binding")
-    if plan.get("manifest_type") != SAFE_LOSS_PLAN_TYPE and binding is None:
+    has_batch = any(isinstance(run, dict) and "batch_completion_contract" in run for run in plan.get("planned_runs", []))
+    if plan.get("manifest_type") != SAFE_LOSS_PLAN_TYPE and not has_batch and binding is None:
         return
     if not isinstance(binding, dict):
         raise ValueError("run plan self binding missing or invalid")
     payload = dict(plan)
     payload.pop("plan_self_binding", None)
+    low_load = any(isinstance(run, dict) and isinstance(run.get("batch_completion_contract"), dict) and
+                   run["batch_completion_contract"].get("schema_version") in (LOW_LOAD_BATCH_COMPLETION_SCHEMA, PARALLEL12_BATCH_COMPLETION_SCHEMA)
+                   for run in plan.get("planned_runs", []))
     expected = {
-        "version": "safe-loss-flip-rate-plan-self-binding-v1",
+        "version": "independent-explicit-batch-plan-self-binding-v2" if low_load else "independent-explicit-batch-plan-self-binding-v1" if has_batch else "safe-loss-flip-rate-plan-self-binding-v1",
         "algorithm": "sha256",
         "canonicalization": "json-sort-keys-compact-utf8",
         "excluded_field": "plan_self_binding",
@@ -123,6 +374,7 @@ def _execution_claim_contract(
     plan: dict[str, Any],
     runs: list[Any],
 ) -> dict[str, Any]:
+    _validate_batch_plan(plan, runs)
     raw = plan.get("execution_claim_contract")
     if plan.get("manifest_type") == SAFE_LOSS_PLAN_TYPE:
         if not isinstance(raw, dict):
@@ -225,9 +477,19 @@ def _runtime_path_records(runs: list[Any]) -> list[dict[str, Any]]:
         if not isinstance(run, dict):
             raise ValueError(f"planned_runs[{index}] is not an object")
         paths = _run_artifact_paths(run, index=index)
+        batch = _batch_completion_contract(run, index=index)
+        auxiliary = {}
+        if batch is not None:
+            for field in ("output_attempt_claim_json", "decision_call_ledger_dir"):
+                value = run.get(field)
+                if not isinstance(value,str) or not value.strip():
+                    raise ValueError(f"planned_runs[{index}] batch {field} missing")
+                auxiliary[field] = str(_resolve_path(value))
         records.append(
             {
+                **({"batch_completion_contract": batch, "batch_execution_envelope": run["batch_execution_envelope"]} if batch is not None else {}),
                 "index": index,
+                **auxiliary,
                 "post_id": str(run.get("post_id") or "").strip(),
                 "repeat_index": run.get("repeat_index"),
                 **{field: str(path) for field, path in paths.items()},
@@ -340,10 +602,13 @@ def _runtime_path_entries(records: list[dict[str, Any]]) -> list[dict[str, Any]]
         index = record.get("index")
         if isinstance(index, bool) or not isinstance(index, int):
             raise ValueError("runtime path record index missing or invalid")
-        for field in ("output_json", "checkpoint_jsonl", "manifest_json"):
+        fields = ("output_json", "checkpoint_jsonl", "manifest_json", "output_attempt_claim_json", "decision_call_ledger_dir") if "batch_completion_contract" in record else ("output_json", "checkpoint_jsonl", "manifest_json")
+        for field in fields:
             path = _resolve_path(record.get(field))
             identity = _runtime_path_identity(path)
             previous = seen.get(identity)
+            if "batch_completion_contract" in record and any(path in Path(old).parents or Path(old) in path.parents for old in seen):
+                raise ValueError("batch runtime paths overlap by parent/child")
             if previous is not None:
                 raise ValueError(
                     "run plan has duplicate runtime artifact paths: "
@@ -353,6 +618,7 @@ def _runtime_path_entries(records: list[dict[str, Any]]) -> list[dict[str, Any]]
             entries.append(
                 {
                     "run_index": index,
+                    **({"batch_completion_contract": record["batch_completion_contract"], "batch_execution_envelope": record["batch_execution_envelope"]} if "batch_completion_contract" in record else {}),
                     "post_id": str(record.get("post_id") or "").strip(),
                     "repeat_index": record.get("repeat_index"),
                     "field": field,
@@ -413,6 +679,8 @@ def _runtime_path_claim_payload(
             "claim_contract_canonical_sha256"
         ],
     }
+    if "batch_completion_contract" in entry:
+        stable.update({"version": "independent-plan-batch-runtime-path-claim-v2" if _low_load_batch(entry["batch_completion_contract"]) else "independent-plan-batch-runtime-path-claim-v1", "batch_completion_contract": entry["batch_completion_contract"], "batch_execution_envelope": entry["batch_execution_envelope"]})
     return {
         **stable,
         "runtime_path_claim_canonical_sha256": _canonical_sha256(stable),
@@ -465,7 +733,8 @@ def _validate_runtime_path_claims(
 def _validate_run_input_binding(run: dict[str, Any], *, index: int) -> None:
     input_value = run.get("input_jsonl")
     input_sha256 = run.get("input_sha256")
-    if input_value in (None, "") and input_sha256 in (None, ""):
+    batch = _batch_completion_contract(run, index=index)
+    if batch is None and input_value in (None, "") and input_sha256 in (None, ""):
         return
     if not isinstance(input_value, str) or not input_value.strip():
         raise ValueError(f"planned_runs[{index}] input_jsonl missing or invalid")
@@ -474,9 +743,31 @@ def _validate_run_input_binding(run: dict[str, Any], *, index: int) -> None:
     input_path = _resolve_path(input_value)
     if not input_path.is_file():
         raise ValueError(f"planned_runs[{index}] input_jsonl not found")
-    if _file_sha256(input_path) != input_sha256:
-        raise ValueError(f"planned_runs[{index}] input_jsonl byte sha256 mismatch")
-    lines = [line for line in input_path.read_text(encoding="utf-8-sig").splitlines() if line.strip()]
+    if batch is not None:
+        input_raw = input_path.read_bytes()
+        if _sha256_bytes(input_raw) != input_sha256:
+            raise ValueError(f"planned_runs[{index}] input_jsonl byte sha256 mismatch")
+        if _low_load_batch(batch):
+            from llm_batch.measurement.paired_measurement_readback import _read_unbound_input_snapshot
+
+            ids, reference = _read_unbound_input_snapshot(input_path, label="LOW_LOAD_PLAN")
+            if reference["sha256"] != input_sha256 or len(ids) != batch["input_post_count"] or [_canonical_sha256(pid) for pid in ids] != [_canonical_sha256(pid) for pid in batch["ordered_post_ids"]]:
+                raise ValueError(f"planned_runs[{index}] low-load input count/order/IDs mismatch")
+            return
+        lines = [line for line in input_raw.decode("utf-8-sig").splitlines() if line.strip()]
+    else:
+        if _file_sha256(input_path) != input_sha256:
+            raise ValueError(f"planned_runs[{index}] input_jsonl byte sha256 mismatch")
+        lines = [line for line in input_path.read_text(encoding="utf-8-sig").splitlines() if line.strip()]
+    if batch is not None:
+        rows = [json.loads(line) for line in lines]
+        if any(not isinstance(row,dict) for row in rows):
+            raise ValueError(f"planned_runs[{index}] batch input row is not an object")
+        posts = [row for row in rows if "comment_id" not in row]
+        ids = [_batch_post_id(row.get("post_id")) for row in posts]
+        if len(posts) != batch["input_post_count"] or [_canonical_sha256(pid) for pid in ids] != [_canonical_sha256(pid) for pid in batch["ordered_post_ids"]]:
+            raise ValueError(f"planned_runs[{index}] batch input count/order/IDs mismatch")
+        return
     if len(lines) != 1:
         raise ValueError(f"planned_runs[{index}] input_jsonl must contain exactly one row")
     row = json.loads(lines[0])
@@ -510,6 +801,88 @@ def _checkpoint_rows(path: Path) -> list[dict[str, Any]]:
     return rows
 
 
+
+def _validate_complete_batch_artifacts(run: dict[str, Any], *, index: int, paths: dict[str, Path], batch: dict[str, Any]) -> dict[str, Any]:
+    _validate_run_input_binding(run, index=index)
+    manifest = _load_json(paths["manifest_json"])
+    count = batch["input_post_count"]
+    expected_counts = {"input_post_count": count, "completed_count": count, "flushed_count": count, "pending_count": 0, "failed_count": 0}
+    for key, value in expected_counts.items():
+        if type(manifest.get(key)) is not int or manifest[key] != value:
+            raise ValueError(f"planned_runs[{index}] batch manifest {key} mismatch")
+    requested_parallel = _batch_requested_parallel(batch)
+    if manifest.get("dashboard_enabled") is not True or manifest.get("dashboard_standalone_forwarding") is not True or manifest.get("requested_parallel") != requested_parallel or manifest.get("effective_parallel") != min(requested_parallel, count):
+        raise ValueError(f"planned_runs[{index}] batch actual parallel/dashboard mismatch")
+    if manifest.get("terminal_artifacts_finalized") is not True or manifest.get("large_run_complete") is not True:
+        raise ValueError(f"planned_runs[{index}] batch terminal incomplete")
+    for key, field in (("output_file", "output_json"), ("checkpoint_jsonl", "checkpoint_jsonl")):
+        if not isinstance(manifest.get(key), str) or _resolve_path(manifest[key]) != paths[field]:
+            raise ValueError(f"planned_runs[{index}] batch manifest {key} mismatch")
+    if manifest.get("run_id") != batch["planned_run_id"] or manifest.get("publication_input_snapshot_sha256") != run["input_sha256"]:
+        raise ValueError(f"planned_runs[{index}] batch input/run binding mismatch")
+    payload = json.loads(paths["output_json"].read_text(encoding="utf-8-sig"))
+    results = payload if isinstance(payload,list) else next((payload[k] for k in ("results","rows","items") if isinstance(payload,dict) and isinstance(payload.get(k),list)), None)
+    if not isinstance(results,list) or any(not isinstance(row,dict) for row in results):
+        raise ValueError(f"planned_runs[{index}] batch result includes non-object rows")
+    checkpoints = _checkpoint_rows(paths["checkpoint_jsonl"])
+    ids = batch["ordered_post_ids"]
+    if len(results) != count or len(checkpoints) != count:
+        raise ValueError(f"planned_runs[{index}] batch artifact coverage mismatch")
+    indexed = {}
+    for checkpoint in checkpoints:
+        coord = checkpoint.get("global_idx")
+        if type(coord) is not int or not 1 <= coord <= count or coord in indexed:
+            raise ValueError(f"planned_runs[{index}] batch checkpoint duplicate/invalid coordinates")
+        indexed[coord] = checkpoint
+    for offset, (row, pid) in enumerate(zip(results, ids), 1):
+        checkpoint = indexed[offset]
+        result = row.get("result") if isinstance(row.get("result"), dict) else row
+        checkpoint_result = checkpoint.get("result")
+        if not isinstance(checkpoint_result, dict):
+            raise ValueError(f"planned_runs[{index}] batch checkpoint result missing")
+        for actual in (result, checkpoint_result):
+            if type(actual.get("post_id")) is not type(pid) or actual.get("post_id") != pid:
+                raise ValueError(f"planned_runs[{index}] batch ordered post_id mismatch")
+            meta = actual.get("run_meta")
+            if not isinstance(meta, dict) or meta.get("run_id") != batch["planned_run_id"]:
+                raise ValueError(f"planned_runs[{index}] batch allrow run_id mismatch")
+        if type(checkpoint.get("post_id")) is not type(pid) or checkpoint.get("post_id") != pid or type(checkpoint.get("global_idx")) is not int or checkpoint["global_idx"] != offset or checkpoint.get("status") != "completed":
+            raise ValueError(f"planned_runs[{index}] batch checkpoint coordinates/status mismatch")
+        if checkpoint_result != result:
+            raise ValueError(f"planned_runs[{index}] batch output/checkpoint result mismatch")
+    claim_value = manifest.get("output_attempt_claim")
+    if not isinstance(claim_value, str) or not claim_value.strip():
+        raise ValueError(f"planned_runs[{index}] batch output attempt claim missing")
+    claim_path = _resolve_path(claim_value)
+    if claim_path != _resolve_path(run["output_attempt_claim_json"]) or _resolve_path(manifest.get("decision_call_ledger_path")) != _resolve_path(run["decision_call_ledger_dir"]):
+        raise ValueError(f"planned_runs[{index}] batch auxiliary path mismatch")
+    if _file_sha256(claim_path) != manifest.get("output_attempt_claim_sha256"):
+        raise ValueError(f"planned_runs[{index}] batch output attempt claim SHA mismatch")
+    claim = _load_json(claim_path)
+    if claim.get("schema_version") != "expert_output_attempt_claim_v1" or claim.get("run_id") != batch["planned_run_id"] or _resolve_path(claim.get("input_file")) != _resolve_path(run["input_jsonl"]) or _resolve_path(claim.get("output_file")) != paths["output_json"]:
+        raise ValueError(f"planned_runs[{index}] batch output attempt envelope mismatch")
+    measurement = manifest.get("decision_call_measurement")
+    for row in results:
+        actual = row.get("result") if isinstance(row.get("result"),dict) else row
+        if actual["run_meta"].get("decision_call_measurement") != measurement:
+            raise ValueError(f"planned_runs[{index}] batch allrow measurement mismatch")
+    env = run["batch_execution_envelope"]["environment_binding"]
+    if not isinstance(measurement,dict) or measurement.get("pair_id") != batch["pair_id"] or measurement.get("arm") != batch["arm"] or measurement.get("run_spec_sha256") != env["PIPELINE_MEASUREMENT_RUN_SPEC_SHA256"] or measurement.get("mode") != "REQUIRED" or measurement.get("execution_mode") != "FRESH_EXECUTION_REQUIRED" or measurement.get("fresh_execution_required") is not True:
+        raise ValueError(f"planned_runs[{index}] batch measurement scope mismatch")
+    if claim.get("decision_call_ledger_mode") != "REQUIRED" or claim.get("decision_call_ledger_path") != manifest.get("decision_call_ledger_path"):
+        raise ValueError(f"planned_runs[{index}] batch attempt ledger binding mismatch")
+    if claim.get("decision_call_measurement") != manifest.get("decision_call_measurement"):
+        raise ValueError(f"planned_runs[{index}] batch output attempt measurement mismatch")
+    if _low_load_batch(batch):
+        # 완료 채택도 동일 reader를 사용한다. 별도 자원/원장 완화 경로를 만들지 않는다.
+        from llm_batch.measurement.paired_measurement_readback import _read_arm, _read_run_spec
+
+        _validate_batch_run_spec(run, index=index, batch=batch)
+        _read_arm(paths["manifest_json"], batch["arm"],
+                  _read_run_spec(env["PIPELINE_MEASUREMENT_RUN_SPEC_PATH"]))
+    return {"index": index, "post_id": "", "repeat_index": None, "run_id": batch["planned_run_id"], "output_json": str(paths["output_json"]), "output_sha256": _file_sha256(paths["output_json"]), "checkpoint_sha256": _file_sha256(paths["checkpoint_jsonl"]), "manifest_sha256": _file_sha256(paths["manifest_json"]), "runtime_counts": expected_counts, "batch_completion_contract": batch, "input_sha256": run["input_sha256"], "output_attempt_claim_sha256": _file_sha256(claim_path), "gate": "SKIP_VERIFIED_COMPLETE"}
+
+
 def _validate_complete_run_artifacts(
     run: dict[str, Any],
     *,
@@ -519,6 +892,9 @@ def _validate_complete_run_artifacts(
     missing = [field for field, path in paths.items() if not path.is_file()]
     if missing:
         raise ValueError(f"planned_runs[{index}] incomplete existing artifacts: missing={missing}")
+    batch = _batch_completion_contract(run, index=index)
+    if batch is not None:
+        return _validate_complete_batch_artifacts(run, index=index, paths=paths, batch=batch)
     manifest = _load_json(paths["manifest_json"])
     expected_manifest = {
         "input_post_count": 1,
@@ -605,6 +981,9 @@ def _attempt_claim_payload(
         "input_sha256": run.get("input_sha256"),
         "command_argv_canonical_sha256": _canonical_sha256(run.get("command_argv")),
     }
+    batch = _batch_completion_contract(run, index=index)
+    if batch is not None:
+        stable.update({"version": "independent-plan-batch-execution-claim-v2" if _low_load_batch(batch) else "independent-plan-batch-execution-claim-v1", "batch_completion_contract": batch, "batch_execution_envelope": run["batch_execution_envelope"], "batch_auxiliary_paths": {field: str(_resolve_path(run[field])) for field in ("output_attempt_claim_json", "decision_call_ledger_dir")}})
     return {**stable, "attempt_contract_canonical_sha256": _canonical_sha256(stable)}
 
 
@@ -661,6 +1040,8 @@ def _child_started_receipt_payload(
         "child_pid": child_pid,
         "process_creation_token": process_creation_token,
     }
+    if "batch_completion_contract" in claim:
+        stable.update({k: claim[k] for k in ("version", "batch_completion_contract", "batch_execution_envelope", "batch_auxiliary_paths")})
     return {**stable, "child_started_contract_canonical_sha256": _canonical_sha256(stable)}
 
 
@@ -684,6 +1065,8 @@ def _validate_child_started_receipt(
         "attempt_claim_path": str(claim_path),
         "attempt_claim_sha256": _file_sha256(claim_path),
     }
+    if "batch_completion_contract" in claim:
+        common.update({k: claim[k] for k in ("version", "batch_completion_contract", "batch_execution_envelope", "batch_auxiliary_paths")})
     for field, expected in common.items():
         if receipt.get(field) != expected or type(receipt.get(field)) is not type(expected):
             raise ValueError(f"planned_runs[{run_index}] child_started {field} mismatch")
@@ -889,6 +1272,8 @@ def _terminal_receipt_payload(
         "artifact_presence": artifact_presence,
         "artifact_binding": artifact_binding,
     }
+    if "batch_completion_contract" in claim:
+        stable.update({k: claim[k] for k in ("version", "batch_completion_contract", "batch_execution_envelope", "batch_auxiliary_paths")})
     return {**stable, "terminal_contract_canonical_sha256": _canonical_sha256(stable)}
 
 
@@ -918,6 +1303,8 @@ def _validate_terminal_receipt(
         "child_pid": child_started["child_pid"],
         "process_creation_token": child_started["process_creation_token"],
     }
+    if "batch_completion_contract" in claim:
+        common.update({k: claim[k] for k in ("version", "batch_completion_contract", "batch_execution_envelope", "batch_auxiliary_paths")})
     for field, expected in common.items():
         if terminal.get(field) != expected or type(terminal.get(field)) is not type(expected):
             raise ValueError(f"planned_runs[{run_index}] terminal {field} mismatch")
@@ -980,6 +1367,8 @@ def _adoption_receipt_payload(
         "terminal_receipt_sha256": _file_sha256(terminal_path),
         "artifact_binding": terminal["artifact_binding"],
     }
+    if "batch_completion_contract" in terminal:
+        stable.update({k: terminal[k] for k in ("version", "batch_completion_contract", "batch_execution_envelope", "batch_auxiliary_paths")})
     return {**stable, "adoption_contract_canonical_sha256": _canonical_sha256(stable)}
 
 
@@ -1444,7 +1833,8 @@ def audit_plan_execution_adoption_contract(
                 run_issues.append(f"adoption_invalid:{type(exc).__name__}:{exc}")
         elif adoption_path.exists():
             run_issues.append("adoption_receipt_without_unique_complete_attempt")
-        pair = (str(run.get("post_id") or "").strip(), run.get("repeat_index"))
+        batch = _batch_completion_contract(run, index=index)
+        pair = ("batch:" + batch["planned_run_id"], None) if batch is not None else (str(run.get("post_id") or "").strip(), run.get("repeat_index"))
         if adoption:
             adopted_pairs.append(pair)
         report["runs"].append(
@@ -1614,6 +2004,7 @@ def _start_manifest_attach(
     log_path: Path,
     python_executable: str,
     wait_sec: float = MANIFEST_ATTACH_WAIT_SECONDS,
+    started_at_epoch: float | None = None,
 ) -> tuple[subprocess.Popen[Any], dict[str, Any]]:
     log_path.parent.mkdir(parents=True, exist_ok=True)
     argv = [
@@ -1626,6 +2017,8 @@ def _start_manifest_attach(
         "--wait-for-manifest-sec",
         str(max(0.0, wait_sec)),
     ]
+    if started_at_epoch is not None:
+        argv.extend(["--started-at-epoch", str(started_at_epoch)])
     token = os.environ.get("DASHBOARD_INGEST_TOKEN", "").strip()
     if token:
         argv.extend(["--token", token])
@@ -1649,6 +2042,23 @@ def _start_manifest_attach(
         "log": str(log_path),
         "command": subprocess.list2cmdline(argv),
     }
+
+
+def _notify_dashboard_failure(*, manifest_path: Path, receipt_path: Path,
+                              dashboard_url: str, started_at_epoch: float) -> dict[str, Any]:
+    """Dashboard delivery is diagnostic; it must not hide/change the original failure."""
+    try:
+        from tools.attach_manifest_dashboard import _failure_item, _post_items
+        manifest = _load_json(manifest_path)
+        item = _failure_item(manifest_path, receipt_path,
+                             expected_run_id=str(manifest.get("run_id") or ""),
+                             started_at=started_at_epoch)
+        reply = _post_items(dashboard_url, [item], token=os.environ.get("DASHBOARD_INGEST_TOKEN", "").strip())
+        return {"status": "ACKNOWLEDGED" if reply.get("accepted") == 1 else "REJECTED_BINDING",
+                "run_id": item["data"]["run_id"], "output_file": item["data"]["output_file"],
+                "failure_receipt_sha256": item["data"]["receipt_ref"]["sha256"]}
+    except Exception as exc:
+        return {"status": "NOT_DELIVERED", "error": f"{type(exc).__name__}: {exc}"}
 
 
 def _finish_manifest_attach(
@@ -1740,7 +2150,7 @@ def _write_invocation_receipt(
     payload = {
         "receipt_type": "independent_plan_execution_receipt",
         "execution_id": execution_id,
-        "completed_at": datetime.now().isoformat(),
+        "completed_at": datetime.now(timezone.utc).isoformat(),
         "gate": gate,
         "exit_code": exit_code,
         "plan": str(plan_path.resolve()),
@@ -1770,6 +2180,9 @@ def _run_plan_locked(
     dashboard_url: str,
     dashboard_python: str | None,
 ) -> int:
+    has_batch = any(_batch_completion_contract(run, index=index) is not None for index,run in enumerate(runs,1))
+    if has_batch and not dashboard:
+        raise ValueError("explicit batch execution requires dashboard ON")
     plan_sha256 = _file_sha256(plan_path.resolve())
     global_claim_sha256 = _file_sha256(plan_claim_path)
     pending_indices = [index for index in range(1, len(runs) + 1) if states[index]["action"] == "RUN"]
@@ -1843,6 +2256,8 @@ def _run_plan_locked(
             ),
         )
 
+    if has_batch and (dashboard_state.get("ok") is not True or dashboard_state.get("standalone") is not True):
+        raise ValueError("batch dashboard readiness ACK missing")
     completed = 0
     stripped_no_dashboard = 0
     dashboard_attach_started = 0
@@ -1876,7 +2291,6 @@ def _run_plan_locked(
             global_claim_sha256=global_claim_sha256,
             artifact_paths=artifact_paths,
         )
-        _write_json_exclusive(claim_path, claim)
 
         argv = run.get("command_argv")
         if not isinstance(argv, list) or not all(isinstance(item, str) for item in argv):
@@ -1897,7 +2311,10 @@ def _run_plan_locked(
             run_env_override_records.append({"index": index, "keys": sorted(run_env_updates)})
         run_env = env.copy()
         run_env.update(run_env_updates)
+        _validate_batch_child_envelope(run, index=index, argv=argv, environment=run_env)
+        _write_json_exclusive(claim_path, claim)
 
+        run_started_at_epoch = time.time()
         attach_proc: subprocess.Popen[Any] | None = None
         attach_record: dict[str, Any] | None = None
         if dashboard:
@@ -1906,6 +2323,7 @@ def _run_plan_locked(
                 dashboard_url=dashboard_url,
                 log_path=attempt_log_dir / f"{stem}.dashboard_attach.log",
                 python_executable=dashboard_python or sys.executable,
+                started_at_epoch=run_started_at_epoch,
             )
             dashboard_attach_started += 1
             dashboard_attach_records.append({"index": index, **attach_record})
@@ -1997,8 +2415,19 @@ def _run_plan_locked(
                 marker_path=execution_marker,
                 summary=failure_summary,
             )
+            if dashboard:
+                delivery = _notify_dashboard_failure(
+                    manifest_path=manifest_path, receipt_path=execution_receipt,
+                    dashboard_url=dashboard_url, started_at_epoch=run_started_at_epoch,
+                )
+                try:
+                    _write_json_exclusive(attempt_log_dir / f"{stem}.dashboard_failure.json", delivery)
+                except OSError as delivery_error:
+                    print(f"[dashboard-failure] delivery receipt unavailable: {delivery_error}", file=sys.stderr)
             return rc
         try:
+            if _batch_completion_contract(run, index=index) is not None and (attach_proc is None or attach_exit != 0):
+                raise ValueError("batch manifest dashboard attach ACK missing")
             artifact_binding = _validate_complete_run_artifacts(
                 run, index=index, paths=artifact_paths
             )
@@ -2032,6 +2461,15 @@ def _run_plan_locked(
                 summary=failure_summary,
                 error=f"{type(exc).__name__}: {exc}",
             )
+            if dashboard:
+                delivery = _notify_dashboard_failure(
+                    manifest_path=manifest_path, receipt_path=execution_receipt,
+                    dashboard_url=dashboard_url, started_at_epoch=run_started_at_epoch,
+                )
+                try:
+                    _write_json_exclusive(attempt_log_dir / f"{stem}.dashboard_failure.json", delivery)
+                except OSError as delivery_error:
+                    print(f"[dashboard-failure] delivery receipt unavailable: {delivery_error}", file=sys.stderr)
             raise
         terminal = _terminal_receipt_payload(
             status="COMPLETE_VERIFIED",
@@ -2108,6 +2546,21 @@ def run_plan(
         raise ValueError(f"plan has no planned_runs list: {plan_path}")
     _validate_plan_self_binding(initial_plan)
     _validate_safe_loss_blind_judge_binding(initial_plan)
+    # v2 저부하 batch의 정책 override는 dashboard/lock/claim/child 시작 전에 거절한다.
+    for index, run in enumerate(initial_runs, 1):
+        if not isinstance(run, dict):
+            continue
+        batch = _batch_completion_contract(run, index=index)
+        if batch is not None and _low_load_batch(batch):
+            if not dashboard:
+                raise ValueError("low-load paired execution requires dashboard ON")
+            effective_env = dict(os.environ)
+            effective_env.update(_plan_env_overrides(initial_plan))
+            effective_env.update(env_updates)
+            effective_env.update(_run_env_overrides(run, index=index))
+            if effective_env.get("DASHBOARD_URL") != dashboard_url.rstrip("/"):
+                raise ValueError("low-load paired dashboard URL differs from plan")
+            _validate_batch_child_envelope(run, index=index, argv=run.get("command_argv", []), environment=effective_env)
     initial_contract = _execution_claim_contract(
         plan_path=plan_path, plan=initial_plan, runs=initial_runs
     )

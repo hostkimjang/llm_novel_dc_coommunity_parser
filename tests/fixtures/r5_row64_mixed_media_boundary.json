@@ -1,0 +1,278 @@
+{
+  "schema_version": "r5_row64_saved_expert_boundary_replay_v1",
+  "scope": "STORED_LOG_REPLAY_NOT_NEW_MODEL_OR_GOLD",
+  "post": {
+    "post_id": 8981568,
+    "title": "나혼렙 재밌냐",
+    "content_blocks": [
+      {
+        "text": "웹툰판은 처음의 그 어리버리랑 광고에 뜨는 쿨가이 캐릭이 매칭이 안되어서 손 떼고",
+        "type": "text"
+      },
+      {
+        "text": "소설판은 내가 소환물 부려서 웃기지도 않는 티티카타하면서 잘난 척하는 주인공 유형(박제후 꺼 같은)을 싫어해서 접었음.",
+        "type": "text"
+      },
+      {
+        "text": "끝까지 읽으면 읽을만했다고 느낌?",
+        "type": "text"
+      }
+    ]
+  },
+  "observations": [
+    {
+      "arm": "bootstrap",
+      "log_sha256": "19ec24b50c20b6c609ecc6c929155a11be0c12b76549a059f37e80788118b5e5",
+      "gatekeeper": {
+        "is_noise": false,
+        "noise_reason": null,
+        "post_type": "meta_platform",
+        "detected_entities": {
+          "possible_titles": [
+            "나혼렙"
+          ],
+          "possible_authors": [],
+          "possible_characters": [],
+          "platforms_mentioned": []
+        },
+        "key_terms": [
+          "광고"
+        ],
+        "context_clues": {
+          "has_url_in_comments": false,
+          "has_specific_names": false,
+          "is_asking_recommendation": false,
+          "is_spoiler_discussion": false,
+          "title_as_body_continuation": true,
+          "title_body_joined_text": "나혼렙 재밌냐 웹툰판은 처음의 그 어리버리랑 광고에 뜨는 쿨가이 캐릭이 매칭이 안되어서 손 떼고 소설판은 내가 소환물 부려서 웃기지도 않는 티티카타하면서 잘난 척하는 주인공 유형(박제후 꺼 같은)을 싫어해서 접었음.",
+          "title_body_first_line": "웹툰판은 처음의 그 어리버리랑 광고에 뜨는 쿨가이 캐릭이 매칭이 안되어서 손 떼고",
+          "meta_platform_issue_detected": true,
+          "platform_issue_keywords": [
+            "광고",
+            "안",
+            "안되"
+          ]
+        },
+        "search_requests": [
+          {
+            "query": "시리즈 광고 회차 다운로드 오류",
+            "purpose": "platform_issue_verify",
+            "priority": 1
+          },
+          {
+            "query": "네이버 시리즈 회차 다운로드 안됨",
+            "purpose": "platform_issue_verify",
+            "priority": 1
+          },
+          {
+            "query": "디시인사이드 시리즈 광고 다운로드 제한",
+            "purpose": "platform_issue_verify",
+            "priority": 2
+          }
+        ],
+        "confidence": "high",
+        "notes": "제목의 '나혼렙'은 매우 유명한 웹소설/웹툰 IP인 '나 혼자만 레벨업'의 약어로 판단됨. 본문에서 웹툰판과 소설판의 차이점 및 주인공 캐릭터 스타일에 대한 구체적인 감상을 서술하고 있으므로 실제 작품 토론(work_discussion)에 해당함."
+      },
+      "discourse": {
+        "discourse_analysis": {
+          "primary_domain": "novel_literature",
+          "domain_confidence": "high",
+          "domain_evidence": [
+            "나혼렙",
+            "웹툰판",
+            "소설판",
+            "주인공 유형",
+            "소환물"
+          ],
+          "secondary_domains": [
+            "manga_comics"
+          ],
+          "intent": "ask_question",
+          "intent_confidence": "high",
+          "speech_act": "question",
+          "target_kind": "work",
+          "is_coherent": true,
+          "coherence_reason": "제목에서 특정 작품(나혼렙)의 재미 여부를 묻고, 본문에서 웹툰과 소설 버전 각각에 대한 개인적 경험과 불호 포인트를 상세히 밝힌 뒤, 다시 결말까지의 가치를 묻는 일관된 흐름을 보임.",
+          "title_novel_terms": [
+            "나혼렙"
+          ],
+          "title_body_consistency": true,
+          "consistency_note": null,
+          "is_association_not_discussion": false,
+          "association_evidence": null,
+          "search_suggestions": [
+            {
+              "query": "나혼렙 웹툰 소설 차이",
+              "purpose": "To verify if the user's description of character discrepancies between webtoon and novel matches known characteristics of 'Solo Leveling'.",
+              "priority": 1
+            }
+          ],
+          "real_subject": "작품 '나 혼자만 레벨업'(나혼렙)의 웹툰 및 소설 판본에 대한 재미와 완결성 확인",
+          "author_question_span": "나혼렙 재밌냐",
+          "author_question_target": "나 혼자만 레벨업 (작품)",
+          "author_recommendation_span": null,
+          "author_recommendation_is_direct": false,
+          "reasoning": "제목의 '나혼렙'은 유명 웹소설/웹툰인 '나 혼자만 레벨업'의 약칭이며, 본문에서 웹툰과 소설의 캐릭터 묘사 차이 및 주인공 성향에 대한 구체적인 불호 이유를 언급하고 있어 실제 작품에 대한 의견을 묻는 질문임을 알 수 있다.",
+          "source_bound_question_receipt": {
+            "span": "나혼렙 재밌냐",
+            "source": "author_title",
+            "speaker": "author",
+            "modality": "text",
+            "position": 0,
+            "target_description": "나혼렙",
+            "target_candidates": [
+              "나 혼자만 레벨업 (작품)",
+              "나혼렙"
+            ],
+            "target_conflict": false,
+            "verification_level": "exact_author_excerpt_model_target"
+          },
+          "source_bound_recommendation_request": false,
+          "image_topic_relation": {
+            "state": "no_image",
+            "source": "author_spans"
+          },
+          "semantic_seed_review": {
+            "post_intent": "작품 '나혼렙'의 웹툰과 소설 판본에 대한 재미 및 완결성에 대해 질문함",
+            "content_interpretation": "표현 오타/축약 패턴(범용)이 포함된 문장이며, 특정 인명이나 작품 유형을 언급하며 개인적 선호도를 기술함",
+            "is_specific_work_discussion": true,
+            "recommended_intent": "ask_question",
+            "recommended_target_kind": "work",
+            "warnings": []
+          },
+          "warnings": [
+            "semantic_seed_review_search_suggestions_removed"
+          ]
+        }
+      }
+    },
+    {
+      "arm": "before",
+      "log_sha256": "da2533506f9de47bf99d50f5d0e4cb07bdb8e81d1706d246c01e4d6a8ea5328c",
+      "gatekeeper": {
+        "is_noise": false,
+        "noise_reason": null,
+        "post_type": "meta_platform",
+        "detected_entities": {
+          "possible_titles": [
+            "나혼렙"
+          ],
+          "possible_authors": [],
+          "possible_characters": [],
+          "platforms_mentioned": []
+        },
+        "key_terms": [
+          "광고"
+        ],
+        "context_clues": {
+          "has_url_in_comments": false,
+          "has_specific_names": false,
+          "is_asking_recommendation": false,
+          "is_spoiler_discussion": false,
+          "title_as_body_continuation": true,
+          "title_body_joined_text": "나혼렙 재밌냐 웹툰판은 처음의 그 어리버리랑 광고에 뜨는 쿨가이 캐릭이 매칭이 안되어서 손 떼고 소설판은 내가 소환물 부려서 웃기지도 않는 티티카타하면서 잘난 척하는 주인공 유형(박제후 꺼 같은)을 싫어해서 접었음.",
+          "title_body_first_line": "웹툰판은 처음의 그 어리버리랑 광고에 뜨는 쿨가이 캐릭이 매칭이 안되어서 손 떼고",
+          "meta_platform_issue_detected": true,
+          "platform_issue_keywords": [
+            "광고",
+            "안",
+            "안되"
+          ]
+        },
+        "search_requests": [
+          {
+            "query": "시리즈 광고 회차 다운로드 오류",
+            "purpose": "platform_issue_verify",
+            "priority": 1
+          },
+          {
+            "query": "네이버 시리즈 회차 다운로드 안됨",
+            "purpose": "platform_issue_verify",
+            "priority": 1
+          },
+          {
+            "query": "디시인사이드 시리즈 광고 다운로드 제한",
+            "purpose": "platform_issue_verify",
+            "priority": 2
+          }
+        ],
+        "confidence": "high",
+        "notes": "제목의 '나혼렙'은 '나 혼자만 레벨업'의 매우 유명한 약어임. 본문에서 웹툰판과 소설판의 차이점 및 주인공의 성격(티티카타, 잘난 척하는 유형)에 대한 구체적인 감상을 서술하고 있으므로 실제 작품에 대한 토론(work_discussion)으로 판단됨."
+      },
+      "discourse": {
+        "discourse_analysis": {
+          "primary_domain": "manga_comics",
+          "domain_confidence": "high",
+          "domain_evidence": [
+            "나혼렙",
+            "웹툰판",
+            "소설판",
+            "캐릭",
+            "주인공"
+          ],
+          "secondary_domains": [
+            "novel_literature"
+          ],
+          "intent": "ask_question",
+          "intent_confidence": "high",
+          "speech_act": "question",
+          "target_kind": "work",
+          "is_coherent": true,
+          "coherence_reason": "제목에서 작품의 재미 여부를 묻고, 본문에서 웹툰과 소설 버전 각각에 대한 개인적인 불호 사유를 밝히며 완결까지 읽을 가치가 있는지 구체적으로 질문하고 있음.",
+          "title_novel_terms": [
+            "나혼렙"
+          ],
+          "title_body_consistency": true,
+          "consistency_note": null,
+          "is_association_not_discussion": false,
+          "association_evidence": null,
+          "search_suggestions": [
+            {
+              "query": "나혼렙 웹툰 소설 차이",
+              "purpose": "To verify if '나혼렙' refers to 'Solo Leveling' and check the differences between its webtoon and novel versions mentioned by the author.",
+              "priority": 1
+            },
+            {
+              "query": "나혼렙 주인공 성격",
+              "purpose": "To confirm the character traits described (clumsy vs cool guy) to ensure the work identity.",
+              "priority": 2
+            }
+          ],
+          "real_subject": "작품 '나혼렙'의 완결까지의 재미 및 정주행 가치에 대한 질문",
+          "author_question_span": "나혼렙 재밌냐",
+          "author_question_target": "나혼렙(작품)",
+          "author_recommendation_span": null,
+          "author_recommendation_is_direct": false,
+          "reasoning": "제목의 '나혼렙'은 유명 작품인 '나 혼자만 레벨업'의 약칭으로 판단되며, 작성자는 해당 작품의 웹툰과 소설 버전에 대해 각기 다른 이유로 흥미를 잃었음을 설명한 뒤, 끝까지 읽을 가치가 있는지 의견을 구하고 있다. 이는 특정 작품에 대한 구체적인 감상과 질문을 담은 전형적인 작품 토론/질문 글이다.",
+          "source_bound_question_receipt": {
+            "span": "나혼렙 재밌냐",
+            "source": "author_title",
+            "speaker": "author",
+            "modality": "text",
+            "position": 0,
+            "target_description": "나혼렙",
+            "target_candidates": [
+              "나혼렙(작품)",
+              "나혼렙"
+            ],
+            "target_conflict": false,
+            "verification_level": "exact_author_excerpt_model_target"
+          },
+          "source_bound_recommendation_request": false,
+          "image_topic_relation": {
+            "state": "no_image",
+            "source": "author_spans"
+          },
+          "semantic_seed_review": {
+            "post_intent": "특정 작품의 웹툰과 소설 버전 간의 차이점 및 완결까지의 재미 여부를 묻는 질문",
+            "content_interpretation": "표현 오타/축약 패턴(범용)이 포함된 제목과 본문 내용을 통해 특정 작품에 대한 경험을 서술함",
+            "is_specific_work_discussion": true,
+            "recommended_intent": "ask_question",
+            "recommended_target_kind": "work",
+            "warnings": []
+          }
+        }
+      }
+    }
+  ]
+}

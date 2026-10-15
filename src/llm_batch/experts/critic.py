@@ -104,6 +104,8 @@ class CriticExpert:
                 for sr in (ctx.search_results or []):
                     if not isinstance(sr, dict):
                         continue
+                    if sr.get("_ocr_diagnostic_only") is True or sr.get("_purpose") == "image_ocr_diagnostic_probe":
+                        continue
                     try:
                         rank = int(sr.get("_evidence_rank")) if sr.get("_evidence_rank") is not None else 10**9
                     except Exception:

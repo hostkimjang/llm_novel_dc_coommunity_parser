@@ -210,8 +210,8 @@ def _public_snapshot_from_identity(identity: dict[str, Any]) -> dict[str, Any]:
 def _implementation_contract() -> dict[str, Any]:
     refs = {
         "harness_tool": _artifact_ref(Path(__file__)),
-        "candidate_generation": _artifact_ref(ROOT / "src/llm_batch/candidate_generation.py"),
-        "candidate_set_shadow": _artifact_ref(ROOT / "src/llm_batch/candidate_set_shadow.py"),
+        "candidate_generation": _artifact_ref(ROOT / "src/llm_batch/grounding/candidate_generation.py"),
+        "candidate_set_shadow": _artifact_ref(ROOT / "src/llm_batch/grounding/candidate_set_shadow.py"),
         "agentic_pipeline": _artifact_ref(ROOT / "src/llm_batch/agentic_pipeline.py"),
         "expert_orchestrator": _artifact_ref(ROOT / "src/llm_batch/experts/orchestrator.py"),
         "expert_gatekeeper": _artifact_ref(ROOT / "src/llm_batch/experts/gatekeeper.py"),

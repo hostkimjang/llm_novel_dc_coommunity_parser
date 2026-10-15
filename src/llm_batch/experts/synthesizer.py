@@ -51,6 +51,8 @@ SYNTHESIZER_SYSTEM = """\
 6. 검색 결과에서 "작가A의 다른 작품 추천" 형태의 결과는 부수 정보이지, 해당 포스트의 주제가 아닙니다.
 7. evidence_alignment의 decoder_match는 Decoder의 실제 출력(best_match, confidence)을 근거로 판단.
    Decoder가 작품을 high/max confidence로 식별했으면 decoder_match는 strong이어야 합니다.
+8. 인물 관계와 화자를 원문 문장에 결속하세요. "A는 B와의 입장 차이"에서 A와 B는 다른 인물입니다. 검색 문구만으로 A를 B의 직책으로 재해석하지 마세요.
+9. 댓글에서 제기한 작가의 동기나 전개 해석은 댓글 의견으로 표시하세요. 본문에 없는 판단을 게시글 작성자의 발화로 합치지 마세요.
 """
 
 SYNTHESIZER_PROMPT = """\

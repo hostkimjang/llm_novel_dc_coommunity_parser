@@ -3,6 +3,8 @@ from __future__ import annotations
 import os
 import re
 import time
+import hashlib
+import json
 from html.parser import HTMLParser
 from typing import Any, Dict, List, Optional
 from urllib.parse import parse_qs, unquote, urljoin, urlparse
@@ -82,6 +84,9 @@ class SearchRequest(BaseModel):
     query: str
     num_results: int = 10  # 기본값: 10개 결과
     purpose: str = ""
+    run_id: Optional[str] = None
+    post_id: Optional[str] = None
+    source_receipt: Optional[Dict[str, Any]] = None
 
 
 class FetchRequest(BaseModel):
@@ -525,6 +530,71 @@ def _has_novel_cues(text: str) -> bool:
     return any(tok.lower() in norm for tok in _NOVEL_CUE_TOKENS)
 
 
+def _source_bound_compound_wiki_character_role(
+    query: str, item: Dict[str, Any], purpose: str,
+) -> bool:
+    """Keep an exact work wiki row when a compound query names its character.
+
+    This is search-row retention only. It does not decide the work identity or
+    bypass the later relation and publication gates.
+    """
+    if _purpose_key(purpose) != "title_anchor_exact_probe":
+        return False
+    query_text = str(query or "").strip()
+    if not re.fullmatch(r"[가-힣]{6,20}", query_text):
+        return False
+    url = str(item.get("url") or "").strip()
+    try:
+        parsed = urlparse(url)
+    except ValueError:
+        return False
+    if (parsed.hostname or "").lower() not in {"namu.wiki", "thewiki.kr"}:
+        return False
+    if not parsed.path.startswith("/w/"):
+        return False
+    page_title = unquote(parsed.path[3:]).replace("_", " ").strip()
+    row_title = str(item.get("title") or "").strip()
+    normalize = lambda value: re.sub(r"[^0-9A-Za-z가-힣]", "", value.lower())
+    if not page_title or "/" in page_title or normalize(page_title) != normalize(row_title):
+        return False
+    content = str(item.get("content") or "").strip()
+    if not content:
+        return False
+    clauses = [part.strip() for part in re.split(r"(?<=[.!?。！？])|[\r\n]+", content) if part.strip()]
+    nonaffirmative = re.compile(
+        r"[?？]|다른\s*(?:작품|소설)|별개|비교(?!적)|아니|않|없|오인|혼동|착각|무관|"
+        r"(?:일|인|했을)\s*수(?:도)?\s*있|가정|추정|소문|것\s*같|듯(?:하|싶)|"
+        r"등장하지|나오지|(?:의부|스승|등장인물|주인공).{0,8}(?:아니|아님)"
+    )
+    for index, clause in enumerate(clauses):
+        if nonaffirmative.search(clause):
+            continue
+        following = " ".join(clauses[index + 1:index + 3])
+        if re.match(r"^(?:아니|정정|틀리|오류|그렇지\s*않)", following) or re.search(
+            r"다른\s*(?:작품|소설)|별개|무관|"
+            r"(?:이|해당)\s*작품.{0,12}(?:나오지|등장하지|아니)", following,
+        ):
+            continue
+        for length in (2, 3, 4):
+            if len(query_text) - length < 3:
+                continue
+            character = re.escape(query_text[-length:])
+            if re.search(
+                rf"(?<![0-9A-Za-z가-힣]){character}"
+                r"(?:은|는|이|가|의)?\s*(?:작가|저자)(?:는|은|가|를|의)?(?![0-9A-Za-z가-힣])",
+                clause,
+            ):
+                continue
+            role = re.compile(
+                rf"(?<![0-9A-Za-z가-힣]){character}"
+                rf"(?:은|는|이|가|을|를|의|도|만)?(?![0-9A-Za-z가-힣]).{{0,24}}"
+                r"(?:주인공|등장인물|캐릭터|인물|의부|스승)"
+            )
+            if role.search(clause):
+                return True
+    return False
+
+
 def _non_korean_noise_reason(query: str, item: Dict[str, Any], purpose: str = "") -> Optional[str]:
     """
     한글 질의에서 한국 웹소설 문맥과 무관한 외국어 결과의 필터 사유를 반환한다.
@@ -586,7 +656,9 @@ def _non_korean_noise_reason(query: str, item: Dict[str, Any], purpose: str = ""
             if not (full_overlap or frag_overlap):
                 return f"token_mismatch:{host_kind}"
         elif host_kind in {"reference", "korean"}:
-            if not full_overlap:
+            if not full_overlap and not _source_bound_compound_wiki_character_role(
+                query, item, purpose,
+            ):
                 return f"token_mismatch:{host_kind}"
         else:
             if not full_overlap:
@@ -778,6 +850,26 @@ def _clean_direct_search_url(url: str) -> str:
     return candidate
 
 
+def _is_naver_original_product_id_url(url: str) -> bool:
+    """Search-form Series identifiers need normal fetch/redirect before detail use."""
+    try:
+        parsed = urlparse(str(url or ""))
+        query = parse_qs(parsed.query, keep_blank_values=True)
+        original_ids = [value for key, values in query.items()
+                        if key.lower() == "originalproductid" for value in values]
+        return bool(
+            parsed.scheme == "https"
+            and (parsed.hostname or "").lower() in {"series.naver.com", "m.series.naver.com"}
+            and parsed.username is None and parsed.password is None
+            and parsed.port is None and "#" not in url
+            and parsed.path.lower() in {"/novel/detail.series", "/novel/detail.nhn"}
+            and len(query) == 1 and len(original_ids) == 1
+            and re.fullmatch(r"[0-9]+", original_ids[0]) is not None
+        )
+    except ValueError:
+        return False
+
+
 def _title_from_direct_url(url: str) -> str:
     try:
         parsed = urlparse(url or "")
@@ -857,6 +949,9 @@ def _normalize_direct_search_items(
             "url": url,
             "content": clean_title or title,
             "engine": f"direct_{provider}",
+            "source_url_original": url,
+            "official_detail_verified": False,
+            "official_detail_verification_state": "hold_pending_normal_fetch_redirect",
         }
         if _non_korean_noise_reason(query, item, purpose):
             continue
@@ -905,7 +1000,105 @@ def _direct_search_fallback_reason(
     return ""
 
 
+def _run_exact_title_direct_fallback_reason(
+    request: SearchRequest,
+    *,
+    filtered_items: List[Dict[str, Any]],
+    raw_items: List[Dict[str, Any]],
+    filtered_out_items: List[Dict[str, Any]],
+) -> str:
+    """Fail-closed direct-search gate for a scoped exact-title research bridge."""
+    if not _env_bool("MCP_DIRECT_SEARCH_FALLBACK", False):
+        return ""
+    if _purpose_key(request.purpose) != "official_title_verify":
+        return ""
+    if not _run_direct_source_binding_digest(request):
+        return ""
+    if filtered_items:
+        return ""
+    if not raw_items:
+        return "run_exact_title_empty"
+    if len(raw_items) != 10 or len(filtered_out_items) != 10:
+        return ""
+    unrelated_reasons = ("token_mismatch:", "no_hangul:", "blacklisted_host:", "cjk_dominant:")
+    for raw, rejected in zip(raw_items, filtered_out_items):
+        if not isinstance(raw, dict) or not isinstance(rejected, dict):
+            return ""
+        url = str(raw.get("url") or "").strip()
+        if not url or "filter_reason" in raw:
+            return ""
+        # _filter_korean_noise copies the exact raw item and adds one reason.
+        # A matching URL alone does not bind a rejection to its source row.
+        if {key: value for key, value in rejected.items() if key != "filter_reason"} != raw:
+            return ""
+        reason = str(rejected.get("filter_reason") or "")
+        if not reason.startswith(unrelated_reasons):
+            return ""
+        if _non_korean_noise_reason(request.query, raw, request.purpose) != reason:
+            return ""
+    return "run_exact_title_irrelevant10"
+
+
+def _run_direct_source_binding_digest(request: SearchRequest) -> str:
+    """Validate one pinned run/row and return its runtime source receipt digest."""
+    run_id = str(request.run_id or "").strip()
+    post_id = str(request.post_id or "").strip()
+    if not re.fullmatch(r"[A-Za-z0-9_.:-]{1,128}", run_id):
+        return ""
+    if not re.fullmatch(r"[0-9]{1,20}", post_id):
+        return ""
+    if run_id != os.getenv("MCP_DIRECT_SEARCH_RUN_ID", "").strip():
+        return ""
+    if post_id != os.getenv("MCP_DIRECT_SEARCH_POST_ID", "").strip():
+        return ""
+    receipt = request.source_receipt
+    fields = {
+        "schema_version", "run_id", "post_id", "canonical_title",
+        "author_alias_span", "author_source", "original_post_sha256",
+        "alias_relation_evidence_ref", "alias_relation_evidence_sha256",
+        "relation_kind", "required_site_query",
+    }
+    if not isinstance(receipt, dict) or set(receipt) != fields:
+        return ""
+    if any(not isinstance(receipt.get(key), str) for key in fields):
+        return ""
+    if (receipt["schema_version"] != "source_bound_canonical_title_v1"
+            or receipt["relation_kind"] != "alias_of"
+            or receipt["run_id"] != run_id
+            or receipt["post_id"] != post_id
+            or receipt["author_source"] not in {"author_title", "author_body"}):
+        return ""
+    normalized_query = re.sub(r"\s+", " ", request.query or "").strip()
+    normalized_title = re.sub(r"\s+", " ", receipt["canonical_title"]).strip()
+    if not normalized_query or normalized_query != normalized_title:
+        return ""
+    if re.search(r"(?i)(?:\bsite:|https?://|[\"“”‘’])", normalized_query):
+        return ""
+    if receipt["required_site_query"] not in {
+        f'site:novelpia.com/novel "{normalized_title}"',
+        f'site:munpia.com "{normalized_title}"',
+    }:
+        return ""
+    if not 1 <= len(receipt["author_alias_span"].strip()) <= 120:
+        return ""
+    if not 1 <= len(receipt["alias_relation_evidence_ref"].strip()) <= 500:
+        return ""
+    if not all(re.fullmatch(r"[0-9a-f]{64}", receipt[key]) for key in (
+        "original_post_sha256", "alias_relation_evidence_sha256",
+    )):
+        return ""
+    from hashlib import sha256
+    from json import dumps
+
+    digest = sha256(dumps(
+        receipt, ensure_ascii=False, sort_keys=True, separators=(",", ":"),
+    ).encode("utf-8")).hexdigest()
+    return digest
+
+
 def _direct_search_fallback_readyz_ok() -> bool:
+    if _env_bool("MCP_DIRECT_SEARCH_EXACT_TITLE_ONLY", False):
+        return False
     if not _env_bool("MCP_DIRECT_SEARCH_FALLBACK_READYZ_OK", False):
         return False
     if not _env_bool("MCP_DIRECT_SEARCH_FALLBACK", True):
@@ -920,11 +1113,11 @@ def _direct_search_fallback_readyz_ok() -> bool:
 
 def _call_direct_search_fallback(query: str, num_results: int, purpose: str) -> Dict[str, Any]:
     providers_raw = os.getenv("MCP_DIRECT_SEARCH_PROVIDERS", "naver,bing")
-    providers = [
+    providers = list(dict.fromkeys(
         p.strip().lower()
         for p in providers_raw.split(",")
         if p.strip().lower() in _DIRECT_SEARCH_PROVIDERS
-    ] or ["naver", "bing"]
+    )) or ["naver", "bing"]
     try:
         timeout_sec = max(3.0, min(float(os.getenv("MCP_DIRECT_SEARCH_TIMEOUT_SEC", "12")), 30.0))
     except Exception:
@@ -938,7 +1131,9 @@ def _call_direct_search_fallback(query: str, num_results: int, purpose: str) -> 
     items: List[Dict[str, Any]] = []
     errors: List[str] = []
     used_providers: List[str] = []
+    attempted_providers: List[str] = []
     for provider in providers:
+        attempted_providers.append(provider)
         search_url = _direct_search_url(provider, query)
         try:
             resp = httpx.get(search_url, headers=headers, timeout=timeout_sec, follow_redirects=True)
@@ -962,6 +1157,7 @@ def _call_direct_search_fallback(query: str, num_results: int, purpose: str) -> 
         "results": _rank_direct_search_items(items, query)[:max_items],
         "count": len(_rank_direct_search_items(items, query)[:max_items]),
         "providers": used_providers,
+        "attempted_providers": attempted_providers,
         "errors": errors[-5:],
     }
 
@@ -1492,7 +1688,9 @@ def mcp_search(request: SearchRequest) -> Dict[str, Any]:
     direct_search_used = False
     direct_search_reason = ""
     direct_search_count = 0
+    direct_search_held_candidates: List[Dict[str, Any]] = []
     direct_search_providers: List[str] = []
+    direct_search_attempted_providers: List[str] = []
     direct_search_errors: List[str] = []
 
     fallback_reason = _headless_fallback_reason(
@@ -1527,21 +1725,49 @@ def mcp_search(request: SearchRequest) -> Dict[str, Any]:
         except Exception:
             pass
 
-    direct_reason = _direct_search_fallback_reason(
-        filtered_items=filtered_items,
-        raw_items=raw_items,
-        filtered_out_items=filtered_out_items,
-        filter_reason_counts=filter_reason_counts,
-        degraded=degraded,
-        possible_throttle=possible_throttle,
-        num_results=num_results,
-    )
+    direct_search_pre_raw_total = len(raw_items)
+    direct_search_pre_accepted_total = len(filtered_items)
+    direct_search_source_receipt_sha256 = ""
+    if _env_bool("MCP_DIRECT_SEARCH_EXACT_TITLE_ONLY", False):
+        if _purpose_key(request.purpose) == "official_title_verify":
+            direct_search_source_receipt_sha256 = _run_direct_source_binding_digest(request)
+        direct_reason = _run_exact_title_direct_fallback_reason(
+            request,
+            filtered_items=filtered_items,
+            raw_items=raw_items,
+            filtered_out_items=filtered_out_items,
+        )
+    else:
+        direct_reason = _direct_search_fallback_reason(
+            filtered_items=filtered_items,
+            raw_items=raw_items,
+            filtered_out_items=filtered_out_items,
+            filter_reason_counts=filter_reason_counts,
+            degraded=degraded,
+            possible_throttle=possible_throttle,
+            num_results=num_results,
+        )
     if direct_reason:
         direct_search_reason = direct_reason
         direct_payload = _call_direct_search_fallback(request.query, num_results, request.purpose)
-        direct_items = list(direct_payload.get("results") or [])
+        direct_items = []
+        for item in (direct_payload.get("results") or []):
+            if not isinstance(item, dict):
+                continue
+            if _is_naver_original_product_id_url(str(item.get("url") or "")):
+                direct_search_held_candidates.append({
+                    "title": item.get("title"),
+                    "url": item.get("url"),
+                    "source_url_original": item.get("source_url_original") or item.get("url"),
+                    "engine": item.get("engine"),
+                    "official_detail_verified": False,
+                    "official_detail_verification_state": "hold_pending_normal_fetch_redirect",
+                })
+            else:
+                direct_items.append(item)
         direct_search_count = len(direct_items)
         direct_search_providers = list(direct_payload.get("providers") or [])
+        direct_search_attempted_providers = list(direct_payload.get("attempted_providers") or [])
         direct_search_errors = list(direct_payload.get("errors") or [])
         direct_search_used = True
         if direct_items:
@@ -1561,14 +1787,19 @@ def mcp_search(request: SearchRequest) -> Dict[str, Any]:
     results: List[Dict[str, Any]] = []
     # 요청한 개수만큼만 반환 (SearXNG가 더 많이 반환할 수 있음)
     for item in filtered_items[:num_results]:
-        results.append(
-            {
-                "title": item.get("title"),
-                "url": item.get("url"),
-                "content": item.get("content"),
-                "engine": item.get("engine"),
-            }
-        )
+        result_item = {
+            "title": item.get("title"),
+            "url": item.get("url"),
+            "content": item.get("content"),
+            "engine": item.get("engine"),
+        }
+        if str(item.get("engine") or "").startswith("direct_"):
+            result_item.update({
+                "source_url_original": item.get("source_url_original") or item.get("url"),
+                "official_detail_verified": False,
+                "official_detail_verification_state": "hold_pending_normal_fetch_redirect",
+            })
+        results.append(result_item)
     fallback_recovered = bool((headless_used and headless_count > 0) or (direct_search_used and direct_search_count > 0))
     degraded_recovered = bool((degraded or possible_throttle) and fallback_recovered and results)
     return {
@@ -1600,9 +1831,17 @@ def mcp_search(request: SearchRequest) -> Dict[str, Any]:
         "fallback_recovered": fallback_recovered,
         "degraded_recovered": degraded_recovered,
         "direct_search_used": direct_search_used,
+        "direct_search_binding_verified": bool(direct_search_source_receipt_sha256),
+        "direct_search_source_receipt_sha256": direct_search_source_receipt_sha256,
+        "direct_search_degraded_provider": direct_search_used,
+        "direct_search_pre_raw_total": direct_search_pre_raw_total,
+        "direct_search_pre_accepted_total": direct_search_pre_accepted_total,
         "direct_search_reason": direct_search_reason,
         "direct_search_count": direct_search_count,
+        "direct_search_held_count": len(direct_search_held_candidates),
+        "direct_search_held_candidates": direct_search_held_candidates[:num_results],
         "direct_search_providers": direct_search_providers,
+        "direct_search_attempted_providers": direct_search_attempted_providers,
         "direct_search_errors": direct_search_errors,
     }
 
@@ -1697,13 +1936,121 @@ def _clean_markdown_for_llm(md: str) -> str:
 # Crawl4AI 연동 — Playwright 기반 심층 크롤링 + 마크다운 변환
 # ---------------------------------------------------------------------------
 
+_MUNPIA_FANART_DETAIL_URL = re.compile(
+    r"https://www\.munpia\.com/communities/novels-fanart/posts/[0-9]+\Z"
+)
+_MUNPIA_OFFICIAL_DETAIL_URL = re.compile(
+    r"https://www\.munpia\.com/novel/detail/[0-9]+\Z"
+)
+_MAX_FANART_RAW_HTML_BYTES = 2 * 1024 * 1024
+
+
+def _is_munpia_official_detail_shell(url: str, info: Dict[str, Any]) -> bool:
+    """Identify the generic JS shell returned for an exact Munpia detail page."""
+    return bool(
+        _MUNPIA_OFFICIAL_DETAIL_URL.fullmatch(url)
+        and str(info.get("title") or "").strip().casefold() == "novel - munpia"
+        and not info.get("author")
+        and info.get("content_status") in {None, "unavailable"}
+    )
+
+
+def _has_munpia_official_detail_content(info: Dict[str, Any]) -> bool:
+    """Require a parsed work identity before accepting a shell retry."""
+    return bool(
+        info.get("page_type") == "novel_page"
+        and info.get("content_status") == "active"
+        and str(info.get("title") or "").strip()
+        and str(info.get("title") or "").strip().casefold() != "novel - munpia"
+        and str(info.get("author") or "").strip()
+    )
+
+
+def _fetch_transport_provenance(
+    requested_url: str, final_url: Any, method: str, status_code: Any,
+) -> Dict[str, Any]:
+    """Expose the observed destination of one successful page fetch."""
+    if not isinstance(final_url, str) or not final_url.strip():
+        return {}
+    if method not in {"crawl4ai", "httpx"}:
+        return {}
+    if type(status_code) is not int or not 200 <= status_code < 300:
+        return {}
+    requested = urlparse(requested_url)
+    final = urlparse(final_url)
+    if (requested.scheme not in {"http", "https"} or not requested.netloc
+            or final.scheme not in {"http", "https"} or not final.netloc):
+        return {}
+    return {
+        "final_url": final_url,
+        "fetch_transport_provenance": {
+            "requested_url": requested_url,
+            "final_url": final_url,
+            "method": method,
+            "status_code": status_code,
+            "redirected": final_url != requested_url,
+        },
+    }
+
+
+def _munpia_official_detail_transport_receipt(
+    requested_url: str, final_url: Any, method: str, status_code: Any,
+) -> Dict[str, Any]:
+    """Expose only transport provenance for one exact Munpia novel detail."""
+    if not _MUNPIA_OFFICIAL_DETAIL_URL.fullmatch(requested_url):
+        return {}
+    if not isinstance(final_url, str) or final_url != requested_url:
+        return {}
+    if method not in {"crawl4ai", "httpx"}:
+        return {}
+    if type(status_code) is not int or not 200 <= status_code < 300:
+        return {}
+    return {"official_detail_transport_provenance": {
+        "requested_url": requested_url,
+        "final_url": final_url,
+        "method": method,
+        "status_code": status_code,
+    }}
+
+
+def _fanart_raw_html_receipt(
+    requested_url: str, original_html: Any, final_url: Any,
+    method: str, status_code: Any,
+) -> Dict[str, Any]:
+    """정확한 팬아트 상세 응답에 한해 원본 HTML의 후보 전송 영수증을 만든다."""
+    if not _MUNPIA_FANART_DETAIL_URL.fullmatch(requested_url):
+        return {}
+    if not isinstance(final_url, str) or final_url != requested_url:
+        return {}
+    if type(status_code) is not int or not 200 <= status_code < 300:
+        return {}
+    if not isinstance(original_html, str) or not original_html:
+        return {}
+    try:
+        encoded = original_html.encode("utf-8")
+    except UnicodeEncodeError:
+        return {}
+    if len(encoded) > _MAX_FANART_RAW_HTML_BYTES:
+        return {}
+    return {
+        "raw_html": original_html,
+        "raw_html_sha256": hashlib.sha256(encoded).hexdigest(),
+        "raw_html_provenance": {
+            "requested_url": requested_url,
+            "final_url": final_url,
+            "method": method,
+            "status_code": status_code,
+        },
+    }
+
+
 def _crawl4ai_fetch(url: str, max_length: int = 0) -> Optional[Dict[str, Any]]:
     """Crawl4AI Docker 서비스를 호출하여 페이지 마크다운을 획득한다.
 
     max_length=0 이면 길이 제한 없음 (전문 반환).
 
     Returns:
-        성공 시 {"markdown": str, "html": str | None} dict,
+        성공 시 markdown·기존 추출용 html과 원본 HTML·최종 URL·상태 metadata dict,
         실패 시 None.
     """
     crawl4ai_url = CRAWL4AI_URL.rstrip("/")
@@ -1814,7 +2161,15 @@ def _crawl4ai_fetch(url: str, max_length: int = 0) -> Optional[Dict[str, Any]]:
     except Exception:
         pass
 
-    return {"markdown": markdown, "html": raw_html}
+    return {
+        "markdown": markdown,
+        "html": raw_html,
+        "original_html": first.get("html"),
+        # CrawlResult.url is the requested URL; only redirected_url describes
+        # the actual response destination. Missing destination fails closed.
+        "final_url": first.get("redirected_url"),
+        "status_code": first.get("status_code"),
+    }
 
 
 def _crawl4ai_health_ok() -> bool:
@@ -2044,6 +2399,192 @@ def _classify_platform_page_type(url: str, html: str) -> str:
     return "unknown"
 
 
+def _is_munpia_canvas_viewer(url: str, html: str) -> bool:
+    parsed = urlparse(url)
+    if (
+        (parsed.hostname or "").lower() not in {"munpia.com", "www.munpia.com"}
+        or not re.fullmatch(r"/novel/viewer/\d+/\d+/?", parsed.path)
+        or "_scrollCanvas_" not in (html or "")
+    ):
+        return False
+    # A real HTML body can coexist with layout canvases. Only visible body
+    # candidates outside comments/recommendations should disable the guard.
+    class _HtmlEpisodeBodyProbe(HTMLParser):
+        _void_tags = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"}
+
+        def __init__(self) -> None:
+            super().__init__()
+            self.stack: List[tuple[str, str]] = []
+            self.has_body = False
+
+        def handle_starttag(self, tag: str, attrs: list[tuple[str, Optional[str]]]) -> None:
+            if tag not in self._void_tags:
+                values = dict(attrs)
+                marker = f"{values.get('id') or ''} {values.get('class') or ''}".lower()
+                self.stack.append((tag, marker))
+
+        def handle_endtag(self, tag: str) -> None:
+            for index in range(len(self.stack) - 1, -1, -1):
+                if self.stack[index][0] == tag:
+                    del self.stack[index:]
+                    break
+
+        def handle_data(self, data: str) -> None:
+            if not data.strip() or any(tag in {"script", "style", "template"} for tag, _ in self.stack):
+                return
+            markers = [marker for _, marker in self.stack]
+            if any(
+                any(token in marker for token in (
+                    "_comment", "_recommend", "_endpage", "_footer", "_toolbar", "_sidebar", "_tutorial",
+                ))
+                for marker in markers
+            ):
+                return
+            explicit_body = any(
+                re.search(r"(?:chapter|episode|novel|story|reader)[-_ ]?(?:body|content|text)", marker)
+                for marker in markers
+            )
+            in_viewer_section = any(
+                "_viewersec" in marker or "_contentarea" in marker
+                for marker in markers
+            )
+            in_article = any(tag == "article" for tag, _ in self.stack)
+            if explicit_body or (in_article and in_viewer_section):
+                self.has_body = True
+
+    html_body_probe = _HtmlEpisodeBodyProbe()
+    html_body_probe.feed(html)
+    if html_body_probe.has_body:
+        return False
+
+    class _ScrollSpacerProbe(HTMLParser):
+        def __init__(self) -> None:
+            super().__init__()
+            self.depth = 0
+            self.spacer_count = 0
+            self.canvas_count = 0
+            self.has_text = False
+            self.end_page_depth = 0
+            self.ignored_depth = 0
+
+        def handle_starttag(self, tag: str, attrs: list[tuple[str, Optional[str]]]) -> None:
+            if self.ignored_depth:
+                if tag in {"script", "style", "template"}:
+                    self.ignored_depth += 1
+                return
+            if self.depth and tag in {"script", "style", "template"}:
+                self.ignored_depth = 1
+                return
+            classes = str(dict(attrs).get("class") or "").split()
+            if tag == "div" and self.depth == 0 and any(
+                value.startswith("_scrollSpacer_") for value in classes
+            ):
+                self.depth = 1
+                self.spacer_count += 1
+            elif self.depth:
+                if tag == "div":
+                    self.depth += 1
+                    if any(value.startswith("_endPageScrollWrapper_") for value in classes):
+                        self.end_page_depth = self.depth
+                elif tag == "canvas" and any(
+                    value.startswith("_scrollCanvas_") for value in classes
+                ):
+                    self.canvas_count += 1
+
+        def handle_endtag(self, tag: str) -> None:
+            if self.ignored_depth:
+                if tag in {"script", "style", "template"}:
+                    self.ignored_depth -= 1
+                return
+            if tag == "div" and self.depth:
+                if self.depth == self.end_page_depth:
+                    self.end_page_depth = 0
+                self.depth -= 1
+
+        def handle_data(self, data: str) -> None:
+            if self.depth and not self.end_page_depth and not self.ignored_depth and data.strip():
+                self.has_text = True
+
+    probe = _ScrollSpacerProbe()
+    probe.feed(html)
+    return probe.spacer_count == 1 and probe.canvas_count > 0 and not probe.has_text
+
+
+def _sanitize_munpia_canvas_viewer_text(
+    url: str, html: str, text: str, structured_info: Dict[str, Any],
+) -> tuple[str, Dict[str, Any]]:
+    """Keep a canvas viewer's reader comments out of official episode evidence."""
+    if not _is_munpia_canvas_viewer(url, html):
+        return text, structured_info
+
+    # The episode is drawn on canvas. HTML/Markdown can still contain reader
+    # comments, recommendations, and navigation; none is episode body text.
+    safe_info = {
+        key: value for key, value in structured_info.items()
+        if key in {"title", "page_type", "content_status", "fetch_method"}
+    }
+    safe_info["reader_body_extraction"] = "canvas_not_extracted"
+    safe_info["reader_comments_excluded"] = True
+    safe_text = f"회차 페이지 제목: {safe_info['title']}" if safe_info.get("title") else ""
+    safe_info["text_preview"] = safe_text
+    return safe_text, safe_info
+
+
+def _munpia_detail_author_from_page(
+    html: str, url: str, title: str, *, return_claims: bool = False,
+) -> Any:
+    """기존 현대형 HTML 판독을 캐시 proof 재검산과 같은 구현으로 공유한다."""
+    from ..grounding.munpia_author_byline import _munpia_detail_author_from_page as read_author
+    return read_author(html, url, title, return_claims=return_claims)
+
+
+def _munpia_rendered_header_author(
+    url: str, info: Dict[str, Any], rendered_text: str, raw_html: str,
+    transport_receipt: Dict[str, Any],
+) -> Optional[str]:
+    """Read a missing byline only beside the first exact work heading in rendered text."""
+    provenance = transport_receipt.get("official_detail_transport_provenance")
+    if not isinstance(provenance, dict) or provenance.get("method") != "crawl4ai":
+        return None
+    if not _MUNPIA_OFFICIAL_DETAIL_URL.fullmatch(url):
+        return None
+    if (provenance.get("requested_url") != url or provenance.get("final_url") != url
+            or type(provenance.get("status_code")) is not int
+            or not 200 <= provenance["status_code"] < 300):
+        return None
+    if info.get("page_type") != "novel_page" or info.get("content_status") != "active":
+        return None
+    if str(info.get("author") or "").strip():
+        return None
+    title = str(info.get("title") or "").strip()
+    if not title or title.casefold() == "novel - munpia":
+        return None
+    # A conflicting title-bound HTML field is an ambiguity, not permission to
+    # replace it with the rendered byline.
+    if raw_html and _munpia_detail_author_from_page(
+        raw_html, url, title, return_claims=True,
+    ):
+        return None
+    lines = [line.strip() for line in str(rendered_text or "").splitlines()]
+    heading_at = next((i for i, line in enumerate(lines) if re.match(r"^#\s+\S", line)), None)
+    if heading_at is None:
+        return None
+    heading = re.sub(r"^#\s+", "", lines[heading_at]).strip()
+    if heading.casefold() != title.casefold():
+        return None
+    header = [line for line in lines[heading_at + 1:heading_at + 6] if line]
+    if len(header) < 3 or header[0] != "글":
+        return None
+    author = header[1].strip()
+    if not re.fullmatch(r"[가-힣A-Za-z0-9_·]{2,30}", author):
+        return None
+    if author in {"작가", "작가명", "원작", "글작가", "unknown"}:
+        return None
+    if not re.match(r"^(?:총\s*\d+\s*화|연재|조회수|좋아요|선호작|글자수|작품등록일)", header[2]):
+        return None
+    return author
+
+
 def _extract_novel_platform_info(html: str, url: str) -> Dict[str, Any]:
     """노벨피아/문피아 등 공식 플랫폼 페이지에서 정보 추출"""
     info: Dict[str, Any] = {}
@@ -2057,7 +2598,7 @@ def _extract_novel_platform_info(html: str, url: str) -> Dict[str, Any]:
     if title_match:
         raw_title = title_match.group(1).strip()
         # 플랫폼 접미사 제거
-        for suffix in (" - 노벨피아", " - 웹소설로 꿈꾸는 세상!", " - 문피아",
+        for suffix in (" - 노벨피아", " - 웹소설로 꿈꾸는 세상!", " - 문피아 웹소설", " - 문피아",
                         " | 카카오페이지", " - 네이버 시리즈"):
             if raw_title.endswith(suffix):
                 raw_title = raw_title[:-len(suffix)].strip()
@@ -2099,7 +2640,7 @@ def _extract_novel_platform_info(html: str, url: str) -> Dict[str, Any]:
         # 추가: 본문이 극히 짧으면(소설페이지인데 80자 미만) unavailable 의심
         if _content_status == "active" and page_type == "novel_page":
             _stripped = (text or "").strip()
-            if len(_stripped) < 80:
+            if len(_stripped) < 80 and not _is_munpia_canvas_viewer(url, html):
                 _content_status = "unavailable"
     info["content_status"] = _content_status
     if _content_status != "active":
@@ -2140,18 +2681,32 @@ def _extract_novel_platform_info(html: str, url: str) -> Dict[str, Any]:
             return ""
         return cleaned
 
+    from ..grounding.munpia_author_byline import is_legacy_munpia_author_detail, is_munpia_author_detail, byline_evidence
     author_candidates: List[str] = []
+    legacy_munpia_author_detail = is_legacy_munpia_author_detail(url)
+    if is_munpia_author_detail(url):
+        author_proof = byline_evidence(url, str(info.get("title") or ""), html, kind="html")
+        if author_proof is not None:
+            info["author_byline"] = author_proof
+            if author_proof["status"] == "VERIFIED":
+                info["author"] = author_proof["name"]
+    munpia_detail = bool(_MUNPIA_OFFICIAL_DETAIL_URL.fullmatch(url)) or legacy_munpia_author_detail
+    if munpia_detail and page_type == "novel_page":
+        author = _munpia_detail_author_from_page(html, url, str(info.get("title") or ""))
+        if author:
+            info["author"] = author
 
     # 1) 텍스트 기반 패턴
     text_patterns = [
         r"(?:작가명|작가|글작가|원작)\s*[:：]?\s*[\"']?([가-힣A-Za-z0-9_]{2,30})",
         r"[\"']?([가-힣A-Za-z0-9_]{2,30})[\"']?\s*(?:작가의|작가님의)",
     ]
-    for pat in text_patterns:
-        for m in re.finditer(pat, text):
-            cand = _clean_author_name(m.group(1))
-            if cand:
-                author_candidates.append(cand)
+    if not munpia_detail:
+        for pat in text_patterns:
+            for m in re.finditer(pat, text):
+                cand = _clean_author_name(m.group(1))
+                if cand:
+                    author_candidates.append(cand)
 
     # 2) HTML 메타/JSON-LD 기반 패턴
     html_patterns = [
@@ -2160,11 +2715,12 @@ def _extract_novel_platform_info(html: str, url: str) -> Dict[str, Any]:
         r'"author"\s*:\s*\{[^{}]{0,300}?"name"\s*:\s*"([^"]{2,60})"',
         r'"writer"\s*:\s*"([^"]{2,60})"',
     ]
-    for pat in html_patterns:
-        for m in re.finditer(pat, html, re.IGNORECASE):
-            cand = _clean_author_name(m.group(1))
-            if cand:
-                author_candidates.append(cand)
+    if not munpia_detail:
+        for pat in html_patterns:
+            for m in re.finditer(pat, html, re.IGNORECASE):
+                cand = _clean_author_name(m.group(1))
+                if cand:
+                    author_candidates.append(cand)
 
     # 중복 제거 후 첫 후보 채택
     seen_authors = set()
@@ -2338,6 +2894,7 @@ def mcp_fetch(request: FetchRequest) -> Dict[str, Any]:
 
     # ── 1단계: Crawl4AI 심층 크롤링 시도 ──
     crawl4ai_result = _crawl4ai_fetch(url)  # 길이 제한 없이 전문 크롤링
+    crawl4ai_shell_result: Optional[Dict[str, Any]] = None
     if crawl4ai_result is not None:
         markdown_text = crawl4ai_result["markdown"]
         raw_html = crawl4ai_result.get("html")
@@ -2376,13 +2933,40 @@ def mcp_fetch(request: FetchRequest) -> Dict[str, Any]:
 
         # 최종 텍스트 — 마크다운 클리닝 후 반환 (URL/이미지 노이즈 제거)
         final_text = _clean_markdown_for_llm(markdown_text)
+        final_text, structured_info = _sanitize_munpia_canvas_viewer_text(
+            url, raw_html or "", final_text, structured_info,
+        )
+        transport_receipt = _munpia_official_detail_transport_receipt(
+            url, crawl4ai_result.get("final_url"), "crawl4ai",
+            crawl4ai_result.get("status_code"),
+        )
+        if not structured_info.get("author"):
+            rendered_author = _munpia_rendered_header_author(
+                url, structured_info, final_text, raw_html or "", transport_receipt,
+            )
+            if rendered_author:
+                structured_info["author"] = rendered_author
 
-        return {
+        crawl_result = {
             "url": url,
             "domain": domain,
             "text": final_text,
             "structured_info": structured_info,
+            **_fetch_transport_provenance(
+                url, crawl4ai_result.get("final_url"), "crawl4ai",
+                crawl4ai_result.get("status_code"),
+            ),
+            **_fanart_raw_html_receipt(
+                url, crawl4ai_result.get("original_html"),
+                crawl4ai_result.get("final_url"), "crawl4ai",
+                crawl4ai_result.get("status_code"),
+            ),
+            **transport_receipt,
         }
+        if _is_munpia_official_detail_shell(url, structured_info):
+            crawl4ai_shell_result = crawl_result
+        else:
+            return crawl_result
 
     # ── 2단계: httpx 직접 fetch (기존 경량 경로) ──
     headers = {
@@ -2394,6 +2978,7 @@ def mcp_fetch(request: FetchRequest) -> Dict[str, Any]:
 
     fetch_error: Optional[str] = None
     html: Optional[str] = None
+    direct_response: Optional[httpx.Response] = None
 
     try:
         response = httpx.get(url, headers=headers, timeout=15.0, follow_redirects=True)
@@ -2401,6 +2986,7 @@ def mcp_fetch(request: FetchRequest) -> Dict[str, Any]:
         content_type = response.headers.get("content-type", "")
         if "text/html" in content_type or "application/xhtml" in content_type:
             html = response.text
+            direct_response = response
         else:
             fetch_error = f"Not HTML content: {content_type}"
     except httpx.HTTPError as exc:
@@ -2415,6 +3001,8 @@ def mcp_fetch(request: FetchRequest) -> Dict[str, Any]:
 
     # ── 3단계: 직접 fetch 실패 → SearXNG site: 검색 fallback ──
     if html is None:
+        if crawl4ai_shell_result is not None:
+            return crawl4ai_shell_result
         fallback_result = _searxng_site_fallback(url, domain, request.max_length)
         if fallback_result is not None:
             fallback_result["direct_fetch_error"] = fetch_error
@@ -2435,15 +3023,61 @@ def mcp_fetch(request: FetchRequest) -> Dict[str, Any]:
         if title_match:
             structured_info_httpx["title"] = title_match.group(1).strip()
 
+    if _is_munpia_official_detail_shell(url, structured_info_httpx):
+        # Munpia serves this 200 shell for a spoofed Chrome UA. The default
+        # httpx UA currently receives the work page; retry this exact route once.
+        retry_headers = {k: v for k, v in headers.items() if k.lower() != "user-agent"}
+        try:
+            retry_response = httpx.get(
+                url, headers=retry_headers, timeout=15.0, follow_redirects=True,
+            )
+            retry_response.raise_for_status()
+            retry_content_type = retry_response.headers.get("content-type", "").lower()
+            if (
+                str(retry_response.url) == url
+                and 200 <= retry_response.status_code < 300
+                and ("text/html" in retry_content_type or "application/xhtml" in retry_content_type)
+            ):
+                retry_info = _extract_novel_platform_info(retry_response.text, url)
+                if _has_munpia_official_detail_content(retry_info):
+                    html = retry_response.text
+                    direct_response = retry_response
+                    structured_info_httpx = retry_info
+        except httpx.HTTPError:
+            pass
+
+    if crawl4ai_shell_result is not None and not (
+        direct_response is not None
+        and str(direct_response.url) == url
+        and 200 <= direct_response.status_code < 300
+        and _has_munpia_official_detail_content(structured_info_httpx)
+    ):
+        return crawl4ai_shell_result
+
     structured_info_httpx["fetch_method"] = "httpx"
 
     text = _html_to_text(html)  # 전문 추출 (길이 제한 없음)
+    text, structured_info_httpx = _sanitize_munpia_canvas_viewer_text(
+        url, html, text, structured_info_httpx,
+    )
 
     return {
         "url": url,
         "domain": domain,
         "text": text,
         "structured_info": structured_info_httpx,
+        **_fetch_transport_provenance(
+            url, str(direct_response.url) if direct_response is not None else None,
+            "httpx", direct_response.status_code if direct_response is not None else None,
+        ),
+        **_fanart_raw_html_receipt(
+            url, html, str(direct_response.url) if direct_response is not None else None,
+            "httpx", direct_response.status_code if direct_response is not None else None,
+        ),
+        **_munpia_official_detail_transport_receipt(
+            url, str(direct_response.url) if direct_response is not None else None,
+            "httpx", direct_response.status_code if direct_response is not None else None,
+        ),
     }
 
 

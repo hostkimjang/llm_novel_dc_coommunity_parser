@@ -1,0 +1,8 @@
+{
+  "scope": "STATIC_REVIEW_COUNTEREXAMPLES_NOT_EXECUTED",
+  "human_gold": false,
+  "source_review_receipt_sha256": "b3452ac5e444f73840cd03890aaf5ee4507b14097f85ce9b9aad68beabb474f1",
+  "files_sha256": {
+    "review_counterexamples.json": "223f116e0cc099aedfbf6f9594f2ea9c8947e98fc79436607c2750f586e2cb21"
+  }
+}

@@ -578,14 +578,28 @@ class ExpertMainEarlyRouteMeasurementTests(unittest.TestCase):
         self.assertEqual(len(complete["row_bindings"]), 1)
 
     def test_process_one_source_places_router_before_pipeline_dispatch(self) -> None:
+        import ast
         text = Path(expert_main.__file__).read_text(encoding="utf-8")
-        process_start = text.index("            def _process_one(")
-        process_end = text.index("            # ─── 메인 처리 루프", process_start)
-        body = text[process_start:process_end]
-        self.assertLess(
-            body.index("_execute_source_only_early_route("),
-            body.index("pipeline.process_post(post)"),
-        )
+        tree = ast.parse(text)
+        process = next(node for node in ast.walk(tree)
+            if isinstance(node, ast.FunctionDef) and node.name == "_process_one")
+        callback = next(node for node in process.body
+            if isinstance(node, ast.FunctionDef) and node.name == "_process_full")
+        dispatches = [node for node in ast.walk(process)
+            if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+            and node.func.id == "_process_post_with_optional_native_capture"]
+        self.assertEqual(len(dispatches), 1)
+        self.assertIn(dispatches[0], list(ast.walk(callback)))
+        routers = [node for node in ast.walk(process)
+            if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+            and node.func.id == "_execute_source_only_early_route"]
+        self.assertEqual(len(routers), 1)
+        process_full = next(item.value for item in routers[0].keywords if item.arg == "process_full")
+        self.assertIsInstance(process_full, ast.Name)
+        self.assertEqual(process_full.id, "_process_full")
+        # 콜백은 전달만 해야 한다. router 판정 전에 별도로 호출하면 안 된다.
+        self.assertFalse(any(isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+            and node.func.id == "_process_full" for node in ast.walk(process)))
         self.assertIn("CHEAP_ZERO_CALL_AUTHORITATIVE_REFERENCE_COPY", text)
 
 

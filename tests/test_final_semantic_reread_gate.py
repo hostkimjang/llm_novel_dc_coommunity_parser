@@ -3,6 +3,7 @@ from __future__ import annotations
 import sys
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
@@ -404,6 +405,7 @@ class FinalSemanticRereadGateTest(unittest.TestCase):
                         "explicit_author_name": "유은우",
                         "title_role": "work_title",
                         "evidence_type": "explicit_text",
+                        "promotion_eligible": True,
                         "screen_type": "work_surface",
                         "surface_type": "episode_reader_page",
                         "ocr_text": "재벌가 차녀의 2회차 걸그룹 267화 카카오페이지",
@@ -441,6 +443,79 @@ class FinalSemanticRereadGateTest(unittest.TestCase):
             [("재벌가 차녀의 2회차 걸그룹 카카오페이지", "official_title_verify")],
         )
         self.assertNotIn("intent_permit_blocked_total", ctx.search_query_stats)
+        with patch("llm_batch.experts.orchestrator.unresolved_ocr_alias_conflict_authority_blocked", return_value=True):
+            self.assertEqual(orchestrator._protected_promotable_image_anchor_norms(ctx), (set(), set()))
+
+    def test_unpromoted_direct_image_work_title_stays_diagnostic(self):
+        for promotion in (None, False):
+            with self.subTest(promotion=promotion):
+                calls = []
+                image = {
+                    "explicit_work_title": "재벌가 차녀의 2회차 걸그룹",
+                    "explicit_author_name": "유은우",
+                    "title_role": "work_title",
+                    "evidence_type": "explicit_text",
+                    "screen_type": "work_surface",
+                    "surface_type": "episode_reader_page",
+                    "ocr_text": "재벌가 차녀의 2회차 걸그룹 267화 카카오페이지",
+                }
+                if promotion is not None:
+                    image["promotion_eligible"] = promotion
+                ctx = ConversationContext(
+                    post_id=11718082,
+                    post_data={"post_id": 11718082, "title": "두렵구나", "image_enrichment": [image]},
+                    comments=[],
+                )
+                ctx.discourse_warning = "semantic_seed_review(no_work_anchor)"
+                ctx.set_expert_output(ExpertType.DISCOURSE, {"discourse_analysis": {
+                    "intent": "community_banter",
+                    "semantic_seed_review": {"is_specific_work_discussion": False},
+                    "warnings": ["semantic_seed_review_specific_work_denied"],
+                }})
+                orchestrator = Orchestrator(
+                    experts={}, search_fn=lambda query, purpose="search": calls.append((query, purpose)) or []
+                )
+                self.assertEqual(orchestrator._protected_promotable_image_anchor_norms(ctx), (set(), set()))
+                orchestrator._execute_searches(
+                    [{"query": "재벌가 차녀의 2회차 걸그룹 카카오페이지",
+                      "purpose": "official_title_verify", "priority": 0}],
+                    post_id=11718082, ctx=ctx,
+                )
+                self.assertEqual(calls, [
+                    ("재벌가 차녀의 2회차 걸그룹 카카오페이지", "image_ocr_diagnostic_probe")
+                ])
+                with patch.object(orchestrator, "_title_search_intent_permit", return_value=(False, "no_work_anchor")):
+                    self.assertEqual(orchestrator._prune_title_search_requests_for_intent_permit(ctx, [{
+                        "query": "재벌가 차녀의 2회차 걸그룹 남캐일러 카카오페이지",
+                        "purpose": "image_ocr_diagnostic_probe", "_ocr_diagnostic_only": True,
+                    }]), [])
+
+    def test_eligible_image_without_typed_title_or_evidence_cannot_seed_search(self):
+        orchestrator = Orchestrator(experts={})
+        image = {
+            "explicit_work_title": "재벌가 차녀의 2회차 걸그룹",
+            "explicit_author_name": "유은우",
+            "promotion_eligible": True,
+            "title_role": "work_title",
+            "evidence_type": "explicit_text",
+            "screen_type": "work_surface",
+            "surface_type": "episode_reader_page",
+            "ocr_text": "재벌가 차녀의 2회차 걸그룹 267화 카카오페이지",
+        }
+        request = {"query": "재벌가 차녀의 2회차 걸그룹 카카오페이지",
+                   "purpose": "official_title_verify", "priority": 0}
+        for missing_key in ("title_role", "evidence_type"):
+            with self.subTest(missing_key=missing_key):
+                incomplete = dict(image)
+                incomplete.pop(missing_key)
+                ctx = ConversationContext(
+                    post_id=11718082,
+                    post_data={"title": "두렵구나", "image_enrichment": [incomplete]},
+                    comments=[],
+                )
+                self.assertEqual(orchestrator._protected_promotable_image_anchor_norms(ctx), (set(), set()))
+                pruned = orchestrator._prune_image_only_title_seed_search_requests(ctx, [request])
+                self.assertEqual(pruned, [])
 
     def test_query_poison_keeps_direct_ocr_work_cue_official_probe(self):
         calls = []
@@ -499,7 +574,7 @@ class FinalSemanticRereadGateTest(unittest.TestCase):
             },
         )
 
-        orchestrator._execute_searches(
+        diagnostic_results = orchestrator._execute_searches(
             [
                 {
                     "query": "이세계 검은머리 외국인 웹소설 노벨피아",
@@ -518,8 +593,160 @@ class FinalSemanticRereadGateTest(unittest.TestCase):
 
         self.assertEqual(
             calls,
-            [("이세계 검은머리 외국인 웹소설 노벨피아", "official_title_verify")],
+            [("이세계 검은머리 외국인 웹소설 노벨피아", "image_ocr_diagnostic_probe")],
         )
+        self.assertNotIn("official_title_verify", [purpose for _, purpose in calls])
+        self.assertEqual(len(diagnostic_results), 1)
+        self.assertIs(diagnostic_results[0]["_ocr_diagnostic_only"], True)
+        self.assertEqual(diagnostic_results[0]["_purpose"], "image_ocr_diagnostic_probe")
+        diagnostic = {
+            "query": "이세계 검은머리 외국인 웹소설 노벨피아",
+            "purpose": "image_ocr_diagnostic_probe",
+            "_ocr_diagnostic_only": True,
+        }
+        self.assertEqual(
+            orchestrator._prune_title_search_requests_for_intent_permit(ctx, [dict(diagnostic, _ocr_diagnostic_only=False)]),
+            [],
+        )
+        self.assertEqual(
+            orchestrator._prune_title_search_requests_for_intent_permit(
+                ctx, [dict(diagnostic, query="남캐일러 웹소설 노벨피아")]
+            ),
+            [],
+        )
+        with patch("llm_batch.experts.orchestrator.unresolved_ocr_alias_conflict_authority_blocked", return_value=True):
+            self.assertEqual(
+                orchestrator._prune_title_search_requests_for_intent_permit(ctx, [diagnostic]),
+                [],
+            )
+
+    def test_search_result_carries_only_request_bound_ocr_diagnostic_flag(self):
+        def fake_search(query, purpose="search"):
+            url = (
+                "https://www.munpia.com/novel/detail/222360"
+                if purpose == "direct_ocr_alias_official_probe"
+                else "https://novelpia.com/novel/102155"
+            )
+            return [{
+                "title": "빌어먹을 환생" if "munpia" in url else "괴담 호텔 탈출기",
+                "url": url, "content": "공식 작품 상세",
+                "_ocr_diagnostic_only": True,  # search transport cannot grant this flag
+            }]
+
+        orchestrator = Orchestrator(experts={}, search_fn=fake_search)
+        image_ctx = ConversationContext(
+            post_id=11718099,
+            post_data={
+                "post_id": 11718099, "title": "빌환 표지변경됨",
+                "image_enrichment": [{
+                    "explicit_work_title": "빌어먹을 환생", "explicit_author_name": "목마",
+                    "title_role": "unknown", "evidence_type": "cover_title",
+                    "promotion_eligible": False,
+                    "ocr_text": "MUNPIA 빌어먹을 환생 목마",
+                }],
+            },
+            comments=[],
+        )
+        probe = orchestrator._direct_ocr_alias_official_probe_request(image_ctx)
+        self.assertIsNotNone(probe)
+        self.assertEqual(probe["purpose"], "direct_ocr_alias_official_probe")
+        diagnostic_rows = orchestrator._execute_searches([probe], post_id=11718099, ctx=image_ctx)
+        self.assertEqual(len(diagnostic_rows), 1)
+        self.assertEqual(diagnostic_rows[0]["_purpose"], "direct_ocr_alias_official_probe")
+        self.assertIs(diagnostic_rows[0]["_ocr_diagnostic_only"], True)
+        image_ctx.add_search_results(diagnostic_rows)
+        self.assertIs(image_ctx.search_results[0]["_ocr_diagnostic_only"], True)
+
+        ordinary_ctx = ConversationContext(
+            post_id=20010012,
+            post_data={"post_id": 20010012, "title": "괴담 호텔 탈출기"},
+            comments=[],
+        )
+        ordinary_rows = orchestrator._execute_searches([{
+            "query": "괴담 호텔 탈출기 노벨피아", "purpose": "official_title_verify",
+            "priority": 0,
+        }], post_id=20010012, ctx=ordinary_ctx)
+        self.assertEqual(len(ordinary_rows), 1)
+        self.assertEqual(ordinary_rows[0]["_purpose"], "official_title_verify")
+        self.assertNotIn("_ocr_diagnostic_only", ordinary_rows[0])
+        ordinary_ctx.add_search_results(ordinary_rows)
+        self.assertNotIn("_ocr_diagnostic_only", ordinary_ctx.search_results[0])
+
+    def test_parallel_search_keeps_diagnostic_and_source_binding_on_own_result(self):
+        class SearchTransport:
+            def __init__(self):
+                self.calls = []
+
+            def search(self, query, purpose="search"):
+                return self._search_with_meta(query, purpose)[0]
+
+            def _search_with_meta(self, query, purpose="search", source_binding=None):
+                self.calls.append((query, purpose, source_binding))
+                key = "a" if "후보 가" in query else "b"
+                return ([{"title": query, "url": f"https://example.test/{key}", "content": query}], {})
+
+        transport = SearchTransport()
+        orchestrator = Orchestrator(experts={}, search_fn=transport.search)
+        binding = {"kind": "source_receipt", "id": "A"}
+        with patch.dict("os.environ", {
+            "PIPELINE_SEARCH_CONCURRENCY": "2",
+            "LLM_ENABLE_CONTEXT_QUERY_RERANK": "0",
+            "LLM_ENABLE_SMART_SEARCH_PRUNE": "0",
+        }):
+            rows = orchestrator._execute_searches([
+                {"query": "후보 가 웹소설", "purpose": "image_ocr_diagnostic_probe",
+                 "priority": 0, "_ocr_diagnostic_only": True, "source_binding": binding},
+                {"query": "후보 나 웹소설", "purpose": "official_title_verify", "priority": 0},
+            ], post_id=20010040)
+        by_url = {row["url"]: row for row in rows}
+        self.assertEqual(set(by_url), {"https://example.test/a", "https://example.test/b"})
+        self.assertIs(by_url["https://example.test/a"]["_ocr_diagnostic_only"], True)
+        self.assertEqual(by_url["https://example.test/a"]["_purpose"], "image_ocr_diagnostic_probe")
+        self.assertNotIn("_ocr_diagnostic_only", by_url["https://example.test/b"])
+        self.assertEqual(by_url["https://example.test/b"]["_purpose"], "official_title_verify")
+        self.assertIn(("후보 가 웹소설", "image_ocr_diagnostic_probe", binding), transport.calls)
+        self.assertIn(("후보 나 웹소설", "official_title_verify", None), transport.calls)
+
+    def test_uncertain_ocr_phrase_fallback_requires_one_foreground_transcription(self):
+        orchestrator = Orchestrator(experts={}, search_fn=lambda *_args, **_kwargs: [])
+        base_image = {
+            "explicit_work_title": "천마",
+            "title_role": "unknown",
+            "evidence_type": "explicit_text",
+            "promotion_eligible": False,
+            "ocr_text": "천마 김캇트 이세계 검은머리 외국인",
+            "work_cues": ["천마", "이세계 검은머리 외국인"],
+        }
+
+        def permits(query, **overrides):
+            image = {**base_image, **overrides}
+            ctx = ConversationContext(
+                post_id=11677913,
+                post_data={"post_id": 11677913, "image_enrichment": [image]},
+                comments=[],
+            )
+            return orchestrator._is_direct_image_ocr_work_phrase_query(query, ctx=ctx)
+
+        self.assertTrue(permits("이세계 검은머리 외국인 웹소설 노벨피아"))
+        self.assertTrue(permits('"이세계 검은머리 외국인" site:novelpia.com'))
+        self.assertTrue(permits("소설가의 무림 외전 웹소설", ocr_text="소설가의 무림 외전", work_cues=[]))
+        self.assertFalse(permits("소설가의 무림 외전", ocr_text="소설가의 무림 외전", work_cues=[]))
+        self.assertFalse(permits("이세계 검은머리 외국인 site:evil.example"))
+        self.assertFalse(permits("이세계 검은머리 외국인 웹소설 site:evil.example"))
+        self.assertFalse(permits("이세계 검은머리 외국인 site:novelpia.com.evil.example"))
+        self.assertFalse(permits("남캐일러 웹소설 노벨피아"))
+        self.assertFalse(permits("이세계 검은머리 외국인 남캐일러 웹소설 노벨피아"))
+        self.assertFalse(permits("이세계 외국인 웹소설 노벨피아"))
+        self.assertFalse(permits("이세계 검은머리 외국인", ocr_text="", work_cues=["이세계", "검은머리 외국인"]))
+        self.assertFalse(permits("이세계 검은머리 외국인 웹소설 노벨피아", title_role="work_title"))
+        self.assertFalse(permits("이세계 검은머리 외국인 웹소설 노벨피아", evidence_type="scene_description"))
+        self.assertFalse(permits("이세계 검은머리 외국인 웹소설 노벨피아", background_listing_only=True))
+        self.assertFalse(permits("이세계 검은머리 외국인 웹소설 노벨피아", screen_type="search_results"))
+        self.assertFalse(permits("이세계 검은머리 외국인 웹소설 노벨피아", surface_type="listing"))
+        self.assertFalse(permits("이세계 검은머리 외국인 웹소설 노벨피아", focus_role="background_catalog"))
+        self.assertFalse(permits("이세계 검은머리 외국인 웹소설 노벨피아", ocr_text="이세계 검은머리\n외국인", work_cues=[]))
+        with patch("llm_batch.experts.orchestrator.unresolved_ocr_alias_conflict_authority_blocked", return_value=True):
+            self.assertFalse(permits("이세계 검은머리 외국인 웹소설 노벨피아"))
 
     def test_rejects_search_promotion_after_context_only_expression_reread_review(self):
         fake_llm = FakeFinalSemanticRereadLLM(
@@ -981,8 +1208,9 @@ class FinalSemanticRereadGateTest(unittest.TestCase):
 
         note = pipeline._build_image_grounding_note(ctx, official_title="망겜의 힐러")
 
-        self.assertIn("최종 제목 확정 근거로 사용하지 않았습니다", note)
+        self.assertIn("이미지는 장면 보조 정보만 제공했으며 OCR/표지 제목 근거는 확인되지 않았습니다.", note)
         self.assertNotIn("보강을 함께 사용", note)
+        self.assertNotIn("망겜의 힐러의 제목", note)
 
     def test_verified_alias_official_detail_anchor_blocks_final_reread_nulling(self):
         pipeline = AgenticPipeline(llm=FakeFinalSemanticRereadLLM("{}"), mcp=DummyMCP(), max_iterations=2)
@@ -1035,7 +1263,62 @@ class FinalSemanticRereadGateTest(unittest.TestCase):
             ],
         )
 
-        self.assertTrue(keep)
+        self.assertFalse(keep)
+
+    def test_specific_work_alias_with_official_detail_keeps_final_reread_resolution(self):
+        pipeline = AgenticPipeline(llm=FakeFinalSemanticRereadLLM("{}"), mcp=DummyMCP(), max_iterations=2)
+        title = "[림월드]변방계에서 회귀자로 살아남기"
+        url = "https://novelpia.com/novel/382324"
+        ctx = ConversationContext(
+            post_id=20010029,
+            post_data={
+                "post_id": 20010029,
+                "title": "랫따싶 칸시가 정실이엿으면",
+                "content_blocks": [{"type": "text", "text": "바로 시트러스 노예조교 on이엿을텐데"}],
+                "image_enrichment": [{
+                    "ocr_text": "Rim World -modded- 사료 섭취 -12 동물밥을 먹어야 했어.",
+                    "visual_summary": "게임 UI 스타일의 텍스트가 있는 캐릭터 일러스트.",
+                    "explicit_work_title": "Rim World",
+                    "evidence_type": "explicit_text",
+                    "work_cues": ["Rim World", "modded", "게임 UI 스타일의 텍스트"],
+                }],
+            },
+            comments=["그치만 폐급이고 - dc App", "심지어 시트러스햄은 싸우는 폼보니까 강인함도 있겠다에요"],
+        )
+        ctx.set_expert_output(ExpertType.DISCOURSE, {"discourse_analysis": {
+            "primary_domain": "gaming", "intent": "make_joke", "target_kind": "character",
+        }})
+        ctx.search_results = [{
+            "title": title, "url": url,
+            "content": "노벨피아 작품. #패러디 #림월드 #랫따싶.",
+            "snippet": "단, 죽어서만. #패러디 #림월드 #랫따싶.",
+            "query": "Rim World 웹소설 노벨피아",
+        }]
+        candidate, hit = pipeline._resolve_title_lead_alias_official_detail_release_candidate(ctx)
+        self.assertIsNotNone(candidate)
+        self.assertEqual(hit["source"], "title_lead_alias_official_detail_release")
+        verification = {
+            "is_relevant": True,
+            "is_novel_discussion": True,
+            "novel_identity": {"official_title": title, "heretic_url": url},
+            "slang_insight": {
+                "detected_term": "랫따싶", "canonical_work_alias": "랫따싶",
+                "decoded_term": title, "decode_verified": True, "alias_scope": "pure_work_alias",
+            },
+            "grounding_check": {
+                "anchor_found": "title_mention", "matched_alias": "랫따싶", "matched_title": title,
+            },
+            "relation_judgment": {
+                "relation_type": "explicit_alias", "discussion_target": "specific_work",
+                "promotion_decision": "allow", "observed_aliases": ["랫따싶"],
+            },
+        }
+        self.assertTrue(pipeline._has_explicit_alias_official_work_lock(ctx, title, verification))
+        self.assertTrue(pipeline._should_keep_final_semantic_resolution_after_official_recall_anchor(
+            ctx=ctx, official_title=title, verification_result=verification,
+            title_candidates=[candidate],
+            consistency_flags=["verified_alias_official_detail_anchor", "confirmed_alias:랫따싶"],
+        ))
 
 
 if __name__ == "__main__":

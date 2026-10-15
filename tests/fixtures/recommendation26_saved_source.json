@@ -1,0 +1,989 @@
+{
+  "schema_version": "recommendation26_saved_experts_partial_context_v1",
+  "scope": "SAVED_EXPERTS_PARTIAL_CONTEXT_NOT_ORIGINAL_MEMORY",
+  "baseline_pipeline_sha256": "f37851726944e5954b7117df27f3d1d85140cb5080773efe918083fa2ca4dde2",
+  "evidence_binding": {
+    "path": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\p4_quality_followup_20261013\\actual80_followup_semantic26_investigation_v1\\EVIDENCE.json",
+    "sha256": "74327b2ab65c644be5a62712e29ff83b552a466cd3cb9192ac3b8db59e85f587",
+    "receipt_sha256": "c7f71ae89c215cf295cd0874f98567fe1dfe502a83cd4e8049ffa6ff0ebd5a78"
+  },
+  "current26": {
+    "source_post": {
+      "author": "ㅇㅇ",
+      "content_blocks": [
+        {
+          "text": "약관동의같은거 추천해줘",
+          "type": "text"
+        },
+        {
+          "text": "근본있는 유열이 보고싶어",
+          "type": "text"
+        }
+      ],
+      "created_at": "2025-10-28 12:32:53",
+      "gallery_id": "genrenovel",
+      "page_no": 7950,
+      "post_id": 11290502,
+      "title": "'가짜 장례식' 씬이 보고싶다",
+      "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11290502"
+    },
+    "source_comments": [
+      {
+        "author": "레이니시즌",
+        "comment_id": "38900090",
+        "content": "이건 라노토벌이네요",
+        "content_html": "이건 라노토벌이네요",
+        "created_at": "2025.10.28 12:33:10",
+        "ip": "",
+        "post_id": 11290502,
+        "reply_level": 0,
+        "reply_to_comment_id": null
+      }
+    ],
+    "source_canonical_sha256": "5ea9aad06f22fcd6ec35e182a11407f4088101de097e8ede3c72764280851069",
+    "stored_result_canonical_sha256": "fe1e552cabdb0e20a176e51ce9c7d223ba9f36851594a1fb98c3f6464c74ae9e",
+    "run_id": "20261013_060126_882644",
+    "publication_scope_id": "84666454781af214bf344282055e4942a066bf14072739a0ffcec6e1b1c3030c",
+    "experts": {
+      "gatekeeper": {
+        "is_noise": false,
+        "post_type": "recommendation",
+        "detected_entities": {
+          "possible_titles": [
+            "약관동의",
+            "가짜 장례식"
+          ],
+          "possible_authors": [],
+          "possible_characters": [],
+          "platforms_mentioned": []
+        },
+        "key_terms": [
+          "가짜 장례식",
+          "약관동의",
+          "유열"
+        ],
+        "context_clues": {
+          "has_url_in_comments": false,
+          "has_specific_names": true,
+          "is_asking_recommendation": true,
+          "is_spoiler_discussion": false,
+          "has_comment_title_answer": true,
+          "comment_title_candidates": [
+            "이건 라노토벌이네요"
+          ],
+          "comment_title_merge_candidates": [],
+          "comment_title_candidate_details": [
+            {
+              "text": "이건 라노토벌이네요",
+              "comment_index": 0,
+              "line_index": 0,
+              "speech_act": "explanation",
+              "has_at_mention": false,
+              "reply_level": 0,
+              "reply_to_comment_id": null,
+              "author": "레이니시즌",
+              "title_assertion_basis": null
+            }
+          ],
+          "title_as_body_continuation": true,
+          "title_body_joined_text": "'가짜 장례식' 씬이 보고싶다 약관동의같은거 추천해줘 근본있는 유열이 보고싶어",
+          "title_body_first_line": "약관동의같은거 추천해줘",
+          "is_recommendation_request": true,
+          "genre_discussion_flags": [
+            "recommendation_request:llm_intent"
+          ],
+          "author_source_recommendation_request": true,
+          "author_source_recommendation_request_spans": [
+            {
+              "source": "author_body",
+              "speaker": "author",
+              "modality": "text",
+              "field": "content_blocks",
+              "position": 0,
+              "text_key": "text",
+              "char_start": 0,
+              "char_end": 12,
+              "text": "약관동의같은거 추천해줘",
+              "request_start": 8,
+              "request_end": 12,
+              "request_kind": "explicit_recommendation"
+            }
+          ]
+        },
+        "search_requests": [
+          {
+            "query": "웹소설 \"약관동의\"",
+            "purpose": "official_title_verify",
+            "priority": 1
+          },
+          {
+            "query": "웹소설 \"가짜 장례식\" 씬",
+            "purpose": "official_title_verify",
+            "priority": 1
+          },
+          {
+            "query": "\"약관동의\" 리뷰",
+            "purpose": "title_search_community",
+            "priority": 1
+          },
+          {
+            "query": "\"유열\" 웹소설 캐릭터",
+            "purpose": "character_verify",
+            "priority": 2
+          }
+        ],
+        "confidence": "medium",
+        "notes": "제목에서 '가짜 장례식'이라는 특정 장면을 언급하며 보고 싶다고 했으나, 본문에서는 '약관동의같은거 추천해줘'라고 명시적으로 추천을 요청하고 있음. '유열'은 특정 캐릭터명이나 작품의 특징을 나타내는 용어로 추정됨. 댓글에서 '라노토벌'이라는 언급이 있으나 이는 특정 작품의 약어인지 확인이 필요함."
+      },
+      "discourse": {
+        "discourse_analysis": {
+          "primary_domain": "novel_literature",
+          "domain_confidence": "high",
+          "domain_evidence": [
+            "씬",
+            "추천해줘",
+            "유열",
+            "라노토벌"
+          ],
+          "secondary_domains": [],
+          "intent": "request_recommendation",
+          "intent_confidence": "medium",
+          "speech_act": "other",
+          "target_kind": "unknown",
+          "is_coherent": true,
+          "coherence_reason": "제목에서 특정 장면(가짜 장례식)을 언급하며 욕구를 드러내고, 본문에서 구체적인 작품명('약관동의')과 선호하는 감정적 키워드('유열')를 포함하여 추천을 요청하고 있으며, 댓글에서도 해당 맥락에 반응하고 있어 일관된 담론을 형성함.",
+          "title_novel_terms": [],
+          "title_body_consistency": true,
+          "consistency_note": null,
+          "is_association_not_discussion": false,
+          "association_evidence": null,
+          "search_suggestions": [
+            {
+              "query": "웹소설 약관동의",
+              "purpose": "To verify if '약관동의' is a specific web novel title mentioned in the request.",
+              "priority": 1
+            }
+          ],
+          "real_subject": "웹소설",
+          "author_question_span": "약관동의같은거 추천해줘",
+          "author_question_target": "웹소설",
+          "author_recommendation_span": "약관동의같은거 추천해줘",
+          "author_recommendation_is_direct": true,
+          "reasoning": "작성자는 제목에서 원하는 서사적 장치('가짜 장례식')를 제시하고, 본문에서 특정 작품('약관동의')과 유사한 성격의 작품을 추천해달라고 명시적으로 요청하고 있습니다. 댓글의 '라노토벌'은 특정 작품이나 작가를 지칭하는 커뮤니티 용어로 보이며, 전체적으로 특정 취향의 웹소설을 찾는 전형적인 추천 요청 게시글입니다.",
+          "source_bound_question_receipt": {
+            "span": "약관동의같은거 추천해줘",
+            "source": "author_body",
+            "speaker": "author",
+            "modality": "text",
+            "position": 0,
+            "target_description": "웹소설",
+            "target_candidates": [
+              "웹소설"
+            ],
+            "target_conflict": false,
+            "verification_level": "exact_author_excerpt_model_target"
+          },
+          "source_bound_recommendation_request": true,
+          "source_bound_recommendation_receipt": {
+            "span": "약관동의같은거 추천해줘",
+            "source": "author_body",
+            "speaker": "author",
+            "modality": "text",
+            "position": 0,
+            "verification_level": "full_line_author_excerpt_and_direct_rule"
+          },
+          "image_topic_relation": {
+            "state": "no_image",
+            "source": "author_spans"
+          },
+          "semantic_seed_review": {
+            "post_intent": "특정 장면이나 분위기를 가진 웹소설 추천을 요청하는 글입니다.",
+            "content_interpretation": "작성자가 선호하는 특정 장면이나 캐릭터 성향을 언급하며 유사한 작품을 찾고 있습니다.",
+            "is_specific_work_discussion": false,
+            "recommended_intent": "request_recommendation",
+            "recommended_target_kind": "work",
+            "warnings": []
+          },
+          "warnings": [
+            "semantic_seed_review_non_title_terms_removed",
+            "semantic_seed_review_search_suggestions_removed",
+            "semantic_seed_review_specific_work_denied"
+          ],
+          "semantic_seed_review_context_terms": [
+            "가짜 장례식"
+          ]
+        }
+      }
+    },
+    "stored_candidate_ledger": {
+      "candidate_audit_lint_reasons": [],
+      "candidate_generation": {
+        "cap": 24,
+        "count_basis": "normalized_title_url_role_unique",
+        "emitted_source_count": 0,
+        "metadata_fingerprint": "bc826a3c64f8b1329882d5a12527cb104db83e6dde1e911d4f29033b96bdcca9",
+        "observed_sources_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "reason_codes": [
+          "upstream_completeness_unknown"
+        ],
+        "retained_sources_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "schema_version": "candidate_generation_v1",
+        "scope": "serializer_preservation_inventory",
+        "source_key_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "status": "UNKNOWN",
+        "unique_valid_source_count": 0,
+        "upstream_completeness": "UNKNOWN"
+      },
+      "candidate_ledger_status": "hold_without_candidates",
+      "candidate_set_shadow": {
+        "action": "NOT_EVALUATED",
+        "action_applied": false,
+        "baseline_decision_fingerprint": "75b5eb83f7a5c9686ece619be053135ccf1095af8f083be98c727409ae91250e",
+        "baseline_selected_candidate_id": null,
+        "candidate_set": {
+          "candidate_inventory_count_hint": 0,
+          "candidate_set_fingerprint": "5e45e22d7fafba5776f79f48fd3f4abc2bd0c41d88cb35c9723270deb4a0bce7",
+          "candidate_set_recall_status": "NOT_EVALUABLE_GENERATION_UNKNOWN",
+          "candidates": [],
+          "event_candidate_count": 0,
+          "generation_cap": 6,
+          "generation_status": "UNKNOWN",
+          "integrity_status": "GO",
+          "nil_label": "__NIL__",
+          "observation_fingerprint": "a91a0d13aa6b7f04d44a21af2826b7b31715ed8a540564cb8d7a9d2b89d7da52",
+          "observation_signatures": [],
+          "observed_late_surface_count": 0,
+          "reason_codes": [
+            "candidate_generation_completeness_unknown",
+            "candidate_set_empty"
+          ],
+          "schema_version": "candidate_set_v1",
+          "source_candidate_pair_count": 0,
+          "source_record_count": 0,
+          "typed_inventory_pair_count": 0,
+          "unlinked_surface_count": 0,
+          "work_candidate_count": 0
+        },
+        "event_probabilities": [
+          {
+            "label": "__NIL__",
+            "probability": null
+          }
+        ],
+        "input_fingerprint": "cbae408d8bbd485f531ebdecd3a9b126a62908af73ae140cfd11e18656acc8c5",
+        "operational_effect": "NONE_SHADOW_ONLY",
+        "probability_status": "NOT_AVAILABLE_UNCALIBRATED",
+        "reason_codes": [
+          "candidate_generation_completeness_unknown",
+          "candidate_set_empty",
+          "probability_uncalibrated",
+          "shadow_action_not_applied"
+        ],
+        "schema_version": "candidate_set_nil_shadow_v1",
+        "selected_label": null,
+        "shadow_fingerprint": "81ae9361040e6d0110b1ea7d126519a9dedec934d583de138873888a8ccf4f73"
+      },
+      "candidate_stage_receipts": [
+        {
+          "cap": 8,
+          "count_basis": "normalized_title_unique_before_stage_row_cap",
+          "emitted_source_count": 1,
+          "metadata_fingerprint": "ae8b9a135b9d0dcdc288143c3e414d01545aaf551a2eee7699c40d11a788c36b",
+          "observed_source_count": 1,
+          "observed_sources_fingerprint": "15d7bbcbaa5b84b86431b2a851ef29e3179b27398db10eff0f566fa4123e383f",
+          "occurrence": 1,
+          "producer": "gatekeeper",
+          "reason_codes": [
+            "upstream_completeness_unknown"
+          ],
+          "retained_source_count": 1,
+          "retained_sources_fingerprint": "15d7bbcbaa5b84b86431b2a851ef29e3179b27398db10eff0f566fa4123e383f",
+          "schema_version": "candidate_stage_receipt_v1",
+          "scope": "expert_stage_candidate_inventory",
+          "source_key_fingerprint": "15d7bbcbaa5b84b86431b2a851ef29e3179b27398db10eff0f566fa4123e383f",
+          "stage": "comment_title_candidates",
+          "status": "UNKNOWN",
+          "unique_valid_source_count": 1,
+          "upstream_completeness": "UNKNOWN"
+        }
+      ],
+      "hold_without_candidates": true,
+      "identity_consistency_lint_reasons": [],
+      "official_title_lint_reasons": [],
+      "output_consistency_lint_reasons": [],
+      "promotion_blocked": false,
+      "promotion_decision": {
+        "bypassed_gate": false,
+        "candidate_preserved": false,
+        "contract_version": "promotion_contract_v2",
+        "input_fingerprint": "d6b2b74acb1c1e54150f6483430b0bf4ad40713ecbf8b69f87e1f3e2671e0c9a",
+        "official_title": null,
+        "official_url": null,
+        "publish_allowed": false,
+        "reason_codes": [
+          "no_candidate_title",
+          "row_discussion_missing",
+          "title_resolution_state_not_publishable",
+          "work_resolution_not_publishable",
+          "scope_unknown",
+          "scope_not_current_work",
+          "serializer_candidate_removed"
+        ],
+        "scope": {
+          "competing_candidates": [],
+          "confidence": "low",
+          "conflict_reason_codes": [
+            "serializer_candidate_removed"
+          ],
+          "direct_bridge_sources": [],
+          "scope_kind": "unknown"
+        },
+        "status": "reject"
+      },
+      "promotion_gate_evidence": [
+        {
+          "candidate_title": "",
+          "candidate_url": "",
+          "kind": "serializer_candidate_removed",
+          "reason_code": "serializer_candidate_removed",
+          "source_path_or_snippet": "",
+          "strength": "strong",
+          "supports_publish": false,
+          "title_url_match": null
+        }
+      ],
+      "promotion_gate_state": {
+        "candidate_title": "",
+        "candidate_url": "",
+        "caveated_alias_boundary": false,
+        "discussion_type": "recommendation",
+        "official_title_exists": false,
+        "post_id": 11290502,
+        "prior_variance_quarantine": false,
+        "row_discusses_work_as_work": false,
+        "same_title_source_movement": false,
+        "scope": {
+          "competing_candidates": [],
+          "confidence": "low",
+          "conflict_reason_codes": [
+            "serializer_candidate_removed"
+          ],
+          "direct_bridge_sources": [],
+          "scope_kind": "unknown"
+        },
+        "source": "serializer_candidate_removed",
+        "title_resolution_state": "adjacent",
+        "work_resolution": "none"
+      },
+      "publish_contract_input_fingerprint": "d6b2b74acb1c1e54150f6483430b0bf4ad40713ecbf8b69f87e1f3e2671e0c9a",
+      "publish_contract_trace": {
+        "bypassed_gate": false,
+        "contract_version": "promotion_contract_v2",
+        "gate_decision": {
+          "bypassed_gate": false,
+          "candidate_preserved": false,
+          "contract_version": "promotion_contract_v2",
+          "input_fingerprint": "d6b2b74acb1c1e54150f6483430b0bf4ad40713ecbf8b69f87e1f3e2671e0c9a",
+          "official_title": null,
+          "official_url": null,
+          "publish_allowed": false,
+          "reason_codes": [
+            "no_candidate_title",
+            "row_discussion_missing",
+            "title_resolution_state_not_publishable",
+            "work_resolution_not_publishable",
+            "scope_unknown",
+            "scope_not_current_work",
+            "serializer_candidate_removed"
+          ],
+          "scope": {
+            "competing_candidates": [],
+            "confidence": "low",
+            "conflict_reason_codes": [
+              "serializer_candidate_removed"
+            ],
+            "direct_bridge_sources": [],
+            "scope_kind": "unknown"
+          },
+          "status": "reject"
+        },
+        "input_fingerprint": "d6b2b74acb1c1e54150f6483430b0bf4ad40713ecbf8b69f87e1f3e2671e0c9a",
+        "post_gate_identity": {
+          "candidate_ledger_status": "hold_without_candidates",
+          "official_title": null,
+          "official_url": null,
+          "title_resolution_allowed": false,
+          "title_resolution_state": "adjacent",
+          "work_resolution": "none"
+        },
+        "pre_gate_candidate": {
+          "candidate_ledger_status": null,
+          "official_title": null,
+          "official_url": null,
+          "title_resolution_allowed": null,
+          "title_resolution_state": null,
+          "work_resolution": null
+        },
+        "reason_codes": [
+          "no_candidate_title",
+          "row_discussion_missing",
+          "title_resolution_state_not_publishable",
+          "work_resolution_not_publishable",
+          "scope_unknown",
+          "scope_not_current_work",
+          "serializer_candidate_removed"
+        ],
+        "scope_state": {
+          "competing_candidates": [],
+          "confidence": "low",
+          "conflict_reason_codes": [
+            "serializer_candidate_removed"
+          ],
+          "direct_bridge_sources": [],
+          "scope_kind": "unknown"
+        }
+      },
+      "publish_contract_version": "promotion_contract_v2",
+      "publish_ledger": {
+        "candidate_preservation": {
+          "candidate_ledger_status": null,
+          "official_title": null,
+          "official_url": null,
+          "title_resolution_allowed": null,
+          "title_resolution_state": null,
+          "work_resolution": null
+        },
+        "gate_decision": {
+          "bypassed_gate": false,
+          "candidate_preserved": false,
+          "contract_version": "promotion_contract_v2",
+          "input_fingerprint": "d6b2b74acb1c1e54150f6483430b0bf4ad40713ecbf8b69f87e1f3e2671e0c9a",
+          "official_title": null,
+          "official_url": null,
+          "publish_allowed": false,
+          "reason_codes": [
+            "no_candidate_title",
+            "row_discussion_missing",
+            "title_resolution_state_not_publishable",
+            "work_resolution_not_publishable",
+            "scope_unknown",
+            "scope_not_current_work",
+            "serializer_candidate_removed"
+          ],
+          "scope": {
+            "competing_candidates": [],
+            "confidence": "low",
+            "conflict_reason_codes": [
+              "serializer_candidate_removed"
+            ],
+            "direct_bridge_sources": [],
+            "scope_kind": "unknown"
+          },
+          "status": "reject"
+        },
+        "public_publish": {
+          "candidate_ledger_status": "hold_without_candidates",
+          "official_title": null,
+          "official_url": null,
+          "title_resolution_allowed": false,
+          "title_resolution_state": "adjacent",
+          "work_resolution": "none"
+        }
+      },
+      "safe_resolved": false,
+      "title_candidate_generation": {
+        "cap": 6,
+        "count_basis": "normalized_title_unique_after_policy_prune",
+        "emitted_source_count": 0,
+        "metadata_fingerprint": "f51eafcdb58549828abc657b311790529327787b7b62cc6b5b307a68b282bff7",
+        "observed_sources_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "reason_codes": [
+          "upstream_completeness_unknown"
+        ],
+        "retained_sources_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "schema_version": "title_candidate_generation_v1",
+        "scope": "title_candidate_ranked_inventory",
+        "source_key_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "status": "UNKNOWN",
+        "unique_valid_source_count": 0,
+        "upstream_completeness": "UNKNOWN"
+      },
+      "title_candidate_generation_retained_sources": [],
+      "title_resolution_allowed": false,
+      "title_resolution_state": "adjacent",
+      "work_resolution": "none"
+    },
+    "observed_context": {
+      "discourse_warning": "recommendation_request(no_work_anchor)"
+    },
+    "context_limitations": [
+      "없는 decoder/verifier/arbiter/synthesizer를 만들지 않음",
+      "검색 catalog 없음과 실제 쿼리 0만 관측됨; full cache/batch memory는 복원하지 않음",
+      "source carrier는 원문에서 실제 capture 함수로 새로 생성함",
+      "전체 원래 메모리 객체의 동일성은 주장하지 않음"
+    ]
+  },
+  "source_only_negative_controls": {
+    "18": {
+      "source_post": {
+        "author": "ㅇㅇ",
+        "content_blocks": [
+          {
+            "text": "귀신임?",
+            "type": "text"
+          }
+        ],
+        "created_at": "2026-01-11 22:28:38",
+        "gallery_id": "genrenovel",
+        "page_no": 1380,
+        "post_id": 11645761,
+        "title": "근데 아이큐 285 키 0 몸무게 0 하면 어케됨",
+        "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11645761"
+      },
+      "source_comments": [
+        {
+          "author": "ㅇㅇ",
+          "comment_id": "40208439",
+          "content": "양자컴",
+          "content_html": "양자컴",
+          "created_at": "01.11 22:28:50",
+          "ip": "",
+          "post_id": 11645761,
+          "reply_level": 0,
+          "reply_to_comment_id": null
+        },
+        {
+          "author": "야월관",
+          "comment_id": "40208440",
+          "content": "인공지능  - dc App",
+          "content_html": "인공지능  - dc App",
+          "created_at": "01.11 22:28:51",
+          "ip": "",
+          "post_id": 11645761,
+          "reply_level": 0,
+          "reply_to_comment_id": null
+        },
+        {
+          "author": "DOR0",
+          "comment_id": "40208444",
+          "content": "짤캐 누구",
+          "content_html": "짤캐 누구",
+          "created_at": "01.11 22:29:06",
+          "ip": "",
+          "post_id": 11645761,
+          "reply_level": 0,
+          "reply_to_comment_id": null
+        },
+        {
+          "author": "ㅇㅇ",
+          "comment_id": "40208448",
+          "content": "핸쟈",
+          "content_html": "핸쟈",
+          "created_at": "01.11 22:29:27",
+          "ip": "",
+          "post_id": 11645761,
+          "reply_level": 0,
+          "reply_to_comment_id": null
+        },
+        {
+          "author": "ㅇㅇ",
+          "comment_id": "40208452",
+          "content": "",
+          "content_html": "<img class=\"written_dccon \" src=\"https://dcimg5.dcinside.com/dccon.php?no=62b5df2be09d3ca567b1c5bc12d46b394aa3b1058c6e4d0ca41648b658ef277963b5d7518c8661ba147507a541dd7881fbc3c61b22d7b3cb175a1b09ac3208ec0910b2418333dcdf4784c308\" conalt=\"22\" alt=\"22\" title=\"22\" data-dcconoverstatus=\"false\">",
+          "created_at": "01.11 22:30:00",
+          "ip": "",
+          "post_id": 11645761,
+          "reply_level": 0,
+          "reply_to_comment_id": null
+        },
+        {
+          "author": "DOR0",
+          "comment_id": "40208472",
+          "content": "@ㅇㅇ",
+          "content_html": "<a href=\"javascript:focusComment(40208452);\" class=\"mention deco\">@ㅇㅇ</a> <video class=\"written_dccon \" autoplay loop muted playsinline onmousedown=\"mp4_overlay_dccon(this, 'https://dcimg5.dcinside.com/dccon.php?no=62b5df2be09d3ca567b1c5bc12d46b394aa3b1058c6e4d0ca41648b658e92477cc3eb010ffe6d1c0915162fba91358516fd9ce632ada652116b3c7f8672797af76293227484f4acc52cc3d15',' conalt=26 alt=26 title=26');\" data-src=\"https://dcimg5.dcinside.com/dccon.php?no=62b5df2be09d3ca567b1c5bc12d46b394aa3b1058c6e4d0ca41648b658e92477cc3eb010ffe6d1c0915162fba91358516fd9ce632ada652116b3c7f8672797af76293227484f4acc52cc3d15\" conalt=\"26\" alt=\"26\" title=\"26\" style=\"max-width:100%;\" ><source src=\"https://dcimg5.dcinside.com/dccon.php?no=62b5df2be09d3ca567b1c5bc12d46b394aa3b1058c6e4d0ca41648b658e92477cc3eb010ffe6d1c0915162fba91358516fd9ce632ada652116b3c7f8672797af76293227484f4acc52cc3d15f4a63a89\" type=\"video/mp4\"/ onerror=\"change_gif(this)\"></video>",
+          "created_at": "01.11 22:31:05",
+          "ip": "",
+          "post_id": 11645761,
+          "reply_level": 1,
+          "reply_to_comment_id": "40208452"
+        },
+        {
+          "author": "ㅇㅇ",
+          "comment_id": "40208449",
+          "content": "ai 모델명 춘식이",
+          "content_html": "ai 모델명 춘식이",
+          "created_at": "01.11 22:29:31",
+          "ip": "",
+          "post_id": 11645761,
+          "reply_level": 0,
+          "reply_to_comment_id": null
+        }
+      ],
+      "source_canonical_sha256": "9a8758fd227680f746c13c8230ff05dcc9eb899891e2de1479da7062b5d37a2a"
+    },
+    "32": {
+      "source_post": {
+        "author": "\"모래시계\"",
+        "content_blocks": [
+          {
+            "type": "image",
+            "url": "https://dcimg1.dcinside.com/viewimage.php?id=2ab8de34e0dc37b06bb3&no=29bcc427b69d39b37ab0ccaf17dd6b6f62b51b91c5c1132c1e5fdbce90be30c6a718e0a96452e4c66fb04a0587b443e9b7c418404b856510ab3ffd4a1d"
+          },
+          {
+            "text": "재밌는데.... 왜 안보는거냐!!!",
+            "type": "text"
+          },
+          {
+            "text": "- dc official App",
+            "type": "text"
+          }
+        ],
+        "created_at": "2025-07-31 19:50:43",
+        "gallery_id": "genrenovel",
+        "page_no": 16740,
+        "post_id": 10810098,
+        "title": "좆같은 소설 리뷰대회 아무도 관심 안주네",
+        "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=10810098"
+      },
+      "source_comments": [
+        {
+          "author": "ㅇㅇ",
+          "comment_id": "37208074",
+          "content": "그치만 이름부터 좆같은 소설인걸",
+          "content_html": "그치만 이름부터 좆같은 소설인걸",
+          "created_at": "2025.07.31 19:51:00",
+          "ip": "",
+          "post_id": 10810098,
+          "reply_level": 0,
+          "reply_to_comment_id": null
+        },
+        {
+          "author": "건소이",
+          "comment_id": "37208079",
+          "content": "너가 대회이름부터 좆같다고했자나...",
+          "content_html": "너가 대회이름부터 좆같다고했자나...",
+          "created_at": "2025.07.31 19:51:04",
+          "ip": "",
+          "post_id": 10810098,
+          "reply_level": 0,
+          "reply_to_comment_id": null
+        },
+        {
+          "author": "코쿄콬코쿄",
+          "comment_id": "37208083",
+          "content": "고인물들은 이미 깔짝이고 토했거나 먹었고, 뉴비들은 좆같다는데 볼 이유가 없다에요....",
+          "content_html": "고인물들은 이미 깔짝이고 토했거나 먹었고, 뉴비들은 좆같다는데 볼 이유가 없다에요....",
+          "created_at": "2025.07.31 19:51:13",
+          "ip": "",
+          "post_id": 10810098,
+          "reply_level": 0,
+          "reply_to_comment_id": null
+        },
+        {
+          "author": "\"모래시계\"",
+          "comment_id": "37208090",
+          "content": "수정해야겠네  - dc App",
+          "content_html": "수정해야겠네  - dc App",
+          "created_at": "2025.07.31 19:51:34",
+          "ip": "",
+          "post_id": 10810098,
+          "reply_level": 0,
+          "reply_to_comment_id": null
+        },
+        {
+          "author": "v5id",
+          "comment_id": "37208101",
+          "content": "엣날 작품이라 볼 사람들은 다 봤고 안볼 사람들은 대충 뭔지 알고 안봄",
+          "content_html": "엣날 작품이라 볼 사람들은 다 봤고 안볼 사람들은 대충 뭔지 알고 안봄",
+          "created_at": "2025.07.31 19:52:09",
+          "ip": "",
+          "post_id": 10810098,
+          "reply_level": 0,
+          "reply_to_comment_id": null
+        },
+        {
+          "author": "ㅇㅇ",
+          "comment_id": "37208110",
+          "content": "좆같으니까",
+          "content_html": "좆같으니까",
+          "created_at": "2025.07.31 19:52:43",
+          "ip": "",
+          "post_id": 10810098,
+          "reply_level": 0,
+          "reply_to_comment_id": null
+        },
+        {
+          "author": "윤아.",
+          "comment_id": "37208119",
+          "content": "제목이 곧...",
+          "content_html": "제목이 곧...",
+          "created_at": "2025.07.31 19:53:08",
+          "ip": "",
+          "post_id": 10810098,
+          "reply_level": 0,
+          "reply_to_comment_id": null
+        },
+        {
+          "author": "\"모래시계\"",
+          "comment_id": "37208124",
+          "content": "너가 봐  - dc App",
+          "content_html": "너가 봐  - dc App",
+          "created_at": "2025.07.31 19:53:18",
+          "ip": "",
+          "post_id": 10810098,
+          "reply_level": 0,
+          "reply_to_comment_id": null
+        },
+        {
+          "author": "천국에서살아돌아온노짱",
+          "comment_id": "37208183",
+          "content": "너무 낡았어",
+          "content_html": "너무 낡았어",
+          "created_at": "2025.07.31 19:55:21",
+          "ip": "",
+          "post_id": 10810098,
+          "reply_level": 0,
+          "reply_to_comment_id": null
+        }
+      ],
+      "source_canonical_sha256": "6e3718b0c6e4c1061248217a7859958955ed8fe2d8859db10468e4cd97704ec4"
+    },
+    "49": {
+      "source_post": {
+        "author": "ㅇㅇ",
+        "content_blocks": [
+          {
+            "type": "image",
+            "url": "https://dcimg1.dcinside.com/viewimage.php?id=2ab8de34e0dc37b06bb3&no=24b0d769e1d32ca73ce887fa11d02831f6239d61d5ffa4d5114270a7c42330e2e1a2af65aca53ba1e3aff305e1b20cccb9e778e3b39ca7dc621c2baf06ba5dc96c3329d08f9ef11a6ef654825fcc2b33ce2f5f9c123c585a54ba5ffdea8f7102312061"
+          },
+          {
+            "text": "이런건 어디물어봐야할 지도 모르 겠음",
+            "type": "text"
+          }
+        ],
+        "created_at": "2025-01-04 19:32:43",
+        "gallery_id": "genrenovel",
+        "page_no": 35130,
+        "post_id": 9788827,
+        "title": "장갤에서 주운짤인데 제목이뭘까",
+        "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=9788827"
+      },
+      "source_comments": [
+        {
+          "author": "ㅇㅇ",
+          "comment_id": "33540715",
+          "content": "",
+          "content_html": "<img class=\"written_dccon \" src=\"https://dcimg5.dcinside.com/dccon.php?no=62b5df2be09d3ca567b1c5bc12d46b394aa3b1058c6e4d0ca41648b658e924732745fd77b9468f1b4a955fe1840c66c64c9eafdf32954a25e68f474f99b85835d7e986fe1845a9cea5\" conalt=\"사악한\" alt=\"사악한\" title=\"사악한\" data-dcconoverstatus=\"false\">",
+          "created_at": "2025.01.04 19:33:08",
+          "ip": "",
+          "post_id": 9788827,
+          "reply_level": 0,
+          "reply_to_comment_id": null
+        },
+        {
+          "author": "유다온",
+          "comment_id": "33540716",
+          "content": "에휴",
+          "content_html": "에휴",
+          "created_at": "2025.01.04 19:33:08",
+          "ip": "",
+          "post_id": 9788827,
+          "reply_level": 0,
+          "reply_to_comment_id": null
+        },
+        {
+          "author": "만인의연인초절정미녀윤찐빵",
+          "comment_id": "33540717",
+          "content": "우리한테도 묻지 말아다오  - dc App",
+          "content_html": "우리한테도 묻지 말아다오  - dc App",
+          "created_at": "2025.01.04 19:33:09",
+          "ip": "",
+          "post_id": 9788827,
+          "reply_level": 0,
+          "reply_to_comment_id": null
+        },
+        {
+          "author": "ㅇㅇ",
+          "comment_id": "33540718",
+          "content": "이거 작가 그림체 아는데",
+          "content_html": "이거 작가 그림체 아는데",
+          "created_at": "2025.01.04 19:33:11",
+          "ip": "",
+          "post_id": 9788827,
+          "reply_level": 0,
+          "reply_to_comment_id": null
+        },
+        {
+          "author": "ㅇㅇ",
+          "comment_id": "33540724",
+          "content": "근데 씨발아 좀",
+          "content_html": "근데 씨발아 좀",
+          "created_at": "2025.01.04 19:33:17",
+          "ip": "",
+          "post_id": 9788827,
+          "reply_level": 0,
+          "reply_to_comment_id": null
+        },
+        {
+          "author": "ㅇㅇ",
+          "comment_id": "33540785",
+          "content": "폴리우레탄같은데",
+          "content_html": "폴리우레탄같은데",
+          "created_at": "2025.01.04 19:37:31",
+          "ip": "",
+          "post_id": 9788827,
+          "reply_level": 0,
+          "reply_to_comment_id": null
+        }
+      ],
+      "source_canonical_sha256": "c9993f683bd76fb02aed205ec0d56bbb99630901eb4969c5e0bb01547bf2d3a7"
+    }
+  },
+  "negative_source_file_sha256": "58adeafac15be155a58e7fa1b653451500ed58fdfe0063c0b793df95807c067c",
+  "legacy_methods": [
+    "test_recommendation_comment_answers_are_preserved_as_candidates",
+    "test_reply_chain_slash_title_answers_are_preserved_without_single_promotion",
+    "test_local_hold_candidate_snapshot_keeps_preservation_type"
+  ],
+  "support_pins": {
+    "expert_main.py": "e92b5d9033bedfc77f28b8973da44db18e1dcc21c9f142e63901bf52b8e3afdc",
+    "tests/test_source_bound_propriety_question_state.py": "55ad2e7f0910c929ed0f49f3aecda1089e16710b29e7263d54fad5a99498d055",
+    "tests/test_comment_answer_original_recall.py": "2c76e6f63f088859aca503e163b9bcaaf91a041458b0c788d19cdc652fb07d82"
+  },
+  "synthetic_negative_controls": [
+    {
+      "name": "food_comparison",
+      "source_post": {
+        "post_id": 90000001,
+        "author": "작성자",
+        "title": "야식이 먹고 싶다",
+        "content_blocks": [
+          {
+            "type": "text",
+            "text": "떡볶이같은거 추천해줘"
+          }
+        ]
+      },
+      "source_comments": [
+        {
+          "post_id": 90000001,
+          "comment_id": "synthetic-1",
+          "author": "응답자",
+          "content": "이건 별빛식당이네요",
+          "reply_level": 0,
+          "reply_to_comment_id": null
+        }
+      ],
+      "source_canonical_sha256": "8d95f102ee387b390237645c0414aa4d3a0dfa32c92da25f3a3f3da15e378b64",
+      "scope": "SYNTHETIC_CONTRAST_NOT_REAL_DATA"
+    },
+    {
+      "name": "daily_walk",
+      "source_post": {
+        "post_id": 90000002,
+        "author": "작성자",
+        "title": "주말 산책 계획",
+        "content_blocks": [
+          {
+            "type": "text",
+            "text": "산책할 곳 추천해줘"
+          }
+        ]
+      },
+      "source_comments": [
+        {
+          "post_id": 90000002,
+          "comment_id": "synthetic-2",
+          "author": "응답자",
+          "content": "이건 솔바람공원이네요",
+          "reply_level": 0,
+          "reply_to_comment_id": null
+        }
+      ],
+      "source_canonical_sha256": "d73b7d9f51d65d9c5a74e556e1b146424472f44492d7d8831ca75aa6f13e40f2",
+      "scope": "SYNTHETIC_CONTRAST_NOT_REAL_DATA"
+    },
+    {
+      "name": "explicit_movie",
+      "source_post": {
+        "post_id": 90000003,
+        "author": "작성자",
+        "title": "보고 싶은 장면",
+        "content_blocks": [
+          {
+            "type": "text",
+            "text": "이런 장면이 나오는 영화 추천해줘"
+          }
+        ]
+      },
+      "source_comments": [
+        {
+          "post_id": 90000003,
+          "comment_id": "synthetic-3",
+          "author": "응답자",
+          "content": "이건 은빛항로전이네요",
+          "reply_level": 0,
+          "reply_to_comment_id": null
+        }
+      ],
+      "source_canonical_sha256": "b6a2e98c3e27ef07b66c78c600aced65bbc51a4ba6956f43061f980c48942548",
+      "scope": "SYNTHETIC_CONTRAST_NOT_REAL_DATA"
+    },
+    {
+      "name": "explicit_webtoon",
+      "source_post": {
+        "post_id": 90000004,
+        "author": "작성자",
+        "title": "보고 싶은 장면",
+        "content_blocks": [
+          {
+            "type": "text",
+            "text": "이런 장면이 나오는 웹툰 추천해줘"
+          }
+        ]
+      },
+      "source_comments": [
+        {
+          "post_id": 90000004,
+          "comment_id": "synthetic-4",
+          "author": "응답자",
+          "content": "이건 은빛항로전이네요",
+          "reply_level": 0,
+          "reply_to_comment_id": null
+        }
+      ],
+      "source_canonical_sha256": "f67b9f7a99e73966809f2ff600781a0aa12fcd6effdf2134b3ce4cc126789f11",
+      "scope": "SYNTHETIC_CONTRAST_NOT_REAL_DATA"
+    },
+    {
+      "name": "explicit_game",
+      "source_post": {
+        "post_id": 90000005,
+        "author": "작성자",
+        "title": "놀고 싶다",
+        "content_blocks": [
+          {
+            "type": "text",
+            "text": "이런 시스템이 있는 게임 추천해줘"
+          }
+        ]
+      },
+      "source_comments": [
+        {
+          "post_id": 90000005,
+          "comment_id": "synthetic-5",
+          "author": "응답자",
+          "content": "이건 은빛항로전이네요",
+          "reply_level": 0,
+          "reply_to_comment_id": null
+        }
+      ],
+      "source_canonical_sha256": "60e796637a0566f4f9afb86e084cebce849c273da9414e52f6a63c88a94a94de",
+      "scope": "SYNTHETIC_CONTRAST_NOT_REAL_DATA"
+    }
+  ],
+  "rights_status": "UNKNOWN",
+  "human_gold": false,
+  "holdout": false,
+  "runtime_execution_performed": false
+}

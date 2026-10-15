@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import copy
 from dataclasses import replace
+import json
+from pathlib import Path
 import unittest
 
 from src.llm_batch.grounding.candidate_generation import (
@@ -32,6 +34,7 @@ from src.llm_batch.promotion_gate import (
     RetrievalState,
     ScopeState,
     can_publish_title,
+    candidate_inventory_evidence_from_sources,
     publish_input_fingerprint,
 )
 
@@ -143,7 +146,15 @@ class CandidateSetShadowContractTests(unittest.TestCase):
             EvidenceRecord(kind="candidate_preservation", candidate_title="작품 B"),
         ]
         baseline = can_publish_title(state, evidence)
-        shadow = build_uncalibrated_selective_shadow(state, evidence, baseline)
+        # The event-space test supplies independent work-role observations;
+        # preservation records alone are not work-identity evidence.
+        shadow = build_uncalibrated_selective_shadow(
+            state, evidence, baseline,
+            additional_sources=[("mentioned_works", [
+                {"official_title": title, "reference_role": "mentioned", "source_tier": "community"}
+                for title in ("작품 A", "작품 B")
+            ])],
+        )
         labels = [item.label for item in shadow.event_probabilities]
         self.assertEqual(NIL_LABEL, labels[-1])
         self.assertEqual(3, len(labels))
@@ -174,7 +185,11 @@ class CandidateSetShadowContractTests(unittest.TestCase):
                 candidate_url="https://example.test/b",
             ),
         ]
-        candidate_set = build_candidate_set(state, evidence)
+        candidate_set = build_candidate_set(state, evidence, additional_sources=[("mentioned_works", [
+            {"official_title": "같은 제목", "heretic_url": url,
+             "reference_role": "mentioned", "source_tier": "community"}
+            for url in ("https://example.test/a", "https://example.test/b")
+        ])])
         self.assertEqual(2, len(candidate_set.candidates))
         self.assertTrue(all(item.event_eligible for item in candidate_set.candidates))
         self.assertEqual(2, candidate_set.event_candidate_count)
@@ -197,6 +212,12 @@ class CandidateSetShadowContractTests(unittest.TestCase):
                 (
                     "candidate_preservation_sources",
                     [
+                        {
+                            "official_title": "정식 작품명",
+                            "heretic_url": "https://example.test/a",
+                            "source_tier": "official_detail",
+                            "reference_role": "candidate",
+                        },
                         {
                             "official_title": "작품 약칭",
                             "source_tier": "community",
@@ -729,6 +750,102 @@ class CandidateSetShadowContractTests(unittest.TestCase):
         payload["candidates"][0]["candidate_id"] = "cand_" + "0" * 64
         with self.assertRaisesRegex(ValueError, "candidate_id does not match"):
             candidate_set_from_dict(payload)
+
+
+    def test_preservation_records_alone_are_inventory_not_work_events(self):
+        sources = [{"official_title": "미판정 관측", "heretic_url": "https://example.test/a"}]
+        records = candidate_inventory_evidence_from_sources(sources)
+        state = GroundingState(post_id=1, candidate_title="", candidate_inventory_count=1)
+        baseline = can_publish_title(state, records)
+        shadow = build_uncalibrated_selective_shadow(state, records, baseline)
+        candidate_set = shadow.candidate_set
+        self.assertEqual(1, candidate_set.typed_inventory_pair_count)
+        self.assertEqual(1, candidate_set.candidate_inventory_count_hint)
+        self.assertEqual("GO", candidate_set.integrity_status)
+        self.assertEqual(1, len(candidate_set.candidates))
+        self.assertEqual("OBSERVED_LATE_SURFACE", candidate_set.candidates[0].option_kind)
+        self.assertFalse(candidate_set.candidates[0].event_eligible)
+        self.assertEqual([NIL_LABEL], [item.label for item in shadow.event_probabilities])
+        self.assertIsNone(shadow.selected_label)
+        self.assertFalse(shadow.action_applied)
+        self.assertEqual(baseline.to_dict(), can_publish_title(state, records).to_dict())
+
+    def test_saved_misclassified_observations_remain_preserved_outside_new_event_space(self):
+        fixture = json.loads((Path(__file__).parent / "fixtures" /
+            "candidate_set_preservation_regressions_v1.json").read_text(encoding="utf-8"))
+        before = copy.deepcopy(fixture)
+        for case in fixture["cases"]:
+            with self.subTest(post_id=case["post_id"]):
+                sources = case["candidate_preservation_sources"]
+                records = candidate_inventory_evidence_from_sources(sources)
+                state = GroundingState(post_id=case["post_id"], candidate_title="", candidate_inventory_count=len(records))
+                baseline = can_publish_title(state, records)
+                fingerprint = publish_input_fingerprint(state, records)
+                shadow = build_uncalibrated_selective_shadow(state, records, baseline,
+                    additional_sources=[("candidate_preservation_sources", sources)])
+                target = next(c for c in shadow.candidate_set.candidates if case["target"] in c.titles)
+                self.assertFalse(target.event_eligible)
+                self.assertNotEqual("WORK_CANDIDATE", target.option_kind)
+                self.assertNotIn(target.candidate_id, [p.label for p in shadow.event_probabilities])
+                self.assertEqual(len(records), shadow.candidate_set.typed_inventory_pair_count)
+                self.assertEqual("GO", shadow.candidate_set.integrity_status)
+                self.assertFalse(shadow.action_applied)
+                self.assertIsNone(shadow.selected_label)
+                self.assertEqual(fingerprint, publish_input_fingerprint(state, records))
+                self.assertEqual(shadow, selective_shadow_from_dict(shadow.to_dict()))
+                # Historical v1 is read as stored, never rebuilt or re-sealed.
+                historical = selective_shadow_from_dict(case["stored_shadow"])
+                self.assertEqual(case["stored_shadow"], historical.to_dict())
+                old_target = next(c for c in historical.candidate_set.candidates if case["target"] in c.titles)
+                self.assertTrue(old_target.event_eligible)
+                self.assertEqual(target.candidate_id, old_target.candidate_id)
+        self.assertEqual(before, fixture)
+
+    def test_unresolved_work_roles_do_not_require_a_public_url_or_high_confidence(self):
+        for role in ("primary", "mentioned", "comparison", "previous", "recommendation"):
+            with self.subTest(role=role):
+                sources = [{"official_title": "별이 없는 서재", "reference_role": role,
+                    "confidence": "Low", "source_tier": "community"}]
+                records = candidate_inventory_evidence_from_sources(sources)
+                state = GroundingState(post_id=1, candidate_title="", candidate_inventory_count=1)
+                shadow = build_uncalibrated_selective_shadow(state, records, can_publish_title(state, records),
+                    additional_sources=[("candidate_preservation_sources", sources)])
+                self.assertTrue(shadow.candidate_set.candidates[0].event_eligible)
+                self.assertFalse(shadow.candidate_set.candidates[0].publish_support_present)
+                self.assertEqual((), shadow.candidate_set.candidates[0].urls)
+                self.assertFalse(shadow.action_applied)
+                self.assertIsNone(shadow.selected_label)
+
+    def test_model_only_role_and_diagnostic_hold_cannot_self_promote(self):
+        for role in ("primary", "mentioned", "candidate"):
+            for hold in (False, True):
+                with self.subTest(role=role, hold=hold):
+                    source = {"official_title": "후보 설명", "reference_role": role,
+                        "source_tier": "llm_only", "alias_or_mention": "후설",
+                        "preservation_role": "title_candidate"}
+                    if hold:
+                        source.update(source_tier="official_detail", heretic_url="https://example.test/a",
+                            local_preservation_type="blocked_batch_alias_hold",
+                            promotion_policy="hold_without_promotion")
+                    records = candidate_inventory_evidence_from_sources([source])
+                    candidate_set = build_candidate_set(GroundingState(post_id=1, candidate_title=""), records,
+                        additional_sources=[("candidate_preservation_sources", [source])])
+                    self.assertEqual(1, len(candidate_set.candidates))
+                    self.assertFalse(candidate_set.candidates[0].event_eligible)
+
+    def test_separate_named_work_observation_can_coexist_with_diagnostic_same_url(self):
+        diagnostic = {"official_title": "정식 작품", "heretic_url": "https://example.test/a",
+            "alias_or_mention": "평범한동사", "reference_role": "candidate", "source_tier": "official_detail",
+            "local_preservation_type": "blocked_batch_alias_hold", "promotion_policy": "hold_without_promotion"}
+        work = {"official_title": "정식 작품", "heretic_url": "https://example.test/a",
+            "reference_role": "mentioned", "source_tier": "community"}
+        records = candidate_inventory_evidence_from_sources([diagnostic, work])
+        candidate_set = build_candidate_set(GroundingState(post_id=1, candidate_title=""), records,
+            additional_sources=[("candidate_preservation_sources", [diagnostic]), ("mentioned_works", [work])])
+        self.assertEqual(1, len(candidate_set.candidates))
+        self.assertTrue(candidate_set.candidates[0].event_eligible)
+        self.assertIn("blocked_batch_alias_hold", candidate_set.candidates[0].local_preservation_types)
+        self.assertFalse(candidate_set.candidates[0].publish_support_present)
 
 
 if __name__ == "__main__":

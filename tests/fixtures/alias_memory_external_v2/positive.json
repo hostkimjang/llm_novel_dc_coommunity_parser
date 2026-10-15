@@ -1,0 +1,67 @@
+{
+  "scope": "SYNTHETIC_EXTERNAL_NEW_ALIAS_REAL_FUNCTION_PATH_NOT_FETCHED_LIVE",
+  "human_gold": false,
+  "external_fetch_performed": false,
+  "alias": "쌍달길",
+  "title": "달이 두 번 뜨는 항해",
+  "post": {
+    "post_id": 501,
+    "title": "쌍달길 40화 재미있네",
+    "content_blocks": [
+      {
+        "type": "text",
+        "text": "주인공의 선택이 다음 전개로 이어져서 좋았다."
+      }
+    ]
+  },
+  "comments": [],
+  "search_rows": [
+    {
+      "title": "달이 두 번 뜨는 항해 - 나무위키",
+      "url": "https://namu.wiki/w/%EB%8B%AC%EC%9D%B4%20%EB%91%90%20%EB%B2%88%20%EB%9C%A8%EB%8A%94%20%ED%95%AD%ED%95%B4",
+      "content": "한국의 판타지 웹소설이다.\n약칭은 쌍달길이다.",
+      "_query": "비권한 질의 필드는 relation 근거가 아님",
+      "model_summary": "비권한 모델 요약 필드는 relation 근거가 아님"
+    }
+  ],
+  "decoder": {
+    "needs_verification": false,
+    "decoded_terms": [
+      {
+        "original": "쌍달길",
+        "is_author_name": false,
+        "interpretations": [
+          {
+            "type": "novel_title",
+            "value": "달이 두 번 뜨는 항해"
+          }
+        ],
+        "best_match": {
+          "title": "달이 두 번 뜨는 항해",
+          "confidence": "high"
+        }
+      }
+    ]
+  },
+  "verification": {
+    "is_relevant": true,
+    "novel_identity": {
+      "official_title": "달이 두 번 뜨는 항해",
+      "confidence": "Max"
+    },
+    "slang_insight": {
+      "canonical_work_alias": "쌍달길",
+      "detected_term": "쌍달길",
+      "decoded_term": "달이 두 번 뜨는 항해",
+      "decode_verified": true,
+      "alias_scope": "pure_work_alias",
+      "store_in_slang_db": false
+    },
+    "relation_judgment": {
+      "relation_type": "explicit_alias",
+      "discussion_target": "specific_work",
+      "promotion_decision": "allow",
+      "confidence": "high"
+    }
+  }
+}

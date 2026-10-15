@@ -1,3 +1,5 @@
+> **레거시 파이프라인의 과거 설명입니다.** 현재 설치·실행은 [README](README.md), 전문가 실행은 [expert_main 안내](expert_readme.md), 완료 범위는 [현재 상태](docs/devs/CURRENT_STATUS_KO.md)를 따릅니다. 아래 명령·모델·판정 예시는 당시 기록입니다.
+
 # LLM Novel Batch Pipeline
 
 디시인사이드 장르소설 갤러리 크롤링 데이터에서 **웹소설 관련 글을 식별**하고, 선택적으로 **담론 메타데이터(마이크로태그/감성/NSFW 등)를 추출**하여 JSON으로 출력합니다.

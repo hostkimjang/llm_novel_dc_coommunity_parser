@@ -908,5 +908,61 @@ class RunIndependentPlanGlobalClaimTest(unittest.TestCase):
                         )
 
 
+class RunIndependentPlanBatchVersionTest(unittest.TestCase):
+    """기존 batch v1은 v2 RunSpec/parallel16으로 그대로 고정된다."""
+
+    def _legacy_batch(self, root):
+        from tests import test_paired_measurement_readback as fixture
+        from tools import run_independent_plan as runner
+
+        before, _, _, spec_path = fixture.PairedMeasurementReadbackTests()._fixture(root)
+        spec = json.loads(spec_path.read_text(encoding="utf-8"))
+        input_path = fixture._claimed_input_path(before)
+        run_id = "20261010_120000_000001"
+        env = {"EXPERT_RUN_ID": run_id, "PIPELINE_MEASUREMENT_PAIR_ID": spec["pair_id"],
+            "PIPELINE_MEASUREMENT_ARM": "BEFORE", "EXPERT_DASHBOARD_FORWARD": "1",
+            "PIPELINE_DECISION_CALL_LEDGER_MODE": "REQUIRED",
+            "PIPELINE_MEASUREMENT_EXECUTION_MODE": "FRESH_EXECUTION_REQUIRED",
+            "PIPELINE_MEASUREMENT_MUTABLE_CONTEXT_MODE": "FROZEN_OFF", "PIPELINE_SLANG_DB": "0",
+            "MCP_HEALTH_LIGHT_MODE": "0", "MCP_HEALTH_INCLUDE_SEARCH": "1",
+            "PIPELINE_MEASUREMENT_RUN_SPEC_PATH": str(spec_path),
+            "PIPELINE_MEASUREMENT_RUN_SPEC_FILE_SHA256": _sha256(spec_path),
+            "PIPELINE_MEASUREMENT_RUN_SPEC_SHA256": spec["run_spec_sha256"]}
+        argv = [sys.executable, "expert_main.py", "--input", str(input_path), "--output", str(root / "new.json"), "--parallel", "16"]
+        return {"input_jsonl": str(input_path), "input_sha256": _sha256(input_path),
+            "output_json": str(root / "new.json"), "command_argv": argv,
+            "batch_completion_contract": {"schema_version": runner.BATCH_COMPLETION_SCHEMA,
+                "batch_id": "legacy-batch", "pair_id": spec["pair_id"], "arm": "BEFORE",
+                "input_post_count": 2, "ordered_post_ids": [101, 102], "planned_run_id": run_id},
+            "batch_execution_envelope": {"schema_version": runner.BATCH_ENVELOPE_SCHEMA,
+                "environment_binding": env, "environment_sha256": runner._canonical_sha256(env),
+                "effective_argv_sha256": runner._canonical_sha256(argv)}}
+
+    def test_legacy_batch_parallel_sixteen_stays_valid_and_one_is_rejected(self):
+        from tools import run_independent_plan as runner
+
+        with tempfile.TemporaryDirectory() as tmp:
+            run = self._legacy_batch(Path(tmp))
+            env = run["batch_execution_envelope"]["environment_binding"]
+            runner._validate_batch_child_envelope(run, index=1, argv=run["command_argv"], environment=env)
+            run["command_argv"][-1] = "1"
+            run["batch_execution_envelope"]["effective_argv_sha256"] = runner._canonical_sha256(run["command_argv"])
+            with self.assertRaisesRegex(ValueError, "parallel/dashboard"):
+                runner._validate_batch_child_envelope(run, index=1, argv=run["command_argv"], environment=env)
+
+    def test_legacy_envelope_rejects_new_policy_fields_and_new_version_without_binding(self):
+        from tools import run_independent_plan as runner
+
+        with tempfile.TemporaryDirectory() as tmp:
+            run = self._legacy_batch(Path(tmp))
+            run["batch_execution_envelope"]["execution_policy_binding"] = {}
+            with self.assertRaises(ValueError):
+                runner._batch_completion_contract(run, index=1)
+            del run["batch_execution_envelope"]["execution_policy_binding"]
+            run["batch_completion_contract"]["schema_version"] = runner.LOW_LOAD_BATCH_COMPLETION_SCHEMA
+            with self.assertRaises(ValueError):
+                runner._batch_completion_contract(run, index=1)
+
+
 if __name__ == "__main__":
     unittest.main()

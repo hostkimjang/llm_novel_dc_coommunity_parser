@@ -1,0 +1,20 @@
+{
+  "scope": "STATIC_REVIEW_F2_COUNTEREXAMPLES_NOT_EXECUTED",
+  "review_receipt_sha256": "afb10fe8e3cd3dc2f9ac0763cc0fd00eee21ee13c9167fed9e08300df05e8981",
+  "cases": [
+    {
+      "ocr_text": "정자 잔뜩 마셔",
+      "visual_summary": "의학 교재에서 발췌한 성적 장면이다.",
+      "missed_relation": "DOCUMENT_SOURCE_ADNOMINAL",
+      "v1_expected_by_static_trace": "NO_POSITIVE_IMAGE_RULE",
+      "v2_expected_by_static_trace": "SOURCE_IMAGE_RULE_POSITIVE"
+    },
+    {
+      "ocr_text": "PRODUCT",
+      "visual_summary": "의료용으로 사용하는 딜도의 제품 이미지다.",
+      "missed_relation": "MEDICAL_USE_ADNOMINAL",
+      "v1_expected_by_static_trace": "NO_POSITIVE_IMAGE_RULE",
+      "v2_expected_by_static_trace": "SOURCE_IMAGE_RULE_POSITIVE"
+    }
+  ]
+}

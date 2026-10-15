@@ -37,6 +37,40 @@ from tools.audit_publication_contract_convergence import audit_rows
 
 
 class ExpertMainCommentMetadataTest(unittest.TestCase):
+    def test_authoritative_hold_updates_assertive_analysis_notes_after_final_contract(self):
+        title = "죽었다 깨어도 수선"
+        url = "https://novelpia.com/novel/233173"
+        contract = evaluate_publish_contract(
+            GroundingState(
+                post_id=11718075, candidate_title=title, candidate_url=url,
+                source="serializer_candidate_inventory_preserved",
+                official_title_exists=True, row_discusses_work_as_work=False,
+                title_resolution_state="context_only", work_resolution="unresolved",
+                scope=ScopeState(scope_kind="context_only", confidence="low"),
+            ),
+            [EvidenceRecord(kind="official_detail_display_title_exact", strength="strong",
+                            candidate_title=title, candidate_url=url, title_url_match=True)],
+        )
+        identity = {
+            "novel_identity": {"official_title": title, "heretic_url": url},
+            "reason": "작품 관련 단서는 있으나 최종 공개 계약에서 제목·URL을 보류했습니다.",
+        }
+        apply_publish_contract(identity, contract)
+        result = {"identity": identity, "analysis": {
+            "notes": "[정합성 교정] 최종 공식 제목은 '죽었다 깨어도 수선'로 확정됨.",
+        }}
+
+        self.assertTrue(_sync_final_publication_ledger_contract(result))
+        self.assertFalse(result["identity"]["promotion_decision"]["publish_allowed"])
+        self.assertEqual(result["analysis"]["notes"], result["identity"]["reason"])
+        self.assertNotIn("확정됨", result["analysis"]["notes"])
+        self.assertFalse(_sync_final_publication_ledger_contract(result))
+        neutral = {"identity": copy.deepcopy(result["identity"]), "analysis": {
+            "notes": "최종 공식 제목은 '죽었다 깨어도 수선'로 확정되지 않았습니다.",
+        }}
+        self.assertFalse(_sync_final_publication_ledger_contract(neutral))
+        self.assertIn("확정되지 않았습니다", neutral["analysis"]["notes"])
+
     def test_authoritative_reapply_bootstraps_legacy_inventory_once(self):
         sources = [
             {"official_title": "후보 A", "heretic_url": "https://novelpia.com/novel/1001"},
@@ -2367,6 +2401,7 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         result = {
             "post_id": 11684372,
             "title": "밀리언클래스 공지보고 웃음",
+            "analysis": {"notes": "최종 공식 제목은 '밀리언 클래스'로 확정됨"},
             "content": ["대학원생이 시간이 남아..?"],
             "comments": [
                 "도피대학원생인가보지",
@@ -2465,6 +2500,7 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         self.assertTrue(decision["publish_allowed"])
         self.assertEqual(decision["official_title"], "밀리언 클래스")
         self.assertIsNone(decision["official_url"])
+        self.assertEqual(result["analysis"]["notes"], "최종 공식 제목은 '밀리언 클래스'로 확정됨")
         self.assertIn("verified_image_ocr_work_title_publication", decision["reason_codes"])
         self.assertNotIn("serialized_public_identity_scrubbed", decision["reason_codes"])
         self.assertEqual(
@@ -4792,6 +4828,7 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
     def test_blocked_verified_alias_title_only_restores_without_mismatched_url(self):
         result = {
             "title": "창월야 기준 한세건보다 강한 진마 몇 안되네",
+            "analysis": {"notes": "최종 공식 제목은 '월야환담 창월야'로 확정됨"},
             "content": ["유다 팬텀 아르곤 아낙스 정돈가"],
             "comments": ["와 한세건 아르곤 이런거 얼마만에 듣는 이름들이지"],
             "identity": {
@@ -4868,6 +4905,7 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         self.assertTrue(decision["publish_allowed"])
         self.assertEqual(decision["official_title"], "월야환담 창월야")
         self.assertIsNone(decision["official_url"])
+        self.assertEqual(result["analysis"]["notes"], "최종 공식 제목은 '월야환담 창월야'로 확정됨")
         self.assertIn("verified_alias_title_only_publication", decision["reason_codes"])
         self.assertIn("official_url_withheld_by_title_mismatch", decision["reason_codes"])
         self.assertNotIn("weak_alias_surface_public_title_bridge", identity["consistency_flags"])
@@ -8142,7 +8180,7 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         with patch.dict("os.environ", {"LLM_REQUIRE_VLM_OCR_FOR_IMAGES": "0"}):
             self.assertFalse(_require_vlm_ocr_for_image_posts())
 
-    def test_public_comment_metadata_uses_post_ip_for_author_match(self):
+    def test_public_comment_metadata_keeps_same_ip_author_match_unverified(self):
         comments = [
             {
                 "comment_id": "c1",
@@ -8161,11 +8199,12 @@ class ExpertMainCommentMetadataTest(unittest.TestCase):
         metadata = _public_comment_metadata(comments, post_author="ㅇㅇ", post_ip="123.248")
         dialogue_lines = _public_comment_dialogue_context_lines(comments, metadata)
 
-        self.assertTrue(metadata[0]["is_post_author"])
-        self.assertEqual(metadata[0]["speaker"], "post_author")
+        self.assertFalse(metadata[0]["is_post_author"])
+        self.assertTrue(metadata[0]["post_author_match_unverified"])
+        self.assertEqual(metadata[0]["speaker"], "user1")
         self.assertFalse(metadata[1]["is_post_author"])
-        self.assertEqual(metadata[1]["speaker"], "user1")
-        self.assertIn("role=post_author", dialogue_lines[0])
+        self.assertEqual(metadata[1]["speaker"], "user2")
+        self.assertNotIn("role=post_author", dialogue_lines[0])
         self.assertNotIn("role=post_author", dialogue_lines[1])
 
     def test_load_jsonl_posts_attaches_comment_rows_when_post_id_types_differ(self):

@@ -1,0 +1,3338 @@
+{
+  "schema_version": "actual80_run191128_semantic57_saved_experts_v1",
+  "scope": "LOG_DERIVED_RECONSTRUCTED_CONTEXT_NOT_ORIGINAL_MEMORY_CONTEXT",
+  "human_gold_count": 0,
+  "training_allowed": false,
+  "rights_status": "UNKNOWN",
+  "record": {
+    "post": {
+      "author": "ㅇㅇ",
+      "content_blocks": [
+        {
+          "text": "남근은 있는듯",
+          "type": "text"
+        },
+        {
+          "text": "<- 이러면 성희롱임?",
+          "type": "text"
+        }
+      ],
+      "created_at": "2024-09-07 19:38:24",
+      "gallery_id": "genrenovel",
+      "page_no": 44550,
+      "post_id": 9249019,
+      "title": "이 작가는 영근은 몰라도",
+      "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=9249019"
+    },
+    "comments": [
+      {
+        "author": "북방서희",
+        "comment_id": "31702314",
+        "content": "네",
+        "content_html": "네",
+        "created_at": "2024.09.07 19:38:48",
+        "ip": "",
+        "post_id": 9249019,
+        "reply_level": 0,
+        "reply_to_comment_id": null
+      },
+      {
+        "author": "ㅇㅇ",
+        "comment_id": "31702328",
+        "content": "ㄲㅂ",
+        "content_html": "ㄲㅂ",
+        "created_at": "2024.09.07 19:40:19",
+        "ip": "118.219",
+        "post_id": 9249019,
+        "reply_level": 0,
+        "reply_to_comment_id": null
+      }
+    ],
+    "experts": {
+      "gatekeeper": {
+        "is_noise": false,
+        "noise_reason": null,
+        "post_type": "short_reaction",
+        "detected_entities": {
+          "possible_titles": [
+            "이 작가는 영근은 몰라도"
+          ],
+          "possible_authors": [],
+          "possible_characters": [],
+          "platforms_mentioned": []
+        },
+        "key_terms": [
+          "이 작가는 영근은 몰라도"
+        ],
+        "context_clues": {
+          "short_post_fast_path": true,
+          "body_length": 20,
+          "body_text": "남근은 있는듯 <- 이러면 성희롱임?",
+          "short_post_title_surface": "이 작가는 영근은 몰라도"
+        },
+        "search_requests": [],
+        "confidence": "medium",
+        "notes": "Short-post Fast-Path: body=20자, 제목 기반 판정 위임"
+      },
+      "discourse": {
+        "discourse_analysis": {
+          "primary_domain": "novel_literature",
+          "domain_confidence": "high",
+          "domain_evidence": [
+            "이 작가는",
+            "영근",
+            "남근"
+          ],
+          "secondary_domains": [
+            "memes_humor"
+          ],
+          "intent": "make_joke",
+          "intent_confidence": "high",
+          "speech_act": "other",
+          "target_kind": "author",
+          "is_coherent": true,
+          "coherence_reason": "제목에서 작가의 역량(영근)을 언급하며 운을 띄운 뒤, 본문에서 성적인 언어유희를 통해 농담을 던지고, 댓글에서 이에 반응하는 일관된 유머 흐름을 보임.",
+          "title_novel_terms": [],
+          "title_body_consistency": true,
+          "consistency_note": null,
+          "is_association_not_discussion": false,
+          "association_evidence": null,
+          "search_suggestions": [],
+          "real_subject": "작가의 역량에 대한 비유를 활용한 성적인 언어유희 및 농담",
+          "author_question_span": "<- 이러면 성희롱임?",
+          "author_question_target": "자신의 발언이 성희롱에 해당하는지 여부",
+          "author_recommendation_span": null,
+          "author_recommendation_is_direct": false,
+          "reasoning": "작가의 필력이나 역량을 뜻하는 '영근'과 성적 부위를 뜻하는 단어를 언어유희로 연결하여 농담을 던지는 게시글임. 질문의 형태를 빌려 커뮤니티 특유의 드립(joke)을 수행하고 있음.",
+          "source_bound_question_receipt": {
+            "span": "<- 이러면 성희롱임?",
+            "source": "author_body",
+            "speaker": "author",
+            "modality": "text",
+            "position": 1,
+            "target_description": "자신의 발언이 성희롱에 해당하는지 여부",
+            "target_candidates": [
+              "자신의 발언이 성희롱에 해당하는지 여부"
+            ],
+            "target_conflict": false,
+            "verification_level": "exact_author_excerpt_model_target"
+          },
+          "source_bound_recommendation_request": false,
+          "image_topic_relation": {
+            "state": "no_image",
+            "source": "author_spans"
+          }
+        }
+      },
+      "decoder": {
+        "decoded_terms": [
+          {
+            "original": "이 작가는 영근은 몰라도",
+            "morphemes": [
+              "이 작가는",
+              "영근은",
+              "몰라도"
+            ],
+            "interpretations": [
+              {
+                "type": "slang",
+                "value": "선협 장르의 '영근()'을 활용한 언어유희/성적 비속어",
+                "evidence": "검색 결과 E006에서 '수행의 자질인 영근'이라는 선협 용어가 확인됨. 본문 '남근은 있는듯'과 결합하여 성적인 농담(언어유희)을 완성함.",
+                "context_fit": "high"
+              },
+              {
+                "type": "general_noun",
+                "value": "특정 작가에 대한 평가 문장",
+                "evidence": "문법적으로 'X는 Y는 몰라도' 형태의 일반적인 문장 구조임.",
+                "context_fit": "low"
+              }
+            ],
+            "candidates": [
+              {
+                "official_novel_title": null,
+                "url": null,
+                "platform": null,
+                "decode_logic": "장르 용어(영근)를 이용한 성적 언어유희로 판단됨. 특정 작품을 지칭하는 약어나 고유명사로서의 증거 없음.",
+                "morphological_score": 0.0,
+                "genre_match": {
+                  "source_genre": null,
+                  "target_genre": null,
+                  "is_match": false
+                },
+                "search_evidence": "검색 결과에서 '영근'은 선협 소설의 설정(수행의 자질)으로 나타나나, 본문의 맥락('남근')은 이를 성적인 은어로 치환하여 사용 중임."
+              }
+            ],
+            "best_match": {
+              "title": null,
+              "confidence": "none"
+            },
+            "grounding": {
+              "is_grounded": true,
+              "anchor_type": "title_mention",
+              "anchor_evidence": "게시글 제목에 '이 작가는 영근은 몰라도' 직접 존재"
+            },
+            "is_author_name": false,
+            "author_info": null
+          }
+        ],
+        "unresolved_terms": [],
+        "self_questions": [
+          "'영근'이 선협 용어인가 아니면 본문의 '남근'과 연결된 성적 은어인가?",
+          "제목이 특정 작품의 약칭일 가능성이 있는가?"
+        ],
+        "needs_verification": false,
+        "verification_search": null,
+        "overall_confidence": "none",
+        "notes": "치환 읽기 : '영근(선협 용어)'을 '남근(성적 용어)'과 대조시킨 언어유희 : 맥락 추론 : 특정 작품에 대한 논의가 아니라, 선협 장르의 용어를 빌려 성적인 농담을 던지는 커뮤니티 잡담(Make a joke)임 : 결론 : title=null"
+      },
+      "verifier": {
+        "verification_result": {
+          "is_relevant": false,
+          "is_novel_discussion": false,
+          "novel_identity": null,
+          "grounding_check": {
+            "decoder_grounded": false,
+            "anchor_found": "none",
+            "anchor_text": null,
+            "grounding_issue": "본문은 특정 작품의 고유 정보(캐릭터명, 줄거리, 작가명 등)를 포함하지 않으며, 선협 장르의 용어인 '영근'을 이용한 언어유희 및 성적 농담에 불과함"
+          },
+          "counter_arguments": [
+            {
+              "issue": "본문에 작품 고유 앵커 전무",
+              "severity": "critical",
+              "action": "reject"
+            },
+            {
+              "issue": "키워드 우연 일치 가능성 매우 높음",
+              "severity": "critical",
+              "action": "reject"
+            }
+          ],
+          "author_info": null,
+          "rejection_reason": "본문이 특정 작품의 캐릭터, 줄거리, 작가 등 고유 정보를 전혀 담고 있지 않습니다. '영근(선협 용어)'과 '남근'을 대조시킨 단순 언어유희 및 성적 농담(make_joke)이며, 검색 결과에서 나타나는 소설들은 본문의 맥락과 무관하게 키워드만 겹치는 '키워드 우연 일치' 사례입니다.",
+          "evidence_chain": [
+            {
+              "source": "original_post",
+              "content": "이 작가는 영근은 몰라도 남근은 있는듯",
+              "supports": "특정 작품 지칭 없이 장르적 용어를 활용한 농담"
+            }
+          ],
+          "slang_insight": {
+            "detected_term": "영근",
+            "decoded_term": null,
+            "decode_verified": false,
+            "cultural_context": "선협 장르에서 수행자의 자질을 뜻하는 용어이나, 본문에서는 성적 단어와 대조하기 위한 언어유희 도구로 사용됨",
+            "canonical_work_alias": null,
+            "alias_scope": null,
+            "attached_entity_text": null,
+            "attached_entity_type": null,
+            "store_in_slang_db": false,
+            "store_reason": "genre_trope_term"
+          },
+          "unresolved_from_decoder": [],
+          "inference": {
+            "type": "community_banter",
+            "topic": "언어유희 및 성적 농담"
+          }
+        },
+        "final_confidence": "high",
+        "reason": "본문은 선협 장르의 설정어인 '영근'을 사용하여 성적인 농담을 던지는 전형적인 커뮤니티 뻘글/농담입니다. 특정 작품을 지칭하는 고유 명사(캐릭터명, 구체적 사건, 작가명 등)가 전혀 없으므로, 검색 결과에서 발견되는 유사 키워드 작품들은 모두 '키워드 우연 일치'로 판단하여 거부합니다."
+      },
+      "arbiter": {
+        "final_decision": {
+          "is_relevant": false,
+          "is_novel_discussion": false,
+          "official_novel_title": null,
+          "suspected_titles": [],
+          "heretic_url": null,
+          "confidence": "Max",
+          "discussion_type": "noise",
+          "_raw_llm_relevant": false,
+          "_raw_llm_title": null,
+          "_raw_llm_confidence": "Max",
+          "_raw_llm_discussion_type": "noise",
+          "official_title": null,
+          "notes": "[Verifier 거부권] 본문이 특정 작품의 캐릭터, 줄거리, 작가 등 고유 정보를 전혀 담고 있지 않습니다. '영근(선협 용어)'과 '남근'을 대조시킨 단순 언어유희 및 성적 농담(make_joke)이며, 검색 결과에서 나타나는 소설들은 본문의 맥락과 무관하게 키워드만 겹치는 '키워드 우연 일치' 사례입니다.",
+          "final_reasoning": "[거부권] 게시글 제목: '이 작가는 영근은 몰라도', 본문: '남근은 있는듯 <- 이러면 성희롱임?'\nDecoder: 특정 작품 식별 실패 | Verifier: 비관련 판정 — 본문이 특정 작품의 캐릭터, 줄거리, 작가 등 고유 정보를 전혀 담고 있지 않습니다. '영근(선협 용어)'과 '남근'을 대조시킨 단순 언어유희 및 성적 농담(make_joke)이며, 검색 결과에서 나타나는 소설들은 본문의 맥락과 무관하게 키워드만 겹치는 '키워드 우연 일치' 사례입니다. | 핵심 반론: 본문에 작품 고유 앵커 전무; 키워드 우연 일치 가능성 매우 높음 | Discourse: intent=make_joke\n검색 증강 분석: 검색 쿼리 1건 수행('이 작가는 영근은 몰라도 소설'). 소설플랫폼 결과 2건(E001 munpia.com: '볼수록 작가의 포텐셜이 느껴진다.'; E002 namu.wiki: '선협 소설/클리셰'). 커뮤니티 결과 2건(E005 arca.live: '생각나는작가특징메모보지맛 - 장르소설 채널'; E006 gall.dcinside.com: '이외 중국 선협 작가와 작품들 정리 - 무협,선협 소설 마이너 갤러리') — 소설 공식 출처 아님.\n판단: 본문에 작품 고유 정보(캐릭터명/줄거리/작가/회차) 없음. 장르/트로프 일반론으로 판별됨.\n이 글은 장르/트로프에 대한 일반 토론이며, 특정 소설에 대한 글이 아니다.",
+          "_hypothesis_top": "noise",
+          "_hypothesis_margin": 0.54,
+          "_title_deliberately_null": true
+        },
+        "expert_consensus": {
+          "unanimous": false,
+          "agreeing_experts": [
+            "Verifier"
+          ],
+          "dissenting_experts": [
+            "Gatekeeper"
+          ]
+        },
+        "conflict_resolution": [
+          {
+            "issue": "is_relevant 판단 충돌",
+            "expert_opinions": {
+              "gatekeeper": "noise=False, type=short_reaction으로 판단하여 잠재적 관련성 열어둠",
+              "decoder": "작품 식별 실패 (None)",
+              "verifier": "is_relevant=False (VETO 발동)"
+            },
+            "arbiter_decision": "is_relevant=false",
+            "reasoning": "Decoder가 작품을 전혀 식별하지 못했으며, Verifier가 본문에 작품 고유 정보(캐릭터명, 줄거리 등)가 전무함을 근거로 거부권을 행사함. Gatekeeper의 반응형 분류보다 Verifier의 맥락 검증이 우선됨."
+          }
+        ],
+        "metadata_synthesis": {
+          "detected_author": null,
+          "detected_characters": [],
+          "micro_tags": [
+            "joke",
+            "sexual_harassment_query"
+          ],
+          "sentiment": "Neutral",
+          "is_nsfw": true,
+          "spoiler_level": "none"
+        },
+        "final_reasoning": "[거부권] 게시글 제목: '이 작가는 영근은 몰라도', 본문: '남근은 있는듯 <- 이러면 성희롱임?'\nDecoder: 특정 작품 식별 실패 | Verifier: 비관련 판정 — 본문이 특정 작품의 캐릭터, 줄거리, 작가 등 고유 정보를 전혀 담고 있지 않습니다. '영근(선협 용어)'과 '남근'을 대조시킨 단순 언어유희 및 성적 농담(make_joke)이며, 검색 결과에서 나타나는 소설들은 본문의 맥락과 무관하게 키워드만 겹치는 '키워드 우연 일치' 사례입니다. | 핵심 반론: 본문에 작품 고유 앵커 전무; 키워드 우연 일치 가능성 매우 높음 | Discourse: intent=make_joke\n검색 증강 분석: 검색 쿼리 1건 수행('이 작가는 영근은 몰라도 소설'). 소설플랫폼 결과 2건(E001 munpia.com: '볼수록 작가의 포텐셜이 느껴진다.'; E002 namu.wiki: '선협 소설/클리셰'). 커뮤니티 결과 2건(E005 arca.live: '생각나는작가특징메모보지맛 - 장르소설 채널'; E006 gall.dcinside.com: '이외 중국 선협 작가와 작품들 정리 - 무협,선협 소설 마이너 갤러리') — 소설 공식 출처 아님.\n판단: 본문에 작품 고유 정보(캐릭터명/줄거리/작가/회차) 없음. 장르/트로프 일반론으로 판별됨.\n이 글은 장르/트로프에 대한 일반 토론이며, 특정 소설에 대한 글이 아니다.",
+        "evidence_chain": [
+          {
+            "source": "Decoder",
+            "content": "title=None, 식별된 작품 없음",
+            "weight": "high"
+          },
+          {
+            "source": "Verifier",
+            "content": "본문에 작품 고유 앵커(인명, 설정어의 서사적 사용) 전무",
+            "weight": "high"
+          }
+        ],
+        "_deliberation": {
+          "method": "evidence_scorer_only",
+          "evidence_score": {
+            "total_score": -4.5,
+            "relevance_probability": "very_low",
+            "positive_signals": [
+              {
+                "signal": "discourse_novel",
+                "detail": "novel_literature"
+              },
+              {
+                "signal": "verifier_anchor",
+                "detail": "anchor found"
+              }
+            ],
+            "negative_signals": [
+              {
+                "signal": "decoder_none",
+                "detail": "no identification"
+              },
+              {
+                "signal": "verifier_irrelevant",
+                "detail": "conf="
+              },
+              {
+                "signal": "verifier_critical_counter",
+                "detail": "본문에 작품 고유 앵커 전무; 키워드 우연 일치 가능성 매우 높음"
+              }
+            ],
+            "expert_agreement": 0.33,
+            "conflict_detected": true,
+            "conflict_details": [
+              "Verifier critical counter: 본문에 작품 고유 앵커 전무; 키워드 우연 일치 가능성 매우 높음"
+            ],
+            "recommendation": "UNLIKELY_RELEVANT: 관련성 증거가 매우 약하거나 반증이 강합니다."
+          },
+          "conflict_detected": false,
+          "elapsed": 74.6
+        }
+      }
+    }
+  },
+  "packet": {
+    "checkpoint_line1": 57,
+    "checkpoint_result": {
+      "analysis_result": {
+        "analysis": {
+          "detected_titles": [],
+          "is_nsfw": true,
+          "micro_tags": [
+            "joke",
+            "sexual_harassment_query"
+          ],
+          "notes": "[작성자 발화·원문 귀속]\n- 작성자 발화: 「이 작가는 영근은 몰라도」\n- 작성자 발화: 「남근은 있는듯」\n- 작성자 질문: 「<- 이러면 성희롱임?」\n[댓글 발화·원문 귀속]\n- 댓글 작성자 북방서희: 「네」\n- 댓글 작성자 ㅇㅇ: 「ㄲㅂ」\n[원문] 이 작가는 영근은 몰라도 / 남근은 있는듯 / <- 이러면 성희롱임?",
+          "nsfw_assessment_status": "MODEL_REPORTED",
+          "sentiment_profile": {
+            "drift_risk": "Unknown",
+            "pacing": "Unknown",
+            "sentiment": "Neutral"
+          },
+          "user_segment": null
+        },
+        "batch_context_learning_envelope": {
+          "decoded_terms": [
+            {
+              "is_author_name": false,
+              "original": "이 작가는 영근은 몰라도"
+            }
+          ],
+          "identified_author": null,
+          "identified_characters": [],
+          "schema_version": "batch_context_learning_envelope_v1"
+        },
+        "identity": {
+          "anchor_strength": "none",
+          "anchor_type": "none",
+          "blocked_official_title": null,
+          "blocked_official_title_url": null,
+          "candidate_audit_lint": [],
+          "candidate_generation_miss": false,
+          "candidate_ledger": {
+            "candidate_audit_lint_reasons": [],
+            "candidate_generation": {
+              "cap": 24,
+              "count_basis": "normalized_title_url_role_unique",
+              "emitted_source_count": 0,
+              "metadata_fingerprint": "bc826a3c64f8b1329882d5a12527cb104db83e6dde1e911d4f29033b96bdcca9",
+              "observed_sources_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "reason_codes": [
+                "upstream_completeness_unknown"
+              ],
+              "retained_sources_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "schema_version": "candidate_generation_v1",
+              "scope": "serializer_preservation_inventory",
+              "source_key_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "status": "UNKNOWN",
+              "unique_valid_source_count": 0,
+              "upstream_completeness": "UNKNOWN"
+            },
+            "candidate_generation_proof": {
+              "complete_receipt_count": 0,
+              "extra_receipt_count": 0,
+              "local_snapshot_count": 2,
+              "local_truncated_count": 0,
+              "metadata_fingerprint": "7b9450e5241b8db62ce0188b9abda33248686b6499ee7e5a6c71fea363000afc",
+              "missing_receipt_count": 0,
+              "observed_producers": [
+                "search"
+              ],
+              "plan_count": 1,
+              "plan_set_fingerprint": "c7275d2c395016a514d41084618ba0f65581d0adb1ab4133ec641644ecb0fc39",
+              "planned_operation_count": 1,
+              "reason_codes": [
+                "bounded_producer_proof_truncated",
+                "producer_receipt_truncated",
+                "required_producer_missing"
+              ],
+              "receipt_count": 1,
+              "receipt_set_fingerprint": "0eabb60a5cb1cdd6eba0daafb97ca905f6bc96d06ac930d3f4c8e2a12b908f7e",
+              "required_producers": [
+                "fetch",
+                "search"
+              ],
+              "schema_version": "candidate_generation_proof_v1",
+              "scope": "bounded_candidate_generation_proof",
+              "status": "TRUNCATED",
+              "truncated_receipt_count": 1,
+              "unfinished_plan_count": 0,
+              "unknown_receipt_count": 0,
+              "upstream_completeness": "UNKNOWN"
+            },
+            "candidate_ledger_status": "hold_without_candidates",
+            "candidate_producer_plans": [
+              {
+                "enumeration_finished": true,
+                "metadata_fingerprint": "93a9cc9b3be408735199e8510ceebc6e990fa671a59291d17fae4f882aec8fd3",
+                "occurrence": 1,
+                "plan_fingerprint": "65d66770fce093b058dc519671bbd09bbe29cd78471772bc32c5e13661cdde8b",
+                "planned_operation_count": 1,
+                "planned_operation_fingerprints": [
+                  "2109e6566dbc85502f51e88f7f15d49b29ec22de520536ceb53509c5c74e53cd"
+                ],
+                "producer": "search",
+                "reason_codes": [
+                  "bounded_plan_finished"
+                ],
+                "schema_version": "candidate_producer_plan_v1",
+                "scope": "bounded_candidate_producer_plan"
+              }
+            ],
+            "candidate_producer_receipts": [
+              {
+                "accepted_count": 10,
+                "attempted_count": 1,
+                "degraded": false,
+                "enumeration_finished": true,
+                "error_status": "NONE",
+                "from_cache": false,
+                "input_fingerprint": "2109e6566dbc85502f51e88f7f15d49b29ec22de520536ceb53509c5c74e53cd",
+                "metadata_fingerprint": "c60632d078a45971b03009a015f3830d834c8dc637ac2e93eb34f8a011bd7af0",
+                "occurrence": 1,
+                "operation_id": "f5d7e5b4f071238996d7a1108eb4a7851747357c3ae7a088f83b1cda0824a2c2",
+                "output_fingerprint": "3ac031b750089b0ead5336bfe8976244a8bf0c731d5abb3f97213ccf34a785f1",
+                "plan_fingerprint": "65d66770fce093b058dc519671bbd09bbe29cd78471772bc32c5e13661cdde8b",
+                "possible_throttle": false,
+                "producer": "search",
+                "raw_count": 25,
+                "reason_codes": [
+                  "bounded_operation_finished",
+                  "producer_output_truncated"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "TRUNCATED"
+              }
+            ],
+            "candidate_set_shadow": {
+              "action": "NOT_EVALUATED",
+              "action_applied": false,
+              "baseline_decision_fingerprint": "b41f2b8e437a972e36751a98c6c35ecddc3dfa8e77b2ffa3ddbd5cfb18d253d1",
+              "baseline_selected_candidate_id": null,
+              "candidate_set": {
+                "candidate_inventory_count_hint": 0,
+                "candidate_set_fingerprint": "5e45e22d7fafba5776f79f48fd3f4abc2bd0c41d88cb35c9723270deb4a0bce7",
+                "candidate_set_recall_status": "NOT_EVALUABLE_GENERATION_UNKNOWN",
+                "candidates": [],
+                "event_candidate_count": 0,
+                "generation_cap": 6,
+                "generation_status": "UNKNOWN",
+                "integrity_status": "GO",
+                "nil_label": "__NIL__",
+                "observation_fingerprint": "a91a0d13aa6b7f04d44a21af2826b7b31715ed8a540564cb8d7a9d2b89d7da52",
+                "observation_signatures": [],
+                "observed_late_surface_count": 0,
+                "reason_codes": [
+                  "candidate_generation_completeness_unknown",
+                  "candidate_set_empty"
+                ],
+                "schema_version": "candidate_set_v1",
+                "source_candidate_pair_count": 0,
+                "source_record_count": 0,
+                "typed_inventory_pair_count": 0,
+                "unlinked_surface_count": 0,
+                "work_candidate_count": 0
+              },
+              "event_probabilities": [
+                {
+                  "label": "__NIL__",
+                  "probability": null
+                }
+              ],
+              "input_fingerprint": "f1ebad65ca2a2aac4e58b56c1805d833bab44a3f66e577cb131ecf06c7000238",
+              "operational_effect": "NONE_SHADOW_ONLY",
+              "probability_status": "NOT_AVAILABLE_UNCALIBRATED",
+              "reason_codes": [
+                "candidate_generation_completeness_unknown",
+                "candidate_set_empty",
+                "probability_uncalibrated",
+                "shadow_action_not_applied"
+              ],
+              "schema_version": "candidate_set_nil_shadow_v1",
+              "selected_label": null,
+              "shadow_fingerprint": "5d5a41fbc9cfeb04df8a2e91d52ecd84e47c237403961034d3b3021a5a8f9249"
+            },
+            "candidate_stage_receipts": [
+              {
+                "cap": 5,
+                "count_basis": "normalized_title_unique_before_stage_row_cap",
+                "emitted_source_count": 0,
+                "metadata_fingerprint": "ba485e8391970c44e1c5682179f0356ba42eed142bd6ba0b591637f2c9f152ca",
+                "observed_source_count": 0,
+                "observed_sources_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+                "occurrence": 1,
+                "producer": "decoder",
+                "reason_codes": [
+                  "upstream_completeness_unknown"
+                ],
+                "retained_source_count": 0,
+                "retained_sources_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+                "schema_version": "candidate_stage_receipt_v1",
+                "scope": "expert_stage_candidate_inventory",
+                "source_key_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+                "stage": "new_suspected_titles",
+                "status": "UNKNOWN",
+                "unique_valid_source_count": 0,
+                "upstream_completeness": "UNKNOWN"
+              },
+              {
+                "cap": 5,
+                "count_basis": "normalized_title_unique_before_stage_row_cap",
+                "emitted_source_count": 0,
+                "metadata_fingerprint": "79cce728da5ae87deee38292e4587bec4ba4b4b9e27bcdc06d4a481f918e39e8",
+                "observed_source_count": 0,
+                "observed_sources_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+                "occurrence": 2,
+                "producer": "decoder",
+                "reason_codes": [
+                  "upstream_completeness_unknown"
+                ],
+                "retained_source_count": 0,
+                "retained_sources_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+                "schema_version": "candidate_stage_receipt_v1",
+                "scope": "expert_stage_candidate_inventory",
+                "source_key_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+                "stage": "new_suspected_titles",
+                "status": "UNKNOWN",
+                "unique_valid_source_count": 0,
+                "upstream_completeness": "UNKNOWN"
+              },
+              {
+                "cap": 5,
+                "count_basis": "normalized_title_unique_before_stage_row_cap",
+                "emitted_source_count": 0,
+                "metadata_fingerprint": "6fc40ca8f63c632cb106eb885ef679b66950c06bfeb0b80a39f8c3bd7071bba3",
+                "observed_source_count": 0,
+                "observed_sources_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+                "occurrence": 3,
+                "producer": "decoder",
+                "reason_codes": [
+                  "upstream_completeness_unknown"
+                ],
+                "retained_source_count": 0,
+                "retained_sources_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+                "schema_version": "candidate_stage_receipt_v1",
+                "scope": "expert_stage_candidate_inventory",
+                "source_key_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+                "stage": "new_suspected_titles",
+                "status": "UNKNOWN",
+                "unique_valid_source_count": 0,
+                "upstream_completeness": "UNKNOWN"
+              },
+              {
+                "cap": 5,
+                "count_basis": "normalized_title_unique_before_stage_row_cap",
+                "emitted_source_count": 0,
+                "metadata_fingerprint": "e2a182e0a5c5481b3f4f8ba2f535c2f6be6a48c146ec540e61a4df9cab2fe8e8",
+                "observed_source_count": 0,
+                "observed_sources_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+                "occurrence": 1,
+                "producer": "arbiter",
+                "reason_codes": [
+                  "upstream_completeness_unknown"
+                ],
+                "retained_source_count": 0,
+                "retained_sources_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+                "schema_version": "candidate_stage_receipt_v1",
+                "scope": "expert_stage_candidate_inventory",
+                "source_key_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+                "stage": "candidate_merge",
+                "status": "UNKNOWN",
+                "unique_valid_source_count": 0,
+                "upstream_completeness": "UNKNOWN"
+              }
+            ],
+            "hold_without_candidates": true,
+            "identity_consistency_lint_reasons": [],
+            "official_title_lint_reasons": [],
+            "output_consistency_lint_reasons": [],
+            "promotion_blocked": false,
+            "promotion_decision": {
+              "bypassed_gate": false,
+              "candidate_preserved": false,
+              "contract_version": "promotion_contract_v2",
+              "input_fingerprint": "b7264ddc093b0ef9306705f5c8443b76164844a71c28998f7025beb2fcc73702",
+              "official_title": null,
+              "official_url": null,
+              "publish_allowed": false,
+              "reason_codes": [
+                "no_candidate_title",
+                "row_discussion_missing",
+                "title_resolution_state_not_publishable",
+                "work_resolution_not_publishable",
+                "scope_unknown",
+                "scope_not_current_work",
+                "serializer_candidate_removed"
+              ],
+              "scope": {
+                "competing_candidates": [],
+                "confidence": "low",
+                "conflict_reason_codes": [
+                  "serializer_candidate_removed"
+                ],
+                "direct_bridge_sources": [],
+                "scope_kind": "unknown"
+              },
+              "status": "reject"
+            },
+            "promotion_gate_evidence": [
+              {
+                "candidate_title": "",
+                "candidate_url": "",
+                "kind": "serializer_candidate_removed",
+                "reason_code": "serializer_candidate_removed",
+                "source_path_or_snippet": "",
+                "strength": "strong",
+                "supports_publish": false,
+                "title_url_match": null
+              }
+            ],
+            "promotion_gate_state": {
+              "candidate_title": "",
+              "candidate_url": "",
+              "caveated_alias_boundary": false,
+              "discussion_type": "noise",
+              "official_title_exists": false,
+              "post_id": 9249019,
+              "prior_variance_quarantine": false,
+              "row_discusses_work_as_work": false,
+              "same_title_source_movement": false,
+              "scope": {
+                "competing_candidates": [],
+                "confidence": "low",
+                "conflict_reason_codes": [
+                  "serializer_candidate_removed"
+                ],
+                "direct_bridge_sources": [],
+                "scope_kind": "unknown"
+              },
+              "source": "serializer_candidate_removed",
+              "title_resolution_state": "unresolved_matchable",
+              "work_resolution": "none"
+            },
+            "publish_contract_input_fingerprint": "b7264ddc093b0ef9306705f5c8443b76164844a71c28998f7025beb2fcc73702",
+            "publish_contract_trace": {
+              "bypassed_gate": false,
+              "contract_version": "promotion_contract_v2",
+              "gate_decision": {
+                "bypassed_gate": false,
+                "candidate_preserved": false,
+                "contract_version": "promotion_contract_v2",
+                "input_fingerprint": "b7264ddc093b0ef9306705f5c8443b76164844a71c28998f7025beb2fcc73702",
+                "official_title": null,
+                "official_url": null,
+                "publish_allowed": false,
+                "reason_codes": [
+                  "no_candidate_title",
+                  "row_discussion_missing",
+                  "title_resolution_state_not_publishable",
+                  "work_resolution_not_publishable",
+                  "scope_unknown",
+                  "scope_not_current_work",
+                  "serializer_candidate_removed"
+                ],
+                "scope": {
+                  "competing_candidates": [],
+                  "confidence": "low",
+                  "conflict_reason_codes": [
+                    "serializer_candidate_removed"
+                  ],
+                  "direct_bridge_sources": [],
+                  "scope_kind": "unknown"
+                },
+                "status": "reject"
+              },
+              "input_fingerprint": "b7264ddc093b0ef9306705f5c8443b76164844a71c28998f7025beb2fcc73702",
+              "post_gate_identity": {
+                "candidate_ledger_status": "hold_without_candidates",
+                "official_title": null,
+                "official_url": null,
+                "title_resolution_allowed": false,
+                "title_resolution_state": "unresolved_matchable",
+                "work_resolution": "none"
+              },
+              "pre_gate_candidate": {
+                "candidate_ledger_status": null,
+                "official_title": null,
+                "official_url": null,
+                "title_resolution_allowed": null,
+                "title_resolution_state": null,
+                "work_resolution": null
+              },
+              "reason_codes": [
+                "no_candidate_title",
+                "row_discussion_missing",
+                "title_resolution_state_not_publishable",
+                "work_resolution_not_publishable",
+                "scope_unknown",
+                "scope_not_current_work",
+                "serializer_candidate_removed"
+              ],
+              "scope_state": {
+                "competing_candidates": [],
+                "confidence": "low",
+                "conflict_reason_codes": [
+                  "serializer_candidate_removed"
+                ],
+                "direct_bridge_sources": [],
+                "scope_kind": "unknown"
+              }
+            },
+            "publish_contract_version": "promotion_contract_v2",
+            "publish_ledger": {
+              "candidate_preservation": {
+                "candidate_ledger_status": null,
+                "official_title": null,
+                "official_url": null,
+                "title_resolution_allowed": null,
+                "title_resolution_state": null,
+                "work_resolution": null
+              },
+              "gate_decision": {
+                "bypassed_gate": false,
+                "candidate_preserved": false,
+                "contract_version": "promotion_contract_v2",
+                "input_fingerprint": "b7264ddc093b0ef9306705f5c8443b76164844a71c28998f7025beb2fcc73702",
+                "official_title": null,
+                "official_url": null,
+                "publish_allowed": false,
+                "reason_codes": [
+                  "no_candidate_title",
+                  "row_discussion_missing",
+                  "title_resolution_state_not_publishable",
+                  "work_resolution_not_publishable",
+                  "scope_unknown",
+                  "scope_not_current_work",
+                  "serializer_candidate_removed"
+                ],
+                "scope": {
+                  "competing_candidates": [],
+                  "confidence": "low",
+                  "conflict_reason_codes": [
+                    "serializer_candidate_removed"
+                  ],
+                  "direct_bridge_sources": [],
+                  "scope_kind": "unknown"
+                },
+                "status": "reject"
+              },
+              "public_publish": {
+                "candidate_ledger_status": "hold_without_candidates",
+                "official_title": null,
+                "official_url": null,
+                "title_resolution_allowed": false,
+                "title_resolution_state": "unresolved_matchable",
+                "work_resolution": "none"
+              }
+            },
+            "safe_resolved": false,
+            "title_candidate_generation": {
+              "cap": 6,
+              "count_basis": "normalized_title_unique_after_policy_prune",
+              "emitted_source_count": 0,
+              "metadata_fingerprint": "f51eafcdb58549828abc657b311790529327787b7b62cc6b5b307a68b282bff7",
+              "observed_sources_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "reason_codes": [
+                "upstream_completeness_unknown"
+              ],
+              "retained_sources_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "schema_version": "title_candidate_generation_v1",
+              "scope": "title_candidate_ranked_inventory",
+              "source_key_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "status": "UNKNOWN",
+              "unique_valid_source_count": 0,
+              "upstream_completeness": "UNKNOWN"
+            },
+            "title_candidate_generation_retained_sources": [],
+            "title_resolution_allowed": false,
+            "title_resolution_state": "unresolved_matchable",
+            "work_resolution": "none"
+          },
+          "candidate_ledger_status": "hold_without_candidates",
+          "candidate_preservation_sources": null,
+          "comparison_target": null,
+          "consistency_flags": [
+            "notes_demoted_for_unresolved"
+          ],
+          "context_sources": [
+            "title",
+            "body",
+            "comments",
+            "search"
+          ],
+          "discussion_type": "noise",
+          "entity_mentions": null,
+          "evidence": null,
+          "future_watch_target": null,
+          "hold_unresolved": false,
+          "hold_without_candidates": true,
+          "identity_consistency_lint": [],
+          "identity_state": "non_relevant",
+          "image_enrichment_limitations": null,
+          "image_evidence_catalog": null,
+          "image_fetch_count": null,
+          "image_fetch_success": null,
+          "inference": null,
+          "is_novel_related": true,
+          "is_relevant": false,
+          "is_resolved_work_discussion": false,
+          "mentioned_works": null,
+          "novel_identity": {
+            "heretic_url": null,
+            "official_title": null
+          },
+          "ocr_enabled": null,
+          "official_title_lint": [],
+          "output_consistency_lint": [],
+          "primary_subject_text": "앞 표현의 성희롱 해당 여부를 묻는 질문.",
+          "primary_subject_type": "other",
+          "primary_work": null,
+          "promotion_blocked": false,
+          "promotion_decision": {
+            "bypassed_gate": false,
+            "candidate_preserved": false,
+            "contract_version": "promotion_contract_v2",
+            "input_fingerprint": "b7264ddc093b0ef9306705f5c8443b76164844a71c28998f7025beb2fcc73702",
+            "official_title": null,
+            "official_url": null,
+            "publish_allowed": false,
+            "reason_codes": [
+              "no_candidate_title",
+              "row_discussion_missing",
+              "title_resolution_state_not_publishable",
+              "work_resolution_not_publishable",
+              "scope_unknown",
+              "scope_not_current_work",
+              "serializer_candidate_removed"
+            ],
+            "scope": {
+              "competing_candidates": [],
+              "confidence": "low",
+              "conflict_reason_codes": [
+                "serializer_candidate_removed"
+              ],
+              "direct_bridge_sources": [],
+              "scope_kind": "unknown"
+            },
+            "status": "reject"
+          },
+          "promotion_gate_evidence": [
+            {
+              "candidate_title": "",
+              "candidate_url": "",
+              "kind": "serializer_candidate_removed",
+              "reason_code": "serializer_candidate_removed",
+              "source_path_or_snippet": "",
+              "strength": "strong",
+              "supports_publish": false,
+              "title_url_match": null
+            }
+          ],
+          "promotion_gate_state": {
+            "candidate_title": "",
+            "candidate_url": "",
+            "caveated_alias_boundary": false,
+            "discussion_type": "noise",
+            "official_title_exists": false,
+            "post_id": 9249019,
+            "prior_variance_quarantine": false,
+            "row_discusses_work_as_work": false,
+            "same_title_source_movement": false,
+            "scope": {
+              "competing_candidates": [],
+              "confidence": "low",
+              "conflict_reason_codes": [
+                "serializer_candidate_removed"
+              ],
+              "direct_bridge_sources": [],
+              "scope_kind": "unknown"
+            },
+            "source": "serializer_candidate_removed",
+            "title_resolution_state": "unresolved_matchable",
+            "work_resolution": "none"
+          },
+          "publish_contract_input_fingerprint": "b7264ddc093b0ef9306705f5c8443b76164844a71c28998f7025beb2fcc73702",
+          "publish_contract_trace": {
+            "bypassed_gate": false,
+            "contract_version": "promotion_contract_v2",
+            "gate_decision": {
+              "bypassed_gate": false,
+              "candidate_preserved": false,
+              "contract_version": "promotion_contract_v2",
+              "input_fingerprint": "b7264ddc093b0ef9306705f5c8443b76164844a71c28998f7025beb2fcc73702",
+              "official_title": null,
+              "official_url": null,
+              "publish_allowed": false,
+              "reason_codes": [
+                "no_candidate_title",
+                "row_discussion_missing",
+                "title_resolution_state_not_publishable",
+                "work_resolution_not_publishable",
+                "scope_unknown",
+                "scope_not_current_work",
+                "serializer_candidate_removed"
+              ],
+              "scope": {
+                "competing_candidates": [],
+                "confidence": "low",
+                "conflict_reason_codes": [
+                  "serializer_candidate_removed"
+                ],
+                "direct_bridge_sources": [],
+                "scope_kind": "unknown"
+              },
+              "status": "reject"
+            },
+            "input_fingerprint": "b7264ddc093b0ef9306705f5c8443b76164844a71c28998f7025beb2fcc73702",
+            "post_gate_identity": {
+              "candidate_ledger_status": "hold_without_candidates",
+              "official_title": null,
+              "official_url": null,
+              "title_resolution_allowed": false,
+              "title_resolution_state": "unresolved_matchable",
+              "work_resolution": "none"
+            },
+            "pre_gate_candidate": {
+              "candidate_ledger_status": null,
+              "official_title": null,
+              "official_url": null,
+              "title_resolution_allowed": null,
+              "title_resolution_state": null,
+              "work_resolution": null
+            },
+            "reason_codes": [
+              "no_candidate_title",
+              "row_discussion_missing",
+              "title_resolution_state_not_publishable",
+              "work_resolution_not_publishable",
+              "scope_unknown",
+              "scope_not_current_work",
+              "serializer_candidate_removed"
+            ],
+            "scope_state": {
+              "competing_candidates": [],
+              "confidence": "low",
+              "conflict_reason_codes": [
+                "serializer_candidate_removed"
+              ],
+              "direct_bridge_sources": [],
+              "scope_kind": "unknown"
+            }
+          },
+          "publish_contract_version": "promotion_contract_v2",
+          "publish_ledger": {
+            "candidate_preservation": {
+              "candidate_ledger_status": null,
+              "official_title": null,
+              "official_url": null,
+              "title_resolution_allowed": null,
+              "title_resolution_state": null,
+              "work_resolution": null
+            },
+            "gate_decision": {
+              "bypassed_gate": false,
+              "candidate_preserved": false,
+              "contract_version": "promotion_contract_v2",
+              "input_fingerprint": "b7264ddc093b0ef9306705f5c8443b76164844a71c28998f7025beb2fcc73702",
+              "official_title": null,
+              "official_url": null,
+              "publish_allowed": false,
+              "reason_codes": [
+                "no_candidate_title",
+                "row_discussion_missing",
+                "title_resolution_state_not_publishable",
+                "work_resolution_not_publishable",
+                "scope_unknown",
+                "scope_not_current_work",
+                "serializer_candidate_removed"
+              ],
+              "scope": {
+                "competing_candidates": [],
+                "confidence": "low",
+                "conflict_reason_codes": [
+                  "serializer_candidate_removed"
+                ],
+                "direct_bridge_sources": [],
+                "scope_kind": "unknown"
+              },
+              "status": "reject"
+            },
+            "public_publish": {
+              "candidate_ledger_status": "hold_without_candidates",
+              "official_title": null,
+              "official_url": null,
+              "title_resolution_allowed": false,
+              "title_resolution_state": "unresolved_matchable",
+              "work_resolution": "none"
+            }
+          },
+          "reason": "[최종 판정]\n- 글 분류: noise\n- 제목 판정: unresolved_matchable\n- 공식 제목: 미확정\n[원문에 근거한 설명]\n글쓴이는 바로 앞 표현 「남근은 있는듯」이 성희롱에 해당하는지 묻는다. 질문만으로 실제 성희롱 여부를 확정하지 않는다.\n[작성자 발화·원문 귀속]\n- 작성자 발화: 「이 작가는 영근은 몰라도」\n- 작성자 발화: 「남근은 있는듯」\n- 작성자 질문: 「<- 이러면 성희롱임?」\n[댓글 발화·원문 귀속]\n- 댓글 작성자 북방서희: 「네」\n- 댓글 작성자 ㅇㅇ: 「ㄲㅂ」\n[원문] 이 작가는 영근은 몰라도 / 남근은 있는듯 / <- 이러면 성희롱임?",
+          "reason_lines": [
+            "[최종 판정]",
+            "- 글 분류: noise",
+            "- 제목 판정: unresolved_matchable",
+            "- 공식 제목: 미확정",
+            "[원문에 근거한 설명]",
+            "글쓴이는 바로 앞 표현 「남근은 있는듯」이 성희롱에 해당하는지 묻는다. 질문만으로 실제 성희롱 여부를 확정하지 않는다.",
+            "[작성자 발화·원문 귀속]",
+            "- 작성자 발화: 「이 작가는 영근은 몰라도」",
+            "- 작성자 발화: 「남근은 있는듯」",
+            "- 작성자 질문: 「<- 이러면 성희롱임?」",
+            "[댓글 발화·원문 귀속]",
+            "- 댓글 작성자 북방서희: 「네」",
+            "- 댓글 작성자 ㅇㅇ: 「ㄲㅂ」",
+            "[원문] 이 작가는 영근은 몰라도 / 남근은 있는듯 / <- 이러면 성희롱임?"
+          ],
+          "recommendation_candidates": null,
+          "relevance_scope": "off_topic",
+          "safe_resolved": false,
+          "search_evidence_catalog": [
+            {
+              "domain": "www.munpia.com",
+              "eid": "E001",
+              "purpose": "abbreviation_verification",
+              "query": "이 작가는 영근은 몰라도 소설",
+              "rank": 1,
+              "snippet": "2025.10.22.작품추천. 소요수선전(逍遙修仙傳). 다른 추천글 사람처럼 나도 모 선협소설 작가인 엄씨의 추천때문에 읽기 시작했다. 요즘 한국선협이라하면 한국사람 성향에 맞게 빠른 성장속도가 특징…",
+              "source_rank": 1,
+              "source_tier": "community",
+              "title": "볼수록 작가의 포텐셜이 느껴진다.",
+              "url": "https://www.munpia.com/communities/novels-recommend/posts/1204611"
+            },
+            {
+              "domain": "namu.wiki",
+              "eid": "E002",
+              "purpose": "abbreviation_verification",
+              "query": "이 작가는 영근은 몰라도 소설",
+              "rank": 2,
+              "snippet": "※ 이 문서에 있다고 해서 선협 소설 전부가 반드시 이 클리셰를 따른다고 믿어서는 안된다. 어디까지나 예시이기 때문에 읽는 데 주의가 필요하다. 수많은 선협 작품 중에서도 어느 정도 널리 알려진 유명 작품들이 예시로 쓰여졌기 때문에 더 많은 정보의 추가와 수정이 필요하다. 2. 특징 2.1. 세속적인 신선들 수행자들의 세계가 원래 그래요. 피 냄새가 끊이질 않죠....",
+              "source_rank": 2,
+              "source_tier": "wiki",
+              "title": "선협 소설/클리셰",
+              "url": "https://namu.wiki/w/%EC%84%A0%ED%98%91%20%EC%86%8C%EC%84%A4/%ED%81%B4%EB%A6%AC%EC%85%B0"
+            },
+            {
+              "domain": "namu.wiki",
+              "eid": "E003",
+              "purpose": "abbreviation_verification",
+              "query": "이 작가는 영근은 몰라도 소설",
+              "rank": 3,
+              "snippet": "크게 호응을 받은 것들은 작가들이 받아들여 실제 웹소설로 연재하기도 한다. 실제로 유료 연재가 성사된 목록은 다음과 같다. 매도당하고 싶은 엘프님 - \"엘프 노예를 구매했다고? 자네... # 무협관련 따옴표 글에서 주로 등장하는 인물로 '남궁형'이 있다. 일반적으로 모르는 게 없는 인물로 묘사되며 도량형이 바뀌었다는 이유로 천근추에 야드파운드법을 적용한 1322....",
+              "source_rank": 3,
+              "source_tier": "wiki",
+              "title": "장르소설 마이너 갤러리/밈",
+              "url": "https://namu.wiki/w/%EC%9E%A5%EB%A5%B4%EC%86%8C%EC%84%A4%20%EB%A7%88%EC%9D%B4%EB%84%88%20%EA%B0%A4%EB%9F%AC%EB%A6%AC/%EB%B0%88"
+            },
+            {
+              "domain": "terms.naver.com",
+              "eid": "E004",
+              "purpose": "abbreviation_verification",
+              "query": "이 작가는 영근은 몰라도 소설",
+              "rank": 4,
+              "snippet": "작품소개 염상섭의 첫 장편소설이라 할 수 있는 「사랑과 죄」(동아일보1927.8-1928.5)의 연재가 성공하자 이에 힘입어 《매일신보》에 발표한 작품이다. 작가는 단행본의 ‘자서(自序)’에서 “이 ‘이심(二心)’으로 말하여도 자기의 머리속에서 이미 곰팡이 난 것 같으니 이것이 제일선에서 활동하시는 여러분의 생신한 최근 작품과 어울릴 것인가 의문이요 더욱이 현재의...",
+              "source_rank": 4,
+              "source_tier": "web",
+              "title": "이심 - 한국현대장편소설사전 1917-1950",
+              "url": "https://terms.naver.com/%ED%95%9C%EA%B5%AD%EB%AC%B8%ED%95%99/%EC%9D%B4%EC%8B%AC-6NEZv4xgev70fhnBWdV1iy"
+            },
+            {
+              "domain": "arca.live",
+              "eid": "E005",
+              "purpose": "abbreviation_verification",
+              "query": "이 작가는 영근은 몰라도 소설",
+              "rank": 5,
+              "snippet": "2025.12.30.지아잔틴 자극적인 소재 잔잔하게 써내려감 검미성 한없이 추악한 등장인물들 TS사랑개 이만두&김마모 둘은 후피집 최강 개돌 영근 없음 미츄리 이하동문 두유하이볼(마좋좋) 작가도... 퉁구스카 이 양반도 소설 내 정보량이 너무 많음 신노아 신 노아 중2감성 저격함 취미글주의 여성향 작가인데 맛있음 오직재미 오직교미 추공 \"일어나라\" 무영자 말로 싸움 홍정훈 옛날...",
+              "source_rank": 5,
+              "source_tier": "community",
+              "title": "생각나는작가특징메모보지맛 - 장르소설 채널",
+              "url": "https://arca.live/b/novelchannel/158259027"
+            },
+            {
+              "domain": "gall.dcinside.com",
+              "eid": "E006",
+              "purpose": "abbreviation_verification",
+              "query": "이 작가는 영근은 몰라도 소설",
+              "rank": 6,
+              "snippet": "2026.05.24.도입부에서는 수행의 자질인 '영근'이 없어 수선 가문의 평범한 여식과 정략결혼을 해 재능 있는 후손을 낳는 데 집중해야 하며, 엎친 데 덮친 격으로 적대 세력의 추격까지 받아... 옥외풍취양(屋外风吹凉) · 재수선세계적유한생활(在修仙世界的悠闲生活): 현대 지구에서 팍팍하게 살아가던 무명 웹소설 작가 이위주가, 어느 날 플랫폼 시스템(점낭)의 은총으로 현실...",
+              "source_rank": 6,
+              "source_tier": "community",
+              "title": "이외 중국 선협 작가와 작품들 정리 - 무협,선협 소설 마이너 갤러리",
+              "url": "https://gall.dcinside.com/mgallery/board/view/?id=eastfantasy&no=43554"
+            },
+            {
+              "domain": "gall.dcinside.com",
+              "eid": "E007",
+              "purpose": "abbreviation_verification",
+              "query": "이 작가는 영근은 몰라도 소설",
+              "rank": 7,
+              "snippet": "2026.05.22.양소융(阳小戎) Tier 2 (대신작가/장르장인) - 작가소개: 기점중문망(Qidian) LV5 등급의 작가로, 전작 '아유일개검선낭자'가... 현대의 지식과 유학자의 소양을 무기 삼아 자신을 핍박하던 세상에 반격하며, 검선(劍仙)인 아내와의 미묘한 관계를... 최신 웹소설 트렌드인 '구도(苟道: 극도로 신중하게 숨어서 수련하는 장르)'와 '장생(영원한 삶)' 메타를 가장 완벽하게 구현한...",
+              "source_rank": 7,
+              "source_tier": "community",
+              "title": "AI피셜 중국 선협 작가 순위 51~75위 - 무협,선협 소설 마이너 갤러리",
+              "url": "https://gall.dcinside.com/mgallery/board/view/?id=eastfantasy&no=43479"
+            },
+            {
+              "domain": "gall.dcinside.com",
+              "eid": "E008",
+              "purpose": "abbreviation_verification",
+              "query": "이 작가는 영근은 몰라도 소설",
+              "rank": 8,
+              "snippet": "2024.11.10.작가분이 소설쓰다가 중간에 돌아가신거 때문에 유명한 작품이라고만 생각했는데 읽어보면 양판소같은 제목이랑 다르게 꽤 재밌는 설정과 줄거리로 가득 차 있었음난 아직도 왜 이 책이 우리 학교 도서관에 있었는지 모르겠다",
+              "source_rank": 8,
+              "source_tier": "community",
+              "title": "스왈로우씨<<의외로 영근 있는 소설이었음 - 장르소설 마이너 갤러리",
+              "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=9541931"
+            },
+            {
+              "domain": "hibook.co.kr",
+              "eid": "E009",
+              "purpose": "abbreviation_verification",
+              "query": "이 작가는 영근은 몰라도 소설",
+              "rank": 9,
+              "snippet": "총 연재수 : 200, 총 조회수 : 1,000 ; 작품소개 · 더보기 ; 그저 평범한 유물 복원사였던 엄세휘, 어느 날 만계경이란 유물을 통해 평행세계의 자신을 만난 순간 모든 운명이 뒤틀렸다. 수도자들이 자동차 대신 비행법기를 타고 출근하는 이 평행",
+              "source_rank": 9,
+              "source_tier": "web",
+              "title": "웹소설 하이북 - 복원수선전",
+              "url": "https://hibook.co.kr/chapter.html?book=59464"
+            }
+          ],
+          "search_health": {
+            "accepted": 9,
+            "cache_hits": 0,
+            "degraded": 0,
+            "degraded_recovered": 0,
+            "degraded_zero": 0,
+            "degraded_zero_suppressed": 0,
+            "direct_search_results": 0,
+            "direct_search_used": 0,
+            "fallback_recovered": 0,
+            "filtered": 0,
+            "headless_used": 0,
+            "queries_issued": 1,
+            "raw": 25,
+            "retried": 0,
+            "status": "ok",
+            "unrecovered_degraded": 0,
+            "upstream_zero": 0
+          },
+          "secondary_reference_works": [],
+          "slang_insight": null,
+          "subtype": "other_quarantine",
+          "system_state": "clean",
+          "title_candidates": null,
+          "title_resolution_allowed": false,
+          "title_resolution_state": "unresolved_matchable",
+          "topicality": "unrelated",
+          "vlm_chunks_sent": null,
+          "vlm_enabled": null,
+          "vlm_enrichment_used": null,
+          "vlm_total_bytes": null,
+          "work_resolution": "none"
+        },
+        "post_id": 9249019
+      },
+      "author": "ㅇㅇ",
+      "author_ip": null,
+      "comment_context_lines": [
+        "#1 speaker=user1 author=북방서희 comment_id=31702314",
+        "#2 speaker=user2 author=ㅇㅇ role=author_match_unverified ip=118.219 comment_id=31702328"
+      ],
+      "comment_dialogue_context_lines": [
+        "#1 speaker=user1 author=북방서희 comment_id=31702314 text=네",
+        "#2 speaker=user2 author=ㅇㅇ role=author_match_unverified ip=118.219 comment_id=31702328 text=ㄲㅂ"
+      ],
+      "comment_metadata": [
+        {
+          "author": "북방서희",
+          "comment_id": "31702314",
+          "created_at": "2024.09.07 19:38:48",
+          "gallery_id": "genrenovel",
+          "index": 0,
+          "ip": null,
+          "is_post_author": false,
+          "post_author_match_unverified": false,
+          "reply_level": 0,
+          "reply_to_comment_id": null,
+          "speaker": "user1"
+        },
+        {
+          "author": "ㅇㅇ",
+          "comment_id": "31702328",
+          "created_at": "2024.09.07 19:40:19",
+          "gallery_id": "genrenovel",
+          "index": 1,
+          "ip": "118.219",
+          "is_post_author": false,
+          "post_author_match_unverified": true,
+          "reply_level": 0,
+          "reply_to_comment_id": null,
+          "speaker": "user2"
+        }
+      ],
+      "comments": [
+        "네",
+        "ㄲㅂ"
+      ],
+      "content": [
+        "남근은 있는듯",
+        "<- 이러면 성희롱임?"
+      ],
+      "content_blocks": [
+        {
+          "text": "남근은 있는듯",
+          "type": "text"
+        },
+        {
+          "text": "<- 이러면 성희롱임?",
+          "type": "text"
+        }
+      ],
+      "created_at": "2024-09-07 19:38:24",
+      "gallery_id": "genrenovel",
+      "image_count": 0,
+      "image_urls": [],
+      "ip": null,
+      "post_author": "ㅇㅇ",
+      "post_id": 9249019,
+      "post_ip": null,
+      "run_meta": {
+        "config_hash": "f2ce658e7c06",
+        "decision_call_attempt_receipt": {
+          "closure_frame_sha256": "4c0b156340e4b7d3407b719bc9c0ff502795da8761aa1bbc2bcc4c8f443b13ef",
+          "event_root_sha256": "3a3872309399f6473eaa61d3ca6be2c2ae945cd6a404ddc1877471f51223f801",
+          "publication_decision_id_preview": "7dd53a888b3f603a81094248d015296f8148146910eec89a399acb67f922efe9",
+          "publication_link_decision_id": null,
+          "publication_link_frame_sha256": null,
+          "publication_link_status": "PENDING_EXTERNAL_LEDGER_LINK",
+          "publication_shadow_observation": null,
+          "row": {
+            "attempt_run_id": "20261012_191128_106718",
+            "input_index": 57,
+            "post_id": 9249019,
+            "publication_scope_id": "96b7f2c20ab6a60853afba9b17b59877fa1309f410caa47415657e527df7c99b",
+            "row_attempt_id": "3b9be8800f6ec4f6a257e1447f223e4d4ff334d54a349a390b6b5676921133df",
+            "schema_version": "decision_call_row_attempt_v1"
+          },
+          "schema_version": "decision_call_attempt_receipt_v1"
+        },
+        "decision_call_ledger": {
+          "closure_frame_sha256": "4c0b156340e4b7d3407b719bc9c0ff502795da8761aa1bbc2bcc4c8f443b13ef",
+          "closure_kind": "ROW_SEAL",
+          "event_frame_count": 14,
+          "event_root_sha256": "3a3872309399f6473eaa61d3ca6be2c2ae945cd6a404ddc1877471f51223f801",
+          "ledger_scope_sha256": "2a140f151a76167ee3873a73c4c5eff99a839d710fc2d7d01d71299e88035315",
+          "path": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\p4_quality_actual80_parallel12_20261012\\run\\result_decision_call_ledger",
+          "publication_scope_id": "96b7f2c20ab6a60853afba9b17b59877fa1309f410caa47415657e527df7c99b",
+          "row": {
+            "attempt_run_id": "20261012_191128_106718",
+            "input_index": 57,
+            "post_id": 9249019,
+            "publication_scope_id": "96b7f2c20ab6a60853afba9b17b59877fa1309f410caa47415657e527df7c99b",
+            "row_attempt_id": "3b9be8800f6ec4f6a257e1447f223e4d4ff334d54a349a390b6b5676921133df",
+            "schema_version": "decision_call_row_attempt_v1"
+          },
+          "schema_version": "decision_call_row_ledger_ref_v1"
+        },
+        "decision_call_ledger_summary": {
+          "actual_kpi_status": "PENDING_INDEPENDENT_READBACK",
+          "actual_metrics": {
+            "completion_tokens": null,
+            "expert_calls": null,
+            "prompt_tokens": null,
+            "total_tokens": null
+          },
+          "derived_observation": {
+            "completion_tokens": 4496,
+            "expert_calls": 7,
+            "prompt_tokens": 155399,
+            "retry_count": 0,
+            "text_calls": 7,
+            "total_tokens": 159895,
+            "vlm_calls": 0
+          },
+          "reason_codes": [
+            "INDEPENDENT_READBACK_NOT_BOUND"
+          ],
+          "schema_version": "decision_call_row_summary_v1",
+          "trace_errors": [],
+          "usage_status": "COMPLETE_PROVIDER_REPORTED",
+          "writer_complete": true
+        },
+        "decision_call_measurement": {
+          "actual_kpi_eligible": false,
+          "arm": null,
+          "binding_status": "UNBOUND",
+          "central_slang_db_write_allowed": null,
+          "early_route_enable_status": "DISABLED",
+          "early_route_enabled": false,
+          "early_route_mode": "OFF",
+          "execution_mode": "NORMAL",
+          "fresh_execution_required": false,
+          "mode": "SHADOW",
+          "mutable_context_binding": {
+            "batch_context_enabled": true,
+            "central_slang_db_write_allowed": null,
+            "mutable_context_mode": "NORMAL",
+            "schema_version": "paired_measurement_mutable_context_binding_v1",
+            "slang_access_mode": "OFF"
+          },
+          "mutable_context_binding_sha256": "ec8befe89c6308a5ad19c6535d44726ce2c227aaa41985d6f010c19ab8749812",
+          "mutable_context_frozen": false,
+          "mutable_context_mode": "NORMAL",
+          "pair_id": null,
+          "publication_decision_equivalence_required": false,
+          "run_spec_sha256": null,
+          "semantic_drift_observation": false,
+          "slang_access_mode": "OFF"
+        },
+        "decision_cost_trace": {
+          "action_applied": false,
+          "completion_tokens": 4245,
+          "expert_calls": null,
+          "input_index": 57,
+          "measurement_status": "PARTIAL_AGGREGATE_NO_CALL_EVENTS",
+          "model_tier": "nvidia/Gemma-4-26B-A4B-NVFP4",
+          "operational_effect": "NONE_SHADOW_ONLY",
+          "post_id": "9249019",
+          "processing_finished_at": "2026-10-12T20:10:56.411+09:00",
+          "processing_started_at": "2026-10-12T19:59:20.279+09:00",
+          "prompt_tokens": 154684,
+          "publication_scope_id": "96b7f2c20ab6a60853afba9b17b59877fa1309f410caa47415657e527df7c99b",
+          "retry_count": 0,
+          "run_id": "20261012_191128_106718",
+          "schema_version": "decision_cost_trace_v1",
+          "search_calls": 1,
+          "total_tokens": 158929,
+          "trace_sha256": "e8c74318a5419afe0d1edcfcacc1ba472a46c7aa20941dceb70bc0c335d4c255",
+          "vlm_chunks": 0,
+          "wall_ms": 696132
+        },
+        "effective_parallel": 12,
+        "execution_config": {
+          "compression": {
+            "scope": "artifact_generation",
+            "status": "OFF_NOT_REQUESTED"
+          },
+          "dashboard": {
+            "enabled": true,
+            "mode": "standalone_forward",
+            "url": "http://127.0.0.1:18865"
+          },
+          "effective_parallel": 12,
+          "image_review": {
+            "image_post_count": 21,
+            "ready": true,
+            "skip_reason_codes": []
+          },
+          "measurement": {
+            "execution_mode": "NORMAL",
+            "formal_kpi_status": "NOT_ESTIMABLE"
+          },
+          "output_file": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\p4_quality_actual80_parallel12_20261012\\run\\result.json",
+          "profile": "low-load-validation",
+          "profile_source": "CLI",
+          "requested_parallel": 12,
+          "resources": {
+            "affinity_mask": 2,
+            "logical_cpu_count": 1,
+            "numeric_threads": {
+              "MKL_NUM_THREADS": "1",
+              "NUMEXPR_NUM_THREADS": "1",
+              "OMP_NUM_THREADS": "1",
+              "OPENBLAS_NUM_THREADS": "1",
+              "VECLIB_MAXIMUM_THREADS": "1"
+            },
+            "pid": 49616,
+            "priority_class": 16384,
+            "status": "LOW_LOAD_VERIFIED"
+          },
+          "schema_version": "expert_execution_config_v1",
+          "settings": {
+            "context_diagnostics": {
+              "source": "CLI",
+              "value": true
+            },
+            "ledger_mode": {
+              "source": "CLI",
+              "value": "SHADOW"
+            },
+            "ocr": {
+              "source": "CLI",
+              "value": true
+            },
+            "requested_parallel": {
+              "source": "CLI",
+              "value": 12
+            },
+            "vlm": {
+              "source": "CLI",
+              "value": true
+            }
+          },
+          "source": {
+            "entry_point": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\expert_main.py",
+            "entry_sha256": "e92b5d9033bedfc77f28b8973da44db18e1dcc21c9f142e63901bf52b8e3afdc",
+            "runtime_source_files": {
+              "expert_main.py": "e92b5d9033bedfc77f28b8973da44db18e1dcc21c9f142e63901bf52b8e3afdc",
+              "src/llm_batch/agentic_pipeline.py": "ee9088f69437617e613c382566b0d7a9a01abe6283a595eeffc5fc18a7c06d07",
+              "src/llm_batch/experts/arbiter.py": "4cb17f4ea364483d04a356184715f9bfada1618948319a7bbe9db7957931abf8",
+              "src/llm_batch/experts/decoder.py": "bb3485e802c4420c1df4dceec259dc094b5394760faec24d3b3fa8a8916a2359",
+              "src/llm_batch/experts/orchestrator.py": "2d974df9a647c4bc91b0934dedd2b21cb5009ae88ec47427302fce744b32e95f",
+              "src/llm_batch/experts/synthesizer.py": "ba42dc34381209ba2a1ce4166805d64d56482198b37ec5a52504be5e1b57c1dd",
+              "src/llm_batch/experts/verifier.py": "ad175467a03b3addadbfb31c644569ee6b2f300a67c548df62c8d62a297c20e2",
+              "src/llm_batch/grounding/candidate_reranker_alias_evidence.py": "7b054d52e4e41d3a71a0ecfccb539d22f36d29414cdaebd52d697774146aa619",
+              "src/llm_batch/grounding/candidate_reranker_calibration.py": "adef55d267ad681963e14bfc80ba13b2dd598084f28d85d82ae094fcb5571aac",
+              "src/llm_batch/grounding/candidate_reranker_calibration_data.py": "d1f243490cf1e166cf4506659c1146a9e9b3e3608e903302c239ef1869018dca",
+              "src/llm_batch/grounding/candidate_reranker_calibration_inference.py": "f543a371f075c1e84790eba964912b97d73a02596f751b1e9c25aa0e967938b0",
+              "src/llm_batch/grounding/candidate_reranker_capture.py": "6b8bb2e01470e2450269e0e4d2a8f6ca4cf04844cf744109beef7eb213ca3de4",
+              "src/llm_batch/grounding/candidate_reranker_event_bridge.py": "c9bf880e0eb6a86be7598722cb3cd07956892ef6c22b95c2acde556872d04754",
+              "src/llm_batch/grounding/candidate_reranker_inference_graph.py": "fc62f68a2f7fcbd2a7d133b64671f4fefb7b3a5fef22c3da2708934f9cb96304",
+              "src/llm_batch/grounding/candidate_reranker_learned.py": "14a3c9052699293c7b76e4fa16725212355d1a2726a5f7f017b250e2e76905ac",
+              "src/llm_batch/grounding/candidate_reranker_nil_learned.py": "968609fd573e9857a1993bc321ecce180e180354cd942cff817781a5e48db3a5",
+              "src/llm_batch/grounding/candidate_reranker_roles.py": "4ed5182a14974e72979db57d559615ebd7643bd6a8c6a02b2779742a51b0a56b",
+              "src/llm_batch/grounding/candidate_reranker_semantic_input.py": "7168ab0ee24214cd518b8dbbb9f935ced0397af175bbd786253df1ee26fbd32e",
+              "src/llm_batch/grounding/candidate_reranker_semantics.py": "00ba2e3d1acffc05af8e9ceced860250944801cc4aab444ceddb32bdbd1cbb53",
+              "src/llm_batch/grounding/candidate_reranker_shadow.py": "1d110a652a2501d64b3f98925386018d789249301b1d3c80336bde09a0e15229",
+              "src/llm_batch/grounding/candidate_retrieval_shadow.py": "0f7e4893d26d9dd4115fe6e63fffce8cd0e6919a8a8deebe5bd749bffe758010",
+              "src/llm_batch/grounding/candidate_set_calibration_shadow.py": "365cb609699e81013fda40f730861bdeb2b93bf18bfc97e931b8ace550e8e5ff",
+              "src/llm_batch/grounding/candidate_set_shadow.py": "0a87e724eb78e5c0a636d17cb1598861bd24d80f15e9be1817b6ecf3b04b05e1",
+              "src/llm_batch/grounding/claim_scope_contract.py": "284afabb86e5bef4dd0b7c53b19b136c1faa35fab91f5843e2bb1de2ecb4620e",
+              "src/llm_batch/grounding/community_knowledge.py": "8142d2f6be7cb29971aedc6eba9cd89e1a1ffde13b74fa3d391931ef11b463c4",
+              "src/llm_batch/grounding/context_projection_contract.py": "a2a4dfadc8872c6e66ef4a32b9bf66c65881bb6f1dbac5946dd4359a01a427e4",
+              "src/llm_batch/grounding/reranker_training_split.py": "1e4453ed08eb4213a57363c10d0e4e610fd3076d209fc0a66295f68143523cb8",
+              "src/llm_batch/grounding/source_context_diagnostics.py": "4863d0c90e62d020fa03a2065a3e9ddadc8b2ac8bbe1ca1287bff1dedc18371d",
+              "src/llm_batch/grounding/source_context_explanation.py": "9927c304ed3ef62e8e9414e55894f85972ce9551919ff09583e00cb1654a9dff",
+              "src/llm_batch/grounding/source_speech_structure.py": "73dea99714b0c87f995453dd68810982505e2c8ce656bc0effd3a785647fbc67",
+              "src/llm_batch/ledger/recovery_native_journal.py": "36e68618b168ad063def750a21a95c8fa1f338b32ab834a47ca4297abf950bb0",
+              "src/llm_batch/ledger/recovery_provider_journal.py": "2a4d921922c9a7082d653acd2c7b1b11928fe430e99d129f6b530f459756913a",
+              "src/llm_batch/llm/client.py": "7ef656f68c8cc5c76b604dc1f99f800c679825dc84042bfc3a73628a37df1085",
+              "src/llm_batch/measurement/paired_execution_policy.py": "e94ba5ff5c54d1c127c33a585320a50142efb0cf22da378d40d281b186542181",
+              "src/llm_batch/measurement/paired_measurement_readback.py": "1c4adba5e19f7a8378ca5e45689dd0e55ee45b17bc4a12259e21fa5cdf8a3733",
+              "src/llm_batch/measurement/recovery_input_projection.py": "cf5617377ee99fce9f59dc27498a9885f64ca68936e08f2ff5d5047875b96591",
+              "src/llm_batch/measurement/recovery_native_source.py": "1f3fd174052d588a46e73ff0f9b787e94c4866d67fa225ae64f52e19e25df94c",
+              "src/llm_batch/measurement/recovery_provider_contract.py": "14841df266d5b19be2f904e81da8f6b06bf78e34e19e4ca169902e2a23c464e6",
+              "src/llm_batch/measurement/recovery_provider_readback.py": "2ef340c8f6c2e493b70c8117ce94ee0a016074c1a424627461d4c23ca7b8ec7b",
+              "src/llm_batch/monitor/recovery_native_view.py": "2be6d9030216c311fc92d4912b5683f2c79237126d63d4dc08a70b9adcbabbd3",
+              "src/llm_batch/monitor/recovery_provider_view.py": "3573a1fd1175b0d77efa58515c4e9bb38235b60466bd28bd5ba58f0cca2cd164",
+              "src/llm_batch/prompts/expert_prompts.py": "691e13a01a3fe2e61390d3b801aa8df791007bef02982be80045bc29ecddce74",
+              "src/llm_batch/runtime/candidate_calibration.py": "2f5d79c26980dee48351194618b3873da075ba0b873f17907007fd55062ba767",
+              "src/llm_batch/runtime/candidate_capture.py": "55ab630bfaba9a2297369f7f533f7c073e8a9c4ebbde100578d1ca5d392e5201",
+              "src/llm_batch/runtime/candidate_inference.py": "25ebe6a716a681d37b1233dae54e0ecf37d504b80673791aab09d505c07634a9",
+              "src/llm_batch/runtime/candidate_reranker.py": "df132311100ba1e906e9dc804a07276e7411f09bf38d5d22a35f407f5cfaea3e",
+              "src/llm_batch/runtime/candidate_retrieval.py": "61077f2f9e1785bd3efffec262a95f202f427cff065666fbb1b3a6b03700f45e",
+              "src/llm_batch/runtime/candidate_semantics.py": "89c63be4036a2fa9fb80a76ed294980c7ac278ef0891d91db8dbb5c37054841e",
+              "src/llm_batch/runtime/community_knowledge.py": "36ea0fb0d2f90b1566e2fd5b357bbf1dc023a90534f25c2c3cb87f8f8a3d9823",
+              "src/llm_batch/runtime/execution_config.py": "b195fa5152bc033b393b3df542d06cc64810670647f6e8b2cc5f12b7885f59aa",
+              "src/llm_batch/runtime/paired_execution.py": "2ae2794fc091ac18385c58f776c6f3879165feb864a0caee99e8b6e72183a5f5",
+              "src/llm_batch/runtime/recovery_native_batch.py": "0f224f08834bdaf97b4af05d3376e3fae8a6bbc45b8fab6c3468de87aff02428",
+              "src/llm_batch/runtime/recovery_native_context.py": "26d15f140119fe930d2d8f22e80d851706d189639bae44b654c7a53faa786fe5",
+              "src/llm_batch/runtime/recovery_native_io.py": "1ec5645dfa26aac3fecb9e3ce3b0e62d9586157b8cfd5caa41371253670fcc87",
+              "src/llm_batch/runtime/recovery_native_workflow.py": "fb2181c4e8c6025caf13b4e87c5785f0052b7a812187dae955863ad0e837b78b",
+              "src/llm_batch/runtime/recovery_provider_transport.py": "49cabbca7740c6ade64eb0a8a8e7cd5084ad236abf0a503e5f3d8cde129c6e05",
+              "src/llm_batch/runtime/recovery_transport.py": "cae8ecfa319e9d430356a270f290a8d2ff26414c9673116f26c20c365843e6e7",
+              "tools/build_candidate_inference_bundle.py": "f17b915011aaf29d9dc322531b3f685d5a7f020e68b1365f7924d5afde5e98af",
+              "tools/run_candidate_reranker_calibration.py": "30f189ce7943069c1d15e94ff5e68963fd03c2f1f8097c58691b8b331571cf30",
+              "tools/run_candidate_reranker_training.py": "d92441d1d1bb4266fd9b5ad0b8e8733da1170dc7714fde779ad46177e1050292",
+              "tools/run_recovery_provider.py": "9986d5104d6ab1083387f71508761737b181049166927b9bee9cfedaa82be938"
+            },
+            "runtime_source_sha256": "a612b8c2bb85b2e0dbfddc978d012d05b63faa23c6b5b9ac65cd11bb2f11ff24",
+            "source_scope": "SELECTED_RUNTIME_FILES"
+          }
+        },
+        "llm_endpoint": "http://10.20.0.101:8000/",
+        "llm_mode": "remote",
+        "main_log_file": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\logs\\expert_run_20261012_191128_106718.log",
+        "mcp_endpoint_count_after_health_filter": 1,
+        "mcp_goal_run_health_filtered": false,
+        "mcp_health_attempts": 1,
+        "mcp_health_checked_endpoint_count": 1,
+        "mcp_health_failure_count": 0,
+        "mcp_health_include_search": true,
+        "mcp_health_light_mode": false,
+        "mcp_health_ok_count": 1,
+        "mcp_health_probe_batch_size": 1,
+        "mcp_health_probe_stopped_after_required_ok": false,
+        "mcp_health_required_ok_count": 1,
+        "mcp_health_search_max_latency_ms": 8000.0,
+        "mcp_health_search_min_results": 1,
+        "mcp_health_timeout_sec": 8.0,
+        "mcp_health_workers": 1,
+        "mcp_healthy_autogen_endpoint_filter": false,
+        "mcp_healthy_autogen_endpoint_filter_reason": "reuse_shards_only",
+        "mcp_healthy_endpoint_count": 1,
+        "mcp_healthy_endpoint_filter": false,
+        "mcp_healthy_endpoint_filter_autogen": false,
+        "mcp_healthy_endpoint_filter_reason": "reuse_shards_only",
+        "mcp_parallel_after_health_filter": 12,
+        "mcp_parallel_before_health_filter": 12,
+        "mcp_requested_endpoint_count_before_health_filter": 1,
+        "mcp_reuse_shards_only_health_filtered": false,
+        "measurement_execution_source": "NORMAL_PUBLICATION_OWNER",
+        "model": "nvidia/Gemma-4-26B-A4B-NVFP4",
+        "model_parallel_cap_applied": false,
+        "model_parallel_cap_model": "nvidia/Gemma-4-26B-A4B-NVFP4",
+        "model_parallel_max": null,
+        "parallel_policy": "effective_parallel=min(requested_parallel,input_post_count)",
+        "prompt_version": "2026-03-30-semantic-contract-v1",
+        "requested_parallel": 12,
+        "requested_parallel_raw": 12,
+        "run_id": "20261012_191128_106718",
+        "search_health": {
+          "accepted": 9,
+          "cache_hits": 0,
+          "degraded": 0,
+          "degraded_recovered": 0,
+          "degraded_zero": 0,
+          "degraded_zero_suppressed": 0,
+          "direct_search_results": 0,
+          "direct_search_used": 0,
+          "fallback_recovered": 0,
+          "filtered": 0,
+          "headless_used": 0,
+          "queries_issued": 1,
+          "raw": 25,
+          "retried": 0,
+          "status": "ok",
+          "unrecovered_degraded": 0,
+          "upstream_zero": 0
+        },
+        "semantic_recovery_plan_receipt": {
+          "attempt_run_id": "20261012_191128_106718",
+          "authority": "attempt_local_completed_result_evidence",
+          "input_index": 57,
+          "mode": "PLAN_ONLY",
+          "plan": {
+            "blocker_codes": [],
+            "canonical_bindings": [],
+            "media_action": "NO_MEDIA_ACTION",
+            "network_calls_executed": 0,
+            "primary_identity_count": 0,
+            "query_plan": {
+              "max_queries": 0,
+              "purposes": [],
+              "query_execution_allowed": false,
+              "search_health": "ok"
+            },
+            "raw_ocr_evidence_count": 0,
+            "relationship_counts": {
+              "comparison": 0,
+              "mentioned": 0,
+              "previous": 0,
+              "primary": 0
+            },
+            "search_calls_executed": 0,
+            "state": "NOT_APPLICABLE"
+          },
+          "plan_sha256": "07b069f20b0934513ce604ce7eff69ba121fc62c866719b6427b984b90fbf6c1",
+          "post_id": 9249019,
+          "public_apply": false,
+          "public_projection_sha256": "b0f71b0e130008016b5b017f3abffa5bc7acab72da3d196ae561752ebe459364",
+          "publication_decision_id": "7dd53a888b3f603a81094248d015296f8148146910eec89a399acb67f922efe9",
+          "publication_scope_id": "96b7f2c20ab6a60853afba9b17b59877fa1309f410caa47415657e527df7c99b",
+          "receipt_sha256": "520bb567afd403a90aaf07e1aa55f8159cfb9b7e0111792099eec06396016a4c",
+          "rule_version": "p1_review_recovery_plan_v1",
+          "schema_version": "semantic_recovery_plan_receipt_v1",
+          "source_view": {
+            "candidate_evidence": [],
+            "decision_reason_codes": [
+              "no_candidate_title",
+              "row_discussion_missing",
+              "scope_not_current_work",
+              "scope_unknown",
+              "serializer_candidate_removed",
+              "title_resolution_state_not_publishable",
+              "work_resolution_not_publishable"
+            ],
+            "evidence_status": "COMPLETE",
+            "is_relevant": false,
+            "publish_allowed": false,
+            "raw_ocr_evidence_count": 0,
+            "search_health": "ok",
+            "semantic_publication": {
+              "evidence_status": "",
+              "media_domain_class": "",
+              "primary_work_status": ""
+            },
+            "work_resolution": "none"
+          },
+          "source_view_sha256": "f03e19c34341958370eea1f29a2b3b3ff3851111419ce0d52263394e2a54b053",
+          "stable_result_sha256": "94b4b8e68c8cec4f812e6c5e2e730f0ec21032c74effafc51e52374be3b39b49"
+        },
+        "semantic_review_router_receipt": {
+          "attempt_run_id": "20261012_191128_106718",
+          "authority": "attempt_local_result_evidence",
+          "input_index": 57,
+          "mode": "REVIEW_ONLY",
+          "post_id": 9249019,
+          "public_apply": false,
+          "public_projection_sha256": "b0f71b0e130008016b5b017f3abffa5bc7acab72da3d196ae561752ebe459364",
+          "publication_decision_id": "7dd53a888b3f603a81094248d015296f8148146910eec89a399acb67f922efe9",
+          "publication_scope_id": "96b7f2c20ab6a60853afba9b17b59877fa1309f410caa47415657e527df7c99b",
+          "receipt_sha256": "4fd02d39ec6fe9c1412bda918e8323274534a42131c5f3202dff3122f117e709",
+          "router_decision_sha256": "a796e9fd84b7e7f9882db4d5a886a90b485618418e1a9edb441c37e3887219ab",
+          "rule_version": "strict_evidence_v2",
+          "schema_version": "semantic_review_router_receipt_v1",
+          "source_view": {
+            "candidate_preservation_present": false,
+            "comments_count": 2,
+            "consistency_flags": [
+              "notes_demoted_for_unresolved"
+            ],
+            "direct_ocr_evidence": {
+              "catalog_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "proposal_count": 0,
+              "proposal_set_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "source_payload_sha256": []
+            },
+            "evidence_status": "COMPLETE",
+            "image_count": 0,
+            "is_relevant": false,
+            "output_consistency_lint": [],
+            "publish_allowed": false,
+            "reason_codes": [
+              "no_candidate_title",
+              "row_discussion_missing",
+              "scope_not_current_work",
+              "scope_unknown",
+              "serializer_candidate_removed",
+              "title_resolution_state_not_publishable",
+              "work_resolution_not_publishable"
+            ],
+            "scope_confidence": "low",
+            "title_candidates": [],
+            "work_resolution": "none"
+          },
+          "source_view_sha256": "b6ab456fd210def8805d41f42c54c504c61eef49198c3f21cbcd2fd63747c8b4",
+          "stable_result_sha256": "94b4b8e68c8cec4f812e6c5e2e730f0ec21032c74effafc51e52374be3b39b49",
+          "state": "NO_REVIEW",
+          "trigger_codes": [],
+          "unknown_reason_codes": []
+        },
+        "source_context_diagnostics": {
+          "byte_count_basis": "UTF8_CANONICAL_JSON",
+          "capture_status": "single_binder",
+          "channels": [
+            {
+              "channel": "speech_act",
+              "field": "speech_act",
+              "index": -1,
+              "locations": [
+                {
+                  "carrier_alignment": "exact_enumeration",
+                  "kind": "author_clause",
+                  "line_span": [
+                    0,
+                    12
+                  ],
+                  "original_index": 1,
+                  "raw_path": "/content_blocks/1/text",
+                  "raw_span": null,
+                  "raw_text_span": [
+                    0,
+                    12
+                  ],
+                  "selection_key": "text",
+                  "source_index": 1,
+                  "source_origin": "body_line",
+                  "span": [
+                    0,
+                    12
+                  ]
+                }
+              ],
+              "rule": "question_cue_kind",
+              "value": "question",
+              "value_kind": "parser_label"
+            },
+            {
+              "channel": "target",
+              "field": "target_kind",
+              "index": -1,
+              "locations": [
+                {
+                  "carrier_alignment": "exact_enumeration",
+                  "kind": "author_clause",
+                  "line_span": [
+                    0,
+                    12
+                  ],
+                  "original_index": 1,
+                  "raw_path": "/content_blocks/1/text",
+                  "raw_span": null,
+                  "raw_text_span": [
+                    0,
+                    12
+                  ],
+                  "selection_key": "text",
+                  "source_index": 1,
+                  "source_origin": "body_line",
+                  "span": [
+                    0,
+                    12
+                  ]
+                }
+              ],
+              "rule": "question_cue_kind",
+              "value": "unknown",
+              "value_kind": "parser_label"
+            },
+            {
+              "channel": "target",
+              "field": "target_span",
+              "index": -1,
+              "locations": [
+                {
+                  "carrier_alignment": "exact_enumeration",
+                  "kind": "author_clause",
+                  "line_span": [
+                    0,
+                    12
+                  ],
+                  "original_index": 1,
+                  "raw_path": "/content_blocks/1/text",
+                  "raw_span": null,
+                  "raw_text_span": [
+                    0,
+                    12
+                  ],
+                  "selection_key": "text",
+                  "source_index": 1,
+                  "source_origin": "body_line",
+                  "span": [
+                    0,
+                    12
+                  ]
+                }
+              ],
+              "rule": "question_cue_kind",
+              "value": "<- 이러면 성희롱임?",
+              "value_kind": "author_clause_quote"
+            }
+          ],
+          "explanation": {
+            "input_fingerprint": "0bf6d142c34025b0b280fe96591f9921c963324c71dd936de0d1a940afdd600f",
+            "proofs": [
+              {
+                "claim_id": "author:clause:1:claim:1",
+                "claim_kind": "own",
+                "claim_view": "claim",
+                "claimant": "self",
+                "event_ids": [],
+                "final_support": true,
+                "predicate_spans": [],
+                "raw_path": "/content_blocks/0/text",
+                "raw_span": [
+                  0,
+                  7
+                ],
+                "rule": "current_pointed_harassment_question",
+                "source_id": "author:clause:1",
+                "source_sha256": "4148339fc26785682b9017c83e2179c37fc63820dbb7fc98d34cf2b79fcda925",
+                "sourcequote": "남근은 있는듯"
+              },
+              {
+                "claim_id": "author:clause:2:claim:2",
+                "claim_kind": "own",
+                "claim_view": "claim",
+                "claimant": "self",
+                "event_ids": [],
+                "final_support": true,
+                "predicate_spans": [],
+                "raw_path": "/content_blocks/1/text",
+                "raw_span": [
+                  0,
+                  12
+                ],
+                "rule": "current_pointed_harassment_question",
+                "source_id": "author:clause:2",
+                "source_sha256": "835e65d66683b6f2c46f3698599db5ee34ae31a52d8205da1f9d797cda471a83",
+                "sourcequote": "<- 이러면 성희롱임?"
+              }
+            ],
+            "source_kind": "deterministic_source_context",
+            "supported": true,
+            "unresolved": [
+              "U: 실제 성희롱 여부"
+            ]
+          },
+          "ledgers": [
+            {
+              "claims": [
+                {
+                  "attribution": "direct_clause",
+                  "claim_id": "author:clause:0:claim:0",
+                  "evaluation_event_ids": [],
+                  "final_support": true,
+                  "initial_support": true,
+                  "kind": "own",
+                  "source_id": "author:clause:0",
+                  "span": [
+                    0,
+                    13
+                  ],
+                  "speaker": "self",
+                  "speaker_source": "unit_speaker",
+                  "support_attribution": "unit_speaker_direct",
+                  "text": "이 작가는 영근은 몰라도"
+                },
+                {
+                  "attribution": "direct_clause",
+                  "claim_id": "author:clause:1:claim:1",
+                  "evaluation_event_ids": [],
+                  "final_support": true,
+                  "initial_support": true,
+                  "kind": "own",
+                  "source_id": "author:clause:1",
+                  "span": [
+                    0,
+                    7
+                  ],
+                  "speaker": "self",
+                  "speaker_source": "unit_speaker",
+                  "support_attribution": "unit_speaker_direct",
+                  "text": "남근은 있는듯"
+                },
+                {
+                  "attribution": "direct_clause",
+                  "claim_id": "author:clause:2:claim:2",
+                  "evaluation_event_ids": [],
+                  "final_support": true,
+                  "initial_support": true,
+                  "kind": "own",
+                  "source_id": "author:clause:2",
+                  "span": [
+                    0,
+                    12
+                  ],
+                  "speaker": "self",
+                  "speaker_source": "unit_speaker",
+                  "support_attribution": "unit_speaker_direct",
+                  "text": "<- 이러면 성희롱임?"
+                }
+              ],
+              "evaluations": [],
+              "graph_edges": [
+                {
+                  "recorded_by": "sources[0].parent_source_id",
+                  "relation": "source_in_unit",
+                  "source_id": "author:clause:0",
+                  "target_id": "author"
+                },
+                {
+                  "recorded_by": "sources[1].parent_source_id",
+                  "relation": "source_in_unit",
+                  "source_id": "author:clause:1",
+                  "target_id": "author"
+                },
+                {
+                  "recorded_by": "sources[2].parent_source_id",
+                  "relation": "source_in_unit",
+                  "source_id": "author:clause:2",
+                  "target_id": "author"
+                },
+                {
+                  "recorded_by": "claims[0].source_id",
+                  "relation": "claim_in_source",
+                  "source_id": "author:clause:0:claim:0",
+                  "target_id": "author:clause:0"
+                },
+                {
+                  "recorded_by": "claims[0].initial_support",
+                  "relation": "direct_support_of",
+                  "source_id": "author:clause:0:claim:0:direct",
+                  "target_id": "author:clause:0:claim:0"
+                },
+                {
+                  "recorded_by": "claims[0].active_adoption_event_ids[0]",
+                  "relation": "claim_active_support",
+                  "source_id": "author:clause:0:claim:0",
+                  "target_id": "author:clause:0:claim:0:direct"
+                },
+                {
+                  "recorded_by": "claims[1].source_id",
+                  "relation": "claim_in_source",
+                  "source_id": "author:clause:1:claim:1",
+                  "target_id": "author:clause:1"
+                },
+                {
+                  "recorded_by": "claims[1].initial_support",
+                  "relation": "direct_support_of",
+                  "source_id": "author:clause:1:claim:1:direct",
+                  "target_id": "author:clause:1:claim:1"
+                },
+                {
+                  "recorded_by": "claims[1].active_adoption_event_ids[0]",
+                  "relation": "claim_active_support",
+                  "source_id": "author:clause:1:claim:1",
+                  "target_id": "author:clause:1:claim:1:direct"
+                },
+                {
+                  "recorded_by": "claims[2].source_id",
+                  "relation": "claim_in_source",
+                  "source_id": "author:clause:2:claim:2",
+                  "target_id": "author:clause:2"
+                },
+                {
+                  "recorded_by": "claims[2].initial_support",
+                  "relation": "direct_support_of",
+                  "source_id": "author:clause:2:claim:2:direct",
+                  "target_id": "author:clause:2:claim:2"
+                },
+                {
+                  "recorded_by": "claims[2].active_adoption_event_ids[0]",
+                  "relation": "claim_active_support",
+                  "source_id": "author:clause:2:claim:2",
+                  "target_id": "author:clause:2:claim:2:direct"
+                }
+              ],
+              "input_alignment": "caller_clauses_equal_parts",
+              "native_version": "context_projection_native_v33",
+              "source_id": "author",
+              "source_index": -1,
+              "source_role": "author",
+              "sources": [
+                {
+                  "carrier_alignment": "exact_enumeration",
+                  "original_index": 0,
+                  "parent_source_id": "author",
+                  "raw_path": "/title",
+                  "raw_text_span": [
+                    0,
+                    13
+                  ],
+                  "source_id": "author:clause:0",
+                  "source_index": 0,
+                  "source_origin": "post_title",
+                  "source_role": "author",
+                  "span": [
+                    0,
+                    13
+                  ],
+                  "text": "이 작가는 영근은 몰라도"
+                },
+                {
+                  "carrier_alignment": "exact_enumeration",
+                  "original_index": 0,
+                  "parent_source_id": "author",
+                  "raw_path": "/content_blocks/0/text",
+                  "raw_text_span": [
+                    0,
+                    7
+                  ],
+                  "source_id": "author:clause:1",
+                  "source_index": 0,
+                  "source_origin": "body_line",
+                  "source_role": "author",
+                  "span": [
+                    0,
+                    7
+                  ],
+                  "text": "남근은 있는듯"
+                },
+                {
+                  "carrier_alignment": "exact_enumeration",
+                  "original_index": 1,
+                  "parent_source_id": "author",
+                  "raw_path": "/content_blocks/1/text",
+                  "raw_text_span": [
+                    0,
+                    12
+                  ],
+                  "source_id": "author:clause:2",
+                  "source_index": 1,
+                  "source_origin": "body_line",
+                  "source_role": "author",
+                  "span": [
+                    0,
+                    12
+                  ],
+                  "text": "<- 이러면 성희롱임?"
+                }
+              ]
+            },
+            {
+              "claims": [
+                {
+                  "attribution": "direct_clause",
+                  "claim_id": "comment:0:clause:0:claim:0",
+                  "evaluation_event_ids": [],
+                  "final_support": true,
+                  "initial_support": true,
+                  "kind": "own",
+                  "source_id": "comment:0:clause:0",
+                  "span": [
+                    0,
+                    1
+                  ],
+                  "speaker": "self",
+                  "speaker_source": "unit_speaker",
+                  "support_attribution": "unit_speaker_direct",
+                  "text": "네"
+                }
+              ],
+              "evaluations": [],
+              "graph_edges": [
+                {
+                  "recorded_by": "sources[0].parent_source_id",
+                  "relation": "source_in_unit",
+                  "source_id": "comment:0:clause:0",
+                  "target_id": "comment:0"
+                },
+                {
+                  "recorded_by": "claims[0].source_id",
+                  "relation": "claim_in_source",
+                  "source_id": "comment:0:clause:0:claim:0",
+                  "target_id": "comment:0:clause:0"
+                },
+                {
+                  "recorded_by": "claims[0].initial_support",
+                  "relation": "direct_support_of",
+                  "source_id": "comment:0:clause:0:claim:0:direct",
+                  "target_id": "comment:0:clause:0:claim:0"
+                },
+                {
+                  "recorded_by": "claims[0].active_adoption_event_ids[0]",
+                  "relation": "claim_active_support",
+                  "source_id": "comment:0:clause:0:claim:0",
+                  "target_id": "comment:0:clause:0:claim:0:direct"
+                }
+              ],
+              "input_alignment": "caller_clauses_equal_parts",
+              "native_version": "context_projection_native_v33",
+              "source_id": "comment:0",
+              "source_index": 0,
+              "source_role": "comment",
+              "sources": [
+                {
+                  "carrier_alignment": "exact_enumeration",
+                  "original_index": 0,
+                  "parent_source_id": "comment:0",
+                  "raw_path": "/comments/0/content",
+                  "raw_text_span": [
+                    0,
+                    1
+                  ],
+                  "source_id": "comment:0:clause:0",
+                  "source_index": 0,
+                  "source_origin": "comment",
+                  "source_role": "comment",
+                  "span": [
+                    0,
+                    1
+                  ],
+                  "text": "네"
+                }
+              ]
+            },
+            {
+              "claims": [
+                {
+                  "attribution": "direct_clause",
+                  "claim_id": "comment:1:clause:0:claim:0",
+                  "evaluation_event_ids": [],
+                  "final_support": true,
+                  "initial_support": true,
+                  "kind": "own",
+                  "source_id": "comment:1:clause:0",
+                  "span": [
+                    0,
+                    2
+                  ],
+                  "speaker": "self",
+                  "speaker_source": "unit_speaker",
+                  "support_attribution": "unit_speaker_direct",
+                  "text": "ㄲㅂ"
+                }
+              ],
+              "evaluations": [],
+              "graph_edges": [
+                {
+                  "recorded_by": "sources[0].parent_source_id",
+                  "relation": "source_in_unit",
+                  "source_id": "comment:1:clause:0",
+                  "target_id": "comment:1"
+                },
+                {
+                  "recorded_by": "claims[0].source_id",
+                  "relation": "claim_in_source",
+                  "source_id": "comment:1:clause:0:claim:0",
+                  "target_id": "comment:1:clause:0"
+                },
+                {
+                  "recorded_by": "claims[0].initial_support",
+                  "relation": "direct_support_of",
+                  "source_id": "comment:1:clause:0:claim:0:direct",
+                  "target_id": "comment:1:clause:0:claim:0"
+                },
+                {
+                  "recorded_by": "claims[0].active_adoption_event_ids[0]",
+                  "relation": "claim_active_support",
+                  "source_id": "comment:1:clause:0:claim:0",
+                  "target_id": "comment:1:clause:0:claim:0:direct"
+                }
+              ],
+              "input_alignment": "caller_clauses_equal_parts",
+              "native_version": "context_projection_native_v33",
+              "source_id": "comment:1",
+              "source_index": 1,
+              "source_role": "comment",
+              "sources": [
+                {
+                  "carrier_alignment": "exact_enumeration",
+                  "original_index": 1,
+                  "parent_source_id": "comment:1",
+                  "raw_path": "/comments/1/content",
+                  "raw_text_span": [
+                    0,
+                    2
+                  ],
+                  "source_id": "comment:1:clause:0",
+                  "source_index": 1,
+                  "source_origin": "comment",
+                  "source_role": "comment",
+                  "span": [
+                    0,
+                    2
+                  ],
+                  "text": "ㄲㅂ"
+                }
+              ]
+            }
+          ],
+          "max_bytes": 65536,
+          "native_verification_status": "NATIVE_CALLBACK_TRUE",
+          "omitted_counts": {},
+          "projection": {
+            "excluded_works": [],
+            "fallback": false,
+            "reasons": [
+              "author_question"
+            ],
+            "reference_works": [],
+            "request_conditions": [],
+            "scope_hint": null,
+            "speech_act": "question",
+            "target_kind": "unknown",
+            "target_media": "unknown",
+            "target_span": "<- 이러면 성희롱임?",
+            "target_surface": null,
+            "work_relation_evidence": [],
+            "work_roles": []
+          },
+          "publication_authority": false,
+          "reason_codes": [],
+          "schema_version": "source_context_diagnostics_v1",
+          "status": "STORED"
+        },
+        "worker_id": 6,
+        "worker_log_file": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\logs\\expert_run_20261012_191128_106718_W6.log"
+      },
+      "title": "이 작가는 영근은 몰라도",
+      "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=9249019"
+    },
+    "comment_binding": "MAIN_COMMENT_TEXT_PROJECTION_EXACT_ORIGINAL_DICTS_PRESERVED_SEPARATELY",
+    "index1": 57,
+    "post_id": 9249019,
+    "post_id_type": "int",
+    "prior_comparison_ref": "prior_comparison.jsonl",
+    "publication_commit": {
+      "attempt_run_id": "20261012_191128_106718",
+      "commit_index": 1,
+      "commit_sha256": "2069d532d140c24a1c2ced9bd2266229b54e2f5c2e79ac8d8684131f0f406b0b",
+      "contract_input_fingerprint": "b7264ddc093b0ef9306705f5c8443b76164844a71c28998f7025beb2fcc73702",
+      "contract_version": "promotion_contract_v2",
+      "decision_id": "7dd53a888b3f603a81094248d015296f8148146910eec89a399acb67f922efe9",
+      "decision_sha256": "b41f2b8e437a972e36751a98c6c35ecddc3dfa8e77b2ffa3ddbd5cfb18d253d1",
+      "input_index": 57,
+      "input_sha256": "dd63b39f6a330f01ca9567ad239b7d9d4dda71c9aca2145de700eeb9ba168e1f",
+      "outcome": "HOLD",
+      "owner": "expert_main.completed_source_writer",
+      "post_id": 9249019,
+      "public_projection_sha256": "b0f71b0e130008016b5b017f3abffa5bc7acab72da3d196ae561752ebe459364",
+      "publication_scope_id": "96b7f2c20ab6a60853afba9b17b59877fa1309f410caa47415657e527df7c99b",
+      "publish_allowed": false,
+      "result_sha256": "9c7ad787175b3a1e4cfac7fbef1858af9fca0ef54b4f5cce6986bab06012dd40",
+      "schema_version": "publication_decision_commit_v3",
+      "stable_result_sha256": "94b4b8e68c8cec4f812e6c5e2e730f0ec21032c74effafc51e52374be3b39b49"
+    },
+    "result_canonical_sha256": "9c7ad787175b3a1e4cfac7fbef1858af9fca0ef54b4f5cce6986bab06012dd40",
+    "review_scope": "PRELIMINARY_COMPLETED_CHECKPOINT_ONLY",
+    "run_id": "20261012_191128_106718",
+    "source_canonical_sha256": "aa35b266648356a5e42412403744402d0609bd7db40a830c6d33e7b418ae6da7",
+    "source_comments": [
+      {
+        "author": "북방서희",
+        "comment_id": "31702314",
+        "content": "네",
+        "content_html": "네",
+        "created_at": "2024.09.07 19:38:48",
+        "ip": "",
+        "post_id": 9249019,
+        "reply_level": 0,
+        "reply_to_comment_id": null
+      },
+      {
+        "author": "ㅇㅇ",
+        "comment_id": "31702328",
+        "content": "ㄲㅂ",
+        "content_html": "ㄲㅂ",
+        "created_at": "2024.09.07 19:40:19",
+        "ip": "118.219",
+        "post_id": 9249019,
+        "reply_level": 0,
+        "reply_to_comment_id": null
+      }
+    ],
+    "source_post": {
+      "author": "ㅇㅇ",
+      "content_blocks": [
+        {
+          "text": "남근은 있는듯",
+          "type": "text"
+        },
+        {
+          "text": "<- 이러면 성희롱임?",
+          "type": "text"
+        }
+      ],
+      "created_at": "2024-09-07 19:38:24",
+      "gallery_id": "genrenovel",
+      "page_no": 44550,
+      "post_id": 9249019,
+      "title": "이 작가는 영근은 몰라도",
+      "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=9249019"
+    }
+  },
+  "completed_expert_stream": {
+    "post_id": 9249019,
+    "source": {
+      "path": "logs/expert_run_20261012_191128_106718_W6.log",
+      "start_line1": 4690,
+      "end_line1": 5845,
+      "byte_offset": 455355,
+      "byte_length": 83870,
+      "sha256": "f7576c34668fb98fc0dd7e90742e863449c72a2e4e7edc93b573d48560983b97",
+      "saved_copy": {
+        "path": "out/p4_quality_followup_20261012/semantic_state57_followup_v1/worker_57.completed.raw.log",
+        "sha256": "f7576c34668fb98fc0dd7e90742e863449c72a2e4e7edc93b573d48560983b97",
+        "bytes": 83870
+      },
+      "whole_growing_log_hashed": false
+    },
+    "outputs": [
+      {
+        "expert": "gatekeeper",
+        "original_log_line1": 4714,
+        "raw_json_sha256": "535a1a2a29877bf45469d8289296f8aa4ae08c090cb05579c39b227fd78a03a2",
+        "value": {
+          "is_noise": false,
+          "noise_reason": null,
+          "post_type": "short_reaction",
+          "detected_entities": {
+            "possible_titles": [
+              "이 작가는 영근은 몰라도"
+            ],
+            "possible_authors": [],
+            "possible_characters": [],
+            "platforms_mentioned": []
+          },
+          "key_terms": [
+            "이 작가는 영근은 몰라도"
+          ],
+          "context_clues": {
+            "short_post_fast_path": true,
+            "body_length": 20,
+            "body_text": "남근은 있는듯 <- 이러면 성희롱임?",
+            "short_post_title_surface": "이 작가는 영근은 몰라도"
+          },
+          "search_requests": [],
+          "confidence": "medium",
+          "notes": "Short-post Fast-Path: body=20자, 제목 기반 판정 위임"
+        }
+      },
+      {
+        "expert": "discourse",
+        "original_log_line1": 4803,
+        "raw_json_sha256": "932518f280bc3154de35b010c966dc0f2baf3e427312df11162655d4cb30dbe4",
+        "value": {
+          "discourse_analysis": {
+            "primary_domain": "novel_literature",
+            "domain_confidence": "high",
+            "domain_evidence": [
+              "이 작가는",
+              "영근",
+              "남근"
+            ],
+            "secondary_domains": [
+              "memes_humor"
+            ],
+            "intent": "make_joke",
+            "intent_confidence": "high",
+            "speech_act": "other",
+            "target_kind": "author",
+            "is_coherent": true,
+            "coherence_reason": "제목에서 작가의 역량(영근)을 언급하며 운을 띄운 뒤, 본문에서 성적인 언어유희를 통해 농담을 던지고, 댓글에서 이에 반응하는 일관된 유머 흐름을 보임.",
+            "title_novel_terms": [],
+            "title_body_consistency": true,
+            "consistency_note": null,
+            "is_association_not_discussion": false,
+            "association_evidence": null,
+            "search_suggestions": [],
+            "real_subject": "작가의 역량에 대한 비유를 활용한 성적인 언어유희 및 농담",
+            "author_question_span": "<- 이러면 성희롱임?",
+            "author_question_target": "자신의 발언이 성희롱에 해당하는지 여부",
+            "author_recommendation_span": null,
+            "author_recommendation_is_direct": false,
+            "reasoning": "작가의 필력이나 역량을 뜻하는 '영근'과 성적 부위를 뜻하는 단어를 언어유희로 연결하여 농담을 던지는 게시글임. 질문의 형태를 빌려 커뮤니티 특유의 드립(joke)을 수행하고 있음.",
+            "source_bound_question_receipt": {
+              "span": "<- 이러면 성희롱임?",
+              "source": "author_body",
+              "speaker": "author",
+              "modality": "text",
+              "position": 1,
+              "target_description": "자신의 발언이 성희롱에 해당하는지 여부",
+              "target_candidates": [
+                "자신의 발언이 성희롱에 해당하는지 여부"
+              ],
+              "target_conflict": false,
+              "verification_level": "exact_author_excerpt_model_target"
+            },
+            "source_bound_recommendation_request": false,
+            "image_topic_relation": {
+              "state": "no_image",
+              "source": "author_spans"
+            }
+          }
+        }
+      },
+      {
+        "expert": "decoder",
+        "original_log_line1": 4949,
+        "raw_json_sha256": "a8887b612f84a65642fed25f0ee2dbddba38e2c7d82c06fdb873ddec2192e47b",
+        "value": {
+          "decoded_terms": [
+            {
+              "original": "이 작가는 영근은 몰라도",
+              "morphemes": [
+                "이 작가는",
+                "영근은",
+                "몰라도"
+              ],
+              "interpretations": [
+                {
+                  "type": "slang",
+                  "value": "특정 단어(영근/남근)를 이용한 성적 비유 또는 언어유희",
+                  "evidence": "본문 '남근은 있는듯'과 제목 '영근은 몰라도'의 형태소 유사성 및 맥락적 연결",
+                  "context_fit": "high"
+                },
+                {
+                  "type": "general_noun",
+                  "value": "작가의 역량에 대한 일반적인 평가 문장",
+                  "evidence": "문법 구조상 'A는 B는 몰라도 C는 ~하다'라는 관용적 표현",
+                  "context_fit": "medium"
+                }
+              ],
+              "candidates": [],
+              "best_match": {
+                "title": null,
+                "confidence": "none"
+              },
+              "grounding": {
+                "is_grounded": true,
+                "anchor_type": "title_mention",
+                "anchor_evidence": "게시글 제목에 '이 작가는 영근은 몰라도' 직접 존재"
+              },
+              "is_author_name": false,
+              "author_info": null
+            }
+          ],
+          "unresolved_terms": [],
+          "self_questions": [
+            "'영근'이 특정 작품의 약칭인가 아니면 본문의 '남근'과 대응되는 언어유희인가?",
+            "제목의 '이 작가는'이 실제 소설 작가를 지칭하는가 아니면 관용구의 일부인가?"
+          ],
+          "needs_verification": true,
+          "verification_search": [
+            "영근 뜻 의미",
+            "이 작가는 영근은 몰라도 소설"
+          ],
+          "overall_confidence": "none",
+          "notes": "치환 읽기 : 제목의 '영근'과 본문의 '남근'이 형태소적으로 유사하며, 이를 이용한 성적 농담/언어유희로 판단됨 : 맥락 추론 : 특정 작품을 지칭하는 것이 아니라 작가의 신체적(?) 특징이나 역량을 비유하는 커뮤니티식 저질 농담임 : 결론 : 작품명으로 볼 수 있는 근거 없음",
+          "request_expert": null,
+          "request_reason": null,
+          "request_context": null
+        }
+      },
+      {
+        "expert": "decoder",
+        "original_log_line1": 5183,
+        "raw_json_sha256": "6911f8b1e2b5d4b3b231c588aa555c710a88fd25da2fc010864c44f553511ec5",
+        "value": {
+          "decoded_terms": [
+            {
+              "original": "이 작가는 영근은 몰라도",
+              "morphemes": [
+                "이 작가는",
+                "영근은",
+                "몰라도"
+              ],
+              "interpretations": [
+                {
+                  "type": "slang",
+                  "value": "선협 장르의 '영근()' 설정을 이용한 성적 비유/언어유희",
+                  "evidence": "E002, E006에서 '영근'이 선협 소설의 수행 자질임을 확인. 본문의 '남근' 발화와 결합하여 성적인 농담(Joke)을 형성함.",
+                  "context_fit": "high"
+                },
+                {
+                  "type": "general_noun",
+                  "value": "특정 작가에 대한 평가 문장",
+                  "evidence": "문법적으로 'X는 Y는 몰라도'는 일반적인 비교/평가 구문임.",
+                  "context_fit": "low"
+                }
+              ],
+              "candidates": [
+                {
+                  "official_novel_title": null,
+                  "url": null,
+                  "platform": null,
+                  "decode_logic": "장르 용어(영근)를 활용한 언어유희 및 성적 농담으로 판단됨. 특정 작품을 지칭하는 약어나 제목이 아님.",
+                  "morphological_score": 0.0,
+                  "genre_match": {
+                    "source_genre": "선협(추정)",
+                    "target_genre": null,
+                    "is_match": false
+                  },
+                  "search_evidence": "검색 결과에서 '영근'이 선협의 설정임은 확인되었으나, 해당 문구 자체가 작품명으로 쓰인 사례는 없음."
+                }
+              ],
+              "best_match": {
+                "title": null,
+                "confidence": "none"
+              },
+              "grounding": {
+                "is_grounded": true,
+                "anchor_type": "title_mention",
+                "anchor_evidence": "이 작가는 영근은 몰라도"
+              },
+              "is_author_name": false,
+              "author_info": null
+            }
+          ],
+          "unresolved_terms": [],
+          "self_questions": [
+            "'영근'이 작품명인가 아니면 선협 장르의 용어인가?",
+            "본문의 '남근' 발화가 특정 작품의 캐릭터나 줄거리를 지칭하는가?"
+          ],
+          "needs_verification": false,
+          "verification_search": null,
+          "overall_confidence": "none",
+          "notes": "치환 읽기 : '영근(선협 설정)'과 '남근(신체 부위)'의 유사성을 이용한 성적 언어유희 : 맥락 추론 : 특정 소설에 대한 토론이 아니라, 선협 장르 용어를 빌려 성적인 농담을 던지는 커뮤니티 잡담(Make a joke)임 : 결론 : 작품명 없음"
+        }
+      },
+      {
+        "expert": "decoder",
+        "original_log_line1": 5345,
+        "raw_json_sha256": "1d4dd4a81c0626c420523cf5a99b1acbc35edf6568c8b321a4d9c4b577bfb4bb",
+        "value": {
+          "decoded_terms": [
+            {
+              "original": "이 작가는 영근은 몰라도",
+              "morphemes": [
+                "이 작가는",
+                "영근은",
+                "몰라도"
+              ],
+              "interpretations": [
+                {
+                  "type": "slang",
+                  "value": "선협 장르의 '영근()'을 활용한 언어유희/성적 비속어",
+                  "evidence": "검색 결과 E006에서 '수행의 자질인 영근'이라는 선협 용어가 확인됨. 본문 '남근은 있는듯'과 결합하여 성적인 농담(언어유희)을 완성함.",
+                  "context_fit": "high"
+                },
+                {
+                  "type": "general_noun",
+                  "value": "특정 작가에 대한 평가 문장",
+                  "evidence": "문법적으로 'X는 Y는 몰라도' 형태의 일반적인 문장 구조임.",
+                  "context_fit": "low"
+                }
+              ],
+              "candidates": [
+                {
+                  "official_novel_title": null,
+                  "url": null,
+                  "platform": null,
+                  "decode_logic": "장르 용어(영근)를 이용한 성적 언어유희로 판단됨. 특정 작품을 지칭하는 약어나 고유명사로서의 증거 없음.",
+                  "morphological_score": 0.0,
+                  "genre_match": {
+                    "source_genre": null,
+                    "target_genre": null,
+                    "is_match": false
+                  },
+                  "search_evidence": "검색 결과에서 '영근'은 선협 소설의 설정(수행의 자질)으로 나타나나, 본문의 맥락('남근')은 이를 성적인 은어로 치환하여 사용 중임."
+                }
+              ],
+              "best_match": {
+                "title": null,
+                "confidence": "none"
+              },
+              "grounding": {
+                "is_grounded": true,
+                "anchor_type": "title_mention",
+                "anchor_evidence": "게시글 제목에 '이 작가는 영근은 몰라도' 직접 존재"
+              },
+              "is_author_name": false,
+              "author_info": null
+            }
+          ],
+          "unresolved_terms": [],
+          "self_questions": [
+            "'영근'이 선협 용어인가 아니면 본문의 '남근'과 연결된 성적 은어인가?",
+            "제목이 특정 작품의 약칭일 가능성이 있는가?"
+          ],
+          "needs_verification": false,
+          "verification_search": null,
+          "overall_confidence": "none",
+          "notes": "치환 읽기 : '영근(선협 용어)'을 '남근(성적 용어)'과 대조시킨 언어유희 : 맥락 추론 : 특정 작품에 대한 논의가 아니라, 선협 장르의 용어를 빌려 성적인 농담을 던지는 커뮤니티 잡담(Make a joke)임 : 결론 : title=null"
+        }
+      },
+      {
+        "expert": "verifier",
+        "original_log_line1": 5492,
+        "raw_json_sha256": "1017c0fd963c77f8a790b0939e756dcbdf0b0ae559504a8da78d015be1f8c22d",
+        "value": {
+          "verification_result": {
+            "is_relevant": false,
+            "is_novel_discussion": false,
+            "novel_identity": null,
+            "grounding_check": {
+              "decoder_grounded": false,
+              "anchor_found": "none",
+              "anchor_text": null,
+              "grounding_issue": "본문은 특정 작품의 고유 정보(캐릭터명, 줄거리, 작가명 등)를 포함하지 않으며, 선협 장르의 용어인 '영근'을 이용한 언어유희 및 성적 농담에 불과함"
+            },
+            "counter_arguments": [
+              {
+                "issue": "본문에 작품 고유 앵커 전무",
+                "severity": "critical",
+                "action": "reject"
+              },
+              {
+                "issue": "키워드 우연 일치 가능성 매우 높음",
+                "severity": "critical",
+                "action": "reject"
+              }
+            ],
+            "author_info": null,
+            "rejection_reason": "본문이 특정 작품의 캐릭터, 줄거리, 작가 등 고유 정보를 전혀 담고 있지 않습니다. '영근(선협 용어)'과 '남근'을 대조시킨 단순 언어유희 및 성적 농담(make_joke)이며, 검색 결과에서 나타나는 소설들은 본문의 맥락과 무관하게 키워드만 겹치는 '키워드 우연 일치' 사례입니다.",
+            "evidence_chain": [
+              {
+                "source": "original_post",
+                "content": "이 작가는 영근은 몰라도 남근은 있는듯",
+                "supports": "특정 작품 지칭 없이 장르적 용어를 활용한 농담"
+              }
+            ],
+            "slang_insight": {
+              "detected_term": "영근",
+              "decoded_term": null,
+              "decode_verified": false,
+              "cultural_context": "선협 장르에서 수행자의 자질을 뜻하는 용어이나, 본문에서는 성적 단어와 대조하기 위한 언어유희 도구로 사용됨",
+              "canonical_work_alias": null,
+              "alias_scope": null,
+              "attached_entity_text": null,
+              "attached_entity_type": null,
+              "store_in_slang_db": false,
+              "store_reason": "genre_trope_term"
+            },
+            "unresolved_from_decoder": [],
+            "inference": {
+              "type": "community_banter",
+              "topic": "언어유희 및 성적 농담"
+            }
+          },
+          "final_confidence": "high",
+          "reason": "본문은 선협 장르의 설정어인 '영근'을 사용하여 성적인 농담을 던지는 전형적인 커뮤니티 뻘글/농담입니다. 특정 작품을 지칭하는 고유 명사(캐릭터명, 구체적 사건, 작가명 등)가 전혀 없으므로, 검색 결과에서 발견되는 유사 키워드 작품들은 모두 '키워드 우연 일치'로 판단하여 거부합니다."
+        }
+      },
+      {
+        "expert": "arbiter",
+        "original_log_line1": 5648,
+        "raw_json_sha256": "14d75e9dbe9a207e3a89f36c557500b98a729723359f0fc02393bba9d70b70aa",
+        "value": {
+          "final_decision": {
+            "is_relevant": false,
+            "is_novel_discussion": false,
+            "official_novel_title": null,
+            "suspected_titles": [],
+            "heretic_url": null,
+            "confidence": "Max",
+            "discussion_type": "noise",
+            "_raw_llm_relevant": false,
+            "_raw_llm_title": null,
+            "_raw_llm_confidence": "Max",
+            "_raw_llm_discussion_type": "noise",
+            "official_title": null,
+            "notes": "[Verifier 거부권] 본문이 특정 작품의 캐릭터, 줄거리, 작가 등 고유 정보를 전혀 담고 있지 않습니다. '영근(선협 용어)'과 '남근'을 대조시킨 단순 언어유희 및 성적 농담(make_joke)이며, 검색 결과에서 나타나는 소설들은 본문의 맥락과 무관하게 키워드만 겹치는 '키워드 우연 일치' 사례입니다.",
+            "final_reasoning": "[거부권] 게시글 제목: '이 작가는 영근은 몰라도', 본문: '남근은 있는듯 <- 이러면 성희롱임?'\nDecoder: 특정 작품 식별 실패 | Verifier: 비관련 판정 — 본문이 특정 작품의 캐릭터, 줄거리, 작가 등 고유 정보를 전혀 담고 있지 않습니다. '영근(선협 용어)'과 '남근'을 대조시킨 단순 언어유희 및 성적 농담(make_joke)이며, 검색 결과에서 나타나는 소설들은 본문의 맥락과 무관하게 키워드만 겹치는 '키워드 우연 일치' 사례입니다. | 핵심 반론: 본문에 작품 고유 앵커 전무; 키워드 우연 일치 가능성 매우 높음 | Discourse: intent=make_joke\n검색 증강 분석: 검색 쿼리 1건 수행('이 작가는 영근은 몰라도 소설'). 소설플랫폼 결과 2건(E001 munpia.com: '볼수록 작가의 포텐셜이 느껴진다.'; E002 namu.wiki: '선협 소설/클리셰'). 커뮤니티 결과 2건(E005 arca.live: '생각나는작가특징메모보지맛 - 장르소설 채널'; E006 gall.dcinside.com: '이외 중국 선협 작가와 작품들 정리 - 무협,선협 소설 마이너 갤러리') — 소설 공식 출처 아님.\n판단: 본문에 작품 고유 정보(캐릭터명/줄거리/작가/회차) 없음. 장르/트로프 일반론으로 판별됨.\n이 글은 장르/트로프에 대한 일반 토론이며, 특정 소설에 대한 글이 아니다.",
+            "_hypothesis_top": "noise",
+            "_hypothesis_margin": 0.54,
+            "_title_deliberately_null": true
+          },
+          "expert_consensus": {
+            "unanimous": false,
+            "agreeing_experts": [
+              "Verifier"
+            ],
+            "dissenting_experts": [
+              "Gatekeeper"
+            ]
+          },
+          "conflict_resolution": [
+            {
+              "issue": "is_relevant 판단 충돌",
+              "expert_opinions": {
+                "gatekeeper": "noise=False, type=short_reaction으로 판단하여 잠재적 관련성 열어둠",
+                "decoder": "작품 식별 실패 (None)",
+                "verifier": "is_relevant=False (VETO 발동)"
+              },
+              "arbiter_decision": "is_relevant=false",
+              "reasoning": "Decoder가 작품을 전혀 식별하지 못했으며, Verifier가 본문에 작품 고유 정보(캐릭터명, 줄거리 등)가 전무함을 근거로 거부권을 행사함. Gatekeeper의 반응형 분류보다 Verifier의 맥락 검증이 우선됨."
+            }
+          ],
+          "metadata_synthesis": {
+            "detected_author": null,
+            "detected_characters": [],
+            "micro_tags": [
+              "joke",
+              "sexual_harassment_query"
+            ],
+            "sentiment": "Neutral",
+            "is_nsfw": true,
+            "spoiler_level": "none"
+          },
+          "final_reasoning": "[거부권] 게시글 제목: '이 작가는 영근은 몰라도', 본문: '남근은 있는듯 <- 이러면 성희롱임?'\nDecoder: 특정 작품 식별 실패 | Verifier: 비관련 판정 — 본문이 특정 작품의 캐릭터, 줄거리, 작가 등 고유 정보를 전혀 담고 있지 않습니다. '영근(선협 용어)'과 '남근'을 대조시킨 단순 언어유희 및 성적 농담(make_joke)이며, 검색 결과에서 나타나는 소설들은 본문의 맥락과 무관하게 키워드만 겹치는 '키워드 우연 일치' 사례입니다. | 핵심 반론: 본문에 작품 고유 앵커 전무; 키워드 우연 일치 가능성 매우 높음 | Discourse: intent=make_joke\n검색 증강 분석: 검색 쿼리 1건 수행('이 작가는 영근은 몰라도 소설'). 소설플랫폼 결과 2건(E001 munpia.com: '볼수록 작가의 포텐셜이 느껴진다.'; E002 namu.wiki: '선협 소설/클리셰'). 커뮤니티 결과 2건(E005 arca.live: '생각나는작가특징메모보지맛 - 장르소설 채널'; E006 gall.dcinside.com: '이외 중국 선협 작가와 작품들 정리 - 무협,선협 소설 마이너 갤러리') — 소설 공식 출처 아님.\n판단: 본문에 작품 고유 정보(캐릭터명/줄거리/작가/회차) 없음. 장르/트로프 일반론으로 판별됨.\n이 글은 장르/트로프에 대한 일반 토론이며, 특정 소설에 대한 글이 아니다.",
+          "evidence_chain": [
+            {
+              "source": "Decoder",
+              "content": "title=None, 식별된 작품 없음",
+              "weight": "high"
+            },
+            {
+              "source": "Verifier",
+              "content": "본문에 작품 고유 앵커(인명, 설정어의 서사적 사용) 전무",
+              "weight": "high"
+            }
+          ],
+          "_deliberation": {
+            "method": "evidence_scorer_only",
+            "evidence_score": {
+              "total_score": -4.5,
+              "relevance_probability": "very_low",
+              "positive_signals": [
+                {
+                  "signal": "discourse_novel",
+                  "detail": "novel_literature"
+                },
+                {
+                  "signal": "verifier_anchor",
+                  "detail": "anchor found"
+                }
+              ],
+              "negative_signals": [
+                {
+                  "signal": "decoder_none",
+                  "detail": "no identification"
+                },
+                {
+                  "signal": "verifier_irrelevant",
+                  "detail": "conf="
+                },
+                {
+                  "signal": "verifier_critical_counter",
+                  "detail": "본문에 작품 고유 앵커 전무; 키워드 우연 일치 가능성 매우 높음"
+                }
+              ],
+              "expert_agreement": 0.33,
+              "conflict_detected": true,
+              "conflict_details": [
+                "Verifier critical counter: 본문에 작품 고유 앵커 전무; 키워드 우연 일치 가능성 매우 높음"
+              ],
+              "recommendation": "UNLIKELY_RELEVANT: 관련성 증거가 매우 약하거나 반증이 강합니다."
+            },
+            "conflict_detected": false,
+            "elapsed": 74.6
+          }
+        }
+      }
+    ],
+    "final_source_observations": [
+      {
+        "actual_expert_getters": [
+          {
+            "branch": "root",
+            "expert": "gatekeeper",
+            "getter_object_same": true,
+            "root_object_id": 2489078039424,
+            "selected_object_id": 2489078039424,
+            "selector_path": ""
+          },
+          {
+            "branch": "nested",
+            "expert": "discourse",
+            "getter_object_same": true,
+            "root_object_id": 2489105178752,
+            "selected_object_id": 2490992110528,
+            "selector_path": "/discourse_analysis"
+          },
+          {
+            "branch": "missing",
+            "expert": "synthesizer",
+            "getter_object_same": true,
+            "root_object_id": null,
+            "selected_object_id": 2489690741184,
+            "selector_path": "",
+            "summary_inputs": {
+              "post_intent": {
+                "container_object_id": null,
+                "field_path": "/reinterpretation/post_intent",
+                "present": false,
+                "signal_value_equal": true,
+                "type": "NoneType",
+                "value_sha256": null
+              },
+              "synthesis_summary": {
+                "container_object_id": null,
+                "field_path": "/synthesis_summary",
+                "present": false,
+                "signal_value_equal": true,
+                "type": "NoneType",
+                "value_sha256": null
+              }
+            }
+          },
+          {
+            "branch": "root",
+            "expert": "decoder",
+            "getter_object_same": true,
+            "root_object_id": 2489395902912,
+            "selected_object_id": 2489395902912,
+            "selector_path": ""
+          }
+        ],
+        "binder_object_id": 2491015231632,
+        "carrier_alignment": "exact_enumeration",
+        "consumption_status": "CONSUMED_NATIVE_CHANNELS",
+        "context_object_id": 2491045784240,
+        "context_status": "OBSERVED",
+        "core_candidate_count": 2,
+        "core_candidate_status": "OBSERVED",
+        "core_verdicts": [
+          {
+            "decision": "skipped_length",
+            "field": "post_intent",
+            "proof_object_id": null,
+            "raw_sentence": "",
+            "raw_span": [
+              0,
+              0
+            ],
+            "reason": "",
+            "scope_reason": "",
+            "sentence_index": 0
+          },
+          {
+            "decision": "skipped_length",
+            "field": "synthesis_summary",
+            "proof_object_id": null,
+            "raw_sentence": "",
+            "raw_span": [
+              0,
+              0
+            ],
+            "reason": "",
+            "scope_reason": "",
+            "sentence_index": 0
+          }
+        ],
+        "edition_status": "NOT_APPLICABLE_NO_BUNDLE",
+        "edition_verifier_return": true,
+        "field_sha256": "352d2cd18c6dc4108ad97670f4a9a475d8c466c81861ff42ae6d37fbc06093ec",
+        "journal_write_status": "ATTEMPTED",
+        "limited_native_hold": false,
+        "meaning_GO": false,
+        "native_object_id": 2491018588336,
+        "native_verification_status": "NATIVE_CALLBACK_TRUE",
+        "native_verifier_return": true,
+        "nonce": "26a9d3b7cfc3076d49301981a82717b2",
+        "nsfw_content_observation": {
+          "arbiter_status": "BOOLEAN",
+          "arbiter_value": true,
+          "assessment_status": "MODEL_REPORTED",
+          "author_endorsement": "NOT_ASSESSED",
+          "evidence": [],
+          "human_gold": false,
+          "post_id": 9249019,
+          "publication_authority": false,
+          "real_world_event": "NOT_ASSERTED",
+          "resolved_value": true,
+          "rule": "TROPE_REPLY_EXPLICIT_SEXUAL_VIOLENCE_V1",
+          "schema_version": "source_bound_nsfw_v2",
+          "scope": "INPUT_CONTENT_ONLY",
+          "source_carrier_sha256": "aa1d51b7304334d3b0e5120e4fcde0d8891fcc3425dc2e2a14276bd84c2d3de1",
+          "status": "NO_APPLICABLE_SOURCE_RULE"
+        },
+        "origin_coordinates": [
+          {
+            "normalized_index": 0,
+            "normalized_raw_span": [
+              0,
+              13
+            ],
+            "occurrence": 0,
+            "origin": "post_title",
+            "original_index": 0,
+            "raw_path": "/title",
+            "raw_text_sha256": "066be1a1e2cb92ad59a700b81ff233b7d2cd16cf409179142cff440ed9408d29",
+            "selection_key": "title"
+          },
+          {
+            "normalized_index": 0,
+            "normalized_raw_span": [
+              0,
+              7
+            ],
+            "occurrence": 0,
+            "origin": "body_line",
+            "original_index": 0,
+            "raw_path": "/content_blocks/0/text",
+            "raw_text_sha256": "4148339fc26785682b9017c83e2179c37fc63820dbb7fc98d34cf2b79fcda925",
+            "selection_key": "text"
+          },
+          {
+            "normalized_index": 1,
+            "normalized_raw_span": [
+              0,
+              12
+            ],
+            "occurrence": 0,
+            "origin": "body_line",
+            "original_index": 1,
+            "raw_path": "/content_blocks/1/text",
+            "raw_text_sha256": "835e65d66683b6f2c46f3698599db5ee34ae31a52d8205da1f9d797cda471a83",
+            "selection_key": "text"
+          },
+          {
+            "normalized_index": 0,
+            "normalized_raw_span": [
+              0,
+              1
+            ],
+            "occurrence": 0,
+            "origin": "comment",
+            "original_index": 0,
+            "raw_path": "/comments/0/content",
+            "raw_text_sha256": "1c0ddfd0050938404c354c36d541bada7f72efa79371d4f96a75a9ad0bc11af0",
+            "selection_key": "content"
+          },
+          {
+            "normalized_index": 1,
+            "normalized_raw_span": [
+              0,
+              2
+            ],
+            "occurrence": 0,
+            "origin": "comment",
+            "original_index": 1,
+            "raw_path": "/comments/1/content",
+            "raw_text_sha256": "28289a06cb82ed915671db386b496e19a6d17a2d1dad9b040975d0cc99c10b17",
+            "selection_key": "content"
+          }
+        ],
+        "origin_count": 5,
+        "output_object_id": 2489704083728,
+        "payload_object_id": 2489558828736,
+        "post_id": 9249019,
+        "process_id": 49616,
+        "same_context_native": true,
+        "stage": "initial_native_receipt",
+        "status": "INITIAL_VERIFIER_RETURNED_TRUE"
+      },
+      {
+        "actual_expert_getters": [
+          {
+            "branch": "root",
+            "expert": "gatekeeper",
+            "getter_object_same": true,
+            "root_object_id": 2489078039424,
+            "selected_object_id": 2489078039424,
+            "selector_path": ""
+          },
+          {
+            "branch": "nested",
+            "expert": "discourse",
+            "getter_object_same": true,
+            "root_object_id": 2489105178752,
+            "selected_object_id": 2490992110528,
+            "selector_path": "/discourse_analysis"
+          },
+          {
+            "branch": "missing",
+            "expert": "synthesizer",
+            "getter_object_same": true,
+            "root_object_id": null,
+            "selected_object_id": 2489690741184,
+            "selector_path": "",
+            "summary_inputs": {
+              "post_intent": {
+                "container_object_id": null,
+                "field_path": "/reinterpretation/post_intent",
+                "present": false,
+                "signal_value_equal": true,
+                "type": "NoneType",
+                "value_sha256": null
+              },
+              "synthesis_summary": {
+                "container_object_id": null,
+                "field_path": "/synthesis_summary",
+                "present": false,
+                "signal_value_equal": true,
+                "type": "NoneType",
+                "value_sha256": null
+              }
+            }
+          },
+          {
+            "branch": "root",
+            "expert": "decoder",
+            "getter_object_same": true,
+            "root_object_id": 2489395902912,
+            "selected_object_id": 2489395902912,
+            "selector_path": ""
+          }
+        ],
+        "binder_object_id": 2491015231632,
+        "carrier_alignment": "exact_enumeration",
+        "consumption_status": "CONSUMED_NATIVE_CHANNELS",
+        "context_object_id": 2491045784240,
+        "context_status": "OBSERVED",
+        "core_candidate_count": 2,
+        "core_candidate_status": "OBSERVED",
+        "core_verdicts": [
+          {
+            "decision": "skipped_length",
+            "field": "post_intent",
+            "proof_object_id": null,
+            "raw_sentence": "",
+            "raw_span": [
+              0,
+              0
+            ],
+            "reason": "",
+            "scope_reason": "",
+            "sentence_index": 0
+          },
+          {
+            "decision": "skipped_length",
+            "field": "synthesis_summary",
+            "proof_object_id": null,
+            "raw_sentence": "",
+            "raw_span": [
+              0,
+              0
+            ],
+            "reason": "",
+            "scope_reason": "",
+            "sentence_index": 0
+          }
+        ],
+        "edition_status": "NOT_APPLICABLE_NO_BUNDLE",
+        "edition_verifier_return": true,
+        "field_sha256": "352d2cd18c6dc4108ad97670f4a9a475d8c466c81861ff42ae6d37fbc06093ec",
+        "journal_write_status": "ATTEMPTED",
+        "limited_native_hold": false,
+        "meaning_GO": false,
+        "native_object_id": 2491018588336,
+        "native_verification_status": "NATIVE_CALLBACK_TRUE",
+        "native_verifier_return": true,
+        "nonce": "26a9d3b7cfc3076d49301981a82717b2",
+        "nsfw_content_observation": {
+          "arbiter_status": "BOOLEAN",
+          "arbiter_value": true,
+          "assessment_status": "MODEL_REPORTED",
+          "author_endorsement": "NOT_ASSESSED",
+          "evidence": [],
+          "human_gold": false,
+          "post_id": 9249019,
+          "publication_authority": false,
+          "real_world_event": "NOT_ASSERTED",
+          "resolved_value": true,
+          "rule": "TROPE_REPLY_EXPLICIT_SEXUAL_VIOLENCE_V1",
+          "schema_version": "source_bound_nsfw_v2",
+          "scope": "INPUT_CONTENT_ONLY",
+          "source_carrier_sha256": "aa1d51b7304334d3b0e5120e4fcde0d8891fcc3425dc2e2a14276bd84c2d3de1",
+          "status": "NO_APPLICABLE_SOURCE_RULE"
+        },
+        "origin_coordinates": [
+          {
+            "normalized_index": 0,
+            "normalized_raw_span": [
+              0,
+              13
+            ],
+            "occurrence": 0,
+            "origin": "post_title",
+            "original_index": 0,
+            "raw_path": "/title",
+            "raw_text_sha256": "066be1a1e2cb92ad59a700b81ff233b7d2cd16cf409179142cff440ed9408d29",
+            "selection_key": "title"
+          },
+          {
+            "normalized_index": 0,
+            "normalized_raw_span": [
+              0,
+              7
+            ],
+            "occurrence": 0,
+            "origin": "body_line",
+            "original_index": 0,
+            "raw_path": "/content_blocks/0/text",
+            "raw_text_sha256": "4148339fc26785682b9017c83e2179c37fc63820dbb7fc98d34cf2b79fcda925",
+            "selection_key": "text"
+          },
+          {
+            "normalized_index": 1,
+            "normalized_raw_span": [
+              0,
+              12
+            ],
+            "occurrence": 0,
+            "origin": "body_line",
+            "original_index": 1,
+            "raw_path": "/content_blocks/1/text",
+            "raw_text_sha256": "835e65d66683b6f2c46f3698599db5ee34ae31a52d8205da1f9d797cda471a83",
+            "selection_key": "text"
+          },
+          {
+            "normalized_index": 0,
+            "normalized_raw_span": [
+              0,
+              1
+            ],
+            "occurrence": 0,
+            "origin": "comment",
+            "original_index": 0,
+            "raw_path": "/comments/0/content",
+            "raw_text_sha256": "1c0ddfd0050938404c354c36d541bada7f72efa79371d4f96a75a9ad0bc11af0",
+            "selection_key": "content"
+          },
+          {
+            "normalized_index": 1,
+            "normalized_raw_span": [
+              0,
+              2
+            ],
+            "occurrence": 0,
+            "origin": "comment",
+            "original_index": 1,
+            "raw_path": "/comments/1/content",
+            "raw_text_sha256": "28289a06cb82ed915671db386b496e19a6d17a2d1dad9b040975d0cc99c10b17",
+            "selection_key": "content"
+          }
+        ],
+        "origin_count": 5,
+        "output_object_id": 2489704083728,
+        "payload_object_id": 2489366342080,
+        "post_id": 9249019,
+        "process_id": 49616,
+        "same_context_native": true,
+        "stage": "model_dump",
+        "status": "SERIALIZATION_EQUAL"
+      },
+      {
+        "actual_expert_getters": [
+          {
+            "branch": "root",
+            "expert": "gatekeeper",
+            "getter_object_same": true,
+            "root_object_id": 2489078039424,
+            "selected_object_id": 2489078039424,
+            "selector_path": ""
+          },
+          {
+            "branch": "nested",
+            "expert": "discourse",
+            "getter_object_same": true,
+            "root_object_id": 2489105178752,
+            "selected_object_id": 2490992110528,
+            "selector_path": "/discourse_analysis"
+          },
+          {
+            "branch": "missing",
+            "expert": "synthesizer",
+            "getter_object_same": true,
+            "root_object_id": null,
+            "selected_object_id": 2489690741184,
+            "selector_path": "",
+            "summary_inputs": {
+              "post_intent": {
+                "container_object_id": null,
+                "field_path": "/reinterpretation/post_intent",
+                "present": false,
+                "signal_value_equal": true,
+                "type": "NoneType",
+                "value_sha256": null
+              },
+              "synthesis_summary": {
+                "container_object_id": null,
+                "field_path": "/synthesis_summary",
+                "present": false,
+                "signal_value_equal": true,
+                "type": "NoneType",
+                "value_sha256": null
+              }
+            }
+          },
+          {
+            "branch": "root",
+            "expert": "decoder",
+            "getter_object_same": true,
+            "root_object_id": 2489395902912,
+            "selected_object_id": 2489395902912,
+            "selector_path": ""
+          }
+        ],
+        "binder_object_id": 2491015231632,
+        "carrier_alignment": "exact_enumeration",
+        "consumption_status": "CONSUMED_NATIVE_CHANNELS",
+        "context_object_id": 2491045784240,
+        "context_status": "OBSERVED",
+        "core_candidate_count": 2,
+        "core_candidate_status": "OBSERVED",
+        "core_verdicts": [
+          {
+            "decision": "skipped_length",
+            "field": "post_intent",
+            "proof_object_id": null,
+            "raw_sentence": "",
+            "raw_span": [
+              0,
+              0
+            ],
+            "reason": "",
+            "scope_reason": "",
+            "sentence_index": 0
+          },
+          {
+            "decision": "skipped_length",
+            "field": "synthesis_summary",
+            "proof_object_id": null,
+            "raw_sentence": "",
+            "raw_span": [
+              0,
+              0
+            ],
+            "reason": "",
+            "scope_reason": "",
+            "sentence_index": 0
+          }
+        ],
+        "edition_status": "NOT_APPLICABLE_NO_BUNDLE",
+        "edition_verifier_return": true,
+        "field_sha256": "352d2cd18c6dc4108ad97670f4a9a475d8c466c81861ff42ae6d37fbc06093ec",
+        "journal_write_status": "ATTEMPTED",
+        "limited_native_hold": false,
+        "meaning_GO": false,
+        "native_object_id": 2491018588336,
+        "native_verification_status": "NATIVE_CALLBACK_TRUE",
+        "native_verifier_return": true,
+        "nonce": "26a9d3b7cfc3076d49301981a82717b2",
+        "nsfw_content_observation": {
+          "arbiter_status": "BOOLEAN",
+          "arbiter_value": true,
+          "assessment_status": "MODEL_REPORTED",
+          "author_endorsement": "NOT_ASSESSED",
+          "evidence": [],
+          "human_gold": false,
+          "post_id": 9249019,
+          "publication_authority": false,
+          "real_world_event": "NOT_ASSERTED",
+          "resolved_value": true,
+          "rule": "TROPE_REPLY_EXPLICIT_SEXUAL_VIOLENCE_V1",
+          "schema_version": "source_bound_nsfw_v2",
+          "scope": "INPUT_CONTENT_ONLY",
+          "source_carrier_sha256": "aa1d51b7304334d3b0e5120e4fcde0d8891fcc3425dc2e2a14276bd84c2d3de1",
+          "status": "NO_APPLICABLE_SOURCE_RULE"
+        },
+        "origin_coordinates": [
+          {
+            "normalized_index": 0,
+            "normalized_raw_span": [
+              0,
+              13
+            ],
+            "occurrence": 0,
+            "origin": "post_title",
+            "original_index": 0,
+            "raw_path": "/title",
+            "raw_text_sha256": "066be1a1e2cb92ad59a700b81ff233b7d2cd16cf409179142cff440ed9408d29",
+            "selection_key": "title"
+          },
+          {
+            "normalized_index": 0,
+            "normalized_raw_span": [
+              0,
+              7
+            ],
+            "occurrence": 0,
+            "origin": "body_line",
+            "original_index": 0,
+            "raw_path": "/content_blocks/0/text",
+            "raw_text_sha256": "4148339fc26785682b9017c83e2179c37fc63820dbb7fc98d34cf2b79fcda925",
+            "selection_key": "text"
+          },
+          {
+            "normalized_index": 1,
+            "normalized_raw_span": [
+              0,
+              12
+            ],
+            "occurrence": 0,
+            "origin": "body_line",
+            "original_index": 1,
+            "raw_path": "/content_blocks/1/text",
+            "raw_text_sha256": "835e65d66683b6f2c46f3698599db5ee34ae31a52d8205da1f9d797cda471a83",
+            "selection_key": "text"
+          },
+          {
+            "normalized_index": 0,
+            "normalized_raw_span": [
+              0,
+              1
+            ],
+            "occurrence": 0,
+            "origin": "comment",
+            "original_index": 0,
+            "raw_path": "/comments/0/content",
+            "raw_text_sha256": "1c0ddfd0050938404c354c36d541bada7f72efa79371d4f96a75a9ad0bc11af0",
+            "selection_key": "content"
+          },
+          {
+            "normalized_index": 1,
+            "normalized_raw_span": [
+              0,
+              2
+            ],
+            "occurrence": 0,
+            "origin": "comment",
+            "original_index": 1,
+            "raw_path": "/comments/1/content",
+            "raw_text_sha256": "28289a06cb82ed915671db386b496e19a6d17a2d1dad9b040975d0cc99c10b17",
+            "selection_key": "content"
+          }
+        ],
+        "origin_count": 5,
+        "output_object_id": 2489704083728,
+        "payload_object_id": 2489366342080,
+        "post_id": 9249019,
+        "process_id": 49616,
+        "same_context_native": true,
+        "stage": "post_wrapper",
+        "status": "SERIALIZATION_EQUAL"
+      }
+    ]
+  },
+  "baseline_scope_function": {
+    "source": "def _derive_resolution_scope_fields(\n    self,\n    *,\n    ctx,\n    is_relevant: bool,\n    official_title: Optional[str],\n    discussion_type: Optional[str],\n    topicality: Optional[str],\n    subtype: Optional[str],\n    work_resolution: Optional[str],\n    verification_result: Optional[Dict[str, Any]],\n    final_decision: Optional[Dict[str, Any]] = None,\n) -> Dict[str, Any]:\n    \"\"\"Separate broad novel relevance from resolved single-work identity.\"\"\"\n    top = str(topicality or \"\").strip().lower()\n    sub = str(subtype or \"\").strip().lower()\n    dt = str(discussion_type or (\"general\" if is_relevant else \"noise\")).strip().lower()\n    resolution = str(work_resolution or \"\").strip().lower()\n    has_title = bool(str(official_title or \"\").strip())\n    vr = verification_result if isinstance(verification_result, dict) else {}\n    fd = final_decision if isinstance(final_decision, dict) else {}\n\n    domain_values = set()\n    discourse_analysis: Dict[str, Any] = {}\n    if ctx is not None:\n        domain_values.add(str(getattr(ctx, \"primary_domain\", \"\") or \"\").strip().lower())\n        discourse_out = ctx.get_expert_output(ExpertType.DISCOURSE) or {}\n        discourse_analysis = discourse_out.get(\"discourse_analysis\") or {}\n        if isinstance(discourse_analysis, dict):\n            domain_values.add(str(discourse_analysis.get(\"primary_domain\") or \"\").strip().lower())\n    novel_domain = bool(domain_values & {\"novel_literature\", \"novel_work\"})\n    discourse_warning = str(getattr(ctx, \"discourse_warning\", \"\") or \"\").strip().lower() if ctx is not None else \"\"\n    discourse_seed_review = discourse_analysis.get(\"semantic_seed_review\") if isinstance(discourse_analysis, dict) else {}\n    if not isinstance(discourse_seed_review, dict):\n        discourse_seed_review = {}\n    raw_discourse_warnings = discourse_analysis.get(\"warnings\") if isinstance(discourse_analysis, dict) else []\n    discourse_warnings = {\n        str(item or \"\").strip().lower()\n        for item in (raw_discourse_warnings or [])\n        if str(item or \"\").strip()\n    }\n\n    gatekeeper_out = (ctx.get_expert_output(ExpertType.GATEKEEPER) or {}) if ctx is not None else {}\n    detected_entities = gatekeeper_out.get(\"detected_entities\") or {}\n    context_clues = gatekeeper_out.get(\"context_clues\") or {}\n    has_worklike_gatekeeper_signal = False\n    if isinstance(detected_entities, dict):\n        has_worklike_gatekeeper_signal = any(\n            bool(detected_entities.get(key))\n            for key in (\"possible_titles\", \"possible_characters\", \"possible_authors\")\n        )\n    has_title_novel_terms = False\n    if isinstance(detected_entities, dict):\n        has_title_novel_terms = bool(detected_entities.get(\"title_novel_terms\"))\n    if not has_title_novel_terms:\n        discourse_out = (ctx.get_expert_output(ExpertType.DISCOURSE) or {}) if ctx is not None else {}\n        discourse_analysis = discourse_out.get(\"discourse_analysis\") or {}\n        if isinstance(discourse_analysis, dict):\n            has_title_novel_terms = bool(discourse_analysis.get(\"title_novel_terms\"))\n    semantic_seed_positive = bool(\n        discourse_seed_review.get(\"is_specific_work_discussion\") is True\n        or has_title_novel_terms\n    )\n\n    novel_discussion_types = {\n        \"review\",\n        \"spoiler\",\n        \"anticipation\",\n        \"meme\",\n        \"character_talk\",\n        \"author_talk\",\n        \"recommendation\",\n        \"trope_discussion\",\n        \"genre_opinion\",\n        \"undecodable_reference\",\n    }\n    novel_subtypes = {\n        \"resolved_work\",\n        \"unresolved_work\",\n        \"multi_work_compare\",\n        \"support_cheer\",\n        \"resume_announcement\",\n        \"character_talk\",\n        \"plot_spoiler\",\n        \"review_reaction\",\n        \"author_meta\",\n        \"platform_meta\",\n        \"release_serialization_meta\",\n        \"recommendation_request\",\n        \"genre_trope_discussion\",\n        \"community_work_banter\",\n        \"fandom_meta\",\n    }\n    is_novel_related = bool(\n        top in {\"core_relevant\", \"adjacent_relevant\"}\n        or novel_domain\n        or sub in novel_subtypes\n        or dt in novel_discussion_types\n        or has_worklike_gatekeeper_signal\n        or has_title_novel_terms\n    )\n    if dt in {\"off_topic\"} and top not in {\"core_relevant\", \"adjacent_relevant\"} and not novel_domain:\n        is_novel_related = False\n\n    memory_query = False\n    relation = vr.get(\"relation_judgment\") or {}\n    if not isinstance(relation, dict):\n        relation = {}\n    relation_target = str(relation.get(\"discussion_target\") or \"\").strip().lower()\n    if relation_target == \"memory_query\":\n        memory_query = True\n    if isinstance(context_clues, dict) and (\n        context_clues.get(\"memory_query\")\n        or context_clues.get(\"asks_title_identification\")\n    ):\n        memory_query = True\n    memory_query_signal = False\n    if ctx is not None:\n        try:\n            memory_query_signal = self._has_memory_query_signal(\n                self._memory_query_context_text(ctx)\n            )\n            memory_query = memory_query or memory_query_signal\n        except Exception:\n            pass\n    title_null_reasons = {\n        str(item or \"\").strip().lower()\n        for item in (fd.get(\"_title_null_block_reasons\") or [])\n        if str(item or \"\").strip()\n    }\n    if \"memory_query_guard\" in title_null_reasons:\n        memory_query = True\n    if \"recommendation_guard\" in title_null_reasons and memory_query_signal:\n        memory_query = True\n\n    ocr_explicit_title_unresolved = False\n    if ctx is not None and not has_title and not memory_query:\n        post_data = getattr(ctx, \"post_data\", None) or {}\n        for item in (post_data.get(\"image_enrichment\") or []):\n            if not isinstance(item, dict):\n                continue\n            explicit_title = str(item.get(\"explicit_work_title\") or \"\").strip()\n            if not explicit_title:\n                continue\n            evidence_type = str(item.get(\"evidence_type\") or \"\").strip().lower()\n            title_role = str(item.get(\"title_role\") or \"\").strip().lower()\n            if (\n                item.get(\"promotion_eligible\") is True\n                or evidence_type in {\"explicit_text\", \"cover_title\"}\n                or title_role == \"work_title\"\n            ):\n                ocr_explicit_title_unresolved = True\n                break\n\n    author_new_work_context = False\n    if (\n        ctx is not None\n        and not has_title\n        and not memory_query\n        and not ocr_explicit_title_unresolved\n        and not (\n            top == \"unrelated\"\n            and sub == \"cross_media_game\"\n            and self._has_confirmed_non_novel_comic_context(ctx)\n        )\n    ):\n        try:\n            author_new_work_context = bool(self._collect_author_new_work_alias_surfaces(ctx))\n        except Exception:\n            author_new_work_context = False\n\n    context_only_no_work_anchor = bool(\n        not has_title\n        and top not in {\"core_relevant\", \"adjacent_relevant\"}\n        and resolution in {\"\", \"none\", \"unresolved\"}\n        and not memory_query\n        and not semantic_seed_positive\n        and (\n            \"semantic_seed_review(no_work_anchor)\" in discourse_warning\n            or discourse_seed_review.get(\"is_specific_work_discussion\") is False\n            or \"semantic_seed_review_specific_work_denied\" in discourse_warnings\n            or bool(\n                discourse_warnings\n                & {\n                    \"semantic_seed_review_non_title_terms_removed\",\n                    \"surface_paraphrase_non_title_terms_removed\",\n                }\n            )\n        )\n    )\n    grounding_check = vr.get(\"grounding_check\") or {}\n    if not isinstance(grounding_check, dict):\n        grounding_check = {}\n    anchor_found = str(grounding_check.get(\"anchor_found\") or \"\").strip().lower()\n    non_relevant_no_anchor_context = bool(\n        not is_relevant\n        and not has_title\n        and top not in {\"core_relevant\", \"adjacent_relevant\"}\n        and resolution in {\"\", \"none\", \"unresolved\"}\n        and not has_worklike_gatekeeper_signal\n        and not memory_query\n        and not ocr_explicit_title_unresolved\n        and not author_new_work_context\n        and not semantic_seed_positive\n        and anchor_found in {\"\", \"none\"}\n        and (\n            dt in {\"noise\", \"off_topic\"}\n            or sub in {\"other_quarantine\", \"platform_meta\", \"fandom_meta\"}\n        )\n    )\n\n    is_resolved_work_discussion = bool(\n        is_relevant\n        and has_title\n        and top == \"core_relevant\"\n        and resolution == \"resolved\"\n    )\n    if AgenticPipeline._is_verifier_failure_result(vr):\n        state = \"technical_missing\"\n    elif is_resolved_work_discussion:\n        state = \"resolved\"\n    elif memory_query and not has_title:\n        state = \"unresolvable_memory_query\"\n    elif ocr_explicit_title_unresolved and resolution in {\"\", \"none\", \"unresolved\"}:\n        state = \"ocr_explicit_title_unresolved\"\n    elif author_new_work_context and not has_title and resolution in {\"\", \"none\", \"unresolved\"}:\n        state = \"author_new_work_context\"\n    elif context_only_no_work_anchor or non_relevant_no_anchor_context:\n        state = \"context_only\"\n    elif resolution == \"multi_work\":\n        state = \"multi_work\"\n    elif top == \"adjacent_relevant\":\n        state = \"adjacent\"\n    elif is_novel_related and not has_title:\n        state = \"unresolved_matchable\"\n    elif is_novel_related and has_title and resolution != \"resolved\":\n        state = \"unresolved_matchable\"\n    else:\n        state = \"nonwork\"\n\n    fd_flags = {\n        str(item or \"\").strip()\n        for item in (fd.get(\"consistency_flags\") or [])\n        if str(item or \"\").strip()\n    }\n    if (\n        \"relation_hold_official_recall_guarded_resolution\" not in fd_flags\n        and \"relation_hold_locked_official_guarded_resolution\" not in fd_flags\n        and self._relation_hold_should_block_title_resolution(\n            ctx=ctx,\n            official_title=official_title,\n            verification_result=vr,\n        )\n    ):\n        is_resolved_work_discussion = False\n        state = \"unresolved_matchable\" if is_novel_related else \"nonwork\"\n\n    # Final nonwork meaning outranks abandoned candidate-generation hints.\n    # Keep unresolved work, genre/author context and direct original anchors\n    # separate; neither \"noise\" nor a nonempty GK candidate list is authority.\n    safe_discourse = discourse_analysis if isinstance(discourse_analysis, dict) else {}\n    discourse_domain = str(safe_discourse.get(\"primary_domain\") or \"\").strip().lower()\n    discourse_confidence = str(safe_discourse.get(\"domain_confidence\") or \"\").strip().lower()\n    confirmed_nonwork_domain = bool(\n        discourse_confidence in {\"high\", \"max\"}\n        and is_non_novel_domain(discourse_domain)\n        and all(is_non_novel_domain(domain) for domain in domain_values if domain)\n    )\n    positive_relation = bool(\n        relation.get(\"post_direct_grounding\") is True\n        or (\n            relation_target in {\"specific_work\", \"mixed_or_uncertain\"}\n            and str(relation.get(\"promotion_decision\") or \"\").strip().lower()\n            not in {\"reject\", \"deny\", \"denied\", \"block\", \"blocked\"}\n        )\n    )\n    post = getattr(ctx, \"post_data\", None) or {} if ctx is not None else {}\n    original_chunks: List[str] = []\n    if isinstance(post, dict):\n        original_chunks.append(str(post.get(\"title\") or \"\"))\n        blocks = post.get(\"content_blocks\")\n        if isinstance(blocks, list):\n            for block in blocks:\n                text = block if isinstance(block, str) else (\n                    block.get(\"text\") if isinstance(block, dict)\n                    and str(block.get(\"type\") or \"text\").strip().lower() == \"text\" else None\n                )\n                if isinstance(text, str) and not text.lstrip().startswith((\"[이미지 OCR]\", \"[이미지 설명]\", \"[이미지 요약]\")):\n                    original_chunks.append(text)\n        else:\n            content = post.get(\"content\")\n            if isinstance(content, str):\n                original_chunks.append(content)\n            elif isinstance(content, (list, tuple)):\n                original_chunks.extend(value for value in content if isinstance(value, str))\n    original_author_new_work = any(\n        re.search(\n            r\"(?<![0-9A-Za-z가-힣_])[0-9A-Za-z가-힣_]{2,16}\"\n            r\"(?:\\s*(?:작가|센세|선생|님))?(?:의)?\\s*\"\n            r\"(?:신작|최신작|새\\s*작품|이번\\s*작|차기작|신간|후속작|연재작)\",\n            text,\n        )\n        for text in original_chunks\n    )\n    protected_recommendation = bool(\n        \"recommendation_guard\" in title_null_reasons\n        or (isinstance(context_clues, dict) and (\n            context_clues.get(\"is_recommendation_request\")\n            or context_clues.get(\"is_asking_recommendation\")\n        ))\n        or self._has_recommendation_request_signal(\" \".join(original_chunks))\n        or self._has_recommendation_seeking_surface_signal(\" \".join(original_chunks))\n    )\n    final_nonwork_precedence = bool(\n        is_relevant is False and not has_title and top == \"unrelated\"\n        and resolution == \"none\" and sub not in novel_subtypes\n        and (\n            dt in {\"noise\", \"off_topic\"}\n            or (dt == \"undecodable_reference\" and sub == \"other_quarantine\")\n        )\n        and confirmed_nonwork_domain and not novel_domain\n        and not memory_query and not ocr_explicit_title_unresolved\n        # A title-term hint alone may be a non-work abbreviation (for\n        # example a medical acronym). An explicit semantic work judgment\n        # and the relation/original/official guards below still hold.\n        and discourse_seed_review.get(\"is_specific_work_discussion\") is not True\n        and not positive_relation\n        and not original_author_new_work and not protected_recommendation\n        and vr.get(\"is_relevant\") is not True\n        and vr.get(\"is_novel_discussion\") is not True\n        and fd.get(\"is_relevant\") is not True\n        and fd.get(\"is_novel_discussion\") is not True\n        and anchor_found in {\"\", \"none\"}\n        and not AgenticPipeline._is_verifier_failure_result(vr)\n    )\n    if final_nonwork_precedence:\n        is_novel_related = False\n        is_resolved_work_discussion = False\n        state = \"context_only\"\n\n    return {\n        \"is_novel_related\": is_novel_related,\n        \"is_resolved_work_discussion\": is_resolved_work_discussion,\n        \"title_resolution_state\": state,\n        \"title_resolution_allowed\": bool(state == \"resolved\" and is_resolved_work_discussion),\n    }\n",
+    "sha256": "d1ecafb61bef7d7eb8de28992202af27d1c621e176f88ba96b1c14dac6bc1a2d",
+    "original_file_sha256": "ee9088f69437617e613c382566b0d7a9a01abe6283a595eeffc5fc18a7c06d07",
+    "function": "AgenticPipeline._derive_resolution_scope_fields"
+  },
+  "evidence_refs": {
+    "packet": {
+      "path": "out/p4_quality_followup_20261012/semantic_state57_followup_v1/packet_57.raw.jsonl",
+      "sha256": "da7ed6278ca3eca3a43a105aea1f6251978d2f676dff08dceb0dd619cb3fe42f",
+      "bytes": 60487
+    },
+    "expert_stream": {
+      "path": "out/p4_quality_followup_20261012/semantic_state57_followup_v1/saved_experts_57.json",
+      "sha256": "87368c1f7261478a34f607e962e8df48b820652b136074f7e34a62527b90b854",
+      "bytes": 41156
+    }
+  },
+  "source_canonical_sha256": "aa35b266648356a5e42412403744402d0609bd7db40a830c6d33e7b418ae6da7",
+  "result_canonical_sha256": "9c7ad787175b3a1e4cfac7fbef1858af9fca0ef54b4f5cce6986bab06012dd40"
+}

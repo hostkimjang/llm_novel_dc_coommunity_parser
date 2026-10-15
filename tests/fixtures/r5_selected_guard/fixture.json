@@ -1,0 +1,50 @@
+{
+  "post": {
+    "post_id": 8981568,
+    "title": "나혼렙 재밌냐",
+    "content_blocks": [
+      {
+        "text": "웹툰판은 처음의 그 어리버리랑 광고에 뜨는 쿨가이 캐릭이 매칭이 안되어서 손 떼고",
+        "type": "text"
+      },
+      {
+        "text": "소설판은 내가 소환물 부려서 웃기지도 않는 티티카타하면서 잘난 척하는 주인공 유형(박제후 꺼 같은)을 싫어해서 접었음.",
+        "type": "text"
+      },
+      {
+        "text": "끝까지 읽으면 읽을만했다고 느낌?",
+        "type": "text"
+      }
+    ]
+  },
+  "fanfic_hit": {
+    "domain": "www.joara.com",
+    "eid": "E001",
+    "purpose": "alias_raw_probe",
+    "query": "나혼렙",
+    "rank": 1,
+    "snippet": "2주 전작품소개 ; 작품명 : [나혼렙]성진우의 쌍둥이 형, 카테고리 : 패러디 · 무료연재, 작가명 : 우화월인, 해당 작품의 조회수 : 89455회, 해당 작품을 추천한 유저 : 1948명, 해당 작품을 선호작한 유저 : 1296명, 해당 작품의 총 댓글 수 : 255개, 작품소개 글 : 성진우에게 쌍둥이 형이 있다면? 매주 수요일 목요일에 연재 됩니다. 포스타입, 조아라,투비컨티뉴드 연재중/캐붕주의/ 원작과 비.....[본문] ![\\[나혼렙\\]성진우의 쌍둥이 형]( 패러디무료연재 완결 전체 무료 [나혼렙]성진우의 쌍둥이 형 우화월인 9만 1,948 1,297 255 나혼렙나혼자만레벨업성진우 성진우에게 쌍둥이 형이 있다면? 매주 수요일 목요일에 연재 됩니다. 포스타입, 조아라,투비컨티뉴드 연재중/캐붕주의/ 원작과 비슷한 스토리/ *...",
+    "source_rank": 1,
+    "source_tier": "novel_platform",
+    "title": "[나혼렙]성진우의 쌍둥이 형",
+    "url": "https://www.joara.com/book/1829469"
+  },
+  "official_hits": [
+    {
+      "domain": "series.naver.com",
+      "eid": "E018",
+      "purpose": "alias_bridge_search",
+      "query": "나혼렙 나 혼자만 레벨업 웹소설",
+      "rank": 18,
+      "snippet": "270 화 완결, #NOVEL, #판타지, #시스템, #먼치킨, #성장판무, 줄거리: 「패왕을 보았다」의 작가 추공. 이번에는 레이드의 진수를 보여준다! 『나 혼자만 레벨업』 재능 없는 만년 E급의 헌터, 성진우. 기이한 던전에서 죽음을 목전에 두지만 위기는 언제나 기회와 함께 찾아오는 법! [플레이어가 되실 자격을 획득하셨습니다.] “플레이어? 내가 레벨업을 할 수 있다고?” 전...",
+      "source_rank": 18,
+      "source_tier": "novel_platform",
+      "title": "나 혼자만 레벨업",
+      "url": "https://series.naver.com/novel/detail.series?productNo=3207276"
+    }
+  ],
+  "selected_title": "나 혼자만 레벨업",
+  "selected_url": "https://series.naver.com/novel/detail.series?productNo=3207276",
+  "source_result_sha256": "ff968dc7a839ce9cb8e18f2bd03ed97f2384cf1826f37edb4fba55ff8b2c67e3",
+  "fetch_scope": "LOG_CONFIRMED_OFFICIAL_FETCH_ACTIVE_WITH_TITLE_NOT_STORED_FULL_FETCH_OBJECT"
+}

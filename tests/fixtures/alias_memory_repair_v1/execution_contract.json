@@ -1,0 +1,13 @@
+{
+  "schema_version": "alias_memory_repair_execution_v1",
+  "origin_root": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser",
+  "end_receipt_path": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\p4_quality_followup_20261013\\actual80_followup_parallel12_v1\\end_check_prep_v1\\end_verification.json",
+  "end_receipt_sha256": "ffb509bcb46bf22e9b0ad960443dba295d923bacaafb2a1f972fc9cf22ac03d5",
+  "fixture_manifest_sha256": "6319739e45acba71475383744623981ff6be296b21224409c4c5fd864bff0c5c",
+  "candidate_product_sha256": {
+    "src/llm_batch/agentic_pipeline.py": "fc4a70a57803ad09ef91f0d584e9dc4b29487deb4f1848848b83395999787879",
+    "src/llm_batch/domain/batch_context.py": "702a056d583984564db8ef08e922d06a98585cff1f6e27860a473d19266582ce",
+    "src/llm_batch/domain/alias_learning.py": "2346c3edd7eb3f08e237874d47326d6f793f71b5e6d29f1edf796c3acef45e99",
+    "src/llm_batch/domain/models.py": "f69b8f00ece5e453279cf19edc35a595106d9bc1d3ae491ef8dc8a84f7e69d5e"
+  }
+}

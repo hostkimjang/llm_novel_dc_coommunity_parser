@@ -1,0 +1,11 @@
+{
+  "scope": "EXISTING_POSITIVE_CONTEXT_AND_SHARED_CARRIER_SCHEMA_REGRESSION",
+  "human_gold": false,
+  "support_sha256": {
+    "tests/test_source_bound_surface_title_state.py": "a0612c228f37b79e7b1f028fc1f237d10ca012aaee9e2d1efa46396a6d9ea988",
+    "tests/test_source_general_context_state.py": "5e50caa78e7905b174d6f37e73a1137f0f3046ec7804b0569a604083bbca1422",
+    "tests/test_source_bound_propriety_question_state.py": "55ad2e7f0910c929ed0f49f3aecda1089e16710b29e7263d54fad5a99498d055",
+    "tests/fixtures/actual80_run191128_semantic55_saved_experts.json": "a0ed4376b0e69dfb78eb86f559a9322c10699cc7d2304e77d2749bda464f6985",
+    "tests/fixtures/actual80_run233800_general_state_saved_experts.json": "f5babea982f5fe629b57bff3b878402f9fb1087a524d9a5b1990ffa5770ced72"
+  }
+}

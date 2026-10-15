@@ -20,6 +20,7 @@ from src.llm_batch.grounding.calibration_dataset_readiness import (  # noqa: E40
     validate_dataset_readiness_manifest,
 )
 from src.llm_batch.grounding.candidate_set_calibration_shadow import (  # noqa: E402
+    CALIBRATION_POLICY_SCHEMA_V4,
     CalibrationEvaluationPolicy,
 )
 from tools.run_candidate_set_nil_shadow_harness import (  # noqa: E402
@@ -90,6 +91,22 @@ def _ref(path: Path, raw: bytes) -> dict[str, Any]:
     }
 
 
+def require_actual_readiness_policy(
+    policy: CalibrationEvaluationPolicy,
+) -> CalibrationEvaluationPolicy:
+    """Require the exact interval protocol accepted by FROZEN_ACTUAL evaluation."""
+
+    if (
+        policy.policy_scope != "FROZEN_ACTUAL_PRE_REGISTERED"
+        or policy.schema_version != CALIBRATION_POLICY_SCHEMA_V4
+    ):
+        raise ValueError(
+            "actual readiness requires a FROZEN_ACTUAL_PRE_REGISTERED "
+            "policy v4 with a hash-bound interval protocol"
+        )
+    return policy
+
+
 def build_current_readiness(
     *,
     p1_run_spec_path: str | Path,
@@ -127,8 +144,7 @@ def build_current_readiness(
             policy = CalibrationEvaluationPolicy(**policy_payload)
         except (TypeError, ValueError) as exc:
             raise ValueError(f"invalid actual evaluation policy: {exc}") from exc
-        if policy.policy_scope != "FROZEN_ACTUAL_PRE_REGISTERED":
-            raise ValueError("actual readiness requires FROZEN_ACTUAL_PRE_REGISTERED policy")
+        require_actual_readiness_policy(policy)
         policy_sha256 = policy.policy_sha256
     manifest = build_dataset_readiness(
         p1_comparison=comparison,

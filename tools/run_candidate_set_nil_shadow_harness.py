@@ -167,9 +167,9 @@ def _public_snapshot_hash(snapshot: dict[str, Any]) -> str:
 def _implementation_contract() -> dict[str, Any]:
     refs = {
         "harness_tool": _artifact_ref(Path(__file__)),
-        "candidate_generation": _artifact_ref(ROOT / "src/llm_batch/candidate_generation.py"),
-        "candidate_set_shadow": _artifact_ref(ROOT / "src/llm_batch/candidate_set_shadow.py"),
-        "candidate_audit": _artifact_ref(ROOT / "src/llm_batch/candidate_audit.py"),
+        "candidate_generation": _artifact_ref(ROOT / "src/llm_batch/grounding/candidate_generation.py"),
+        "candidate_set_shadow": _artifact_ref(ROOT / "src/llm_batch/grounding/candidate_set_shadow.py"),
+        "candidate_audit": _artifact_ref(ROOT / "src/llm_batch/grounding/candidate_audit.py"),
         "agentic_pipeline": _artifact_ref(ROOT / "src/llm_batch/agentic_pipeline.py"),
     }
     return {"artifacts": refs, "sha256": _canonical_hash({name: ref["sha256"] for name, ref in sorted(refs.items())})}

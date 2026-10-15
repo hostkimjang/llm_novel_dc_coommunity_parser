@@ -1,0 +1,3364 @@
+{
+  "checkpoint_line1": 66,
+  "checkpoint_result": {
+    "analysis_result": {
+      "analysis": {
+        "detected_titles": [],
+        "is_nsfw": false,
+        "micro_tags": [],
+        "notes": "[문맥과 댓글 역할]\n해외소설도 추천 범위로 허용한다. 그 범주의 실제 작품을 읽고 좋게 평가했다는 뜻으로 확대하지 않는다.\n화자는 자신의 기분·상태를 말한다. 작품 내용에 대한 구체적인 질 평가와는 구분한다.\n해외소설도 요청의 허용 범위에 포함한다. 원하는 소재나 읽고 호평한 작품으로 바꾸지 않는다.\n121세기는 찾는 작품의 비교 기준이다.\n댓글 4의 화자는 읽어본 내용이 기대하던 느낌과 다르다고 말한다.\n댓글 4의 화자는 감사를 전한다. 감사만으로 추천 내용에 완전히 동의했다고 볼 수 없다.\n댓글 5의 화자는 140화 이후  건담 타고 다니는데 그때부터 메카물 느낌남라고 설명한다. 이는 해당 댓글의 주장이다.\n댓글 6의 화자는 언급된 지점까지는 읽지 않았다고 말한다.\n댓글 6의 화자는 감사를 전한다. 감사만으로 추천 내용에 완전히 동의했다고 볼 수 없다.\n댓글 6의 화자는 언급된 지점까지는 읽지 않았다고 밝힌다. 다른 지점까지의 독서나 완독 여부는 이 표현으로 확정하지 않는다.\n[발화 해석]\n- 발화 유형: 추천 요청\n- 대상: 요청 조건\n- 작성자 조건: 글에서 쇠비린내랑 부동액 냄새 나는 글 없냐 / 거대로봇 비행선 파워아머병사 고성능ai 인류의 숙적 / 이런거 나오는 소설 없냐 / 해외소설이라도 좋아 / 121세기가 그나마 비슷한 느낌이라 최근 기분이 좋다\n- 비교 기준 표면: '121세기'(작품 여부 미확인)\n[작성자 발화·원문 귀속]\n- 작성자 질문: 「글에서 쇠비린내랑 부동액 냄새 나는 글 없냐」\n- 작성자 발화: 「거대로봇 비행선 파워아머병사 고성능ai 인류의 숙적」\n- 작성자 질문: 「이런거 나오는 소설 없냐」\n- 작성자 발화: 「해외소설이라도 좋아」\n- 작성자 발화: 「121세기가 그나마 비슷한 느낌이라 최근 기분이 좋다」\n[댓글 발화·원문 귀속]\n- 댓글 작성자 ㅇㅇ1: 「우주괴물...」\n- 댓글 작성자 ㅇㅇ: 「메카닉 쪽 내공 ㅈㄴ 높아야 난도질 안 당하는 장르라 ㅈㄴ 빡세지」\n- 댓글 작성자 ㅇㅇ2: 「메카네크」\n- 댓글 작성자 lastmania: 「읽어봤는데 내가바라는 그런게 아니었음 댓글은 고맙다   - dc App」\n- 댓글 작성자 ㅇㅇ2: 「한 140화 부터 건담 타고 다니는데 그때부터 메카물 느낌남」\n- 댓글 작성자 lastmania: 「거기까진 안 읽어봤는데 고마워  - dc App」\n[원문] 글에서 쇠비린내랑 부동액 냄새 나는 글 없냐 / 거대로봇 비행선 파워아머병사 고성능ai 인류의 숙적 / 이런거 나오는 소설 없냐 / 해외소설이라도 좋아 / 121세기가 그나마 비슷한 느낌이라 최근 기분이 좋다 / - dc official App",
+        "nsfw_assessment_status": "NOT_EVALUATED",
+        "sentiment_profile": null,
+        "user_segment": null
+      },
+      "batch_context_learning_envelope": {
+        "decoded_terms": [],
+        "identified_author": null,
+        "identified_characters": [],
+        "schema_version": "batch_context_learning_envelope_v1"
+      },
+      "identity": {
+        "anchor_strength": "none",
+        "anchor_type": "none",
+        "blocked_official_title": null,
+        "blocked_official_title_url": null,
+        "candidate_audit_lint": [],
+        "candidate_generation_miss": false,
+        "candidate_ledger": {
+          "candidate_audit_lint_reasons": [],
+          "candidate_generation": {
+            "cap": 24,
+            "count_basis": "normalized_title_url_role_unique",
+            "emitted_source_count": 1,
+            "metadata_fingerprint": "c1698dc1ee1e547cb7d63a7982841706575ddeae0f9efb253e4afb605bea6138",
+            "observed_sources_fingerprint": "afbef62839f090e32cb773483a4da35ac1dbe251643cf615a76efc098b655073",
+            "reason_codes": [
+              "upstream_completeness_unknown"
+            ],
+            "retained_sources_fingerprint": "afbef62839f090e32cb773483a4da35ac1dbe251643cf615a76efc098b655073",
+            "schema_version": "candidate_generation_v1",
+            "scope": "serializer_preservation_inventory",
+            "source_key_fingerprint": "cb6a605090bb3e26226070ddef3dfbcaa51f001720bbe6b126f4d79cb7ccfa8f",
+            "status": "UNKNOWN",
+            "unique_valid_source_count": 1,
+            "upstream_completeness": "UNKNOWN"
+          },
+          "candidate_generation_proof": {
+            "complete_receipt_count": 0,
+            "extra_receipt_count": 0,
+            "local_snapshot_count": 2,
+            "local_truncated_count": 0,
+            "metadata_fingerprint": "fc7588d88392567ff51b036a05f63d96170f88ffaec2a3860ea062ca7c814bf6",
+            "missing_receipt_count": 0,
+            "observed_producers": [
+              "search"
+            ],
+            "plan_count": 4,
+            "plan_set_fingerprint": "8c67f05a0c871df509e43ec6af71ac3f1772f263d3fa0f65d5dcaad55b51b2ea",
+            "planned_operation_count": 4,
+            "reason_codes": [
+              "bounded_plan_unfinished",
+              "bounded_producer_proof_truncated",
+              "producer_receipt_truncated",
+              "producer_receipt_unknown",
+              "required_producer_missing"
+            ],
+            "receipt_count": 4,
+            "receipt_set_fingerprint": "f691015543b92109278c4f1ba97c9b662adf8a03f4f20bed226abe37339cb45d",
+            "required_producers": [
+              "fetch",
+              "search"
+            ],
+            "schema_version": "candidate_generation_proof_v1",
+            "scope": "bounded_candidate_generation_proof",
+            "status": "TRUNCATED",
+            "truncated_receipt_count": 3,
+            "unfinished_plan_count": 4,
+            "unknown_receipt_count": 1,
+            "upstream_completeness": "UNKNOWN"
+          },
+          "candidate_ledger_status": "promotion_blocked",
+          "candidate_producer_plans": [
+            {
+              "enumeration_finished": false,
+              "metadata_fingerprint": "7244824b0429d7ba6dfe1be18e09b3220c64fa312d72078a8be12edb1b0ca2d4",
+              "occurrence": 1,
+              "plan_fingerprint": "53846eac93a0107c8c9d22109f3fd1c1a7a6a79c0b61b1bf4fb3a33eaa5ccbf6",
+              "planned_operation_count": 1,
+              "planned_operation_fingerprints": [
+                "093abbcf4f72a4da0ce06fc2b578970c30d9059ebebd02e41a873c196ae9257c"
+              ],
+              "producer": "search",
+              "reason_codes": [
+                "bounded_plan_unfinished"
+              ],
+              "schema_version": "candidate_producer_plan_v1",
+              "scope": "bounded_candidate_producer_plan"
+            },
+            {
+              "enumeration_finished": false,
+              "metadata_fingerprint": "ea0a2cad14ed69d9e5fb079cacb5a95ec669e86dd775705062950f68bb1719d9",
+              "occurrence": 2,
+              "plan_fingerprint": "e39dcd041c24a89272a0c6aa80e3513e92564365c14b143d04b32055ae8b513e",
+              "planned_operation_count": 1,
+              "planned_operation_fingerprints": [
+                "15d89f2237881a063c4d6bfe15e0418983727154531ece84c130055d8c1c7dcf"
+              ],
+              "producer": "search",
+              "reason_codes": [
+                "bounded_plan_unfinished"
+              ],
+              "schema_version": "candidate_producer_plan_v1",
+              "scope": "bounded_candidate_producer_plan"
+            },
+            {
+              "enumeration_finished": false,
+              "metadata_fingerprint": "4fe1a1b0d7993d5afcf94701b1a0ca24df0e4574640d64f72811ad6b08cc5fed",
+              "occurrence": 3,
+              "plan_fingerprint": "45ec2634c0aed410ada9b97696380ebbb81e0d09628cd0112663bf10e6b1fc19",
+              "planned_operation_count": 1,
+              "planned_operation_fingerprints": [
+                "093abbcf4f72a4da0ce06fc2b578970c30d9059ebebd02e41a873c196ae9257c"
+              ],
+              "producer": "search",
+              "reason_codes": [
+                "bounded_plan_unfinished"
+              ],
+              "schema_version": "candidate_producer_plan_v1",
+              "scope": "bounded_candidate_producer_plan"
+            },
+            {
+              "enumeration_finished": false,
+              "metadata_fingerprint": "6cae826b798aea054db2490ac144c1432730865ad1735d3c287495040348887e",
+              "occurrence": 4,
+              "plan_fingerprint": "4e7cd9aa05988145bf072661795d68effb8172dd593722d8d0cd3c0aa998ac22",
+              "planned_operation_count": 1,
+              "planned_operation_fingerprints": [
+                "15d89f2237881a063c4d6bfe15e0418983727154531ece84c130055d8c1c7dcf"
+              ],
+              "producer": "search",
+              "reason_codes": [
+                "bounded_plan_unfinished"
+              ],
+              "schema_version": "candidate_producer_plan_v1",
+              "scope": "bounded_candidate_producer_plan"
+            }
+          ],
+          "candidate_producer_receipts": [
+            {
+              "accepted_count": 0,
+              "attempted_count": 1,
+              "degraded": false,
+              "enumeration_finished": true,
+              "error_status": "NONE",
+              "from_cache": false,
+              "input_fingerprint": "093abbcf4f72a4da0ce06fc2b578970c30d9059ebebd02e41a873c196ae9257c",
+              "metadata_fingerprint": "be34a9d2519b80568bcccc7a37c5590f14d9e36ac19c60a70bd083aa891f0959",
+              "occurrence": 1,
+              "operation_id": "5997dbb7b1daefbd4608b6545092d186817afc6bd8dd2b59be68b546dd5fb133",
+              "output_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "plan_fingerprint": "53846eac93a0107c8c9d22109f3fd1c1a7a6a79c0b61b1bf4fb3a33eaa5ccbf6",
+              "possible_throttle": false,
+              "producer": "search",
+              "raw_count": 25,
+              "reason_codes": [
+                "bounded_operation_finished",
+                "producer_output_truncated"
+              ],
+              "schema_version": "candidate_producer_receipt_v1",
+              "scope": "bounded_candidate_producer_operation",
+              "status": "TRUNCATED"
+            },
+            {
+              "accepted_count": 4,
+              "attempted_count": 1,
+              "degraded": false,
+              "enumeration_finished": true,
+              "error_status": "NONE",
+              "from_cache": false,
+              "input_fingerprint": "15d89f2237881a063c4d6bfe15e0418983727154531ece84c130055d8c1c7dcf",
+              "metadata_fingerprint": "41907c0f1b386449c0ed60992d816a3dda41f7763b7007d0e6a7dbce940cc627",
+              "occurrence": 2,
+              "operation_id": "ff3bb65348a09c96f1f2917965f285e15d92974551a3942de40a52bf99d95a47",
+              "output_fingerprint": "6627d905907e98703de7a7adc17833a620b3f0cbb653f6a46265d98cc766f5a1",
+              "plan_fingerprint": "e39dcd041c24a89272a0c6aa80e3513e92564365c14b143d04b32055ae8b513e",
+              "possible_throttle": false,
+              "producer": "search",
+              "raw_count": 24,
+              "reason_codes": [
+                "bounded_operation_finished",
+                "producer_output_truncated"
+              ],
+              "schema_version": "candidate_producer_receipt_v1",
+              "scope": "bounded_candidate_producer_operation",
+              "status": "TRUNCATED"
+            },
+            {
+              "accepted_count": 0,
+              "attempted_count": 1,
+              "degraded": false,
+              "enumeration_finished": true,
+              "error_status": "NONE",
+              "from_cache": false,
+              "input_fingerprint": "093abbcf4f72a4da0ce06fc2b578970c30d9059ebebd02e41a873c196ae9257c",
+              "metadata_fingerprint": "9fef2304ed796dc7a1958371cf7f01a3ba17f7e76c10521fcef24dbf69cdb908",
+              "occurrence": 3,
+              "operation_id": "51c5b85dfa8ac67d2f242d444f022a39c13604952ffd9d0d9039596cdd4e1293",
+              "output_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "plan_fingerprint": "45ec2634c0aed410ada9b97696380ebbb81e0d09628cd0112663bf10e6b1fc19",
+              "possible_throttle": false,
+              "producer": "search",
+              "raw_count": 25,
+              "reason_codes": [
+                "bounded_operation_finished",
+                "producer_output_truncated"
+              ],
+              "schema_version": "candidate_producer_receipt_v1",
+              "scope": "bounded_candidate_producer_operation",
+              "status": "TRUNCATED"
+            },
+            {
+              "accepted_count": 4,
+              "attempted_count": 1,
+              "degraded": false,
+              "enumeration_finished": true,
+              "error_status": "NONE",
+              "from_cache": true,
+              "input_fingerprint": "15d89f2237881a063c4d6bfe15e0418983727154531ece84c130055d8c1c7dcf",
+              "metadata_fingerprint": "6e54eec3b66556aec0e395dbcab4c354e75006e2076e8d2440b3fcff1a954ac9",
+              "occurrence": 4,
+              "operation_id": "226da286686406da0a9656c85a0dd2fdb3980e5cc469fc96767b92377d0142e1",
+              "output_fingerprint": "6627d905907e98703de7a7adc17833a620b3f0cbb653f6a46265d98cc766f5a1",
+              "plan_fingerprint": "4e7cd9aa05988145bf072661795d68effb8172dd593722d8d0cd3c0aa998ac22",
+              "possible_throttle": false,
+              "producer": "search",
+              "raw_count": 24,
+              "reason_codes": [
+                "bounded_operation_finished",
+                "cache_origin_proof_missing",
+                "cache_replay"
+              ],
+              "schema_version": "candidate_producer_receipt_v1",
+              "scope": "bounded_candidate_producer_operation",
+              "status": "UNKNOWN"
+            }
+          ],
+          "candidate_set_shadow": {
+            "action": "NOT_EVALUATED",
+            "action_applied": false,
+            "baseline_decision_fingerprint": "1b03f3de8713454efbed9c6ca5d7db043d3ef02596518c8fc981ef070ba71a68",
+            "baseline_selected_candidate_id": null,
+            "candidate_set": {
+              "candidate_inventory_count_hint": 1,
+              "candidate_set_fingerprint": "7ba7c585621d3f5fac6d5421c4976e330c97c613c6d631995d41b96ce885e227",
+              "candidate_set_recall_status": "NOT_EVALUABLE_GENERATION_UNKNOWN",
+              "candidates": [
+                {
+                  "aliases": [
+                    "글에서"
+                  ],
+                  "baseline_selected": false,
+                  "candidate_id": "cand_5da056518f774ed471a76ae39a2b6d1beed1f9c1c547aac3f63f2e70983f4674",
+                  "event_eligible": false,
+                  "evidence_kinds": [
+                    "candidate_preservation"
+                  ],
+                  "identity_conflict": false,
+                  "local_preservation_types": [
+                    "local_surface_diagnostic_hold"
+                  ],
+                  "negative_evidence": [
+                    "short_alias_hold_without_promotion"
+                  ],
+                  "option_kind": "UNLINKED_SURFACE",
+                  "preservation_roles": [
+                    "local_surface_diagnostic_hold"
+                  ],
+                  "promotion_policies": [
+                    "hold_without_promotion"
+                  ],
+                  "publish_support_present": false,
+                  "reason_codes": [
+                    "candidate_inventory_preserved_without_selection"
+                  ],
+                  "reference_roles": [
+                    "candidate"
+                  ],
+                  "source_fields": [
+                    "candidate_preservation_sources",
+                    "promotion_gate_evidence"
+                  ],
+                  "source_tiers": [
+                    "community"
+                  ],
+                  "titles": [
+                    "글에서"
+                  ],
+                  "urls": []
+                }
+              ],
+              "event_candidate_count": 0,
+              "generation_cap": 6,
+              "generation_status": "UNKNOWN",
+              "integrity_status": "GO",
+              "nil_label": "__NIL__",
+              "observation_fingerprint": "bd63f82d924ef9d244bdad8124f7675fc90ba65d9f706af19f3caffad9cf3fca",
+              "observation_signatures": [
+                "b1cedfdc3dc2b367388916754d6c2787cd0b99e2a506154cf187012a2d272198",
+                "ecfcd4f6512743b5fcca9047ab5089781cd327056ac585cfbef07938c0eaa885"
+              ],
+              "observed_late_surface_count": 0,
+              "reason_codes": [
+                "candidate_generation_completeness_unknown",
+                "no_event_eligible_work_candidates",
+                "unlinked_surfaces_preserved_outside_event_space"
+              ],
+              "schema_version": "candidate_set_v1",
+              "source_candidate_pair_count": 1,
+              "source_record_count": 2,
+              "typed_inventory_pair_count": 1,
+              "unlinked_surface_count": 1,
+              "work_candidate_count": 0
+            },
+            "event_probabilities": [
+              {
+                "label": "__NIL__",
+                "probability": null
+              }
+            ],
+            "input_fingerprint": "df8363558295ab52bac8c41141fa6a7062e4c1f909d5e0a12514c2985d572718",
+            "operational_effect": "NONE_SHADOW_ONLY",
+            "probability_status": "NOT_AVAILABLE_UNCALIBRATED",
+            "reason_codes": [
+              "candidate_generation_completeness_unknown",
+              "no_event_eligible_work_candidates",
+              "probability_uncalibrated",
+              "shadow_action_not_applied",
+              "unlinked_surfaces_preserved_outside_event_space"
+            ],
+            "schema_version": "candidate_set_nil_shadow_v1",
+            "selected_label": null,
+            "shadow_fingerprint": "6d918e53cd7bdc5e27470255dbc3fae90f92853e3041617d3a82e007f759e898"
+          },
+          "candidate_stage_receipts": [
+            {
+              "cap": 8,
+              "count_basis": "normalized_title_unique_before_stage_row_cap",
+              "emitted_source_count": 5,
+              "metadata_fingerprint": "506c95ed6fa5bc17deed386e209f255992f20bcada4234609507b3fb6313ba66",
+              "observed_source_count": 5,
+              "observed_sources_fingerprint": "bf91c617555930e003c1be7d0916fbb870206b2fcf07f92f5534ba78e7fdde32",
+              "occurrence": 1,
+              "producer": "gatekeeper",
+              "reason_codes": [
+                "upstream_completeness_unknown"
+              ],
+              "retained_source_count": 5,
+              "retained_sources_fingerprint": "bf91c617555930e003c1be7d0916fbb870206b2fcf07f92f5534ba78e7fdde32",
+              "schema_version": "candidate_stage_receipt_v1",
+              "scope": "expert_stage_candidate_inventory",
+              "source_key_fingerprint": "36e3fd0c2eac8f530bad668b0209ddaddfa4daf68a176b81d3f92a3c6c8e9b0a",
+              "stage": "comment_title_candidates",
+              "status": "UNKNOWN",
+              "unique_valid_source_count": 5,
+              "upstream_completeness": "UNKNOWN"
+            }
+          ],
+          "hold_without_candidates": false,
+          "identity_consistency_lint_reasons": [],
+          "official_title_lint_reasons": [],
+          "output_consistency_lint_reasons": [],
+          "promotion_blocked": true,
+          "promotion_decision": {
+            "bypassed_gate": false,
+            "candidate_preserved": true,
+            "contract_version": "promotion_contract_v2",
+            "input_fingerprint": "6c9341213cf4687989e4c3aa54ef309027f91576b2fc8d35e3e6c25aed2a0e03",
+            "official_title": null,
+            "official_url": null,
+            "publish_allowed": false,
+            "reason_codes": [
+              "no_public_candidate_title",
+              "candidate_inventory_preserved_without_selection",
+              "row_discussion_missing",
+              "title_resolution_state_not_publishable",
+              "work_resolution_not_publishable",
+              "scope_unknown",
+              "scope_not_current_work",
+              "serializer_candidate_inventory_hold",
+              "candidate_inventory_unselected"
+            ],
+            "scope": {
+              "competing_candidates": [],
+              "confidence": "low",
+              "conflict_reason_codes": [
+                "serializer_candidate_inventory_hold",
+                "candidate_inventory_unselected"
+              ],
+              "direct_bridge_sources": [],
+              "scope_kind": "unknown"
+            },
+            "status": "candidate_only"
+          },
+          "promotion_gate_evidence": [
+            {
+              "candidate_title": "글에서",
+              "candidate_url": "",
+              "kind": "candidate_preservation",
+              "reason_code": "candidate_inventory_preserved_without_selection",
+              "source_path_or_snippet": "글에서",
+              "strength": "medium",
+              "supports_publish": false,
+              "title_url_match": null
+            }
+          ],
+          "promotion_gate_state": {
+            "candidate_inventory_count": 1,
+            "candidate_title": "",
+            "candidate_url": "",
+            "caveated_alias_boundary": false,
+            "discussion_type": "trope_discussion",
+            "official_title_exists": false,
+            "post_id": 8620907,
+            "prior_variance_quarantine": false,
+            "row_discusses_work_as_work": false,
+            "same_title_source_movement": false,
+            "scope": {
+              "competing_candidates": [],
+              "confidence": "low",
+              "conflict_reason_codes": [
+                "serializer_candidate_inventory_hold",
+                "candidate_inventory_unselected"
+              ],
+              "direct_bridge_sources": [],
+              "scope_kind": "unknown"
+            },
+            "source": "serializer_candidate_inventory_preserved",
+            "title_resolution_state": "adjacent",
+            "work_resolution": "none"
+          },
+          "publish_contract_input_fingerprint": "6c9341213cf4687989e4c3aa54ef309027f91576b2fc8d35e3e6c25aed2a0e03",
+          "publish_contract_trace": {
+            "bypassed_gate": false,
+            "contract_version": "promotion_contract_v2",
+            "gate_decision": {
+              "bypassed_gate": false,
+              "candidate_preserved": true,
+              "contract_version": "promotion_contract_v2",
+              "input_fingerprint": "6c9341213cf4687989e4c3aa54ef309027f91576b2fc8d35e3e6c25aed2a0e03",
+              "official_title": null,
+              "official_url": null,
+              "publish_allowed": false,
+              "reason_codes": [
+                "no_public_candidate_title",
+                "candidate_inventory_preserved_without_selection",
+                "row_discussion_missing",
+                "title_resolution_state_not_publishable",
+                "work_resolution_not_publishable",
+                "scope_unknown",
+                "scope_not_current_work",
+                "serializer_candidate_inventory_hold",
+                "candidate_inventory_unselected"
+              ],
+              "scope": {
+                "competing_candidates": [],
+                "confidence": "low",
+                "conflict_reason_codes": [
+                  "serializer_candidate_inventory_hold",
+                  "candidate_inventory_unselected"
+                ],
+                "direct_bridge_sources": [],
+                "scope_kind": "unknown"
+              },
+              "status": "candidate_only"
+            },
+            "input_fingerprint": "6c9341213cf4687989e4c3aa54ef309027f91576b2fc8d35e3e6c25aed2a0e03",
+            "post_gate_identity": {
+              "candidate_ledger_status": "promotion_blocked",
+              "official_title": null,
+              "official_url": null,
+              "title_resolution_allowed": false,
+              "title_resolution_state": "adjacent",
+              "work_resolution": "none"
+            },
+            "pre_gate_candidate": {
+              "candidate_ledger_status": null,
+              "official_title": null,
+              "official_url": null,
+              "title_resolution_allowed": null,
+              "title_resolution_state": null,
+              "work_resolution": null
+            },
+            "reason_codes": [
+              "no_public_candidate_title",
+              "candidate_inventory_preserved_without_selection",
+              "row_discussion_missing",
+              "title_resolution_state_not_publishable",
+              "work_resolution_not_publishable",
+              "scope_unknown",
+              "scope_not_current_work",
+              "serializer_candidate_inventory_hold",
+              "candidate_inventory_unselected"
+            ],
+            "scope_state": {
+              "competing_candidates": [],
+              "confidence": "low",
+              "conflict_reason_codes": [
+                "serializer_candidate_inventory_hold",
+                "candidate_inventory_unselected"
+              ],
+              "direct_bridge_sources": [],
+              "scope_kind": "unknown"
+            }
+          },
+          "publish_contract_version": "promotion_contract_v2",
+          "publish_ledger": {
+            "candidate_preservation": {
+              "candidate_ledger_status": null,
+              "official_title": null,
+              "official_url": null,
+              "title_resolution_allowed": null,
+              "title_resolution_state": null,
+              "work_resolution": null
+            },
+            "gate_decision": {
+              "bypassed_gate": false,
+              "candidate_preserved": true,
+              "contract_version": "promotion_contract_v2",
+              "input_fingerprint": "6c9341213cf4687989e4c3aa54ef309027f91576b2fc8d35e3e6c25aed2a0e03",
+              "official_title": null,
+              "official_url": null,
+              "publish_allowed": false,
+              "reason_codes": [
+                "no_public_candidate_title",
+                "candidate_inventory_preserved_without_selection",
+                "row_discussion_missing",
+                "title_resolution_state_not_publishable",
+                "work_resolution_not_publishable",
+                "scope_unknown",
+                "scope_not_current_work",
+                "serializer_candidate_inventory_hold",
+                "candidate_inventory_unselected"
+              ],
+              "scope": {
+                "competing_candidates": [],
+                "confidence": "low",
+                "conflict_reason_codes": [
+                  "serializer_candidate_inventory_hold",
+                  "candidate_inventory_unselected"
+                ],
+                "direct_bridge_sources": [],
+                "scope_kind": "unknown"
+              },
+              "status": "candidate_only"
+            },
+            "public_publish": {
+              "candidate_ledger_status": "promotion_blocked",
+              "official_title": null,
+              "official_url": null,
+              "title_resolution_allowed": false,
+              "title_resolution_state": "adjacent",
+              "work_resolution": "none"
+            }
+          },
+          "safe_resolved": false,
+          "title_candidate_generation": {
+            "cap": 6,
+            "count_basis": "normalized_title_unique_after_policy_prune",
+            "emitted_source_count": 0,
+            "metadata_fingerprint": "f51eafcdb58549828abc657b311790529327787b7b62cc6b5b307a68b282bff7",
+            "observed_sources_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "reason_codes": [
+              "upstream_completeness_unknown"
+            ],
+            "retained_sources_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "schema_version": "title_candidate_generation_v1",
+            "scope": "title_candidate_ranked_inventory",
+            "source_key_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "status": "UNKNOWN",
+            "unique_valid_source_count": 0,
+            "upstream_completeness": "UNKNOWN"
+          },
+          "title_candidate_generation_retained_sources": [],
+          "title_resolution_allowed": false,
+          "title_resolution_state": "adjacent",
+          "work_resolution": "none"
+        },
+        "candidate_ledger_status": "promotion_blocked",
+        "candidate_preservation_sources": [
+          {
+            "alias_or_mention": "글에서",
+            "confidence": "Low",
+            "local_preservation_type": "local_surface_diagnostic_hold",
+            "negative_evidence": [
+              "short_alias_hold_without_promotion"
+            ],
+            "official_title": "글에서",
+            "preservation_role": "local_surface_diagnostic_hold",
+            "promotion_policy": "hold_without_promotion",
+            "reference_role": "candidate",
+            "source_tier": "community"
+          }
+        ],
+        "comparison_target": null,
+        "consistency_flags": [
+          "unresolved_worklike_hold:title_led_consumption",
+          "genre_trope_context_only_no_work_anchor",
+          "context_only_no_work_anchor",
+          "notes_demoted_for_unresolved",
+          "batch_memory_alias_rescue_blocked_nonwork_context",
+          "batch_memory_alias_rescue_blocked_genre_context"
+        ],
+        "context_sources": [
+          "title",
+          "body",
+          "comments"
+        ],
+        "discussion_type": "recommendation",
+        "entity_mentions": null,
+        "evidence": null,
+        "future_watch_target": null,
+        "hold_unresolved": false,
+        "hold_without_candidates": false,
+        "identity_consistency_lint": [],
+        "identity_state": "adjacent_relevant",
+        "image_enrichment_limitations": null,
+        "image_evidence_catalog": null,
+        "image_fetch_count": null,
+        "image_fetch_success": null,
+        "inference": null,
+        "is_novel_related": true,
+        "is_relevant": false,
+        "is_resolved_work_discussion": false,
+        "mentioned_works": null,
+        "novel_identity": {
+          "heretic_url": null,
+          "official_title": null
+        },
+        "ocr_enabled": null,
+        "official_title_lint": [],
+        "output_consistency_lint": [],
+        "primary_subject_text": "「글에서 쇠비린내랑 부동액 냄새 나는·거대로봇 비행선 파워아머병사 고성능ai 인류의 숙적·이런거 나오는」 조건을 충족하는 작품 추천 요청.",
+        "primary_subject_type": "recommendation_request",
+        "primary_work": null,
+        "promotion_blocked": true,
+        "promotion_decision": {
+          "bypassed_gate": false,
+          "candidate_preserved": true,
+          "contract_version": "promotion_contract_v2",
+          "input_fingerprint": "6c9341213cf4687989e4c3aa54ef309027f91576b2fc8d35e3e6c25aed2a0e03",
+          "official_title": null,
+          "official_url": null,
+          "publish_allowed": false,
+          "reason_codes": [
+            "no_public_candidate_title",
+            "candidate_inventory_preserved_without_selection",
+            "row_discussion_missing",
+            "title_resolution_state_not_publishable",
+            "work_resolution_not_publishable",
+            "scope_unknown",
+            "scope_not_current_work",
+            "serializer_candidate_inventory_hold",
+            "candidate_inventory_unselected"
+          ],
+          "scope": {
+            "competing_candidates": [],
+            "confidence": "low",
+            "conflict_reason_codes": [
+              "serializer_candidate_inventory_hold",
+              "candidate_inventory_unselected"
+            ],
+            "direct_bridge_sources": [],
+            "scope_kind": "unknown"
+          },
+          "status": "candidate_only"
+        },
+        "promotion_gate_evidence": [
+          {
+            "candidate_title": "글에서",
+            "candidate_url": "",
+            "kind": "candidate_preservation",
+            "reason_code": "candidate_inventory_preserved_without_selection",
+            "source_path_or_snippet": "글에서",
+            "strength": "medium",
+            "supports_publish": false,
+            "title_url_match": null
+          }
+        ],
+        "promotion_gate_state": {
+          "candidate_inventory_count": 1,
+          "candidate_title": "",
+          "candidate_url": "",
+          "caveated_alias_boundary": false,
+          "discussion_type": "trope_discussion",
+          "official_title_exists": false,
+          "post_id": 8620907,
+          "prior_variance_quarantine": false,
+          "row_discusses_work_as_work": false,
+          "same_title_source_movement": false,
+          "scope": {
+            "competing_candidates": [],
+            "confidence": "low",
+            "conflict_reason_codes": [
+              "serializer_candidate_inventory_hold",
+              "candidate_inventory_unselected"
+            ],
+            "direct_bridge_sources": [],
+            "scope_kind": "unknown"
+          },
+          "source": "serializer_candidate_inventory_preserved",
+          "title_resolution_state": "adjacent",
+          "work_resolution": "none"
+        },
+        "publish_contract_input_fingerprint": "6c9341213cf4687989e4c3aa54ef309027f91576b2fc8d35e3e6c25aed2a0e03",
+        "publish_contract_trace": {
+          "bypassed_gate": false,
+          "contract_version": "promotion_contract_v2",
+          "gate_decision": {
+            "bypassed_gate": false,
+            "candidate_preserved": true,
+            "contract_version": "promotion_contract_v2",
+            "input_fingerprint": "6c9341213cf4687989e4c3aa54ef309027f91576b2fc8d35e3e6c25aed2a0e03",
+            "official_title": null,
+            "official_url": null,
+            "publish_allowed": false,
+            "reason_codes": [
+              "no_public_candidate_title",
+              "candidate_inventory_preserved_without_selection",
+              "row_discussion_missing",
+              "title_resolution_state_not_publishable",
+              "work_resolution_not_publishable",
+              "scope_unknown",
+              "scope_not_current_work",
+              "serializer_candidate_inventory_hold",
+              "candidate_inventory_unselected"
+            ],
+            "scope": {
+              "competing_candidates": [],
+              "confidence": "low",
+              "conflict_reason_codes": [
+                "serializer_candidate_inventory_hold",
+                "candidate_inventory_unselected"
+              ],
+              "direct_bridge_sources": [],
+              "scope_kind": "unknown"
+            },
+            "status": "candidate_only"
+          },
+          "input_fingerprint": "6c9341213cf4687989e4c3aa54ef309027f91576b2fc8d35e3e6c25aed2a0e03",
+          "post_gate_identity": {
+            "candidate_ledger_status": "promotion_blocked",
+            "official_title": null,
+            "official_url": null,
+            "title_resolution_allowed": false,
+            "title_resolution_state": "adjacent",
+            "work_resolution": "none"
+          },
+          "pre_gate_candidate": {
+            "candidate_ledger_status": null,
+            "official_title": null,
+            "official_url": null,
+            "title_resolution_allowed": null,
+            "title_resolution_state": null,
+            "work_resolution": null
+          },
+          "reason_codes": [
+            "no_public_candidate_title",
+            "candidate_inventory_preserved_without_selection",
+            "row_discussion_missing",
+            "title_resolution_state_not_publishable",
+            "work_resolution_not_publishable",
+            "scope_unknown",
+            "scope_not_current_work",
+            "serializer_candidate_inventory_hold",
+            "candidate_inventory_unselected"
+          ],
+          "scope_state": {
+            "competing_candidates": [],
+            "confidence": "low",
+            "conflict_reason_codes": [
+              "serializer_candidate_inventory_hold",
+              "candidate_inventory_unselected"
+            ],
+            "direct_bridge_sources": [],
+            "scope_kind": "unknown"
+          }
+        },
+        "publish_contract_version": "promotion_contract_v2",
+        "publish_ledger": {
+          "candidate_preservation": {
+            "candidate_ledger_status": null,
+            "official_title": null,
+            "official_url": null,
+            "title_resolution_allowed": null,
+            "title_resolution_state": null,
+            "work_resolution": null
+          },
+          "gate_decision": {
+            "bypassed_gate": false,
+            "candidate_preserved": true,
+            "contract_version": "promotion_contract_v2",
+            "input_fingerprint": "6c9341213cf4687989e4c3aa54ef309027f91576b2fc8d35e3e6c25aed2a0e03",
+            "official_title": null,
+            "official_url": null,
+            "publish_allowed": false,
+            "reason_codes": [
+              "no_public_candidate_title",
+              "candidate_inventory_preserved_without_selection",
+              "row_discussion_missing",
+              "title_resolution_state_not_publishable",
+              "work_resolution_not_publishable",
+              "scope_unknown",
+              "scope_not_current_work",
+              "serializer_candidate_inventory_hold",
+              "candidate_inventory_unselected"
+            ],
+            "scope": {
+              "competing_candidates": [],
+              "confidence": "low",
+              "conflict_reason_codes": [
+                "serializer_candidate_inventory_hold",
+                "candidate_inventory_unselected"
+              ],
+              "direct_bridge_sources": [],
+              "scope_kind": "unknown"
+            },
+            "status": "candidate_only"
+          },
+          "public_publish": {
+            "candidate_ledger_status": "promotion_blocked",
+            "official_title": null,
+            "official_url": null,
+            "title_resolution_allowed": false,
+            "title_resolution_state": "adjacent",
+            "work_resolution": "none"
+          }
+        },
+        "reason": "[최종 판정]\n- 글 분류: recommendation\n- 제목 판정: adjacent\n- 공식 제목: 미확정\n[원문에 근거한 설명]\n「글에서 쇠비린내랑 부동액 냄새 나는·거대로봇 비행선 파워아머병사 고성능ai 인류의 숙적·이런거 나오는」 조건을 충족하는 작품을 찾는다.\n글쓴이는 '글에서 쇠비린내랑 부동액 냄새 나는 글 없냐'라고 묻는다. 질문을 확정 진술로 바꾸지 않는다.\n글쓴이는 '이런거 나오는 소설 없냐'라고 묻는다. 질문을 확정 진술로 바꾸지 않는다.\n글쓴이는 최근 기분이에 긍정적인 반응을 보인다.\n[발화 해석]\n- 발화 유형: 추천 요청\n- 대상: 요청 조건\n- 작성자 조건: 글에서 쇠비린내랑 부동액 냄새 나는 글 없냐 / 거대로봇 비행선 파워아머병사 고성능ai 인류의 숙적 / 이런거 나오는 소설 없냐 / 해외소설이라도 좋아 / 121세기가 그나마 비슷한 느낌이라 최근 기분이 좋다\n- 비교 기준 표면: '121세기'(작품 여부 미확인)\n[작성자 발화·원문 귀속]\n- 작성자 질문: 「글에서 쇠비린내랑 부동액 냄새 나는 글 없냐」\n- 작성자 발화: 「거대로봇 비행선 파워아머병사 고성능ai 인류의 숙적」\n- 작성자 질문: 「이런거 나오는 소설 없냐」\n- 작성자 발화: 「해외소설이라도 좋아」\n- 작성자 발화: 「121세기가 그나마 비슷한 느낌이라 최근 기분이 좋다」\n[댓글 발화·원문 귀속]\n- 댓글 작성자 ㅇㅇ1: 「우주괴물...」\n- 댓글 작성자 ㅇㅇ: 「메카닉 쪽 내공 ㅈㄴ 높아야 난도질 안 당하는 장르라 ㅈㄴ 빡세지」\n- 댓글 작성자 ㅇㅇ2: 「메카네크」\n- 댓글 작성자 lastmania: 「읽어봤는데 내가바라는 그런게 아니었음 댓글은 고맙다   - dc App」\n- 댓글 작성자 ㅇㅇ2: 「한 140화 부터 건담 타고 다니는데 그때부터 메카물 느낌남」\n- 댓글 작성자 lastmania: 「거기까진 안 읽어봤는데 고마워  - dc App」\n[원문] 글에서 쇠비린내랑 부동액 냄새 나는 글 없냐 / 거대로봇 비행선 파워아머병사 고성능ai 인류의 숙적 / 이런거 나오는 소설 없냐 / 해외소설이라도 좋아 / 121세기가 그나마 비슷한 느낌이라 최근 기분이 좋다 / - dc official App",
+        "reason_lines": [
+          "[최종 판정]",
+          "- 글 분류: recommendation",
+          "- 제목 판정: adjacent",
+          "- 공식 제목: 미확정",
+          "[원문에 근거한 설명]",
+          "「글에서 쇠비린내랑 부동액 냄새 나는·거대로봇 비행선 파워아머병사 고성능ai 인류의 숙적·이런거 나오는」 조건을 충족하는 작품을 찾는다.",
+          "글쓴이는 '글에서 쇠비린내랑 부동액 냄새 나는 글 없냐'라고 묻는다. 질문을 확정 진술로 바꾸지 않는다.",
+          "글쓴이는 '이런거 나오는 소설 없냐'라고 묻는다. 질문을 확정 진술로 바꾸지 않는다.",
+          "글쓴이는 최근 기분이에 긍정적인 반응을 보인다.",
+          "[발화 해석]",
+          "- 발화 유형: 추천 요청",
+          "- 대상: 요청 조건",
+          "- 작성자 조건: 글에서 쇠비린내랑 부동액 냄새 나는 글 없냐 / 거대로봇 비행선 파워아머병사 고성능ai 인류의 숙적 / 이런거 나오는 소설 없냐 / 해외소설이라도 좋아 / 121세기가 그나마 비슷한 느낌이라 최근 기분이 좋다",
+          "- 비교 기준 표면: '121세기'(작품 여부 미확인)",
+          "[작성자 발화·원문 귀속]",
+          "- 작성자 질문: 「글에서 쇠비린내랑 부동액 냄새 나는 글 없냐」",
+          "- 작성자 발화: 「거대로봇 비행선 파워아머병사 고성능ai 인류의 숙적」",
+          "- 작성자 질문: 「이런거 나오는 소설 없냐」",
+          "- 작성자 발화: 「해외소설이라도 좋아」",
+          "- 작성자 발화: 「121세기가 그나마 비슷한 느낌이라 최근 기분이 좋다」",
+          "[댓글 발화·원문 귀속]",
+          "- 댓글 작성자 ㅇㅇ1: 「우주괴물...」",
+          "- 댓글 작성자 ㅇㅇ: 「메카닉 쪽 내공 ㅈㄴ 높아야 난도질 안 당하는 장르라 ㅈㄴ 빡세지」",
+          "- 댓글 작성자 ㅇㅇ2: 「메카네크」",
+          "- 댓글 작성자 lastmania: 「읽어봤는데 내가바라는 그런게 아니었음 댓글은 고맙다   - dc App」",
+          "- 댓글 작성자 ㅇㅇ2: 「한 140화 부터 건담 타고 다니는데 그때부터 메카물 느낌남」",
+          "- 댓글 작성자 lastmania: 「거기까진 안 읽어봤는데 고마워  - dc App」",
+          "[원문] 글에서 쇠비린내랑 부동액 냄새 나는 글 없냐 / 거대로봇 비행선 파워아머병사 고성능ai 인류의 숙적 / 이런거 나오는 소설 없냐 / 해외소설이라도 좋아 / 121세기가 그나마 비슷한 느낌이라 최근 기분이 좋다 / - dc official App"
+        ],
+        "recommendation_candidates": null,
+        "relevance_scope": "adjacent",
+        "safe_resolved": false,
+        "search_evidence_catalog": [
+          {
+            "domain": "m.386dx.com",
+            "eid": "SR001",
+            "purpose": "title_alias_platform_recall",
+            "query": "쇠비린내 노벨피아",
+            "rank": 1,
+            "snippet": "초반 10화에서 20화 정도까지는 꽤 씀. 근데 30화 넘어가면 슬슬 쇠비린내가 올라오기 시작함. 개연성 있게 쓸려면 토큰을 존나 태워야 하는 50-60화 쯤 되면 글이 걸레짝이 됨. 이후 연중 초식으로 초반만 빨아먹고 사라지는게 ai 쌀먹 초식임. 이후 무너져서 하꼬로 전락하고 급 완결친 다음에 다음작부턴 작가 연재로 ai 글쌀먹 8배럭 돌리는거임. 이외엔 노피아에서 난리났던 오지.....",
+            "source_rank": 1,
+            "source_tier": "web",
+            "title": "독자들이 ai로 웹소 쓰는 거 감별하고 고로시하는 이유.jpg - 핫게 실시간 커뮤니....",
+            "url": "https://m.386dx.com/b/v/ball/7171316"
+          },
+          {
+            "domain": "m.386dx.com",
+            "eid": "SR002",
+            "purpose": "title_alias_platform_recall",
+            "query": "쇠비린내 노벨피아",
+            "rank": 2,
+            "snippet": "초반 10화에서 20화 정도까지는 꽤 씀. 근데 30화 넘어가면 슬슬 쇠비린내가 올라오기 시작함. 개연성 있게 쓸려면 토큰을 존나 태워야 하는 50-60화 쯤 되면 글이 걸레짝이 됨. 이후 연중 초식으로 초반만 빨아먹고 사라지는게 ai 쌀먹 초식임. 이후 무너져서 하꼬로 전락하고 급 완결친 다음에 다음작부턴 작가 연재로 ai 글쌀먹 8배럭 돌리는거임. 이외엔 노피아에서 난리났던 오지.....",
+            "source_rank": 2,
+            "source_tier": "web",
+            "title": "독자들이 ai로 웹소 쓰는 거 감별하고 고로시하는 이유.jpg - 핫게 실시간 커뮤니....",
+            "url": "https://m.386dx.com/b/v/ball/7171316/1"
+          },
+          {
+            "domain": "arca.live",
+            "eid": "SR003",
+            "purpose": "title_alias_platform_recall",
+            "query": "쇠비린내 노벨피아",
+            "rank": 3,
+            "snippet": "2026.07.20.은은한 가죽 냄새와 쇠비린내 물씬 풍기는 옛날 메이플 베이스 모험물 드시고 싶은 분들은 맛있게 드시리라 자신합니다. 최소한 '그때 노벨피아에 그런 메이플 패러디도 있었지...' 하고 추억할 정도의 재미는 보장합니다. 모험을 시작하기 : https://novelpia.com/novel/437406 (노벨피아) https://www.joara.com/book/1881073?fecheckmode=null (조아라)",
+            "source_rank": 3,
+            "source_tier": "community",
+            "title": "리뷰) 2004년 메이플 속 둔기 전사 - 메이플랜드 채널",
+            "url": "https://arca.live/b/mapleland/177403570"
+          },
+          {
+            "domain": "gall.dcinside.com",
+            "eid": "SR004",
+            "purpose": "title_alias_platform_recall",
+            "query": "쇠비린내 노벨피아",
+            "rank": 4,
+            "snippet": "2023.04.09.상탈은 전계절이라는것 같은데 어나더는 일단 여름엔 안될듯쇠비린내인가 피비린내인가 그게 세서가을에도 애매하면 마르지엘라 재즈클럽 사게- dc official App",
+            "source_rank": 4,
+            "source_tier": "community",
+            "title": "어나더는 계절이 언제임? - 향수 마이너 갤러리",
+            "url": "https://gall.dcinside.com/mgallery/board/view/?id=hyang&no=172222"
+          }
+        ],
+        "search_health": {
+          "accepted": 8,
+          "cache_hits": 1,
+          "degraded": 0,
+          "degraded_recovered": 0,
+          "degraded_zero": 0,
+          "degraded_zero_suppressed": 0,
+          "direct_search_results": 0,
+          "direct_search_used": 0,
+          "fallback_recovered": 0,
+          "filtered": 90,
+          "headless_used": 0,
+          "queries_issued": 4,
+          "raw": 98,
+          "retried": 0,
+          "status": "ok",
+          "unrecovered_degraded": 0,
+          "upstream_zero": 2
+        },
+        "secondary_reference_works": [],
+        "slang_insight": null,
+        "subtype": "recommendation_request",
+        "system_state": "clean",
+        "title_candidates": null,
+        "title_resolution_allowed": false,
+        "title_resolution_state": "adjacent",
+        "topicality": "adjacent_relevant",
+        "vlm_chunks_sent": null,
+        "vlm_enabled": null,
+        "vlm_enrichment_used": null,
+        "vlm_total_bytes": null,
+        "work_resolution": "none"
+      },
+      "post_id": 8620907
+    },
+    "author": "lastmania",
+    "author_ip": null,
+    "comment_context_lines": [
+      "#1 speaker=user1 author=ㅇㅇ1 ip=1.230 comment_id=29462410",
+      "#2 speaker=user2 author=ㅇㅇ ip=1.237 comment_id=29462475",
+      "#3 speaker=user3 author=ㅇㅇ2 ip=220.70 comment_id=29464610",
+      "#4 speaker=user4 author=lastmania role=author_match_unverified comment_id=29464727",
+      "#5 speaker=user3 author=ㅇㅇ2 ip=220.70 comment_id=29464742",
+      "#6 speaker=user4 author=lastmania role=author_match_unverified comment_id=29465528"
+    ],
+    "comment_dialogue_context_lines": [
+      "#1 speaker=user1 author=ㅇㅇ1 ip=1.230 comment_id=29462410 text=우주괴물...",
+      "#2 speaker=user2 author=ㅇㅇ ip=1.237 comment_id=29462475 text=메카닉 쪽 내공 ㅈㄴ 높아야 난도질 안 당하는 장르라 ㅈㄴ 빡세지",
+      "#3 speaker=user3 author=ㅇㅇ2 ip=220.70 comment_id=29464610 text=메카네크",
+      "#4 speaker=user4 author=lastmania role=author_match_unverified comment_id=29464727 text=읽어봤는데 내가바라는 그런게 아니었음 댓글은 고맙다 - dc App",
+      "#5 speaker=user3 author=ㅇㅇ2 ip=220.70 comment_id=29464742 text=한 140화 부터 건담 타고 다니는데 그때부터 메카물 느낌남",
+      "#6 speaker=user4 author=lastmania role=author_match_unverified comment_id=29465528 text=거기까진 안 읽어봤는데 고마워 - dc App"
+    ],
+    "comment_metadata": [
+      {
+        "author": "ㅇㅇ1",
+        "comment_id": "29462410",
+        "created_at": "2024.05.02 01:06:12",
+        "gallery_id": "genrenovel",
+        "index": 0,
+        "ip": "1.230",
+        "is_post_author": false,
+        "post_author_match_unverified": false,
+        "reply_level": 0,
+        "reply_to_comment_id": null,
+        "speaker": "user1"
+      },
+      {
+        "author": "ㅇㅇ",
+        "comment_id": "29462475",
+        "created_at": "2024.05.02 01:08:01",
+        "gallery_id": "genrenovel",
+        "index": 1,
+        "ip": "1.237",
+        "is_post_author": false,
+        "post_author_match_unverified": false,
+        "reply_level": 0,
+        "reply_to_comment_id": null,
+        "speaker": "user2"
+      },
+      {
+        "author": "ㅇㅇ2",
+        "comment_id": "29464610",
+        "created_at": "2024.05.02 04:01:33",
+        "gallery_id": "genrenovel",
+        "index": 2,
+        "ip": "220.70",
+        "is_post_author": false,
+        "post_author_match_unverified": false,
+        "reply_level": 0,
+        "reply_to_comment_id": null,
+        "speaker": "user3"
+      },
+      {
+        "author": "lastmania",
+        "comment_id": "29464727",
+        "created_at": "2024.05.02 04:25:25",
+        "gallery_id": "genrenovel",
+        "index": 3,
+        "ip": null,
+        "is_post_author": false,
+        "post_author_match_unverified": true,
+        "reply_level": 0,
+        "reply_to_comment_id": null,
+        "speaker": "user4"
+      },
+      {
+        "author": "ㅇㅇ2",
+        "comment_id": "29464742",
+        "created_at": "2024.05.02 04:29:16",
+        "gallery_id": "genrenovel",
+        "index": 4,
+        "ip": "220.70",
+        "is_post_author": false,
+        "post_author_match_unverified": false,
+        "reply_level": 0,
+        "reply_to_comment_id": null,
+        "speaker": "user3"
+      },
+      {
+        "author": "lastmania",
+        "comment_id": "29465528",
+        "created_at": "2024.05.02 08:28:43",
+        "gallery_id": "genrenovel",
+        "index": 5,
+        "ip": null,
+        "is_post_author": false,
+        "post_author_match_unverified": true,
+        "reply_level": 0,
+        "reply_to_comment_id": null,
+        "speaker": "user4"
+      }
+    ],
+    "comments": [
+      "우주괴물...",
+      "메카닉 쪽 내공 ㅈㄴ 높아야 난도질 안 당하는 장르라 ㅈㄴ 빡세지",
+      "메카네크",
+      "읽어봤는데 내가바라는 그런게 아니었음 댓글은 고맙다   - dc App",
+      "한 140화 부터 건담 타고 다니는데 그때부터 메카물 느낌남",
+      "거기까진 안 읽어봤는데 고마워  - dc App"
+    ],
+    "content": [
+      "거대로봇 비행선 파워아머병사 고성능ai 인류의 숙적",
+      "이런거 나오는 소설 없냐",
+      "해외소설이라도 좋아",
+      "121세기가 그나마 비슷한 느낌이라 최근 기분이 좋다",
+      "- dc official App"
+    ],
+    "content_blocks": [
+      {
+        "text": "거대로봇 비행선 파워아머병사 고성능ai 인류의 숙적",
+        "type": "text"
+      },
+      {
+        "text": "이런거 나오는 소설 없냐",
+        "type": "text"
+      },
+      {
+        "text": "해외소설이라도 좋아",
+        "type": "text"
+      },
+      {
+        "text": "121세기가 그나마 비슷한 느낌이라 최근 기분이 좋다",
+        "type": "text"
+      },
+      {
+        "text": "- dc official App",
+        "type": "text"
+      }
+    ],
+    "created_at": "2024-05-02 01:05:38",
+    "gallery_id": "genrenovel",
+    "image_count": 0,
+    "image_urls": [],
+    "ip": null,
+    "post_author": "lastmania",
+    "post_id": 8620907,
+    "post_ip": null,
+    "run_meta": {
+      "config_hash": "19406381481b",
+      "decision_call_attempt_receipt": {
+        "closure_frame_sha256": "5a5cb16e5cfb14efb61b8b9f5edac412ee71bdfe3c7e4f08b139cc753883a6f2",
+        "event_root_sha256": "8a6d3048329f03884292d7c226ddb0be9cfb422eb29810274e6c6d911a51d20b",
+        "publication_decision_id_preview": "16b4b329a47a6438b99fc926c87e5a7d6e27ba3c809ce2ef7c08c8f7249ebbae",
+        "publication_link_decision_id": null,
+        "publication_link_frame_sha256": null,
+        "publication_link_status": "PENDING_EXTERNAL_LEDGER_LINK",
+        "publication_shadow_observation": null,
+        "row": {
+          "attempt_run_id": "20261013_060126_882644",
+          "input_index": 71,
+          "post_id": 8620907,
+          "publication_scope_id": "84666454781af214bf344282055e4942a066bf14072739a0ffcec6e1b1c3030c",
+          "row_attempt_id": "fc612b3bb674fe5728802da49e5a130280e84b68d81a3f7756cfb470fa337c46",
+          "schema_version": "decision_call_row_attempt_v1"
+        },
+        "schema_version": "decision_call_attempt_receipt_v1"
+      },
+      "decision_call_ledger": {
+        "closure_frame_sha256": "5a5cb16e5cfb14efb61b8b9f5edac412ee71bdfe3c7e4f08b139cc753883a6f2",
+        "closure_kind": "ROW_SEAL",
+        "event_frame_count": 6,
+        "event_root_sha256": "8a6d3048329f03884292d7c226ddb0be9cfb422eb29810274e6c6d911a51d20b",
+        "ledger_scope_sha256": "efee3a2bb8261ff2cb80c087184289f3d5cdcce9c1e700c40601bb9dfe7587e0",
+        "path": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\p4_followup_actual80_parallel12_20261013\\run\\result_decision_call_ledger",
+        "publication_scope_id": "84666454781af214bf344282055e4942a066bf14072739a0ffcec6e1b1c3030c",
+        "row": {
+          "attempt_run_id": "20261013_060126_882644",
+          "input_index": 71,
+          "post_id": 8620907,
+          "publication_scope_id": "84666454781af214bf344282055e4942a066bf14072739a0ffcec6e1b1c3030c",
+          "row_attempt_id": "fc612b3bb674fe5728802da49e5a130280e84b68d81a3f7756cfb470fa337c46",
+          "schema_version": "decision_call_row_attempt_v1"
+        },
+        "schema_version": "decision_call_row_ledger_ref_v1"
+      },
+      "decision_call_ledger_summary": {
+        "actual_kpi_status": "PENDING_INDEPENDENT_READBACK",
+        "actual_metrics": {
+          "completion_tokens": null,
+          "expert_calls": null,
+          "prompt_tokens": null,
+          "total_tokens": null
+        },
+        "derived_observation": {
+          "completion_tokens": 1455,
+          "expert_calls": 3,
+          "prompt_tokens": 29171,
+          "retry_count": 0,
+          "text_calls": 3,
+          "total_tokens": 30626,
+          "vlm_calls": 0
+        },
+        "reason_codes": [
+          "INDEPENDENT_READBACK_NOT_BOUND"
+        ],
+        "schema_version": "decision_call_row_summary_v1",
+        "trace_errors": [],
+        "usage_status": "COMPLETE_PROVIDER_REPORTED",
+        "writer_complete": true
+      },
+      "decision_call_measurement": {
+        "actual_kpi_eligible": false,
+        "arm": null,
+        "binding_status": "UNBOUND",
+        "central_slang_db_write_allowed": null,
+        "early_route_enable_status": "DISABLED",
+        "early_route_enabled": false,
+        "early_route_mode": "OFF",
+        "execution_mode": "NORMAL",
+        "fresh_execution_required": false,
+        "mode": "SHADOW",
+        "mutable_context_binding": {
+          "batch_context_enabled": true,
+          "central_slang_db_write_allowed": null,
+          "mutable_context_mode": "NORMAL",
+          "schema_version": "paired_measurement_mutable_context_binding_v1",
+          "slang_access_mode": "OFF"
+        },
+        "mutable_context_binding_sha256": "ec8befe89c6308a5ad19c6535d44726ce2c227aaa41985d6f010c19ab8749812",
+        "mutable_context_frozen": false,
+        "mutable_context_mode": "NORMAL",
+        "pair_id": null,
+        "publication_decision_equivalence_required": false,
+        "run_spec_sha256": null,
+        "semantic_drift_observation": false,
+        "slang_access_mode": "OFF"
+      },
+      "decision_cost_trace": {
+        "action_applied": false,
+        "completion_tokens": 884,
+        "expert_calls": null,
+        "input_index": 71,
+        "measurement_status": "PARTIAL_AGGREGATE_NO_CALL_EVENTS",
+        "model_tier": "nvidia/Gemma-4-26B-A4B-NVFP4",
+        "operational_effect": "NONE_SHADOW_ONLY",
+        "post_id": "8620907",
+        "processing_finished_at": "2026-10-13T07:19:30.015+09:00",
+        "processing_started_at": "2026-10-13T07:11:39.309+09:00",
+        "prompt_tokens": 20572,
+        "publication_scope_id": "84666454781af214bf344282055e4942a066bf14072739a0ffcec6e1b1c3030c",
+        "retry_count": 0,
+        "run_id": "20261013_060126_882644",
+        "schema_version": "decision_cost_trace_v1",
+        "search_calls": 4,
+        "total_tokens": 21456,
+        "trace_sha256": "e81ff4cbea690d11ac117d4577c6c5d81ba91924a4d6c8ffef5d6df4d58d3dee",
+        "vlm_chunks": 0,
+        "wall_ms": 470706
+      },
+      "effective_parallel": 12,
+      "execution_config": {
+        "compression": {
+          "scope": "artifact_generation",
+          "status": "OFF_NOT_REQUESTED"
+        },
+        "dashboard": {
+          "enabled": true,
+          "mode": "standalone_forward",
+          "url": "http://127.0.0.1:18866"
+        },
+        "effective_parallel": 12,
+        "image_review": {
+          "image_post_count": 21,
+          "ready": true,
+          "skip_reason_codes": []
+        },
+        "measurement": {
+          "execution_mode": "NORMAL",
+          "formal_kpi_status": "NOT_ESTIMABLE"
+        },
+        "output_file": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\p4_followup_actual80_parallel12_20261013\\run\\result.json",
+        "profile": "low-load-validation",
+        "profile_source": "CLI",
+        "requested_parallel": 12,
+        "resources": {
+          "affinity_mask": 2,
+          "logical_cpu_count": 1,
+          "numeric_threads": {
+            "MKL_NUM_THREADS": "1",
+            "NUMEXPR_NUM_THREADS": "1",
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+            "VECLIB_MAXIMUM_THREADS": "1"
+          },
+          "pid": 84652,
+          "priority_class": 16384,
+          "status": "LOW_LOAD_VERIFIED"
+        },
+        "schema_version": "expert_execution_config_v1",
+        "settings": {
+          "context_diagnostics": {
+            "source": "CLI",
+            "value": true
+          },
+          "ledger_mode": {
+            "source": "CLI",
+            "value": "SHADOW"
+          },
+          "ocr": {
+            "source": "CLI",
+            "value": true
+          },
+          "requested_parallel": {
+            "source": "CLI",
+            "value": 12
+          },
+          "vlm": {
+            "source": "CLI",
+            "value": true
+          }
+        },
+        "source": {
+          "entry_point": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\expert_main.py",
+          "entry_sha256": "e92b5d9033bedfc77f28b8973da44db18e1dcc21c9f142e63901bf52b8e3afdc",
+          "runtime_source_files": {
+            "expert_main.py": "e92b5d9033bedfc77f28b8973da44db18e1dcc21c9f142e63901bf52b8e3afdc",
+            "src/llm_batch/agentic_pipeline.py": "f37851726944e5954b7117df27f3d1d85140cb5080773efe918083fa2ca4dde2",
+            "src/llm_batch/experts/arbiter.py": "4cb17f4ea364483d04a356184715f9bfada1618948319a7bbe9db7957931abf8",
+            "src/llm_batch/experts/decoder.py": "61d2116bfbdfd99ff6d0da81ecb20a905cac48ecf86e10dfa4e743bf7949c26f",
+            "src/llm_batch/experts/orchestrator.py": "7bc17c4ee7ff7b0623f43eb064012bce0bf1f8d1c966e58eb71941dc2dd241d7",
+            "src/llm_batch/experts/synthesizer.py": "ba42dc34381209ba2a1ce4166805d64d56482198b37ec5a52504be5e1b57c1dd",
+            "src/llm_batch/experts/verifier.py": "ad175467a03b3addadbfb31c644569ee6b2f300a67c548df62c8d62a297c20e2",
+            "src/llm_batch/grounding/candidate_reranker_alias_evidence.py": "7b054d52e4e41d3a71a0ecfccb539d22f36d29414cdaebd52d697774146aa619",
+            "src/llm_batch/grounding/candidate_reranker_calibration.py": "adef55d267ad681963e14bfc80ba13b2dd598084f28d85d82ae094fcb5571aac",
+            "src/llm_batch/grounding/candidate_reranker_calibration_data.py": "d1f243490cf1e166cf4506659c1146a9e9b3e3608e903302c239ef1869018dca",
+            "src/llm_batch/grounding/candidate_reranker_calibration_inference.py": "f543a371f075c1e84790eba964912b97d73a02596f751b1e9c25aa0e967938b0",
+            "src/llm_batch/grounding/candidate_reranker_capture.py": "6b8bb2e01470e2450269e0e4d2a8f6ca4cf04844cf744109beef7eb213ca3de4",
+            "src/llm_batch/grounding/candidate_reranker_event_bridge.py": "c9bf880e0eb6a86be7598722cb3cd07956892ef6c22b95c2acde556872d04754",
+            "src/llm_batch/grounding/candidate_reranker_inference_graph.py": "fc62f68a2f7fcbd2a7d133b64671f4fefb7b3a5fef22c3da2708934f9cb96304",
+            "src/llm_batch/grounding/candidate_reranker_learned.py": "14a3c9052699293c7b76e4fa16725212355d1a2726a5f7f017b250e2e76905ac",
+            "src/llm_batch/grounding/candidate_reranker_nil_learned.py": "968609fd573e9857a1993bc321ecce180e180354cd942cff817781a5e48db3a5",
+            "src/llm_batch/grounding/candidate_reranker_roles.py": "4ed5182a14974e72979db57d559615ebd7643bd6a8c6a02b2779742a51b0a56b",
+            "src/llm_batch/grounding/candidate_reranker_semantic_input.py": "7168ab0ee24214cd518b8dbbb9f935ced0397af175bbd786253df1ee26fbd32e",
+            "src/llm_batch/grounding/candidate_reranker_semantics.py": "00ba2e3d1acffc05af8e9ceced860250944801cc4aab444ceddb32bdbd1cbb53",
+            "src/llm_batch/grounding/candidate_reranker_shadow.py": "1d110a652a2501d64b3f98925386018d789249301b1d3c80336bde09a0e15229",
+            "src/llm_batch/grounding/candidate_retrieval_shadow.py": "0f7e4893d26d9dd4115fe6e63fffce8cd0e6919a8a8deebe5bd749bffe758010",
+            "src/llm_batch/grounding/candidate_set_calibration_shadow.py": "365cb609699e81013fda40f730861bdeb2b93bf18bfc97e931b8ace550e8e5ff",
+            "src/llm_batch/grounding/candidate_set_shadow.py": "0a87e724eb78e5c0a636d17cb1598861bd24d80f15e9be1817b6ecf3b04b05e1",
+            "src/llm_batch/grounding/claim_scope_contract.py": "284afabb86e5bef4dd0b7c53b19b136c1faa35fab91f5843e2bb1de2ecb4620e",
+            "src/llm_batch/grounding/community_knowledge.py": "8142d2f6be7cb29971aedc6eba9cd89e1a1ffde13b74fa3d391931ef11b463c4",
+            "src/llm_batch/grounding/context_projection_contract.py": "a2a4dfadc8872c6e66ef4a32b9bf66c65881bb6f1dbac5946dd4359a01a427e4",
+            "src/llm_batch/grounding/reranker_training_split.py": "1e4453ed08eb4213a57363c10d0e4e610fd3076d209fc0a66295f68143523cb8",
+            "src/llm_batch/grounding/source_context_diagnostics.py": "dc474fa74ed40982c702bfc50a0f50a881727f1c259fea38ffbed9d62bb9475c",
+            "src/llm_batch/grounding/source_context_explanation.py": "9927c304ed3ef62e8e9414e55894f85972ce9551919ff09583e00cb1654a9dff",
+            "src/llm_batch/grounding/source_speech_structure.py": "73dea99714b0c87f995453dd68810982505e2c8ce656bc0effd3a785647fbc67",
+            "src/llm_batch/ledger/recovery_native_journal.py": "36e68618b168ad063def750a21a95c8fa1f338b32ab834a47ca4297abf950bb0",
+            "src/llm_batch/ledger/recovery_provider_journal.py": "2a4d921922c9a7082d653acd2c7b1b11928fe430e99d129f6b530f459756913a",
+            "src/llm_batch/llm/client.py": "7ef656f68c8cc5c76b604dc1f99f800c679825dc84042bfc3a73628a37df1085",
+            "src/llm_batch/measurement/paired_execution_policy.py": "e94ba5ff5c54d1c127c33a585320a50142efb0cf22da378d40d281b186542181",
+            "src/llm_batch/measurement/paired_measurement_readback.py": "1c4adba5e19f7a8378ca5e45689dd0e55ee45b17bc4a12259e21fa5cdf8a3733",
+            "src/llm_batch/measurement/recovery_input_projection.py": "cf5617377ee99fce9f59dc27498a9885f64ca68936e08f2ff5d5047875b96591",
+            "src/llm_batch/measurement/recovery_native_source.py": "1f3fd174052d588a46e73ff0f9b787e94c4866d67fa225ae64f52e19e25df94c",
+            "src/llm_batch/measurement/recovery_provider_contract.py": "14841df266d5b19be2f904e81da8f6b06bf78e34e19e4ca169902e2a23c464e6",
+            "src/llm_batch/measurement/recovery_provider_readback.py": "2ef340c8f6c2e493b70c8117ce94ee0a016074c1a424627461d4c23ca7b8ec7b",
+            "src/llm_batch/monitor/recovery_native_view.py": "2be6d9030216c311fc92d4912b5683f2c79237126d63d4dc08a70b9adcbabbd3",
+            "src/llm_batch/monitor/recovery_provider_view.py": "3573a1fd1175b0d77efa58515c4e9bb38235b60466bd28bd5ba58f0cca2cd164",
+            "src/llm_batch/prompts/expert_prompts.py": "691e13a01a3fe2e61390d3b801aa8df791007bef02982be80045bc29ecddce74",
+            "src/llm_batch/runtime/candidate_calibration.py": "2f5d79c26980dee48351194618b3873da075ba0b873f17907007fd55062ba767",
+            "src/llm_batch/runtime/candidate_capture.py": "55ab630bfaba9a2297369f7f533f7c073e8a9c4ebbde100578d1ca5d392e5201",
+            "src/llm_batch/runtime/candidate_inference.py": "25ebe6a716a681d37b1233dae54e0ecf37d504b80673791aab09d505c07634a9",
+            "src/llm_batch/runtime/candidate_reranker.py": "df132311100ba1e906e9dc804a07276e7411f09bf38d5d22a35f407f5cfaea3e",
+            "src/llm_batch/runtime/candidate_retrieval.py": "61077f2f9e1785bd3efffec262a95f202f427cff065666fbb1b3a6b03700f45e",
+            "src/llm_batch/runtime/candidate_semantics.py": "89c63be4036a2fa9fb80a76ed294980c7ac278ef0891d91db8dbb5c37054841e",
+            "src/llm_batch/runtime/community_knowledge.py": "36ea0fb0d2f90b1566e2fd5b357bbf1dc023a90534f25c2c3cb87f8f8a3d9823",
+            "src/llm_batch/runtime/execution_config.py": "b195fa5152bc033b393b3df542d06cc64810670647f6e8b2cc5f12b7885f59aa",
+            "src/llm_batch/runtime/paired_execution.py": "2ae2794fc091ac18385c58f776c6f3879165feb864a0caee99e8b6e72183a5f5",
+            "src/llm_batch/runtime/recovery_native_batch.py": "0f224f08834bdaf97b4af05d3376e3fae8a6bbc45b8fab6c3468de87aff02428",
+            "src/llm_batch/runtime/recovery_native_context.py": "26d15f140119fe930d2d8f22e80d851706d189639bae44b654c7a53faa786fe5",
+            "src/llm_batch/runtime/recovery_native_io.py": "1ec5645dfa26aac3fecb9e3ce3b0e62d9586157b8cfd5caa41371253670fcc87",
+            "src/llm_batch/runtime/recovery_native_workflow.py": "fb2181c4e8c6025caf13b4e87c5785f0052b7a812187dae955863ad0e837b78b",
+            "src/llm_batch/runtime/recovery_provider_transport.py": "49cabbca7740c6ade64eb0a8a8e7cd5084ad236abf0a503e5f3d8cde129c6e05",
+            "src/llm_batch/runtime/recovery_transport.py": "cae8ecfa319e9d430356a270f290a8d2ff26414c9673116f26c20c365843e6e7",
+            "tools/build_candidate_inference_bundle.py": "f17b915011aaf29d9dc322531b3f685d5a7f020e68b1365f7924d5afde5e98af",
+            "tools/run_candidate_reranker_calibration.py": "30f189ce7943069c1d15e94ff5e68963fd03c2f1f8097c58691b8b331571cf30",
+            "tools/run_candidate_reranker_training.py": "d92441d1d1bb4266fd9b5ad0b8e8733da1170dc7714fde779ad46177e1050292",
+            "tools/run_recovery_provider.py": "9986d5104d6ab1083387f71508761737b181049166927b9bee9cfedaa82be938"
+          },
+          "runtime_source_sha256": "cfce2f6f2b02d28d9ae5b22772bdbddec55c641a72f0e9bbd2fb541c3055b958",
+          "source_scope": "SELECTED_RUNTIME_FILES"
+        }
+      },
+      "llm_endpoint": "http://10.20.0.101:8000/",
+      "llm_mode": "remote",
+      "main_log_file": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\logs\\expert_run_20261013_060126_882644.log",
+      "mcp_endpoint_count_after_health_filter": 1,
+      "mcp_goal_run_health_filtered": false,
+      "mcp_health_attempts": 1,
+      "mcp_health_checked_endpoint_count": 1,
+      "mcp_health_failure_count": 0,
+      "mcp_health_include_search": true,
+      "mcp_health_light_mode": false,
+      "mcp_health_ok_count": 1,
+      "mcp_health_probe_batch_size": 1,
+      "mcp_health_probe_stopped_after_required_ok": false,
+      "mcp_health_required_ok_count": 1,
+      "mcp_health_search_max_latency_ms": 8000.0,
+      "mcp_health_search_min_results": 1,
+      "mcp_health_timeout_sec": 8.0,
+      "mcp_health_workers": 1,
+      "mcp_healthy_autogen_endpoint_filter": false,
+      "mcp_healthy_autogen_endpoint_filter_reason": "reuse_shards_only",
+      "mcp_healthy_endpoint_count": 1,
+      "mcp_healthy_endpoint_filter": false,
+      "mcp_healthy_endpoint_filter_autogen": false,
+      "mcp_healthy_endpoint_filter_reason": "reuse_shards_only",
+      "mcp_parallel_after_health_filter": 12,
+      "mcp_parallel_before_health_filter": 12,
+      "mcp_requested_endpoint_count_before_health_filter": 1,
+      "mcp_reuse_shards_only_health_filtered": false,
+      "measurement_execution_source": "NORMAL_PUBLICATION_OWNER",
+      "model": "nvidia/Gemma-4-26B-A4B-NVFP4",
+      "model_parallel_cap_applied": false,
+      "model_parallel_cap_model": "nvidia/Gemma-4-26B-A4B-NVFP4",
+      "model_parallel_max": null,
+      "parallel_policy": "effective_parallel=min(requested_parallel,input_post_count)",
+      "prompt_version": "2026-03-30-semantic-contract-v1",
+      "requested_parallel": 12,
+      "requested_parallel_raw": 12,
+      "run_id": "20261013_060126_882644",
+      "search_health": {
+        "accepted": 8,
+        "cache_hits": 1,
+        "degraded": 0,
+        "degraded_recovered": 0,
+        "degraded_zero": 0,
+        "degraded_zero_suppressed": 0,
+        "direct_search_results": 0,
+        "direct_search_used": 0,
+        "fallback_recovered": 0,
+        "filtered": 90,
+        "headless_used": 0,
+        "queries_issued": 4,
+        "raw": 98,
+        "retried": 0,
+        "status": "ok",
+        "unrecovered_degraded": 0,
+        "upstream_zero": 2
+      },
+      "semantic_recovery_plan_receipt": {
+        "attempt_run_id": "20261013_060126_882644",
+        "authority": "attempt_local_completed_result_evidence",
+        "input_index": 71,
+        "mode": "PLAN_ONLY",
+        "plan": {
+          "blocker_codes": [],
+          "canonical_bindings": [],
+          "media_action": "NO_MEDIA_ACTION",
+          "network_calls_executed": 0,
+          "primary_identity_count": 0,
+          "query_plan": {
+            "max_queries": 0,
+            "purposes": [],
+            "query_execution_allowed": false,
+            "search_health": "ok"
+          },
+          "raw_ocr_evidence_count": 0,
+          "relationship_counts": {
+            "comparison": 0,
+            "mentioned": 0,
+            "previous": 0,
+            "primary": 0
+          },
+          "search_calls_executed": 0,
+          "state": "NOT_APPLICABLE"
+        },
+        "plan_sha256": "07b069f20b0934513ce604ce7eff69ba121fc62c866719b6427b984b90fbf6c1",
+        "post_id": 8620907,
+        "public_apply": false,
+        "public_projection_sha256": "b0f71b0e130008016b5b017f3abffa5bc7acab72da3d196ae561752ebe459364",
+        "publication_decision_id": "16b4b329a47a6438b99fc926c87e5a7d6e27ba3c809ce2ef7c08c8f7249ebbae",
+        "publication_scope_id": "84666454781af214bf344282055e4942a066bf14072739a0ffcec6e1b1c3030c",
+        "receipt_sha256": "8b058507dc77fee590b806785e294b5b2a2b2afc9af1525865f192f31d9c3244",
+        "rule_version": "p1_review_recovery_plan_v1",
+        "schema_version": "semantic_recovery_plan_receipt_v1",
+        "source_view": {
+          "candidate_evidence": [],
+          "decision_reason_codes": [
+            "candidate_inventory_preserved_without_selection",
+            "candidate_inventory_unselected",
+            "no_public_candidate_title",
+            "row_discussion_missing",
+            "scope_not_current_work",
+            "scope_unknown",
+            "serializer_candidate_inventory_hold",
+            "title_resolution_state_not_publishable",
+            "work_resolution_not_publishable"
+          ],
+          "evidence_status": "COMPLETE",
+          "is_relevant": false,
+          "publish_allowed": false,
+          "raw_ocr_evidence_count": 0,
+          "search_health": "ok",
+          "semantic_publication": {
+            "evidence_status": "",
+            "media_domain_class": "",
+            "primary_work_status": ""
+          },
+          "work_resolution": "none"
+        },
+        "source_view_sha256": "311179d9d01689fb6cea1d97cf5cca4c90e25c249d73246b7dda83b184918245",
+        "stable_result_sha256": "b8fec5e6cd21842a4d73a1c0654d397fc519e7933ed35ba1beb7bf3fd782366c"
+      },
+      "semantic_review_router_receipt": {
+        "attempt_run_id": "20261013_060126_882644",
+        "authority": "attempt_local_result_evidence",
+        "input_index": 71,
+        "mode": "REVIEW_ONLY",
+        "post_id": 8620907,
+        "public_apply": false,
+        "public_projection_sha256": "b0f71b0e130008016b5b017f3abffa5bc7acab72da3d196ae561752ebe459364",
+        "publication_decision_id": "16b4b329a47a6438b99fc926c87e5a7d6e27ba3c809ce2ef7c08c8f7249ebbae",
+        "publication_scope_id": "84666454781af214bf344282055e4942a066bf14072739a0ffcec6e1b1c3030c",
+        "receipt_sha256": "8dd5e3b0f09ec6f8ea0acd086a93281a4708915c779993b7dfc511fcd3f6b8cd",
+        "router_decision_sha256": "e3e8c3150ac4fb407a329a4a7a129c660f4c62e341877e4714fe6e7d6ba4298c",
+        "rule_version": "strict_evidence_v2",
+        "schema_version": "semantic_review_router_receipt_v1",
+        "source_view": {
+          "candidate_preservation_present": true,
+          "comments_count": 6,
+          "consistency_flags": [
+            "batch_memory_alias_rescue_blocked_genre_context",
+            "batch_memory_alias_rescue_blocked_nonwork_context",
+            "context_only_no_work_anchor",
+            "genre_trope_context_only_no_work_anchor",
+            "notes_demoted_for_unresolved",
+            "unresolved_worklike_hold:title_led_consumption"
+          ],
+          "direct_ocr_evidence": {
+            "catalog_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "proposal_count": 0,
+            "proposal_set_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "source_payload_sha256": []
+          },
+          "evidence_status": "COMPLETE",
+          "image_count": 0,
+          "is_relevant": false,
+          "output_consistency_lint": [],
+          "publish_allowed": false,
+          "reason_codes": [
+            "candidate_inventory_preserved_without_selection",
+            "candidate_inventory_unselected",
+            "no_public_candidate_title",
+            "row_discussion_missing",
+            "scope_not_current_work",
+            "scope_unknown",
+            "serializer_candidate_inventory_hold",
+            "title_resolution_state_not_publishable",
+            "work_resolution_not_publishable"
+          ],
+          "scope_confidence": "low",
+          "title_candidates": [],
+          "work_resolution": "none"
+        },
+        "source_view_sha256": "67048ade4656fa20345dde86a131beed87129dee8ebcb1d5e6a25c6b64bc2bbd",
+        "stable_result_sha256": "b8fec5e6cd21842a4d73a1c0654d397fc519e7933ed35ba1beb7bf3fd782366c",
+        "state": "NO_REVIEW",
+        "trigger_codes": [],
+        "unknown_reason_codes": []
+      },
+      "source_context_diagnostics": {
+        "byte_count_basis": "UTF8_CANONICAL_JSON",
+        "capture_status": "single_binder",
+        "channels": [
+          {
+            "channel": "speech_act",
+            "field": "speech_act",
+            "index": -1,
+            "locations": [
+              {
+                "carrier_alignment": "exact_enumeration",
+                "kind": "author_clause",
+                "line_span": [
+                  0,
+                  24
+                ],
+                "original_index": 0,
+                "raw_path": "/title",
+                "raw_span": null,
+                "raw_text_span": [
+                  0,
+                  24
+                ],
+                "selection_key": "title",
+                "source_index": 0,
+                "source_origin": "post_title",
+                "span": [
+                  0,
+                  24
+                ]
+              }
+            ],
+            "rule": "recommendation_request",
+            "value": "recommendation_request",
+            "value_kind": "parser_label"
+          },
+          {
+            "channel": "target",
+            "field": "target_kind",
+            "index": -1,
+            "locations": [
+              {
+                "carrier_alignment": "exact_enumeration",
+                "kind": "author_clause",
+                "line_span": [
+                  0,
+                  24
+                ],
+                "original_index": 0,
+                "raw_path": "/title",
+                "raw_span": null,
+                "raw_text_span": [
+                  0,
+                  24
+                ],
+                "selection_key": "title",
+                "source_index": 0,
+                "source_origin": "post_title",
+                "span": [
+                  0,
+                  24
+                ]
+              }
+            ],
+            "rule": "recommendation_request",
+            "value": "conditions",
+            "value_kind": "parser_label"
+          },
+          {
+            "channel": "target",
+            "field": "target_span",
+            "index": -1,
+            "locations": [
+              {
+                "carrier_alignment": "exact_enumeration",
+                "kind": "author_clause",
+                "line_span": [
+                  0,
+                  24
+                ],
+                "original_index": 0,
+                "raw_path": "/title",
+                "raw_span": null,
+                "raw_text_span": [
+                  0,
+                  24
+                ],
+                "selection_key": "title",
+                "source_index": 0,
+                "source_origin": "post_title",
+                "span": [
+                  0,
+                  24
+                ]
+              }
+            ],
+            "rule": "recommendation_request",
+            "value": "글에서 쇠비린내랑 부동액 냄새 나는 글 없냐",
+            "value_kind": "author_clause_quote"
+          },
+          {
+            "channel": "request_condition",
+            "field": "request_conditions",
+            "index": 0,
+            "locations": [
+              {
+                "carrier_alignment": "exact_enumeration",
+                "kind": "author_clause",
+                "line_span": [
+                  0,
+                  24
+                ],
+                "original_index": 0,
+                "raw_path": "/title",
+                "raw_span": null,
+                "raw_text_span": [
+                  0,
+                  24
+                ],
+                "selection_key": "title",
+                "source_index": 0,
+                "source_origin": "post_title",
+                "span": [
+                  0,
+                  24
+                ]
+              }
+            ],
+            "rule": "author_clauses_first_six",
+            "value": "글에서 쇠비린내랑 부동액 냄새 나는 글 없냐",
+            "value_kind": "author_clause_quote"
+          },
+          {
+            "channel": "request_condition",
+            "field": "request_conditions",
+            "index": 1,
+            "locations": [
+              {
+                "carrier_alignment": "exact_enumeration",
+                "kind": "author_clause",
+                "line_span": [
+                  0,
+                  28
+                ],
+                "original_index": 0,
+                "raw_path": "/content_blocks/0/text",
+                "raw_span": null,
+                "raw_text_span": [
+                  0,
+                  28
+                ],
+                "selection_key": "text",
+                "source_index": 0,
+                "source_origin": "body_line",
+                "span": [
+                  0,
+                  28
+                ]
+              }
+            ],
+            "rule": "author_clauses_first_six",
+            "value": "거대로봇 비행선 파워아머병사 고성능ai 인류의 숙적",
+            "value_kind": "author_clause_quote"
+          },
+          {
+            "channel": "request_condition",
+            "field": "request_conditions",
+            "index": 2,
+            "locations": [
+              {
+                "carrier_alignment": "exact_enumeration",
+                "kind": "author_clause",
+                "line_span": [
+                  0,
+                  13
+                ],
+                "original_index": 1,
+                "raw_path": "/content_blocks/1/text",
+                "raw_span": null,
+                "raw_text_span": [
+                  0,
+                  13
+                ],
+                "selection_key": "text",
+                "source_index": 1,
+                "source_origin": "body_line",
+                "span": [
+                  0,
+                  13
+                ]
+              }
+            ],
+            "rule": "author_clauses_first_six",
+            "value": "이런거 나오는 소설 없냐",
+            "value_kind": "author_clause_quote"
+          },
+          {
+            "channel": "request_condition",
+            "field": "request_conditions",
+            "index": 3,
+            "locations": [
+              {
+                "carrier_alignment": "exact_enumeration",
+                "kind": "author_clause",
+                "line_span": [
+                  0,
+                  10
+                ],
+                "original_index": 2,
+                "raw_path": "/content_blocks/2/text",
+                "raw_span": null,
+                "raw_text_span": [
+                  0,
+                  10
+                ],
+                "selection_key": "text",
+                "source_index": 2,
+                "source_origin": "body_line",
+                "span": [
+                  0,
+                  10
+                ]
+              }
+            ],
+            "rule": "author_clauses_first_six",
+            "value": "해외소설이라도 좋아",
+            "value_kind": "author_clause_quote"
+          },
+          {
+            "channel": "request_condition",
+            "field": "request_conditions",
+            "index": 4,
+            "locations": [
+              {
+                "carrier_alignment": "exact_enumeration",
+                "kind": "author_clause",
+                "line_span": [
+                  0,
+                  29
+                ],
+                "original_index": 3,
+                "raw_path": "/content_blocks/3/text",
+                "raw_span": null,
+                "raw_text_span": [
+                  0,
+                  29
+                ],
+                "selection_key": "text",
+                "source_index": 3,
+                "source_origin": "body_line",
+                "span": [
+                  0,
+                  29
+                ]
+              }
+            ],
+            "rule": "author_clauses_first_six",
+            "value": "121세기가 그나마 비슷한 느낌이라 최근 기분이 좋다",
+            "value_kind": "author_clause_quote"
+          },
+          {
+            "channel": "work_role",
+            "field": "work_roles",
+            "index": 0,
+            "locations": [
+              {
+                "carrier_alignment": "exact_enumeration",
+                "kind": "author_clause",
+                "line_span": [
+                  0,
+                  5
+                ],
+                "original_index": 3,
+                "raw_path": "/content_blocks/3/text",
+                "raw_span": null,
+                "raw_text_span": [
+                  0,
+                  5
+                ],
+                "selection_key": "text",
+                "source_index": 3,
+                "source_origin": "body_line",
+                "span": [
+                  0,
+                  5
+                ]
+              }
+            ],
+            "rule": "comparison_token",
+            "value": [
+              "121세기",
+              "reference",
+              "work_typed_comparison"
+            ],
+            "value_kind": "source_surface"
+          }
+        ],
+        "explanation": {
+          "input_fingerprint": "d84a83586ffed2eca9451f2c3134b286ec8edc0558f9825d1920620b5ff7d51f",
+          "proofs": [
+            {
+              "claim_id": "author:clause:3:claim:3",
+              "claim_kind": "own",
+              "claim_view": "claim",
+              "claimant": "self",
+              "event_ids": [
+                "author:clause:3:8:10:cue:8"
+              ],
+              "final_support": true,
+              "predicate_spans": [
+                [
+                  8,
+                  10
+                ]
+              ],
+              "raw_path": "/content_blocks/2/text",
+              "raw_span": [
+                0,
+                10
+              ],
+              "rule": "allowance_not_work_praise",
+              "source_id": "author:clause:3",
+              "source_sha256": "4babcec6af890f19d1151c61b428a63ebb2155d8be0e45d68e611f20ff69ee2d",
+              "sourcequote": "해외소설이라도 좋아"
+            },
+            {
+              "claim_id": "author:clause:4:claim:4",
+              "claim_kind": "own",
+              "claim_view": "claim",
+              "claimant": "self",
+              "event_ids": [
+                "author:clause:4:27:29:cue:27"
+              ],
+              "final_support": true,
+              "predicate_spans": [
+                [
+                  27,
+                  29
+                ]
+              ],
+              "raw_path": "/content_blocks/3/text",
+              "raw_span": [
+                0,
+                29
+              ],
+              "rule": "personal_state_not_work_quality",
+              "source_id": "author:clause:4",
+              "source_sha256": "c2f20b1f9b6cc47a8fd1a2dd076f6c12a2f8d70983439730e1a34cf447b69fa1",
+              "sourcequote": "121세기가 그나마 비슷한 느낌이라 최근 기분이 좋다"
+            },
+            {
+              "claim_id": "author:clause:0:claim:0",
+              "claim_kind": "own",
+              "claim_view": "claim",
+              "claimant": "self",
+              "event_ids": [],
+              "final_support": true,
+              "predicate_spans": [],
+              "raw_path": "/title",
+              "raw_span": [
+                0,
+                24
+              ],
+              "rule": "request_purpose_and_content",
+              "source_id": "author:clause:0",
+              "source_sha256": "5b6d66adc0c5ff3217217ea09043af5b61d0aa0d97b27a8cd5ba18526c3bcbba",
+              "sourcequote": "글에서 쇠비린내랑 부동액 냄새 나는 글 없냐"
+            },
+            {
+              "claim_id": "author:clause:1:claim:1",
+              "claim_kind": "own",
+              "claim_view": "claim",
+              "claimant": "self",
+              "event_ids": [],
+              "final_support": true,
+              "predicate_spans": [],
+              "raw_path": "/content_blocks/0/text",
+              "raw_span": [
+                0,
+                28
+              ],
+              "rule": "request_purpose_and_content",
+              "source_id": "author:clause:1",
+              "source_sha256": "990bad03ac427cb74822bccd3c9ba109dfc984515d7c63b6e089c8d83d0943bd",
+              "sourcequote": "거대로봇 비행선 파워아머병사 고성능ai 인류의 숙적"
+            },
+            {
+              "claim_id": "author:clause:2:claim:2",
+              "claim_kind": "own",
+              "claim_view": "claim",
+              "claimant": "self",
+              "event_ids": [],
+              "final_support": true,
+              "predicate_spans": [],
+              "raw_path": "/content_blocks/1/text",
+              "raw_span": [
+                0,
+                13
+              ],
+              "rule": "request_purpose_and_content",
+              "source_id": "author:clause:2",
+              "source_sha256": "ad0603d0ee58f9f065c357d909b8b5b1dd657bf3e6e696f9a9d68d0560b1530c",
+              "sourcequote": "이런거 나오는 소설 없냐"
+            },
+            {
+              "claim_id": "author:clause:3:claim:3",
+              "claim_kind": "own",
+              "claim_view": "claim",
+              "claimant": "self",
+              "event_ids": [
+                "author:clause:3:8:10:cue:8"
+              ],
+              "final_support": true,
+              "predicate_spans": [
+                [
+                  8,
+                  10
+                ]
+              ],
+              "raw_path": "/content_blocks/2/text",
+              "raw_span": [
+                0,
+                10
+              ],
+              "rule": "request_allowance_role",
+              "source_id": "author:clause:3",
+              "source_sha256": "4babcec6af890f19d1151c61b428a63ebb2155d8be0e45d68e611f20ff69ee2d",
+              "sourcequote": "해외소설이라도 좋아"
+            },
+            {
+              "claim_id": "author:clause:4:claim:4",
+              "claim_kind": "own",
+              "claim_view": "claim",
+              "claimant": "self",
+              "event_ids": [
+                "author:clause:4:27:29:cue:27"
+              ],
+              "final_support": true,
+              "predicate_spans": [
+                [
+                  27,
+                  29
+                ]
+              ],
+              "raw_path": "/content_blocks/3/text",
+              "raw_span": [
+                0,
+                29
+              ],
+              "rule": "request_reference_separate",
+              "source_id": "author:clause:4",
+              "source_sha256": "c2f20b1f9b6cc47a8fd1a2dd076f6c12a2f8d70983439730e1a34cf447b69fa1",
+              "sourcequote": "121세기가 그나마 비슷한 느낌이라 최근 기분이 좋다"
+            },
+            {
+              "claim_id": "comment:3:clause:0:claim:0",
+              "claim_kind": "own",
+              "claim_view": "claim",
+              "claimant": "self",
+              "event_ids": [],
+              "final_support": true,
+              "predicate_spans": [],
+              "raw_path": "/comments/3/content",
+              "raw_span": [
+                0,
+                39
+              ],
+              "rule": "reading_expectation_mismatch",
+              "source_id": "comment:3:clause:0",
+              "source_sha256": "11e69af15d8c104bd77680f368f90b216e3ec578b7d4d3afa7d66ffed9a79e39",
+              "sourcequote": "읽어봤는데 내가바라는 그런게 아니었음 댓글은 고맙다   - dc App"
+            },
+            {
+              "claim_id": "comment:3:clause:0:claim:0",
+              "claim_kind": "own",
+              "claim_view": "claim",
+              "claimant": "self",
+              "event_ids": [],
+              "final_support": true,
+              "predicate_spans": [],
+              "raw_path": "/comments/3/content",
+              "raw_span": [
+                0,
+                39
+              ],
+              "rule": "gratitude_not_full_agreement",
+              "source_id": "comment:3:clause:0",
+              "source_sha256": "11e69af15d8c104bd77680f368f90b216e3ec578b7d4d3afa7d66ffed9a79e39",
+              "sourcequote": "읽어봤는데 내가바라는 그런게 아니었음 댓글은 고맙다   - dc App"
+            },
+            {
+              "claim_id": "comment:4:clause:0:claim:0",
+              "claim_kind": "own",
+              "claim_view": "claim",
+              "claimant": "self",
+              "event_ids": [],
+              "final_support": true,
+              "predicate_spans": [],
+              "raw_path": "/comments/4/content",
+              "raw_span": [
+                0,
+                33
+              ],
+              "rule": "comment_chapter_scoped_report",
+              "source_id": "comment:4:clause:0",
+              "source_sha256": "cfde74b561683f4597666a7c97774baebfc0a5465dab0bf7f9059acc3893f1ac",
+              "sourcequote": "한 140화 부터 건담 타고 다니는데 그때부터 메카물 느낌남"
+            },
+            {
+              "claim_id": "comment:5:clause:0:claim:0",
+              "claim_kind": "own",
+              "claim_view": "claim",
+              "claimant": "self",
+              "event_ids": [],
+              "final_support": true,
+              "predicate_spans": [],
+              "raw_path": "/comments/5/content",
+              "raw_span": [
+                0,
+                26
+              ],
+              "rule": "partial_reading_limit",
+              "source_id": "comment:5:clause:0",
+              "source_sha256": "15204e1db5138bd8c666e947450c8b51266b1b7932c45c3892f27b7ca1f0dc94",
+              "sourcequote": "거기까진 안 읽어봤는데 고마워  - dc App"
+            },
+            {
+              "claim_id": "comment:5:clause:0:claim:0",
+              "claim_kind": "own",
+              "claim_view": "claim",
+              "claimant": "self",
+              "event_ids": [],
+              "final_support": true,
+              "predicate_spans": [],
+              "raw_path": "/comments/5/content",
+              "raw_span": [
+                0,
+                26
+              ],
+              "rule": "gratitude_not_full_agreement",
+              "source_id": "comment:5:clause:0",
+              "source_sha256": "15204e1db5138bd8c666e947450c8b51266b1b7932c45c3892f27b7ca1f0dc94",
+              "sourcequote": "거기까진 안 읽어봤는데 고마워  - dc App"
+            },
+            {
+              "claim_id": "author:clause:0:claim:0",
+              "claim_kind": "own",
+              "claim_view": "claim",
+              "claimant": "self",
+              "event_ids": [],
+              "final_support": true,
+              "predicate_spans": [],
+              "raw_path": "/title",
+              "raw_span": [
+                0,
+                24
+              ],
+              "rule": "source_proposition_question_structure",
+              "source_id": "author:clause:0",
+              "source_sha256": "5b6d66adc0c5ff3217217ea09043af5b61d0aa0d97b27a8cd5ba18526c3bcbba",
+              "sourcequote": "글에서 쇠비린내랑 부동액 냄새 나는 글 없냐"
+            },
+            {
+              "claim_id": "author:clause:2:claim:2",
+              "claim_kind": "own",
+              "claim_view": "claim",
+              "claimant": "self",
+              "event_ids": [],
+              "final_support": true,
+              "predicate_spans": [],
+              "raw_path": "/content_blocks/1/text",
+              "raw_span": [
+                0,
+                13
+              ],
+              "rule": "source_proposition_question_structure",
+              "source_id": "author:clause:2",
+              "source_sha256": "ad0603d0ee58f9f065c357d909b8b5b1dd657bf3e6e696f9a9d68d0560b1530c",
+              "sourcequote": "이런거 나오는 소설 없냐"
+            },
+            {
+              "claim_id": "author:clause:4:claim:4",
+              "claim_kind": "own",
+              "claim_view": "claim",
+              "claimant": "self",
+              "event_ids": [
+                "author:clause:4:27:29:cue:27"
+              ],
+              "final_support": true,
+              "predicate_spans": [
+                [
+                  27,
+                  29
+                ]
+              ],
+              "raw_path": "/content_blocks/3/text",
+              "raw_span": [
+                0,
+                29
+              ],
+              "rule": "source_event_structure",
+              "source_id": "author:clause:4",
+              "source_sha256": "c2f20b1f9b6cc47a8fd1a2dd076f6c12a2f8d70983439730e1a34cf447b69fa1",
+              "sourcequote": "121세기가 그나마 비슷한 느낌이라 최근 기분이 좋다"
+            },
+            {
+              "claim_id": "comment:5:clause:0:claim:0",
+              "claim_kind": "own",
+              "claim_view": "claim",
+              "claimant": "self",
+              "event_ids": [],
+              "final_support": true,
+              "predicate_spans": [],
+              "raw_path": "/comments/5/content",
+              "raw_span": [
+                0,
+                26
+              ],
+              "rule": "source_reading_range_structure",
+              "source_id": "comment:5:clause:0",
+              "source_sha256": "15204e1db5138bd8c666e947450c8b51266b1b7932c45c3892f27b7ca1f0dc94",
+              "sourcequote": "거기까진 안 읽어봤는데 고마워  - dc App"
+            }
+          ],
+          "source_kind": "deterministic_source_context",
+          "supported": true,
+          "unresolved": [
+            "U: 기분의 원인을 작품 평가로 연결하는 범위",
+            "U: 댓글 1의 작품 후보·추천 의도 관계",
+            "U: 댓글 2의 작품 후보·추천 의도 관계",
+            "U: 댓글 3의 작품 후보·추천 의도 관계",
+            "U: 댓글 4의 작품 후보·추천 의도 관계",
+            "U: 읽어본 대상의 특정 작품·완독 여부",
+            "U: 댓글 5의 작품 후보·추천 의도 관계",
+            "U: 댓글 6의 작품 후보·추천 의도 관계",
+            "U: 지시된 지점의 특정 작품 대상·완독 여부"
+          ]
+        },
+        "ledgers": [
+          {
+            "claims": [
+              {
+                "attribution": "direct_clause",
+                "claim_id": "author:clause:0:claim:0",
+                "evaluation_event_ids": [],
+                "final_support": true,
+                "initial_support": true,
+                "kind": "own",
+                "source_id": "author:clause:0",
+                "span": [
+                  0,
+                  24
+                ],
+                "speaker": "self",
+                "speaker_source": "unit_speaker",
+                "support_attribution": "unit_speaker_direct",
+                "text": "글에서 쇠비린내랑 부동액 냄새 나는 글 없냐"
+              },
+              {
+                "attribution": "direct_clause",
+                "claim_id": "author:clause:1:claim:1",
+                "evaluation_event_ids": [],
+                "final_support": true,
+                "initial_support": true,
+                "kind": "own",
+                "source_id": "author:clause:1",
+                "span": [
+                  0,
+                  28
+                ],
+                "speaker": "self",
+                "speaker_source": "unit_speaker",
+                "support_attribution": "unit_speaker_direct",
+                "text": "거대로봇 비행선 파워아머병사 고성능ai 인류의 숙적"
+              },
+              {
+                "attribution": "direct_clause",
+                "claim_id": "author:clause:2:claim:2",
+                "evaluation_event_ids": [],
+                "final_support": true,
+                "initial_support": true,
+                "kind": "own",
+                "source_id": "author:clause:2",
+                "span": [
+                  0,
+                  13
+                ],
+                "speaker": "self",
+                "speaker_source": "unit_speaker",
+                "support_attribution": "unit_speaker_direct",
+                "text": "이런거 나오는 소설 없냐"
+              },
+              {
+                "attribution": "direct_clause",
+                "claim_id": "author:clause:3:claim:3",
+                "evaluation_event_ids": [
+                  "author:clause:3:8:10:cue:8"
+                ],
+                "final_support": true,
+                "initial_support": true,
+                "kind": "own",
+                "source_id": "author:clause:3",
+                "span": [
+                  0,
+                  10
+                ],
+                "speaker": "self",
+                "speaker_source": "unit_speaker",
+                "support_attribution": "unit_speaker_direct",
+                "text": "해외소설이라도 좋아"
+              },
+              {
+                "attribution": "direct_clause",
+                "claim_id": "author:clause:4:claim:4",
+                "evaluation_event_ids": [
+                  "author:clause:4:27:29:cue:27"
+                ],
+                "final_support": true,
+                "initial_support": true,
+                "kind": "own",
+                "source_id": "author:clause:4",
+                "span": [
+                  0,
+                  29
+                ],
+                "speaker": "self",
+                "speaker_source": "unit_speaker",
+                "support_attribution": "unit_speaker_direct",
+                "text": "121세기가 그나마 비슷한 느낌이라 최근 기분이 좋다"
+              },
+              {
+                "attribution": "direct_clause",
+                "claim_id": "author:clause:5:claim:5",
+                "evaluation_event_ids": [],
+                "final_support": true,
+                "initial_support": true,
+                "kind": "own",
+                "source_id": "author:clause:5",
+                "span": [
+                  0,
+                  17
+                ],
+                "speaker": "self",
+                "speaker_source": "unit_speaker",
+                "support_attribution": "unit_speaker_direct",
+                "text": "- dc official App"
+              }
+            ],
+            "evaluations": [
+              {
+                "actor": "self",
+                "assertion_span": [
+                  -1,
+                  -1
+                ],
+                "attribution": "unit_speaker_default",
+                "claim_id": "author:clause:3:claim:3",
+                "evaluation_polarity": "pos",
+                "event_id": "author:clause:3:8:10:cue:8",
+                "evidence_text": "해외소설이라도 좋아",
+                "final_support": true,
+                "grammatical_subject": {
+                  "actor": "self",
+                  "explicit": true,
+                  "span": [
+                    0,
+                    7
+                  ],
+                  "text": "해외소설이라도"
+                },
+                "kind": "evaluate",
+                "objects": [
+                  {
+                    "head": "해외소설이라",
+                    "owner": "",
+                    "owner_span": [
+                      -1,
+                      -1
+                    ],
+                    "relation": "selects",
+                    "span": [
+                      0,
+                      7
+                    ],
+                    "text": "해외소설이라도",
+                    "works": []
+                  }
+                ],
+                "parent_event_id": "author:clause:3:claim:3",
+                "polarity": "positive",
+                "predicate": "좋아",
+                "predicate_span": [
+                  8,
+                  10
+                ],
+                "realization": "actual",
+                "source_id": "author:clause:3",
+                "speaker": "self",
+                "support_attribution": "unit_speaker_direct",
+                "temporal_scope": "unmarked"
+              },
+              {
+                "actor": "self",
+                "assertion_span": [
+                  -1,
+                  -1
+                ],
+                "attribution": "unit_speaker_default",
+                "claim_id": "author:clause:4:claim:4",
+                "evaluation_polarity": "pos",
+                "event_id": "author:clause:4:27:29:cue:27",
+                "evidence_text": "121세기가 그나마 비슷한 느낌이라 최근 기분이 좋다",
+                "final_support": true,
+                "grammatical_subject": {
+                  "actor": "other:121세기",
+                  "explicit": true,
+                  "span": [
+                    23,
+                    26
+                  ],
+                  "text": "기분이"
+                },
+                "kind": "evaluate",
+                "objects": [
+                  {
+                    "head": "기분",
+                    "owner": "최근",
+                    "owner_span": [
+                      20,
+                      22
+                    ],
+                    "relation": "selects",
+                    "span": [
+                      20,
+                      26
+                    ],
+                    "text": "최근 기분이",
+                    "works": []
+                  }
+                ],
+                "parent_event_id": "author:clause:4:claim:4",
+                "polarity": "positive",
+                "predicate": "좋다",
+                "predicate_span": [
+                  27,
+                  29
+                ],
+                "realization": "actual",
+                "source_id": "author:clause:4",
+                "speaker": "self",
+                "support_attribution": "unit_speaker_direct",
+                "temporal_scope": "unmarked"
+              }
+            ],
+            "graph_edges": [
+              {
+                "recorded_by": "sources[0].parent_source_id",
+                "relation": "source_in_unit",
+                "source_id": "author:clause:0",
+                "target_id": "author"
+              },
+              {
+                "recorded_by": "sources[1].parent_source_id",
+                "relation": "source_in_unit",
+                "source_id": "author:clause:1",
+                "target_id": "author"
+              },
+              {
+                "recorded_by": "sources[2].parent_source_id",
+                "relation": "source_in_unit",
+                "source_id": "author:clause:2",
+                "target_id": "author"
+              },
+              {
+                "recorded_by": "sources[3].parent_source_id",
+                "relation": "source_in_unit",
+                "source_id": "author:clause:3",
+                "target_id": "author"
+              },
+              {
+                "recorded_by": "sources[4].parent_source_id",
+                "relation": "source_in_unit",
+                "source_id": "author:clause:4",
+                "target_id": "author"
+              },
+              {
+                "recorded_by": "sources[5].parent_source_id",
+                "relation": "source_in_unit",
+                "source_id": "author:clause:5",
+                "target_id": "author"
+              },
+              {
+                "recorded_by": "claims[0].source_id",
+                "relation": "claim_in_source",
+                "source_id": "author:clause:0:claim:0",
+                "target_id": "author:clause:0"
+              },
+              {
+                "recorded_by": "claims[0].initial_support",
+                "relation": "direct_support_of",
+                "source_id": "author:clause:0:claim:0:direct",
+                "target_id": "author:clause:0:claim:0"
+              },
+              {
+                "recorded_by": "claims[0].active_adoption_event_ids[0]",
+                "relation": "claim_active_support",
+                "source_id": "author:clause:0:claim:0",
+                "target_id": "author:clause:0:claim:0:direct"
+              },
+              {
+                "recorded_by": "claims[1].source_id",
+                "relation": "claim_in_source",
+                "source_id": "author:clause:1:claim:1",
+                "target_id": "author:clause:1"
+              },
+              {
+                "recorded_by": "claims[1].initial_support",
+                "relation": "direct_support_of",
+                "source_id": "author:clause:1:claim:1:direct",
+                "target_id": "author:clause:1:claim:1"
+              },
+              {
+                "recorded_by": "claims[1].active_adoption_event_ids[0]",
+                "relation": "claim_active_support",
+                "source_id": "author:clause:1:claim:1",
+                "target_id": "author:clause:1:claim:1:direct"
+              },
+              {
+                "recorded_by": "claims[2].source_id",
+                "relation": "claim_in_source",
+                "source_id": "author:clause:2:claim:2",
+                "target_id": "author:clause:2"
+              },
+              {
+                "recorded_by": "claims[2].initial_support",
+                "relation": "direct_support_of",
+                "source_id": "author:clause:2:claim:2:direct",
+                "target_id": "author:clause:2:claim:2"
+              },
+              {
+                "recorded_by": "claims[2].active_adoption_event_ids[0]",
+                "relation": "claim_active_support",
+                "source_id": "author:clause:2:claim:2",
+                "target_id": "author:clause:2:claim:2:direct"
+              },
+              {
+                "recorded_by": "claims[3].source_id",
+                "relation": "claim_in_source",
+                "source_id": "author:clause:3:claim:3",
+                "target_id": "author:clause:3"
+              },
+              {
+                "recorded_by": "claims[3].initial_support",
+                "relation": "direct_support_of",
+                "source_id": "author:clause:3:claim:3:direct",
+                "target_id": "author:clause:3:claim:3"
+              },
+              {
+                "recorded_by": "claims[3].evaluation_event_ids[0]",
+                "relation": "claim_evaluation",
+                "source_id": "author:clause:3:claim:3",
+                "target_id": "author:clause:3:8:10:cue:8"
+              },
+              {
+                "recorded_by": "claims[3].active_adoption_event_ids[0]",
+                "relation": "claim_active_support",
+                "source_id": "author:clause:3:claim:3",
+                "target_id": "author:clause:3:claim:3:direct"
+              },
+              {
+                "recorded_by": "claims[4].source_id",
+                "relation": "claim_in_source",
+                "source_id": "author:clause:4:claim:4",
+                "target_id": "author:clause:4"
+              },
+              {
+                "recorded_by": "claims[4].initial_support",
+                "relation": "direct_support_of",
+                "source_id": "author:clause:4:claim:4:direct",
+                "target_id": "author:clause:4:claim:4"
+              },
+              {
+                "recorded_by": "claims[4].evaluation_event_ids[0]",
+                "relation": "claim_evaluation",
+                "source_id": "author:clause:4:claim:4",
+                "target_id": "author:clause:4:27:29:cue:27"
+              },
+              {
+                "recorded_by": "claims[4].active_adoption_event_ids[0]",
+                "relation": "claim_active_support",
+                "source_id": "author:clause:4:claim:4",
+                "target_id": "author:clause:4:claim:4:direct"
+              },
+              {
+                "recorded_by": "claims[5].source_id",
+                "relation": "claim_in_source",
+                "source_id": "author:clause:5:claim:5",
+                "target_id": "author:clause:5"
+              }
+            ],
+            "input_alignment": "caller_clauses_equal_parts",
+            "native_version": "context_projection_native_v33",
+            "source_id": "author",
+            "source_index": -1,
+            "source_role": "author",
+            "sources": [
+              {
+                "carrier_alignment": "exact_enumeration",
+                "original_index": 0,
+                "parent_source_id": "author",
+                "raw_path": "/title",
+                "raw_text_span": [
+                  0,
+                  24
+                ],
+                "source_id": "author:clause:0",
+                "source_index": 0,
+                "source_origin": "post_title",
+                "source_role": "author",
+                "span": [
+                  0,
+                  24
+                ],
+                "text": "글에서 쇠비린내랑 부동액 냄새 나는 글 없냐"
+              },
+              {
+                "carrier_alignment": "exact_enumeration",
+                "original_index": 0,
+                "parent_source_id": "author",
+                "raw_path": "/content_blocks/0/text",
+                "raw_text_span": [
+                  0,
+                  28
+                ],
+                "source_id": "author:clause:1",
+                "source_index": 0,
+                "source_origin": "body_line",
+                "source_role": "author",
+                "span": [
+                  0,
+                  28
+                ],
+                "text": "거대로봇 비행선 파워아머병사 고성능ai 인류의 숙적"
+              },
+              {
+                "carrier_alignment": "exact_enumeration",
+                "original_index": 1,
+                "parent_source_id": "author",
+                "raw_path": "/content_blocks/1/text",
+                "raw_text_span": [
+                  0,
+                  13
+                ],
+                "source_id": "author:clause:2",
+                "source_index": 1,
+                "source_origin": "body_line",
+                "source_role": "author",
+                "span": [
+                  0,
+                  13
+                ],
+                "text": "이런거 나오는 소설 없냐"
+              },
+              {
+                "carrier_alignment": "exact_enumeration",
+                "original_index": 2,
+                "parent_source_id": "author",
+                "raw_path": "/content_blocks/2/text",
+                "raw_text_span": [
+                  0,
+                  10
+                ],
+                "source_id": "author:clause:3",
+                "source_index": 2,
+                "source_origin": "body_line",
+                "source_role": "author",
+                "span": [
+                  0,
+                  10
+                ],
+                "text": "해외소설이라도 좋아"
+              },
+              {
+                "carrier_alignment": "exact_enumeration",
+                "original_index": 3,
+                "parent_source_id": "author",
+                "raw_path": "/content_blocks/3/text",
+                "raw_text_span": [
+                  0,
+                  29
+                ],
+                "source_id": "author:clause:4",
+                "source_index": 3,
+                "source_origin": "body_line",
+                "source_role": "author",
+                "span": [
+                  0,
+                  29
+                ],
+                "text": "121세기가 그나마 비슷한 느낌이라 최근 기분이 좋다"
+              },
+              {
+                "carrier_alignment": "exact_enumeration",
+                "original_index": 4,
+                "parent_source_id": "author",
+                "raw_path": "/content_blocks/4/text",
+                "raw_text_span": [
+                  0,
+                  17
+                ],
+                "source_id": "author:clause:5",
+                "source_index": 4,
+                "source_origin": "body_line",
+                "source_role": "author",
+                "span": [
+                  0,
+                  17
+                ],
+                "text": "- dc official App"
+              }
+            ]
+          },
+          {
+            "claims": [
+              {
+                "attribution": "direct_clause",
+                "claim_id": "comment:0:clause:0:claim:0",
+                "evaluation_event_ids": [],
+                "final_support": true,
+                "initial_support": true,
+                "kind": "own",
+                "source_id": "comment:0:clause:0",
+                "span": [
+                  0,
+                  7
+                ],
+                "speaker": "self",
+                "speaker_source": "unit_speaker",
+                "support_attribution": "unit_speaker_direct",
+                "text": "우주괴물..."
+              }
+            ],
+            "evaluations": [],
+            "graph_edges": [
+              {
+                "recorded_by": "sources[0].parent_source_id",
+                "relation": "source_in_unit",
+                "source_id": "comment:0:clause:0",
+                "target_id": "comment:0"
+              },
+              {
+                "recorded_by": "claims[0].source_id",
+                "relation": "claim_in_source",
+                "source_id": "comment:0:clause:0:claim:0",
+                "target_id": "comment:0:clause:0"
+              },
+              {
+                "recorded_by": "claims[0].initial_support",
+                "relation": "direct_support_of",
+                "source_id": "comment:0:clause:0:claim:0:direct",
+                "target_id": "comment:0:clause:0:claim:0"
+              },
+              {
+                "recorded_by": "claims[0].active_adoption_event_ids[0]",
+                "relation": "claim_active_support",
+                "source_id": "comment:0:clause:0:claim:0",
+                "target_id": "comment:0:clause:0:claim:0:direct"
+              }
+            ],
+            "input_alignment": "caller_clauses_equal_parts",
+            "native_version": "context_projection_native_v33",
+            "source_id": "comment:0",
+            "source_index": 0,
+            "source_role": "comment",
+            "sources": [
+              {
+                "carrier_alignment": "exact_enumeration",
+                "original_index": 0,
+                "parent_source_id": "comment:0",
+                "raw_path": "/comments/0/content",
+                "raw_text_span": [
+                  0,
+                  7
+                ],
+                "source_id": "comment:0:clause:0",
+                "source_index": 0,
+                "source_origin": "comment",
+                "source_role": "comment",
+                "span": [
+                  0,
+                  7
+                ],
+                "text": "우주괴물..."
+              }
+            ]
+          },
+          {
+            "claims": [
+              {
+                "attribution": "direct_clause",
+                "claim_id": "comment:1:clause:0:claim:0",
+                "evaluation_event_ids": [
+                  "comment:1:clause:0:33:36:cue:33"
+                ],
+                "final_support": true,
+                "initial_support": true,
+                "kind": "own",
+                "source_id": "comment:1:clause:0",
+                "span": [
+                  0,
+                  36
+                ],
+                "speaker": "self",
+                "speaker_source": "unit_speaker",
+                "support_attribution": "unit_speaker_direct",
+                "text": "메카닉 쪽 내공 ㅈㄴ 높아야 난도질 안 당하는 장르라 ㅈㄴ 빡세지"
+              }
+            ],
+            "evaluations": [
+              {
+                "actor": "self",
+                "assertion_span": [
+                  -1,
+                  -1
+                ],
+                "attribution": "unit_speaker_default",
+                "claim_id": "comment:1:clause:0:claim:0",
+                "evaluation_polarity": "neg",
+                "event_id": "comment:1:clause:0:33:36:cue:33",
+                "evidence_text": "메카닉 쪽 내공 ㅈㄴ 높아야 난도질 안 당하는 장르라 ㅈㄴ 빡세지",
+                "final_support": true,
+                "grammatical_subject": {
+                  "actor": "self",
+                  "explicit": true,
+                  "span": [
+                    22,
+                    25
+                  ],
+                  "text": "당하는"
+                },
+                "kind": "evaluate",
+                "objects": [],
+                "parent_event_id": "comment:1:clause:0:claim:0",
+                "polarity": "positive",
+                "predicate": "빡세지",
+                "predicate_span": [
+                  33,
+                  36
+                ],
+                "realization": "actual",
+                "source_id": "comment:1:clause:0",
+                "speaker": "self",
+                "support_attribution": "unit_speaker_direct",
+                "temporal_scope": "unmarked"
+              }
+            ],
+            "graph_edges": [
+              {
+                "recorded_by": "sources[0].parent_source_id",
+                "relation": "source_in_unit",
+                "source_id": "comment:1:clause:0",
+                "target_id": "comment:1"
+              },
+              {
+                "recorded_by": "claims[0].source_id",
+                "relation": "claim_in_source",
+                "source_id": "comment:1:clause:0:claim:0",
+                "target_id": "comment:1:clause:0"
+              },
+              {
+                "recorded_by": "claims[0].initial_support",
+                "relation": "direct_support_of",
+                "source_id": "comment:1:clause:0:claim:0:direct",
+                "target_id": "comment:1:clause:0:claim:0"
+              },
+              {
+                "recorded_by": "claims[0].evaluation_event_ids[0]",
+                "relation": "claim_evaluation",
+                "source_id": "comment:1:clause:0:claim:0",
+                "target_id": "comment:1:clause:0:33:36:cue:33"
+              },
+              {
+                "recorded_by": "claims[0].active_adoption_event_ids[0]",
+                "relation": "claim_active_support",
+                "source_id": "comment:1:clause:0:claim:0",
+                "target_id": "comment:1:clause:0:claim:0:direct"
+              },
+              {
+                "recorded_by": "evaluations[0].source_id",
+                "relation": "evaluation_in_source",
+                "source_id": "comment:1:clause:0:33:36:cue:33",
+                "target_id": "comment:1:clause:0"
+              },
+              {
+                "recorded_by": "evaluations[0].parent_event_id",
+                "relation": "evaluation_parent",
+                "source_id": "comment:1:clause:0:33:36:cue:33",
+                "target_id": "comment:1:clause:0:claim:0"
+              },
+              {
+                "recorded_by": "evaluations[0].claim_id",
+                "relation": "evaluation_claim",
+                "source_id": "comment:1:clause:0:33:36:cue:33",
+                "target_id": "comment:1:clause:0:claim:0"
+              },
+              {
+                "recorded_by": "evaluations[0].support_adoption_event_ids[0]",
+                "relation": "evaluation_support",
+                "source_id": "comment:1:clause:0:33:36:cue:33",
+                "target_id": "comment:1:clause:0:claim:0:direct"
+              }
+            ],
+            "input_alignment": "caller_clauses_equal_parts",
+            "native_version": "context_projection_native_v33",
+            "source_id": "comment:1",
+            "source_index": 1,
+            "source_role": "comment",
+            "sources": [
+              {
+                "carrier_alignment": "exact_enumeration",
+                "original_index": 1,
+                "parent_source_id": "comment:1",
+                "raw_path": "/comments/1/content",
+                "raw_text_span": [
+                  0,
+                  36
+                ],
+                "source_id": "comment:1:clause:0",
+                "source_index": 1,
+                "source_origin": "comment",
+                "source_role": "comment",
+                "span": [
+                  0,
+                  36
+                ],
+                "text": "메카닉 쪽 내공 ㅈㄴ 높아야 난도질 안 당하는 장르라 ㅈㄴ 빡세지"
+              }
+            ]
+          },
+          {
+            "claims": [
+              {
+                "attribution": "direct_clause",
+                "claim_id": "comment:2:clause:0:claim:0",
+                "evaluation_event_ids": [],
+                "final_support": true,
+                "initial_support": true,
+                "kind": "own",
+                "source_id": "comment:2:clause:0",
+                "span": [
+                  0,
+                  4
+                ],
+                "speaker": "self",
+                "speaker_source": "unit_speaker",
+                "support_attribution": "unit_speaker_direct",
+                "text": "메카네크"
+              }
+            ],
+            "evaluations": [],
+            "graph_edges": [
+              {
+                "recorded_by": "sources[0].parent_source_id",
+                "relation": "source_in_unit",
+                "source_id": "comment:2:clause:0",
+                "target_id": "comment:2"
+              },
+              {
+                "recorded_by": "claims[0].source_id",
+                "relation": "claim_in_source",
+                "source_id": "comment:2:clause:0:claim:0",
+                "target_id": "comment:2:clause:0"
+              },
+              {
+                "recorded_by": "claims[0].initial_support",
+                "relation": "direct_support_of",
+                "source_id": "comment:2:clause:0:claim:0:direct",
+                "target_id": "comment:2:clause:0:claim:0"
+              },
+              {
+                "recorded_by": "claims[0].active_adoption_event_ids[0]",
+                "relation": "claim_active_support",
+                "source_id": "comment:2:clause:0:claim:0",
+                "target_id": "comment:2:clause:0:claim:0:direct"
+              }
+            ],
+            "input_alignment": "caller_clauses_equal_parts",
+            "native_version": "context_projection_native_v33",
+            "source_id": "comment:2",
+            "source_index": 2,
+            "source_role": "comment",
+            "sources": [
+              {
+                "carrier_alignment": "exact_enumeration",
+                "original_index": 2,
+                "parent_source_id": "comment:2",
+                "raw_path": "/comments/2/content",
+                "raw_text_span": [
+                  0,
+                  4
+                ],
+                "source_id": "comment:2:clause:0",
+                "source_index": 2,
+                "source_origin": "comment",
+                "source_role": "comment",
+                "span": [
+                  0,
+                  4
+                ],
+                "text": "메카네크"
+              }
+            ]
+          },
+          {
+            "claims": [
+              {
+                "attribution": "direct_clause",
+                "claim_id": "comment:3:clause:0:claim:0",
+                "evaluation_event_ids": [],
+                "final_support": true,
+                "initial_support": true,
+                "kind": "own",
+                "source_id": "comment:3:clause:0",
+                "span": [
+                  0,
+                  39
+                ],
+                "speaker": "self",
+                "speaker_source": "unit_speaker",
+                "support_attribution": "unit_speaker_direct",
+                "text": "읽어봤는데 내가바라는 그런게 아니었음 댓글은 고맙다   - dc App"
+              }
+            ],
+            "evaluations": [],
+            "graph_edges": [
+              {
+                "recorded_by": "sources[0].parent_source_id",
+                "relation": "source_in_unit",
+                "source_id": "comment:3:clause:0",
+                "target_id": "comment:3"
+              },
+              {
+                "recorded_by": "claims[0].source_id",
+                "relation": "claim_in_source",
+                "source_id": "comment:3:clause:0:claim:0",
+                "target_id": "comment:3:clause:0"
+              },
+              {
+                "recorded_by": "claims[0].initial_support",
+                "relation": "direct_support_of",
+                "source_id": "comment:3:clause:0:claim:0:direct",
+                "target_id": "comment:3:clause:0:claim:0"
+              },
+              {
+                "recorded_by": "claims[0].active_adoption_event_ids[0]",
+                "relation": "claim_active_support",
+                "source_id": "comment:3:clause:0:claim:0",
+                "target_id": "comment:3:clause:0:claim:0:direct"
+              }
+            ],
+            "input_alignment": "caller_clauses_equal_parts",
+            "native_version": "context_projection_native_v33",
+            "source_id": "comment:3",
+            "source_index": 3,
+            "source_role": "comment",
+            "sources": [
+              {
+                "carrier_alignment": "exact_enumeration",
+                "original_index": 3,
+                "parent_source_id": "comment:3",
+                "raw_path": "/comments/3/content",
+                "raw_text_span": [
+                  0,
+                  39
+                ],
+                "source_id": "comment:3:clause:0",
+                "source_index": 3,
+                "source_origin": "comment",
+                "source_role": "comment",
+                "span": [
+                  0,
+                  39
+                ],
+                "text": "읽어봤는데 내가바라는 그런게 아니었음 댓글은 고맙다   - dc App"
+              }
+            ]
+          },
+          {
+            "claims": [
+              {
+                "attribution": "direct_clause",
+                "claim_id": "comment:4:clause:0:claim:0",
+                "evaluation_event_ids": [],
+                "final_support": true,
+                "initial_support": true,
+                "kind": "own",
+                "source_id": "comment:4:clause:0",
+                "span": [
+                  0,
+                  33
+                ],
+                "speaker": "self",
+                "speaker_source": "unit_speaker",
+                "support_attribution": "unit_speaker_direct",
+                "text": "한 140화 부터 건담 타고 다니는데 그때부터 메카물 느낌남"
+              }
+            ],
+            "evaluations": [],
+            "graph_edges": [
+              {
+                "recorded_by": "sources[0].parent_source_id",
+                "relation": "source_in_unit",
+                "source_id": "comment:4:clause:0",
+                "target_id": "comment:4"
+              },
+              {
+                "recorded_by": "claims[0].source_id",
+                "relation": "claim_in_source",
+                "source_id": "comment:4:clause:0:claim:0",
+                "target_id": "comment:4:clause:0"
+              },
+              {
+                "recorded_by": "claims[0].initial_support",
+                "relation": "direct_support_of",
+                "source_id": "comment:4:clause:0:claim:0:direct",
+                "target_id": "comment:4:clause:0:claim:0"
+              },
+              {
+                "recorded_by": "claims[0].active_adoption_event_ids[0]",
+                "relation": "claim_active_support",
+                "source_id": "comment:4:clause:0:claim:0",
+                "target_id": "comment:4:clause:0:claim:0:direct"
+              }
+            ],
+            "input_alignment": "caller_clauses_equal_parts",
+            "native_version": "context_projection_native_v33",
+            "source_id": "comment:4",
+            "source_index": 4,
+            "source_role": "comment",
+            "sources": [
+              {
+                "carrier_alignment": "exact_enumeration",
+                "original_index": 4,
+                "parent_source_id": "comment:4",
+                "raw_path": "/comments/4/content",
+                "raw_text_span": [
+                  0,
+                  33
+                ],
+                "source_id": "comment:4:clause:0",
+                "source_index": 4,
+                "source_origin": "comment",
+                "source_role": "comment",
+                "span": [
+                  0,
+                  33
+                ],
+                "text": "한 140화 부터 건담 타고 다니는데 그때부터 메카물 느낌남"
+              }
+            ]
+          },
+          {
+            "claims": [
+              {
+                "attribution": "direct_clause",
+                "claim_id": "comment:5:clause:0:claim:0",
+                "evaluation_event_ids": [],
+                "final_support": true,
+                "initial_support": true,
+                "kind": "own",
+                "source_id": "comment:5:clause:0",
+                "span": [
+                  0,
+                  26
+                ],
+                "speaker": "self",
+                "speaker_source": "unit_speaker",
+                "support_attribution": "unit_speaker_direct",
+                "text": "거기까진 안 읽어봤는데 고마워  - dc App"
+              }
+            ],
+            "evaluations": [],
+            "graph_edges": [
+              {
+                "recorded_by": "sources[0].parent_source_id",
+                "relation": "source_in_unit",
+                "source_id": "comment:5:clause:0",
+                "target_id": "comment:5"
+              },
+              {
+                "recorded_by": "claims[0].source_id",
+                "relation": "claim_in_source",
+                "source_id": "comment:5:clause:0:claim:0",
+                "target_id": "comment:5:clause:0"
+              },
+              {
+                "recorded_by": "claims[0].initial_support",
+                "relation": "direct_support_of",
+                "source_id": "comment:5:clause:0:claim:0:direct",
+                "target_id": "comment:5:clause:0:claim:0"
+              },
+              {
+                "recorded_by": "claims[0].active_adoption_event_ids[0]",
+                "relation": "claim_active_support",
+                "source_id": "comment:5:clause:0:claim:0",
+                "target_id": "comment:5:clause:0:claim:0:direct"
+              }
+            ],
+            "input_alignment": "caller_clauses_equal_parts",
+            "native_version": "context_projection_native_v33",
+            "source_id": "comment:5",
+            "source_index": 5,
+            "source_role": "comment",
+            "sources": [
+              {
+                "carrier_alignment": "exact_enumeration",
+                "original_index": 5,
+                "parent_source_id": "comment:5",
+                "raw_path": "/comments/5/content",
+                "raw_text_span": [
+                  0,
+                  26
+                ],
+                "source_id": "comment:5:clause:0",
+                "source_index": 5,
+                "source_origin": "comment",
+                "source_role": "comment",
+                "span": [
+                  0,
+                  26
+                ],
+                "text": "거기까진 안 읽어봤는데 고마워  - dc App"
+              }
+            ]
+          }
+        ],
+        "max_bytes": 65536,
+        "native_verification_status": "NATIVE_CALLBACK_TRUE",
+        "omitted_counts": {
+          "ledgers.graph_edges.items": 10
+        },
+        "projection": {
+          "excluded_works": [],
+          "fallback": false,
+          "reasons": [
+            "author_owned_request"
+          ],
+          "reference_works": [],
+          "request_conditions": [
+            "글에서 쇠비린내랑 부동액 냄새 나는 글 없냐",
+            "거대로봇 비행선 파워아머병사 고성능ai 인류의 숙적",
+            "이런거 나오는 소설 없냐",
+            "해외소설이라도 좋아",
+            "121세기가 그나마 비슷한 느낌이라 최근 기분이 좋다"
+          ],
+          "scope_hint": null,
+          "speech_act": "recommendation_request",
+          "target_kind": "conditions",
+          "target_media": "unknown",
+          "target_span": "글에서 쇠비린내랑 부동액 냄새 나는 글 없냐",
+          "target_surface": null,
+          "work_relation_evidence": [],
+          "work_roles": [
+            [
+              "121세기",
+              "reference",
+              "work_typed_comparison"
+            ]
+          ]
+        },
+        "publication_authority": false,
+        "reason_codes": [
+          "FIELD_LIMIT"
+        ],
+        "schema_version": "source_context_diagnostics_v1",
+        "scope_state_guards": [
+          {
+            "applied": false,
+            "calls": 0,
+            "code": "FINAL_NONWORK_PRECONDITIONS_NOT_MET",
+            "first_rejection": null,
+            "gate": "surface_title_anchor",
+            "publication_authority": false,
+            "status": "SKIPPED"
+          },
+          {
+            "applied": false,
+            "calls": 1,
+            "code": "FINAL_IDENTITY_OR_CONTRACT",
+            "first_rejection": "FINAL_IDENTITY_OR_CONTRACT",
+            "gate": "propriety_question_scope",
+            "publication_authority": false,
+            "status": "REJECTED"
+          },
+          {
+            "applied": false,
+            "calls": 1,
+            "code": "GUARD_RETURNED_NO_PROOF",
+            "first_rejection": null,
+            "gate": "propriety_callback",
+            "publication_authority": false,
+            "status": "NOT_APPLIED"
+          }
+        ],
+        "status": "TRUNCATED"
+      },
+      "worker_id": 6,
+      "worker_log_file": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\logs\\expert_run_20261013_060126_882644_W6.log"
+    },
+    "title": "글에서 쇠비린내랑 부동액 냄새 나는 글 없냐",
+    "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=8620907"
+  },
+  "checkpoint_row_canonical_sha256": "d408898b65377b7d3bc3ca6b11bf4c5ea3c89f980220e41080cadf7e811d407c",
+  "checkpoint_row_raw_sha256": "75b6d9d2c4dcf778e909126332c725a6a35dbb1e9b0f0c0da125c6280b1a2958",
+  "comment_binding": "MAIN_COMMENT_TEXT_PROJECTION_EXACT_ORIGINAL_DICTS_PRESERVED_SEPARATELY",
+  "index1": 71,
+  "post_id": 8620907,
+  "post_id_type": "int",
+  "publication_commit": {
+    "attempt_run_id": "20261013_060126_882644",
+    "commit_index": 1,
+    "commit_sha256": "84bde83bdc48ed2d9b0fd4e7948f121351fe7a7f2b3c63a87c84f39f29f7ba90",
+    "contract_input_fingerprint": "6c9341213cf4687989e4c3aa54ef309027f91576b2fc8d35e3e6c25aed2a0e03",
+    "contract_version": "promotion_contract_v2",
+    "decision_id": "16b4b329a47a6438b99fc926c87e5a7d6e27ba3c809ce2ef7c08c8f7249ebbae",
+    "decision_sha256": "1b03f3de8713454efbed9c6ca5d7db043d3ef02596518c8fc981ef070ba71a68",
+    "input_index": 71,
+    "input_sha256": "83007465f321ab04d77ed0a8aedff6ef784c29f405c2057f88865d130e886ad2",
+    "outcome": "HOLD",
+    "owner": "expert_main.completed_source_writer",
+    "post_id": 8620907,
+    "public_projection_sha256": "b0f71b0e130008016b5b017f3abffa5bc7acab72da3d196ae561752ebe459364",
+    "publication_scope_id": "84666454781af214bf344282055e4942a066bf14072739a0ffcec6e1b1c3030c",
+    "publish_allowed": false,
+    "result_sha256": "8d9fa5f4aff63120fe652de51b45143eaa203ea2d5ae9b337b5595e962e69e19",
+    "schema_version": "publication_decision_commit_v3",
+    "stable_result_sha256": "b8fec5e6cd21842a4d73a1c0654d397fc519e7933ed35ba1beb7bf3fd782366c"
+  },
+  "publication_scope_id": "84666454781af214bf344282055e4942a066bf14072739a0ffcec6e1b1c3030c",
+  "result_canonical_sha256": "8d9fa5f4aff63120fe652de51b45143eaa203ea2d5ae9b337b5595e962e69e19",
+  "review_scope": "PRELIMINARY_COMPLETED_CHECKPOINT_ONLY",
+  "review_status": "UNREVIEWED",
+  "run_id": "20261013_060126_882644",
+  "source_canonical_sha256": "d915cdc8e4b41f0564fee02697bc99759736f86730991771762523b3f904b939",
+  "source_comments": [
+    {
+      "author": "ㅇㅇ1",
+      "comment_id": "29462410",
+      "content": "우주괴물...",
+      "content_html": "우주괴물...",
+      "created_at": "2024.05.02 01:06:12",
+      "ip": "1.230",
+      "post_id": 8620907,
+      "reply_level": 0,
+      "reply_to_comment_id": null
+    },
+    {
+      "author": "ㅇㅇ",
+      "comment_id": "29462475",
+      "content": "메카닉 쪽 내공 ㅈㄴ 높아야 난도질 안 당하는 장르라 ㅈㄴ 빡세지",
+      "content_html": "메카닉 쪽 내공 ㅈㄴ 높아야 난도질 안 당하는 장르라 ㅈㄴ 빡세지",
+      "created_at": "2024.05.02 01:08:01",
+      "ip": "1.237",
+      "post_id": 8620907,
+      "reply_level": 0,
+      "reply_to_comment_id": null
+    },
+    {
+      "author": "ㅇㅇ2",
+      "comment_id": "29464610",
+      "content": "메카네크",
+      "content_html": "메카네크",
+      "created_at": "2024.05.02 04:01:33",
+      "ip": "220.70",
+      "post_id": 8620907,
+      "reply_level": 0,
+      "reply_to_comment_id": null
+    },
+    {
+      "author": "lastmania",
+      "comment_id": "29464727",
+      "content": "읽어봤는데 내가바라는 그런게 아니었음 댓글은 고맙다   - dc App",
+      "content_html": "읽어봤는데 내가바라는 그런게 아니었음 댓글은 고맙다   - dc App",
+      "created_at": "2024.05.02 04:25:25",
+      "ip": "",
+      "post_id": 8620907,
+      "reply_level": 0,
+      "reply_to_comment_id": null
+    },
+    {
+      "author": "ㅇㅇ2",
+      "comment_id": "29464742",
+      "content": "한 140화 부터 건담 타고 다니는데 그때부터 메카물 느낌남",
+      "content_html": "한 140화 부터 건담 타고 다니는데 그때부터 메카물 느낌남",
+      "created_at": "2024.05.02 04:29:16",
+      "ip": "220.70",
+      "post_id": 8620907,
+      "reply_level": 0,
+      "reply_to_comment_id": null
+    },
+    {
+      "author": "lastmania",
+      "comment_id": "29465528",
+      "content": "거기까진 안 읽어봤는데 고마워  - dc App",
+      "content_html": "거기까진 안 읽어봤는데 고마워  - dc App",
+      "created_at": "2024.05.02 08:28:43",
+      "ip": "",
+      "post_id": 8620907,
+      "reply_level": 0,
+      "reply_to_comment_id": null
+    }
+  ],
+  "source_post": {
+    "author": "lastmania",
+    "content_blocks": [
+      {
+        "text": "거대로봇 비행선 파워아머병사 고성능ai 인류의 숙적",
+        "type": "text"
+      },
+      {
+        "text": "이런거 나오는 소설 없냐",
+        "type": "text"
+      },
+      {
+        "text": "해외소설이라도 좋아",
+        "type": "text"
+      },
+      {
+        "text": "121세기가 그나마 비슷한 느낌이라 최근 기분이 좋다",
+        "type": "text"
+      },
+      {
+        "text": "- dc official App",
+        "type": "text"
+      }
+    ],
+    "created_at": "2024-05-02 01:05:38",
+    "gallery_id": "genrenovel",
+    "page_no": 55470,
+    "post_id": 8620907,
+    "title": "글에서 쇠비린내랑 부동액 냄새 나는 글 없냐",
+    "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=8620907"
+  }
+}

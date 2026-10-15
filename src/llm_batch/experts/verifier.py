@@ -11,6 +11,7 @@ import re
 import sys
 import time
 from typing import Any, Dict, List, Optional, Tuple
+from urllib.parse import parse_qs, urlencode, urlsplit
 
 from .prompts import (
     VERIFIER_SYSTEM,
@@ -18,6 +19,10 @@ from .prompts import (
     build_verifier_system_prompt,
 )
 from .decoder import abbreviation_match_score
+from ..grounding.anticipation_search_probe import (
+    source_bound_alias_assertion,
+    source_bound_search_row_fingerprint,
+)
 from ..grounding.candidate_generation import record_candidate_stage_receipt
 from .utils import (
     parse_json_with_think_removal,
@@ -265,6 +270,10 @@ class VerifierExpert:
             query = (parsed.query or "").lower()
         except Exception:
             return False
+        if "kakao.page" in host or "page.kakao.com" in host:
+            from llm_batch.kakao_routes import is_kakao_work_detail_url
+            return is_kakao_work_detail_url(url)
+
 
         # 검색/목록 URL 우선 차단
         if any(tok in path for tok in ("/arena/", "/community/", "/board/", "/forum/", "/review/", "/reviews/")):
@@ -272,8 +281,6 @@ class VerifierExpert:
         if any(tok in path for tok in ("/search", "/author", "/writers", "/ranking", "/best", "/genre", "/tag", "/list")):
             return False
         if any(tok in query for tok in ("search=", "q=", "query=", "keyword=", "writer=", "author=", "tag=", "genre=", "page=")):
-            return False
-        if ("kakao.page" in host or "page.kakao.com" in host) and "tab_type=comment" in query:
             return False
 
         if "novelpia.com" in host and re.search(r"/novel/\d+", path):
@@ -285,8 +292,6 @@ class VerifierExpert:
         if "munpia.com" in host and (("action=view" in query and "id=" in query) or re.search(r"/novel/\d+", path)):
             return True
         if "joara.com" in host and ("/book/" in path or "book_no=" in query or "bookcode=" in query):
-            return True
-        if ("kakao.page" in host or "page.kakao.com" in host) and "/content/" in path:
             return True
         return False
 
@@ -1134,6 +1139,67 @@ class VerifierExpert:
         user_prompt += "\n '웹소설로 꿈꾸는 세상!'은 노벨피아 플랫폼 슬로건입니다. 이 표현만 확인되면 official_novel_title로 채택하지 마세요.\n"
         return user_prompt
 
+    def _classify_search_absence_evidence(self, ctx: Any, title: str) -> Dict[str, Any]:
+        """구조화된 검색 실행 관측으로 부재 사유의 적용 범위만 제한한다.
+
+        제목/URL을 수용하거나 nullify 권한을 해제하지 않는다. 정상적인
+        제목 질의와 완결된 검색 증빙이 없으면 부재를 환각 근거로 단정하지 않는다.
+        """
+        from collections import Counter
+        from ..grounding.candidate_generation import (
+            candidate_producer_plans_from_payload,
+            candidate_producer_receipts_from_payload,
+        )
+
+        stats = getattr(ctx, "search_query_stats", None)
+        stats = stats if isinstance(stats, dict) else {}
+        names = ("total", "effective_total", "degraded_total", "degraded_zero", "degraded_zero_suppressed_total", "unrecovered_degraded_total")
+        raw_counts = {key: stats.get(key) for key in names}
+        valid_counts = all(type(value) is int and value >= 0 for value in raw_counts.values())
+        counts = {key: value if type(value) is int and value >= 0 else None for key, value in raw_counts.items()}
+        raw_queries = getattr(ctx, "executed_queries", None)
+        valid_queries = isinstance(raw_queries, list) and all(isinstance(value, str) and value.strip() for value in raw_queries)
+        queries = raw_queries if valid_queries else []
+        title_norm = self._norm_text(title)
+        candidate_query_observed = bool(len(title_norm) >= 4 and any(title_norm in self._norm_text(query) for query in queries))
+        receipt_count = noncomplete_count = plan_count = 0
+        ledger_finished = False
+        try:
+            plans = candidate_producer_plans_from_payload(getattr(ctx, "_candidate_producer_plans", None) or [])
+            receipts = candidate_producer_receipts_from_payload(getattr(ctx, "_candidate_producer_receipts", None) or [])
+            plans = [item for item in plans if item.producer == "search"]
+            receipts = [item for item in receipts if item.producer == "search"]
+            planned = Counter((item.plan_fingerprint, value) for item in plans for value in item.planned_operation_fingerprints)
+            recorded = Counter((item.plan_fingerprint, item.input_fingerprint) for item in receipts)
+            receipt_count, plan_count = len(receipts), len(plans)
+            noncomplete_count = sum(item.status != "COMPLETE" for item in receipts)
+            ledger_finished = bool(planned and planned == recorded and not noncomplete_count and all(item.enumeration_finished for item in plans))
+        except (TypeError, ValueError):
+            pass
+        integrity_errors = bool(getattr(ctx, "_candidate_producer_integrity_errors", None))
+        status = "unknown"
+        if valid_counts and valid_queries:
+            if counts["total"] == 0 and not queries:
+                status = "not_observed"
+            elif any(counts[key] for key in names[2:]) or integrity_errors or noncomplete_count:
+                status = "incomplete"
+            elif not candidate_query_observed:
+                status = "scope_unverified"
+            elif (
+                counts["total"] > 0 and counts["effective_total"] == counts["total"]
+                and len(queries) <= counts["total"] and receipt_count == counts["total"]
+                and ledger_finished
+            ):
+                status = "observed_complete"
+        return {
+            "schema_version": "search_absence_observation_v1",
+            "status": status, "absence_supported": status == "observed_complete",
+            "candidate_query_observed": candidate_query_observed,
+            "recorded_query_count": len(queries), "counts": counts,
+            "search_plan_count": plan_count, "search_receipt_count": receipt_count,
+            "noncomplete_search_receipt_count": noncomplete_count,
+            "ledger_finished": ledger_finished, "producer_integrity_errors": integrity_errors,
+        }
     def _resolve_verifier_max_tokens(self, prompt_chars: int, *, compact_mode: bool = False) -> int:
         """Use a bounded verifier generation budget instead of the client max."""
         global_default = max(256, int(getattr(self.llm, "max_tokens", 65536)))
@@ -1754,6 +1820,9 @@ class VerifierExpert:
 
                 # 여전히 검색 근거가 없으면 환각 후보로 처리
                 if not title_in_search:
+                    absence_observation = self._classify_search_absence_evidence(ctx, verified_title_d)
+                    verification["search_absence_observation"] = absence_observation
+                    absence_supported = absence_observation["absence_supported"]
                     old_conf = novel_id.get("confidence", "Low")
                     novel_id["confidence"] = "Low"
                     heretic_url_now = str(novel_id.get("heretic_url") or "").strip()
@@ -1780,8 +1849,8 @@ class VerifierExpert:
                         if "official_title" in novel_id:
                             novel_id["official_title"] = None
                     print(
-                        f"[{_ts()}][{self.emoji}] 🛡️ 검색에 '{verified_title_d}' 부재 → "
-                        f"환각 의심, confidence: {old_conf} → Low"
+                        f"[{_ts()}][{self.emoji}] 🛡️ '{verified_title_d}' 선택 보류 → "
+                        + (f"검색 범위 내 부재, confidence: {old_conf} → Low" if absence_supported else f"검색 관측 불완전·제목 미검증, confidence: {old_conf} → Low")
                         + (", title=null" if should_nullify else "")
                         + (" (direct OCR/VLM title tuple support)" if direct_title_tuple_support else ""),
                         file=sys.stderr,
@@ -1791,14 +1860,21 @@ class VerifierExpert:
                         counter_args = []
                         verification["counter_arguments"] = counter_args
                     counter_args.append({
-                        "issue": "search_absent_verified_title",
+                        "issue": "search_absent_verified_title" if absence_supported else "search_incomplete_title_unverified",
                         "severity": "critical" if should_nullify else "major",
                         "action": "nullify_title" if should_nullify else "downgrade_confidence",
                         "explanation": (
-                            f"Verifier 제목 '{verified_title_d}'이(가) 검색 근거에 직접 등장하지 않아 "
-                            + ("다만 direct OCR/VLM title tuple support가 있어 제목 nullify는 보류함." if direct_title_tuple_support else "독자 추정/환각 가능성이 높음.")
+                            (f"Verifier 제목 '{verified_title_d}'이(가) 관측된 정상 제목 질의의 검색 근거에 직접 등장하지 않아 "
+                             + ("다만 direct OCR/VLM title tuple support가 있어 제목 nullify는 보류함." if direct_title_tuple_support else "독자 추정/환각 가능성이 높음."))
+                            if absence_supported else
+                            f"Verifier 제목 '{verified_title_d}'은 검색 실행·가용성 또는 질의 범위가 충분히 확인되지 않아 미검증 상태로 보류함."
                         ),
+                        "search_observation": absence_observation,
                     })
+                    print("[verifier_search_absence_observation] " + json.dumps({
+                        "post_id": getattr(ctx, "post_id", None), "candidate_title": verified_title_d,
+                        "title_nullified": should_nullify, "observation": absence_observation,
+                    }, ensure_ascii=False, sort_keys=True), file=sys.stderr)
 
             # 🛡️ Phase40: 소설 플랫폼 미출현 + 커뮤니티 전용 제목 필터
             # 검색에서 발견됐더라도, 소설 플랫폼(novelpia/munpia/series.naver 등)에 없고
@@ -2625,16 +2701,94 @@ class VerifierExpert:
         
         return summary
     
+    @staticmethod
+    def _is_image_derived_content_block(block: Any) -> bool:
+        return bool(
+            isinstance(block, dict)
+            and str(block.get("type") or "").strip().lower()
+            in {"ocr_text", "image_ocr", "image_summary", "vlm_summary"}
+        )
+
+    def _source_native_relation_post(self, post: Dict[str, Any]) -> Dict[str, Any]:
+        """Give relation surface checks author text without generated image inserts."""
+        source_post = dict(post or {})
+        source_post["content_blocks"] = [
+            {"type": "text", "text": block} if isinstance(block, str) else dict(block)
+            for block in ((post or {}).get("content_blocks") or [])
+            if isinstance(block, (dict, str)) and not self._is_image_derived_content_block(block)
+        ]
+        return source_post
+
+    def _source_bound_relation_text(
+        self,
+        post: Optional[Dict[str, Any]],
+        comments: Optional[List[str]],
+    ) -> str:
+        """Return packet-local author text without OCR/VLM/model-derived blocks."""
+        source_post = self._source_native_relation_post(post if isinstance(post, dict) else {})
+        chunks: List[str] = [str(source_post.get("title") or "")]
+        generated_prefixes = ("[이미지 OCR]", "[이미지 요약]", "[이미지 설명]")
+        source_blocks = source_post.get("content_blocks") or []
+        for block in source_blocks:
+            if not isinstance(block, dict) or str(block.get("type") or "text").lower() != "text":
+                continue
+            text = str(block.get("text") or "").strip()
+            if text and not text.lstrip().startswith(generated_prefixes):
+                chunks.append(text)
+        if not source_blocks and isinstance((post or {}).get("content"), list):
+            chunks.extend(
+                value.strip()
+                for value in (post or {}).get("content") or []
+                if isinstance(value, str)
+                and value.strip()
+                and not value.lstrip().startswith(generated_prefixes)
+            )
+        chunks.extend(
+            str(comment).strip()
+            for comment in (comments or [])
+            if isinstance(comment, str) and str(comment).strip()
+        )
+        return " ".join(chunk for chunk in chunks if chunk).strip()
+
+    def _source_bound_alias_assertion_for_relation(
+        self,
+        title: str,
+        alias_terms: List[str],
+        search_results: List[Dict[str, Any]],
+        *,
+        post: Optional[Dict[str, Any]],
+        comments: Optional[List[str]],
+    ) -> Dict[str, str]:
+        evidence = source_bound_alias_assertion(
+            title,
+            alias_terms,
+            search_results,
+            source_text=self._source_bound_relation_text(post, comments),
+        )
+        return evidence if isinstance(evidence, dict) else {}
+
     def _build_post_json(
         self,
         post: Dict[str, Any],
         comments: List[str],
         *,
         compact: bool = False,
+        separate_image_evidence: bool = False,
     ) -> Dict[str, Any]:
         """Build simplified post JSON with bounded body/comment sizes."""
         content_texts = []
-        for block in post.get("content_blocks", []):
+        image_derived = []
+        for block_index, block in enumerate(post.get("content_blocks", [])):
+            if separate_image_evidence and self._is_image_derived_content_block(block):
+                derived_text = str(block.get("text") or "").strip()
+                if derived_text:
+                    image_derived.append({
+                        "type": str(block.get("type") or "").strip().lower(),
+                        "text": derived_text,
+                        "source_url": str(block.get("source_url") or block.get("url") or ""),
+                        "block_index": block_index,
+                    })
+                continue
             if isinstance(block, dict) and block.get("text"):
                 content_texts.append(block["text"])
             elif isinstance(block, str):
@@ -2670,13 +2824,20 @@ class VerifierExpert:
             )
 
         clipped_content: List[str] = []
-        remaining = max_total_content_chars
+        reserved_image_chars = min(
+            max_total_content_chars // 3,
+            sum(min(len(item["text"]), max_block_chars) for item in image_derived),
+        )
+        remaining = max_total_content_chars - reserved_image_chars
         content_truncated = False
         for text in content_texts:
             if remaining <= 80:
                 content_truncated = True
                 break
-            clipped = self._clip_text(text, min(max_block_chars, remaining))
+            clip_limit = min(max_block_chars, remaining)
+            clipped = self._clip_text(text, clip_limit)
+            if separate_image_evidence:
+                clipped = clipped[:clip_limit]
             if clipped:
                 clipped_content.append(clipped)
                 remaining -= len(clipped)
@@ -2684,6 +2845,26 @@ class VerifierExpert:
                     content_truncated = True
         if len(clipped_content) < len(content_texts):
             content_truncated = True
+
+        # Preserve both source text and image evidence inside the existing total
+        # budget.  A small image reservation prevents a long body from removing
+        # all image evidence; without images, the legacy budget is unchanged.
+        remaining = max_total_content_chars - sum(len(text) for text in clipped_content)
+        clipped_image_derived = []
+        image_derived_truncated = False
+        for item in image_derived:
+            if remaining <= 0:
+                image_derived_truncated = True
+                break
+            clip_limit = min(max_block_chars, remaining)
+            clipped = self._clip_text(item["text"], clip_limit)[:clip_limit]
+            if clipped:
+                clipped_image_derived.append({**item, "text": clipped})
+                remaining -= len(clipped)
+                if len(clipped) < len(item["text"]):
+                    image_derived_truncated = True
+        if len(clipped_image_derived) < len(image_derived):
+            image_derived_truncated = True
 
         clipped_comments = []
         comments_truncated = len(comments or []) > max_comments
@@ -2719,6 +2900,13 @@ class VerifierExpert:
             "comments_truncated": comments_truncated,
         }
         comment_context = post.get("comment_context_lines") or []
+        if separate_image_evidence:
+            result["image_derived_evidence"] = clipped_image_derived
+            if image_derived:
+                result["image_derived_text_count"] = len(image_derived)
+                result["image_derived_total_chars"] = sum(len(item["text"]) for item in image_derived)
+                result["image_derived_truncated"] = image_derived_truncated
+                result["content_truncated"] = content_truncated or image_derived_truncated
         if comment_context:
             result["comment_context"] = comment_context[:max_comments]
         comment_dialogue = post.get("comment_dialogue_context_lines") or []
@@ -2907,6 +3095,16 @@ class VerifierExpert:
 ## 게시글
 {post_json}
 
+## 게시글과 이미지 해석의 출처
+- title, content, comments는 작성자·댓글 원문이며 image_derived_evidence는 모델이 이미지에서 읽거나 요약한 내용이다.
+- image_derived_evidence의 type, source_url, block_index를 함께 확인하라. 같은 이미지의 OCR·요약·전문가 재인용은 하나의 이미지 해석에서 파생됐으며 독립된 본문 언급이나 외부 검증이 아니다.
+- block_index는 이미지 해석이 삽입된 content_blocks 배열의 위치이며 원본 이미지 번호가 아니다.
+- 이미지 제목·작가·작품 표면은 이미지 근거로 검토하되, OCR에만 있는 제목을 작성자가 본문에 직접 썼다거나 원문이 명시 별칭을 선언했다고 설명하지 마라.
+- Gatekeeper·Decoder·Verifier 요약에도 같은 OCR를 재인용한 추론이 포함될 수 있다. 전문가 간 반복·합의를 별도의 출처로 세지 말고 원문 관계와 검색 근거를 구분하라.
+- post_direct_grounding은 이미지 파생 블록을 제외한 제목·본문에 후보 정식 제목이 있는지 나타낸다. false 자체가 이미지 후보의 기각을 뜻하지 않는다.
+- 서로 다른 원본 이미지에 같은 작품명·작가·회차가 명시되고, 작성자 본문이 그 이미지에 실제로 보이는 장면의 구체적 사건에 반응하며, 같은 제목·작가의 공식 상세가 확인되면 이미지에 직접 표시된 작품을 특정 작품 대상으로 볼 수 있다. 본문에 제목 문자열이나 약칭이 없어도 이 결속을 thematic_overlap_only로 낮추지 마라.
+- 같은 이미지에서 나온 OCR·요약의 반복은 서로 다른 장면이 아니다. 표지·배경·워터마크에만 있는 제목, 이미지와 무관한 일반 감탄·장르 반응, 서로 다른 작품·작가·회차가 섞인 이미지는 이 경로에 해당하지 않는다.
+
 ## Gatekeeper 요약
 {gatekeeper_json}
 
@@ -2931,6 +3129,7 @@ class VerifierExpert:
    - 게시글 안에 정식 제목이 직접 언급됨
    - 검색/본문에서 "X는 Y의 약칭/줄임말/통칭" 같은 명시 브리지 존재
    - 커뮤니티 약칭이더라도 단일 작품을 직접 가리킨다는 강한 명시 근거 존재
+   - 서로 다른 원본 장면 이미지 두 개 이상에 동일한 정식 제목·작가·회차가 직접 표시되고, 작성자 본문이 화면의 구체적 사건을 가리키며, 공식 상세가 그 제목·작가를 확인함. 이때 relation_type은 이미지에 적힌 제목의 exact_title로 기록할 수 있으나, 게시글 본문에 제목이나 별칭이 적혔다고 주장하지 마라.
 2. 다음 규칙을 반드시 지켜라.
    - community_post가 여러 개 있어도 explicit_alias_bridge_count가 0이면 specific_work로 단정하지 마라.
    - official_detail_count가 있어도 alias와 title이 줄거리 단어로 함께 등장할 뿐 명시 브리지가 없으면 thematic_overlap_only 또는 mixed_or_uncertain이다.
@@ -2938,7 +3137,7 @@ class VerifierExpert:
    - 게시글 본문 직접 앵커가 없고 검색 근거가 community/listing 중심이면 discussion_target은 specific_work보다 mixed_or_uncertain / community_banter / genre_general 쪽을 우선 검토하라.
    - work_specific_nickname은 실제 별칭 근거가 있을 때만 쓰고, 장르 복합어/분위기어/서비스 카테고리어에는 쓰지 마라.
    - 무림맹/마교/혈교/정파/사파/천마/제자/맹주 같은 무협 세력·역할어, 또는 헌터/던전/마탑/아카데미 같은 장르어만 후보 제목과 겹치면 explicit_alias가 아니다.
-   - 후보 제목의 비일반 고유 요소(캐릭터명, 독자적 제목 조각, 작가명, 회차/플롯)가 게시글/댓글에 없으면 genre_or_trope_label 또는 thematic_overlap_only로 보라.
+   - 후보 제목의 비일반 고유 요소(캐릭터명, 독자적 제목 조각, 작가명, 회차/플롯)가 게시글/댓글에도 없고 위의 서로 다른 원본 장면 이미지와 본문 반응의 결속도 없으면 genre_or_trope_label 또는 thematic_overlap_only로 보라.
    - review/arena/community page 제목은 작품 존재의 보조 단서일 수는 있어도, 그 제목 자체를 official_title 후보로 승격하는 직접 근거가 아니다.
 3. 다음은 절대 allow가 아니다.
    - 장르/트로프/분위기 단어만 겹침
@@ -3822,6 +4021,36 @@ OUTPUT JSON:
             )
         )
 
+    @staticmethod
+    def _community_post_identity_url(value: Any) -> str:
+        """Use a DC post's site, board and number as its source identity.
+
+        Keep other community URLs intact because their post URL formats are not
+        necessarily described by DC's ``id``/``no`` query parameters.
+        """
+        url = str(value or "").strip()
+        parsed = urlsplit(url)
+        host = (parsed.hostname or "").lower()
+        if parsed.scheme.lower() not in {"http", "https"} or host not in {
+            "gall.dcinside.com", "m.dcinside.com", "dcinside.com", "www.dcinside.com",
+        }:
+            return url
+        path = parsed.path.rstrip("/").lower()
+        board = post_no = ""
+        if path in {"/board/view", "/mgallery/board/view", "/mini/board/view"}:
+            query = parse_qs(parsed.query, keep_blank_values=False)
+            board = (query.get("id") or [""])[0].strip().lower()
+            post_no = (query.get("no") or [""])[0].strip()
+        elif host == "m.dcinside.com":
+            parts = path.split("/")
+            if len(parts) == 4 and parts[1] == "board":
+                board, post_no = parts[2], parts[3]
+        if not board or not post_no.isdecimal():
+            return url
+        return "https://gall.dcinside.com/board/view/?" + urlencode(
+            {"id": board, "no": str(int(post_no))}
+        )
+
     def _build_relation_search_support_summary(
         self,
         title: str,
@@ -3831,6 +4060,7 @@ OUTPUT JSON:
         ctx: Optional[Any] = None,
         post: Optional[Dict[str, Any]] = None,
         comments: Optional[List[str]] = None,
+        grounding: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         if self._is_community_artifact_title(title):
             return {
@@ -3869,10 +4099,49 @@ OUTPUT JSON:
         official_exact_urls: set[str] = set()
         official_alias_urls: set[str] = set()
         community_alias_urls: set[str] = set()
+        community_alias_character_urls: set[str] = set()
+        self_post_url = self._community_post_identity_url((post or {}).get("url"))
         support_purposes: set[str] = set()
         explicit_alias_bridge_count = 0
         best_official_url = ""
         title_words = [tok for tok in re.findall(r"[가-힣A-Za-z0-9]+", title) if len(tok) >= 2]
+        source_bound_evidence = self._source_bound_alias_assertion_for_relation(
+            title,
+            alias_terms,
+            search_results,
+            post=post,
+            comments=comments,
+        )
+        source_bound_url = str(source_bound_evidence.get("source_url") or "")
+        source_bound_row_sha256 = str(source_bound_evidence.get("source_row_sha256") or "")
+        source_bound_counted = False
+        source_title = str((post or {}).get("title") or "")
+        anchor = str((grounding or {}).get("anchor_text") or "").strip()
+        character_anchor = bool(
+            str((grounding or {}).get("anchor_found") or "").strip().lower()
+            in {"character_mention", "character_title_link"}
+            and len(self._norm_text(anchor)) >= 2
+            and not self._is_generic_relation_surface(anchor)
+        )
+        post_alias_character_context = False
+        if character_anchor and self._surface_in_text(source_title, anchor):
+            compact_title = self._norm_text(source_title)
+            anchor_pos = compact_title.find(self._norm_text(anchor))
+            for alias in alias_terms or []:
+                alias_norm = self._norm_text(alias)
+                alias_pos = compact_title.find(alias_norm)
+                if (
+                    not alias_norm
+                    or self._is_generic_relation_surface(alias)
+                    or alias_pos < 0
+                    or anchor_pos < alias_pos + len(alias_norm)
+                    or anchor_pos - (alias_pos + len(alias_norm)) > 20
+                ):
+                    continue
+                between = compact_title[alias_pos + len(alias_norm):anchor_pos]
+                if not re.search(r"말고|아니고|아닌|비교|다른작품|보다", between):
+                    post_alias_character_context = True
+                    break
 
         for sr in search_results or []:
             if not isinstance(sr, dict):
@@ -3887,13 +4156,20 @@ OUTPUT JSON:
                 continue
 
             alias_hits = [alias for alias in alias_norms if alias and alias in sr_blob_norm]
-            explicit_alias_bridge = self._has_explicit_alias_bridge_text(
+            legacy_explicit_alias_bridge = self._has_explicit_alias_bridge_text(
                 alias_hits=alias_hits,
                 candidate_title=title,
                 text=sr_blob,
             )
-            if explicit_alias_bridge:
+            source_bound_explicit_alias_bridge = bool(
+                source_bound_row_sha256
+                and source_bound_search_row_fingerprint(sr) == source_bound_row_sha256
+            )
+            if legacy_explicit_alias_bridge:
                 explicit_alias_bridge_count += 1
+            elif source_bound_explicit_alias_bridge and not source_bound_counted:
+                explicit_alias_bridge_count += 1
+                source_bound_counted = True
 
             purpose_key = self._normalize_search_purpose(sr.get("_purpose"))
             title_hit = bool(
@@ -3924,7 +4200,27 @@ OUTPUT JSON:
             else:
                 page_type = str(sr.get("page_type") or "").lower()
                 if (page_type == "community_post" or self._is_community_discussion_url(sr_url)) and alias_hits:
-                    community_alias_urls.add(sr_url or sr_title)
+                    community_url = self._community_post_identity_url(sr_url) if sr_url else sr_title
+                    if self_post_url and community_url == self_post_url:
+                        continue
+                    community_alias_urls.add(community_url)
+                    # Same-source alias/person discussion supports the topic only.
+                    # It does not establish this alias as the official title.
+                    if (
+                        post_alias_character_context
+                        and sr_url
+                        and community_url != self_post_url
+                        and self._is_community_discussion_url(sr_url)
+                        and re.search(r"(?:[?&]no=|/)(?:\d{5,})(?:\D|$)", sr_url)
+                        and self._surface_in_text(sr_title, anchor)
+                        and any(
+                            self._surface_in_text(sr_title, alias)
+                            for alias in alias_terms or []
+                            if not self._is_generic_relation_surface(alias)
+                        )
+                        and not re.search(r"말고|아니고|아닌|비교|다른작품", sr_title)
+                    ):
+                        community_alias_character_urls.add(community_url)
 
         alias_in_post_count = sum(
             1 for alias in (alias_terms or [])
@@ -3952,7 +4248,12 @@ OUTPUT JSON:
             "official_exact_title_count": len(official_exact_urls),
             "official_alias_context_count": len(official_alias_urls),
             "community_alias_support_count": len(community_alias_urls),
+            "community_alias_character_context_count": len(community_alias_character_urls),
+            "community_alias_character_context_urls": sorted(community_alias_character_urls)[:4],
+            "post_alias_character_context": post_alias_character_context,
             "explicit_alias_bridge_count": explicit_alias_bridge_count,
+            "source_bound_alias_assertion_count": int(bool(source_bound_evidence)),
+            "source_bound_alias_assertion_url": source_bound_url or None,
             "support_channel_count": support_channel_count,
             "support_purposes": sorted(support_purposes),
             "alias_in_post_count": alias_in_post_count,
@@ -3974,6 +4275,8 @@ OUTPUT JSON:
         search_results: List[Dict[str, Any]],
         *,
         max_items: int = 6,
+        post: Optional[Dict[str, Any]] = None,
+        comments: Optional[List[str]] = None,
     ) -> List[Dict[str, Any]]:
         title_norm = self._norm_text(title)
         alias_norms = {
@@ -3982,6 +4285,14 @@ OUTPUT JSON:
             if self._norm_text(alias)
         }
         scored: List[tuple[int, Dict[str, Any]]] = []
+        source_bound_evidence = self._source_bound_alias_assertion_for_relation(
+            title,
+            alias_terms,
+            search_results,
+            post=post,
+            comments=comments,
+        )
+        source_bound_row_sha256 = str(source_bound_evidence.get("source_row_sha256") or "")
         for idx, sr in enumerate(search_results or [], 1):
             if not isinstance(sr, dict):
                 continue
@@ -4020,6 +4331,11 @@ OUTPUT JSON:
                 candidate_title=title,
                 text=blob,
             )
+            source_bound_alias_bridge = bool(
+                source_bound_row_sha256
+                and source_bound_search_row_fingerprint(sr) == source_bound_row_sha256
+            )
+            explicit_alias_bridge = bool(explicit_alias_bridge or source_bound_alias_bridge)
             if explicit_alias_bridge:
                 score += 6
             if source_class == "official_detail":
@@ -4047,6 +4363,7 @@ OUTPUT JSON:
                 "source_class": source_class,
                 "alias_hits": alias_hits[:3],
                 "explicit_alias_bridge": explicit_alias_bridge,
+                "source_bound_alias_bridge": source_bound_alias_bridge,
                 "official_exact_title": bool(source_class == "official_detail" and title_hit),
                 "purpose": self._normalize_search_purpose(sr.get("_purpose")),
             }
@@ -4081,7 +4398,6 @@ OUTPUT JSON:
         bridge_patterns = [
             r"(?:약칭|줄임말|줄여서|통칭|별칭|약어|약자로|불린다|부른다|라고\s*한다|라고\s*부른다)",
             r"(?:정식\s*제목|정식명|작품명|원제|제목)",
-            r"[=:→\-]",
         ]
         alias_regex = "|".join(re.escape(alias) for alias in alias_hits if str(alias or "").strip())
         if not alias_regex:
@@ -4101,7 +4417,17 @@ OUTPUT JSON:
             rf"(?:{alias_regex}).{{0,20}}(?:{'|'.join(bridge_patterns)}).{{0,30}}(?:{re.escape(candidate)})",
             rf"(?:{re.escape(candidate)}).{{0,20}}(?:{'|'.join(bridge_patterns)}).{{0,20}}(?:{alias_regex})",
         ]
-        return any(re.search(pattern, raw, flags=re.IGNORECASE | re.DOTALL) for pattern in patterns)
+        # Keep word-label recognition unchanged. Punctuation alone is not a declaration.
+        # Direct equals pairs are strict subsets of the previous punctuation patterns:
+        # bounded whitespace replaces their wildcard gaps without adding new positives.
+        direct_equals_patterns = [
+            rf"(?:{alias_regex})\s{{0,20}}=\s{{0,20}}(?:{re.escape(candidate)})",
+            rf"(?:{re.escape(candidate)})\s{{0,20}}=\s{{0,20}}(?:{alias_regex})",
+        ]
+        return any(
+            re.search(pattern, raw, flags=re.IGNORECASE | re.DOTALL)
+            for pattern in patterns + direct_equals_patterns
+        )
 
     @staticmethod
     def _summarize_relation_evidence(evidence: List[Dict[str, Any]]) -> Dict[str, Any]:
@@ -4209,9 +4535,10 @@ OUTPUT JSON:
         if not title:
             return None
 
+        source_post = self._source_native_relation_post(post)
         alias_terms = self._collect_relation_aliases(
             title,
-            post,
+            source_post,
             comments,
             decoder_result,
             verification,
@@ -4223,6 +4550,8 @@ OUTPUT JSON:
             alias_terms,
             all_search,
             max_items=self._env_int("LLM_RELATION_JUDGE_MAX_SEARCH_ITEMS", 6, minimum=3, maximum=10),
+            post=source_post,
+            comments=comments,
         )
         evidence_summary = self._summarize_relation_evidence(evidence)
         search_support_summary = self._build_relation_search_support_summary(
@@ -4230,18 +4559,22 @@ OUTPUT JSON:
             alias_terms,
             all_search,
             ctx=ctx,
-            post=post,
+            post=source_post,
             comments=comments,
+            grounding=verification.get("grounding_check"),
         )
         post_text = " ".join(
-            [str((post or {}).get("title") or "")]
+            [str(source_post.get("title") or "")]
             + [
                 str(block.get("text") or "")
-                for block in ((post or {}).get("content_blocks") or [])
+                for block in (source_post.get("content_blocks") or [])
                 if isinstance(block, dict)
             ]
         ).strip()
         post_direct_grounding = bool(self._surface_in_text(post_text, title))
+        # Generic-only rejection considers the full evidence, including a real
+        # title read from an image.  Source separation must not itself reject
+        # valid image-only titles in otherwise generic author text.
         generic_relation_only = self._is_generic_relation_only_mapping(
             title,
             post or {},
@@ -4251,7 +4584,11 @@ OUTPUT JSON:
 
         prompt = self._RELATION_JUDGE_PROMPT.format(
             candidate_title=title,
-            post_json=json.dumps(self._build_post_json(post, comments, compact=True), ensure_ascii=False, indent=2),
+            post_json=json.dumps(
+                self._build_post_json(post, comments, compact=True, separate_image_evidence=True),
+                ensure_ascii=False,
+                indent=2,
+            ),
             gatekeeper_json=json.dumps(self._summarize_gatekeeper(gatekeeper_result or {}), ensure_ascii=False, indent=2),
             decoder_json=json.dumps(self._summarize_decoder(decoder_result or {}), ensure_ascii=False, indent=2),
             verification_json=json.dumps(
@@ -4358,6 +4695,12 @@ OUTPUT JSON:
         official_exact_title_count = int(search_support_summary.get("official_exact_title_count") or 0)
         official_alias_context_count = int(search_support_summary.get("official_alias_context_count") or 0)
         community_alias_support_count = int(search_support_summary.get("community_alias_support_count") or 0)
+        community_alias_character_count = int(
+            search_support_summary.get("community_alias_character_context_count") or 0
+        )
+        post_alias_character_context = bool(
+            search_support_summary.get("post_alias_character_context")
+        )
         support_channel_count = int(search_support_summary.get("support_channel_count") or 0)
         alias_in_post_count = int(search_support_summary.get("alias_in_post_count") or 0)
         converged_official_signal = bool(search_support_summary.get("converged_official_signal"))
@@ -4367,6 +4710,16 @@ OUTPUT JSON:
         best_official_url = str(search_support_summary.get("best_official_url") or "").strip()
         post_direct_grounding = bool(relation.get("post_direct_grounding"))
         generic_relation_only = bool(relation.get("generic_relation_only"))
+        qualified_topic_hold = bool(
+            promotion in {"reject", "hold"}
+            and target in {"community_banter", "mixed_or_uncertain"}
+            and relation_type in {"explicit_alias", "work_specific_nickname"}
+            and not generic_relation_only
+            and post_alias_character_context
+            and community_alias_character_count >= 2
+            and explicit_bridge_count == 0
+            and official_exact_title_count == 0
+        )
         grounding = verification.get("grounding_check") if isinstance(verification.get("grounding_check"), dict) else {}
         anchor_found = str(grounding.get("anchor_found") or "").strip().lower()
         anchor_text = str(grounding.get("anchor_text") or "").strip()
@@ -4517,6 +4870,14 @@ OUTPUT JSON:
                 or "후보 제목과 게시글의 연결이 무림/세력/역할 같은 일반 장르어 겹침뿐이라 특정 작품 승격을 차단함"
             )
 
+        if qualified_topic_hold:
+            target = "specific_work"
+            promotion = "hold"
+            reason = (
+                "원문 제목의 비일반 약칭과 인물 감상이 독립 커뮤니티 게시글의 동일 맥락으로 확인되어 "
+                "특정 작품 담론은 유지함. 약칭과 공식 제목의 직접 결속은 없어 제목 공개를 보류함"
+            )
+
         if exact_title_direct_official_support:
             relation_type = "exact_title"
             target = "specific_work"
@@ -4583,6 +4944,7 @@ OUTPUT JSON:
             "search_support_summary": search_support_summary,
             "post_direct_grounding": post_direct_grounding,
             "generic_relation_only": generic_relation_only,
+            "qualified_topic_hold": qualified_topic_hold,
         }
 
         counter_args = verification.get("counter_arguments")
@@ -4685,7 +5047,8 @@ OUTPUT JSON:
             # LLM이 explicit_alias/work_specific_nickname 으로 읽은 strong community alias는
             # 작품 관련성 자체까지 버리면 과보수 FN이 생긴다.
             keep_specific_work_hold = bool(
-                (
+                qualified_topic_hold
+                or (
                     relation_type in {"explicit_alias", "work_specific_nickname"}
                     and community_count >= 2
                     and len(list(relation.get("observed_aliases") or [])) >= 1

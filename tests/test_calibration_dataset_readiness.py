@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
+
+from tests.candidate_shadow_graph_fixture import build_current_shadow_graph, new_graph_directory
 
 from src.llm_batch.grounding.calibration_dataset_readiness import (
     GATE_NOT_READY,
@@ -13,10 +16,14 @@ from src.llm_batch.grounding.calibration_dataset_readiness import (
     validate_dataset_readiness_against_sources,
     validate_dataset_readiness_manifest,
 )
-from src.llm_batch.grounding.candidate_set_calibration_shadow import CalibrationEvaluationPolicy
+from src.llm_batch.grounding.candidate_set_calibration_shadow import (
+    CALIBRATION_POLICY_SCHEMA_V4,
+    CalibrationEvaluationPolicy,
+)
 from tools.run_calibration_dataset_readiness import (
     build_current_readiness,
     render_markdown,
+    require_actual_readiness_policy,
     write_outputs,
 )
 
@@ -30,13 +37,16 @@ LABEL_LEDGER = ROOT / "docs/devs/p1_candidate_set_nil_golden18_label_ledger_2026
 class CalibrationDatasetReadinessTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        directory = new_graph_directory()
+        cls.addClassCleanup(directory.cleanup)
+        cls.graph = build_current_shadow_graph(Path(directory.name), include_calibration=False)
         cls.manifest = build_current_readiness(
-            p1_run_spec_path=P1_RUN_SPEC,
-            p1_comparison_path=P1_COMPARISON,
-            label_ledger_path=LABEL_LEDGER,
+            p1_run_spec_path=cls.graph.p1,
+            p1_comparison_path=cls.graph.p1_comparison,
+            label_ledger_path=cls.graph.ledger,
         )
 
-    def test_current_golden18_is_explicitly_not_actual_ready(self):
+    def test_synthetic_golden18_is_explicitly_not_actual_ready(self):
         manifest = self.manifest
         self.assertEqual(GATE_NOT_READY, manifest["gate"])
         self.assertFalse(manifest["ready_for_split_manifest"])
@@ -129,8 +139,8 @@ class CalibrationDatasetReadinessTests(unittest.TestCase):
             {key: value for key, value in forged.items() if key != "manifest_sha256"}
         )
         validate_dataset_readiness_manifest(forged)
-        p1_comparison = json.loads(P1_COMPARISON.read_text(encoding="utf-8"))
-        label_ledger = json.loads(LABEL_LEDGER.read_text(encoding="utf-8"))
+        p1_comparison = json.loads(self.graph.p1_comparison.read_text(encoding="utf-8"))
+        label_ledger = json.loads(self.graph.ledger.read_text(encoding="utf-8"))
         with self.assertRaisesRegex(ValueError, "source replay mismatch"):
             validate_dataset_readiness_against_sources(
                 forged,
@@ -200,9 +210,9 @@ class CalibrationDatasetReadinessTests(unittest.TestCase):
                 encoding="utf-8",
             )
             manifest = build_current_readiness(
-                p1_run_spec_path=P1_RUN_SPEC,
-                p1_comparison_path=P1_COMPARISON,
-                label_ledger_path=LABEL_LEDGER,
+                p1_run_spec_path=self.graph.p1,
+                p1_comparison_path=self.graph.p1_comparison,
+                label_ledger_path=self.graph.ledger,
                 actual_evaluation_policy_path=policy_path,
             )
             self.assertEqual(policy.policy_sha256, manifest["actual_evaluation_policy_sha256"])
@@ -215,11 +225,16 @@ class CalibrationDatasetReadinessTests(unittest.TestCase):
                 )
             )
 
-    def test_actual_policy_v3_hash_binds_top_label_accuracy_denominator(self):
+    def test_actual_policy_v4_hash_binds_accuracy_and_interval_protocol(self):
         policy = self._actual_policy()
         payload = policy.to_dict()
-        self.assertEqual("candidate_set_calibration_policy_v3", payload["schema_version"])
+        self.assertEqual(CALIBRATION_POLICY_SCHEMA_V4, payload["schema_version"])
         self.assertEqual("ALL_FROZEN_ROWS", payload["top_label_accuracy_denominator"])
+        self.assertEqual(30, payload["min_bootstrap_groups"])
+        self.assertEqual(2_000, payload["min_bootstrap_replicates"])
+        self.assertEqual(
+            "CLUSTER_BOOTSTRAP_PERCENTILE", payload["cluster_interval_method"]
+        )
         payload["top_label_accuracy_denominator"] = "NON_ABSTAIN_ROWS"
         with self.assertRaisesRegex(ValueError, "fingerprint mismatch"):
             CalibrationEvaluationPolicy(**payload)
@@ -229,7 +244,7 @@ class CalibrationDatasetReadinessTests(unittest.TestCase):
             if key not in {"policy_sha256", "top_label_accuracy_denominator"}
         }
         legacy["schema_version"] = "candidate_set_calibration_policy_v2"
-        with self.assertRaisesRegex(ValueError, "requires explicit v3"):
+        with self.assertRaisesRegex(ValueError, "requires explicit v3 or v4"):
             CalibrationEvaluationPolicy.create(**legacy)
 
     def test_synthetic_or_duplicate_key_policy_is_rejected(self):
@@ -245,9 +260,9 @@ class CalibrationDatasetReadinessTests(unittest.TestCase):
             synthetic_path.write_text(json.dumps(synthetic_policy.to_dict()), encoding="utf-8")
             with self.assertRaisesRegex(ValueError, "FROZEN_ACTUAL_PRE_REGISTERED"):
                 build_current_readiness(
-                    p1_run_spec_path=P1_RUN_SPEC,
-                    p1_comparison_path=P1_COMPARISON,
-                    label_ledger_path=LABEL_LEDGER,
+                    p1_run_spec_path=self.graph.p1,
+                    p1_comparison_path=self.graph.p1_comparison,
+                    label_ledger_path=self.graph.ledger,
                     actual_evaluation_policy_path=synthetic_path,
                 )
             duplicate_path = root / "duplicate.json"
@@ -259,11 +274,48 @@ class CalibrationDatasetReadinessTests(unittest.TestCase):
             )
             with self.assertRaisesRegex(ValueError, "duplicate JSON key"):
                 build_current_readiness(
-                    p1_run_spec_path=P1_RUN_SPEC,
-                    p1_comparison_path=P1_COMPARISON,
-                    label_ledger_path=LABEL_LEDGER,
+                    p1_run_spec_path=self.graph.p1,
+                    p1_comparison_path=self.graph.p1_comparison,
+                    label_ledger_path=self.graph.ledger,
                     actual_evaluation_policy_path=duplicate_path,
                 )
+
+
+class HistoricalReadinessRejectionTests(unittest.TestCase):
+    def test_original_golden18_ledger_byte_mismatch_remains_rejected(self):
+        # 과거 파일은 읽기만 한다. 현재 SHA로 봉인을 고치거나 성공 fixture로 재사용하지 않는다.
+        paths = (P1_RUN_SPEC, P1_COMPARISON, LABEL_LEDGER)
+        before = {path: hashlib.sha256(path.read_bytes()).hexdigest() for path in paths}
+        spec = json.loads(P1_RUN_SPEC.read_text(encoding="utf-8"))
+        self.assertNotEqual(spec["artifacts"]["label_ledger"]["sha256"], before[LABEL_LEDGER])
+        with self.assertRaisesRegex(ValueError, "artifact sha256 mismatch: label_ledger"):
+            build_current_readiness(
+                p1_run_spec_path=P1_RUN_SPEC,
+                p1_comparison_path=P1_COMPARISON,
+                label_ledger_path=LABEL_LEDGER,
+            )
+        self.assertEqual(before, {path: hashlib.sha256(path.read_bytes()).hexdigest() for path in paths})
+
+
+class ActualPolicyReadinessProtocolTests(unittest.TestCase):
+    def test_readiness_accepts_v4_and_rejects_hash_valid_v3(self):
+        current = CalibrationDatasetReadinessTests()._actual_policy()
+        self.assertIs(current, require_actual_readiness_policy(current))
+        legacy_values = {
+            key: value
+            for key, value in current.to_dict().items()
+            if key
+            not in {
+                "policy_sha256",
+                "min_bootstrap_groups",
+                "min_bootstrap_replicates",
+                "cluster_interval_method",
+            }
+        }
+        legacy_values["schema_version"] = "candidate_set_calibration_policy_v3"
+        legacy = CalibrationEvaluationPolicy.create(**legacy_values)
+        with self.assertRaisesRegex(ValueError, "policy v4"):
+            require_actual_readiness_policy(legacy)
 
 
 if __name__ == "__main__":

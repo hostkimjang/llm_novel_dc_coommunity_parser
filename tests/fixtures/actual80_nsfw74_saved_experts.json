@@ -1,0 +1,1937 @@
+{
+  "schema_version": "saved_experts_nsfw74_v1",
+  "human_gold_count": 0,
+  "rights_status": "UNKNOWN",
+  "quality_gate": "REVIEW",
+  "formal_kpi_status": "NOT_ESTIMABLE",
+  "fixture_kind": "ACTUAL_SOURCE_SAVED_EXPERT_REPLAY_NOT_NEW_MODEL_RUN",
+  "records": {
+    "new": {
+      "post": {
+        "gallery_id": "genrenovel",
+        "post_id": 8403713,
+        "title": "요즘나오면 욕먹는전개",
+        "author": "ㅇㅇ",
+        "created_at": "2024-03-17 15:40:33",
+        "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=8403713",
+        "content_blocks": [
+          {
+            "type": "text",
+            "text": "이세계 귀환했더니 가족들이 사채써서 조폭찾아가는거"
+          },
+          {
+            "type": "text",
+            "text": "명절에 친척들 나와서 꼽주다가 정체 밝히고 깨갱하는거"
+          },
+          {
+            "type": "text",
+            "text": "동창회나가서 학창시절첫사랑꼬시기"
+          },
+          {
+            "type": "text",
+            "text": "또 뭐있냐"
+          }
+        ],
+        "page_no": 59250
+      },
+      "comments": [
+        {
+          "comment_id": "28684571",
+          "author": "ㅇㅇ",
+          "content": "안녕난신이야",
+          "content_html": "안녕난신이야",
+          "created_at": "2024.03.17 15:40:59",
+          "ip": "223.39",
+          "reply_to_comment_id": null,
+          "reply_level": 0,
+          "post_id": 8403713
+        },
+        {
+          "comment_id": "28684573",
+          "author": "토끼달린다",
+          "content": "개맛도리 전개네",
+          "content_html": "개맛도리 전개네",
+          "created_at": "2024.03.17 15:41:06",
+          "ip": "",
+          "reply_to_comment_id": null,
+          "reply_level": 0,
+          "post_id": 8403713
+        },
+        {
+          "comment_id": "28684574",
+          "author": "ㅇㅇ",
+          "content": "다 아직 현역인거 같은데",
+          "content_html": "다 아직 현역인거 같은데",
+          "created_at": "2024.03.17 15:41:25",
+          "ip": "",
+          "reply_to_comment_id": null,
+          "reply_level": 0,
+          "post_id": 8403713
+        },
+        {
+          "comment_id": "28684583",
+          "author": "ㅇㅇ1",
+          "content": "모르는 천장이다...",
+          "content_html": "모르는 천장이다...",
+          "created_at": "2024.03.17 15:42:12",
+          "ip": "58.233",
+          "reply_to_comment_id": null,
+          "reply_level": 0,
+          "post_id": 8403713
+        },
+        {
+          "comment_id": "28684585",
+          "author": "ㅇㅇ",
+          "content": "히로인 강간",
+          "content_html": "히로인 강간",
+          "created_at": "2024.03.17 15:42:25",
+          "ip": "",
+          "reply_to_comment_id": null,
+          "reply_level": 0,
+          "post_id": 8403713
+        },
+        {
+          "comment_id": "28684595",
+          "author": "ㅇㅇ",
+          "content": "갑자기 일본인들이 한국인보고 조센징이라하는거 그래서 일본 개털어주는거  그런데 중국은 안텀ㅋ",
+          "content_html": "갑자기 일본인들이 한국인보고 조센징이라하는거 그래서 일본 개털어주는거  그런데 중국은 안텀ㅋ",
+          "created_at": "2024.03.17 15:43:15",
+          "ip": "112.160",
+          "reply_to_comment_id": null,
+          "reply_level": 0,
+          "post_id": 8403713
+        },
+        {
+          "comment_id": "28684609",
+          "author": "ㅇㅇ",
+          "content": "구와아악",
+          "content_html": "구와아악",
+          "created_at": "2024.03.17 15:44:23",
+          "ip": "",
+          "reply_to_comment_id": null,
+          "reply_level": 0,
+          "post_id": 8403713
+        }
+      ],
+      "experts": {
+        "gatekeeper": {
+          "is_noise": false,
+          "noise_reason": null,
+          "post_type": "genre_discussion",
+          "detected_entities": {
+            "possible_titles": [
+              "요즘나오면",
+              "즘나오",
+              "전개",
+              "즘나",
+              "요즘"
+            ],
+            "possible_authors": [],
+            "possible_characters": [],
+            "platforms_mentioned": []
+          },
+          "key_terms": [
+            "요즘나오면",
+            "이세계 귀환",
+            "사채",
+            "조폭",
+            "명절",
+            "친척",
+            "정체",
+            "동창회",
+            "첫사랑"
+          ],
+          "context_clues": {
+            "has_url_in_comments": false,
+            "has_specific_names": false,
+            "is_asking_recommendation": false,
+            "is_spoiler_discussion": false,
+            "has_comment_title_answer": true,
+            "comment_title_candidates": [
+              "안녕난신이야",
+              "개맛도리 전개네",
+              "다 아직 현역인거 같은데",
+              "모르는 천장이다...",
+              "히로인 강간",
+              "구와아악"
+            ],
+            "comment_title_merge_candidates": [],
+            "comment_title_candidate_details": [
+              {
+                "text": "안녕난신이야",
+                "comment_index": 0,
+                "line_index": 0,
+                "speech_act": "explanation",
+                "has_at_mention": false,
+                "reply_level": 0,
+                "reply_to_comment_id": null,
+                "author": "ㅇㅇ",
+                "title_assertion_basis": null
+              },
+              {
+                "text": "개맛도리 전개네",
+                "comment_index": 1,
+                "line_index": 0,
+                "speech_act": "explanation",
+                "has_at_mention": false,
+                "reply_level": 0,
+                "reply_to_comment_id": null,
+                "author": "토끼달린다",
+                "title_assertion_basis": null
+              },
+              {
+                "text": "다 아직 현역인거 같은데",
+                "comment_index": 2,
+                "line_index": 0,
+                "speech_act": "explanation",
+                "has_at_mention": false,
+                "reply_level": 0,
+                "reply_to_comment_id": null,
+                "author": "ㅇㅇ",
+                "title_assertion_basis": null
+              },
+              {
+                "text": "모르는 천장이다...",
+                "comment_index": 3,
+                "line_index": 0,
+                "speech_act": "explanation",
+                "has_at_mention": false,
+                "reply_level": 0,
+                "reply_to_comment_id": null,
+                "author": "ㅇㅇ1",
+                "title_assertion_basis": null
+              },
+              {
+                "text": "히로인 강간",
+                "comment_index": 4,
+                "line_index": 0,
+                "speech_act": "unasserted_reaction",
+                "has_at_mention": false,
+                "reply_level": 0,
+                "reply_to_comment_id": null,
+                "author": "ㅇㅇ",
+                "title_assertion_basis": null
+              },
+              {
+                "text": "구와아악",
+                "comment_index": 6,
+                "line_index": 0,
+                "speech_act": "unasserted_reaction",
+                "has_at_mention": false,
+                "reply_level": 0,
+                "reply_to_comment_id": null,
+                "author": "ㅇㅇ",
+                "title_assertion_basis": null
+              }
+            ],
+            "title_as_body_continuation": true,
+            "title_body_joined_text": "요즘나오면 욕먹는전개 이세계 귀환했더니 가족들이 사채써서 조폭찾아가는거 명절에 친척들 나와서 꼽주다가 정체 밝히고 깨갱하는거",
+            "title_body_first_line": "이세계 귀환했더니 가족들이 사채써서 조폭찾아가는거"
+          },
+          "search_requests": [
+            {
+              "query": "(site:novelpia.com OR site:munpia.com OR site:series.naver.com) 요즘나오면",
+              "purpose": "official_title_verify",
+              "priority": 1
+            },
+            {
+              "query": "요즘나오면 웹소설",
+              "purpose": "title_search_community",
+              "priority": 1
+            }
+          ],
+          "confidence": "high",
+          "notes": "특정 작품을 지칭하는 것이 아니라, 최근 웹소설에서 흔히 보이는 클리셰(트로프)들을 나열하며 이에 대한 부정적인 반응을 유도하거나 의견을 묻는 장르론적 담론임. 본문과 댓글 모두 특정 작품의 고유 정보가 아닌, 장르적 전개 양상(클리셰)에 대해 이야기하고 있음."
+        },
+        "discourse": {
+          "discourse_analysis": {
+            "primary_domain": "novel_literature",
+            "domain_confidence": "high",
+            "domain_evidence": [
+              "전개",
+              "이세계 귀환",
+              "히로인",
+              "현역"
+            ],
+            "secondary_domains": [],
+            "intent": "express_opinion",
+            "intent_confidence": "medium",
+            "speech_act": "other",
+            "target_kind": "trope",
+            "is_coherent": true,
+            "coherence_reason": "제목에서 제시한 '욕먹는 전개(클리셰)'에 대해 본문이 구체적인 예시들을 나열하고, 댓글에서도 해당 전개들에 대한 찬반 및 추가적인 클리셰 예시를 언급하며 하나의 담론을 형성함.",
+            "title_novel_terms": [],
+            "title_body_consistency": true,
+            "consistency_note": null,
+            "is_association_not_discussion": false,
+            "association_evidence": null,
+            "search_suggestions": [
+              {
+                "query": "웹소설 욕먹는 클리셰",
+                "purpose": "To verify if the mentioned tropes are commonly discussed as disliked clichés in web novel communities.",
+                "priority": 2
+              }
+            ],
+            "real_subject": "욕먹는 전개 패턴",
+            "author_question_span": "또 뭐있냐",
+            "author_question_target": "욕먹는 전개(클리셰)의 추가 사례",
+            "author_recommendation_span": null,
+            "author_recommendation_is_direct": false,
+            "reasoning": "작성자는 특정 작품을 지칭하지 않고 '이세계 귀환', '친척들의 무시' 등 웹소설의 전형적인 클리셰들을 나열하며 이것이 최근 욕을 먹는 전개라고 주장하고 있습니다. 댓글 또한 이러한 클리셰의 유효성이나 추가적인 사례를 언급하고 있어, 특정 작품에 대한 토론이 아닌 장르적 문법(tropes)에 대한 일반적인 담론으로 분석됩니다.",
+            "source_bound_question_receipt": {
+              "span": "또 뭐있냐",
+              "source": "author_body",
+              "speaker": "author",
+              "modality": "text",
+              "position": 3,
+              "target_description": "욕먹는 전개 패턴",
+              "target_candidates": [
+                "욕먹는 전개(클리셰)의 추가 사례",
+                "욕먹는 전개 패턴"
+              ],
+              "target_conflict": false,
+              "verification_level": "exact_author_excerpt_model_target"
+            },
+            "source_bound_recommendation_request": false,
+            "image_topic_relation": {
+              "state": "no_image",
+              "source": "author_spans"
+            },
+            "semantic_seed_review": {
+              "post_intent": "웹소설에서 식상하거나 비판받는 특정 서사 패턴(클리셰)들에 대해 나열하며 의견을 묻는 글입니다.",
+              "content_interpretation": "작성자가 나열한 문장들은 특정 작품의 줄거리가 아닌 일반적인 서사 유형을 설명하는 문장 일부입니다.",
+              "is_specific_work_discussion": false,
+              "recommended_intent": "express_opinion",
+              "recommended_target_kind": "trope",
+              "warnings": []
+            },
+            "warnings": [
+              "semantic_seed_review_specific_work_denied"
+            ]
+          }
+        },
+        "decoder": {
+          "decoded_terms": [
+            {
+              "original": "요즘나오면",
+              "morphemes": [
+                "요즘",
+                "나오면"
+              ],
+              "interpretations": [
+                {
+                  "type": "slang",
+                  "value": "요즘 나오면 (욕먹는)",
+                  "evidence": "검색 결과 E003에서 '분명 좋은 소재거나 전개인데 요즘 나오면 욕먹는게 많지요'라는 문구 발견",
+                  "context_fit": "high"
+                },
+                {
+                  "type": "general_noun",
+                  "value": "요즘 나오는 것들",
+                  "evidence": null,
+                  "context_fit": "medium"
+                }
+              ],
+              "candidates": [],
+              "best_match": {
+                "title": null,
+                "confidence": "none"
+              },
+              "grounding": {
+                "is_grounded": true,
+                "anchor_type": "title_mention",
+                "anchor_evidence": "게시글 제목에 '요즘나오면' 직접 존재"
+              },
+              "is_author_name": false,
+              "author_info": null
+            },
+            {
+              "original": "이세계 귀환",
+              "morphemes": [
+                "이세계",
+                "귀환"
+              ],
+              "interpretations": [
+                {
+                  "type": "genre_term",
+                  "value": "이세계 귀환물",
+                  "evidence": "검색 결과 E014, E015에서 '문제 1. 철수가 이세계에서 귀환했다'라는 작품이 검색됨",
+                  "context_fit": "low"
+                },
+                {
+                  "type": "genre_term",
+                  "value": "이세계 귀환 (클리셰)",
+                  "evidence": null,
+                  "context_fit": "high"
+                }
+              ],
+              "candidates": [
+                {
+                  "official_novel_title": "문제 1. 철수가 이세계에서 귀환했다 [개정판]",
+                  "url": "https://series.naver.com/novel/detail.series?productNo=6359188",
+                  "platform": "naver",
+                  "decode_logic": "장르 불일치/후보 제외",
+                  "morphological_score": 0.8,
+                  "genre_match": {
+                    "source_genre": "이세계 귀환",
+                    "target_genre": "판타지/로맨스",
+                    "is_match": true
+                  },
+                  "search_evidence": "검색 결과 E014에서 해당 제목 확인"
+                }
+              ],
+              "best_match": {
+                "title": null,
+                "confidence": "none"
+              },
+              "grounding": {
+                "is_grounded": false,
+                "anchor_type": "plot_mention",
+                "anchor_evidence": "이세계 귀환했더니 가족들이 사채써서..."
+              },
+              "is_author_name": false,
+              "author_info": null
+            },
+            {
+              "original": "사채",
+              "morphemes": [
+                "사채"
+              ],
+              "interpretations": [
+                {
+                  "type": "general_noun",
+                  "value": "사채 (고리대금)",
+                  "evidence": null,
+                  "context_fit": "high"
+                }
+              ],
+              "candidates": [],
+              "best_match": {
+                "title": null,
+                "confidence": "none"
+              },
+              "grounding": {
+                "is_grounded": false,
+                "anchor_type": "none",
+                "anchor_evidence": null
+              },
+              "is_author_name": false,
+              "author_info": null
+            },
+            {
+              "original": "조폭",
+              "morphemes": [
+                "조폭"
+              ],
+              "interpretations": [
+                {
+                  "type": "general_noun",
+                  "value": "조폭 (조직폭력배)",
+                  "evidence": null,
+                  "context_fit": "high"
+                }
+              ],
+              "candidates": [],
+              "best_match": {
+                "title": null,
+                "confidence": "none"
+              },
+              "grounding": {
+                "is_grounded": false,
+                "anchor_type": "none",
+                "anchor_evidence": null
+              },
+              "is_author_name": false,
+              "author_info": null
+            },
+            {
+              "original": "명절",
+              "morphemes": [
+                "명절"
+              ],
+              "interpretations": [
+                {
+                  "type": "general_noun",
+                  "value": "명절",
+                  "evidence": null,
+                  "context_fit": "high"
+                }
+              ],
+              "candidates": [],
+              "best_match": {
+                "title": null,
+                "confidence": "none"
+              },
+              "grounding": {
+                "is_grounded": false,
+                "anchor_type": "none",
+                "anchor_evidence": null
+              },
+              "is_author_name": false,
+              "author_info": null
+            },
+            {
+              "original": "친척",
+              "morphemes": [
+                "친척"
+              ],
+              "interpretations": [
+                {
+                  "type": "general_noun",
+                  "value": "친척",
+                  "evidence": null,
+                  "context_fit": "high"
+                }
+              ],
+              "candidates": [],
+              "best_match": {
+                "title": null,
+                "confidence": "none"
+              },
+              "grounding": {
+                "is_grounded": false,
+                "anchor_type": "none",
+                "anchor_evidence": null
+              },
+              "is_author_name": false,
+              "author_info": null
+            },
+            {
+              "original": "정체",
+              "morphemes": [
+                "정체"
+              ],
+              "interpretations": [
+                {
+                  "type": "general_noun",
+                  "value": "정체 (신분)",
+                  "evidence": null,
+                  "context_fit": "high"
+                }
+              ],
+              "candidates": [],
+              "best_match": {
+                "title": null,
+                "confidence": "none"
+              },
+              "grounding": {
+                "is_grounded": false,
+                "anchor_type": "none",
+                "anchor_evidence": null
+              },
+              "is_author_name": false,
+              "author_info": null
+            },
+            {
+              "original": "동창회",
+              "morphemes": [
+                "동창회"
+              ],
+              "interpretations": [
+                {
+                  "type": "general_noun",
+                  "value": "동창회",
+                  "evidence": null,
+                  "context_fit": "high"
+                }
+              ],
+              "candidates": [],
+              "best_match": {
+                "title": null,
+                "confidence": "none"
+              },
+              "grounding": {
+                "is_grounded": false,
+                "anchor_type": "none",
+                "anchor_evidence": null
+              },
+              "is_author_name": false,
+              "author_info": null
+            },
+            {
+              "original": "첫사랑",
+              "morphemes": [
+                "첫사랑"
+              ],
+              "interpretations": [
+                {
+                  "type": "general_noun",
+                  "value": "첫사랑",
+                  "evidence": null,
+                  "context_fit": "high"
+                }
+              ],
+              "candidates": [],
+              "best_match": {
+                "title": null,
+                "confidence": "none"
+              },
+              "grounding": {
+                "is_grounded": false,
+                "anchor_type": "none",
+                "anchor_evidence": null
+              },
+              "is_author_name": false,
+              "author_info": null
+            }
+          ],
+          "unresolved_terms": [],
+          "self_questions": [
+            "본문의 키워드들이 특정 작품의 고유 설정인가, 아니면 흔한 클리셰인가?",
+            "검색된 '문제 1. 철수가...'가 본문에서 말하는 '이세계 귀환'과 맥락상 일치하는가?"
+          ],
+          "needs_verification": true,
+          "verification_search": [
+            "웹소설 클리셰 이세계 귀환 사채 조폭"
+          ],
+          "overall_confidence": "none",
+          "notes": "치환 읽기 : 본문의 키워드(사채, 조폭, 명절, 친척, 정체, 동창회, 첫사랑)는 모두 웹소설에서 흔히 쓰이는 장르적 클리셰(트로프)를 나열하고 있음. 이는 특정 작품에 대한 토론이 아니라, 최근 유행하거나 욕먹는 전개 양상에 대한 '장르/트로프 토론(trope_discussion)'임. 검색 결과에서 '문제 1. 철수가...'라는 작품이 나왔으나, 본문은 해당 작품의 구체적인 정보(작가, 캐릭터명 등)를 담고 있지 않고 일반적인 상황만을 묘사하므로 매칭할 수 없음."
+        },
+        "verifier": {
+          "verification_result": {
+            "is_relevant": false,
+            "is_novel_discussion": false,
+            "novel_identity": {
+              "official_novel_title": null,
+              "official_title": null,
+              "heretic_url": null,
+              "confidence": "Low",
+              "evidence_type": "converged_search_bootstrap",
+              "notes": "search convergence bootstrap (official_search)",
+              "search_support_summary": {
+                "official_exact_title_count": 2,
+                "official_alias_context_count": 0,
+                "community_alias_support_count": 1,
+                "community_alias_character_context_count": 0,
+                "community_alias_character_context_urls": [],
+                "post_alias_character_context": false,
+                "explicit_alias_bridge_count": 0,
+                "source_bound_alias_assertion_count": 0,
+                "source_bound_alias_assertion_url": null,
+                "support_channel_count": 1,
+                "support_purposes": [
+                  "adaptive_abbreviation"
+                ],
+                "alias_in_post_count": 4,
+                "best_official_url": "https://series.naver.com/novel/detail.series?productNo=6359188",
+                "converged_official_signal": false,
+                "bridge_quality": "weak",
+                "closed_bridge": false,
+                "related_anchor_hit_count": 0,
+                "author_context_match_count": 0,
+                "character_context_match_count": 0,
+                "matched_related_anchor_terms": [],
+                "author_context_anchor_terms": []
+              }
+            },
+            "grounding_check": {
+              "decoder_grounded": false,
+              "anchor_found": "search_only",
+              "anchor_text": null,
+              "grounding_issue": "검색 결과로 나타난 작품은 본문의 클리셰 나열과 무관한 별개의 작품임"
+            },
+            "counter_arguments": [
+              {
+                "issue": "본문 키워드와 검색 결과의 불일치",
+                "severity": "critical",
+                "action": "reject"
+              },
+              {
+                "issue": "장르/트로프 토론을 특정 작품으로 오인",
+                "severity": "critical",
+                "action": "reject"
+              },
+              {
+                "issue": "relation_judge:genre_or_trope_label",
+                "severity": "critical",
+                "action": "nullify_title",
+                "explanation": "게시글의 내용은 특정 작품을 지칭하는 것이 아니라, '이세계 귀환', '사채/조폭', '명절 친척', '동창회 첫사랑' 등 웹소설에서 흔히 쓰이는 진부한 클리셰(trope)들을 나열하며 이에 대해 논하는 장르 일반적인 담론임. 후보 작품인 '문제 1. 철수가 이세계에서 귀환했다 [개정판]'의 제목 일부와 키워드가 유사할 뿐, 본문에서 해당 작품을 직접 언급하거나 약칭으로 사용하는 명시적 근거가 전혀 없음."
+              }
+            ],
+            "author_info": null,
+            "rejection_reason": "게시글의 내용은 특정 작품을 지칭하는 것이 아니라, '이세계 귀환', '사채/조폭', '명절 친척', '동창회 첫사랑' 등 웹소설에서 흔히 쓰이는 진부한 클리셰(trope)들을 나열하며 이에 대해 논하는 장르 일반적인 담론임. 후보 작품인 '문제 1. 철수가 이세계에서 귀환했다 [개정판]'의 제목 일부와 키워드가 유사할 뿐, 본문에서 해당 작품을 직접 언급하거나 약칭으로 사용하는 명시적 근거가 전혀 없음.",
+            "evidence_chain": [
+              {
+                "source": "post_content",
+                "content": "이세계 귀환했더니 가족들이 사채써서 조폭찾아가는거, 명절에 친척들 나와서 꼽주다가...",
+                "supports": "웹소설의 전형적인 클리셰(트로프)를 나열함"
+              },
+              {
+                "source": "search_result_E014",
+                "content": "문제 1. 철수가 이세계에서 귀환했다",
+                "supports": "본문의 '이세계 귀환' 키워드와 형태소만 유사할 뿐, 본문 내용과 매칭되는 고유 정보 없음"
+              }
+            ],
+            "slang_insight": null,
+            "unresolved_from_decoder": [],
+            "inference": {
+              "type": "genre_discussion",
+              "topic": "장르/트로프 일반 논의"
+            },
+            "relation_judgment": {
+              "relation_type": "genre_or_trope_label",
+              "discussion_target": "genre_general",
+              "promotion_decision": "reject",
+              "confidence": "high",
+              "reason": "게시글의 내용은 특정 작품을 지칭하는 것이 아니라, '이세계 귀환', '사채/조폭', '명절 친척', '동창회 첫사랑' 등 웹소설에서 흔히 쓰이는 진부한 클리셰(trope)들을 나열하며 이에 대해 논하는 장르 일반적인 담론임. 후보 작품인 '문제 1. 철수가 이세계에서 귀환했다 [개정판]'의 제목 일부와 키워드가 유사할 뿐, 본문에서 해당 작품을 직접 언급하거나 약칭으로 사용하는 명시적 근거가 전혀 없음.",
+              "key_evidence": [
+                "본문 내용이 특정 작품의 고유한 사건이 아닌 웹소설의 전형적인 클리셰들을 나열하고 있음",
+                "post_direct_grounding가 false이며, 후보 제목에 대한 직접적인 언급이나 별칭 사용이 없음",
+                "검색 결과로 나타난 작품은 키워드 유사성에 의한 검색일 뿐, 게시글 작성자의 의도와 결속되지 않음"
+              ],
+              "observed_aliases": [],
+              "evidence_summary": {
+                "total_items": 6,
+                "official_detail_count": 6,
+                "community_post_count": 0,
+                "listing_or_category_count": 0,
+                "explicit_alias_bridge_count": 0
+              },
+              "search_support_summary": {
+                "official_exact_title_count": 2,
+                "official_alias_context_count": 0,
+                "community_alias_support_count": 0,
+                "community_alias_character_context_count": 0,
+                "community_alias_character_context_urls": [],
+                "post_alias_character_context": false,
+                "explicit_alias_bridge_count": 0,
+                "source_bound_alias_assertion_count": 0,
+                "source_bound_alias_assertion_url": null,
+                "support_channel_count": 1,
+                "support_purposes": [
+                  "adaptive_abbreviation"
+                ],
+                "alias_in_post_count": 0,
+                "best_official_url": "https://series.naver.com/novel/detail.series?productNo=6359188",
+                "converged_official_signal": false,
+                "bridge_quality": "weak",
+                "closed_bridge": false,
+                "related_anchor_hit_count": 0,
+                "author_context_match_count": 0,
+                "character_context_match_count": 0,
+                "matched_related_anchor_terms": [],
+                "author_context_anchor_terms": []
+              },
+              "post_direct_grounding": false,
+              "generic_relation_only": true,
+              "qualified_topic_hold": false
+            }
+          },
+          "final_confidence": "high",
+          "reason": "게시글의 제목('요즘나오면 욕먹는전개')과 본문 내용은 모두 특정 작품을 지칭하는 것이 아니라, 최근 웹소설 시장에서 반복되는 클리셰들을 예시로 들며 유저들의 공감을 유도하거나 추가 사례를 묻는 '장르/트로프 토론'입니다. Decoder가 식별한 '이세계 귀환' 관련 작품은 본문의 일반적인 소재 설명과 단어만 겹칠 뿐, 작품의 고유한 서사나 캐릭터를 논하고 있지 않으므로 키워드 우연 일치(Keyword Coincidence)에 해당합니다."
+        },
+        "arbiter": {
+          "final_decision": {
+            "is_relevant": false,
+            "is_novel_discussion": false,
+            "official_novel_title": null,
+            "suspected_titles": [],
+            "heretic_url": null,
+            "confidence": "Max",
+            "discussion_type": "trope_discussion",
+            "_raw_llm_relevant": false,
+            "_raw_llm_title": null,
+            "_raw_llm_confidence": "Max",
+            "_raw_llm_discussion_type": "trope_discussion",
+            "official_title": null,
+            "notes": "[Verifier 거부권] 게시글의 내용은 특정 작품을 지칭하는 것이 아니라, '이세계 귀환', '사채/조폭', '명절 친척', '동창회 첫사랑' 등 웹소설에서 흔히 쓰이는 진부한 클리셰(trope)들을 나열하며 이에 대해 논하는 장르 일반적인 담론임. 후보 작품인 '문제 1. 철수가 이세계에서 귀환했다 [개정판]'의 제목 일부와 키워드가 유사할 뿐, 본문에서 해당 작품을 직접 언급하거나 약칭으로 사용하는 명시적 근거가 전혀 없음.",
+            "final_reasoning": "[거부권] 게시글 제목: '요즘나오면 욕먹는전개', 본문: '이세계 귀환했더니 가족들이 사채써서 조폭찾아가는거 명절에 친척들 나와서 꼽주다가 정체 밝히고 깨갱하는거 동창회나가서 학창시절첫사랑꼬시기 또 뭐있냐'\nDecoder: 특정 작품 식별 실패 | Verifier: 비관련 판정 — 게시글의 내용은 특정 작품을 지칭하는 것이 아니라, '이세계 귀환', '사채/조폭', '명절 친척', '동창회 첫사랑' 등 웹소설에서 흔히 쓰이는 진부한 클리셰(trope)들을 나열하며 이에 대해 논하는 장르 일반적인 담론임. 후보 작품인 '문제 1. 철수가 이세계에서 귀환했다 [개정판]'의 제목 일부와 키워드가 유사할 뿐, 본문에서 해당 작품을 직접 언급하거나 약칭으로 사용하는 명시적 근거가 전혀 없음. | 핵심 반론: 본문 키워드와 검색 결과의 불일치; 장르/트로프 토론을 특정 작품으로 오인; relation_judge:genre_or_trope_label | Discourse 경고: genre_discussion(snippet_analyzer)\n검색 증강 분석: 검색 쿼리 4건 수행('요즘나오면욕먹는전개', '요즘나오면 웹소설', '이세계 귀환 줄임 웹소설 정식 제목', '요즘나오면 줄임 웹소설 정식 제목'). 스니펫 분석기 판정: '장르 일반론' — 제목과 본문이 특정 작품의 고유명사가 아닌, 웹소설에서 흔히 쓰이는 클리셰(이세계 귀환, 사채, 조폭, 동창회 등)를 나열하며 비판하는 장르 일반론적 내용임, 카테고리: genre_discussion. 소설플랫폼 결과 2건(E004 namu.wiki: '웹소설/시장 - 나무위키'; E014 series.naver.com: '문제 1. 철수가 이세계에서 귀환했다 [개정판]'). 커뮤니티 결과 4건(E001 fmkorea.com: '요즘 덕후들이 정신 못차리는 건담 여주인공 - 유머/움짤/이슈'; E002 bbs.ruliweb.com: '요즘 웹소설 웹툰의 고질병'; E003 gall.dcinside.com: '분명 좋은 소재거나 전개인데 요즘 나오면 욕먹는게 많지요 - 장르소설 마이너 ....'; E019 arca.live: '(공모전) 이세계에 디즈니를 만들고 싶은 용사의 이야기는 어떠세요 - 웹소설 ....') — 소설 공식 출처 아님.\n판단: 장르/트로프 일반론으로 판별됨.\n이 글은 장르/트로프에 대한 일반 토론이며, 특정 소설에 대한 글이 아니다.",
+            "_hypothesis_top": "noise",
+            "_hypothesis_margin": 0.2,
+            "_title_null_block_reasons": [
+              "memory_query_forced_upgrade_guard"
+            ],
+            "_title_deliberately_null": true
+          },
+          "expert_consensus": {
+            "unanimous": true,
+            "agreeing_experts": [
+              "Gatekeeper",
+              "Verifier"
+            ],
+            "dissenting_experts": [
+              "Decoder"
+            ]
+          },
+          "conflict_resolution": [
+            {
+              "issue": "작품 식별 여부 및 관련성 판단",
+              "expert_opinions": {
+                "gatekeeper": "장르 토론으로 판단 (high confidence)",
+                "decoder": "식별 실패 (none)",
+                "verifier": "관련 없음 (Veto 발동, 장르/트로프 레이블로 판정)"
+              },
+              "arbiter_decision": "is_relevant=false, discussion_type='trope_discussion'",
+              "reasoning": "Decoder가 작품을 식별하지 못했으며, Verifier가 본문의 키워드들이 특정 작품의 고유 정보가 아닌 웹소설의 전형적인 클리셰(트로프)임을 정확히 짚어내어 거부권을 행사함. 따라서 특정 작품에 대한 토론이 아닌 장르적 특성에 대한 의견 교환으로 판정함."
+            }
+          ],
+          "metadata_synthesis": {
+            "detected_author": null,
+            "detected_characters": [],
+            "micro_tags": [
+              "이세계 귀환",
+              "클리셰",
+              "전개 비판"
+            ],
+            "sentiment": "Negative",
+            "is_nsfw": false,
+            "spoiler_level": "none"
+          },
+          "final_reasoning": "[거부권] 게시글 제목: '요즘나오면 욕먹는전개', 본문: '이세계 귀환했더니 가족들이 사채써서 조폭찾아가는거 명절에 친척들 나와서 꼽주다가 정체 밝히고 깨갱하는거 동창회나가서 학창시절첫사랑꼬시기 또 뭐있냐'\nDecoder: 특정 작품 식별 실패 | Verifier: 비관련 판정 — 게시글의 내용은 특정 작품을 지칭하는 것이 아니라, '이세계 귀환', '사채/조폭', '명절 친척', '동창회 첫사랑' 등 웹소설에서 흔히 쓰이는 진부한 클리셰(trope)들을 나열하며 이에 대해 논하는 장르 일반적인 담론임. 후보 작품인 '문제 1. 철수가 이세계에서 귀환했다 [개정판]'의 제목 일부와 키워드가 유사할 뿐, 본문에서 해당 작품을 직접 언급하거나 약칭으로 사용하는 명시적 근거가 전혀 없음. | 핵심 반론: 본문 키워드와 검색 결과의 불일치; 장르/트로프 토론을 특정 작품으로 오인; relation_judge:genre_or_trope_label | Discourse 경고: genre_discussion(snippet_analyzer)\n검색 증강 분석: 검색 쿼리 4건 수행('요즘나오면욕먹는전개', '요즘나오면 웹소설', '이세계 귀환 줄임 웹소설 정식 제목', '요즘나오면 줄임 웹소설 정식 제목'). 스니펫 분석기 판정: '장르 일반론' — 제목과 본문이 특정 작품의 고유명사가 아닌, 웹소설에서 흔히 쓰이는 클리셰(이세계 귀환, 사채, 조폭, 동창회 등)를 나열하며 비판하는 장르 일반론적 내용임, 카테고리: genre_discussion. 소설플랫폼 결과 2건(E004 namu.wiki: '웹소설/시장 - 나무위키'; E014 series.naver.com: '문제 1. 철수가 이세계에서 귀환했다 [개정판]'). 커뮤니티 결과 4건(E001 fmkorea.com: '요즘 덕후들이 정신 못차리는 건담 여주인공 - 유머/움짤/이슈'; E002 bbs.ruliweb.com: '요즘 웹소설 웹툰의 고질병'; E003 gall.dcinside.com: '분명 좋은 소재거나 전개인데 요즘 나오면 욕먹는게 많지요 - 장르소설 마이너 ....'; E019 arca.live: '(공모전) 이세계에 디즈니를 만들고 싶은 용사의 이야기는 어떠세요 - 웹소설 ....') — 소설 공식 출처 아님.\n판단: 장르/트로프 일반론으로 판별됨.\n이 글은 장르/트로프에 대한 일반 토론이며, 특정 소설에 대한 글이 아니다.",
+          "evidence_chain": [
+            {
+              "source": "Title/Body Analysis",
+              "content": "Keywords like '이세계 귀환', '사채', '조폭' are generic web novel tropes, not specific titles.",
+              "weight": "high"
+            },
+            {
+              "source": "Verifier",
+              "content": "No unique identifiers (character names, author names, or specific plot points) found to link to a single work.",
+              "weight": "high"
+            }
+          ],
+          "_deliberation": {
+            "method": "evidence_scorer_only",
+            "evidence_score": {
+              "total_score": -4.5,
+              "relevance_probability": "very_low",
+              "positive_signals": [
+                {
+                  "signal": "discourse_novel",
+                  "detail": "novel_literature"
+                },
+                {
+                  "signal": "verifier_anchor",
+                  "detail": "anchor found"
+                }
+              ],
+              "negative_signals": [
+                {
+                  "signal": "decoder_none",
+                  "detail": "no identification"
+                },
+                {
+                  "signal": "verifier_irrelevant",
+                  "detail": "conf="
+                },
+                {
+                  "signal": "verifier_critical_counter",
+                  "detail": "본문 키워드와 검색 결과의 불일치; 장르/트로프 토론을 특정 작품으로 오인; relation_judge:genre_or_trope_label"
+                }
+              ],
+              "expert_agreement": 0.33,
+              "conflict_detected": true,
+              "conflict_details": [
+                "Verifier critical counter: 본문 키워드와 검색 결과의 불일치; 장르/트로프 토론을 특정 작품으로 오인; relation_judge:genre_or_trope_label"
+              ],
+              "recommendation": "UNLIKELY_RELEVANT: 관련성 증거가 매우 약하거나 반증이 강합니다."
+            },
+            "conflict_detected": false,
+            "elapsed": 152.2
+          }
+        }
+      },
+      "expert_origins": {
+        "gatekeeper": {
+          "log": "logs/expert_run_20261012_145104_574531_W10.log",
+          "line1": 7570,
+          "canonical_sha256": "c8cfc911efd621225ef03a07e61b4d7b4fa16b10e5ba68ca5c6ea70363e57e61"
+        },
+        "discourse": {
+          "log": "logs/expert_run_20261012_145104_574531_W10.log",
+          "line1": 7498,
+          "canonical_sha256": "30c8f19f4883737a561f4a604e557ae2cd5fb9a783b6bae1b2daf586c4d60fca"
+        },
+        "decoder": {
+          "log": "logs/expert_run_20261012_145104_574531_W10.log",
+          "line1": 8346,
+          "canonical_sha256": "d5088e4fd965818d7c41f0657f2e8405b4ad00ca66403fdea391d2b1a4bff684"
+        },
+        "verifier": {
+          "log": "logs/expert_run_20261012_145104_574531_W10.log",
+          "line1": 8740,
+          "canonical_sha256": "0e7383824cd2076c7f1b827c4988f7379a2148f7768325766e60efcdc8680cd2"
+        },
+        "arbiter": {
+          "log": "logs/expert_run_20261012_145104_574531_W10.log",
+          "line1": 8971,
+          "canonical_sha256": "639046ad0bb48df12d492aae1e088bcb0f4b6c32508e806649659352586cf6ed"
+        }
+      }
+    },
+    "old": {
+      "post": {
+        "gallery_id": "genrenovel",
+        "post_id": 8403713,
+        "title": "요즘나오면 욕먹는전개",
+        "author": "ㅇㅇ",
+        "created_at": "2024-03-17 15:40:33",
+        "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=8403713",
+        "content_blocks": [
+          {
+            "type": "text",
+            "text": "이세계 귀환했더니 가족들이 사채써서 조폭찾아가는거"
+          },
+          {
+            "type": "text",
+            "text": "명절에 친척들 나와서 꼽주다가 정체 밝히고 깨갱하는거"
+          },
+          {
+            "type": "text",
+            "text": "동창회나가서 학창시절첫사랑꼬시기"
+          },
+          {
+            "type": "text",
+            "text": "또 뭐있냐"
+          }
+        ],
+        "page_no": 59250
+      },
+      "comments": [
+        {
+          "comment_id": "28684571",
+          "author": "ㅇㅇ",
+          "content": "안녕난신이야",
+          "content_html": "안녕난신이야",
+          "created_at": "2024.03.17 15:40:59",
+          "ip": "223.39",
+          "reply_to_comment_id": null,
+          "reply_level": 0,
+          "post_id": 8403713
+        },
+        {
+          "comment_id": "28684573",
+          "author": "토끼달린다",
+          "content": "개맛도리 전개네",
+          "content_html": "개맛도리 전개네",
+          "created_at": "2024.03.17 15:41:06",
+          "ip": "",
+          "reply_to_comment_id": null,
+          "reply_level": 0,
+          "post_id": 8403713
+        },
+        {
+          "comment_id": "28684574",
+          "author": "ㅇㅇ",
+          "content": "다 아직 현역인거 같은데",
+          "content_html": "다 아직 현역인거 같은데",
+          "created_at": "2024.03.17 15:41:25",
+          "ip": "",
+          "reply_to_comment_id": null,
+          "reply_level": 0,
+          "post_id": 8403713
+        },
+        {
+          "comment_id": "28684583",
+          "author": "ㅇㅇ1",
+          "content": "모르는 천장이다...",
+          "content_html": "모르는 천장이다...",
+          "created_at": "2024.03.17 15:42:12",
+          "ip": "58.233",
+          "reply_to_comment_id": null,
+          "reply_level": 0,
+          "post_id": 8403713
+        },
+        {
+          "comment_id": "28684585",
+          "author": "ㅇㅇ",
+          "content": "히로인 강간",
+          "content_html": "히로인 강간",
+          "created_at": "2024.03.17 15:42:25",
+          "ip": "",
+          "reply_to_comment_id": null,
+          "reply_level": 0,
+          "post_id": 8403713
+        },
+        {
+          "comment_id": "28684595",
+          "author": "ㅇㅇ",
+          "content": "갑자기 일본인들이 한국인보고 조센징이라하는거 그래서 일본 개털어주는거  그런데 중국은 안텀ㅋ",
+          "content_html": "갑자기 일본인들이 한국인보고 조센징이라하는거 그래서 일본 개털어주는거  그런데 중국은 안텀ㅋ",
+          "created_at": "2024.03.17 15:43:15",
+          "ip": "112.160",
+          "reply_to_comment_id": null,
+          "reply_level": 0,
+          "post_id": 8403713
+        },
+        {
+          "comment_id": "28684609",
+          "author": "ㅇㅇ",
+          "content": "구와아악",
+          "content_html": "구와아악",
+          "created_at": "2024.03.17 15:44:23",
+          "ip": "",
+          "reply_to_comment_id": null,
+          "reply_level": 0,
+          "post_id": 8403713
+        }
+      ],
+      "experts": {
+        "gatekeeper": {
+          "is_noise": false,
+          "noise_reason": null,
+          "post_type": "genre_discussion",
+          "detected_entities": {
+            "possible_titles": [
+              "요즘나오면",
+              "즘나오",
+              "즘나",
+              "요즘",
+              "전개"
+            ],
+            "possible_authors": [],
+            "possible_characters": [],
+            "platforms_mentioned": []
+          },
+          "key_terms": [
+            "요즘나오면",
+            "이세계 귀환",
+            "사채",
+            "조폭",
+            "명절",
+            "친척",
+            "정체",
+            "동창회",
+            "첫사랑"
+          ],
+          "context_clues": {
+            "has_url_in_comments": false,
+            "has_specific_names": false,
+            "is_asking_recommendation": false,
+            "is_spoiler_discussion": false,
+            "has_comment_title_answer": true,
+            "comment_title_candidates": [
+              "안녕난신이야",
+              "개맛도리 전개네",
+              "다 아직 현역인거 같은데",
+              "모르는 천장이다...",
+              "히로인 강간",
+              "구와아악"
+            ],
+            "comment_title_merge_candidates": [],
+            "comment_title_candidate_details": [
+              {
+                "text": "안녕난신이야",
+                "comment_index": 0,
+                "line_index": 0,
+                "speech_act": "explanation",
+                "has_at_mention": false,
+                "reply_level": 0,
+                "reply_to_comment_id": null,
+                "author": "ㅇㅇ",
+                "title_assertion_basis": null
+              },
+              {
+                "text": "개맛도리 전개네",
+                "comment_index": 1,
+                "line_index": 0,
+                "speech_act": "explanation",
+                "has_at_mention": false,
+                "reply_level": 0,
+                "reply_to_comment_id": null,
+                "author": "토끼달린다",
+                "title_assertion_basis": null
+              },
+              {
+                "text": "다 아직 현역인거 같은데",
+                "comment_index": 2,
+                "line_index": 0,
+                "speech_act": "explanation",
+                "has_at_mention": false,
+                "reply_level": 0,
+                "reply_to_comment_id": null,
+                "author": "ㅇㅇ",
+                "title_assertion_basis": null
+              },
+              {
+                "text": "모르는 천장이다...",
+                "comment_index": 3,
+                "line_index": 0,
+                "speech_act": "explanation",
+                "has_at_mention": false,
+                "reply_level": 0,
+                "reply_to_comment_id": null,
+                "author": "ㅇㅇ1",
+                "title_assertion_basis": null
+              },
+              {
+                "text": "히로인 강간",
+                "comment_index": 4,
+                "line_index": 0,
+                "speech_act": "unasserted_reaction",
+                "has_at_mention": false,
+                "reply_level": 0,
+                "reply_to_comment_id": null,
+                "author": "ㅇㅇ",
+                "title_assertion_basis": null
+              },
+              {
+                "text": "구와아악",
+                "comment_index": 6,
+                "line_index": 0,
+                "speech_act": "unasserted_reaction",
+                "has_at_mention": false,
+                "reply_level": 0,
+                "reply_to_comment_id": null,
+                "author": "ㅇㅇ",
+                "title_assertion_basis": null
+              }
+            ],
+            "title_as_body_continuation": true,
+            "title_body_joined_text": "요즘나오면 욕먹는전개 이세계 귀환했더니 가족들이 사채써서 조폭찾아가는거 명절에 친척들 나와서 꼽주다가 정체 밝히고 깨갱하는거",
+            "title_body_first_line": "이세계 귀환했더니 가족들이 사채써서 조폭찾아가는거"
+          },
+          "search_requests": [
+            {
+              "query": "(site:novelpia.com OR site:munpia.com OR site:series.naver.com) 요즘나오면",
+              "purpose": "official_title_verify",
+              "priority": 1
+            },
+            {
+              "query": "요즘나오면 웹소설",
+              "purpose": "title_search_community",
+              "priority": 1
+            }
+          ],
+          "confidence": "high",
+          "notes": "특정 작품을 지칭하는 것이 아니라, 최근 웹소설에서 흔히 보이는 클리셰(트로프)들을 나열하며 이에 대한 비판적 담론을 형성하려는 장르론적 게시글임. 본문과 댓글 모두 특정 작품의 고유 정보가 아닌, 장르 전반의 전개 방식(클리셰)에 대해 이야기하고 있으므로 genre_discussion으로 분류함."
+        },
+        "discourse": {
+          "discourse_analysis": {
+            "primary_domain": "novel_literature",
+            "domain_confidence": "high",
+            "domain_evidence": [
+              "전개",
+              "이세계 귀환",
+              "히로인",
+              "현역"
+            ],
+            "secondary_domains": [],
+            "intent": "express_opinion",
+            "intent_confidence": "medium",
+            "speech_act": "other",
+            "target_kind": "trope",
+            "is_coherent": true,
+            "coherence_reason": "제목에서 제시한 '욕먹는 전개(클리셰)'에 대해 본문이 구체적인 예시들을 나열하고, 댓글에서 이에 동조하거나 추가적인 클리셰를 언급하며 담론이 일관되게 유지됨.",
+            "title_novel_terms": [],
+            "title_body_consistency": true,
+            "consistency_note": null,
+            "is_association_not_discussion": false,
+            "association_evidence": null,
+            "search_suggestions": [
+              {
+                "query": "웹소설 클리셰 욕먹는 전개",
+                "purpose": "To verify if these specific tropes are commonly discussed as 'clichéd' or 'hated' in web novel communities.",
+                "priority": 2
+              }
+            ],
+            "real_subject": "욕먹는 전개(클리셰) 사례",
+            "author_question_span": "또 뭐있냐",
+            "author_question_target": "욕먹는 전개(클리셰)의 추가 사례",
+            "author_recommendation_span": null,
+            "author_recommendation_is_direct": false,
+            "reasoning": "작성자는 특정 작품을 지칭하지 않고, 웹소설에서 흔히 나타나는 몇 가지 서사적 장치(이세계 귀환 후 가족 문제, 친척과의 갈등, 동창회 등)를 '욕먹는 전개'라고 규정하며 다른 사례를 묻고 있다. 댓글 또한 이러한 클리셰의 유효성이나 추가적인 자극적 소재를 언급하며 장르적 특성에 대한 담론을 이어가고 있으므로 discuss_genre로 판단된다.",
+            "source_bound_question_receipt": {
+              "span": "또 뭐있냐",
+              "source": "author_body",
+              "speaker": "author",
+              "modality": "text",
+              "position": 3,
+              "target_description": "욕먹는 전개(클리셰) 사례",
+              "target_candidates": [
+                "욕먹는 전개(클리셰)의 추가 사례",
+                "욕먹는 전개(클리셰) 사례"
+              ],
+              "target_conflict": false,
+              "verification_level": "exact_author_excerpt_model_target"
+            },
+            "source_bound_recommendation_request": false,
+            "image_topic_relation": {
+              "state": "no_image",
+              "source": "author_spans"
+            },
+            "semantic_seed_review": {
+              "post_intent": "웹소설에서 식상하거나 비판받는 특정 서사 패턴(클리셰)들에 대해 나열하며 의견을 묻는 글입니다.",
+              "content_interpretation": "작성자가 제시한 문장들은 특정 작품의 제목이 아니라 웹소설의 일반적인 서사 유형을 묘사하는 문장 일부입니다.",
+              "is_specific_work_discussion": false,
+              "recommended_intent": "express_opinion",
+              "recommended_target_kind": "trope",
+              "warnings": []
+            },
+            "warnings": [
+              "semantic_seed_review_specific_work_denied"
+            ]
+          }
+        },
+        "decoder": {
+          "decoded_terms": [
+            {
+              "original": "요즘나오면",
+              "morphemes": [
+                "요즘",
+                "나오면"
+              ],
+              "interpretations": [
+                {
+                  "type": "slang",
+                  "value": "요즘 나오면 (욕먹는)",
+                  "evidence": "검색 결과 E003, E009에서 '요즘 나오면 욕먹는 전개'라는 커뮤니티 담론 확인",
+                  "context_fit": "high"
+                },
+                {
+                  "type": "general_noun",
+                  "value": "요즘 나오는",
+                  "evidence": null,
+                  "context_fit": "medium"
+                }
+              ],
+              "candidates": [
+                {
+                  "official_novel_title": null,
+                  "url": null,
+                  "platform": null,
+                  "decode_logic": "일반적인 시간적 상황을 나타내는 문구로, 특정 작품의 약칭이 아님",
+                  "morphological_score": 0.0,
+                  "genre_match": {
+                    "source_genre": null,
+                    "target_genre": null,
+                    "is_match": true
+                  },
+                  "search_evidence": "검색 결과에서 특정 작품명으로 매칭되는 사례 없음"
+                }
+              ],
+              "best_match": {
+                "title": null,
+                "confidence": "none"
+              },
+              "grounding": {
+                "is_grounded": true,
+                "anchor_type": "title_mention",
+                "anchor_evidence": "게시글 제목에 '요즘나오면' 직접 존재"
+              },
+              "is_author_name": false,
+              "author_info": null
+            },
+            {
+              "original": "이세계 귀환",
+              "morphemes": [
+                "이세계",
+                "귀환"
+              ],
+              "interpretations": [
+                {
+                  "type": "genre_term",
+                  "value": "이세계 귀환물",
+                  "evidence": "장르적 클리셰를 나열하는 맥락",
+                  "context_fit": "high"
+                },
+                {
+                  "type": "novel_title",
+                  "value": "문제 1. 철수가 이세계에서 귀환했다",
+                  "evidence": "검색 결과 E014, E015에서 해당 제목 발견",
+                  "context_fit": "low"
+                }
+              ],
+              "candidates": [
+                {
+                  "official_novel_title": "문제 1. 철수가 이세계에서 귀환했다 [개정판]",
+                  "url": null,
+                  "platform": "platform:series.naver.com",
+                  "decode_logic": "코드 레벨 rescue: abbreviation_match_score=0.90",
+                  "morphological_score": 0.9,
+                  "search_evidence": "rescue from platform:series.naver.com"
+                },
+                {
+                  "official_novel_title": "문제 1. 철수가 이세계에서 귀환했다",
+                  "url": "https://series.naver.com/novel/detail.series?productNo=6359188",
+                  "platform": "naver",
+                  "decode_logic": "장르 키워드와 일치하지만, 본문은 특정 작품의 줄거리가 아닌 클리셰 나열임",
+                  "morphological_score": 0.7,
+                  "genre_match": {
+                    "source_genre": "이세계 귀환",
+                    "target_genre": "판타지",
+                    "is_match": true
+                  },
+                  "search_evidence": "E014, E015"
+                }
+              ],
+              "best_match": {
+                "title": "문제 1. 철수가 이세계에서 귀환했다 [개정판]",
+                "confidence": "medium"
+              },
+              "grounding": {
+                "is_grounded": false,
+                "anchor_type": "plot_mention",
+                "anchor_evidence": "이세계 귀환했더니 가족들이 사채써서..."
+              },
+              "is_author_name": false,
+              "author_info": null
+            },
+            {
+              "original": "사채",
+              "morphemes": [
+                "사채"
+              ],
+              "interpretations": [
+                {
+                  "type": "general_noun",
+                  "value": "사채",
+                  "evidence": null,
+                  "context_fit": "high"
+                }
+              ],
+              "candidates": [
+                {
+                  "official_novel_title": null,
+                  "url": null,
+                  "platform": null,
+                  "decode_logic": "본문에서 클리셰의 소재(사채업자)로 사용됨",
+                  "morphological_score": 0.0,
+                  "genre_match": {
+                    "source_genre": null,
+                    "target_genre": null,
+                    "is_match": true
+                  },
+                  "search_evidence": null
+                }
+              ],
+              "best_match": {
+                "title": null,
+                "confidence": "none"
+              },
+              "grounding": {
+                "is_grounded": true,
+                "anchor_type": "plot_mention",
+                "anchor_evidence": "가족들이 사채써서 조폭찾아가는거"
+              },
+              "is_author_name": false,
+              "author_info": null
+            },
+            {
+              "original": "조폭",
+              "morphemes": [
+                "조폭"
+              ],
+              "interpretations": [
+                {
+                  "type": "general_noun",
+                  "value": "조폭",
+                  "evidence": null,
+                  "context_fit": "high"
+                }
+              ],
+              "candidates": [
+                {
+                  "official_novel_title": null,
+                  "url": null,
+                  "platform": null,
+                  "decode_logic": "본문에서 클리셰의 소재(조폭)로 사용됨",
+                  "morphological_score": 0.0,
+                  "genre_match": {
+                    "source_genre": null,
+                    "target_genre": null,
+                    "is_match": true
+                  },
+                  "search_evidence": null
+                }
+              ],
+              "best_match": {
+                "title": null,
+                "confidence": "none"
+              },
+              "grounding": {
+                "is_grounded": true,
+                "anchor_type": "plot_mention",
+                "anchor_evidence": "사채써서 조폭찾아가는거"
+              },
+              "is_author_name": false,
+              "author_info": null
+            },
+            {
+              "original": "명절",
+              "morphemes": [
+                "명절"
+              ],
+              "interpretations": [
+                {
+                  "type": "general_noun",
+                  "value": "명절",
+                  "evidence": null,
+                  "context_fit": "high"
+                }
+              ],
+              "candidates": [
+                {
+                  "official_novel_title": null,
+                  "url": null,
+                  "platform": null,
+                  "decode_logic": "본문에서 클리셰의 배경(명절)으로 사용됨",
+                  "morphological_score": 0.0,
+                  "genre_match": {
+                    "source_genre": null,
+                    "target_genre": null,
+                    "is_match": true
+                  },
+                  "search_evidence": null
+                }
+              ],
+              "best_match": {
+                "title": null,
+                "confidence": "none"
+              },
+              "grounding": {
+                "is_grounded": true,
+                "anchor_type": "plot_mention",
+                "anchor_evidence": "명절에 친척들 나와서 꼽주다가"
+              },
+              "is_author_name": false,
+              "author_info": null
+            },
+            {
+              "original": "친척",
+              "morphemes": [
+                "친척"
+              ],
+              "interpretations": [
+                {
+                  "type": "general_noun",
+                  "value": "친척",
+                  "evidence": null,
+                  "context_fit": "high"
+                }
+              ],
+              "candidates": [
+                {
+                  "official_novel_title": null,
+                  "url": null,
+                  "platform": null,
+                  "decode_logic": "본문에서 클리셰의 등장인물군(친척)으로 사용됨",
+                  "morphological_score": 0.0,
+                  "genre_match": {
+                    "source_genre": null,
+                    "target_genre": null,
+                    "is_match": true
+                  },
+                  "search_evidence": null
+                }
+              ],
+              "best_match": {
+                "title": null,
+                "confidence": "none"
+              },
+              "grounding": {
+                "is_grounded": true,
+                "anchor_type": "plot_mention",
+                "anchor_evidence": "명절에 친척들 나와서 꼽주다가"
+              },
+              "is_author_name": false,
+              "author_info": null
+            },
+            {
+              "original": "정체",
+              "morphemes": [
+                "정체"
+              ],
+              "interpretations": [
+                {
+                  "type": "general_noun",
+                  "value": "정체",
+                  "evidence": null,
+                  "context_fit": "high"
+                }
+              ],
+              "candidates": [
+                {
+                  "official_novel_title": null,
+                  "url": null,
+                  "platform": null,
+                  "decode_logic": "본문에서 클리셰의 사건(정체 공개)으로 사용됨",
+                  "morphological_score": 0.0,
+                  "genre_match": {
+                    "source_genre": null,
+                    "target_genre": null,
+                    "is_match": true
+                  },
+                  "search_evidence": null
+                }
+              ],
+              "best_match": {
+                "title": null,
+                "confidence": "none"
+              },
+              "grounding": {
+                "is_grounded": true,
+                "anchor_type": "plot_mention",
+                "anchor_evidence": "정체 밝히고 깨갱하는거"
+              },
+              "is_author_name": false,
+              "author_info": null
+            },
+            {
+              "original": "동창회",
+              "morphemes": [
+                "동창회"
+              ],
+              "interpretations": [
+                {
+                  "type": "general_noun",
+                  "value": "동창회",
+                  "evidence": null,
+                  "context_fit": "high"
+                }
+              ],
+              "candidates": [
+                {
+                  "official_novel_title": null,
+                  "url": null,
+                  "platform": null,
+                  "decode_logic": "본문에서 클리셰의 배경(동창회)으로 사용됨",
+                  "morphological_score": 0.0,
+                  "genre_match": {
+                    "source_genre": null,
+                    "target_genre": null,
+                    "is_match": true
+                  },
+                  "search_evidence": null
+                }
+              ],
+              "best_match": {
+                "title": null,
+                "confidence": "none"
+              },
+              "grounding": {
+                "is_grounded": true,
+                "anchor_type": "plot_mention",
+                "anchor_evidence": "동창회나가서 학창시절첫사랑꼬시기"
+              },
+              "is_author_name": false,
+              "author_info": null
+            },
+            {
+              "original": "첫사랑",
+              "morphemes": [
+                "첫사랑"
+              ],
+              "interpretations": [
+                {
+                  "type": "general_noun",
+                  "value": "첫사랑",
+                  "evidence": null,
+                  "context_fit": "high"
+                }
+              ],
+              "candidates": [
+                {
+                  "official_novel_title": null,
+                  "url": null,
+                  "platform": null,
+                  "decode_logic": "본문에서 클리셰의 대상(첫사랑)으로 사용됨",
+                  "morphological_score": 0.0,
+                  "genre_match": {
+                    "source_genre": null,
+                    "target_genre": null,
+                    "is_match": true
+                  },
+                  "search_evidence": null
+                }
+              ],
+              "best_match": {
+                "title": null,
+                "confidence": "none"
+              },
+              "grounding": {
+                "is_grounded": true,
+                "anchor_type": "plot_mention",
+                "anchor_evidence": "학창시절첫사랑꼬시기"
+              },
+              "is_author_name": false,
+              "author_info": null
+            }
+          ],
+          "unresolved_terms": [],
+          "self_questions": [
+            "제목의 '요즘나오면'이 특정 작품의 약칭인가?",
+            "본문의 구체적인 줄거리 묘사가 특정 소설의 고유 설정인가?",
+            "댓글의 반응이 특정 작품에 대한 감상인가, 아니면 장르적 공감인가?"
+          ],
+          "needs_verification": false,
+          "verification_search": null,
+          "overall_confidence": "medium",
+          "notes": "치환 읽기 : 본문의 키워드(사채, 조폭, 명절, 친척, 동창회 등)는 모두 웹소설에서 흔히 쓰이는 클리셰(트로프)의 소재들임. 글쓴이는 특정 작품을 리뷰하는 것이 아니라, 최근 유행하는 '이세계 귀환 후 현대 사회에서의 갑질/사이다 전개'라는 장르적 패턴을 나열하며 비판하거나 논하고 있음. 따라서 특정 작품을 매칭할 근거가 없으며, discussion_type은 genre_discussion이 적절함."
+        },
+        "verifier": {
+          "verification_result": {
+            "is_relevant": false,
+            "is_novel_discussion": false,
+            "novel_identity": {
+              "official_novel_title": null,
+              "official_title": null,
+              "heretic_url": null,
+              "confidence": "Low",
+              "evidence_type": "converged_search_bootstrap",
+              "notes": "search convergence bootstrap (decoder)",
+              "search_support_summary": {
+                "official_exact_title_count": 2,
+                "official_alias_context_count": 0,
+                "community_alias_support_count": 1,
+                "community_alias_character_context_count": 0,
+                "community_alias_character_context_urls": [],
+                "post_alias_character_context": false,
+                "explicit_alias_bridge_count": 0,
+                "source_bound_alias_assertion_count": 0,
+                "source_bound_alias_assertion_url": null,
+                "support_channel_count": 1,
+                "support_purposes": [
+                  "adaptive_abbreviation"
+                ],
+                "alias_in_post_count": 4,
+                "best_official_url": "https://series.naver.com/novel/detail.series?productNo=6359188",
+                "converged_official_signal": false,
+                "bridge_quality": "weak",
+                "closed_bridge": false,
+                "related_anchor_hit_count": 0,
+                "author_context_match_count": 0,
+                "character_context_match_count": 0,
+                "matched_related_anchor_terms": [],
+                "author_context_anchor_terms": []
+              }
+            },
+            "grounding_check": {
+              "decoder_grounded": false,
+              "anchor_found": "none",
+              "anchor_text": null,
+              "grounding_issue": "본문의 키워드는 특정 작품의 고유 설정이 아닌, 웹소설에서 흔히 쓰이는 일반적인 클리셰(트로프)들의 나열임"
+            },
+            "counter_arguments": [
+              {
+                "issue": "키워드 우연 일치 (Keyword Coincidence)",
+                "severity": "critical",
+                "action": "reject"
+              },
+              {
+                "issue": "Decoder의 잘못된 매칭",
+                "severity": "major",
+                "action": "reject"
+              },
+              {
+                "issue": "relation_judge:genre_or_trope_label",
+                "severity": "critical",
+                "action": "nullify_title",
+                "explanation": "게시글의 내용은 특정 작품을 지칭하는 것이 아니라, '이세계 귀환', '가족의 사채/조폭 문제', '명절 친척 갈등', '동창회' 등 웹소설에서 흔히 사용되는 전형적인 클리셰(트로프)들을 나열하며 최근 유행하는 전개 양상을 비판하거나 논하는 장르 일반적 담론임. 후보 작품의 제목 조각이나 고유 설정이 본문에 명시되지 않았으며, 검색 결과와의 유사성은 단순한 장르적 소재의 중첩에 불과함."
+              }
+            ],
+            "author_info": null,
+            "rejection_reason": "게시글의 내용은 특정 작품을 지칭하는 것이 아니라, '이세계 귀환', '가족의 사채/조폭 문제', '명절 친척 갈등', '동창회' 등 웹소설에서 흔히 사용되는 전형적인 클리셰(트로프)들을 나열하며 최근 유행하는 전개 양상을 비판하거나 논하는 장르 일반적 담론임. 후보 작품의 제목 조각이나 고유 설정이 본문에 명시되지 않았으며, 검색 결과와의 유사성은 단순한 장르적 소재의 중첩에 불과함.",
+            "evidence_chain": [
+              {
+                "source": "본문 내용",
+                "content": "이세계 귀환했더니 가족들이 사채써서 조폭찾아가는거...",
+                "supports": "특정 작품의 고유 서사가 아닌 전형적인 클리셰 패턴의 나열"
+              },
+              {
+                "source": "댓글 맥락",
+                "content": "개맛도리 전개네, 다 아직 현역인거 같은데",
+                "supports": "특정 작품에 대한 감상이 아니라 언급된 '전개(클리셰)' 자체에 대한 반응"
+              }
+            ],
+            "slang_insight": null,
+            "unresolved_from_decoder": [],
+            "inference": {
+              "type": "genre_discussion",
+              "topic": "장르/트로프 일반 논의"
+            },
+            "relation_judgment": {
+              "relation_type": "genre_or_trope_label",
+              "discussion_target": "genre_general",
+              "promotion_decision": "reject",
+              "confidence": "high",
+              "reason": "게시글의 내용은 특정 작품을 지칭하는 것이 아니라, '이세계 귀환', '가족의 사채/조폭 문제', '명절 친척 갈등', '동창회' 등 웹소설에서 흔히 사용되는 전형적인 클리셰(트로프)들을 나열하며 최근 유행하는 전개 양상을 비판하거나 논하는 장르 일반적 담론임. 후보 작품의 제목 조각이나 고유 설정이 본문에 명시되지 않았으며, 검색 결과와의 유사성은 단순한 장르적 소재의 중첩에 불과함.",
+              "key_evidence": [
+                "본문 키워드(사채, 조폭, 명절, 동창회 등)는 특정 작품의 고유 설정이 아닌 웹소설의 일반적인 클리셰임",
+                "작성자는 '요즘 나오면 욕먹는 전개'라는 제목을 통해 특정 작품 리뷰가 아닌 장르적 패턴에 대해 논하고 있음",
+                "후보 작품명이나 이를 지칭하는 명시적인 약칭/별칭이 게시글 내에 존재하지 않음"
+              ],
+              "observed_aliases": [],
+              "evidence_summary": {
+                "total_items": 5,
+                "official_detail_count": 4,
+                "community_post_count": 0,
+                "listing_or_category_count": 0,
+                "explicit_alias_bridge_count": 0
+              },
+              "search_support_summary": {
+                "official_exact_title_count": 2,
+                "official_alias_context_count": 0,
+                "community_alias_support_count": 0,
+                "community_alias_character_context_count": 0,
+                "community_alias_character_context_urls": [],
+                "post_alias_character_context": false,
+                "explicit_alias_bridge_count": 0,
+                "source_bound_alias_assertion_count": 0,
+                "source_bound_alias_assertion_url": null,
+                "support_channel_count": 1,
+                "support_purposes": [
+                  "adaptive_abbreviation"
+                ],
+                "alias_in_post_count": 0,
+                "best_official_url": "https://series.naver.com/novel/detail.series?productNo=6359188",
+                "converged_official_signal": false,
+                "bridge_quality": "weak",
+                "closed_bridge": false,
+                "related_anchor_hit_count": 0,
+                "author_context_match_count": 0,
+                "character_context_match_count": 0,
+                "matched_related_anchor_terms": [],
+                "author_context_anchor_terms": []
+              },
+              "post_direct_grounding": false,
+              "generic_relation_only": true,
+              "qualified_topic_hold": false
+            }
+          },
+          "final_confidence": "high",
+          "reason": "본문은 특정 작품을 논하는 것이 아니라, 최근 웹소설 시장에서 자주 등장하여 피로감을 주는 '클리셰(Trope)'들을 예시로 들며 그 경향성을 비판하는 글입니다. '이세계 귀환'은 매우 보편적인 장르 용어이며, 본문에 제시된 상황들(사채, 조폭, 명절, 동창회)은 특정 소설의 고유 정보가 아닌 장르적 문법에 해당합니다. 따라서 Decoder가 검색 결과의 제목과 형태소 일부가 겹친다는 이유로 특정 작품을 매칭한 것은 '키워드 우연 일치'에 의한 전형적인 오탐(False Positive)입니다."
+        },
+        "synthesizer": {
+          "reinterpretation": {
+            "post_intent": "웹소설에서 흔히 쓰이는 전형적인 클리셰(트로프)들을 나열하며, 이러한 전개 방식이 최근에 다시 나오면 독자들에게 비판받을 가능성이 높다는 점을 시사하는 장르적 담론",
+            "text_analysis": [
+              {
+                "segment": "요즘나오면 욕먹는전개",
+                "interpretation": "특정 작품의 제목이 아니라, 최근 웹소설 시장에서 유행하거나 혹은 진부해진 특정 서사 구조(클리셰)를 지칭함",
+                "evidence_source": "verifier"
+              },
+              {
+                "segment": "이세계 귀환했더니 가족들이 사채써서 조폭찾아가는거",
+                "interpretation": "현대 판타지/귀환물 장르에서 주인공의 압도적인 무력을 보여주기 위해 가족의 위기를 설정하는 전형적인 클리셰",
+                "evidence_source": "verifier"
+              },
+              {
+                "segment": "명절에 친척들 나와서 꼽주다가 정체 밝히고 깨갱하는거",
+                "interpretation": "주인공의 신분을 숨긴 상태에서 주변 인물들이 무시하다가, 주인공의 능력이 드러나며 상황이 역전되는 '사이다' 서사의 전형적 패턴",
+                "evidence_source": "verifier"
+              },
+              {
+                "segment": "동창회나가서 학창시절첫사랑꼬시기",
+                "interpretation": "현대 판타지나 회귀물에서 주인공의 매력이나 능력을 과시하는 도구로 사용되는 흔한 설정",
+                "evidence_source": "verifier"
+              }
+            ],
+            "comment_insights": [
+              {
+                "comment": "개맛도리 전개네",
+                "insight": "작성자가 나열한 클리셰들이 비판 대상임에도 불구하고, 장르적 재미(사이다) 측면에서는 여전히 수요가 있음을 인정하는 반응"
+              },
+              {
+                "comment": "다 아직 현역인거 같은데",
+                "insight": "언급된 전개들이 구식(틀내)이라기보다 여전히 웹소설 시장에서 유효하게 소비되는 트렌드라는 의견"
+              },
+              {
+                "comment": "히로인 강간",
+                "insight": "최근 웹소설/웹툰의 자극적이고 극단적인 전개 양상을 비판적으로 언급하거나, 혹은 그런 자극적인 소재를 찾는 맥락"
+              },
+              {
+                "comment": "갑자기 일본인들이 한국인보고 조센징이라하는거 그래서 일본 개털어주는거 그런데 중국은 안텀ㅋ",
+                "insight": "국뽕(애국주의) 요소가 가미된 웹소설의 전형적인 카타르시스 전개 방식을 묘사함"
+              }
+            ]
+          },
+          "hidden_references": [
+            {
+              "text": "이세계 귀환",
+              "reference_type": "plot",
+              "matched_to": "장르적 소재 (Trope)",
+              "evidence": "Decoder가 특정 작품[문제 1. 철수가 이세계에서 귀환했다]으로 매칭하려 했으나, Verifier와 검색 결과[E003, E004]를 종합할 때 이는 특정 작품명이 아닌 웹소설의 일반적인 장르적 소재를 의미함"
+            }
+          ],
+          "evidence_alignment": {
+            "decoder_match": "weak",
+            "decoder_reason": "Decoder는 '이세계 귀환' 키워드를 통해 특정 작품명을 추출했으나, 이는 본문의 문맥상 특정 작품을 지칭하는 것이 아니라 클리셰를 나열하는 과정에서 나온 일반 명사임",
+            "verifier_match": "strong",
+            "verifier_reason": "본문 내용이 특정 고유 명사나 캐릭터 없이 웹소설의 전형적인 클리셰들만 나열하고 있으므로, 장르 일반적 담론으로 판단한 Verifier의 결과가 정확함",
+            "overall_coherence": "high"
+          },
+          "confidence_assessment": {
+            "is_about_identified_work": false,
+            "confidence": "Max",
+            "reasoning": "본문과 댓글 모두 특정 작품의 제목, 작가, 캐릭터 이름을 포함하고 있지 않으며, 오직 웹소설의 '전개 방식(클리셰)'만을 나열하고 있음. 따라서 특정 작품에 대한 글이 아님을 확신함.",
+            "alternative_interpretation": null
+          },
+          "synthesis_summary": "본 포스트는 특정 웹소설 작품을 논하는 것이 아니라, 웹소설 시장에서 흔히 발견되는 전형적인 클리셰(가족의 위기, 명절 갈등, 동창회 재회 등)를 나열하며 이러한 전개가 최근 독자들에게 어떻게 받아들여질지에 대해 화두를 던지는 게시글입니다. 댓글 반응 또한 이러한 전개들이 여전히 유효한 '맛도리(재미있는)' 요소인지, 혹은 지나치게 자극적이거나 진부한지에 대한 장르적 담론을 형성하고 있습니다. 결론적으로 특정 작품 식별은 불가능하며, 웹소설 장르의 서사 패턴에 대한 커뮤니티의 의견 교환이 주 목적입니다.",
+          "elapsed": 43.767529249191284
+        },
+        "arbiter": {
+          "final_decision": {
+            "is_relevant": false,
+            "is_novel_discussion": false,
+            "official_novel_title": null,
+            "suspected_titles": [
+              {
+                "title": "문제 1. 철수가 이세계에서 귀환했다 [개정판]",
+                "confidence": "Low",
+                "reason": "본문의 '이세계 귀환' 키워드가 해당 작품 제목과 음절이 일치하나, 본문 맥락상 특정 작품이 아닌 장르적 소재(Trope)를 지칭함"
+              }
+            ],
+            "heretic_url": null,
+            "confidence": "Max",
+            "discussion_type": "trope_discussion",
+            "_raw_llm_relevant": false,
+            "_raw_llm_title": null,
+            "_raw_llm_confidence": "Max",
+            "_raw_llm_discussion_type": "trope_discussion",
+            "_forced_upgrade_score": 0.0,
+            "_forced_upgrade_threshold": 0.62,
+            "_forced_upgrade_title": "문제 1. 철수가 이세계에서 귀환했다 [개정판]",
+            "official_title": null,
+            "notes": "[Verifier 거부권] 게시글의 내용은 특정 작품을 지칭하는 것이 아니라, '이세계 귀환', '가족의 사채/조폭 문제', '명절 친척 갈등', '동창회' 등 웹소설에서 흔히 사용되는 전형적인 클리셰(트로프)들을 나열하며 최근 유행하는 전개 양상을 비판하거나 논하는 장르 일반적 담론임. 후보 작품의 제목 조각이나 고유 설정이 본문에 명시되지 않았으며, 검색 결과와의 유사성은 단순한 장르적 소재의 중첩에 불과함.",
+            "final_reasoning": "[거부권] 게시글 제목: '요즘나오면 욕먹는전개', 본문: '이세계 귀환했더니 가족들이 사채써서 조폭찾아가는거 명절에 친척들 나와서 꼽주다가 정체 밝히고 깨갱하는거 동창회나가서 학창시절첫사랑꼬시기 또 뭐있냐'\nDecoder: '이세계 귀환'을(를) '문제 1. 철수가 이세계에서 귀환했다 [개정판]'(medium)로 식별 | Verifier: 비관련 판정 — 게시글의 내용은 특정 작품을 지칭하는 것이 아니라, '이세계 귀환', '가족의 사채/조폭 문제', '명절 친척 갈등', '동창회' 등 웹소설에서 흔히 사용되는 전형적인 클리셰(트로프)들을 나열하며 최근 유행하는 전개 양상을 비판하거나 논하는 장르 일반적 담론임. 후보 작품의 제목 조각이나 고유 설정이 본문에 명시되지 않았으며, 검색 결과와의 유사성은 단순한 장르적 소재의 중첩에 불과함. | 핵심 반론: 키워드 우연 일치 (Keyword Coincidence); relation_judge:genre_or_trope_label | Discourse 경고: genre_discussion(snippet_analyzer)\n검색 증강 분석: 검색 쿼리 4건 수행('요즘나오면욕먹는전개', '요즘나오면 웹소설', '이세계 귀환 줄임 웹소설 정식 제목', '요즘나오면 줄임 웹소설 정식 제목'). 스니펫 분석기 판정: '장르 일반론' — 제목과 본문이 특정 작품의 고유 명사가 아닌, 웹소설에서 흔히 쓰이는 클리셰(이세계 귀환, 사채, 조폭, 동창회 등)를 나열하며 일반적인 전개 양상을 비판하고 있음, 카테고리: genre_discussion. 소설플랫폼 결과 2건(E004 namu.wiki: '웹소설/시장 - 나무위키'; E014 series.naver.com: '문제 1. 철수가 이세계에서 귀환했다 [개정판]'). 커뮤니티 결과 4건(E001 fmkorea.com: '요즘 덕후들이 정신 못차리는 건담 여주인공 - 유머/움짤/이슈'; E002 bbs.ruliweb.com: '요즘 웹소설 웹툰의 고질병'; E003 gall.dcinside.com: '분명 좋은 소재거나 전개인데 요즘 나오면 욕먹는게 많지요 - 장르소설 마이너 ....'; E019 arca.live: '(공모전) 이세계에 디즈니를 만들고 싶은 용사의 이야기는 어떠세요 - 웹소설 ....') — 소설 공식 출처 아님. '문제 1. 철수가 이세계에서 귀환했다 [개정판]' 증거: 본문증거유형: plot_mention (미검증).\n판단: 본문에 작품 고유 정보(캐릭터명/줄거리/작가/회차) 없음. 장르/트로프 일반론으로 판별됨. 검색에서 '문제 1. 철수가 이세계에서 귀환했다 [개정판]'을(를) 찾았으나 본문에 해당 작품의 고유 정보가 없어 매칭 불가.\n이 글은 장르/트로프에 대한 일반 토론이며, 특정 소설에 대한 글이 아니다.",
+            "_hypothesis_top": "noise",
+            "_hypothesis_margin": 0.036,
+            "_title_null_block_reasons": [
+              "memory_query_forced_upgrade_guard"
+            ],
+            "_title_deliberately_null": true
+          },
+          "expert_consensus": {
+            "unanimous": false,
+            "agreeing_experts": [
+              "Gatekeeper",
+              "Verifier"
+            ],
+            "dissenting_experts": [
+              "Decoder"
+            ]
+          },
+          "conflict_resolution": [
+            {
+              "issue": "작품 식별 여부 (Decoder의 검색 매칭 vs Verifier의 맥락 검증)",
+              "expert_opinions": {
+                "gatekeeper": "genre_discussion (장르 토론)",
+                "decoder": "title=None (식별 실패/중립)",
+                "verifier": "is_relevant=false (거부권 발동)"
+              },
+              "arbiter_decision": "is_relevant=false (장르/트로프 토론 채택)",
+              "reasoning": "Decoder가 '이세계 귀환'이라는 키워드를 통해 특정 작품을 후보로 올렸으나, Verifier가 본문의 어휘 클러스터(사채, 조폭, 동창회, 첫사랑 등)가 특정 작품의 고유 설정이 아닌 웹소설의 전형적인 클리셰(Trope)임을 정확히 짚어냈습니다. 따라서 검색 결과와의 우연한 일치를 배제하고 장르 일반론으로 판정합니다."
+            }
+          ],
+          "metadata_synthesis": {
+            "detected_author": null,
+            "detected_characters": [],
+            "micro_tags": [
+              "클리셰",
+              "이세계귀환",
+              "사이다전개",
+              "웹소설트렌드"
+            ],
+            "sentiment": "Neutral",
+            "is_nsfw": true,
+            "spoiler_level": "none"
+          },
+          "final_reasoning": "[거부권] 게시글 제목: '요즘나오면 욕먹는전개', 본문: '이세계 귀환했더니 가족들이 사채써서 조폭찾아가는거 명절에 친척들 나와서 꼽주다가 정체 밝히고 깨갱하는거 동창회나가서 학창시절첫사랑꼬시기 또 뭐있냐'\nDecoder: '이세계 귀환'을(를) '문제 1. 철수가 이세계에서 귀환했다 [개정판]'(medium)로 식별 | Verifier: 비관련 판정 — 게시글의 내용은 특정 작품을 지칭하는 것이 아니라, '이세계 귀환', '가족의 사채/조폭 문제', '명절 친척 갈등', '동창회' 등 웹소설에서 흔히 사용되는 전형적인 클리셰(트로프)들을 나열하며 최근 유행하는 전개 양상을 비판하거나 논하는 장르 일반적 담론임. 후보 작품의 제목 조각이나 고유 설정이 본문에 명시되지 않았으며, 검색 결과와의 유사성은 단순한 장르적 소재의 중첩에 불과함. | 핵심 반론: 키워드 우연 일치 (Keyword Coincidence); relation_judge:genre_or_trope_label | Discourse 경고: genre_discussion(snippet_analyzer)\n검색 증강 분석: 검색 쿼리 4건 수행('요즘나오면욕먹는전개', '요즘나오면 웹소설', '이세계 귀환 줄임 웹소설 정식 제목', '요즘나오면 줄임 웹소설 정식 제목'). 스니펫 분석기 판정: '장르 일반론' — 제목과 본문이 특정 작품의 고유 명사가 아닌, 웹소설에서 흔히 쓰이는 클리셰(이세계 귀환, 사채, 조폭, 동창회 등)를 나열하며 일반적인 전개 양상을 비판하고 있음, 카테고리: genre_discussion. 소설플랫폼 결과 2건(E004 namu.wiki: '웹소설/시장 - 나무위키'; E014 series.naver.com: '문제 1. 철수가 이세계에서 귀환했다 [개정판]'). 커뮤니티 결과 4건(E001 fmkorea.com: '요즘 덕후들이 정신 못차리는 건담 여주인공 - 유머/움짤/이슈'; E002 bbs.ruliweb.com: '요즘 웹소설 웹툰의 고질병'; E003 gall.dcinside.com: '분명 좋은 소재거나 전개인데 요즘 나오면 욕먹는게 많지요 - 장르소설 마이너 ....'; E019 arca.live: '(공모전) 이세계에 디즈니를 만들고 싶은 용사의 이야기는 어떠세요 - 웹소설 ....') — 소설 공식 출처 아님. '문제 1. 철수가 이세계에서 귀환했다 [개정판]' 증거: 본문증거유형: plot_mention (미검증).\n판단: 본문에 작품 고유 정보(캐릭터명/줄거리/작가/회차) 없음. 장르/트로프 일반론으로 판별됨. 검색에서 '문제 1. 철수가 이세계에서 귀환했다 [개정판]'을(를) 찾았으나 본문에 해당 작품의 고유 정보가 없어 매칭 불가.\n이 글은 장르/트로프에 대한 일반 토론이며, 특정 소설에 대한 글이 아니다.",
+          "evidence_chain": [
+            {
+              "source": "Body Text",
+              "content": "이세계 귀환했더니 가족들이 사채써서 조폭찾아가는거 / 명절에 친척들 나와서 꼽주다가 정체 밝히고 깨갱하는거...",
+              "weight": "high"
+            },
+            {
+              "source": "Search Result E003",
+              "content": "분명 좋은 소재거나 전개인데 요즘 나오면 욕먹는게 많지요 - 장르소설 마이너 갤러리",
+              "weight": "medium"
+            }
+          ],
+          "_deliberation": {
+            "method": "evidence_scorer_only",
+            "evidence_score": {
+              "total_score": -1.5,
+              "relevance_probability": "very_low",
+              "positive_signals": [
+                {
+                  "signal": "discourse_novel",
+                  "detail": "novel_literature"
+                },
+                {
+                  "signal": "decoder_medium",
+                  "detail": "title=None"
+                },
+                {
+                  "signal": "verifier_anchor",
+                  "detail": "anchor found"
+                }
+              ],
+              "negative_signals": [
+                {
+                  "signal": "verifier_irrelevant",
+                  "detail": "conf="
+                },
+                {
+                  "signal": "verifier_critical_counter",
+                  "detail": "키워드 우연 일치 (Keyword Coincidence); relation_judge:genre_or_trope_label"
+                },
+                {
+                  "signal": "decoder_genre_collision",
+                  "detail": "'이세계 귀환' = novel_title + genre_term 동시 등장"
+                }
+              ],
+              "expert_agreement": 0.67,
+              "conflict_detected": true,
+              "conflict_details": [
+                "Verifier critical counter: 키워드 우연 일치 (Keyword Coincidence); relation_judge:genre_or_trope_label",
+                "Decoder genre collision: '이세계 귀환' 은 장르용어이자 동명 소설이 존재"
+              ],
+              "recommendation": "UNLIKELY_RELEVANT: 관련성 증거가 매우 약하거나 반증이 강합니다."
+            },
+            "conflict_detected": false,
+            "elapsed": 34.9
+          }
+        }
+      },
+      "expert_origins": {
+        "gatekeeper": {
+          "log": "logs/expert_run_20261010_210300_688879.log",
+          "line1": 97362,
+          "canonical_sha256": "4c5ece1f88c8f810dfaa41b3206006cf0735406a9ef7875cf0b39587f3eaa391"
+        },
+        "discourse": {
+          "log": "logs/expert_run_20261010_210300_688879.log",
+          "line1": 97290,
+          "canonical_sha256": "5e799c277fc568d59b43cc9ed18e8254ec5b3da47bee88ed6fb96deeb397e1f0"
+        },
+        "decoder": {
+          "log": "logs/expert_run_20261010_210300_688879.log",
+          "line1": 98337,
+          "canonical_sha256": "ff7dfe6884f19afc20eb9b12186841aa064bfd81a018dd010bf25e9a849c1970"
+        },
+        "verifier": {
+          "log": "logs/expert_run_20261010_210300_688879.log",
+          "line1": 98851,
+          "canonical_sha256": "5d1dac3afde2c43c9f0b5dbbb0d6b7374650a419d38a9f692b58d1865744a9b0"
+        },
+        "synthesizer": {
+          "log": "logs/expert_run_20261010_210300_688879.log",
+          "line1": 99089,
+          "canonical_sha256": "822d04546a57278b3e61b6a09cb180ad67e6a8d12005917dabff7af7ed056603"
+        },
+        "arbiter": {
+          "log": "logs/expert_run_20261010_210300_688879.log",
+          "line1": 99264,
+          "canonical_sha256": "8d7143937a3a8c61f20062f6bdddf86b30d7c7c6e12b61814ed9f2e6642a367c"
+        }
+      }
+    }
+  },
+  "source_refs": {
+    "out\\development_plan_20261010\\p4_reapproval_v1\\final80_parallel12_v1\\progress_review_v14\\review_packets.jsonl": {
+      "sha256": "72fe1429ecaab8f6768a0a8b22a0e3802eeb17d812dedb4664192a21905779eb",
+      "bytes": 6322295
+    },
+    "logs/expert_run_20261012_145104_574531_W10.log": {
+      "sha256": "d9177d245cd267856329720368fbe555679f01460ed9e995558ce8834e86b977",
+      "bytes": 801512
+    },
+    "logs/expert_run_20261010_210300_688879.log": {
+      "sha256": "4baadac425a878c4ab8d6210c8338f40b4781774899c6a4d6ee44a1e6879a953",
+      "bytes": 10329711
+    }
+  }
+}

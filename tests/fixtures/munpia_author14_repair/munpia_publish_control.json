@@ -1,0 +1,2527 @@
+{
+  "packet": {
+    "checkpoint_result": {
+      "analysis_result": {
+        "analysis": {
+          "detected_titles": [
+            {
+              "alias_or_mention": "빌환",
+              "confidence": "High",
+              "content_status": "active",
+              "heretic_url": "https://www.munpia.com/novel/detail/222360",
+              "locked": true,
+              "negative_evidence": null,
+              "official_title": "빌어먹을 환생",
+              "page_type": "novel_page",
+              "reference_role": "primary",
+              "resolved_recall_anchor": null,
+              "source_tier": "official_detail"
+            }
+          ],
+          "is_nsfw": false,
+          "micro_tags": [
+            "표지변경",
+            "캐릭터"
+          ],
+          "notes": "[작성자 발화·원문 귀속]\n- 작성자 발화: 「빌환 표지변경됨」\n- 작성자 발화: 「시엘이랑 세냐 빼고 아니스티나랑 매르만 있어도 된다는 말은 ㄴㄴ」\n[원문] 빌환 표지변경됨 / 시엘이랑 세냐 빼고 아니스티나랑 매르만 있어도 된다는 말은 ㄴㄴ\n[이미지 OCR 진단·비권한 인용]「빌어먹을 환생」(원시 판독·문맥 귀속 미검증)",
+          "nsfw_assessment_status": "MODEL_REPORTED",
+          "sentiment_profile": {
+            "drift_risk": "Unknown",
+            "pacing": "Unknown",
+            "sentiment": "Neutral"
+          },
+          "user_segment": null
+        },
+        "batch_context_learning_envelope": {
+          "decoded_terms": [
+            {
+              "is_author_name": false,
+              "original": "표지변경"
+            },
+            {
+              "best_match": {
+                "title": "빌어먹을 환생"
+              },
+              "is_author_name": false,
+              "original": "시엘"
+            },
+            {
+              "best_match": {
+                "title": "빌어먹을 환생"
+              },
+              "is_author_name": false,
+              "original": "세냐"
+            },
+            {
+              "best_match": {
+                "title": "빌어먹을 환생"
+              },
+              "is_author_name": false,
+              "original": "아니스티나"
+            },
+            {
+              "best_match": {
+                "title": "빌어먹을 환생"
+              },
+              "is_author_name": false,
+              "original": "매르"
+            }
+          ],
+          "identified_author": null,
+          "identified_characters": [],
+          "schema_version": "batch_context_learning_envelope_v1"
+        },
+        "identity": {
+          "anchor_strength": "high",
+          "anchor_type": "image",
+          "candidate_audit_lint": [],
+          "candidate_generation_miss": false,
+          "candidate_ledger": {
+            "candidate_audit_lint_reasons": [],
+            "candidate_generation": {
+              "cap": 24,
+              "count_basis": "normalized_title_url_role_unique",
+              "emitted_source_count": 1,
+              "metadata_fingerprint": "1e1b163c01e7b12598f45d041e0fae4c3e2d6d567791e7a779f93cdc50f227e2",
+              "observed_sources_fingerprint": "2fe684d548a2522fb24c6823426c31e8c3bc4e10276805b0fb85a3533bee4189",
+              "reason_codes": [
+                "upstream_completeness_unknown"
+              ],
+              "retained_sources_fingerprint": "2fe684d548a2522fb24c6823426c31e8c3bc4e10276805b0fb85a3533bee4189",
+              "schema_version": "candidate_generation_v1",
+              "scope": "serializer_preservation_inventory",
+              "source_key_fingerprint": "6deae45fb8dc00ea89fbcae8c7053e67c40344035548459a679777977a2ec5ca",
+              "status": "UNKNOWN",
+              "unique_valid_source_count": 1,
+              "upstream_completeness": "UNKNOWN"
+            },
+            "candidate_generation_proof": {
+              "complete_receipt_count": 1,
+              "extra_receipt_count": 0,
+              "local_snapshot_count": 2,
+              "local_truncated_count": 0,
+              "metadata_fingerprint": "7e5cb5a1193e847cdb44444ff2ac0b692bef84d6bb70d9bfdd6379e35213d169",
+              "missing_receipt_count": 2,
+              "observed_producers": [
+                "fetch",
+                "search"
+              ],
+              "plan_count": 6,
+              "plan_set_fingerprint": "9ea754e80c0015344537b12ed555f5c61668b7703e4bf2cf945377d318558fcc",
+              "planned_operation_count": 10,
+              "reason_codes": [
+                "bounded_plan_unfinished",
+                "bounded_producer_proof_truncated",
+                "planned_operation_receipt_missing",
+                "producer_receipt_truncated",
+                "producer_receipt_unknown"
+              ],
+              "receipt_count": 8,
+              "receipt_set_fingerprint": "dd6e4dd48f930964bf0cddc63bb4b50e13e117cff905e1ac8903cc6b26be40b2",
+              "required_producers": [
+                "fetch",
+                "search"
+              ],
+              "schema_version": "candidate_generation_proof_v1",
+              "scope": "bounded_candidate_generation_proof",
+              "status": "TRUNCATED",
+              "truncated_receipt_count": 4,
+              "unfinished_plan_count": 4,
+              "unknown_receipt_count": 3,
+              "upstream_completeness": "UNKNOWN"
+            },
+            "candidate_ledger_status": "safe_resolved",
+            "candidate_producer_plans": [
+              {
+                "enumeration_finished": false,
+                "metadata_fingerprint": "0a6014ab8d882cdbb3b8572c200f02e584deb1ab0333de93c2595bb210d06fd4",
+                "occurrence": 1,
+                "plan_fingerprint": "6b3ab38b38ae2fe942c28ca2cb6c7fac530f2da113f13ef5b9a9661264f6cb36",
+                "planned_operation_count": 2,
+                "planned_operation_fingerprints": [
+                  "7b82faf5813c33d3ab19305ddcf91d9f3ced064aaf8c3241608a21a458ea446b",
+                  "200eb9ce964c350308e9376969af7caadc6a2318ae881eea1916c9788c7a3c17"
+                ],
+                "producer": "search",
+                "reason_codes": [
+                  "bounded_plan_unfinished"
+                ],
+                "schema_version": "candidate_producer_plan_v1",
+                "scope": "bounded_candidate_producer_plan"
+              },
+              {
+                "enumeration_finished": false,
+                "metadata_fingerprint": "9be1d1080777df60fa3eb2ec610c57283a82a7a0dc721b4da49371d074465350",
+                "occurrence": 2,
+                "plan_fingerprint": "9e8c5f9d5ebdb2551d6bb5f20e8b63d641b082f4c3854b7a0ae035287e2509bb",
+                "planned_operation_count": 4,
+                "planned_operation_fingerprints": [
+                  "580b07c1da2c86d439200f2a063d289d8e766ab5d9e3d7aaacf8b09a21eca47d",
+                  "c0fb45949ec9e935c749f58dd5f0669ed6d3f40a18faeda8068700bb8e1c00c7",
+                  "85fb949e9f287761cdd7409f3c2df3047301379ab00dcce1fe79aaa392116ecd",
+                  "d2628a85b8fc55b97fa97f03dac131ce1f967237956eb50d7f6a7937cf227f67"
+                ],
+                "producer": "search",
+                "reason_codes": [
+                  "bounded_plan_unfinished"
+                ],
+                "schema_version": "candidate_producer_plan_v1",
+                "scope": "bounded_candidate_producer_plan"
+              },
+              {
+                "enumeration_finished": true,
+                "metadata_fingerprint": "3d60ba9ee987d9c14fb0ae6729d1974dc4441a3d01ef5621bfb195363beaa069",
+                "occurrence": 1,
+                "plan_fingerprint": "3abc1933bbb11555491115414b52aeddd5c487ffaf0ed9cdb6b43c6eb7687216",
+                "planned_operation_count": 1,
+                "planned_operation_fingerprints": [
+                  "dcbc584236845c3a796f02041a165bb361bf6e01ea306c7c99594818dd0e1f1b"
+                ],
+                "producer": "fetch",
+                "reason_codes": [
+                  "bounded_plan_finished"
+                ],
+                "schema_version": "candidate_producer_plan_v1",
+                "scope": "bounded_candidate_producer_plan"
+              },
+              {
+                "enumeration_finished": true,
+                "metadata_fingerprint": "553844e063b3d7c975f627c473bf529a8d1e8fd54ebd26a159d83c487ab9776e",
+                "occurrence": 2,
+                "plan_fingerprint": "b1b6e1b17ee644fda7762945abc000e3542b8b572fdac4ffeaac1c2d803285c9",
+                "planned_operation_count": 1,
+                "planned_operation_fingerprints": [
+                  "859ed93bf6d517db71b2ff53271147c50db43af8476dfe0943f64828d77bb2a3"
+                ],
+                "producer": "fetch",
+                "reason_codes": [
+                  "bounded_plan_finished"
+                ],
+                "schema_version": "candidate_producer_plan_v1",
+                "scope": "bounded_candidate_producer_plan"
+              },
+              {
+                "enumeration_finished": false,
+                "metadata_fingerprint": "91bfec4238822701c1b555a69acf899ab440852e0082dd2e30efaf9ffc9a94ee",
+                "occurrence": 3,
+                "plan_fingerprint": "eff63d93ae38580386d9610fa97c5f46423910f3e4a7fe689b3463c4e6a8b01c",
+                "planned_operation_count": 1,
+                "planned_operation_fingerprints": [
+                  "572e54adf6255c53338d1bbf28d6d9a4c76966c22c9b3cb7a28375d7d91045d5"
+                ],
+                "producer": "fetch",
+                "reason_codes": [
+                  "bounded_plan_unfinished"
+                ],
+                "schema_version": "candidate_producer_plan_v1",
+                "scope": "bounded_candidate_producer_plan"
+              },
+              {
+                "enumeration_finished": false,
+                "metadata_fingerprint": "455db9332b4424ed9bf7ccbfa0e33193ef89b93f2c555e4ec326adea97ae45be",
+                "occurrence": 4,
+                "plan_fingerprint": "7faf292cf66996b6797a947301090cc31dd0d59bed481143085ebb2cbdaaeb05",
+                "planned_operation_count": 1,
+                "planned_operation_fingerprints": [
+                  "5e875782fd4afbb1fcd35a901145d18f7df701428220b5ae8c2a52108588589b"
+                ],
+                "producer": "fetch",
+                "reason_codes": [
+                  "bounded_plan_unfinished"
+                ],
+                "schema_version": "candidate_producer_plan_v1",
+                "scope": "bounded_candidate_producer_plan"
+              }
+            ],
+            "candidate_producer_receipts": [
+              {
+                "accepted_count": 10,
+                "attempted_count": 1,
+                "degraded": false,
+                "enumeration_finished": true,
+                "error_status": "NONE",
+                "from_cache": false,
+                "input_fingerprint": "7b82faf5813c33d3ab19305ddcf91d9f3ced064aaf8c3241608a21a458ea446b",
+                "metadata_fingerprint": "ffb71d220ce3b1cdcae3facdc7f8ae5b6b02c5acad33f2e96d2a886046ce2558",
+                "occurrence": 1,
+                "operation_id": "417be5ecfbe2acc5b189f00816876d73954e09bb87c67d471fa767f5f1bb436e",
+                "output_fingerprint": "560e700a3b17e22cf0b24cccc08a9987e2a06c503e5c6921162b9c95e0fae481",
+                "plan_fingerprint": "6b3ab38b38ae2fe942c28ca2cb6c7fac530f2da113f13ef5b9a9661264f6cb36",
+                "possible_throttle": false,
+                "producer": "search",
+                "raw_count": 25,
+                "reason_codes": [
+                  "bounded_operation_finished",
+                  "producer_output_truncated"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "TRUNCATED"
+              },
+              {
+                "accepted_count": 10,
+                "attempted_count": 1,
+                "degraded": false,
+                "enumeration_finished": true,
+                "error_status": "NONE",
+                "from_cache": false,
+                "input_fingerprint": "200eb9ce964c350308e9376969af7caadc6a2318ae881eea1916c9788c7a3c17",
+                "metadata_fingerprint": "55c6f3da6001bdebf642ea0ba14ce0f9dd2b6818bd9a104d8b99004589f60640",
+                "occurrence": 2,
+                "operation_id": "be1f7218f8d17232380424b55eef3c8a0241f3c97b95c1948308f5371abeb40c",
+                "output_fingerprint": "7e71e10fb09c15966ab9a8acd262326883a7fece7d929b7192eaed6073d392af",
+                "plan_fingerprint": "6b3ab38b38ae2fe942c28ca2cb6c7fac530f2da113f13ef5b9a9661264f6cb36",
+                "possible_throttle": false,
+                "producer": "search",
+                "raw_count": 25,
+                "reason_codes": [
+                  "bounded_operation_finished",
+                  "producer_output_truncated"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "TRUNCATED"
+              },
+              {
+                "accepted_count": 10,
+                "attempted_count": 1,
+                "degraded": false,
+                "enumeration_finished": true,
+                "error_status": "NONE",
+                "from_cache": false,
+                "input_fingerprint": "580b07c1da2c86d439200f2a063d289d8e766ab5d9e3d7aaacf8b09a21eca47d",
+                "metadata_fingerprint": "4b0f4d03c4d74e4a10d488a860c231db11e7db66410d79ba2d87d6d195f2240d",
+                "occurrence": 3,
+                "operation_id": "e90940840c8a0efb26f9157af1999f50ab61de4b33524cc7d16ff4fbb5ee183f",
+                "output_fingerprint": "80f6986aadbe57d7e09aa484ee7a6461d2bc171d4550ec82d59bb334b465d81e",
+                "plan_fingerprint": "9e8c5f9d5ebdb2551d6bb5f20e8b63d641b082f4c3854b7a0ae035287e2509bb",
+                "possible_throttle": false,
+                "producer": "search",
+                "raw_count": 25,
+                "reason_codes": [
+                  "bounded_operation_finished",
+                  "producer_output_truncated"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "TRUNCATED"
+              },
+              {
+                "accepted_count": 10,
+                "attempted_count": 1,
+                "degraded": false,
+                "enumeration_finished": true,
+                "error_status": "NONE",
+                "from_cache": false,
+                "input_fingerprint": "c0fb45949ec9e935c749f58dd5f0669ed6d3f40a18faeda8068700bb8e1c00c7",
+                "metadata_fingerprint": "d5074e54dae6b21f18e05583c8b8e798118c0651508919e8b07e01695934e87d",
+                "occurrence": 4,
+                "operation_id": "be953da3e61e7a88aa152960bfb18d4a161e4d5250e74862417f672e23b0bb1a",
+                "output_fingerprint": "18c1cfba6ada1b4d1c6150ba49ab1099a53a29bb11972f7e2d5203c4498deabd",
+                "plan_fingerprint": "9e8c5f9d5ebdb2551d6bb5f20e8b63d641b082f4c3854b7a0ae035287e2509bb",
+                "possible_throttle": false,
+                "producer": "search",
+                "raw_count": 25,
+                "reason_codes": [
+                  "bounded_operation_finished",
+                  "producer_output_truncated"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "TRUNCATED"
+              },
+              {
+                "accepted_count": 1,
+                "attempted_count": 0,
+                "degraded": false,
+                "enumeration_finished": false,
+                "error_status": "MISSING_META",
+                "from_cache": true,
+                "input_fingerprint": "dcbc584236845c3a796f02041a165bb361bf6e01ea306c7c99594818dd0e1f1b",
+                "metadata_fingerprint": "0abbcb29106d1db7f7572051ff6bbced4ef6c97917c04f75f7d7ab545afa27ef",
+                "occurrence": 5,
+                "operation_id": "106319520824483cbfe0aef058ea4e998393f423b4b5587ea5d88c75a03750de",
+                "output_fingerprint": "8e5fa1a5dc2e3ba223b23cb37f75aeb9d6ec41df18ade48d3aad2af9a3f4e001",
+                "plan_fingerprint": "3abc1933bbb11555491115414b52aeddd5c487ffaf0ed9cdb6b43c6eb7687216",
+                "possible_throttle": false,
+                "producer": "fetch",
+                "raw_count": 1,
+                "reason_codes": [
+                  "bounded_operation_unfinished",
+                  "cache_origin_proof_missing",
+                  "cache_replay",
+                  "producer_meta_missing"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "UNKNOWN"
+              },
+              {
+                "accepted_count": 1,
+                "attempted_count": 1,
+                "degraded": false,
+                "enumeration_finished": true,
+                "error_status": "NONE",
+                "from_cache": true,
+                "input_fingerprint": "859ed93bf6d517db71b2ff53271147c50db43af8476dfe0943f64828d77bb2a3",
+                "metadata_fingerprint": "76fc1907617feb179c6db0a12d8145810c3eaf34c0a3548fb1140fc4eaf4ce05",
+                "occurrence": 6,
+                "operation_id": "03581658f422632632a9d9b4032aed5c12c6e762e33f81456a456582bdf96f16",
+                "output_fingerprint": "d22ec348a151950a998d92553a3eacc640115836af71de487aa3602ffa57a559",
+                "plan_fingerprint": "b1b6e1b17ee644fda7762945abc000e3542b8b572fdac4ffeaac1c2d803285c9",
+                "possible_throttle": false,
+                "producer": "fetch",
+                "raw_count": 1,
+                "reason_codes": [
+                  "bounded_operation_finished",
+                  "cache_origin_proof_missing",
+                  "cache_replay"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "UNKNOWN"
+              },
+              {
+                "accepted_count": 1,
+                "attempted_count": 1,
+                "degraded": false,
+                "enumeration_finished": true,
+                "error_status": "NONE",
+                "from_cache": false,
+                "input_fingerprint": "572e54adf6255c53338d1bbf28d6d9a4c76966c22c9b3cb7a28375d7d91045d5",
+                "metadata_fingerprint": "6e05965feb2a9da963783ca6b2f30ac93fb3afc887e0c82672fcf9e8ee368fd2",
+                "occurrence": 7,
+                "operation_id": "2a567f61d51bb2de0c62da55ac5ad59b562c576079953b8c5896c5dcff2b5792",
+                "output_fingerprint": "1625b3e7df9d7b714399784def04435478c4cbe3c1c3c143c4e9e18ce6769cc0",
+                "plan_fingerprint": "eff63d93ae38580386d9610fa97c5f46423910f3e4a7fe689b3463c4e6a8b01c",
+                "possible_throttle": false,
+                "producer": "fetch",
+                "raw_count": 1,
+                "reason_codes": [
+                  "bounded_operation_finished"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "COMPLETE"
+              },
+              {
+                "accepted_count": 1,
+                "attempted_count": 1,
+                "degraded": false,
+                "enumeration_finished": true,
+                "error_status": "NONE",
+                "from_cache": true,
+                "input_fingerprint": "5e875782fd4afbb1fcd35a901145d18f7df701428220b5ae8c2a52108588589b",
+                "metadata_fingerprint": "089937239e4dd54bdfda9614110618a912539b499a3e73a5265766d710dfd886",
+                "occurrence": 8,
+                "operation_id": "c5fd343a9644a2bd2eb828f794a70214eb843170be529311b0f4783b06da0693",
+                "output_fingerprint": "905b6a546cd42c55b96cacaad66408a9643f326b168f05b3d16eca84271c12cf",
+                "plan_fingerprint": "7faf292cf66996b6797a947301090cc31dd0d59bed481143085ebb2cbdaaeb05",
+                "possible_throttle": false,
+                "producer": "fetch",
+                "raw_count": 1,
+                "reason_codes": [
+                  "bounded_operation_finished",
+                  "cache_origin_proof_missing",
+                  "cache_replay"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "UNKNOWN"
+              }
+            ],
+            "candidate_set_shadow": {
+              "action": "NOT_EVALUATED",
+              "action_applied": false,
+              "baseline_decision_fingerprint": "422d3368469ae66909ece8410867cd55d973d693a1a1e76c13f35d51b6b21ce0",
+              "baseline_selected_candidate_id": "cand_145d164b4ec7a3249c88ec6260a01950aedf5d12cf776c2211cadf096247cb74",
+              "candidate_set": {
+                "candidate_inventory_count_hint": 0,
+                "candidate_set_fingerprint": "f55f3b3aab13fc0614c96a309416d61705812174136aa745e211f59d4b15897d",
+                "candidate_set_recall_status": "NOT_EVALUABLE_GENERATION_UNKNOWN",
+                "candidates": [
+                  {
+                    "aliases": [
+                      "빌환"
+                    ],
+                    "baseline_selected": true,
+                    "candidate_id": "cand_145d164b4ec7a3249c88ec6260a01950aedf5d12cf776c2211cadf096247cb74",
+                    "event_eligible": true,
+                    "evidence_kinds": [
+                      "direct_image_work_surface",
+                      "ocr_catalog_official_title",
+                      "official_detail_display_title_exact",
+                      "official_detail_url"
+                    ],
+                    "identity_conflict": false,
+                    "local_preservation_types": [],
+                    "negative_evidence": [],
+                    "option_kind": "WORK_CANDIDATE",
+                    "preservation_roles": [
+                      "title_candidate"
+                    ],
+                    "promotion_policies": [],
+                    "publish_support_present": true,
+                    "reason_codes": [
+                      "direct_image_work_surface_bridge",
+                      "ocr_catalog_official_title",
+                      "official_detail_display_title_exact",
+                      "official_detail_url"
+                    ],
+                    "reference_roles": [
+                      "primary"
+                    ],
+                    "source_fields": [
+                      "candidate_preservation_sources",
+                      "primary_work",
+                      "promotion_gate_evidence",
+                      "promotion_gate_state",
+                      "title_candidates"
+                    ],
+                    "source_tiers": [
+                      "official_detail"
+                    ],
+                    "titles": [
+                      "빌어먹을 환생"
+                    ],
+                    "urls": [
+                      "https://www.munpia.com/novel/detail/222360"
+                    ]
+                  }
+                ],
+                "event_candidate_count": 1,
+                "generation_cap": 6,
+                "generation_status": "UNKNOWN",
+                "integrity_status": "GO",
+                "nil_label": "__NIL__",
+                "observation_fingerprint": "89dbc45bfb7efd63dd32ba36d9427bfdb3d353a29ff40d3ee23f647c3afa8ea4",
+                "observation_signatures": [
+                  "165a0e2a4a5938707a7e981a793eaadb19e6f1d58804b8f1e6fbac86adf91505",
+                  "50a1e71925b4312f195b4cd6b17eb5f677d329b354b33efc9a84d7178e6e6494",
+                  "5de054844e5a913f2c9047f8b939c4783ef31d191aad540351bd2af17da62db1",
+                  "5f087ba1884c97e20b8a3bd66ec40d612f3c31576b1abef5429d5b8bde21a7fd",
+                  "909454bf8b78881ddbecb67d1df74d01fbbf4f79b033cd1bb7c266d2ab2d1822",
+                  "9ea75ee75ff2bb4741095b156dd8e1ba4d7228593833a8cb2172e0a243c6eed6",
+                  "c435bcf39081b3828595a660fb47668c9fddf1f3ed2160bf4b0c70d47607b239",
+                  "e286f01501fd6b2721c9a85206d3ebef32ca86a421c9e31683c1b05485541e6e"
+                ],
+                "observed_late_surface_count": 0,
+                "reason_codes": [
+                  "candidate_generation_completeness_unknown"
+                ],
+                "schema_version": "candidate_set_v1",
+                "source_candidate_pair_count": 2,
+                "source_record_count": 8,
+                "typed_inventory_pair_count": 0,
+                "unlinked_surface_count": 0,
+                "work_candidate_count": 1
+              },
+              "event_probabilities": [
+                {
+                  "label": "cand_145d164b4ec7a3249c88ec6260a01950aedf5d12cf776c2211cadf096247cb74",
+                  "probability": null
+                },
+                {
+                  "label": "__NIL__",
+                  "probability": null
+                }
+              ],
+              "input_fingerprint": "216ab8095c6d8ca401a587bbf0b7dae9ad562fa31ce111984dd59c6b398186e6",
+              "operational_effect": "NONE_SHADOW_ONLY",
+              "probability_status": "NOT_AVAILABLE_UNCALIBRATED",
+              "reason_codes": [
+                "candidate_generation_completeness_unknown",
+                "probability_uncalibrated",
+                "shadow_action_not_applied"
+              ],
+              "schema_version": "candidate_set_nil_shadow_v1",
+              "selected_label": null,
+              "shadow_fingerprint": "351fb62e8757d27340211691b0d6149a15ccc09b556e288aa5d38400911878e5"
+            },
+            "candidate_stage_receipts": [
+              {
+                "cap": 8,
+                "count_basis": "normalized_title_unique_before_stage_row_cap",
+                "emitted_source_count": 0,
+                "metadata_fingerprint": "f5c394deb0bb3928ce962797c67546210e78cb98de3c342b534ccc7da00e0953",
+                "observed_source_count": 0,
+                "observed_sources_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+                "occurrence": 1,
+                "producer": "gatekeeper",
+                "reason_codes": [
+                  "upstream_completeness_unknown"
+                ],
+                "retained_source_count": 0,
+                "retained_sources_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+                "schema_version": "candidate_stage_receipt_v1",
+                "scope": "expert_stage_candidate_inventory",
+                "source_key_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+                "stage": "comment_title_candidates",
+                "status": "UNKNOWN",
+                "unique_valid_source_count": 0,
+                "upstream_completeness": "UNKNOWN"
+              },
+              {
+                "cap": 5,
+                "count_basis": "normalized_title_unique_before_stage_row_cap",
+                "emitted_source_count": 1,
+                "metadata_fingerprint": "f2b98627ea64790144cc6ce6c890cdfa0f7713d3938c9ba1fbb628ae76040274",
+                "observed_source_count": 1,
+                "observed_sources_fingerprint": "0e0645bf4672167cef2558d62a0dda28a8af6d55ba810c66f704e84660dbf173",
+                "occurrence": 1,
+                "producer": "decoder",
+                "reason_codes": [
+                  "upstream_completeness_unknown"
+                ],
+                "retained_source_count": 1,
+                "retained_sources_fingerprint": "0e0645bf4672167cef2558d62a0dda28a8af6d55ba810c66f704e84660dbf173",
+                "schema_version": "candidate_stage_receipt_v1",
+                "scope": "expert_stage_candidate_inventory",
+                "source_key_fingerprint": "0e0645bf4672167cef2558d62a0dda28a8af6d55ba810c66f704e84660dbf173",
+                "stage": "new_suspected_titles",
+                "status": "UNKNOWN",
+                "unique_valid_source_count": 1,
+                "upstream_completeness": "UNKNOWN"
+              },
+              {
+                "cap": 5,
+                "count_basis": "normalized_title_unique_before_stage_row_cap",
+                "emitted_source_count": 1,
+                "metadata_fingerprint": "15a137535fd6f3195f56709a3f1a48321a3e80912790d1ceefd7ab9952225f43",
+                "observed_source_count": 1,
+                "observed_sources_fingerprint": "0e0645bf4672167cef2558d62a0dda28a8af6d55ba810c66f704e84660dbf173",
+                "occurrence": 1,
+                "producer": "verifier",
+                "reason_codes": [
+                  "upstream_completeness_unknown"
+                ],
+                "retained_source_count": 1,
+                "retained_sources_fingerprint": "0e0645bf4672167cef2558d62a0dda28a8af6d55ba810c66f704e84660dbf173",
+                "schema_version": "candidate_stage_receipt_v1",
+                "scope": "expert_stage_candidate_inventory",
+                "source_key_fingerprint": "0e0645bf4672167cef2558d62a0dda28a8af6d55ba810c66f704e84660dbf173",
+                "stage": "ranked_update",
+                "status": "UNKNOWN",
+                "unique_valid_source_count": 1,
+                "upstream_completeness": "UNKNOWN"
+              },
+              {
+                "cap": 5,
+                "count_basis": "normalized_title_unique_before_stage_row_cap",
+                "emitted_source_count": 1,
+                "metadata_fingerprint": "6a895bf4dba2826bd7c417ea62bdec6a9626319269f72448d54084f322c0268a",
+                "observed_source_count": 1,
+                "observed_sources_fingerprint": "0e0645bf4672167cef2558d62a0dda28a8af6d55ba810c66f704e84660dbf173",
+                "occurrence": 1,
+                "producer": "arbiter",
+                "reason_codes": [
+                  "upstream_completeness_unknown"
+                ],
+                "retained_source_count": 1,
+                "retained_sources_fingerprint": "0e0645bf4672167cef2558d62a0dda28a8af6d55ba810c66f704e84660dbf173",
+                "schema_version": "candidate_stage_receipt_v1",
+                "scope": "expert_stage_candidate_inventory",
+                "source_key_fingerprint": "0e0645bf4672167cef2558d62a0dda28a8af6d55ba810c66f704e84660dbf173",
+                "stage": "critic_filter",
+                "status": "UNKNOWN",
+                "unique_valid_source_count": 1,
+                "upstream_completeness": "UNKNOWN"
+              },
+              {
+                "cap": 5,
+                "count_basis": "normalized_title_unique_before_stage_row_cap",
+                "emitted_source_count": 1,
+                "metadata_fingerprint": "da869a3943fc2a2eb7976d263b53b091c48c71f146b0303eca01f83bf71a6a64",
+                "observed_source_count": 1,
+                "observed_sources_fingerprint": "0e0645bf4672167cef2558d62a0dda28a8af6d55ba810c66f704e84660dbf173",
+                "occurrence": 1,
+                "producer": "arbiter",
+                "reason_codes": [
+                  "upstream_completeness_unknown"
+                ],
+                "retained_source_count": 1,
+                "retained_sources_fingerprint": "0e0645bf4672167cef2558d62a0dda28a8af6d55ba810c66f704e84660dbf173",
+                "schema_version": "candidate_stage_receipt_v1",
+                "scope": "expert_stage_candidate_inventory",
+                "source_key_fingerprint": "0e0645bf4672167cef2558d62a0dda28a8af6d55ba810c66f704e84660dbf173",
+                "stage": "candidate_merge",
+                "status": "UNKNOWN",
+                "unique_valid_source_count": 1,
+                "upstream_completeness": "UNKNOWN"
+              },
+              {
+                "cap": 5,
+                "count_basis": "normalized_title_unique_before_stage_row_cap",
+                "emitted_source_count": 1,
+                "metadata_fingerprint": "84afd62634fd8f3d513b82be0479e60eb9b01e6ba1a457869fb16d1d495ee4cf",
+                "observed_source_count": 1,
+                "observed_sources_fingerprint": "0e0645bf4672167cef2558d62a0dda28a8af6d55ba810c66f704e84660dbf173",
+                "occurrence": 1,
+                "producer": "arbiter",
+                "reason_codes": [
+                  "upstream_completeness_unknown"
+                ],
+                "retained_source_count": 1,
+                "retained_sources_fingerprint": "0e0645bf4672167cef2558d62a0dda28a8af6d55ba810c66f704e84660dbf173",
+                "schema_version": "candidate_stage_receipt_v1",
+                "scope": "expert_stage_candidate_inventory",
+                "source_key_fingerprint": "0e0645bf4672167cef2558d62a0dda28a8af6d55ba810c66f704e84660dbf173",
+                "stage": "llm_candidate_merge",
+                "status": "UNKNOWN",
+                "unique_valid_source_count": 1,
+                "upstream_completeness": "UNKNOWN"
+              }
+            ],
+            "hold_without_candidates": false,
+            "identity_consistency_lint_reasons": [],
+            "official_title_lint_reasons": [],
+            "output_consistency_lint_reasons": [],
+            "promotion_blocked": false,
+            "promotion_decision": {
+              "bypassed_gate": false,
+              "candidate_preserved": false,
+              "contract_version": "promotion_contract_v2",
+              "input_fingerprint": "4de156666c5af6f2a0266c7532dc62754bd5fb2fdd47ece8d9aeb06f98c839a2",
+              "official_title": "빌어먹을 환생",
+              "official_url": "https://www.munpia.com/novel/detail/222360",
+              "publish_allowed": true,
+              "reason_codes": [
+                "official_title_exists",
+                "row_discusses_work_as_work",
+                "scope_current_work",
+                "direct_image_work_surface_bridge",
+                "ocr_catalog_official_title",
+                "official_detail_url",
+                "official_detail_display_title_exact",
+                "title_url_pair_verified"
+              ],
+              "scope": {
+                "competing_candidates": [],
+                "confidence": "high",
+                "conflict_reason_codes": [],
+                "direct_bridge_sources": [
+                  "direct_image_work_surface_lock",
+                  "structured_direct_image_work_surface",
+                  "ocr_catalog_official_title",
+                  "official_detail_url"
+                ],
+                "scope_kind": "current_work"
+              },
+              "status": "publish"
+            },
+            "promotion_gate_evidence": [
+              {
+                "candidate_title": "빌어먹을 환생",
+                "candidate_url": "",
+                "kind": "direct_image_work_surface",
+                "reason_code": "direct_image_work_surface_bridge",
+                "source_path_or_snippet": "빌어먹을 환생",
+                "strength": "strong",
+                "supports_publish": true,
+                "title_url_match": null
+              },
+              {
+                "candidate_title": "빌어먹을 환생",
+                "candidate_url": "",
+                "kind": "ocr_catalog_official_title",
+                "reason_code": "ocr_catalog_official_title",
+                "source_path_or_snippet": "빌어먹을 환생",
+                "strength": "strong",
+                "supports_publish": true,
+                "title_url_match": null
+              },
+              {
+                "candidate_title": "빌어먹을 환생",
+                "candidate_url": "https://www.munpia.com/novel/detail/222360",
+                "kind": "official_detail_url",
+                "reason_code": "official_detail_url",
+                "source_path_or_snippet": "https://www.munpia.com/novel/detail/222360",
+                "strength": "strong",
+                "supports_publish": false,
+                "title_url_match": true
+              },
+              {
+                "candidate_title": "빌어먹을 환생",
+                "candidate_url": "https://www.munpia.com/novel/detail/222360",
+                "kind": "official_detail_display_title_exact",
+                "reason_code": "official_detail_display_title_exact",
+                "source_path_or_snippet": "https://www.munpia.com/novel/detail/222360",
+                "strength": "strong",
+                "supports_publish": false,
+                "title_url_match": true
+              }
+            ],
+            "promotion_gate_state": {
+              "candidate_title": "빌어먹을 환생",
+              "candidate_url": "https://www.munpia.com/novel/detail/222360",
+              "caveated_alias_boundary": false,
+              "discussion_type": "general",
+              "official_title_exists": true,
+              "post_id": 11718099,
+              "prior_variance_quarantine": false,
+              "row_discusses_work_as_work": true,
+              "same_title_source_movement": false,
+              "scope": {
+                "competing_candidates": [],
+                "confidence": "high",
+                "conflict_reason_codes": [],
+                "direct_bridge_sources": [
+                  "direct_image_work_surface_lock",
+                  "structured_direct_image_work_surface",
+                  "ocr_catalog_official_title",
+                  "official_detail_url"
+                ],
+                "scope_kind": "current_work"
+              },
+              "semantic_publication": {
+                "evidence_status": "sufficient",
+                "media_domain_class": "novel_work",
+                "primary_work_status": "unique"
+              },
+              "source": "direct_image_work_surface_lock",
+              "title_resolution_state": "resolved",
+              "work_resolution": "resolved"
+            },
+            "publish_contract_input_fingerprint": "4de156666c5af6f2a0266c7532dc62754bd5fb2fdd47ece8d9aeb06f98c839a2",
+            "publish_contract_trace": {
+              "bypassed_gate": false,
+              "contract_version": "promotion_contract_v2",
+              "gate_decision": {
+                "bypassed_gate": false,
+                "candidate_preserved": false,
+                "contract_version": "promotion_contract_v2",
+                "input_fingerprint": "4de156666c5af6f2a0266c7532dc62754bd5fb2fdd47ece8d9aeb06f98c839a2",
+                "official_title": "빌어먹을 환생",
+                "official_url": "https://www.munpia.com/novel/detail/222360",
+                "publish_allowed": true,
+                "reason_codes": [
+                  "official_title_exists",
+                  "row_discusses_work_as_work",
+                  "scope_current_work",
+                  "direct_image_work_surface_bridge",
+                  "ocr_catalog_official_title",
+                  "official_detail_url",
+                  "official_detail_display_title_exact",
+                  "title_url_pair_verified"
+                ],
+                "scope": {
+                  "competing_candidates": [],
+                  "confidence": "high",
+                  "conflict_reason_codes": [],
+                  "direct_bridge_sources": [
+                    "direct_image_work_surface_lock",
+                    "structured_direct_image_work_surface",
+                    "ocr_catalog_official_title",
+                    "official_detail_url"
+                  ],
+                  "scope_kind": "current_work"
+                },
+                "status": "publish"
+              },
+              "input_fingerprint": "4de156666c5af6f2a0266c7532dc62754bd5fb2fdd47ece8d9aeb06f98c839a2",
+              "post_gate_identity": {
+                "candidate_ledger_status": "safe_resolved",
+                "official_title": "빌어먹을 환생",
+                "official_url": "https://www.munpia.com/novel/detail/222360",
+                "title_resolution_allowed": true,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved"
+              },
+              "pre_gate_candidate": {
+                "candidate_ledger_status": null,
+                "official_title": "빌어먹을 환생",
+                "official_url": "https://www.munpia.com/novel/detail/222360",
+                "title_resolution_allowed": null,
+                "title_resolution_state": null,
+                "work_resolution": null
+              },
+              "reason_codes": [
+                "official_title_exists",
+                "row_discusses_work_as_work",
+                "scope_current_work",
+                "direct_image_work_surface_bridge",
+                "ocr_catalog_official_title",
+                "official_detail_url",
+                "official_detail_display_title_exact",
+                "title_url_pair_verified"
+              ],
+              "scope_state": {
+                "competing_candidates": [],
+                "confidence": "high",
+                "conflict_reason_codes": [],
+                "direct_bridge_sources": [
+                  "direct_image_work_surface_lock",
+                  "structured_direct_image_work_surface",
+                  "ocr_catalog_official_title",
+                  "official_detail_url"
+                ],
+                "scope_kind": "current_work"
+              }
+            },
+            "publish_contract_version": "promotion_contract_v2",
+            "publish_ledger": {
+              "candidate_preservation": {
+                "candidate_ledger_status": null,
+                "official_title": "빌어먹을 환생",
+                "official_url": "https://www.munpia.com/novel/detail/222360",
+                "title_resolution_allowed": null,
+                "title_resolution_state": null,
+                "work_resolution": null
+              },
+              "gate_decision": {
+                "bypassed_gate": false,
+                "candidate_preserved": false,
+                "contract_version": "promotion_contract_v2",
+                "input_fingerprint": "4de156666c5af6f2a0266c7532dc62754bd5fb2fdd47ece8d9aeb06f98c839a2",
+                "official_title": "빌어먹을 환생",
+                "official_url": "https://www.munpia.com/novel/detail/222360",
+                "publish_allowed": true,
+                "reason_codes": [
+                  "official_title_exists",
+                  "row_discusses_work_as_work",
+                  "scope_current_work",
+                  "direct_image_work_surface_bridge",
+                  "ocr_catalog_official_title",
+                  "official_detail_url",
+                  "official_detail_display_title_exact",
+                  "title_url_pair_verified"
+                ],
+                "scope": {
+                  "competing_candidates": [],
+                  "confidence": "high",
+                  "conflict_reason_codes": [],
+                  "direct_bridge_sources": [
+                    "direct_image_work_surface_lock",
+                    "structured_direct_image_work_surface",
+                    "ocr_catalog_official_title",
+                    "official_detail_url"
+                  ],
+                  "scope_kind": "current_work"
+                },
+                "status": "publish"
+              },
+              "public_publish": {
+                "candidate_ledger_status": "safe_resolved",
+                "official_title": "빌어먹을 환생",
+                "official_url": "https://www.munpia.com/novel/detail/222360",
+                "title_resolution_allowed": true,
+                "title_resolution_state": "resolved",
+                "work_resolution": "resolved"
+              }
+            },
+            "safe_resolved": true,
+            "title_candidate_generation": {
+              "cap": 6,
+              "count_basis": "normalized_title_unique_after_policy_prune",
+              "emitted_source_count": 1,
+              "metadata_fingerprint": "2d38bd419b090f35c9edf6864e93d419d8ba4dcde0651d3fbfd1ae510ac9c0cb",
+              "observed_sources_fingerprint": "22d12213dc6edf1be2d3d6355865d6b9178bd5c43363e60ab7177a91208567f9",
+              "reason_codes": [
+                "upstream_completeness_unknown"
+              ],
+              "retained_sources_fingerprint": "22d12213dc6edf1be2d3d6355865d6b9178bd5c43363e60ab7177a91208567f9",
+              "schema_version": "title_candidate_generation_v1",
+              "scope": "title_candidate_ranked_inventory",
+              "source_key_fingerprint": "ae35a3c42dc21b23447bd9d554d66f534fd28f66a26075eff3649ba5f4468bfd",
+              "status": "UNKNOWN",
+              "unique_valid_source_count": 1,
+              "upstream_completeness": "UNKNOWN"
+            },
+            "title_candidate_generation_retained_sources": [
+              {
+                "alias_or_mention": "빌환",
+                "confidence": "High",
+                "content_status": "active",
+                "heretic_url": "https://www.munpia.com/novel/detail/222360",
+                "locked": true,
+                "official_title": "빌어먹을 환생",
+                "page_type": "novel_page",
+                "preservation_role": "ranked_title_candidate",
+                "reference_role": "primary",
+                "source_tier": "official_detail"
+              }
+            ],
+            "title_resolution_allowed": true,
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved"
+          },
+          "candidate_ledger_status": "safe_resolved",
+          "candidate_preservation_sources": [
+            {
+              "alias_or_mention": "빌환",
+              "confidence": "High",
+              "content_status": "active",
+              "heretic_url": "https://www.munpia.com/novel/detail/222360",
+              "official_title": "빌어먹을 환생",
+              "page_type": "novel_page",
+              "preservation_role": "title_candidate",
+              "reference_role": "primary",
+              "source_tier": "official_detail"
+            }
+          ],
+          "comparison_target": null,
+          "consistency_flags": [
+            "verified_alias_official_detail_anchor",
+            "confirmed_alias:시엘",
+            "explicit_alias_official_work_lock",
+            "weak_public_title_bridge_verified_alias_detail_exempt",
+            "official_detail_display_title_bound"
+          ],
+          "context_sources": [
+            "title",
+            "body",
+            "search",
+            "image"
+          ],
+          "discussion_type": "general",
+          "entity_mentions": [
+            {
+              "canonical_value": "빌어먹을 환생",
+              "confidence": "High",
+              "entity_type": "work",
+              "role": "primary",
+              "source": "title_candidates",
+              "text": "빌환"
+            },
+            {
+              "canonical_value": null,
+              "confidence": "High",
+              "entity_type": "other",
+              "role": "candidate",
+              "source": "verifier",
+              "text": "록마"
+            },
+            {
+              "canonical_value": null,
+              "confidence": "Medium",
+              "entity_type": "other",
+              "role": "candidate",
+              "source": "snippet",
+              "text": "하멜"
+            },
+            {
+              "canonical_value": null,
+              "confidence": "Medium",
+              "entity_type": "other",
+              "role": "candidate",
+              "source": "snippet",
+              "text": "유진 라이언하트"
+            },
+            {
+              "canonical_value": null,
+              "confidence": "Medium",
+              "entity_type": "other",
+              "role": "candidate",
+              "source": "snippet",
+              "text": "베르무트"
+            },
+            {
+              "canonical_value": null,
+              "confidence": "Medium",
+              "entity_type": "other",
+              "role": "candidate",
+              "source": "snippet",
+              "text": "크리스티나"
+            },
+            {
+              "canonical_value": "빌어먹을 환생",
+              "confidence": "High",
+              "entity_type": "slang",
+              "role": "slang",
+              "source": "verifier",
+              "text": "빌환"
+            }
+          ],
+          "evidence": null,
+          "future_watch_target": null,
+          "hold_unresolved": false,
+          "hold_without_candidates": false,
+          "identity_consistency_lint": [],
+          "identity_state": "resolved_title",
+          "image_enrichment_limitations": null,
+          "image_evidence_catalog": [
+            {
+              "block_index": 0,
+              "eid": "IMG001",
+              "evidence_type": "cover_title",
+              "explicit_author_name": "록마",
+              "explicit_work_title": "빌어먹을 환생",
+              "ocr_text": "MUNPIA 빌어먹을 환생 록마 퓨전판타지 소설",
+              "promotion_eligible": true,
+              "rank": 1,
+              "source_url": "https://dcimg7.dcinside.co.kr/viewimage.php?id=2ab8de34e0dc37b06bb3&no=24b0d769e1d32ca73ce88ffa11d02831cb1683a5d6841fa83169d8a3677674c069a547b2fdca0d9b9a622d493130afe581d7ba17a9a66ad0e6951ed8fe9731a676106623a0bd3460e9a1782a4668e0b133cf2ea31774879968fd2bc344c0",
+              "title_role": "work_title",
+              "visual_summary": "은발의 남성과 금발, 보라색 머리의 여성 캐릭터들이 등장하는 웹소설 표지 일러스트. 배경에는 성곽과 종탑이 보이며 붉은 꽃잎이 흩날리고 있다.",
+              "work_cues": [
+                "빌어먹을 환생",
+                "록마",
+                "퓨전판타지 소설",
+                "MUNPIA"
+              ]
+            }
+          ],
+          "image_fetch_count": 1,
+          "image_fetch_success": 1,
+          "inference": null,
+          "is_novel_related": true,
+          "is_relevant": true,
+          "is_resolved_work_discussion": true,
+          "mentioned_works": null,
+          "novel_identity": {
+            "alias_resolution_sources": [
+              {
+                "alias": "빌환",
+                "alias_resolution_source": "known_title_abbreviation",
+                "canonical_title": "빌어먹을 환생",
+                "matched_surface_excerpt": "빌환 표지변경됨",
+                "matched_surface_kind": "post_title",
+                "source_registry": "KNOWN_TITLE_ABBREVIATIONS",
+                "used_for_resolution": false
+              }
+            ],
+            "confidence": "High",
+            "heretic_url": "https://www.munpia.com/novel/detail/222360",
+            "official_title": "빌어먹을 환생"
+          },
+          "ocr_enabled": true,
+          "official_title_lint": [],
+          "output_consistency_lint": [],
+          "primary_subject_text": "시엘이랑 세냐 빼고 아니스티나랑 매르만 있어도 된라는 주장에 대한 반대.",
+          "primary_subject_type": "work_discussion",
+          "primary_work": {
+            "alias_or_mention": "빌환",
+            "confidence": "High",
+            "content_status": "active",
+            "heretic_url": "https://www.munpia.com/novel/detail/222360",
+            "locked": true,
+            "negative_evidence": null,
+            "official_title": "빌어먹을 환생",
+            "page_type": "novel_page",
+            "reference_role": "primary",
+            "resolved_recall_anchor": null,
+            "source_tier": "official_detail"
+          },
+          "promotion_blocked": false,
+          "promotion_decision": {
+            "bypassed_gate": false,
+            "candidate_preserved": false,
+            "contract_version": "promotion_contract_v2",
+            "input_fingerprint": "4de156666c5af6f2a0266c7532dc62754bd5fb2fdd47ece8d9aeb06f98c839a2",
+            "official_title": "빌어먹을 환생",
+            "official_url": "https://www.munpia.com/novel/detail/222360",
+            "publish_allowed": true,
+            "reason_codes": [
+              "official_title_exists",
+              "row_discusses_work_as_work",
+              "scope_current_work",
+              "direct_image_work_surface_bridge",
+              "ocr_catalog_official_title",
+              "official_detail_url",
+              "official_detail_display_title_exact",
+              "title_url_pair_verified"
+            ],
+            "scope": {
+              "competing_candidates": [],
+              "confidence": "high",
+              "conflict_reason_codes": [],
+              "direct_bridge_sources": [
+                "direct_image_work_surface_lock",
+                "structured_direct_image_work_surface",
+                "ocr_catalog_official_title",
+                "official_detail_url"
+              ],
+              "scope_kind": "current_work"
+            },
+            "status": "publish"
+          },
+          "promotion_gate_evidence": [
+            {
+              "candidate_title": "빌어먹을 환생",
+              "candidate_url": "",
+              "kind": "direct_image_work_surface",
+              "reason_code": "direct_image_work_surface_bridge",
+              "source_path_or_snippet": "빌어먹을 환생",
+              "strength": "strong",
+              "supports_publish": true,
+              "title_url_match": null
+            },
+            {
+              "candidate_title": "빌어먹을 환생",
+              "candidate_url": "",
+              "kind": "ocr_catalog_official_title",
+              "reason_code": "ocr_catalog_official_title",
+              "source_path_or_snippet": "빌어먹을 환생",
+              "strength": "strong",
+              "supports_publish": true,
+              "title_url_match": null
+            },
+            {
+              "candidate_title": "빌어먹을 환생",
+              "candidate_url": "https://www.munpia.com/novel/detail/222360",
+              "kind": "official_detail_url",
+              "reason_code": "official_detail_url",
+              "source_path_or_snippet": "https://www.munpia.com/novel/detail/222360",
+              "strength": "strong",
+              "supports_publish": false,
+              "title_url_match": true
+            },
+            {
+              "candidate_title": "빌어먹을 환생",
+              "candidate_url": "https://www.munpia.com/novel/detail/222360",
+              "kind": "official_detail_display_title_exact",
+              "reason_code": "official_detail_display_title_exact",
+              "source_path_or_snippet": "https://www.munpia.com/novel/detail/222360",
+              "strength": "strong",
+              "supports_publish": false,
+              "title_url_match": true
+            }
+          ],
+          "promotion_gate_state": {
+            "candidate_title": "빌어먹을 환생",
+            "candidate_url": "https://www.munpia.com/novel/detail/222360",
+            "caveated_alias_boundary": false,
+            "discussion_type": "general",
+            "official_title_exists": true,
+            "post_id": 11718099,
+            "prior_variance_quarantine": false,
+            "row_discusses_work_as_work": true,
+            "same_title_source_movement": false,
+            "scope": {
+              "competing_candidates": [],
+              "confidence": "high",
+              "conflict_reason_codes": [],
+              "direct_bridge_sources": [
+                "direct_image_work_surface_lock",
+                "structured_direct_image_work_surface",
+                "ocr_catalog_official_title",
+                "official_detail_url"
+              ],
+              "scope_kind": "current_work"
+            },
+            "semantic_publication": {
+              "evidence_status": "sufficient",
+              "media_domain_class": "novel_work",
+              "primary_work_status": "unique"
+            },
+            "source": "direct_image_work_surface_lock",
+            "title_resolution_state": "resolved",
+            "work_resolution": "resolved"
+          },
+          "publish_contract_input_fingerprint": "4de156666c5af6f2a0266c7532dc62754bd5fb2fdd47ece8d9aeb06f98c839a2",
+          "publish_contract_trace": {
+            "bypassed_gate": false,
+            "contract_version": "promotion_contract_v2",
+            "gate_decision": {
+              "bypassed_gate": false,
+              "candidate_preserved": false,
+              "contract_version": "promotion_contract_v2",
+              "input_fingerprint": "4de156666c5af6f2a0266c7532dc62754bd5fb2fdd47ece8d9aeb06f98c839a2",
+              "official_title": "빌어먹을 환생",
+              "official_url": "https://www.munpia.com/novel/detail/222360",
+              "publish_allowed": true,
+              "reason_codes": [
+                "official_title_exists",
+                "row_discusses_work_as_work",
+                "scope_current_work",
+                "direct_image_work_surface_bridge",
+                "ocr_catalog_official_title",
+                "official_detail_url",
+                "official_detail_display_title_exact",
+                "title_url_pair_verified"
+              ],
+              "scope": {
+                "competing_candidates": [],
+                "confidence": "high",
+                "conflict_reason_codes": [],
+                "direct_bridge_sources": [
+                  "direct_image_work_surface_lock",
+                  "structured_direct_image_work_surface",
+                  "ocr_catalog_official_title",
+                  "official_detail_url"
+                ],
+                "scope_kind": "current_work"
+              },
+              "status": "publish"
+            },
+            "input_fingerprint": "4de156666c5af6f2a0266c7532dc62754bd5fb2fdd47ece8d9aeb06f98c839a2",
+            "post_gate_identity": {
+              "candidate_ledger_status": "safe_resolved",
+              "official_title": "빌어먹을 환생",
+              "official_url": "https://www.munpia.com/novel/detail/222360",
+              "title_resolution_allowed": true,
+              "title_resolution_state": "resolved",
+              "work_resolution": "resolved"
+            },
+            "pre_gate_candidate": {
+              "candidate_ledger_status": null,
+              "official_title": "빌어먹을 환생",
+              "official_url": "https://www.munpia.com/novel/detail/222360",
+              "title_resolution_allowed": null,
+              "title_resolution_state": null,
+              "work_resolution": null
+            },
+            "reason_codes": [
+              "official_title_exists",
+              "row_discusses_work_as_work",
+              "scope_current_work",
+              "direct_image_work_surface_bridge",
+              "ocr_catalog_official_title",
+              "official_detail_url",
+              "official_detail_display_title_exact",
+              "title_url_pair_verified"
+            ],
+            "scope_state": {
+              "competing_candidates": [],
+              "confidence": "high",
+              "conflict_reason_codes": [],
+              "direct_bridge_sources": [
+                "direct_image_work_surface_lock",
+                "structured_direct_image_work_surface",
+                "ocr_catalog_official_title",
+                "official_detail_url"
+              ],
+              "scope_kind": "current_work"
+            }
+          },
+          "publish_contract_version": "promotion_contract_v2",
+          "publish_ledger": {
+            "candidate_preservation": {
+              "candidate_ledger_status": null,
+              "official_title": "빌어먹을 환생",
+              "official_url": "https://www.munpia.com/novel/detail/222360",
+              "title_resolution_allowed": null,
+              "title_resolution_state": null,
+              "work_resolution": null
+            },
+            "gate_decision": {
+              "bypassed_gate": false,
+              "candidate_preserved": false,
+              "contract_version": "promotion_contract_v2",
+              "input_fingerprint": "4de156666c5af6f2a0266c7532dc62754bd5fb2fdd47ece8d9aeb06f98c839a2",
+              "official_title": "빌어먹을 환생",
+              "official_url": "https://www.munpia.com/novel/detail/222360",
+              "publish_allowed": true,
+              "reason_codes": [
+                "official_title_exists",
+                "row_discusses_work_as_work",
+                "scope_current_work",
+                "direct_image_work_surface_bridge",
+                "ocr_catalog_official_title",
+                "official_detail_url",
+                "official_detail_display_title_exact",
+                "title_url_pair_verified"
+              ],
+              "scope": {
+                "competing_candidates": [],
+                "confidence": "high",
+                "conflict_reason_codes": [],
+                "direct_bridge_sources": [
+                  "direct_image_work_surface_lock",
+                  "structured_direct_image_work_surface",
+                  "ocr_catalog_official_title",
+                  "official_detail_url"
+                ],
+                "scope_kind": "current_work"
+              },
+              "status": "publish"
+            },
+            "public_publish": {
+              "candidate_ledger_status": "safe_resolved",
+              "official_title": "빌어먹을 환생",
+              "official_url": "https://www.munpia.com/novel/detail/222360",
+              "title_resolution_allowed": true,
+              "title_resolution_state": "resolved",
+              "work_resolution": "resolved"
+            }
+          },
+          "reason": "[최종 판정]\n- 글 분류: general\n- 제목 판정: resolved\n- 공식 제목: '빌어먹을 환생'\n- 공식 URL: https://www.munpia.com/novel/detail/222360\n[원문에 근거한 설명]\n글쓴이는 빌환의 표지 변경 소식을 알린다. 원문 알림이며 외부 사실 확인과는 별개다.\n글쓴이는 시엘이랑 세냐 빼고 아니스티나랑 매르만 있어도 된라는 주장을 부정한다. 주장 속의 조건이나 제외를 본인의 확정 평가로 채택하지 않는다.\n[작성자 발화·원문 귀속]\n- 작성자 발화: 「빌환 표지변경됨」\n- 작성자 발화: 「시엘이랑 세냐 빼고 아니스티나랑 매르만 있어도 된다는 말은 ㄴㄴ」\n[원문] 빌환 표지변경됨 / 시엘이랑 세냐 빼고 아니스티나랑 매르만 있어도 된다는 말은 ㄴㄴ\n[이미지 OCR 진단·비권한 인용]「빌어먹을 환생」(원시 판독·문맥 귀속 미검증)",
+          "reason_lines": [
+            "[최종 판정]",
+            "- 글 분류: general",
+            "- 제목 판정: resolved",
+            "- 공식 제목: '빌어먹을 환생'",
+            "- 공식 URL: https://www.munpia.com/novel/detail/222360",
+            "[원문에 근거한 설명]",
+            "글쓴이는 빌환의 표지 변경 소식을 알린다. 원문 알림이며 외부 사실 확인과는 별개다.",
+            "글쓴이는 시엘이랑 세냐 빼고 아니스티나랑 매르만 있어도 된라는 주장을 부정한다. 주장 속의 조건이나 제외를 본인의 확정 평가로 채택하지 않는다.",
+            "[작성자 발화·원문 귀속]",
+            "- 작성자 발화: 「빌환 표지변경됨」",
+            "- 작성자 발화: 「시엘이랑 세냐 빼고 아니스티나랑 매르만 있어도 된다는 말은 ㄴㄴ」",
+            "[원문] 빌환 표지변경됨 / 시엘이랑 세냐 빼고 아니스티나랑 매르만 있어도 된다는 말은 ㄴㄴ",
+            "[이미지 OCR 진단·비권한 인용]「빌어먹을 환생」(원시 판독·문맥 귀속 미검증)"
+          ],
+          "recommendation_candidates": null,
+          "relevance_scope": "core",
+          "safe_resolved": true,
+          "search_evidence_catalog": [
+            {
+              "domain": "series.naver.com",
+              "eid": "E001",
+              "purpose": "image_work_cue_search",
+              "query": "\"빌어먹을 환생\" \"록마\"",
+              "rank": 1,
+              "snippet": "8 화 완결, #NOVEL, #무협, #성장판무, #영지물, #차원이동물, #판무회귀물, #환생판무, 줄거리: 제약회사 영업사원이었던 주인공이 무협세계의 상단의 소공자에게 빙의했다. 자신의 편의를 위해 만든 각종 현대 기물들이 돈이 된다는 것을 알게 되고 재벌을 꿈꾼다. 다만, 마교로 불리는 이들의 등장으로 일이 꼬이게 되고 설상가상으로 자신을 이 세계로 불러들인 것으로...[본문] 지랄맞은 환생, 빌어먹을 회귀 [단행본] 지옥왕;[단행본]... 메인메뉴 바로가기 본문 바로가기 **사용자 링크** * 로그인 * (임직원혜택) 프로필 사진 변경 _님로그아웃 @naver.com * 네이버ID * 보안설정 * 내인증서 _네이버 멤버쉽_ _N Pay_ 내 페이포인트 내 블로그가입한 카페N Pay _네이버 멤버십 최대 5% 적립_ 환경설정 * 네...",
+              "source_rank": 1,
+              "source_tier": "non_novel_media_platform",
+              "title": "지랄맞은 환생, 빌어먹을 회귀 [단행본]",
+              "url": "https://series.naver.com/novel/detail.series?productNo=8073458"
+            },
+            {
+              "domain": "series.naver.com",
+              "eid": "E002",
+              "purpose": "image_work_cue_search",
+              "query": "\"빌어먹을 환생\" \"록마\"",
+              "rank": 2,
+              "snippet": "625 화 완결, #NOVEL, #판타지, 줄거리: 마왕을 절멸하기 위해 동료들과 여정을 떠났던 용사 하멜. 마왕과의 일전을 코앞에 두고 죽음을 맞이한 뒤, “응애.” ‘뭐야 씨X.’ 동료였던 용사, 베르무트의 후손으로 환생하게 된다. 위대한 베르무트의 피를 이은 하멜. 아니, 유진 라이언하트. ‘전생의 몸도 천재라 착각할 만큼은 됐는데. 이건…… 비교가 안 돼.’ 성능부터 다른...[본문] 빌어먹을 환생 프로젝트J;[독점]... 메인메뉴 바로가기 본문 바로가기 **사용자 링크** * 로그인 * (임직원혜택) 프로필 사진 변경 _님로그아웃 @naver.com * 네이버ID * 보안설정 * 내인증서 _네이버 멤버쉽_ _N Pay_ 내 페이포인트 내 블로그가입한 카페N Pay _네이버 멤버십 최대 5% 적립_ 환경설정 * 네이버톡 * 알림...",
+              "source_rank": 2,
+              "source_tier": "novel_platform",
+              "title": "빌어먹을 환생",
+              "url": "https://series.naver.com/novel/detail.series?productNo=5935188"
+            },
+            {
+              "domain": "namu.wiki",
+              "eid": "E003",
+              "purpose": "image_work_cue_search",
+              "query": "\"빌어먹을 환생\" \"록마\"",
+              "rank": 3,
+              "snippet": "대한민국의 판타지 웹소설. 작가는 천화일로, 글러먹은 빙의, 디자이어(소설), 쥐뿔도 없는 회귀를 집필한 목마.",
+              "source_rank": 3,
+              "source_tier": "wiki",
+              "title": "빌어먹을 환생 - 나무위키",
+              "url": "https://namu.wiki/w/%EB%B9%8C%EC%96%B4%EB%A8%B9%EC%9D%84%20%ED%99%98%EC%83%9D"
+            },
+            {
+              "domain": "namu.wiki",
+              "eid": "E004",
+              "purpose": "image_work_cue_search",
+              "query": "\"빌어먹을 환생\" \"록마\"",
+              "rank": 4,
+              "snippet": "한국의 판타지 웹툰. 스토리는 키키, 작화는 박정열이 담당했다. 동명의 웹소설 《빌어먹을 환생》를 웹툰화한 작품이다.",
+              "source_rank": 4,
+              "source_tier": "wiki",
+              "title": "빌어먹을 환생(웹툰)",
+              "url": "https://namu.wiki/w/%EB%B9%8C%EC%96%B4%EB%A8%B9%EC%9D%84%20%ED%99%98%EC%83%9D(%EC%9B%B9%ED%88%B0)"
+            },
+            {
+              "domain": "arca.live",
+              "eid": "E005",
+              "purpose": "confident_title_genre_expansion",
+              "query": "빌환 장르소설",
+              "rank": 5,
+              "snippet": "2주 전세계 구하고 죽거나 실종된 주인공이 많은 시간이 지나고 돌아와서 이제는 없는 동료들의 이야기를 듣거나 후손 얘기 들으면서 시원 씁쓸한 이야기가 보고 싶다 그리고 동료 중 주인공 좋아한 히로인이 뭐 어떻게 해서 다시 주인공 만나는 것도 그리고 이 소설도 이런 느낌이니까 함 봐바",
+              "source_rank": 5,
+              "source_tier": "community",
+              "title": "빌환 같은 소설 추천 좀 - 장르소설 채널",
+              "url": "https://arca.live/b/novelchannel/184718880"
+            },
+            {
+              "domain": "gall.dcinside.com",
+              "eid": "E006",
+              "purpose": "confident_title_genre_expansion",
+              "query": "빌환 장르소설",
+              "rank": 6,
+              "snippet": "2021.04.08.멜키스 나쁘지 않다 생각했는데 할머니냄새 난다는 문장 하나로 이미지를 조져버리노",
+              "source_rank": 6,
+              "source_tier": "community",
+              "title": "빌환 히로인이 누구누구 있음? - 장르소설 마이너 갤러리",
+              "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=2477841"
+            },
+            {
+              "domain": "gall.dcinside.com",
+              "eid": "E007",
+              "purpose": "confident_title_genre_expansion",
+              "query": "빌환 장르소설",
+              "rank": 7,
+              "snippet": "2021.04.08.나름 히로인 보는 눈 좋다고 생각했는데 인기 없음 ㄹㅇ? 메인도 아니고 서브임?",
+              "source_rank": 7,
+              "source_tier": "community",
+              "title": "빌환 카르멘 인기 없음??? - 장르소설 마이너 갤러리",
+              "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=2478227"
+            },
+            {
+              "domain": "gall.dcinside.com",
+              "eid": "E008",
+              "purpose": "confident_title_genre_expansion",
+              "query": "빌환 장르소설",
+              "rank": 8,
+              "snippet": "2021.12.02.스포일러 경고 기능이 추가됐습니다. ( 설정 에서 변경 가능) 신과 마왕은 동일한 존재이면서 대칭되는 존재. 근본적으로 같은 놈인데 한쪽은 선한면, 한쪽은 악한면인거지 그리고 서로 대칭되는 거는 빛의 신=멸망의 마왕 / 전쟁신 아가로트=광란의 마왕 이렇게... 유폐의 마왕은 어떠한 이유로 신과 마왕이 갈라치기 안된 존재같음 내가 그렇게 생각하는게 베르무트와...",
+              "source_rank": 8,
+              "source_tier": "community",
+              "title": "스포) 빌환 현재 신/마왕 떡밥은 이거 같음 - 장르소설 마이너 갤러리",
+              "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=4091531"
+            },
+            {
+              "domain": "gall.dcinside.com",
+              "eid": "E009",
+              "purpose": "confident_title_genre_expansion",
+              "query": "빌환 장르소설",
+              "rank": 9,
+              "snippet": "2021.02.07.말그대로",
+              "source_rank": 9,
+              "source_tier": "community",
+              "title": "빌환 크리스티나 엉덩이 - 장르소설 마이너 갤러리",
+              "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=2073861"
+            },
+            {
+              "domain": "gall.dcinside.com",
+              "eid": "E010",
+              "purpose": "confident_title_genre_expansion",
+              "query": "빌환 장르소설",
+              "rank": 10,
+              "snippet": "2026.07.30.나무위키 읽다가 히로인? 이라 적혀있던데 - dc official App",
+              "source_rank": 10,
+              "source_tier": "community",
+              "title": "빌환 누아르 제벨라 히로인임? - 장르소설 마이너 갤러리",
+              "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=12652100"
+            },
+            {
+              "domain": "gall.dcinside.com",
+              "eid": "E011",
+              "purpose": "confident_title_genre_expansion",
+              "query": "빌환 장르소설",
+              "rank": 11,
+              "snippet": "2026.07.29.글먹빙 후반에 폼이 좀 많이 망가진다는 걸 감안해도 그 후반이란게 400화대 넘어서야 발생하는 이슈라서 최소한 300~400화대까진 폼 고저차 없이 안정적으로 맛있는 국밥을 말아준다는 점에서 가산점이 가능한 소설 빌환은 200화대 넘겼을때 급격히 무너졌던걸 생각하면 빌환보다 고점이 좀 깎이고 저점이 좀 더 탄탄하게 다져진 느낌 목마식 다중빙의+겜판+무협+판타지...",
+              "source_rank": 11,
+              "source_tier": "community",
+              "title": "시리즈 3차 지상최대쿠키 추천작 라인업 - 장르소설 마이너 갤러리",
+              "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=12649307"
+            },
+            {
+              "domain": "gall.dcinside.com",
+              "eid": "E012",
+              "purpose": "confident_title_genre_expansion",
+              "query": "빌환 장르소설",
+              "rank": 12,
+              "snippet": "2025.10.20.씹덕의 종착지가 웹소설이잖아 일본만화/애니메이션 << 좋아하는거 이미 10대초반부터 후반까지 열심히 퍼먹음 그러니까 으제 웬만한거 다 본 딜레마가 발생 아 웹툰을 보자 ! 카카페 등 마이너한 웹툰들 입문 빌환 웹툰 연재분 다봄 이시발 존나 재밌네 다음 파트 없나 하고 작년 12월에 7일 내지 600인가 700화 남짓한 분량 다 보고 뭐 더 없나 더 긁다가 노피아 입문...",
+              "source_rank": 12,
+              "source_tier": "community",
+              "title": "나 웹소 입문은 빌환이었음 - 장르소설 마이너 갤러리",
+              "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11248744"
+            },
+            {
+              "domain": "gall.dcinside.com",
+              "eid": "E013",
+              "purpose": "confident_title_genre_expansion",
+              "query": "빌환 장르소설",
+              "rank": 13,
+              "snippet": "2026.07.23.유진 여장 시키기 + 억지 즙짜기 이게 한 에피에서 나온 장면이라니 얜 진짜 빌환을 망친 추녀가 맞네",
+              "source_rank": 13,
+              "source_tier": "community",
+              "title": "빌환 다시 보는데 - 장르소설 마이너 갤러리",
+              "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=12615227"
+            },
+            {
+              "domain": "arca.live",
+              "eid": "E014",
+              "purpose": "confident_title_genre_expansion",
+              "query": "빌환 장르소설",
+              "rank": 14,
+              "snippet": "평화주의자들의 쉼터 [2] ; 모든 장르소설을 다루는 채널. 소설(주로 웹소설) 전반의 대한 이야기를 한다. 접근성 남성향 요금이 저렴하다는 이유로 노벨피아 웹소설이 사실상 주요 떡밥.[3] 9월 말 모종의 사태로 장르소설 마이너 갤러리의 정상적 이용이 불가능해지자 일부 인원이 정착하기 시작했다. 생각보다 인원이 많이 유입되어서 어느정도 떡밥을 굴릴 크기는 된다. 사실 ......",
+              "source_rank": 14,
+              "source_tier": "community",
+              "title": "장르소설 채널 - 장르소설 채널 위키",
+              "url": "https://arca.live/w/novelchannel/%EC%9E%A5%EB%A5%B4%EC%86%8C%EC%84%A4%20%EC%B1%84%EB%84%90"
+            },
+            {
+              "domain": "webtoon.kakao.com",
+              "eid": "E015",
+              "purpose": "image_work_cue_search",
+              "query": "\"빌어먹을 환생\" \"록마\"",
+              "rank": 15,
+              "snippet": "마왕을 없애기 위해 용사와 함께 모험을 하던 하멜. 마왕과의 대결 직전 용사 베르무트 라이언하트를 구하고 대신 죽음을 맞이하게 된다. 그리고 300년 후. 하멜은 용사의 머나먼 후손인 유진 라이언하트로서 환생한다. 죽기 전의 육체보다 월등한 성능을 가진 천재로서. 전생의 경험을 토대로 더 뛰어난 육체에 맞춰 폭발적인 성장을 하는 유진. 전생에 이루지 못한 마왕...",
+              "source_rank": 15,
+              "source_tier": "web",
+              "title": "빌어먹을 환생 - 카카오웹툰",
+              "url": "https://webtoon.kakao.com/content/%EB%B9%8C%EC%96%B4%EB%A8%B9%EC%9D%84-%ED%99%98%EC%83%9D/2935"
+            },
+            {
+              "domain": "everyq.co.kr",
+              "eid": "E016",
+              "purpose": "image_work_cue_search",
+              "query": "\"빌어먹을 환생\" \"록마\"",
+              "rank": 16,
+              "snippet": "2023년 12월 16일 · 구체적인 예를 들어보면, \"빌어먹을 놈!\", \"빌어먹을, 자동차 브레이크가 또 말썽이로군.\", \"빌어먹을 녀석들아!\" 등이 …",
+              "source_rank": 16,
+              "source_tier": "web",
+              "title": "'빌어먹을'은 무슨 뜻은 무엇일까요? - 모두의 궁금증",
+              "url": "https://everyq.co.kr/60"
+            },
+            {
+              "domain": "blog.naver.com",
+              "eid": "E017",
+              "purpose": "image_work_cue_search",
+              "query": "\"빌어먹을 환생\" \"록마\"",
+              "rank": 17,
+              "snippet": "이 빌어먹을 돈 때문에 이 빌어먹을 돈 때문에 결국 나도 빌어먹을 돈때매 사회로 뛰어나와 절실해 그럴 싸한 말들을 혀에 감어 그들은 자기 …",
+              "source_rank": 17,
+              "source_tier": "web",
+              "title": "타임피버 (TimeFeveR) - 빌어먹을 MEGA MIX (feat. 김단 허너버 유리안 ...",
+              "url": "https://blog.naver.com/whrjsgml1123/223708643735"
+            },
+            {
+              "domain": "www.lyrics.co.kr",
+              "eid": "E018",
+              "purpose": "image_work_cue_search",
+              "query": "\"빌어먹을 환생\" \"록마\"",
+              "rank": 18,
+              "snippet": "이 빌어먹을 돈 때문에 이 빌어먹을 돈 때문에 결국 나도 빌어먹을 돈때매 사회로 뛰어나와 절실해 그럴 싸한 말들을 혀에 감어 그들은 자기 …",
+              "source_rank": 18,
+              "source_tier": "web",
+              "title": "빌어먹을 MEGAMIX (feat.... - 노래 가사",
+              "url": "https://www.lyrics.co.kr/?p=931223"
+            },
+            {
+              "domain": "ridibooks.com",
+              "eid": "E019",
+              "purpose": "official_title_verify",
+              "query": "빌어먹을 환생 웹소설 문피아",
+              "rank": 19,
+              "snippet": "업데이트 : 2026.02.25 업데이트, 출간 정보 : 2026.02.25 출간, 듣기 기능 : TTS(듣기) 지원, 파일 정보 : EPUB · 평균 1.6MB, UCI : G720:N A305-20260128068.0001",
+              "source_rank": 19,
+              "source_tier": "novel_platform",
+              "title": "빌어먹을 환생",
+              "url": "https://ridibooks.com/books/425616817"
+            },
+            {
+              "domain": "www.munpia.com",
+              "eid": "E020",
+              "purpose": "official_title_verify",
+              "query": "빌어먹을 환생 웹소설 문피아",
+              "rank": 20,
+              "snippet": "작품추천3",
+              "source_rank": 20,
+              "source_tier": "novel_platform",
+              "title": "빌어먹을 환생",
+              "url": "https://www.munpia.com/novel/detail/222360"
+            },
+            {
+              "domain": "novelpia.com",
+              "eid": "E021",
+              "purpose": "official_title_verify",
+              "query": "빌어먹을 환생 웹소설 노벨피아",
+              "rank": 21,
+              "snippet": "도시에 이능력자도 나타나고 괴물도 나타나고 슈퍼 아이템도 나타났는데 주인공은 최약체 + 능력 無. 근데 한방에 이김짓지도 않은 죄로 모든 것을 잃은 나에게, 전혀 다른 세상에서의 《기사》란 운명이 기다리고 있었다.남녀 역전 세계의 악녀 포지션으로 환생 했다. 악역 공자가 아니라 귀족으로 살겠다. *피폐는 나오는데 조금 걸립니다.",
+              "source_rank": 21,
+              "source_tier": "web",
+              "title": "웹소설로 꿈꾸는 세상!",
+              "url": "https://novelpia.com/freestory/view/5/662/%ED%8C%90%ED%83%80%EC%A7%80/"
+            },
+            {
+              "domain": "namu.wiki",
+              "eid": "E022",
+              "purpose": "official_title_verify",
+              "query": "빌어먹을 환생 웹소설 노벨피아",
+              "rank": 22,
+              "snippet": "하지만 인터넷 소설 연재 사이트와 도서대여점, 출판사 등지에서 '퓨전 판타지'가 공식적으로 이세계물을 가리키는 용어로 정착되고, 이고깽, 차원이동물, 환생물 등 당시... 대여점 양판소 세계관의 계승 정통 판타지가 1세대 판타지를 계승한다면, 판타지 웹소설은 판타지 소설과 여러 퓨전 판타지 요소가 섞이며 탄생한 2000년대 도서대여점 시절의 양판소를 계승하는...",
+              "source_rank": 22,
+              "source_tier": "wiki",
+              "title": "판타지 웹소설 - 나무위키",
+              "url": "https://namu.wiki/w/%ED%8C%90%ED%83%80%EC%A7%80%20%EC%9B%B9%EC%86%8C%EC%84%A4"
+            },
+            {
+              "domain": "novelpia.com",
+              "eid": "E023",
+              "purpose": "official_title_verify",
+              "query": "빌어먹을 환생 웹소설 노벨피아",
+              "rank": 23,
+              "snippet": "너클볼로 어디까지 뚫을 수 있을까. '모르겠다. 해봐야 알지.' ; 빌어먹는 능력뿐인 거지 이용, 하루아침에 고려 왕자의 운명을 짊어지게 되었다?! ; 마이너하지만 팬층이 탄탄했던 모바일 게임 [던전 인카운터]. 던전 인카운터에서 유저들은 용사 진영을 선택해 용사가 되어 오픈월드를 탐험하거나 마왕 진영을 선택해 자신의 던전을 ; 스승님이 돌아가시고 난 한국의 마지막 도사....",
+              "source_rank": 23,
+              "source_tier": "web",
+              "title": "웹소설로 꿈꾸는 세상!",
+              "url": "https://novelpia.com/freestory/zlib/vote/736/%ED%8C%90%ED%83%80%EC%A7%80/"
+            },
+            {
+              "domain": "namu.wiki",
+              "eid": "E024",
+              "purpose": "official_title_verify",
+              "query": "빌어먹을 환생 웹소설 노벨피아",
+              "rank": 24,
+              "snippet": "플러스 노벨피아의 정액제 웹소설 서비스. 플러스 가입 작품의 경우, 15화까진 무료로 제공되나 그 이후부터는 플러스 서비스에 가입해야만 볼 수 있다. 자유연재와 마찬가지로 전체/신작/완결 카테고리가 있으며, 추가로 베테랑 , 독점 카테고리가 있다. 처음 가입 시 주는 무료 이용권 외에도 가끔가다가 이벤트로 무료 이용권을 주기도 하지만, 이벤트로...",
+              "source_rank": 24,
+              "source_tier": "wiki",
+              "title": "노벨피아/시스템 - 나무위키",
+              "url": "https://namu.wiki/w/%EB%85%B8%EB%B2%A8%ED%94%BC%EC%95%84/%EC%8B%9C%EC%8A%A4%ED%85%9C"
+            }
+          ],
+          "search_health": {
+            "accepted": 29,
+            "cache_hits": 0,
+            "degraded": 0,
+            "degraded_recovered": 0,
+            "degraded_zero": 0,
+            "degraded_zero_suppressed": 0,
+            "direct_search_results": 0,
+            "direct_search_used": 0,
+            "fallback_recovered": 0,
+            "filtered": 6,
+            "headless_used": 0,
+            "queries_issued": 4,
+            "raw": 100,
+            "retried": 0,
+            "status": "ok",
+            "unrecovered_degraded": 0,
+            "upstream_zero": 0
+          },
+          "secondary_reference_works": [],
+          "slang_insight": {
+            "alias_scope": "pure_work_alias",
+            "attached_entity_text": null,
+            "attached_entity_type": null,
+            "canonical_work_alias": "빌환",
+            "cultural_context": "[작성자 발화·원문 귀속]\n- 작성자 발화: 「빌환 표지변경됨」\n- 작성자 발화: 「시엘이랑 세냐 빼고 아니스티나랑 매르만 있어도 된다는 말은 ㄴㄴ」\n[원문] 빌환 표지변경됨 / 시엘이랑 세냐 빼고 아니스티나랑 매르만 있어도 된다는 말은 ㄴㄴ\n[이미지 OCR 진단·비권한 인용]「빌어먹을 환생」(원시 판독·문맥 귀속 미검증)",
+            "decode_verified": true,
+            "decoded_term": "빌어먹을 환생",
+            "detected_term": "빌환",
+            "store_in_slang_db": true,
+            "store_reason": "pure_work_alias"
+          },
+          "subtype": "resolved_work",
+          "system_state": "clean",
+          "title_candidates": [
+            {
+              "alias_or_mention": "빌환",
+              "confidence": "High",
+              "content_status": "active",
+              "heretic_url": "https://www.munpia.com/novel/detail/222360",
+              "locked": true,
+              "negative_evidence": null,
+              "official_title": "빌어먹을 환생",
+              "page_type": "novel_page",
+              "reference_role": "primary",
+              "resolved_recall_anchor": null,
+              "source_tier": "official_detail"
+            }
+          ],
+          "title_resolution_allowed": true,
+          "title_resolution_state": "resolved",
+          "topicality": "core_relevant",
+          "vlm_chunks_sent": 1,
+          "vlm_enabled": true,
+          "vlm_enrichment_used": true,
+          "vlm_total_bytes": 1982486,
+          "work_resolution": "resolved"
+        },
+        "post_id": 11718099
+      },
+      "author": "Salb",
+      "author_ip": null,
+      "comment_context_lines": [],
+      "comment_dialogue_context_lines": [],
+      "comment_metadata": [],
+      "comments": [],
+      "content": [
+        "시엘이랑 세냐 빼고 아니스티나랑 매르만 있어도 된다는 말은 ㄴㄴ"
+      ],
+      "content_blocks": [
+        {
+          "type": "image",
+          "url": "https://dcimg7.dcinside.co.kr/viewimage.php?id=2ab8de34e0dc37b06bb3&no=24b0d769e1d32ca73ce88ffa11d02831cb1683a5d6841fa83169d8a3677674c069a547b2fdca0d9b9a622d493130afe581d7ba17a9a66ad0e6951ed8fe9731a676106623a0bd3460e9a1782a4668e0b133cf2ea31774879968fd2bc344c0"
+        },
+        {
+          "text": "시엘이랑 세냐 빼고 아니스티나랑 매르만 있어도 된다는 말은 ㄴㄴ",
+          "type": "text"
+        }
+      ],
+      "created_at": "2026-01-28 18:45:14",
+      "gallery_id": "genrenovel",
+      "image_count": 1,
+      "image_urls": [
+        "https://dcimg7.dcinside.co.kr/viewimage.php?id=2ab8de34e0dc37b06bb3&no=24b0d769e1d32ca73ce88ffa11d02831cb1683a5d6841fa83169d8a3677674c069a547b2fdca0d9b9a622d493130afe581d7ba17a9a66ad0e6951ed8fe9731a676106623a0bd3460e9a1782a4668e0b133cf2ea31774879968fd2bc344c0"
+      ],
+      "ip": null,
+      "post_author": "Salb",
+      "post_id": 11718099,
+      "post_ip": null,
+      "run_meta": {
+        "config_hash": "19406381481b",
+        "decision_call_attempt_receipt": {
+          "closure_frame_sha256": "2b500e1071456ebd59dd4547ea03f045f7a2a345844996df2f7a342811241e6e",
+          "event_root_sha256": "bde60c7bfbeec5d6c4a057b476bc6cdd9a96c221d9539bc80fc4621e9cc895fd",
+          "publication_decision_id_preview": "80ad3d8dfc90a5db7b9c6f3222f01ec008d5d5b8fdcaee4dabac17365649144c",
+          "publication_link_decision_id": null,
+          "publication_link_frame_sha256": null,
+          "publication_link_status": "PENDING_EXTERNAL_LEDGER_LINK",
+          "publication_shadow_observation": null,
+          "row": {
+            "attempt_run_id": "20261013_060126_882644",
+            "input_index": 12,
+            "post_id": 11718099,
+            "publication_scope_id": "84666454781af214bf344282055e4942a066bf14072739a0ffcec6e1b1c3030c",
+            "row_attempt_id": "bf45963f834cf90fd35ed0ad6832ff431ddf34ee24c85833f7513e93a9159b59",
+            "schema_version": "decision_call_row_attempt_v1"
+          },
+          "schema_version": "decision_call_attempt_receipt_v1"
+        },
+        "decision_call_ledger": {
+          "closure_frame_sha256": "2b500e1071456ebd59dd4547ea03f045f7a2a345844996df2f7a342811241e6e",
+          "closure_kind": "ROW_SEAL",
+          "event_frame_count": 24,
+          "event_root_sha256": "bde60c7bfbeec5d6c4a057b476bc6cdd9a96c221d9539bc80fc4621e9cc895fd",
+          "ledger_scope_sha256": "efee3a2bb8261ff2cb80c087184289f3d5cdcce9c1e700c40601bb9dfe7587e0",
+          "path": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\p4_followup_actual80_parallel12_20261013\\run\\result_decision_call_ledger",
+          "publication_scope_id": "84666454781af214bf344282055e4942a066bf14072739a0ffcec6e1b1c3030c",
+          "row": {
+            "attempt_run_id": "20261013_060126_882644",
+            "input_index": 12,
+            "post_id": 11718099,
+            "publication_scope_id": "84666454781af214bf344282055e4942a066bf14072739a0ffcec6e1b1c3030c",
+            "row_attempt_id": "bf45963f834cf90fd35ed0ad6832ff431ddf34ee24c85833f7513e93a9159b59",
+            "schema_version": "decision_call_row_attempt_v1"
+          },
+          "schema_version": "decision_call_row_ledger_ref_v1"
+        },
+        "decision_call_ledger_summary": {
+          "actual_kpi_status": "PENDING_INDEPENDENT_READBACK",
+          "actual_metrics": {
+            "completion_tokens": null,
+            "expert_calls": null,
+            "prompt_tokens": null,
+            "total_tokens": null
+          },
+          "derived_observation": {
+            "completion_tokens": 7253,
+            "expert_calls": 12,
+            "prompt_tokens": 147294,
+            "retry_count": 0,
+            "text_calls": 11,
+            "total_tokens": 154547,
+            "vlm_calls": 1
+          },
+          "reason_codes": [
+            "INDEPENDENT_READBACK_NOT_BOUND"
+          ],
+          "schema_version": "decision_call_row_summary_v1",
+          "trace_errors": [],
+          "usage_status": "COMPLETE_PROVIDER_REPORTED",
+          "writer_complete": true
+        },
+        "decision_call_measurement": {
+          "actual_kpi_eligible": false,
+          "arm": null,
+          "binding_status": "UNBOUND",
+          "central_slang_db_write_allowed": null,
+          "early_route_enable_status": "DISABLED",
+          "early_route_enabled": false,
+          "early_route_mode": "OFF",
+          "execution_mode": "NORMAL",
+          "fresh_execution_required": false,
+          "mode": "SHADOW",
+          "mutable_context_binding": {
+            "batch_context_enabled": true,
+            "central_slang_db_write_allowed": null,
+            "mutable_context_mode": "NORMAL",
+            "schema_version": "paired_measurement_mutable_context_binding_v1",
+            "slang_access_mode": "OFF"
+          },
+          "mutable_context_binding_sha256": "ec8befe89c6308a5ad19c6535d44726ce2c227aaa41985d6f010c19ab8749812",
+          "mutable_context_frozen": false,
+          "mutable_context_mode": "NORMAL",
+          "pair_id": null,
+          "publication_decision_equivalence_required": false,
+          "run_spec_sha256": null,
+          "semantic_drift_observation": false,
+          "slang_access_mode": "OFF"
+        },
+        "decision_cost_trace": {
+          "action_applied": false,
+          "completion_tokens": 4841,
+          "expert_calls": null,
+          "input_index": 12,
+          "measurement_status": "PARTIAL_AGGREGATE_NO_CALL_EVENTS",
+          "model_tier": "nvidia/Gemma-4-26B-A4B-NVFP4",
+          "operational_effect": "NONE_SHADOW_ONLY",
+          "post_id": "11718099",
+          "processing_finished_at": "2026-10-13T06:13:39.112+09:00",
+          "processing_started_at": "2026-10-13T06:02:08.982+09:00",
+          "prompt_tokens": 98051,
+          "publication_scope_id": "84666454781af214bf344282055e4942a066bf14072739a0ffcec6e1b1c3030c",
+          "retry_count": null,
+          "run_id": "20261013_060126_882644",
+          "schema_version": "decision_cost_trace_v1",
+          "search_calls": 4,
+          "total_tokens": 102892,
+          "trace_sha256": "ab2983a2dff342f9b9d910bdfc96ad2c52d63bbb155501e1c0950c80c9f745ab",
+          "vlm_chunks": 1,
+          "wall_ms": 690130
+        },
+        "effective_parallel": 12,
+        "execution_config": {
+          "compression": {
+            "scope": "artifact_generation",
+            "status": "OFF_NOT_REQUESTED"
+          },
+          "dashboard": {
+            "enabled": true,
+            "mode": "standalone_forward",
+            "url": "http://127.0.0.1:18866"
+          },
+          "effective_parallel": 12,
+          "image_review": {
+            "image_post_count": 21,
+            "ready": true,
+            "skip_reason_codes": []
+          },
+          "measurement": {
+            "execution_mode": "NORMAL",
+            "formal_kpi_status": "NOT_ESTIMABLE"
+          },
+          "output_file": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\p4_followup_actual80_parallel12_20261013\\run\\result.json",
+          "profile": "low-load-validation",
+          "profile_source": "CLI",
+          "requested_parallel": 12,
+          "resources": {
+            "affinity_mask": 2,
+            "logical_cpu_count": 1,
+            "numeric_threads": {
+              "MKL_NUM_THREADS": "1",
+              "NUMEXPR_NUM_THREADS": "1",
+              "OMP_NUM_THREADS": "1",
+              "OPENBLAS_NUM_THREADS": "1",
+              "VECLIB_MAXIMUM_THREADS": "1"
+            },
+            "pid": 84652,
+            "priority_class": 16384,
+            "status": "LOW_LOAD_VERIFIED"
+          },
+          "schema_version": "expert_execution_config_v1",
+          "settings": {
+            "context_diagnostics": {
+              "source": "CLI",
+              "value": true
+            },
+            "ledger_mode": {
+              "source": "CLI",
+              "value": "SHADOW"
+            },
+            "ocr": {
+              "source": "CLI",
+              "value": true
+            },
+            "requested_parallel": {
+              "source": "CLI",
+              "value": 12
+            },
+            "vlm": {
+              "source": "CLI",
+              "value": true
+            }
+          },
+          "source": {
+            "entry_point": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\expert_main.py",
+            "entry_sha256": "e92b5d9033bedfc77f28b8973da44db18e1dcc21c9f142e63901bf52b8e3afdc",
+            "runtime_source_files": {
+              "expert_main.py": "e92b5d9033bedfc77f28b8973da44db18e1dcc21c9f142e63901bf52b8e3afdc",
+              "src/llm_batch/agentic_pipeline.py": "f37851726944e5954b7117df27f3d1d85140cb5080773efe918083fa2ca4dde2",
+              "src/llm_batch/experts/arbiter.py": "4cb17f4ea364483d04a356184715f9bfada1618948319a7bbe9db7957931abf8",
+              "src/llm_batch/experts/decoder.py": "61d2116bfbdfd99ff6d0da81ecb20a905cac48ecf86e10dfa4e743bf7949c26f",
+              "src/llm_batch/experts/orchestrator.py": "7bc17c4ee7ff7b0623f43eb064012bce0bf1f8d1c966e58eb71941dc2dd241d7",
+              "src/llm_batch/experts/synthesizer.py": "ba42dc34381209ba2a1ce4166805d64d56482198b37ec5a52504be5e1b57c1dd",
+              "src/llm_batch/experts/verifier.py": "ad175467a03b3addadbfb31c644569ee6b2f300a67c548df62c8d62a297c20e2",
+              "src/llm_batch/grounding/candidate_reranker_alias_evidence.py": "7b054d52e4e41d3a71a0ecfccb539d22f36d29414cdaebd52d697774146aa619",
+              "src/llm_batch/grounding/candidate_reranker_calibration.py": "adef55d267ad681963e14bfc80ba13b2dd598084f28d85d82ae094fcb5571aac",
+              "src/llm_batch/grounding/candidate_reranker_calibration_data.py": "d1f243490cf1e166cf4506659c1146a9e9b3e3608e903302c239ef1869018dca",
+              "src/llm_batch/grounding/candidate_reranker_calibration_inference.py": "f543a371f075c1e84790eba964912b97d73a02596f751b1e9c25aa0e967938b0",
+              "src/llm_batch/grounding/candidate_reranker_capture.py": "6b8bb2e01470e2450269e0e4d2a8f6ca4cf04844cf744109beef7eb213ca3de4",
+              "src/llm_batch/grounding/candidate_reranker_event_bridge.py": "c9bf880e0eb6a86be7598722cb3cd07956892ef6c22b95c2acde556872d04754",
+              "src/llm_batch/grounding/candidate_reranker_inference_graph.py": "fc62f68a2f7fcbd2a7d133b64671f4fefb7b3a5fef22c3da2708934f9cb96304",
+              "src/llm_batch/grounding/candidate_reranker_learned.py": "14a3c9052699293c7b76e4fa16725212355d1a2726a5f7f017b250e2e76905ac",
+              "src/llm_batch/grounding/candidate_reranker_nil_learned.py": "968609fd573e9857a1993bc321ecce180e180354cd942cff817781a5e48db3a5",
+              "src/llm_batch/grounding/candidate_reranker_roles.py": "4ed5182a14974e72979db57d559615ebd7643bd6a8c6a02b2779742a51b0a56b",
+              "src/llm_batch/grounding/candidate_reranker_semantic_input.py": "7168ab0ee24214cd518b8dbbb9f935ced0397af175bbd786253df1ee26fbd32e",
+              "src/llm_batch/grounding/candidate_reranker_semantics.py": "00ba2e3d1acffc05af8e9ceced860250944801cc4aab444ceddb32bdbd1cbb53",
+              "src/llm_batch/grounding/candidate_reranker_shadow.py": "1d110a652a2501d64b3f98925386018d789249301b1d3c80336bde09a0e15229",
+              "src/llm_batch/grounding/candidate_retrieval_shadow.py": "0f7e4893d26d9dd4115fe6e63fffce8cd0e6919a8a8deebe5bd749bffe758010",
+              "src/llm_batch/grounding/candidate_set_calibration_shadow.py": "365cb609699e81013fda40f730861bdeb2b93bf18bfc97e931b8ace550e8e5ff",
+              "src/llm_batch/grounding/candidate_set_shadow.py": "0a87e724eb78e5c0a636d17cb1598861bd24d80f15e9be1817b6ecf3b04b05e1",
+              "src/llm_batch/grounding/claim_scope_contract.py": "284afabb86e5bef4dd0b7c53b19b136c1faa35fab91f5843e2bb1de2ecb4620e",
+              "src/llm_batch/grounding/community_knowledge.py": "8142d2f6be7cb29971aedc6eba9cd89e1a1ffde13b74fa3d391931ef11b463c4",
+              "src/llm_batch/grounding/context_projection_contract.py": "a2a4dfadc8872c6e66ef4a32b9bf66c65881bb6f1dbac5946dd4359a01a427e4",
+              "src/llm_batch/grounding/reranker_training_split.py": "1e4453ed08eb4213a57363c10d0e4e610fd3076d209fc0a66295f68143523cb8",
+              "src/llm_batch/grounding/source_context_diagnostics.py": "dc474fa74ed40982c702bfc50a0f50a881727f1c259fea38ffbed9d62bb9475c",
+              "src/llm_batch/grounding/source_context_explanation.py": "9927c304ed3ef62e8e9414e55894f85972ce9551919ff09583e00cb1654a9dff",
+              "src/llm_batch/grounding/source_speech_structure.py": "73dea99714b0c87f995453dd68810982505e2c8ce656bc0effd3a785647fbc67",
+              "src/llm_batch/ledger/recovery_native_journal.py": "36e68618b168ad063def750a21a95c8fa1f338b32ab834a47ca4297abf950bb0",
+              "src/llm_batch/ledger/recovery_provider_journal.py": "2a4d921922c9a7082d653acd2c7b1b11928fe430e99d129f6b530f459756913a",
+              "src/llm_batch/llm/client.py": "7ef656f68c8cc5c76b604dc1f99f800c679825dc84042bfc3a73628a37df1085",
+              "src/llm_batch/measurement/paired_execution_policy.py": "e94ba5ff5c54d1c127c33a585320a50142efb0cf22da378d40d281b186542181",
+              "src/llm_batch/measurement/paired_measurement_readback.py": "1c4adba5e19f7a8378ca5e45689dd0e55ee45b17bc4a12259e21fa5cdf8a3733",
+              "src/llm_batch/measurement/recovery_input_projection.py": "cf5617377ee99fce9f59dc27498a9885f64ca68936e08f2ff5d5047875b96591",
+              "src/llm_batch/measurement/recovery_native_source.py": "1f3fd174052d588a46e73ff0f9b787e94c4866d67fa225ae64f52e19e25df94c",
+              "src/llm_batch/measurement/recovery_provider_contract.py": "14841df266d5b19be2f904e81da8f6b06bf78e34e19e4ca169902e2a23c464e6",
+              "src/llm_batch/measurement/recovery_provider_readback.py": "2ef340c8f6c2e493b70c8117ce94ee0a016074c1a424627461d4c23ca7b8ec7b",
+              "src/llm_batch/monitor/recovery_native_view.py": "2be6d9030216c311fc92d4912b5683f2c79237126d63d4dc08a70b9adcbabbd3",
+              "src/llm_batch/monitor/recovery_provider_view.py": "3573a1fd1175b0d77efa58515c4e9bb38235b60466bd28bd5ba58f0cca2cd164",
+              "src/llm_batch/prompts/expert_prompts.py": "691e13a01a3fe2e61390d3b801aa8df791007bef02982be80045bc29ecddce74",
+              "src/llm_batch/runtime/candidate_calibration.py": "2f5d79c26980dee48351194618b3873da075ba0b873f17907007fd55062ba767",
+              "src/llm_batch/runtime/candidate_capture.py": "55ab630bfaba9a2297369f7f533f7c073e8a9c4ebbde100578d1ca5d392e5201",
+              "src/llm_batch/runtime/candidate_inference.py": "25ebe6a716a681d37b1233dae54e0ecf37d504b80673791aab09d505c07634a9",
+              "src/llm_batch/runtime/candidate_reranker.py": "df132311100ba1e906e9dc804a07276e7411f09bf38d5d22a35f407f5cfaea3e",
+              "src/llm_batch/runtime/candidate_retrieval.py": "61077f2f9e1785bd3efffec262a95f202f427cff065666fbb1b3a6b03700f45e",
+              "src/llm_batch/runtime/candidate_semantics.py": "89c63be4036a2fa9fb80a76ed294980c7ac278ef0891d91db8dbb5c37054841e",
+              "src/llm_batch/runtime/community_knowledge.py": "36ea0fb0d2f90b1566e2fd5b357bbf1dc023a90534f25c2c3cb87f8f8a3d9823",
+              "src/llm_batch/runtime/execution_config.py": "b195fa5152bc033b393b3df542d06cc64810670647f6e8b2cc5f12b7885f59aa",
+              "src/llm_batch/runtime/paired_execution.py": "2ae2794fc091ac18385c58f776c6f3879165feb864a0caee99e8b6e72183a5f5",
+              "src/llm_batch/runtime/recovery_native_batch.py": "0f224f08834bdaf97b4af05d3376e3fae8a6bbc45b8fab6c3468de87aff02428",
+              "src/llm_batch/runtime/recovery_native_context.py": "26d15f140119fe930d2d8f22e80d851706d189639bae44b654c7a53faa786fe5",
+              "src/llm_batch/runtime/recovery_native_io.py": "1ec5645dfa26aac3fecb9e3ce3b0e62d9586157b8cfd5caa41371253670fcc87",
+              "src/llm_batch/runtime/recovery_native_workflow.py": "fb2181c4e8c6025caf13b4e87c5785f0052b7a812187dae955863ad0e837b78b",
+              "src/llm_batch/runtime/recovery_provider_transport.py": "49cabbca7740c6ade64eb0a8a8e7cd5084ad236abf0a503e5f3d8cde129c6e05",
+              "src/llm_batch/runtime/recovery_transport.py": "cae8ecfa319e9d430356a270f290a8d2ff26414c9673116f26c20c365843e6e7",
+              "tools/build_candidate_inference_bundle.py": "f17b915011aaf29d9dc322531b3f685d5a7f020e68b1365f7924d5afde5e98af",
+              "tools/run_candidate_reranker_calibration.py": "30f189ce7943069c1d15e94ff5e68963fd03c2f1f8097c58691b8b331571cf30",
+              "tools/run_candidate_reranker_training.py": "d92441d1d1bb4266fd9b5ad0b8e8733da1170dc7714fde779ad46177e1050292",
+              "tools/run_recovery_provider.py": "9986d5104d6ab1083387f71508761737b181049166927b9bee9cfedaa82be938"
+            },
+            "runtime_source_sha256": "cfce2f6f2b02d28d9ae5b22772bdbddec55c641a72f0e9bbd2fb541c3055b958",
+            "source_scope": "SELECTED_RUNTIME_FILES"
+          }
+        },
+        "llm_endpoint": "http://10.20.0.101:8000/",
+        "llm_mode": "remote",
+        "main_log_file": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\logs\\expert_run_20261013_060126_882644.log",
+        "mcp_endpoint_count_after_health_filter": 1,
+        "mcp_goal_run_health_filtered": false,
+        "mcp_health_attempts": 1,
+        "mcp_health_checked_endpoint_count": 1,
+        "mcp_health_failure_count": 0,
+        "mcp_health_include_search": true,
+        "mcp_health_light_mode": false,
+        "mcp_health_ok_count": 1,
+        "mcp_health_probe_batch_size": 1,
+        "mcp_health_probe_stopped_after_required_ok": false,
+        "mcp_health_required_ok_count": 1,
+        "mcp_health_search_max_latency_ms": 8000.0,
+        "mcp_health_search_min_results": 1,
+        "mcp_health_timeout_sec": 8.0,
+        "mcp_health_workers": 1,
+        "mcp_healthy_autogen_endpoint_filter": false,
+        "mcp_healthy_autogen_endpoint_filter_reason": "reuse_shards_only",
+        "mcp_healthy_endpoint_count": 1,
+        "mcp_healthy_endpoint_filter": false,
+        "mcp_healthy_endpoint_filter_autogen": false,
+        "mcp_healthy_endpoint_filter_reason": "reuse_shards_only",
+        "mcp_parallel_after_health_filter": 12,
+        "mcp_parallel_before_health_filter": 12,
+        "mcp_requested_endpoint_count_before_health_filter": 1,
+        "mcp_reuse_shards_only_health_filtered": false,
+        "measurement_execution_source": "NORMAL_PUBLICATION_OWNER",
+        "model": "nvidia/Gemma-4-26B-A4B-NVFP4",
+        "model_parallel_cap_applied": false,
+        "model_parallel_cap_model": "nvidia/Gemma-4-26B-A4B-NVFP4",
+        "model_parallel_max": null,
+        "parallel_policy": "effective_parallel=min(requested_parallel,input_post_count)",
+        "prompt_version": "2026-03-30-semantic-contract-v1",
+        "requested_parallel": 12,
+        "requested_parallel_raw": 12,
+        "run_id": "20261013_060126_882644",
+        "search_health": {
+          "accepted": 29,
+          "cache_hits": 0,
+          "degraded": 0,
+          "degraded_recovered": 0,
+          "degraded_zero": 0,
+          "degraded_zero_suppressed": 0,
+          "direct_search_results": 0,
+          "direct_search_used": 0,
+          "fallback_recovered": 0,
+          "filtered": 6,
+          "headless_used": 0,
+          "queries_issued": 4,
+          "raw": 100,
+          "retried": 0,
+          "status": "ok",
+          "unrecovered_degraded": 0,
+          "upstream_zero": 0
+        },
+        "semantic_recovery_plan_receipt": {
+          "attempt_run_id": "20261013_060126_882644",
+          "authority": "attempt_local_completed_result_evidence",
+          "input_index": 12,
+          "mode": "PLAN_ONLY",
+          "plan": {
+            "blocker_codes": [
+              "OFFICIAL_DETAIL_ID_UNAVAILABLE",
+              "PRIMARY_CANONICAL_ID_UNBOUND"
+            ],
+            "canonical_bindings": [],
+            "media_action": "NO_MEDIA_ACTION",
+            "network_calls_executed": 0,
+            "primary_identity_count": 1,
+            "query_plan": {
+              "max_queries": 1,
+              "purposes": [
+                "VERIFY_OFFICIAL_DETAIL_ID"
+              ],
+              "query_execution_allowed": true,
+              "search_health": "ok"
+            },
+            "raw_ocr_evidence_count": 0,
+            "relationship_counts": {
+              "comparison": 0,
+              "mentioned": 0,
+              "previous": 0,
+              "primary": 1
+            },
+            "search_calls_executed": 0,
+            "state": "HOLD"
+          },
+          "plan_sha256": "5874b9c7e8562b041d6ef39e3e2eb1240a5a1dda65e3429ff3296ad715724b20",
+          "post_id": 11718099,
+          "public_apply": false,
+          "public_projection_sha256": "dcf9305829e092edcb3a175d99201e9f6d0548d193172e462f99b585c19af0e5",
+          "publication_decision_id": "80ad3d8dfc90a5db7b9c6f3222f01ec008d5d5b8fdcaee4dabac17365649144c",
+          "publication_scope_id": "84666454781af214bf344282055e4942a066bf14072739a0ffcec6e1b1c3030c",
+          "receipt_sha256": "6e2e631bdbab863a1c5d43dcdceeaeb77f82ac50f75000d7172cee95f43164da",
+          "rule_version": "p1_review_recovery_plan_v1",
+          "schema_version": "semantic_recovery_plan_receipt_v1",
+          "source_view": {
+            "candidate_evidence": [
+              {
+                "canonical_url": null,
+                "canonical_work_id": null,
+                "content_status": "active",
+                "display_key_sha256": "a08696665c47ae6fc563ed5e15eb7ea9616015766bf475f73b7a7f0c312213ad",
+                "has_display_title": true,
+                "page_type": "novel_page",
+                "relation_role": "primary",
+                "source_tier": "official_detail",
+                "stable_identity_status": "MALFORMED_OR_LISTING_OFFICIAL_DETAIL",
+                "verified_display_title": null
+              }
+            ],
+            "decision_reason_codes": [
+              "direct_image_work_surface_bridge",
+              "ocr_catalog_official_title",
+              "official_detail_display_title_exact",
+              "official_detail_url",
+              "official_title_exists",
+              "row_discusses_work_as_work",
+              "scope_current_work",
+              "title_url_pair_verified"
+            ],
+            "evidence_status": "COMPLETE",
+            "is_relevant": true,
+            "publish_allowed": true,
+            "raw_ocr_evidence_count": 0,
+            "search_health": "ok",
+            "semantic_publication": {
+              "evidence_status": "sufficient",
+              "media_domain_class": "novel_work",
+              "primary_work_status": "unique"
+            },
+            "work_resolution": "resolved"
+          },
+          "source_view_sha256": "45977e9ecc1cc8d993edaafa03d2b5385742a362ca20abc4753440e4b328addd",
+          "stable_result_sha256": "76fd17309434a793952407f764dc05b8757c92a06e49434c187deda1dd0e612d"
+        },
+        "semantic_review_router_receipt": {
+          "attempt_run_id": "20261013_060126_882644",
+          "authority": "attempt_local_result_evidence",
+          "input_index": 12,
+          "mode": "REVIEW_ONLY",
+          "post_id": 11718099,
+          "public_apply": false,
+          "public_projection_sha256": "dcf9305829e092edcb3a175d99201e9f6d0548d193172e462f99b585c19af0e5",
+          "publication_decision_id": "80ad3d8dfc90a5db7b9c6f3222f01ec008d5d5b8fdcaee4dabac17365649144c",
+          "publication_scope_id": "84666454781af214bf344282055e4942a066bf14072739a0ffcec6e1b1c3030c",
+          "receipt_sha256": "7409dbb0499dc8ecfc9d8745e32106970fbc5abece02461934eba0dbb291d907",
+          "router_decision_sha256": "4e66da421b8fbab5646a617b89e9fd9208988fe5f5865c965249b79d49fdb5cb",
+          "rule_version": "strict_evidence_v2",
+          "schema_version": "semantic_review_router_receipt_v1",
+          "source_view": {
+            "candidate_preservation_present": true,
+            "comments_count": 0,
+            "consistency_flags": [
+              "confirmed_alias:시엘",
+              "explicit_alias_official_work_lock",
+              "official_detail_display_title_bound",
+              "verified_alias_official_detail_anchor",
+              "weak_public_title_bridge_verified_alias_detail_exempt"
+            ],
+            "direct_ocr_evidence": {
+              "catalog_sha256": "b9f990391458465dc621aff7e43f91b89fed4a543f4cf8ffeb462f87ed190d1a",
+              "proposal_count": 0,
+              "proposal_set_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "source_payload_sha256": []
+            },
+            "evidence_status": "COMPLETE",
+            "image_count": 1,
+            "is_relevant": true,
+            "output_consistency_lint": [],
+            "publish_allowed": true,
+            "reason_codes": [
+              "direct_image_work_surface_bridge",
+              "ocr_catalog_official_title",
+              "official_detail_display_title_exact",
+              "official_detail_url",
+              "official_title_exists",
+              "row_discusses_work_as_work",
+              "scope_current_work",
+              "title_url_pair_verified"
+            ],
+            "scope_confidence": "high",
+            "title_candidates": [
+              {
+                "has_title": true,
+                "locked": true,
+                "page_type": "novel_page",
+                "reference_role": "primary",
+                "source_tier": "official_detail",
+                "title_relation": "MATCH_PUBLIC"
+              }
+            ],
+            "work_resolution": "resolved"
+          },
+          "source_view_sha256": "9e0f21ae357c95c2a421f25982966a2bd095e246e6f90e71d1c684871529bd77",
+          "stable_result_sha256": "76fd17309434a793952407f764dc05b8757c92a06e49434c187deda1dd0e612d",
+          "state": "NO_REVIEW",
+          "trigger_codes": [],
+          "unknown_reason_codes": []
+        },
+        "source_context_diagnostics": {
+          "byte_count_basis": "UTF8_CANONICAL_JSON",
+          "capture_status": "single_binder",
+          "channels": [
+            {
+              "channel": "speech_act",
+              "field": "speech_act",
+              "index": -1,
+              "locations": [],
+              "rule": "opinion_cue_kind",
+              "value": "opinion",
+              "value_kind": "parser_label"
+            },
+            {
+              "channel": "target",
+              "field": "target_kind",
+              "index": -1,
+              "locations": [],
+              "rule": "opinion_cue_kind",
+              "value": "unknown",
+              "value_kind": "parser_label"
+            },
+            {
+              "channel": "work_relation",
+              "field": "work_relation_evidence",
+              "index": 0,
+              "locations": [
+                {
+                  "carrier_alignment": "exact_enumeration",
+                  "kind": "author_clause",
+                  "line_span": [
+                    0,
+                    2
+                  ],
+                  "original_index": 0,
+                  "raw_path": "/title",
+                  "raw_span": null,
+                  "raw_text_span": [
+                    0,
+                    2
+                  ],
+                  "selection_key": "title",
+                  "source_index": 0,
+                  "source_origin": "post_title",
+                  "span": [
+                    0,
+                    2
+                  ]
+                }
+              ],
+              "rule": "relation_representative_occurrence",
+              "value": [
+                "빌환",
+                "unresolved",
+                "image_context_without_cue",
+                "빌환 표지변경됨"
+              ],
+              "value_kind": "derived_relation"
+            }
+          ],
+          "explanation": {
+            "input_fingerprint": "47c4b3081e99e2abb5890cbd17aafbfe3b07bbe36243a9b06e8b1f67dc0d3c9c",
+            "proofs": [
+              {
+                "claim_id": "author:clause:0:claim:0",
+                "claim_kind": "own",
+                "claim_view": "claim",
+                "claimant": "self",
+                "event_ids": [],
+                "final_support": true,
+                "predicate_spans": [],
+                "raw_path": "/title",
+                "raw_span": [
+                  0,
+                  8
+                ],
+                "rule": "source_change_notice_structure",
+                "source_id": "author:clause:0",
+                "source_sha256": "ed3df56d3c4901b3c5a39f8a6782e68f582b1b2d940d6c6494190e97ae17a5e5",
+                "sourcequote": "빌환 표지변경됨"
+              },
+              {
+                "claim_id": "author:clause:1:claim:1",
+                "claim_kind": "own",
+                "claim_view": "claim",
+                "claimant": "self",
+                "event_ids": [],
+                "final_support": true,
+                "predicate_spans": [],
+                "raw_path": "/content_blocks/1/text",
+                "raw_span": [
+                  0,
+                  35
+                ],
+                "rule": "source_negated_claim_structure",
+                "source_id": "author:clause:1",
+                "source_sha256": "7abb3637f6c40a5f91bf22db792d7b80b53bec2d51afbd3606a7ffc5413748d2",
+                "sourcequote": "시엘이랑 세냐 빼고 아니스티나랑 매르만 있어도 된다는 말은 ㄴㄴ"
+              }
+            ],
+            "source_kind": "deterministic_source_context",
+            "supported": true,
+            "unresolved": []
+          },
+          "ledgers": [
+            {
+              "claims": [
+                {
+                  "attribution": "direct_clause",
+                  "claim_id": "author:clause:0:claim:0",
+                  "evaluation_event_ids": [],
+                  "final_support": true,
+                  "initial_support": true,
+                  "kind": "own",
+                  "source_id": "author:clause:0",
+                  "span": [
+                    0,
+                    8
+                  ],
+                  "speaker": "self",
+                  "speaker_source": "unit_speaker",
+                  "support_attribution": "unit_speaker_direct",
+                  "text": "빌환 표지변경됨"
+                },
+                {
+                  "attribution": "direct_clause",
+                  "claim_id": "author:clause:1:claim:1",
+                  "evaluation_event_ids": [],
+                  "final_support": true,
+                  "initial_support": true,
+                  "kind": "own",
+                  "source_id": "author:clause:1",
+                  "span": [
+                    0,
+                    35
+                  ],
+                  "speaker": "self",
+                  "speaker_source": "unit_speaker",
+                  "support_attribution": "unit_speaker_direct",
+                  "text": "시엘이랑 세냐 빼고 아니스티나랑 매르만 있어도 된다는 말은 ㄴㄴ"
+                }
+              ],
+              "evaluations": [],
+              "graph_edges": [
+                {
+                  "recorded_by": "sources[0].parent_source_id",
+                  "relation": "source_in_unit",
+                  "source_id": "author:clause:0",
+                  "target_id": "author"
+                },
+                {
+                  "recorded_by": "sources[1].parent_source_id",
+                  "relation": "source_in_unit",
+                  "source_id": "author:clause:1",
+                  "target_id": "author"
+                },
+                {
+                  "recorded_by": "claims[0].source_id",
+                  "relation": "claim_in_source",
+                  "source_id": "author:clause:0:claim:0",
+                  "target_id": "author:clause:0"
+                },
+                {
+                  "recorded_by": "claims[0].initial_support",
+                  "relation": "direct_support_of",
+                  "source_id": "author:clause:0:claim:0:direct",
+                  "target_id": "author:clause:0:claim:0"
+                },
+                {
+                  "recorded_by": "claims[0].active_adoption_event_ids[0]",
+                  "relation": "claim_active_support",
+                  "source_id": "author:clause:0:claim:0",
+                  "target_id": "author:clause:0:claim:0:direct"
+                },
+                {
+                  "recorded_by": "claims[1].source_id",
+                  "relation": "claim_in_source",
+                  "source_id": "author:clause:1:claim:1",
+                  "target_id": "author:clause:1"
+                },
+                {
+                  "recorded_by": "claims[1].initial_support",
+                  "relation": "direct_support_of",
+                  "source_id": "author:clause:1:claim:1:direct",
+                  "target_id": "author:clause:1:claim:1"
+                },
+                {
+                  "recorded_by": "claims[1].active_adoption_event_ids[0]",
+                  "relation": "claim_active_support",
+                  "source_id": "author:clause:1:claim:1",
+                  "target_id": "author:clause:1:claim:1:direct"
+                }
+              ],
+              "input_alignment": "caller_clauses_equal_parts",
+              "native_version": "context_projection_native_v33",
+              "source_id": "author",
+              "source_index": -1,
+              "source_role": "author",
+              "sources": [
+                {
+                  "carrier_alignment": "exact_enumeration",
+                  "original_index": 0,
+                  "parent_source_id": "author",
+                  "raw_path": "/title",
+                  "raw_text_span": [
+                    0,
+                    8
+                  ],
+                  "source_id": "author:clause:0",
+                  "source_index": 0,
+                  "source_origin": "post_title",
+                  "source_role": "author",
+                  "span": [
+                    0,
+                    8
+                  ],
+                  "text": "빌환 표지변경됨"
+                },
+                {
+                  "carrier_alignment": "exact_enumeration",
+                  "original_index": 1,
+                  "parent_source_id": "author",
+                  "raw_path": "/content_blocks/1/text",
+                  "raw_text_span": [
+                    0,
+                    35
+                  ],
+                  "source_id": "author:clause:1",
+                  "source_index": 0,
+                  "source_origin": "body_line",
+                  "source_role": "author",
+                  "span": [
+                    0,
+                    35
+                  ],
+                  "text": "시엘이랑 세냐 빼고 아니스티나랑 매르만 있어도 된다는 말은 ㄴㄴ"
+                }
+              ]
+            }
+          ],
+          "max_bytes": 65536,
+          "native_verification_status": "NATIVE_CALLBACK_TRUE",
+          "omitted_counts": {},
+          "projection": {
+            "excluded_works": [],
+            "fallback": false,
+            "reasons": [
+              "named_surface_unresolved:빌환",
+              "discourse_discuss_work",
+              "core_hold:unsupported_content",
+              "core_hold:unsupported_content",
+              "core_hold:unsupported_content",
+              "core_hold:unsupported_content"
+            ],
+            "reference_works": [],
+            "request_conditions": [],
+            "scope_hint": null,
+            "speech_act": "opinion",
+            "target_kind": "unknown",
+            "target_media": "unknown",
+            "target_span": null,
+            "target_surface": null,
+            "work_relation_evidence": [
+              [
+                "빌환",
+                "unresolved",
+                "image_context_without_cue",
+                "빌환 표지변경됨"
+              ]
+            ],
+            "work_roles": []
+          },
+          "publication_authority": false,
+          "reason_codes": [],
+          "schema_version": "source_context_diagnostics_v1",
+          "scope_state_guards": [
+            {
+              "applied": false,
+              "calls": 0,
+              "code": "FINAL_NONWORK_PRECONDITIONS_NOT_MET",
+              "first_rejection": null,
+              "gate": "surface_title_anchor",
+              "publication_authority": false,
+              "status": "SKIPPED"
+            },
+            {
+              "applied": false,
+              "calls": 1,
+              "code": "FINAL_IDENTITY_OR_CONTRACT",
+              "first_rejection": "FINAL_IDENTITY_OR_CONTRACT",
+              "gate": "propriety_question_scope",
+              "publication_authority": false,
+              "status": "REJECTED"
+            },
+            {
+              "applied": false,
+              "calls": 1,
+              "code": "GUARD_RETURNED_NO_PROOF",
+              "first_rejection": null,
+              "gate": "propriety_callback",
+              "publication_authority": false,
+              "status": "NOT_APPLIED"
+            }
+          ],
+          "status": "STORED"
+        },
+        "worker_id": 11,
+        "worker_log_file": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\logs\\expert_run_20261013_060126_882644_W11.log"
+      },
+      "title": "빌환 표지변경됨",
+      "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11718099"
+    },
+    "index1": 12,
+    "post_id": 11718099,
+    "post_id_type": "int",
+    "publication_scope_id": "84666454781af214bf344282055e4942a066bf14072739a0ffcec6e1b1c3030c",
+    "result_canonical_sha256": "821af8d34980fe3595f493ed2976e492d7389d5292a7b527e38de5ae671c79d5",
+    "result_origin": "FINAL_RESULT_JSON",
+    "result_source_path": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\p4_followup_actual80_parallel12_20261013\\run\\result.json",
+    "review_scope": "FINAL_BOUND_SOURCE_RESULT",
+    "review_status": "UNREVIEWED",
+    "run_id": "20261013_060126_882644",
+    "source_canonical_sha256": "d1d7ab959e0677f4e44aca022f258cbc4ab703f60ca1d9fd925531aec35e14ee",
+    "source_comments": [],
+    "source_post": {
+      "author": "Salb",
+      "content_blocks": [
+        {
+          "type": "image",
+          "url": "https://dcimg7.dcinside.co.kr/viewimage.php?id=2ab8de34e0dc37b06bb3&no=24b0d769e1d32ca73ce88ffa11d02831cb1683a5d6841fa83169d8a3677674c069a547b2fdca0d9b9a622d493130afe581d7ba17a9a66ad0e6951ed8fe9731a676106623a0bd3460e9a1782a4668e0b133cf2ea31774879968fd2bc344c0"
+        },
+        {
+          "text": "시엘이랑 세냐 빼고 아니스티나랑 매르만 있어도 된다는 말은 ㄴㄴ",
+          "type": "text"
+        }
+      ],
+      "created_at": "2026-01-28 18:45:14",
+      "gallery_id": "genrenovel",
+      "page_no": 30,
+      "post_id": 11718099,
+      "title": "빌환 표지변경됨",
+      "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11718099"
+    }
+  },
+  "packets_sha256": "7e2a5b70f6f3dd1809c825bdd446e7573dbaf949872eb8221f6c0537903637c2",
+  "purpose": "기존 공개 작품 identity와 동일 작품의 합성 저자 채널 대조; 실제 작가 정답 아님"
+}

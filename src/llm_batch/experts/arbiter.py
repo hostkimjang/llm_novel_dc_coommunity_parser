@@ -27,10 +27,62 @@ from ..prompts.expert_prompts import LF_ARBITER, PLATFORM_ABBREVIATION_MAP
 from ..prompts.prompt_router import build_arbiter_system_prompt
 from ..domain.rules import OFFICIAL_PLATFORMS, GENRE_ARCHETYPE_TERMS, PLATFORM_ABBREVIATIONS
 from ..grounding.candidate_generation import record_candidate_stage_receipt
+from ..grounding.image_title_conflict import unresolved_ocr_alias_conflict_authority_blocked
 from .decoder import abbreviation_match_score, KNOWN_ABBREVIATIONS
 
 if TYPE_CHECKING:
     from .orchestrator import ConversationContext
+
+
+def _build_title_lock_conflict_prompt(
+    consensus_titles: Any,
+    canonical_title: Any = "",
+    canonical_author: Any = "",
+) -> str:
+    """Present competing title provenance without issuing any title as a lock.
+
+    Decoder+Verifier agreement remains model provenance, while canonical_title_lock
+    is a source-referenced snippet-analysis candidate. Divergence or multiple
+    consensus candidates requires comparison against post and stored EID evidence.
+    """
+    if isinstance(consensus_titles, (list, tuple, set)):
+        consensus_list = [str(value or "").strip() for value in consensus_titles]
+    else:
+        consensus_list = [str(consensus_titles or "").strip()]
+    consensus_list = [value for value in consensus_list if value]
+    canonical = str(canonical_title or "").strip()
+    if len(consensus_list) < 2 and not (consensus_list and canonical):
+        return ""
+    author = str(canonical_author or "").strip()
+    author_line = (
+        f"- snippet analysis candidate author (source-referenced model provenance): {author}\n"
+        if author
+        else ""
+    )
+    lines = [
+        "\n\n=== TITLE LOCK CONFLICT REVIEW (제목 잠금 충돌 보류) ===",
+    ]
+    for index, title in enumerate(consensus_list, 1):
+        lines.append(
+            f"- Decoder+Verifier consensus candidate {index} "
+            f"(model provenance): {title}"
+        )
+    if canonical:
+        lines.append(
+            "- snippet analysis candidate "
+            "(source-referenced model provenance): "
+            f"{canonical}"
+        )
+    if author_line:
+        lines.append(author_line.rstrip("\n"))
+    lines.extend(
+        [
+            "- 어느 후보도 잠금 명령이나 확정 title로 취급하지 마세요.",
+            "- 원문 표면과 저장 EID별 title/alias/공식 상세 관계를 모든 후보에 대해 대조하세요.",
+            "- 관계가 하나의 후보로 수렴하지 않으면 official_novel_title을 확정하지 말고 미해결로 보류하세요.",
+        ]
+    )
+    return "\n".join(lines) + "\n"
 
 
 def _build_snippet_canonical_lock_prompt(title: Any, author: Any = "") -> str:
@@ -70,7 +122,7 @@ YOUR ROLE:
 - Review ALL expert opinions and their reasoning
 - Resolve conflicts between experts
 - Make the FINAL determination on novel identity
-- Synthesize metadata from all sources
+- Synthesize metadata; NSFW must follow the input-content-only scope below
 
 """ + LF_ARBITER + """
 
@@ -432,12 +484,28 @@ Step 2: 검색 결과 재해석
 - Arbiter는 "밈/구호"라는 이유로 이를 뒤집지 말 것
 - 대신 discussion_type을 "meme" 또는 "anticipation"으로 설정
 
+=== NSFW 원문 범위 (INPUT CONTENT ONLY) ===
+metadata_synthesis.is_nsfw는 외부 작품의 성인 등급이 아니라 입력 게시글 자체의 성적 내용에 대한 판정입니다.
+원문 제목·본문·댓글에서 실제로 표현된 내용과, 같은 원문 이미지에 출처가 결속된 OCR만 근거로 사용하세요.
+OCR은 원문 이미지 URL/위치와의 대응이 확인되는 범위만 사용하고, 다른 이미지·외부 페이지의 글자를 합치지 마세요.
+[이미지 출처]는 전달된 메타데이터이며 결속 검증의 증명은 아닙니다. OCR 표식이나 요약만으로 픽셀을 봤다고 단정하지 마세요.
+검색 본문·검색 제목·외부 작품의 성인 등급·별칭 풀이·전문가의 원문 밖 추정은 단독 NSFW 양성 근거가 아닙니다.
+욕설·욕설처럼 보이는 작품명/약어·성인 장르의 단순 언급과 실제 성적 행위·대사·묘사를 구분하세요.
+독자층·취향을 낮춰 부르는 합성 은어는 전체 표현의 문장 역할부터 확인하세요. 신체 부위처럼 보이는 일부 글자만 잘라 성행위나 작품 속 히로인 선택을 만들어 내지 마세요.
+성적 행위가 생략된 완곡 표현은 제목·본문이 지시하는 대상과 해당 댓글을 함께 읽으세요. 원문 문맥상 성적 욕구를 표현한 경우에는 명시적인 행위 명사가 없다는 이유만으로 누락하지 마세요.
+반대로 경험·하다·싶다 같은 일반 표현만 있거나 활동 대상이 운동·게임·업무라면 성적 의미를 보충하지 마세요. 모호하면 불확실한 범위를 설명하세요.
+현실의 개인 의견인지 작품 관련인지와 성적 내용인지는 별개입니다. 판독한 댓글을 글쓴이의 의사나 실제 행위로 귀속하지 마세요.
+의학·교육·비성적 설명인지, 성적 묘사 자체인지 문맥과 대상을 확인하세요. 의학이라는 단어만으로 다른 성적 내용을 지우지 마세요.
+원문 인용문이나 댓글 속 명시적 성적 내용도 판독 대상입니다. 인용·부정·거절이라는 이유만으로 내용을 없애거나 작성자의 동의로 바꾸지 마세요.
+원문 양성을 판단하면 해당 원문 구절과 출처를 reasoning에서 설명하고, 판독 불가·잘린 입력·미확인 이미지의 한계를 남기세요.
+작품 식별 confidence나 장르·관련성 판정을 is_nsfw의 근거로 대신 사용하지 마세요.
+
 YOUR JUDGMENT MUST INCLUDE:
 - final_decision: The conclusive answer
 - confidence_level: How certain you are (Max/High/Medium/Low/None)
 - reasoning: Why you made this decision (Korean)
 - dissenting_opinions: Any expert opinions you overruled and why
-- metadata_synthesis: Combined metadata from all sources
+- metadata_synthesis: Combined metadata; is_nsfw is scoped to input content only
 """
 
 ARBITER_PROMPT = """\
@@ -448,6 +516,26 @@ Title: {title}
 Body: {body_preview}
 Comments ({comment_count} total):
 {comment_preview}
+
+=== 작성자 발화와 근거 출처 ===
+제목·본문에서 글쓴이가 직접 한 질문·평가·부정과 인용문·타인 댓글·검색 결과를 분리하세요.
+final_decision의 discussion_type과 final_reasoning은 직접 발화의 대상 구절에 결속하세요.
+전언 속 타인의 불만을 글쓴이의 불만으로 바꾸거나, 부정한 주장을 글쓴이가 동의한 주장으로
+뒤집지 마세요. 질문이 여러 개면 각 질문을 보존하고, 비교 대상과 비교 기준을 원문대로
+적으세요. 매체 비교를 장르 능력 비교로, 독자 댓글 습관을 작품 추천으로 바꾸지 마세요.
+이미지 제목·출처 질문은 질문 대상과 출처를 구분하고, 작품 공식 제목을 뜻하지 않는다면
+그대로 설명하세요. 검색에서 찾은 인명·작품명은 원문 키워드로 돌려 쓰지 마세요.
+제목 표현의 어원은 작성자 발화나 직접 확인된 어원 근거 없이 확정하지 마세요.
+근거가 불충분하면 설명에서 불확실성을 명시하고, 원문에 없는 발화·대상을 생성하지 마세요.
+
+=== NSFW 판독 범위 ===
+is_nsfw는 위 POST의 원문 제목·본문·댓글과 같은 원문 이미지에 결속된 OCR의 내용만 판독하세요.
+아래 EXPERT CONSENSUS·KEY EVIDENCE·검색 catalog·전문가 재해석은 원문을 대신하지 않습니다.
+외부 검색의 성적 문구·작품 등급·약어 추정만으로 원문을 NSFW로 바꾸지 마세요.
+[이미지 출처]의 URL을 원문 이미지와 대조하고, 미확인 출처·다른 이미지·잘린 OCR의 내용을 추정해 채우지 마세요.
+욕설/작품명/장르 언급·의학/교육 설명과 성적 묘사를 구분하되, 원문 인용·댓글의 명시적 내용을 누락하지 마세요.
+독자층 은어의 일부 글자를 성행위로 읽거나, 성적 문맥의 생략 표현을 일반 의견이라는 이유로 누락하지 마세요. 전체 표현의 역할과 원문에 있는 대상·행위를 구분하고, 댓글 화자와 글쓴이를 합치지 마세요.
+이 제한은 NSFW의 근거 범위이며 작품 식별이나 기존 출력 스키마를 바꾸지 않습니다.
 
 === EXPERT CONSENSUS ===
 
@@ -815,6 +903,13 @@ class ArbiterExpert:
     - 최종 결론 도출
     - 메타데이터 종합
     """
+
+    @staticmethod
+    def _is_diagnostic_search_result(result: Any) -> bool:
+        return isinstance(result, dict) and (
+            result.get("_ocr_diagnostic_only") is True
+            or result.get("_purpose") == "image_ocr_diagnostic_probe"
+        )
     
     def __init__(self, llm_client):
         self.llm = llm_client
@@ -1053,6 +1148,8 @@ class ArbiterExpert:
         for item in post_data.get("image_enrichment") or []:
             if not isinstance(item, dict):
                 continue
+            if unresolved_ocr_alias_conflict_authority_blocked(item):
+                continue
             explicit_title = str(item.get("explicit_work_title") or "").strip()
             title_norm = self._normalize_match_text(explicit_title)
             if not title_norm:
@@ -1088,6 +1185,121 @@ class ArbiterExpert:
                 continue
             titles.append(explicit_title)
         return list(dict.fromkeys(titles))
+
+    def _should_hold_nonpromotable_image_suspect(
+        self,
+        ctx: "ConversationContext",
+        candidate_title: Any,
+        verifier_out: Dict[str, Any],
+        raw_arbiter_title: Any,
+    ) -> bool:
+        """Keep an ancillary OCR title in inventory without forcing it over consensus."""
+        candidate_norm = self._normalize_match_text(candidate_title)
+        if not candidate_norm:
+            return False
+        images = (getattr(ctx, "post_data", None) or {}).get("image_enrichment") or []
+        matching_images = [
+            item for item in images
+            if isinstance(item, dict)
+            and self._normalize_match_text(item.get("explicit_work_title")) == candidate_norm
+        ]
+        if not matching_images:
+            return False
+        if any(
+            item.get("promotion_eligible") is True
+            and str(item.get("title_role") or "").strip().lower() == "work_title"
+            for item in matching_images
+        ):
+            return False
+        if not any(
+            item.get("promotion_eligible") is False
+            or str(item.get("title_role") or "").strip().lower() not in {"", "work_title"}
+            for item in matching_images
+        ):
+            return False
+
+        vf_result = (verifier_out or {}).get("verification_result") or {}
+        if not isinstance(vf_result, dict):
+            return False
+        vf_identity = vf_result.get("novel_identity") or {}
+        if not isinstance(vf_identity, dict):
+            vf_identity = {}
+        verifier_title = (
+            vf_identity.get("official_novel_title")
+            or vf_identity.get("official_title")
+            or vf_result.get("verified_title")
+        )
+        verifier_norm = self._normalize_match_text(verifier_title)
+        arbiter_norm = self._normalize_match_text(raw_arbiter_title)
+        if not verifier_norm or verifier_norm != arbiter_norm or verifier_norm == candidate_norm:
+            return False
+
+        post_data = getattr(ctx, "post_data", None) or {}
+        original_texts = [str(post_data.get("title") or "")]
+        for block in post_data.get("content_blocks") or []:
+            if isinstance(block, str):
+                original_texts.append(block)
+            elif isinstance(block, dict):
+                block_type = str(block.get("type") or "text").strip().lower()
+                if block_type not in {"text", "plain_text"}:
+                    continue
+                block_text = str(block.get("text") or "")
+                if block_text.lstrip().startswith(("[이미지 OCR]", "[이미지 요약]")):
+                    continue
+                original_texts.append(block_text)
+        for comment in getattr(ctx, "comments", None) or []:
+            if isinstance(comment, str):
+                original_texts.append(comment)
+            elif isinstance(comment, dict):
+                original_texts.append(str(
+                    comment.get("content") or comment.get("text") or comment.get("body") or ""
+                ))
+        if any(
+            self._has_affirmative_original_title_mention(text, candidate_title)
+            for text in original_texts
+        ):
+            return False
+        if self._verified_contextual_alias_work_bridge_context(
+            ctx, candidate_title, verifier_out=verifier_out
+        ):
+            return False
+        return True
+
+    def _has_affirmative_original_title_mention(self, raw_text: Any, title: Any) -> bool:
+        """A mention of an image title must describe the discussed work, not its source."""
+        import re
+
+        if not self._text_matches_title_strict(raw_text, title):
+            return False
+        text = str(raw_text or "")
+        title_text = str(title or "").strip()
+        if not title_text:
+            return False
+        for match in re.finditer(re.escape(title_text), text, flags=re.IGNORECASE):
+            following = text[match.end():match.end() + 64]
+            clause = re.split(r"[.!?。！？\n]", following, maxsplit=1)[0]
+            # A title printed on an ancillary image can also be named in a
+            # comment that explicitly rejects it as the post's subject.
+            if re.match(
+                r"\s*(?:은|는|이|가|의|을|를)?\s*(?:짤|이미지|스샷|캡처|그림|표지)?"
+                r"\s*(?:의)?\s*(?:출처|저작권|표기|워터마크)",
+                clause,
+            ):
+                continue
+            if re.match(
+                r"\s*(?:은|는|이|가|을|를)?\s*(?:이야기|작품|내용|주제|소설)?"
+                r"\s*(?:이|가|은|는)?\s*(?:아님|아니|무관|별개|제외|관계없|말고)",
+                clause,
+            ):
+                continue
+            if re.match(r"\s*보다(?:\s|$)", clause) or re.match(
+                r"\s*(?:와|과|랑|하고|vs)\s*(?:비교|대비|다르)",
+                clause,
+                re.IGNORECASE,
+            ):
+                continue
+            return True
+        return False
 
     def _direct_image_forced_title_guard(
         self,
@@ -1503,6 +1715,12 @@ class ArbiterExpert:
         single_score = float(scores.get("single_work", 0.0))
         title_support_ok = bool(board.get("title_support_ok"))
 
+        # A relation-hold can establish a work/character discussion while the
+        # canonical title remains unverified. Missing title support must not
+        # turn that independently supported discussion into noise.
+        if decision.get("is_relevant") is True and self._qualified_relation_topic_hold(verifier_out):
+            return board
+
         # 로그: 상위 3개 가설만 출력
         top3 = sorted(scores.items(), key=lambda x: x[1], reverse=True)[:3]
         top3_text = ", ".join(f"{k}={v:.2f}" for k, v in top3)
@@ -1607,6 +1825,44 @@ class ArbiterExpert:
                 )
 
         return board
+
+    @staticmethod
+    def _qualified_relation_topic_hold(verifier_out: Dict[str, Any]) -> bool:
+        verification = (verifier_out or {}).get("verification_result") or {}
+        relation = verification.get("relation_judgment") or {}
+        summary = relation.get("search_support_summary") or {}
+        grounding = verification.get("grounding_check") or {}
+        try:
+            qualified_sources = int(summary.get("community_alias_character_context_count") or 0)
+        except (TypeError, ValueError):
+            return False
+        return bool(
+            verification.get("is_relevant") is True
+            and relation.get("qualified_topic_hold") is True
+            and relation.get("discussion_target") == "specific_work"
+            and relation.get("promotion_decision") == "hold"
+            and relation.get("relation_type") in {"explicit_alias", "work_specific_nickname"}
+            and grounding.get("anchor_found") in {"character_mention", "character_title_link"}
+            and summary.get("post_alias_character_context") is True
+            and qualified_sources >= 2
+        )
+
+    def _retain_qualified_relation_hold_subject(
+        self,
+        decision: Dict[str, Any],
+        verifier_out: Dict[str, Any],
+    ) -> None:
+        if decision.get("is_relevant") is not True or not self._qualified_relation_topic_hold(verifier_out):
+            return
+        decision["is_novel_discussion"] = True
+        if decision.get("discussion_type") in {"general", "general_discussion", "short_reaction", "noise", "community_banter"}:
+            decision["discussion_type"] = "character_talk"
+        # The relation establishes the topic, not a publishable canonical pair.
+        decision["official_title"] = None
+        decision["official_novel_title"] = None
+        decision["heretic_url"] = None
+        decision["confidence"] = "Low"
+        decision["_title_deliberately_null"] = True
     
     def analyze(self, ctx: "ConversationContext") -> Dict[str, Any]:
         """
@@ -1984,6 +2240,21 @@ class ArbiterExpert:
             key_evidence=key_evidence,
             suspected_titles=suspected_titles_str,
         ) + expert_confidence_info + uncertainty_info + evidence_bucket_info + hypothesis_info + discourse_info
+        # 원래 본문 800자에 출처 문자열을 넣지 않는다. 위치는 전달된 content_blocks 기준이다.
+        image_origin_lines = []
+        for block_index, block in enumerate(content_blocks[:8]):
+            if isinstance(block, dict) and block.get("type") in {"image", "ocr_text", "image_summary"}:
+                image_origin = json.dumps(
+                    {"type": block.get("type"), "url": block.get("url") or None},
+                    ensure_ascii=False,
+                )
+                image_origin_lines.append(f"content_blocks[{block_index}] [이미지 출처] {image_origin}")
+        if image_origin_lines:
+            user_prompt += (
+                "\n\n=== 이미지 출처 메타데이터 (본문 예산 밖) ===\n"
+                "전달된 위치·URL이며 원문 결속의 증명이 아닙니다. 보이지 않는 OCR 내용은 추정하지 마세요.\n"
+                + "\n".join(image_origin_lines)
+            )
         if _comment_context_lines:
             user_prompt += (
                 "\n\n=== 댓글 작성자/대화 맥락 ===\n"
@@ -2066,11 +2337,44 @@ class ArbiterExpert:
             if _v:
                 _vf_title_cands.append(str(_v))
 
-        _dec_norm_to_raw = {_norm_title_local(t): t for t in _dec_title_cands if _norm_title_local(t)}
+        _dec_norm_to_raw = {
+            _norm_title_local(t): t
+            for t in _dec_title_cands
+            if _norm_title_local(t)
+        }
         _vf_norm_set = {_norm_title_local(t) for t in _vf_title_cands if _norm_title_local(t)}
         _dv_overlap = [n for n in _dec_norm_to_raw.keys() if n in _vf_norm_set]
-        if _dv_overlap:
-            _dv_lock_title = _dec_norm_to_raw[_dv_overlap[0]]
+        _dv_lock_titles = [_dec_norm_to_raw[norm] for norm in _dv_overlap]
+
+        _canonical_lock_title = str(getattr(ctx, "canonical_title_lock", "") or "").strip()
+        _canonical_lock_author = str(getattr(ctx, "canonical_author_lock", "") or "").strip()
+        _overlap_norms = set(_dv_overlap)
+        _dv_lock_title = _dv_lock_titles[0] if len(_dv_lock_titles) == 1 else ""
+        _canonical_lock_norm = _norm_title_local(_canonical_lock_title)
+        _title_lock_conflict = bool(
+            len(_dv_lock_titles) > 1
+            or (
+                len(_dv_lock_titles) == 1
+                and _canonical_lock_title
+                and _canonical_lock_norm
+                and _canonical_lock_norm not in _overlap_norms
+            )
+        )
+        if _title_lock_conflict:
+            user_prompt += _build_title_lock_conflict_prompt(
+                _dv_lock_titles,
+                _canonical_lock_title,
+                _canonical_lock_author,
+            )
+            _conflict_log_titles = list(_dv_lock_titles)
+            if _canonical_lock_title and _canonical_lock_title not in _conflict_log_titles:
+                _conflict_log_titles.append(_canonical_lock_title)
+            print(
+                f"[{_ts()}][{self.emoji}] ⚠️ title lock conflict 보류: "
+                f"candidates={_conflict_log_titles}",
+                file=sys.stderr,
+            )
+        elif _dv_lock_title:
             user_prompt += (
                 "\n\n=== CONSENSUS TITLE LOCK (합의 제목 잠금) ===\n"
                 f"- Decoder+Verifier 합의 제목: {_dv_lock_title}\n"
@@ -2083,11 +2387,7 @@ class ArbiterExpert:
                 file=sys.stderr,
             )
 
-        _canonical_lock_title = str(getattr(ctx, "canonical_title_lock", "") or "").strip()
-        _canonical_lock_author = str(getattr(ctx, "canonical_author_lock", "") or "").strip()
-        if _canonical_lock_title:
-            _canonical_lock_norm = _norm_title_local(_canonical_lock_title)
-            _overlap_norms = set(_dv_overlap)
+        if _canonical_lock_title and not _title_lock_conflict:
             if _canonical_lock_norm and _canonical_lock_norm not in _overlap_norms:
                 user_prompt += _build_snippet_canonical_lock_prompt(
                     _canonical_lock_title,
@@ -2157,6 +2457,9 @@ class ArbiterExpert:
             #   강제 승격되는 오매칭이 발생함.
             # - 따라서 "병합 + 증거 필터"로만 반영한다.
             decision = result.get("final_decision") or {}
+            # This internal signal must be computed from the post, never trusted
+            # when echoed by an LLM response.
+            decision.pop("_untitled_new_work_content_review", None)
 
             # 🆕 Smart Deliberation: 후처리 가드 적용 전 LLM 원본 판정을 보존
             # 밈 가드/multi_work 가드 등이 is_relevant를 뒤집어도 deliberation에서
@@ -2310,7 +2613,7 @@ class ArbiterExpert:
                 _search_hit_cnt = 0
                 _seen_hit_urls: Set[str] = set()
                 for _sr in (getattr(ctx, "search_results", None) or []):
-                    if not isinstance(_sr, dict):
+                    if not isinstance(_sr, dict) or self._is_diagnostic_search_result(_sr):
                         continue
                     _sr_title = str(_sr.get("title") or "")
                     _sr_body = str(_sr.get("content") or "")
@@ -2939,7 +3242,7 @@ class ArbiterExpert:
                     return False
                 _parenthetical_search_hit = False
                 for _sr in (getattr(ctx, "search_results", None) or []):
-                    if not isinstance(_sr, dict):
+                    if not isinstance(_sr, dict) or self._is_diagnostic_search_result(_sr):
                         continue
                     _sr_title_norm = _st_norm(_sr.get("title"))
                     if _title_norm and _title_norm in _sr_title_norm and "(" in str(_sr.get("title") or ""):
@@ -3561,6 +3864,15 @@ class ArbiterExpert:
                     _st_title = st.get("title")
                     if not _st_title:
                         continue
+                    if self._should_hold_nonpromotable_image_suspect(
+                        ctx, _st_title, verifier_out, decision.get("_raw_llm_title")
+                    ):
+                        print(
+                            f"[{_ts()}][{self.emoji}] 🛡️ 보조 이미지 제목 강제 적용 보류: "
+                            f"title='{_st_title}' (suspected inventory retained)",
+                            file=sys.stderr,
+                        )
+                        continue
                     if self._is_platform_branding_title(str(_st_title)):
                         continue
                     if _st_title in decoder_author_names:
@@ -3698,9 +4010,8 @@ class ArbiterExpert:
                 if len(filtered_titles) < len(ctx.suspected_titles):
                     removed = len(ctx.suspected_titles) - len(filtered_titles)
                     print(
-                        f"[{_ts()}][{self.emoji}] 🛡️ 작가명 필터: "
-                        f"suspected_titles에서 작가명 {removed}건 제거 "
-                        f"(작가명: {decoder_author_names})",
+                        f"[{_ts()}][{self.emoji}] 🛡️ suspected_titles 강제 적용 필터: "
+                        f"{removed}건 제외 (작가명 후보: {decoder_author_names})",
                         file=sys.stderr,
                     )
                 
@@ -4004,6 +4315,8 @@ class ArbiterExpert:
                             # 꺾쇠 제목이 검색 결과에 있는지 확인
                             _bracket_in_search = False
                             for _sr in (getattr(ctx, "search_results", []) or []):
+                                if self._is_diagnostic_search_result(_sr):
+                                    continue
                                 _sr_blob = (
                                     str((_sr or {}).get("title") or "")
                                     + " "
@@ -4229,7 +4542,7 @@ class ArbiterExpert:
 
                         _has_official_detail_match = False
                         for _sr in (getattr(ctx, "search_results", None) or []):
-                            if not isinstance(_sr, dict):
+                            if not isinstance(_sr, dict) or self._is_diagnostic_search_result(_sr):
                                 continue
                             _sr_url = str(_sr.get("url") or "")
                             if not any(p in _sr_url for p in OFFICIAL_PLATFORMS):
@@ -4276,7 +4589,7 @@ class ArbiterExpert:
                         official_linked = 0
 
                         for _sr in (getattr(ctx, "search_results", None) or [])[:120]:
-                            if not isinstance(_sr, dict):
+                            if not isinstance(_sr, dict) or self._is_diagnostic_search_result(_sr):
                                 continue
                             _sr_text = _norm_veto_text(f"{_sr.get('title', '')} {_sr.get('content', '')}")
                             if not _sr_text or _abbr_norm not in _sr_text:
@@ -5414,16 +5727,53 @@ class ArbiterExpert:
                             file=sys.stderr,
                         )
                     elif _author_new_work_assoc and disc_domain == "novel_literature":
+                        _gk_work_out = ctx.get_expert_output(ExpertType.GATEKEEPER) or {}
+                        _semantic_review = d_analysis.get("semantic_seed_review") or {}
+                        _verified_work = (verifier_out or {}).get("verification_result") or {}
+                        _verified_author = _verified_work.get("author_info") or {}
+                        _body_content_review = self._has_untitled_new_work_content_critique(ctx)
+                        _raw_work_review = str(decision.get("_raw_llm_discussion_type") or "").strip().lower() in {
+                            "review", "work_discussion", "character_talk", "spoiler",
+                        }
+                        _specific_untitled_review = bool(
+                            (_raw_work_review or _body_content_review)
+                            and _gk_work_out.get("post_type") == "work_discussion"
+                            and isinstance(_semantic_review, dict)
+                            and _semantic_review.get("is_specific_work_discussion") is True
+                            and _semantic_review.get("recommended_intent") == "discuss_work"
+                            and (
+                                _semantic_review.get("recommended_target_kind") == "work"
+                                or (_body_content_review and _semantic_review.get("recommended_target_kind") == "author")
+                            )
+                            and _verified_work.get("is_relevant") is True
+                            and isinstance(_verified_author, dict)
+                            and _verified_author.get("is_author_criticism") is False
+                            and (
+                                _raw_work_review
+                                or str((_verified_work.get("inference") or {}).get("type") or "").strip().lower()
+                                in {"작품 토론", "work_discussion", "discuss_work"}
+                            )
+                        )
+                        if _specific_untitled_review:
+                            decision["discussion_type"] = "work_discussion"
+                            decision["is_relevant"] = True
+                            if _body_content_review:
+                                decision["_untitled_new_work_content_review"] = True
+                            decision["notes"] = (
+                                "[author_new_work 작품 비평] 정식 제목은 미확정이나 논의 대상은 신작 자체입니다. "
+                                + decision.get("notes", "")
+                            )
+                        else:
+                            decision["discussion_type"] = "author_talk"
+                            decision["is_relevant"] = False
+                            decision["notes"] = (
+                                f"[author_new_work 예외] 작가 {', '.join(detected_authors)}의 신작 언급(정식 제목 미확정). "
+                                + decision.get("notes", "")
+                            )
                         print(
                             f"[{_ts()}][{self.emoji}] 🔧 author_new_work 연상 예외: "
-                            f"제목 '{_post_title_at}'은 작가 신작 패턴 → author_talk 유지",
+                            f"제목 '{_post_title_at}' → {decision['discussion_type']}",
                             file=sys.stderr,
-                        )
-                        decision["discussion_type"] = "author_talk"
-                        decision["is_relevant"] = False
-                        decision["notes"] = (
-                            f"[author_new_work 예외] 작가 {', '.join(detected_authors)}의 신작 언급(정식 제목 미확정). "
-                            + decision.get("notes", "")
                         )
                         if "metadata_synthesis" in result:
                             result["metadata_synthesis"]["detected_author"] = detected_authors[0]
@@ -5596,6 +5946,8 @@ class ArbiterExpert:
                                 _arb_norm = re.sub(r"[^\w가-힣]", "", str(arbiter_title or "")).lower()
                                 if _arb_norm:
                                     for _sr in (ctx.search_results or []):
+                                        if self._is_diagnostic_search_result(_sr):
+                                            continue
                                         _blob = re.sub(
                                             r"[^\w가-힣]",
                                             "",
@@ -7339,6 +7691,9 @@ class ArbiterExpert:
                     )
                     decision[title_key] = _clean_t
 
+            self._retain_qualified_relation_hold_subject(decision, verifier_out)
+            self._retain_work_recall_question_speech_act(ctx, decision)
+
             # 🔧 후처리로 final_decision이 바뀐 경우(강제승격/차단 등)에도
             # top-level final_reasoning이 stale해지지 않도록 동기화
             _decision_reasoning = decision.get("final_reasoning") or decision.get("reason")
@@ -7569,6 +7924,10 @@ class ArbiterExpert:
             query = (parsed.query or "").lower()
         except Exception:
             return False
+        if "kakao.page" in host or "page.kakao.com" in host:
+            from llm_batch.kakao_routes import is_kakao_work_detail_url
+            return is_kakao_work_detail_url(url)
+
 
         # listing/search 우선 차단
         if any(tok in path for tok in ("/search", "/author", "/writers", "/ranking", "/best", "/genre", "/tag", "/list")):
@@ -7589,8 +7948,6 @@ class ArbiterExpert:
         ):
             return True
         if "joara.com" in host and ("/book/" in path or "book_no=" in query or "bookcode=" in query):
-            return True
-        if ("kakao.page" in host or "page.kakao.com" in host) and "/content/" in path:
             return True
 
         return False
@@ -7707,7 +8064,7 @@ class ArbiterExpert:
                     quality["active_detail_match_count"] += 1
 
             for sr in (getattr(ctx, "search_results", None) or []):
-                if not isinstance(sr, dict):
+                if not isinstance(sr, dict) or self._is_diagnostic_search_result(sr):
                     continue
                 if sr.get("_is_derivative"):
                     continue
@@ -7926,7 +8283,11 @@ class ArbiterExpert:
 
         seen: Set[str] = set()
         for sr in (getattr(ctx, "search_results", None) or []):
-            if not isinstance(sr, dict) or sr.get("_is_derivative"):
+            if (
+                not isinstance(sr, dict)
+                or self._is_diagnostic_search_result(sr)
+                or sr.get("_is_derivative")
+            ):
                 continue
             sr_url = str(sr.get("url") or "").strip()
             norm_url = _normalized_url(sr_url)
@@ -8493,7 +8854,7 @@ class ArbiterExpert:
         support_parts: List[str] = []
         support_urls: set[str] = set()
         for sr in (getattr(ctx, "search_results", None) or []):
-            if not isinstance(sr, dict):
+            if not isinstance(sr, dict) or self._is_diagnostic_search_result(sr):
                 continue
             sr_url = str(sr.get("url") or "").strip()
             if not self._is_novel_detail_url(sr_url):
@@ -8848,6 +9209,11 @@ class ArbiterExpert:
         import re
         from difflib import SequenceMatcher
         from collections import Counter
+
+        search_results = [
+            sr for sr in (search_results or [])
+            if isinstance(sr, dict) and not self._is_diagnostic_search_result(sr)
+        ]
         
         official_platforms = OFFICIAL_PLATFORMS
 
@@ -9486,6 +9852,101 @@ class ArbiterExpert:
             "evidence_chain": [],
         }
 
+    @staticmethod
+    def _has_untitled_new_work_content_critique(ctx: "ConversationContext | Dict[str, Any]") -> bool:
+        """Find critique of story content in the post body, excluding author metadata.
+
+        This only helps resolve a disputed discussion type. It never supplies a
+        work title or publication evidence. Comments and the author-name title
+        cannot satisfy the content requirement by themselves.
+        """
+        post_data = ctx if isinstance(ctx, dict) else (getattr(ctx, "post_data", None) or {})
+        body_parts = []
+        for block in (post_data.get("content_blocks") or [])[:24]:
+            if not isinstance(block, dict):
+                continue
+            kind = str(block.get("type") or "text").strip().lower()
+            if kind != "text" or any(block.get(key) for key in ("url", "image_url", "src")):
+                continue
+            if any(str(block.get(key) or "").strip().lower() in {"1", "true", "yes", "on"}
+                   for key in ("generated", "is_generated", "synthetic", "from_image", "is_ocr")):
+                continue
+            trusted_origins = {
+                "", "post", "post_body", "post_text", "original", "original_post",
+                "user", "user_post", "dc_post", "dcinside", "body", "text",
+                "text_content", "content_block", "main_text",
+            }
+            provenance = (
+                str(block.get(key) or "").strip().lower().replace(" ", "_")
+                for key in ("source", "source_type", "source_role", "origin", "provenance", "generated_source", "evidence_type")
+            )
+            if any(value not in trusted_origins for value in provenance):
+                continue
+            part = str(block.get("text") or block.get("content") or "").strip()
+            if not part or re.match(
+                r"^\s*\[(?:이미지\s*(?:OCR|설명|요약)|OCR|VLM|검색\s*요약|링크\s*미리보기)\]",
+                part,
+                flags=re.IGNORECASE,
+            ):
+                continue
+            body_parts.append(part)
+        body = " ".join(body_parts)
+        if len(body) < 24:
+            return False
+        if re.search(r"필력|문체|커리어|작가\s*(?:행보|노선|스타일)|전작\s*(?:과|이랑|보다|비교)", body):
+            return False
+        character_pattern = r"캐릭터|등장인물|주인공|남주|여주|남캐|여캐|조연|빌런|악역|용사|마왕|마법사"
+        story_pattern = r"줄거리|전개|결말|엔딩|스토리|서사|회차|\d+\s*화|장면|설정|관계|반전|떡밥|NTR"
+        character = re.search(character_pattern, body)
+        story = re.search(story_pattern, body, re.IGNORECASE)
+        evaluation = re.search(r"불쾌|싫|별로|좋|재밌|재미|멋|어색|답답|이상|납득|개연|지루|거슬|멀쩡|좆같|한심|아쉽", body)
+        story_lines = sum(
+            bool(re.search(character_pattern, part) or re.search(story_pattern, part, re.IGNORECASE))
+            for part in body_parts
+        )
+        current_work_reference = re.search(r"이\s*작품|이번\s*(?:작품|신작)|신작\s*(?:내용|설정|캐릭터|전개)", body)
+        return bool(character and story and evaluation and (story_lines >= 2 or current_work_reference))
+
+    @staticmethod
+    def _retain_work_recall_question_speech_act(ctx: "ConversationContext", decision: Dict[str, Any]) -> bool:
+        """Keep a concrete episode recall question out of the review bucket.
+
+        The public discussion type has no `question` value, so `general` keeps
+        the work discussion while an internal marker retains the speech act.
+        This does not touch relevance, title, or publication evidence.
+        """
+        if decision.get("is_relevant") is not True or decision.get("discussion_type") not in {"review", "spoiler"}:
+            return False
+        from .orchestrator import ExpertType
+        discourse_out = ctx.get_expert_output(ExpertType.DISCOURSE) or {}
+        discourse = discourse_out.get("discourse_analysis") or {}
+        if not isinstance(discourse, dict) or any(
+            discourse.get(key) != expected
+            for key, expected in (
+                ("primary_domain", "novel_literature"),
+                ("intent", "discuss_work"),
+                ("speech_act", "question"),
+                ("target_kind", "work"),
+            )
+        ):
+            return False
+        post_data = getattr(ctx, "post_data", None) or {}
+        title = str(post_data.get("title") or post_data.get("normalized_title") or "").strip()
+        if not re.search(r"(?:맞는\s*거임|맞았(?:던)?\s*거임|맞음|기억\s*맞음)\s*[?？]$", title):
+            return False
+        body = " ".join(
+            str(block.get("text") or "")
+            for block in (post_data.get("content_blocks") or [])
+            if isinstance(block, dict) and str(block.get("type") or "text").lower() == "text"
+        )
+        if not re.search(r"회차|\d+\s*화|장면|기억|같은\s*느낌|했던\s*것", body):
+            return False
+        if re.search(r"재밌|재미|별로|좋았|싫었|지루|명작|망작|평가|추천", f"{title} {body}"):
+            return False
+        decision["discussion_type"] = "general"
+        decision["_work_recall_question_speech_act"] = "question"
+        return True
+
     def _detect_author_criticism_post(
         self,
         post_data: Dict[str, Any],
@@ -9830,6 +10291,48 @@ class ArbiterExpert:
                 signals.append("single_vf_confirmed_override")
                 return False, signals
 
+        # A named author's untitled new work can list characters and ask
+        # rhetorical questions. Those surfaces are not a list of works.
+        # Keep the override behind the work-focused discourse decision and
+        # absence of any independently identified title or comparison cue.
+        semantic_seed = discourse_analysis.get("semantic_seed_review") or {}
+        author_new_work_title = any(
+            re.search(
+                rf"^\s*{re.escape(str(author).strip())}(?:꺼)?\s*(?:신작|최신작|새작품|이번작|차기작|신간)",
+                title,
+            )
+            for author in gk_authors
+            if str(author or "").strip()
+        )
+        explicit_work_comparison = bool(re.search(
+            r"전작|비교|대비|\bvs\b|둘\s*중|어느\s*쪽|뭐\s*볼|뭘\s*볼",
+            merged_text_no_url,
+            flags=re.IGNORECASE,
+        ))
+        candidate_named_in_post = any(
+            candidate and candidate.lower() in merged_text_no_url.lower()
+            for candidate in candidate_titles
+        )
+        if (
+            author_new_work_title
+            and not has_multi_titles
+            and not candidate_named_in_post
+            and not explicit_work_comparison
+            and gatekeeper_out.get("post_type") == "work_discussion"
+            and isinstance(semantic_seed, dict)
+            and semantic_seed.get("is_specific_work_discussion") is True
+            and semantic_seed.get("recommended_intent") == "discuss_work"
+            and (
+                semantic_seed.get("recommended_target_kind") == "work"
+                or (
+                    semantic_seed.get("recommended_target_kind") == "author"
+                    and self._has_untitled_new_work_content_critique(post_data)
+                )
+            )
+        ):
+            signals.append("single_untitled_new_work_override")
+            return False, signals
+
         # 다중 작품 맥락 판정:
         # - 명시적 다중 후보 + (질문/나열) 또는
         # - 나열 + 질문 동시 충족
@@ -9958,6 +10461,8 @@ class ArbiterExpert:
         )
         
         for sr in search_results:
+            if self._is_diagnostic_search_result(sr):
+                continue
             sr_title = sr.get("title", "")
             sr_content = (sr.get("content") or sr.get("snippet") or "")
             sr_url = sr.get("url", "")
@@ -10137,7 +10642,7 @@ class ArbiterExpert:
         explicit_community_hits = 0
 
         for sr in search_results:
-            if not isinstance(sr, dict):
+            if not isinstance(sr, dict) or self._is_diagnostic_search_result(sr):
                 continue
             sr_title = str(sr.get("title") or "")
             sr_content = str(sr.get("content") or sr.get("snippet") or "")

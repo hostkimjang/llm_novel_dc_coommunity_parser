@@ -1,0 +1,1376 @@
+{
+  "schema_version": "image_native_observation_v1",
+  "input": {
+    "title": "감상",
+    "body": "나는 달의 항로를 읽었다.",
+    "image": {
+      "explicit_work_title": "달의 항로",
+      "evidence_type": "explicit_text",
+      "title_role": "unknown",
+      "promotion_eligible": false
+    },
+    "candidate": {
+      "official_title": "달의 항로",
+      "confidence": "Low",
+      "source_tier": "llm_only"
+    }
+  },
+  "pipeline_sha256": "24bc2c9c57f301aa73054709d1b2eb5fa00c3b4ac34820488d0ea5a1d0763dd1",
+  "completed_tree": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\p4_quality_followup_20261013\\source_quality_followup_validation_v5\\run_001\\tree",
+  "original_failed_nodeid": "tests/test_source_role39_boundaries.py::test_ineligible_image_with_native_author_work_relation_preserved",
+  "steps_completed": [
+    "original_test_pipeline_and_context",
+    "image_work_relation",
+    "source_image_title_recall_allowed",
+    "direct_source_mentions_and_graph",
+    "morphology_observation"
+  ],
+  "semantic_quality_accepted": false,
+  "repair_verified": false,
+  "relation": {
+    "python_type": "llm_batch.agentic_pipeline.ImageWorkRelation",
+    "fields": {
+      "candidate_title": "달의 항로",
+      "source_role": "ineligible_image_label",
+      "actor": "author",
+      "target": "unknown",
+      "event": "unresolved_image_relation",
+      "polarity": "positive",
+      "correction_of": null,
+      "certainty": "low",
+      "state": "ambiguous",
+      "evidence_span": "",
+      "span_start": -1,
+      "span_end": -1,
+      "supporting_event_ids": []
+    }
+  },
+  "supports_primary": false,
+  "original_positive_expectation_met": false,
+  "native_context_after_relation": {
+    "_image_work_relation_cache": {
+      "mapping_entries": [
+        {
+          "key": [
+            "달의항로",
+            "나는 달의 항로를 읽었다.",
+            [
+              [
+                "달의항로",
+                false,
+                "unknown"
+              ]
+            ]
+          ],
+          "value": {
+            "python_type": "llm_batch.agentic_pipeline.ImageWorkRelation",
+            "fields": {
+              "candidate_title": "달의 항로",
+              "source_role": "ineligible_image_label",
+              "actor": "author",
+              "target": "unknown",
+              "event": "unresolved_image_relation",
+              "polarity": "positive",
+              "correction_of": null,
+              "certainty": "low",
+              "state": "ambiguous",
+              "evidence_span": "",
+              "span_start": -1,
+              "span_end": -1,
+              "supporting_event_ids": []
+            }
+          }
+        }
+      ]
+    },
+    "_image_native_comment_graphs": {
+      "mapping_entries": [
+        {
+          "key": [
+            [],
+            null
+          ],
+          "value": []
+        }
+      ]
+    },
+    "_image_native_comments_current": [],
+    "_image_native_reducers": {
+      "달의항로": {
+        "python_type": "llm_batch.agentic_pipeline.ImageNativeReducer",
+        "fields": {
+          "candidate_key": "달의항로",
+          "authority": false,
+          "state": "ambiguous",
+          "source_graph_observed": true,
+          "support_event_ids": [],
+          "grant_event_ids": [],
+          "authority_dependencies": [],
+          "selection_dependencies": [
+            {
+              "python_type": "llm_batch.agentic_pipeline.ImageNativeAuthority",
+              "fields": {
+                "event_id": 0,
+                "source_event_id": null,
+                "checks": [
+                  [
+                    "actor_is_author",
+                    false
+                  ],
+                  [
+                    "target_is_candidate_work",
+                    false
+                  ],
+                  [
+                    "has_target_mention",
+                    true
+                  ],
+                  [
+                    "mention_matches_candidate",
+                    false
+                  ],
+                  [
+                    "assertion_is_actual_or_corrected",
+                    false
+                  ],
+                  [
+                    "certainty_is_high",
+                    false
+                  ],
+                  [
+                    "polarity_is_supported",
+                    true
+                  ],
+                  [
+                    "not_withdrawn",
+                    true
+                  ],
+                  [
+                    "agrees_with_post_graph",
+                    false
+                  ]
+                ],
+                "eligible": false
+              }
+            },
+            {
+              "python_type": "llm_batch.agentic_pipeline.ImageNativeAuthority",
+              "fields": {
+                "event_id": 1,
+                "source_event_id": null,
+                "checks": [
+                  [
+                    "actor_is_author",
+                    false
+                  ],
+                  [
+                    "target_is_candidate_work",
+                    false
+                  ],
+                  [
+                    "has_target_mention",
+                    true
+                  ],
+                  [
+                    "mention_matches_candidate",
+                    false
+                  ],
+                  [
+                    "assertion_is_actual_or_corrected",
+                    false
+                  ],
+                  [
+                    "certainty_is_high",
+                    false
+                  ],
+                  [
+                    "polarity_is_supported",
+                    true
+                  ],
+                  [
+                    "not_withdrawn",
+                    true
+                  ],
+                  [
+                    "agrees_with_post_graph",
+                    false
+                  ]
+                ],
+                "eligible": false
+              }
+            },
+            {
+              "python_type": "llm_batch.agentic_pipeline.ImageNativeAuthority",
+              "fields": {
+                "event_id": 2,
+                "source_event_id": 0,
+                "checks": [
+                  [
+                    "actor_is_author",
+                    true
+                  ],
+                  [
+                    "target_is_candidate_work",
+                    false
+                  ],
+                  [
+                    "has_target_mention",
+                    true
+                  ],
+                  [
+                    "mention_matches_candidate",
+                    false
+                  ],
+                  [
+                    "assertion_is_actual_or_corrected",
+                    true
+                  ],
+                  [
+                    "certainty_is_high",
+                    true
+                  ],
+                  [
+                    "polarity_is_supported",
+                    true
+                  ],
+                  [
+                    "not_withdrawn",
+                    true
+                  ],
+                  [
+                    "agrees_with_post_graph",
+                    false
+                  ]
+                ],
+                "eligible": false
+              }
+            }
+          ]
+        }
+      }
+    },
+    "_image_work_event_ledgers": {
+      "달의항로": [
+        {
+          "python_type": "llm_batch.agentic_pipeline.ImageRelationEvent",
+          "fields": {
+            "event_id": 0,
+            "candidate_title": "달의 항로",
+            "source_role": "post_body",
+            "speaker": "post_author",
+            "actor": "unknown",
+            "predicate": "named_work_consumption",
+            "object_target": "other_work",
+            "polarity": "positive",
+            "correction_of": null,
+            "clause_span": [
+              0,
+              13
+            ],
+            "evidence_span": [
+              3,
+              13
+            ],
+            "certainty": "low",
+            "assertion_mode": "proposal",
+            "target_mention_id": 6,
+            "supersedes_event_id": null,
+            "source_block_index": 0,
+            "temporal_scope": "completed",
+            "object_kind": "work",
+            "parent_span": null,
+            "claim_source": "post_author",
+            "source_event_id": null,
+            "source_assertion_mode": null,
+            "object_head_span": null,
+            "object_head_kind": null,
+            "parent_event_id": null,
+            "native_trace": null,
+            "native_source_pointer": null
+          }
+        },
+        {
+          "python_type": "llm_batch.agentic_pipeline.ImageRelationEvent",
+          "fields": {
+            "event_id": 1,
+            "candidate_title": "달의 항로",
+            "source_role": "post_body",
+            "speaker": "post_author",
+            "actor": "unknown",
+            "predicate": "named_work_consumption",
+            "object_target": "other_work",
+            "polarity": "positive",
+            "correction_of": null,
+            "clause_span": [
+              0,
+              13
+            ],
+            "evidence_span": [
+              3,
+              12
+            ],
+            "certainty": "low",
+            "assertion_mode": "proposal",
+            "target_mention_id": 6,
+            "supersedes_event_id": null,
+            "source_block_index": 0,
+            "temporal_scope": "completed",
+            "object_kind": "work",
+            "parent_span": null,
+            "claim_source": "post_author",
+            "source_event_id": null,
+            "source_assertion_mode": null,
+            "object_head_span": null,
+            "object_head_kind": null,
+            "parent_event_id": null,
+            "native_trace": null,
+            "native_source_pointer": null
+          }
+        },
+        {
+          "python_type": "llm_batch.agentic_pipeline.ImageRelationEvent",
+          "fields": {
+            "event_id": 2,
+            "candidate_title": "달의 항로",
+            "source_role": "post_body",
+            "speaker": "post_author",
+            "actor": "author",
+            "predicate": "named_work_consumption",
+            "object_target": "other_work",
+            "polarity": "positive",
+            "correction_of": null,
+            "clause_span": [
+              0,
+              14
+            ],
+            "evidence_span": [
+              10,
+              13
+            ],
+            "certainty": "high",
+            "assertion_mode": "direct",
+            "target_mention_id": 6,
+            "supersedes_event_id": null,
+            "source_block_index": 0,
+            "temporal_scope": "completed",
+            "object_kind": "work",
+            "parent_span": [
+              0,
+              14
+            ],
+            "claim_source": "post_author",
+            "source_event_id": 0,
+            "source_assertion_mode": "direct",
+            "object_head_span": null,
+            "object_head_kind": null,
+            "parent_event_id": null,
+            "native_trace": {
+              "python_type": "llm_batch.agentic_pipeline.ImageNativeEvent",
+              "fields": {
+                "event_id": 0,
+                "work_id": "항로",
+                "source_record": {
+                  "python_type": "llm_batch.agentic_pipeline.ImageNativeSource",
+                  "fields": {
+                    "source": "post_body",
+                    "source_id": "post_body:0",
+                    "source_block_index": 0,
+                    "source_pointer": "/post_data/content_blocks/0/text",
+                    "source_text": "나는 달의 항로를 읽었다.",
+                    "source_sha256": "d903fe4c75e98aa7c22c6ed5dd19c915be839a96f6fc29c771f4872969359b25",
+                    "span": [
+                      0,
+                      14
+                    ],
+                    "local_span": [
+                      0,
+                      14
+                    ],
+                    "text": "나는 달의 항로를 읽었다."
+                  }
+                },
+                "predicate_text": "읽었다",
+                "predicate_span": [
+                  10,
+                  13
+                ],
+                "predicate_kind": "named_work_consumption",
+                "grammatical_subject": "나는 ",
+                "actualsubject_span": [
+                  0,
+                  3
+                ],
+                "actor": "author",
+                "actor_kind": "author",
+                "actor_evidence": {
+                  "python_type": "llm_batch.agentic_pipeline.ImageNativeSource",
+                  "fields": {
+                    "source": "post_body",
+                    "source_id": "post_body:0",
+                    "source_block_index": 0,
+                    "source_pointer": "/post_data/content_blocks/0/text",
+                    "source_text": "나는 달의 항로를 읽었다.",
+                    "source_sha256": "d903fe4c75e98aa7c22c6ed5dd19c915be839a96f6fc29c771f4872969359b25",
+                    "span": [
+                      0,
+                      3
+                    ],
+                    "local_span": [
+                      0,
+                      3
+                    ],
+                    "text": "나는 "
+                  }
+                },
+                "actor_basis": "explicit_subject",
+                "speaker": "post_author",
+                "object_np_record": {
+                  "python_type": "llm_batch.agentic_pipeline.ImageNativeNP",
+                  "fields": {
+                    "object_np": "항로",
+                    "object_span": [
+                      6,
+                      8
+                    ],
+                    "object_head": "항로",
+                    "object_head_span": [
+                      6,
+                      8
+                    ],
+                    "object_head_kind": "named_work",
+                    "object_kind": "novel_text",
+                    "target_mention_id": 6,
+                    "work_id": "항로",
+                    "observation": "OBSERVED"
+                  }
+                },
+                "mood": "completed",
+                "mood_evidence": {
+                  "python_type": "llm_batch.agentic_pipeline.ImageNativeSource",
+                  "fields": {
+                    "source": "post_body",
+                    "source_id": "post_body:0",
+                    "source_block_index": 0,
+                    "source_pointer": "/post_data/content_blocks/0/text",
+                    "source_text": "나는 달의 항로를 읽었다.",
+                    "source_sha256": "d903fe4c75e98aa7c22c6ed5dd19c915be839a96f6fc29c771f4872969359b25",
+                    "span": [
+                      0,
+                      14
+                    ],
+                    "local_span": [
+                      0,
+                      14
+                    ],
+                    "text": "나는 달의 항로를 읽었다."
+                  }
+                },
+                "mood_flags": [
+                  [
+                    "permission",
+                    false
+                  ],
+                  [
+                    "question",
+                    false
+                  ],
+                  [
+                    "hypothetical",
+                    false
+                  ],
+                  [
+                    "conditional",
+                    false
+                  ],
+                  [
+                    "request",
+                    false
+                  ],
+                  [
+                    "reported",
+                    false
+                  ],
+                  [
+                    "quoted",
+                    false
+                  ],
+                  [
+                    "ui_label",
+                    false
+                  ],
+                  [
+                    "past_predicate",
+                    true
+                  ],
+                  [
+                    "current_predicate",
+                    false
+                  ]
+                ],
+                "attribution": "direct",
+                "attribution_evidence": {
+                  "python_type": "llm_batch.agentic_pipeline.ImageNativeSource",
+                  "fields": {
+                    "source": "post_body",
+                    "source_id": "post_body:0",
+                    "source_block_index": 0,
+                    "source_pointer": "/post_data/content_blocks/0/text",
+                    "source_text": "나는 달의 항로를 읽었다.",
+                    "source_sha256": "d903fe4c75e98aa7c22c6ed5dd19c915be839a96f6fc29c771f4872969359b25",
+                    "span": [
+                      0,
+                      14
+                    ],
+                    "local_span": [
+                      0,
+                      14
+                    ],
+                    "text": "나는 달의 항로를 읽었다."
+                  }
+                },
+                "polarity": "positive",
+                "polarity_evidence": {
+                  "python_type": "llm_batch.agentic_pipeline.ImageNativeSource",
+                  "fields": {
+                    "source": "post_body",
+                    "source_id": "post_body:0",
+                    "source_block_index": 0,
+                    "source_pointer": "/post_data/content_blocks/0/text",
+                    "source_text": "나는 달의 항로를 읽었다.",
+                    "source_sha256": "d903fe4c75e98aa7c22c6ed5dd19c915be839a96f6fc29c771f4872969359b25",
+                    "span": [
+                      10,
+                      13
+                    ],
+                    "local_span": [
+                      10,
+                      13
+                    ],
+                    "text": "읽었다"
+                  }
+                },
+                "clause_id": "post_body:0:clause:0:14",
+                "withdrawn": false,
+                "edge": null,
+                "antecedent_np_record": null,
+                "event_key": "post_body:0:event:0",
+                "source_speaker": "post_author",
+                "superseded": false
+              }
+            },
+            "native_source_pointer": null
+          }
+        }
+      ]
+    },
+    "_image_relation_clause_scopes": {
+      "달의항로": [
+        {
+          "python_type": "llm_batch.agentic_pipeline.ImageClauseScope",
+          "fields": {
+            "clause_id": 0,
+            "start": 0,
+            "end": 13,
+            "speaker": "post_author",
+            "actor": "author",
+            "assertion_mode": "direct",
+            "ui_content_span": null,
+            "source_block_index": 0
+          }
+        }
+      ]
+    },
+    "_image_common_work_mentions": {
+      "나는 달의 항로를 읽었다.": [
+        {
+          "python_type": "llm_batch.agentic_pipeline.ImageWorkMention",
+          "fields": {
+            "mention_id": 6,
+            "title": "항로",
+            "start": 6,
+            "end": 8,
+            "source_block_index": 0,
+            "kind": "work_action",
+            "source_id": "post_body:0",
+            "work_id": "항로",
+            "paragraph_id": 0,
+            "head_span": null,
+            "head_kind": "case_work"
+          }
+        }
+      ]
+    },
+    "_image_work_mentions": {
+      "달의항로": [
+        {
+          "python_type": "llm_batch.agentic_pipeline.ImageWorkMention",
+          "fields": {
+            "mention_id": 6,
+            "title": "항로",
+            "start": 6,
+            "end": 8,
+            "source_block_index": 0,
+            "kind": "work_action",
+            "source_id": "post_body:0",
+            "work_id": "항로",
+            "paragraph_id": 0,
+            "head_span": null,
+            "head_kind": "case_work"
+          }
+        }
+      ]
+    },
+    "_image_post_event_graphs": {
+      "나는 달의 항로를 읽었다.": [
+        {
+          "python_type": "llm_batch.agentic_pipeline.ImageRelationEvent",
+          "fields": {
+            "event_id": 0,
+            "candidate_title": "",
+            "source_role": "post_body",
+            "speaker": "post_author",
+            "actor": "author",
+            "predicate": "named_work_consumption",
+            "object_target": "work",
+            "polarity": "positive",
+            "correction_of": null,
+            "clause_span": [
+              0,
+              14
+            ],
+            "evidence_span": [
+              10,
+              13
+            ],
+            "certainty": "high",
+            "assertion_mode": "direct",
+            "target_mention_id": 6,
+            "supersedes_event_id": null,
+            "source_block_index": 0,
+            "temporal_scope": "completed",
+            "object_kind": "work",
+            "parent_span": [
+              0,
+              14
+            ],
+            "claim_source": "post_author",
+            "source_event_id": null,
+            "source_assertion_mode": "direct",
+            "object_head_span": null,
+            "object_head_kind": null,
+            "parent_event_id": null,
+            "native_trace": {
+              "python_type": "llm_batch.agentic_pipeline.ImageNativeEvent",
+              "fields": {
+                "event_id": 0,
+                "work_id": "항로",
+                "source_record": {
+                  "python_type": "llm_batch.agentic_pipeline.ImageNativeSource",
+                  "fields": {
+                    "source": "post_body",
+                    "source_id": "post_body:0",
+                    "source_block_index": 0,
+                    "source_pointer": "/post_data/content_blocks/0/text",
+                    "source_text": "나는 달의 항로를 읽었다.",
+                    "source_sha256": "d903fe4c75e98aa7c22c6ed5dd19c915be839a96f6fc29c771f4872969359b25",
+                    "span": [
+                      0,
+                      14
+                    ],
+                    "local_span": [
+                      0,
+                      14
+                    ],
+                    "text": "나는 달의 항로를 읽었다."
+                  }
+                },
+                "predicate_text": "읽었다",
+                "predicate_span": [
+                  10,
+                  13
+                ],
+                "predicate_kind": "named_work_consumption",
+                "grammatical_subject": "나는 ",
+                "actualsubject_span": [
+                  0,
+                  3
+                ],
+                "actor": "author",
+                "actor_kind": "author",
+                "actor_evidence": {
+                  "python_type": "llm_batch.agentic_pipeline.ImageNativeSource",
+                  "fields": {
+                    "source": "post_body",
+                    "source_id": "post_body:0",
+                    "source_block_index": 0,
+                    "source_pointer": "/post_data/content_blocks/0/text",
+                    "source_text": "나는 달의 항로를 읽었다.",
+                    "source_sha256": "d903fe4c75e98aa7c22c6ed5dd19c915be839a96f6fc29c771f4872969359b25",
+                    "span": [
+                      0,
+                      3
+                    ],
+                    "local_span": [
+                      0,
+                      3
+                    ],
+                    "text": "나는 "
+                  }
+                },
+                "actor_basis": "explicit_subject",
+                "speaker": "post_author",
+                "object_np_record": {
+                  "python_type": "llm_batch.agentic_pipeline.ImageNativeNP",
+                  "fields": {
+                    "object_np": "항로",
+                    "object_span": [
+                      6,
+                      8
+                    ],
+                    "object_head": "항로",
+                    "object_head_span": [
+                      6,
+                      8
+                    ],
+                    "object_head_kind": "named_work",
+                    "object_kind": "novel_text",
+                    "target_mention_id": 6,
+                    "work_id": "항로",
+                    "observation": "OBSERVED"
+                  }
+                },
+                "mood": "completed",
+                "mood_evidence": {
+                  "python_type": "llm_batch.agentic_pipeline.ImageNativeSource",
+                  "fields": {
+                    "source": "post_body",
+                    "source_id": "post_body:0",
+                    "source_block_index": 0,
+                    "source_pointer": "/post_data/content_blocks/0/text",
+                    "source_text": "나는 달의 항로를 읽었다.",
+                    "source_sha256": "d903fe4c75e98aa7c22c6ed5dd19c915be839a96f6fc29c771f4872969359b25",
+                    "span": [
+                      0,
+                      14
+                    ],
+                    "local_span": [
+                      0,
+                      14
+                    ],
+                    "text": "나는 달의 항로를 읽었다."
+                  }
+                },
+                "mood_flags": [
+                  [
+                    "permission",
+                    false
+                  ],
+                  [
+                    "question",
+                    false
+                  ],
+                  [
+                    "hypothetical",
+                    false
+                  ],
+                  [
+                    "conditional",
+                    false
+                  ],
+                  [
+                    "request",
+                    false
+                  ],
+                  [
+                    "reported",
+                    false
+                  ],
+                  [
+                    "quoted",
+                    false
+                  ],
+                  [
+                    "ui_label",
+                    false
+                  ],
+                  [
+                    "past_predicate",
+                    true
+                  ],
+                  [
+                    "current_predicate",
+                    false
+                  ]
+                ],
+                "attribution": "direct",
+                "attribution_evidence": {
+                  "python_type": "llm_batch.agentic_pipeline.ImageNativeSource",
+                  "fields": {
+                    "source": "post_body",
+                    "source_id": "post_body:0",
+                    "source_block_index": 0,
+                    "source_pointer": "/post_data/content_blocks/0/text",
+                    "source_text": "나는 달의 항로를 읽었다.",
+                    "source_sha256": "d903fe4c75e98aa7c22c6ed5dd19c915be839a96f6fc29c771f4872969359b25",
+                    "span": [
+                      0,
+                      14
+                    ],
+                    "local_span": [
+                      0,
+                      14
+                    ],
+                    "text": "나는 달의 항로를 읽었다."
+                  }
+                },
+                "polarity": "positive",
+                "polarity_evidence": {
+                  "python_type": "llm_batch.agentic_pipeline.ImageNativeSource",
+                  "fields": {
+                    "source": "post_body",
+                    "source_id": "post_body:0",
+                    "source_block_index": 0,
+                    "source_pointer": "/post_data/content_blocks/0/text",
+                    "source_text": "나는 달의 항로를 읽었다.",
+                    "source_sha256": "d903fe4c75e98aa7c22c6ed5dd19c915be839a96f6fc29c771f4872969359b25",
+                    "span": [
+                      10,
+                      13
+                    ],
+                    "local_span": [
+                      10,
+                      13
+                    ],
+                    "text": "읽었다"
+                  }
+                },
+                "clause_id": "post_body:0:clause:0:14",
+                "withdrawn": false,
+                "edge": null,
+                "antecedent_np_record": null,
+                "event_key": "post_body:0:event:0",
+                "source_speaker": "post_author",
+                "superseded": false
+              }
+            },
+            "native_source_pointer": null
+          }
+        }
+      ]
+    },
+    "_image_native_authority_groups": {
+      "나는 달의 항로를 읽었다.": [
+        {
+          "python_type": "llm_batch.agentic_pipeline.ImageNativeAuthorityGroup",
+          "fields": {
+            "work_id": "항로",
+            "authority_kind": "native_intrinsic_eligibility",
+            "grant_event_ids": [
+              0
+            ],
+            "authority_dependencies": [
+              {
+                "python_type": "llm_batch.agentic_pipeline.ImageNativeAuthority",
+                "fields": {
+                  "event_id": 0,
+                  "source_event_id": 0,
+                  "checks": [
+                    [
+                      "actor_is_author",
+                      true
+                    ],
+                    [
+                      "assertion_is_actual_or_corrected",
+                      true
+                    ],
+                    [
+                      "has_source_work_object",
+                      true
+                    ],
+                    [
+                      "polarity_is_positive",
+                      true
+                    ],
+                    [
+                      "certainty_is_high",
+                      true
+                    ],
+                    [
+                      "not_withdrawn",
+                      true
+                    ]
+                  ],
+                  "eligible": true
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "recall_allowed": false,
+  "direct_source_mentions": [
+    {
+      "python_type": "llm_batch.agentic_pipeline.ImageWorkMention",
+      "fields": {
+        "mention_id": 6,
+        "title": "항로",
+        "start": 6,
+        "end": 8,
+        "source_block_index": 0,
+        "kind": "work_action",
+        "source_id": "post_body:0",
+        "work_id": "항로",
+        "paragraph_id": 0,
+        "head_span": null,
+        "head_kind": "case_work"
+      }
+    }
+  ],
+  "direct_native_events": [
+    {
+      "python_type": "llm_batch.agentic_pipeline.ImageRelationEvent",
+      "fields": {
+        "event_id": 0,
+        "candidate_title": "",
+        "source_role": "post_body",
+        "speaker": "post_author",
+        "actor": "author",
+        "predicate": "named_work_consumption",
+        "object_target": "work",
+        "polarity": "positive",
+        "correction_of": null,
+        "clause_span": [
+          0,
+          14
+        ],
+        "evidence_span": [
+          10,
+          13
+        ],
+        "certainty": "high",
+        "assertion_mode": "direct",
+        "target_mention_id": 6,
+        "supersedes_event_id": null,
+        "source_block_index": 0,
+        "temporal_scope": "completed",
+        "object_kind": "work",
+        "parent_span": [
+          0,
+          14
+        ],
+        "claim_source": "post_author",
+        "source_event_id": null,
+        "source_assertion_mode": "direct",
+        "object_head_span": null,
+        "object_head_kind": null,
+        "parent_event_id": null,
+        "native_trace": {
+          "python_type": "llm_batch.agentic_pipeline.ImageNativeEvent",
+          "fields": {
+            "event_id": 0,
+            "work_id": "항로",
+            "source_record": {
+              "python_type": "llm_batch.agentic_pipeline.ImageNativeSource",
+              "fields": {
+                "source": "post_body",
+                "source_id": "post_body:0",
+                "source_block_index": 0,
+                "source_pointer": "/post_data/content_blocks/0/text",
+                "source_text": "나는 달의 항로를 읽었다.",
+                "source_sha256": "d903fe4c75e98aa7c22c6ed5dd19c915be839a96f6fc29c771f4872969359b25",
+                "span": [
+                  0,
+                  14
+                ],
+                "local_span": [
+                  0,
+                  14
+                ],
+                "text": "나는 달의 항로를 읽었다."
+              }
+            },
+            "predicate_text": "읽었다",
+            "predicate_span": [
+              10,
+              13
+            ],
+            "predicate_kind": "named_work_consumption",
+            "grammatical_subject": "나는 ",
+            "actualsubject_span": [
+              0,
+              3
+            ],
+            "actor": "author",
+            "actor_kind": "author",
+            "actor_evidence": {
+              "python_type": "llm_batch.agentic_pipeline.ImageNativeSource",
+              "fields": {
+                "source": "post_body",
+                "source_id": "post_body:0",
+                "source_block_index": 0,
+                "source_pointer": "/post_data/content_blocks/0/text",
+                "source_text": "나는 달의 항로를 읽었다.",
+                "source_sha256": "d903fe4c75e98aa7c22c6ed5dd19c915be839a96f6fc29c771f4872969359b25",
+                "span": [
+                  0,
+                  3
+                ],
+                "local_span": [
+                  0,
+                  3
+                ],
+                "text": "나는 "
+              }
+            },
+            "actor_basis": "explicit_subject",
+            "speaker": "post_author",
+            "object_np_record": {
+              "python_type": "llm_batch.agentic_pipeline.ImageNativeNP",
+              "fields": {
+                "object_np": "항로",
+                "object_span": [
+                  6,
+                  8
+                ],
+                "object_head": "항로",
+                "object_head_span": [
+                  6,
+                  8
+                ],
+                "object_head_kind": "named_work",
+                "object_kind": "novel_text",
+                "target_mention_id": 6,
+                "work_id": "항로",
+                "observation": "OBSERVED"
+              }
+            },
+            "mood": "completed",
+            "mood_evidence": {
+              "python_type": "llm_batch.agentic_pipeline.ImageNativeSource",
+              "fields": {
+                "source": "post_body",
+                "source_id": "post_body:0",
+                "source_block_index": 0,
+                "source_pointer": "/post_data/content_blocks/0/text",
+                "source_text": "나는 달의 항로를 읽었다.",
+                "source_sha256": "d903fe4c75e98aa7c22c6ed5dd19c915be839a96f6fc29c771f4872969359b25",
+                "span": [
+                  0,
+                  14
+                ],
+                "local_span": [
+                  0,
+                  14
+                ],
+                "text": "나는 달의 항로를 읽었다."
+              }
+            },
+            "mood_flags": [
+              [
+                "permission",
+                false
+              ],
+              [
+                "question",
+                false
+              ],
+              [
+                "hypothetical",
+                false
+              ],
+              [
+                "conditional",
+                false
+              ],
+              [
+                "request",
+                false
+              ],
+              [
+                "reported",
+                false
+              ],
+              [
+                "quoted",
+                false
+              ],
+              [
+                "ui_label",
+                false
+              ],
+              [
+                "past_predicate",
+                true
+              ],
+              [
+                "current_predicate",
+                false
+              ]
+            ],
+            "attribution": "direct",
+            "attribution_evidence": {
+              "python_type": "llm_batch.agentic_pipeline.ImageNativeSource",
+              "fields": {
+                "source": "post_body",
+                "source_id": "post_body:0",
+                "source_block_index": 0,
+                "source_pointer": "/post_data/content_blocks/0/text",
+                "source_text": "나는 달의 항로를 읽었다.",
+                "source_sha256": "d903fe4c75e98aa7c22c6ed5dd19c915be839a96f6fc29c771f4872969359b25",
+                "span": [
+                  0,
+                  14
+                ],
+                "local_span": [
+                  0,
+                  14
+                ],
+                "text": "나는 달의 항로를 읽었다."
+              }
+            },
+            "polarity": "positive",
+            "polarity_evidence": {
+              "python_type": "llm_batch.agentic_pipeline.ImageNativeSource",
+              "fields": {
+                "source": "post_body",
+                "source_id": "post_body:0",
+                "source_block_index": 0,
+                "source_pointer": "/post_data/content_blocks/0/text",
+                "source_text": "나는 달의 항로를 읽었다.",
+                "source_sha256": "d903fe4c75e98aa7c22c6ed5dd19c915be839a96f6fc29c771f4872969359b25",
+                "span": [
+                  10,
+                  13
+                ],
+                "local_span": [
+                  10,
+                  13
+                ],
+                "text": "읽었다"
+              }
+            },
+            "clause_id": "post_body:0:clause:0:14",
+            "withdrawn": false,
+            "edge": null,
+            "antecedent_np_record": null,
+            "event_key": "post_body:0:event:0",
+            "source_speaker": "post_author",
+            "superseded": false
+          }
+        },
+        "native_source_pointer": null
+      }
+    }
+  ],
+  "morphology": {
+    "available": true,
+    "cache_info": "CacheInfo(hits=2, misses=1, maxsize=1, currsize=1)",
+    "tokens": [
+      {
+        "form": "나",
+        "tag": "NP",
+        "start": 0,
+        "length": 1
+      },
+      {
+        "form": "는",
+        "tag": "JX",
+        "start": 1,
+        "length": 1
+      },
+      {
+        "form": "달",
+        "tag": "NNG",
+        "start": 3,
+        "length": 1
+      },
+      {
+        "form": "의",
+        "tag": "JKG",
+        "start": 4,
+        "length": 1
+      },
+      {
+        "form": "항로",
+        "tag": "NNG",
+        "start": 6,
+        "length": 2
+      },
+      {
+        "form": "를",
+        "tag": "JKO",
+        "start": 8,
+        "length": 1
+      },
+      {
+        "form": "읽",
+        "tag": "VV",
+        "start": 10,
+        "length": 1
+      },
+      {
+        "form": "었",
+        "tag": "EP",
+        "start": 11,
+        "length": 1
+      },
+      {
+        "form": "다",
+        "tag": "EF",
+        "start": 12,
+        "length": 1
+      },
+      {
+        "form": ".",
+        "tag": "SF",
+        "start": 13,
+        "length": 1
+      }
+    ]
+  },
+  "error": null,
+  "external_call_attempts": [],
+  "unsupported_serialization": [],
+  "source_before": {
+    "original_inputs": [
+      {
+        "origin": "post_title",
+        "original_index": 0,
+        "raw_path": "/title",
+        "selection_key": "title",
+        "raw_text": "감상",
+        "raw_value": "감상",
+        "raw_value_type": "str",
+        "caller_disposition": "passed_to_source"
+      },
+      {
+        "origin": "body_line",
+        "original_index": 0,
+        "raw_path": "/content_blocks/0/text",
+        "selection_key": "text",
+        "raw_text": "나는 달의 항로를 읽었다.",
+        "raw_value": "나는 달의 항로를 읽었다.",
+        "raw_value_type": "str",
+        "caller_disposition": "passed_to_source"
+      }
+    ],
+    "comments": [],
+    "title": "감상",
+    "author": "작성자",
+    "content_blocks": [
+      {
+        "type": "text",
+        "text": "나는 달의 항로를 읽었다.",
+        "url": null
+      }
+    ]
+  },
+  "source_after": {
+    "original_inputs": [
+      {
+        "origin": "post_title",
+        "original_index": 0,
+        "raw_path": "/title",
+        "selection_key": "title",
+        "raw_text": "감상",
+        "raw_value": "감상",
+        "raw_value_type": "str",
+        "caller_disposition": "passed_to_source"
+      },
+      {
+        "origin": "body_line",
+        "original_index": 0,
+        "raw_path": "/content_blocks/0/text",
+        "selection_key": "text",
+        "raw_text": "나는 달의 항로를 읽었다.",
+        "raw_value": "나는 달의 항로를 읽었다.",
+        "raw_value_type": "str",
+        "caller_disposition": "passed_to_source"
+      }
+    ],
+    "comments": [],
+    "title": "감상",
+    "author": "작성자",
+    "content_blocks": [
+      {
+        "type": "text",
+        "text": "나는 달의 항로를 읽었다.",
+        "url": null
+      }
+    ]
+  },
+  "post_data_comments_before": {
+    "post_data": {
+      "post_id": 80239,
+      "title": "감상",
+      "normalized_title": "감상",
+      "compound_anchor_terms": [],
+      "surface_paraphrase_notes": [],
+      "neighbor_hints": {},
+      "post_author": "작성자",
+      "author": "작성자",
+      "post_ip": null,
+      "created_at": null,
+      "url": null,
+      "content_blocks": [
+        {
+          "type": "text",
+          "text": "나는 달의 항로를 읽었다.",
+          "url": null
+        }
+      ],
+      "gallery_id": "test",
+      "comments_raw": [],
+      "comment_metadata": [],
+      "comment_context_lines": [],
+      "comment_dialogue_context_lines": [],
+      "image_enrichment": [
+        {
+          "explicit_work_title": "달의 항로",
+          "evidence_type": "explicit_text",
+          "title_role": "unknown",
+          "promotion_eligible": false
+        }
+      ]
+    },
+    "comments": []
+  },
+  "post_data_comments_after": {
+    "post_data": {
+      "post_id": 80239,
+      "title": "감상",
+      "normalized_title": "감상",
+      "compound_anchor_terms": [],
+      "surface_paraphrase_notes": [],
+      "neighbor_hints": {},
+      "post_author": "작성자",
+      "author": "작성자",
+      "post_ip": null,
+      "created_at": null,
+      "url": null,
+      "content_blocks": [
+        {
+          "type": "text",
+          "text": "나는 달의 항로를 읽었다.",
+          "url": null
+        }
+      ],
+      "gallery_id": "test",
+      "comments_raw": [],
+      "comment_metadata": [],
+      "comment_context_lines": [],
+      "comment_dialogue_context_lines": [],
+      "image_enrichment": [
+        {
+          "explicit_work_title": "달의 항로",
+          "evidence_type": "explicit_text",
+          "title_role": "unknown",
+          "promotion_eligible": false
+        }
+      ]
+    },
+    "comments": []
+  }
+}

@@ -567,6 +567,8 @@ Analyze this community post and classify it.
 POST DATA:
 {post_json}
 
+`post_ip`는 게시글 작성자 메타 IP입니다. null이면 본문이나 댓글의 숫자·IP 표기를 작성자 IP로 귀속하지 마세요.
+
 ===  CRITICAL: 불확실하면 검색 먼저! 조기 종료 금지!  ===
 
 **황금률: 제목에 2-4음절 약어/용어가 있으면 : 무조건 검색 요청!**
@@ -1334,6 +1336,8 @@ Decode Korean community slang and abbreviations into official novel titles - but
 Core anti-misfire rule:
 - A title mapping is valid only when the evidence is traceable to post body/comments with direct mention (character, platform URL, chapter marker, or author talk).
 - If the same string appears in another context (title, search title, or reply examples) but not in core body intent, treat it as a "유사어" candidate, not a match.
+- 인물 관계도 원문 문법에 결속하세요. "A는 B와의 입장 차이"는 A와 B가 다른 주체라는 뜻입니다. 검색 결과에서 A와 B를 나란히 언급하더라도 A=B 또는 A가 B의 직책이라고 바꾸지 마세요.
+- 댓글의 작가 해석은 댓글 화자의 의견입니다. 게시글 본문에 없는 작가 동기나 판단을 글쓴이의 주장으로 돌리지 마세요.
 
 """ + LF_DECODER + """
 

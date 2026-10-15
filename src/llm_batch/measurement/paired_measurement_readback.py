@@ -45,7 +45,15 @@ from ..ledger.publication_commit import (
 
 
 SCHEMA_VERSION = "paired-pipeline-measurement-readback-v2"
-RUN_SPEC_SCHEMA_VERSION = "paired-pipeline-measurement-runspec-v1"
+RUN_SPEC_SCHEMA_VERSION = "paired-pipeline-measurement-runspec-v2"
+LEGACY_RUN_SPEC_SCHEMA_VERSION = "paired-pipeline-measurement-runspec-v1"
+LOW_LOAD_RUN_SPEC_SCHEMA_VERSION = "paired-pipeline-measurement-runspec-v3"
+LOW_LOAD_SCHEMA_VERSION = "paired-pipeline-measurement-readback-v3"
+PARALLEL12_RUN_SPEC_SCHEMA_VERSION = "paired-pipeline-measurement-runspec-v4"
+PARALLEL12_SCHEMA_VERSION = "paired-pipeline-measurement-readback-v4"
+EXECUTION_POLICY_BINDING_SCHEMA_VERSION = "paired_measurement_execution_policy_file_binding_v1"
+EXECUTION_OBSERVATION_BUNDLE_SCHEMA_VERSION = "paired_measurement_execution_observation_bundle_v1"
+ROW_EXECUTION_OBSERVATION_SCHEMA_VERSION = "paired_measurement_row_execution_observation_v1"
 RECOVERY_WITNESS_SCHEMA_VERSION = "paired_measurement_recovery_witness_v1"
 EXECUTION_ENVELOPE_SCHEMA_VERSION = "paired_measurement_execution_envelope_v1"
 EXECUTION_ENVELOPE_POLICY_SCHEMA_VERSION = "paired_measurement_execution_envelope_policy_v1"
@@ -311,6 +319,8 @@ class _RunSpecReadback:
     shared_measurement_fields: dict[str, Any]
     arm_measurement_fields: dict[str, dict[str, Any]]
     ordered_post_ids: tuple[int | str, ...]
+    execution_policy: dict[str, Any] | None = None
+    execution_policy_reference: dict[str, Any] | None = None
 
 
 @dataclass(frozen=True)
@@ -320,12 +330,114 @@ class _RecoveryWitnessReadback:
     reference: dict[str, Any]
 
 
+
+def publication_slang_input_binding(access_mode: str, input_sha256: Any) -> dict[str, Any]:
+    if access_mode == "OFF":
+        if input_sha256 is not None:
+            raise ValueError("OFF slang input must be explicit null")
+        status = "OFF_NOT_READ"
+    elif access_mode in {"READ_ONLY", "MUTABLE_WRITE"}:
+        _require_sha256(input_sha256, "slang input SHA")
+        status = "PRESENT_SNAPSHOT"
+    else:
+        raise ValueError("unsupported slang input access mode")
+    return {"schema_version": "publication_slang_input_binding_v1", "access_mode": access_mode, "status": status, "enabled": access_mode != "OFF", "input_read": access_mode != "OFF", "input_sha256": input_sha256}
+
+
+def _validate_publication_slang_input_binding(runtime_fields: Mapping[str, Any], access_mode: str) -> None:
+    if "publication_slang_db_input_sha256" not in runtime_fields:
+        raise ValueError("slang input SHA field missing")
+    expected = publication_slang_input_binding(access_mode, runtime_fields["publication_slang_db_input_sha256"])
+    actual = runtime_fields.get("publication_slang_db_input_binding")
+    if not isinstance(actual, Mapping) or set(actual) != set(expected) or type(actual.get("enabled")) is not bool or type(actual.get("input_read")) is not bool or any(type(actual.get(k)) is not str for k in ("schema_version", "access_mode", "status")) or dict(actual) != expected:
+        raise ValueError("slang input explicit absence/snapshot binding mismatch")
+
+
+def read_prebound_execution_measurement(*, run_spec_path: str | Path, file_sha256: str, self_sha256: str, pair_id: str, arm: str) -> dict[str, Any]:
+    spec = _read_run_spec(run_spec_path)
+    if spec.value["schema_version"] not in {RUN_SPEC_SCHEMA_VERSION, LOW_LOAD_RUN_SPEC_SCHEMA_VERSION, PARALLEL12_RUN_SPEC_SCHEMA_VERSION}:
+        raise ValueError("prebound runtime requires revised paired RunSpec")
+    if spec.reference["sha256"] != _require_sha256(file_sha256, "RunSpec file SHA") or spec.value["run_spec_sha256"] != _require_sha256(self_sha256, "RunSpec self SHA"):
+        raise ValueError("prebound RunSpec file/self hash mismatch")
+    if spec.value["pair_id"] != pair_id or arm not in spec.arm_measurement_fields:
+        raise ValueError("prebound RunSpec pair/arm mismatch")
+    policy = _read_execution_envelope_policy(spec.shared_measurement_fields)
+    if policy is None:
+        raise ValueError("prebound execution envelope policy missing")
+    result = {"expected_measurement_fields": {**spec.shared_measurement_fields, **spec.arm_measurement_fields[arm]}, "run_spec_file_binding": {"schema_version": "paired_measurement_runspec_file_binding_v1", "path": str(spec.path), "file_sha256": spec.reference["sha256"], "self_sha256": self_sha256, "pair_id": pair_id, "arm": arm}, "execution_envelope_policy": policy}
+    if spec.execution_policy is not None:
+        result["execution_policy"] = spec.execution_policy
+        result["execution_policy_binding"] = dict(spec.value["execution_policy"])
+    return result
+
+
+def _read_low_load_policy_binding(value: Any) -> tuple[dict[str, Any], dict[str, Any]]:
+    from .paired_execution_policy import read_execution_policy
+
+    binding = _require_mapping(value, "execution policy binding")
+    if set(binding) != {"schema_version", "path", "file_sha256", "policy_sha256"}:
+        raise ValueError("execution policy binding shape mismatch")
+    if binding["schema_version"] != EXECUTION_POLICY_BINDING_SCHEMA_VERSION:
+        raise ValueError("execution policy binding schema mismatch")
+    path = Path(_require_text(binding["path"], "execution policy path"))
+    if not path.is_absolute() or str(path.resolve()) != str(path):
+        raise ValueError("execution policy path must be canonical absolute path")
+    result = read_execution_policy(
+        path,
+        expected_sha256=_require_sha256(binding["file_sha256"], "execution policy file SHA"),
+        expected_policy_sha256=_require_sha256(binding["policy_sha256"], "execution policy self SHA"),
+    )
+    reference = {"path": result["path"], "bytes": result["bytes"], "sha256": result["file_sha256"]}
+    return result["policy"], reference
+
+
+def _validate_low_load_frozen_runtime(policy: Mapping[str, Any], runtime: Mapping[str, Any], *,
+                                      run_spec_schema: str, input_post_count: int) -> None:
+    from .paired_execution_policy import POLICY_SCHEMA, PARALLEL12_POLICY_SCHEMA
+
+    expected_policy = PARALLEL12_POLICY_SCHEMA if run_spec_schema == PARALLEL12_RUN_SPEC_SCHEMA_VERSION else POLICY_SCHEMA
+    if policy["schema_version"] != expected_policy:
+        raise ValueError("RunSpec execution policy revision mismatch")
+    projection = policy["config_projection"]
+    if run_spec_schema == PARALLEL12_RUN_SPEC_SCHEMA_VERSION and projection["input_post_count"] != input_post_count:
+        raise ValueError("RunSpec policy input count mismatch")
+    for actual, expected, label in (
+        (runtime.get("requested_parallel"), projection["requested_parallel"], "requested_parallel"),
+        (runtime.get("effective_parallel"), projection["effective_parallel"], "effective_parallel"),
+        (runtime.get("vlm_enabled"), projection["settings"]["vlm"], "vlm_enabled"),
+        (runtime.get("ocr_enabled"), projection["settings"]["ocr"], "ocr_enabled"),
+        (runtime.get("dashboard_enabled"), projection["dashboard_enabled"], "dashboard_enabled"),
+        (runtime.get("vlm_ocr_semantic_review_ready"), projection["image_review_ready"], "image_review_ready"),
+    ):
+        if type(actual) is not type(expected) or actual != expected:
+            raise ValueError(f"low-load frozen runtime {label} differs from policy")
+    for name in ("llm_model", "llm_endpoint", "publication_config_sha256", "publication_decision_environment_sha256"):
+        if runtime.get(name) != projection["runtime"][name]:
+            raise ValueError(f"low-load frozen runtime {name} differs from policy")
+
+
+def _validate_low_load_config(owner: Mapping[str, Any], policy: Mapping[str, Any], label: str) -> dict[str, Any]:
+    from .paired_execution_policy import execution_config_projection
+
+    projection = execution_config_projection(
+        _require_mapping(owner.get("execution_config"), f"{label} execution_config"),
+        runtime_fields=_require_mapping(owner.get("paired_execution_runtime_fields"), f"{label} paired_execution_runtime_fields"),
+        projection_schema=policy["config_projection"]["schema_version"],
+        input_post_count=policy["config_projection"].get("input_post_count"),
+    )
+    if _canonical_bytes(projection) != _canonical_bytes(policy["config_projection"]):
+        raise ValueError(f"{label} execution config projection differs from policy")
+    return projection
+
+
 def _read_run_spec(path: str | Path) -> _RunSpecReadback:
     run_spec_path = Path(path).resolve()
     spec, reference = _load_json_snapshot(run_spec_path)
-    if set(spec) != _RUN_SPEC_KEYS:
+    parallel12 = spec.get("schema_version") == PARALLEL12_RUN_SPEC_SCHEMA_VERSION
+    low_load = spec.get("schema_version") in (LOW_LOAD_RUN_SPEC_SCHEMA_VERSION, PARALLEL12_RUN_SPEC_SCHEMA_VERSION)
+    if set(spec) != (_RUN_SPEC_KEYS | {"execution_policy"} if low_load else _RUN_SPEC_KEYS):
         raise ValueError("paired RunSpec shape mismatch")
-    if spec.get("schema_version") != RUN_SPEC_SCHEMA_VERSION:
+    if spec.get("schema_version") not in {RUN_SPEC_SCHEMA_VERSION, LEGACY_RUN_SPEC_SCHEMA_VERSION, LOW_LOAD_RUN_SPEC_SCHEMA_VERSION, PARALLEL12_RUN_SPEC_SCHEMA_VERSION}:
         raise ValueError("unsupported paired RunSpec schema")
     supplied_hash = _require_sha256(spec.get("run_spec_sha256"), "RunSpec self hash")
     expected_hash = _sha256(
@@ -368,8 +480,9 @@ def _read_run_spec(path: str | Path) -> _RunSpecReadback:
     requested_parallel = _require_positive_int(
         runtime_fields.get("requested_parallel"), "RunSpec requested_parallel"
     )
-    if requested_parallel != 16:
-        raise ValueError("paired RunSpec requires requested_parallel=16")
+    required_parallel = 12 if parallel12 else 1 if low_load else 16
+    if requested_parallel != required_parallel:
+        raise ValueError(f"paired RunSpec requires requested_parallel={required_parallel}")
     effective_parallel = _require_positive_int(
         runtime_fields.get("effective_parallel"), "RunSpec effective_parallel"
     )
@@ -402,17 +515,19 @@ def _read_run_spec(path: str | Path) -> _RunSpecReadback:
         runtime_fields.get("mcp_health_failure_count"),
         "RunSpec mcp_health_failure_count",
     )
-    if health_ok < requested_parallel or health_failures != 0:
-        raise ValueError("paired RunSpec requires at least 16 healthy search shards and zero failures")
+    required_health = 1 if low_load else required_parallel
+    if health_ok < required_health or health_failures != 0:
+        raise ValueError(f"paired RunSpec requires at least {required_health} healthy search shards and zero failures")
     if runtime_fields.get("mcp_healthy_endpoint_filter_reason") != "reuse_shards_only":
         raise ValueError("paired RunSpec requires --reuse-shards-only provenance")
     for field in (
         "publication_config_sha256",
         "publication_decision_environment_sha256",
-        "publication_slang_db_input_sha256",
         "publication_release_fingerprint",
     ):
         _require_sha256(runtime_fields.get(field), f"RunSpec {field}")
+    if spec["schema_version"] == LEGACY_RUN_SPEC_SCHEMA_VERSION:
+        _require_sha256(runtime_fields.get("publication_slang_db_input_sha256"), "RunSpec legacy slang input SHA")
 
     shared = dict(
         _require_mapping(
@@ -423,11 +538,27 @@ def _read_run_spec(path: str | Path) -> _RunSpecReadback:
     if _RESERVED_MEASUREMENT_FIELDS & set(shared):
         raise ValueError("RunSpec shared measurement fields contain arm bindings")
     for field, expected in _REQUIRED_SHARED_MEASUREMENT.items():
-        if shared.get(field) != expected:
+        if shared.get(field) != expected or (low_load and type(shared.get(field)) is not type(expected)):
             raise ValueError(f"RunSpec shared measurement {field} mismatch")
     slang_mode = shared.get("slang_access_mode")
     if slang_mode not in {"OFF", "READ_ONLY"}:
         raise ValueError("RunSpec slang_access_mode must be OFF or READ_ONLY")
+    if spec["schema_version"] in {RUN_SPEC_SCHEMA_VERSION, LOW_LOAD_RUN_SPEC_SCHEMA_VERSION, PARALLEL12_RUN_SPEC_SCHEMA_VERSION}:
+        _validate_publication_slang_input_binding(runtime_fields, slang_mode)
+        if _read_execution_envelope_policy(shared) is None:
+            raise ValueError("RunSpec execution envelope policy missing")
+    execution_policy = execution_policy_reference = None
+    if low_load:
+        execution_policy, execution_policy_reference = _read_low_load_policy_binding(spec["execution_policy"])
+        if shared.get("execution_policy_binding") != spec["execution_policy"]:
+            raise ValueError("RunSpec shared execution policy binding mismatch")
+        _validate_low_load_frozen_runtime(execution_policy, runtime_fields,
+            run_spec_schema=spec["schema_version"], input_post_count=input_count)
+        policy_runtime = execution_policy["config_projection"]["runtime"]
+        if policy_runtime["slang_mode"] != slang_mode or policy_runtime["slang_snapshot_sha256"] != runtime_fields["publication_slang_db_input_sha256"]:
+            raise ValueError("RunSpec low-load slang snapshot policy mismatch")
+    elif "execution_policy_binding" in shared:
+        raise ValueError("legacy RunSpec cannot carry a low-load execution policy")
     mutable_binding = _require_mapping(
         shared.get("mutable_context_binding"),
         "RunSpec mutable_context_binding",
@@ -439,7 +570,7 @@ def _read_run_spec(path: str | Path) -> _RunSpecReadback:
         "slang_access_mode": slang_mode,
         "central_slang_db_write_allowed": False,
     }
-    if dict(mutable_binding) != expected_mutable_binding:
+    if dict(mutable_binding) != expected_mutable_binding or (low_load and _canonical_bytes(mutable_binding) != _canonical_bytes(expected_mutable_binding)):
         raise ValueError("RunSpec mutable_context_binding mismatch")
     if shared.get("mutable_context_binding_sha256") != _sha256(expected_mutable_binding):
         raise ValueError("RunSpec mutable_context_binding self hash mismatch")
@@ -465,7 +596,7 @@ def _read_run_spec(path: str | Path) -> _RunSpecReadback:
         arm_value = dict(_require_mapping(raw_arms.get(arm), f"RunSpec {arm} fields"))
         if _RESERVED_MEASUREMENT_FIELDS & set(arm_value):
             raise ValueError(f"RunSpec {arm} fields contain reserved bindings")
-        if arm_value != expected_arm_values[arm]:
+        if arm_value != expected_arm_values[arm] or (low_load and _canonical_bytes(arm_value) != _canonical_bytes(expected_arm_values[arm])):
             raise ValueError(f"RunSpec {arm} early-route contract mismatch")
         arm_fields[arm] = arm_value
 
@@ -490,6 +621,8 @@ def _read_run_spec(path: str | Path) -> _RunSpecReadback:
         shared_measurement_fields=shared,
         arm_measurement_fields=arm_fields,
         ordered_post_ids=ordered_post_ids,
+        execution_policy=execution_policy,
+        execution_policy_reference=execution_policy_reference,
     )
 
 
@@ -592,6 +725,11 @@ def _measurement_config(
     for field, expected_value in expected.items():
         if config.get(field) != expected_value:
             raise ValueError(f"{expected_arm} measurement {field} differs from RunSpec")
+    if run_spec.value["schema_version"] in {RUN_SPEC_SCHEMA_VERSION, LOW_LOAD_RUN_SPEC_SCHEMA_VERSION, PARALLEL12_RUN_SPEC_SCHEMA_VERSION}:
+        expected_file_binding = {"schema_version": "paired_measurement_runspec_file_binding_v1", "path": str(run_spec.path), "file_sha256": run_spec.reference["sha256"], "self_sha256": run_spec.value["run_spec_sha256"], "pair_id": run_spec.value["pair_id"], "arm": expected_arm}
+        if config.get("run_spec_file_binding") != expected_file_binding:
+            raise ValueError(f"{expected_arm} RunSpec file binding mismatch")
+        _validate_publication_slang_input_binding(manifest, run_spec.shared_measurement_fields["slang_access_mode"])
     _require_sha256(config.get("run_spec_sha256"), f"{expected_arm} run_spec_sha256")
     return config
 
@@ -975,6 +1113,10 @@ def _validate_recovery_witness_sources(
         raise ValueError(f"{arm} recovery source manifest reference mismatch")
     if any(field in source_manifest for field in _RECOVERY_MARKERS):
         raise ValueError(f"{arm} chained recovery source manifests are not supported")
+    if run_spec.execution_policy is not None:
+        for field in ("paired_execution_observation", "paired_execution_runtime_fields", "execution_config"):
+            if field not in source_manifest or source_manifest[field] != manifest.get(field):
+                raise ValueError(f"{arm} recovered low-load {field} is not preserved from source")
 
     expected_marker_paths = {
         "recovered_from": source_manifest_path,
@@ -1470,6 +1612,8 @@ def build_paired_measurement_run_spec(
     source_manifest_path: str | Path,
     pair_id: str,
     slang_access_mode: str = "OFF",
+    run_spec_schema_version: str = LEGACY_RUN_SPEC_SCHEMA_VERSION,
+    execution_policy_path: str | Path | None = None,
 ) -> dict[str, Any]:
     """Freeze the exact input, publication scope, and runtime for two fresh arms.
 
@@ -1478,8 +1622,27 @@ def build_paired_measurement_run_spec(
     writes nothing; the CLI performs exclusive validated persistence.
     """
 
+    if run_spec_schema_version not in {RUN_SPEC_SCHEMA_VERSION, LEGACY_RUN_SPEC_SCHEMA_VERSION, LOW_LOAD_RUN_SPEC_SCHEMA_VERSION, PARALLEL12_RUN_SPEC_SCHEMA_VERSION}:
+        raise ValueError("unsupported paired RunSpec builder revision")
+    parallel12 = run_spec_schema_version == PARALLEL12_RUN_SPEC_SCHEMA_VERSION
+    low_load = run_spec_schema_version in (LOW_LOAD_RUN_SPEC_SCHEMA_VERSION, PARALLEL12_RUN_SPEC_SCHEMA_VERSION)
+    new_revision = run_spec_schema_version in {RUN_SPEC_SCHEMA_VERSION, LOW_LOAD_RUN_SPEC_SCHEMA_VERSION, PARALLEL12_RUN_SPEC_SCHEMA_VERSION}
+    if low_load != (execution_policy_path is not None):
+        raise ValueError("execution policy path is required exclusively for low-load v3/v4")
+    execution_policy = policy_binding = policy_reference = None
+    if low_load:
+        from .paired_execution_policy import read_execution_policy
+
+        policy_path = Path(execution_policy_path).resolve()
+        policy_snapshot = _artifact_reference_for_path(policy_path)
+        loaded = read_execution_policy(policy_path, expected_sha256=policy_snapshot["sha256"])
+        execution_policy = loaded["policy"]
+        policy_binding = {"schema_version": EXECUTION_POLICY_BINDING_SCHEMA_VERSION,
+                          "path": str(policy_path), "file_sha256": loaded["file_sha256"],
+                          "policy_sha256": loaded["policy_sha256"]}
+        execution_policy, policy_reference = _read_low_load_policy_binding(policy_binding)
     source_path = Path(source_manifest_path).resolve()
-    manifest, _ = _load_json_snapshot(source_path)
+    manifest, source_reference = _load_json_snapshot(source_path)
     input_post_ids, input_reference = _read_unbound_input_snapshot(
         Path(input_path).resolve(),
         label="RUN_SPEC",
@@ -1491,6 +1654,13 @@ def build_paired_measurement_run_spec(
         raise ValueError("source manifest terminal artifacts are not finalized")
     if manifest.get("large_run_complete") is not True:
         raise ValueError("source manifest is not large_run_complete")
+    if low_load:
+        for field, expected in (("completed_count", input_count), ("flushed_count", input_count),
+                                ("failed_count", 0), ("pending_count", 0)):
+            if _require_nonnegative_int(manifest.get(field), f"source {field}") != expected:
+                raise ValueError(f"source terminal count mismatch: {field}")
+        if _require_mapping(manifest.get("runtime_completion_gate"), "source runtime_completion_gate").get("status") != "GO":
+            raise ValueError("source runtime completion gate is not GO")
     if _require_nonnegative_int(
         manifest.get("input_post_count"), "source input_post_count"
     ) != input_count:
@@ -1508,7 +1678,7 @@ def build_paired_measurement_run_spec(
         source_path,
         "source publication WAL",
     )
-    wal_rows, _ = _read_publication_wal(
+    wal_rows, wal_reference = _read_publication_wal(
         wal_path,
         publication_scope_id=scope_id,
     )
@@ -1522,11 +1692,19 @@ def build_paired_measurement_run_spec(
     ) != input_count:
         raise ValueError("source publication commit count differs from frozen input")
 
+    normalized_slang = str(slang_access_mode or "").strip().upper()
+    if normalized_slang not in {"OFF", "READ_ONLY"}:
+        raise ValueError("slang_access_mode must be OFF or READ_ONLY")
     runtime_fields = {
         field: manifest.get(field) for field in sorted(_REQUIRED_RUNTIME_FIELDS)
     }
+    if new_revision:
+        if "publication_slang_db_input_sha256" not in manifest:
+            raise ValueError("source explicit slang SHA key missing")
+        runtime_fields["publication_slang_db_input_binding"] = manifest.get("publication_slang_db_input_binding")
+        _validate_publication_slang_input_binding(runtime_fields, normalized_slang)
     missing_runtime = sorted(
-        field for field, value in runtime_fields.items() if value is None
+        field for field, value in runtime_fields.items() if value is None and not (field == "publication_slang_db_input_sha256" and new_revision and normalized_slang == "OFF")
     )
     if missing_runtime:
         raise ValueError(f"source runtime fields missing: {missing_runtime}")
@@ -1536,8 +1714,9 @@ def build_paired_measurement_run_spec(
     effective_parallel = _require_positive_int(
         runtime_fields["effective_parallel"], "source effective_parallel"
     )
-    if requested_parallel != 16 or effective_parallel != min(16, input_count):
-        raise ValueError("source runtime does not use parallel 16 bounded by input count")
+    required_parallel = 12 if parallel12 else 1 if low_load else 16
+    if requested_parallel != required_parallel or effective_parallel != min(required_parallel, input_count):
+        raise ValueError(f"source runtime does not use parallel {required_parallel} bounded by input count")
     if (
         runtime_fields["dashboard_enabled"] is not True
         or runtime_fields["mcp_health_include_search"] is not True
@@ -1549,7 +1728,7 @@ def build_paired_measurement_run_spec(
         _require_nonnegative_int(
             runtime_fields["mcp_health_ok_count"], "source mcp_health_ok_count"
         )
-        < 16
+        < (1 if low_load else required_parallel)
         or _require_nonnegative_int(
             runtime_fields["mcp_health_failure_count"],
             "source mcp_health_failure_count",
@@ -1562,10 +1741,21 @@ def build_paired_measurement_run_spec(
     for field in (
         "publication_config_sha256",
         "publication_decision_environment_sha256",
-        "publication_slang_db_input_sha256",
         "publication_release_fingerprint",
     ):
         _require_sha256(runtime_fields[field], f"source {field}")
+    if not new_revision:
+        _require_sha256(runtime_fields["publication_slang_db_input_sha256"], "source legacy slang SHA")
+    if low_load:
+        _validate_low_load_frozen_runtime(execution_policy, runtime_fields,
+            run_spec_schema=run_spec_schema_version, input_post_count=input_count)
+        # The completed source owns the reference WAL, not a measured arm.
+        # Requiring REQUIRED/FROZEN_OFF before a RunSpec exists creates a
+        # bootstrap cycle. Only the declared inference/publication fields
+        # above are shared; full policy/START-END checks apply to both arms.
+        policy_runtime = execution_policy["config_projection"]["runtime"]
+        if policy_runtime["slang_mode"] != normalized_slang or policy_runtime["slang_snapshot_sha256"] != runtime_fields["publication_slang_db_input_sha256"]:
+            raise ValueError("source low-load slang snapshot policy mismatch")
 
     normalized_slang = str(slang_access_mode or "").strip().upper()
     if normalized_slang not in {"OFF", "READ_ONLY"}:
@@ -1590,8 +1780,10 @@ def build_paired_measurement_run_spec(
             "min_comparable_rows": 2,
         },
     }
+    if low_load:
+        shared_measurement["execution_policy_binding"] = policy_binding
     payload: dict[str, Any] = {
-        "schema_version": RUN_SPEC_SCHEMA_VERSION,
+        "schema_version": run_spec_schema_version,
         "pair_id": _require_text(pair_id, "pair_id"),
         "publication_scope_id": scope_id,
         "publication_input_snapshot_sha256": input_reference["sha256"],
@@ -1620,6 +1812,11 @@ def build_paired_measurement_run_spec(
             "full_scan_approval": False,
         },
     }
+    if low_load:
+        payload["execution_policy"] = policy_binding
+        for reference, label in ((source_reference, "source manifest"), (input_reference, "source input"),
+                                 (wal_reference, "source publication WAL"), (policy_reference, "execution policy")):
+            _assert_snapshot_unchanged(reference, label)
     return {**payload, "run_spec_sha256": _sha256(payload)}
 
 
@@ -1774,6 +1971,76 @@ class _ArmReadback:
     run_id: str
     recovery_witness: _RecoveryWitnessReadback | None
     recovery_source_refs: tuple[dict[str, Any], ...]
+    execution_observation: dict[str, Any] | None = None
+
+
+def _low_load_observation_binding(run_spec: _RunSpecReadback, arm: str, run_id: str, attempt_id: str) -> dict[str, Any]:
+    return {"pair_id": run_spec.value["pair_id"], "arm": arm, "run_id": run_id,
+            "attempt_id": attempt_id, "input_sha256": run_spec.value["publication_input_snapshot_sha256"],
+            "publication_scope_id": run_spec.value["publication_scope_id"]}
+
+
+def _validate_low_load_observation_bundle(
+    owner: Mapping[str, Any], run_spec: _RunSpecReadback, *, arm: str, run_id: str,
+    attempt_id: str, coordinate: tuple[int, int | str] | None = None,
+    arm_bundle: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    from .paired_execution_policy import validate_execution_observation_pair
+
+    label = f"{arm} low-load " + ("manifest" if coordinate is None else f"row {coordinate}")
+    _validate_low_load_config(owner, run_spec.execution_policy, label)
+    bundle = dict(_require_mapping(owner.get("paired_execution_observation"), label + " observation"))
+    expected_keys = {"schema_version", "start", "end"}
+    expected_schema = EXECUTION_OBSERVATION_BUNDLE_SCHEMA_VERSION
+    if coordinate is not None:
+        expected_keys |= {"input_index", "post_id"}
+        expected_schema = ROW_EXECUTION_OBSERVATION_SCHEMA_VERSION
+        if (type(bundle.get("input_index")) is not int or bundle["input_index"] != coordinate[0]
+                or type(bundle.get("post_id")) is not type(coordinate[1]) or bundle["post_id"] != coordinate[1]):
+            raise ValueError(label + " observation coordinate mismatch")
+    if set(bundle) != expected_keys or bundle.get("schema_version") != expected_schema:
+        raise ValueError(label + " observation bundle shape/schema mismatch")
+    validate_execution_observation_pair(
+        run_spec.execution_policy, bundle["start"], bundle["end"],
+        binding=_low_load_observation_binding(run_spec, arm, run_id, attempt_id),
+    )
+    if arm_bundle is not None:
+        if any(bundle[phase]["resources"]["pid"] != arm_bundle["start"]["resources"]["pid"] for phase in ("start", "end")):
+            raise ValueError(label + " observation PID differs from manifest")
+        if not (arm_bundle["start"]["monotonic_ns"] <= bundle["start"]["monotonic_ns"]
+                < bundle["end"]["monotonic_ns"] <= arm_bundle["end"]["monotonic_ns"]):
+            raise ValueError(label + " observation falls outside manifest interval")
+        if not (datetime.fromisoformat(arm_bundle["start"]["observed_at"]) <= datetime.fromisoformat(bundle["start"]["observed_at"])
+                <= datetime.fromisoformat(bundle["end"]["observed_at"]) <= datetime.fromisoformat(arm_bundle["end"]["observed_at"])):
+            raise ValueError(label + " observation timestamp falls outside manifest interval")
+    return bundle
+
+
+def _validate_parallel12_row_intervals(observations: list[dict[str, Any]], *,
+                                       input_count: int, effective_parallel: int) -> None:
+    """이미 검산한 행 구간의 겹침은 허용하되 두 clock 모두 동시성 상한을 지킨다."""
+    if type(input_count) is not int or input_count < 1 or type(effective_parallel) is not int or effective_parallel != min(12, input_count):
+        raise ValueError("parallel12 interval input/parallel mismatch")
+    if len(observations) != input_count:
+        raise ValueError("parallel12 interval coverage mismatch")
+    for clock in ("monotonic_ns", "observed_at"):
+        events = []
+        for bundle in observations:
+            a, b = bundle["start"][clock], bundle["end"][clock]
+            if clock == "observed_at":
+                a, b = datetime.fromisoformat(a), datetime.fromisoformat(b)
+            if b < a or (clock == "monotonic_ns" and b == a):
+                raise ValueError("parallel12 interval clock invalid")
+            # UTC는 해상도 때문에 같은 시각이 가능하다. monotonic은 항상 양수 구간이다.
+            if a != b:
+                events.extend(((a, 1), (b, -1)))
+        active = 0
+        for _, delta in sorted(events):  # 같은 경계에서는 종료를 먼저 세어 인접 행을 허용한다.
+            active += delta
+            if active < 0 or active > effective_parallel:
+                raise ValueError(f"parallel12 row concurrency exceeds bound: {clock}")
+        if active:
+            raise ValueError("parallel12 interval closure mismatch")
 
 
 def _read_arm(path: str | Path, arm: str, run_spec: _RunSpecReadback) -> _ArmReadback:
@@ -1788,6 +2055,10 @@ def _read_arm(path: str | Path, arm: str, run_spec: _RunSpecReadback) -> _ArmRea
     measurement = _measurement_config(manifest, arm, run_spec)
     scope_id = _require_sha256(manifest.get("publication_scope_id"), f"{arm} publication_scope_id")
     run_id = _require_text(manifest.get("run_id"), f"{arm} run_id")
+    execution_observation = None
+    if run_spec.execution_policy is not None:
+        execution_observation = _validate_low_load_observation_bundle(
+            manifest, run_spec, arm=arm, run_id=run_id, attempt_id=run_id)
 
     ledger_path = _artifact_path(
         manifest.get("decision_call_ledger_path"), manifest_path, f"{arm} ledger"
@@ -1823,6 +2094,7 @@ def _read_arm(path: str | Path, arm: str, run_spec: _RunSpecReadback) -> _ArmRea
     if not isinstance(rows, list) or len(rows) != input_count:
         raise ValueError(f"{arm} independent row receipts are incomplete")
     ledger_by_coordinate: dict[tuple[int, int | str], Mapping[str, Any]] = {}
+    low_load_attempt_ids: set[str] = set()
     for row in rows:
         if not isinstance(row, Mapping):
             raise ValueError(f"{arm} independent row receipt is invalid")
@@ -1833,6 +2105,13 @@ def _read_arm(path: str | Path, arm: str, run_spec: _RunSpecReadback) -> _ArmRea
             raise ValueError(f"{arm} duplicate ledger coordinate: {coordinate}")
         if row.get("attempt_run_id") != run_id:
             raise ValueError(f"{arm} ledger row run_id mismatch: {coordinate}")
+        if run_spec.execution_policy is not None:
+            row_attempt_id = _require_text(row.get("row_attempt_id"), f"{arm} ledger row attempt")
+            if row_attempt_id == run_id:
+                raise ValueError(f"{arm} low-load row attempt must differ from run_id: {coordinate}")
+            if row_attempt_id in low_load_attempt_ids:
+                raise ValueError(f"{arm} low-load row attempt reused across input rows: {coordinate}")
+            low_load_attempt_ids.add(row_attempt_id)
         for metric in _METRIC_NAMES:
             _require_nonnegative_int(row.get(metric), f"{arm} row {metric}")
         ledger_by_coordinate[coordinate] = row
@@ -1867,6 +2146,9 @@ def _read_arm(path: str | Path, arm: str, run_spec: _RunSpecReadback) -> _ArmRea
     observed_post_ids = []
     output_rows: dict[tuple[int, int | str], Mapping[str, Any]] = {}
     route_rows: dict[tuple[int, int | str], dict[str, Any]] = {}
+    prior_low_load_end: Mapping[str, Any] | None = None
+    parallel12 = run_spec.value["schema_version"] == PARALLEL12_RUN_SPEC_SCHEMA_VERSION
+    parallel12_observations = []
     for index, raw_row in enumerate(output_value, 1):
         if not isinstance(raw_row, Mapping):
             raise ValueError(f"{arm} output row is not an object: {index}")
@@ -1887,6 +2169,22 @@ def _read_arm(path: str | Path, arm: str, run_spec: _RunSpecReadback) -> _ArmRea
         if run_meta.get("measurement_execution_source") != "FRESH_EXECUTION_NO_PUBLIC_WRITE":
             raise ValueError(f"{arm} output is not from fresh measurement execution: {coordinate}")
         ledger_row = ledger_by_coordinate[coordinate]
+        if run_spec.execution_policy is not None:
+            row_observation = _validate_low_load_observation_bundle(
+                run_meta, run_spec, arm=arm, run_id=run_id,
+                attempt_id=_require_text(ledger_row.get("row_attempt_id"), f"{arm} ledger row attempt"),
+                coordinate=coordinate, arm_bundle=execution_observation,
+            )
+            if parallel12:
+                parallel12_observations.append(row_observation)
+            elif prior_low_load_end is not None:
+                # 단일 worker는 입력 순서대로 실행하며 인접 행의 같은 시각 경계는 허용한다.
+                start = row_observation["start"]
+                if start["monotonic_ns"] < prior_low_load_end["monotonic_ns"]:
+                    raise ValueError(f"{arm} low-load row intervals overlap or reorder by monotonic clock: {coordinate}")
+                if datetime.fromisoformat(start["observed_at"]) < datetime.fromisoformat(prior_low_load_end["observed_at"]):
+                    raise ValueError(f"{arm} low-load row intervals overlap or reorder by UTC clock: {coordinate}")
+            prior_low_load_end = row_observation["end"]
         wal_row = wal_rows[coordinate]
         validate_publication_result_decision(
             raw_row,
@@ -1912,6 +2210,9 @@ def _read_arm(path: str | Path, arm: str, run_spec: _RunSpecReadback) -> _ArmRea
                 publication_scope_id=scope_id,
             )
         output_rows[coordinate] = raw_row
+    if parallel12:
+        _validate_parallel12_row_intervals(parallel12_observations, input_count=input_count,
+            effective_parallel=run_spec.runtime_fields["effective_parallel"])
     if tuple(observed_post_ids) != run_spec.ordered_post_ids:
         raise ValueError(f"{arm} output ordered post_id coverage differs from RunSpec")
 
@@ -1959,6 +2260,10 @@ def _read_arm(path: str | Path, arm: str, run_spec: _RunSpecReadback) -> _ArmRea
         recovery_witness=recovery_witness,
     )
     recovery_source_refs: tuple[dict[str, Any], ...] = ()
+    if execution_observation is not None:
+        claim, claim_snapshot = _load_json_snapshot(claim_path)
+        if claim_snapshot != claim_ref or type(claim.get("pid")) is not int or claim["pid"] != execution_observation["start"]["resources"]["pid"]:
+            raise ValueError(f"{arm} low-load observation PID differs from output attempt claim")
     if recovery_witness is not None:
         recovery_source_refs = _validate_recovery_witness_sources(
             manifest=manifest,
@@ -2001,6 +2306,7 @@ def _read_arm(path: str | Path, arm: str, run_spec: _RunSpecReadback) -> _ArmRea
         run_id=run_id,
         recovery_witness=recovery_witness,
         recovery_source_refs=recovery_source_refs,
+        execution_observation=execution_observation,
     )
 
 
@@ -2381,7 +2687,7 @@ def build_paired_measurement_readback(
 
     reference_count = len(reference_coordinates)
     report: dict[str, Any] = {
-        "schema_version": SCHEMA_VERSION,
+        "schema_version": PARALLEL12_SCHEMA_VERSION if run_spec.value["schema_version"] == PARALLEL12_RUN_SPEC_SCHEMA_VERSION else LOW_LOAD_SCHEMA_VERSION if run_spec.execution_policy is not None else SCHEMA_VERSION,
         "status": "GO_COST_READBACK_ONLY_ACCURACY_NOT_ESTIMABLE",
         "run_spec_sha256": run_spec.value["run_spec_sha256"],
         "pair_id": run_spec.value["pair_id"],
@@ -2500,6 +2806,29 @@ def build_paired_measurement_readback(
             "비용 GO만으로 실제 라우팅이나 production 승인을 열지 않는다.",
         ],
     }
+    if run_spec.execution_policy is not None:
+        report["execution_protocol"] = {
+            "schema_version": "paired_measurement_parallel12_readback_v1" if run_spec.value["schema_version"] == PARALLEL12_RUN_SPEC_SCHEMA_VERSION else "paired_measurement_low_load_readback_v1",
+            "run_spec_schema_version": run_spec.value["schema_version"],
+            "profile": "low-load-validation",
+            "requested_parallel": run_spec.runtime_fields["requested_parallel"],
+            "effective_parallel": run_spec.runtime_fields["effective_parallel"],
+            "policy_binding": dict(run_spec.value["execution_policy"]),
+            "config_projection_sha256": run_spec.execution_policy["config_projection_sha256"],
+            "observation_scope": "START_END_OBSERVED",
+            "resources": run_spec.execution_policy["resources"],
+            "health": run_spec.execution_policy["health"],
+            "before_observation": before.execution_observation,
+            "after_observation": after.execution_observation,
+            "observed_row_count_per_arm": before.input_count,
+            "authoritative_source_role": "REFERENCE_WAL_ONLY_NOT_A_MEASURED_ARM",
+            "actual_quality_status": "NOT_ESTIMABLE_NOT_BOUND_IN_THIS_REPORT",
+            "money_status": "NOT_ESTIMABLE_NO_PRICE_SNAPSHOT",
+        }
+        report["sources"]["execution_policy"] = run_spec.execution_policy_reference
+        report["gates"]["low_load_policy_and_start_end_observations"] = "GO"
+        report["limitations"].append("저부하 자원은 arm/행 시작·종료에만 관측했다. 실행 중 모든 순간이나 원격 모델 weight 불변을 증명하지 않는다.")
+        report["limitations"].append("기준 source는 기존 입력·모델·공개 설정에 결속된 판정 WAL 참조이며 측정 arm이 아니다. 기준 source의 프로필·장부·자원·health freshness를 새 arm의 실제 관측으로 승격하지 않는다.")
     report["report_sha256"] = _sha256(report)
 
     # Broaden the terminal stable recheck beyond the WAL.  A report is never
@@ -2525,6 +2854,8 @@ def build_paired_measurement_readback(
             )
     _assert_ledger_replay_unchanged(before)
     _assert_ledger_replay_unchanged(after)
+    if run_spec.execution_policy_reference is not None:
+        _assert_snapshot_unchanged(run_spec.execution_policy_reference, "execution policy")
     return report
 
 
@@ -2569,10 +2900,19 @@ def validate_paired_measurement_readback(
 
 
 __all__ = [
+    "LEGACY_RUN_SPEC_SCHEMA_VERSION",
+    "LOW_LOAD_RUN_SPEC_SCHEMA_VERSION",
+    "LOW_LOAD_SCHEMA_VERSION",
+    "PARALLEL12_RUN_SPEC_SCHEMA_VERSION",
+    "PARALLEL12_SCHEMA_VERSION",
+    "EXECUTION_POLICY_BINDING_SCHEMA_VERSION",
+    "EXECUTION_OBSERVATION_BUNDLE_SCHEMA_VERSION",
+    "ROW_EXECUTION_OBSERVATION_SCHEMA_VERSION",
     "RECOVERY_WITNESS_SCHEMA_VERSION",
     "REFERENCE_COPY_COST_ONLY",
     "RUN_SPEC_SCHEMA_VERSION",
     "SCHEMA_VERSION",
+    "read_prebound_execution_measurement",
     "build_recovery_witness",
     "build_paired_measurement_run_spec",
     "build_paired_measurement_readback",

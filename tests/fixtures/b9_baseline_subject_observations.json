@@ -1,0 +1,506 @@
+[
+  {
+    "text": "초대남이 좆같아야하는거임",
+    "tokens": [
+      {
+        "form": "초대",
+        "start": 0,
+        "len": 2,
+        "tag": "NNG"
+      },
+      {
+        "form": "남",
+        "start": 2,
+        "len": 1,
+        "tag": "NNG"
+      },
+      {
+        "form": "이",
+        "start": 3,
+        "len": 1,
+        "tag": "JKS"
+      },
+      {
+        "form": "좆같",
+        "start": 5,
+        "len": 2,
+        "tag": "VA"
+      },
+      {
+        "form": "어야",
+        "start": 7,
+        "len": 2,
+        "tag": "EC"
+      },
+      {
+        "form": "하",
+        "start": 9,
+        "len": 1,
+        "tag": "VX"
+      },
+      {
+        "form": "는",
+        "start": 10,
+        "len": 1,
+        "tag": "ETM"
+      },
+      {
+        "form": "거",
+        "start": 11,
+        "len": 1,
+        "tag": "NNB"
+      },
+      {
+        "form": "이",
+        "start": 12,
+        "len": 1,
+        "tag": "VCP"
+      },
+      {
+        "form": "ᆷ",
+        "start": 12,
+        "len": 1,
+        "tag": "EF"
+      }
+    ],
+    "events": [
+      {
+        "event": {
+          "source_id": "comment:0:clause:0",
+          "event_id": "comment:0:clause:0:5:13:cue:5",
+          "parent_event_id": "comment:0:clause:0:claim:0",
+          "start": 5,
+          "end": 13,
+          "predicate": "좆같아야하는거임",
+          "predicate_span": [
+            5,
+            13
+          ],
+          "actor": "self",
+          "grammatical_subject": {
+            "actor": "other:초대남",
+            "text": "초대남이",
+            "span": [
+              0,
+              4
+            ],
+            "explicit": true
+          },
+          "objects": [],
+          "polarity": "positive",
+          "evaluation_polarity": "neg",
+          "realization": "actual",
+          "assertion_span": [
+            -1,
+            -1
+          ],
+          "kind": "evaluate",
+          "evidence_kind": "cue",
+          "speaker": "self",
+          "claim_id": "comment:0:clause:0:claim:0",
+          "evidence_text": "초대남이 좆같아야하는거임",
+          "support_adoption_event_ids": [
+            "comment:0:clause:0:claim:0:direct"
+          ],
+          "final_support": true,
+          "surface_realization": "actual",
+          "evidence_offset": 0,
+          "binding_text": "초대남이 좆같아야하는거임",
+          "binding_offset": 0,
+          "temporal_scope": "unmarked",
+          "temporal_evidence_span": [
+            -1,
+            -1
+          ],
+          "realization_source": "cue_token_construction",
+          "realization_frame": "clause",
+          "attribution": "unit_speaker_default",
+          "attribution_evidence_span": [
+            -1,
+            -1
+          ],
+          "support_attribution": "unit_speaker_direct",
+          "claim_attachment": "claim",
+          "evidence_view_id": "comment:0:clause:0:view:act",
+          "binding_view_id": "comment:0:clause:0:view:binding"
+        },
+        "verified_subject_target": ""
+      }
+    ],
+    "notes": "[작성자 발화·원문 귀속]\n- 작성자 발화: 「개돌 신작 초대남이 너무 좆같은데」\n- 작성자 발화: 「좀 사람새끼처럼 생겨야지」\n[댓글 발화·원문 귀속]\n- 댓글 작성자 ㅇㅇ: 「초대남이 좆같아야하는거임」\n[원문] 개돌 신작 초대남이 너무 좆같은데 / 좀 사람새끼처럼 생겨야지",
+    "identity_reason": "[최종 판정]\n- 글 분류: general\n- 공식 제목: 미확정\n[원문에 근거한 설명]\n글쓴이는 제목에서 비유나 인상으로 의견을 표현한다. 비유의 내용을 실제 동일성이나 확인된 사실로 바꾸지 않는다. 근거가 된 제목 표현은 「개돌 신작 초대남이 너무 좆같은데」이다.\n[작성자 발화·원문 귀속]\n- 작성자 발화: 「개돌 신작 초대남이 너무 좆같은데」\n- 작성자 발화: 「좀 사람새끼처럼 생겨야지」\n[댓글 발화·원문 귀속]\n- 댓글 작성자 ㅇㅇ: 「초대남이 좆같아야하는거임」\n[원문] 개돌 신작 초대남이 너무 좆같은데 / 좀 사람새끼처럼 생겨야지",
+    "native_verification": true
+  },
+  {
+    "text": "초대남이 좆같음",
+    "tokens": [
+      {
+        "form": "초대",
+        "start": 0,
+        "len": 2,
+        "tag": "NNG"
+      },
+      {
+        "form": "남",
+        "start": 2,
+        "len": 1,
+        "tag": "NNG"
+      },
+      {
+        "form": "이",
+        "start": 3,
+        "len": 1,
+        "tag": "JKS"
+      },
+      {
+        "form": "좆같",
+        "start": 5,
+        "len": 2,
+        "tag": "VA"
+      },
+      {
+        "form": "음",
+        "start": 7,
+        "len": 1,
+        "tag": "EF"
+      }
+    ],
+    "events": [
+      {
+        "event": {
+          "source_id": "comment:0:clause:0",
+          "event_id": "comment:0:clause:0:5:8:cue:5",
+          "parent_event_id": "comment:0:clause:0:claim:0",
+          "start": 5,
+          "end": 8,
+          "predicate": "좆같음",
+          "predicate_span": [
+            5,
+            8
+          ],
+          "actor": "self",
+          "grammatical_subject": {
+            "actor": "other:초대남",
+            "text": "초대남이",
+            "span": [
+              0,
+              4
+            ],
+            "explicit": true
+          },
+          "objects": [],
+          "polarity": "positive",
+          "evaluation_polarity": "neg",
+          "realization": "actual",
+          "assertion_span": [
+            -1,
+            -1
+          ],
+          "kind": "evaluate",
+          "evidence_kind": "cue",
+          "speaker": "self",
+          "claim_id": "comment:0:clause:0:claim:0",
+          "evidence_text": "초대남이 좆같음",
+          "support_adoption_event_ids": [
+            "comment:0:clause:0:claim:0:direct"
+          ],
+          "final_support": true,
+          "surface_realization": "actual",
+          "evidence_offset": 0,
+          "binding_text": "초대남이 좆같음",
+          "binding_offset": 0,
+          "temporal_scope": "unmarked",
+          "temporal_evidence_span": [
+            -1,
+            -1
+          ],
+          "realization_source": "cue_token_construction",
+          "realization_frame": "clause",
+          "attribution": "unit_speaker_default",
+          "attribution_evidence_span": [
+            -1,
+            -1
+          ],
+          "support_attribution": "unit_speaker_direct",
+          "claim_attachment": "claim",
+          "evidence_view_id": "comment:0:clause:0:view:act",
+          "binding_view_id": "comment:0:clause:0:view:binding"
+        },
+        "verified_subject_target": ""
+      }
+    ],
+    "notes": "[작성자 발화·원문 귀속]\n- 작성자 발화: 「개돌 신작 초대남이 너무 좆같은데」\n- 작성자 발화: 「좀 사람새끼처럼 생겨야지」\n[댓글 발화·원문 귀속]\n- 댓글 작성자 ㅇㅇ: 「초대남이 좆같음」\n[원문] 개돌 신작 초대남이 너무 좆같은데 / 좀 사람새끼처럼 생겨야지",
+    "identity_reason": "[최종 판정]\n- 글 분류: general\n- 공식 제목: 미확정\n[원문에 근거한 설명]\n글쓴이는 제목에서 비유나 인상으로 의견을 표현한다. 비유의 내용을 실제 동일성이나 확인된 사실로 바꾸지 않는다. 근거가 된 제목 표현은 「개돌 신작 초대남이 너무 좆같은데」이다.\n[작성자 발화·원문 귀속]\n- 작성자 발화: 「개돌 신작 초대남이 너무 좆같은데」\n- 작성자 발화: 「좀 사람새끼처럼 생겨야지」\n[댓글 발화·원문 귀속]\n- 댓글 작성자 ㅇㅇ: 「초대남이 좆같음」\n[원문] 개돌 신작 초대남이 너무 좆같은데 / 좀 사람새끼처럼 생겨야지",
+    "native_verification": true
+  },
+  {
+    "text": "초대남이 좆같아야 하나?",
+    "tokens": [
+      {
+        "form": "초대",
+        "start": 0,
+        "len": 2,
+        "tag": "NNG"
+      },
+      {
+        "form": "남",
+        "start": 2,
+        "len": 1,
+        "tag": "NNG"
+      },
+      {
+        "form": "이",
+        "start": 3,
+        "len": 1,
+        "tag": "JKS"
+      },
+      {
+        "form": "좆같",
+        "start": 5,
+        "len": 2,
+        "tag": "VA"
+      },
+      {
+        "form": "어야",
+        "start": 7,
+        "len": 2,
+        "tag": "EC"
+      },
+      {
+        "form": "하",
+        "start": 10,
+        "len": 1,
+        "tag": "VX"
+      },
+      {
+        "form": "나",
+        "start": 11,
+        "len": 1,
+        "tag": "EF"
+      },
+      {
+        "form": "?",
+        "start": 12,
+        "len": 1,
+        "tag": "SF"
+      }
+    ],
+    "events": [
+      {
+        "event": {
+          "source_id": "comment:0:clause:0",
+          "event_id": "comment:0:clause:0:5:9:cue:5",
+          "parent_event_id": "comment:0:clause:0:claim:0",
+          "start": 5,
+          "end": 9,
+          "predicate": "좆같아야",
+          "predicate_span": [
+            5,
+            9
+          ],
+          "actor": "self",
+          "grammatical_subject": {
+            "actor": "other:초대남",
+            "text": "초대남이",
+            "span": [
+              0,
+              4
+            ],
+            "explicit": true
+          },
+          "objects": [],
+          "polarity": "positive",
+          "evaluation_polarity": "neg",
+          "realization": "actual",
+          "assertion_span": [
+            -1,
+            -1
+          ],
+          "kind": "evaluate",
+          "evidence_kind": "cue",
+          "speaker": "self",
+          "claim_id": "comment:0:clause:0:claim:0",
+          "evidence_text": "초대남이 좆같아야 하나?",
+          "support_adoption_event_ids": [
+            "comment:0:clause:0:claim:0:direct"
+          ],
+          "final_support": true,
+          "surface_realization": "actual",
+          "evidence_offset": 0,
+          "binding_text": "초대남이 좆같아야 하나?",
+          "binding_offset": 0,
+          "temporal_scope": "unmarked",
+          "temporal_evidence_span": [
+            -1,
+            -1
+          ],
+          "realization_source": "cue_token_construction",
+          "realization_frame": "clause",
+          "attribution": "unit_speaker_default",
+          "attribution_evidence_span": [
+            -1,
+            -1
+          ],
+          "support_attribution": "unit_speaker_direct",
+          "claim_attachment": "claim",
+          "evidence_view_id": "comment:0:clause:0:view:act",
+          "binding_view_id": "comment:0:clause:0:view:binding"
+        },
+        "verified_subject_target": ""
+      }
+    ],
+    "notes": "[문맥과 댓글 역할]\n댓글 1의 화자는 '초대남이 좆같아야 하나?'라고 묻는다. 질문을 확정 진술로 바꾸지 않는다.\n[작성자 발화·원문 귀속]\n- 작성자 발화: 「개돌 신작 초대남이 너무 좆같은데」\n- 작성자 발화: 「좀 사람새끼처럼 생겨야지」\n[댓글 발화·원문 귀속]\n- 댓글 작성자 ㅇㅇ: 「초대남이 좆같아야 하나?」\n[원문] 개돌 신작 초대남이 너무 좆같은데 / 좀 사람새끼처럼 생겨야지",
+    "identity_reason": "[최종 판정]\n- 글 분류: general\n- 공식 제목: 미확정\n[원문에 근거한 설명]\n글쓴이는 제목에서 비유나 인상으로 의견을 표현한다. 비유의 내용을 실제 동일성이나 확인된 사실로 바꾸지 않는다. 근거가 된 제목 표현은 「개돌 신작 초대남이 너무 좆같은데」이다.\n[작성자 발화·원문 귀속]\n- 작성자 발화: 「개돌 신작 초대남이 너무 좆같은데」\n- 작성자 발화: 「좀 사람새끼처럼 생겨야지」\n[댓글 발화·원문 귀속]\n- 댓글 작성자 ㅇㅇ: 「초대남이 좆같아야 하나?」\n[원문] 개돌 신작 초대남이 너무 좆같은데 / 좀 사람새끼처럼 생겨야지",
+    "native_verification": true
+  },
+  {
+    "text": "초대남이 좆같아야하는거임은 아님",
+    "tokens": [
+      {
+        "form": "초대",
+        "start": 0,
+        "len": 2,
+        "tag": "NNG"
+      },
+      {
+        "form": "남",
+        "start": 2,
+        "len": 1,
+        "tag": "NNG"
+      },
+      {
+        "form": "이",
+        "start": 3,
+        "len": 1,
+        "tag": "JKS"
+      },
+      {
+        "form": "좆같",
+        "start": 5,
+        "len": 2,
+        "tag": "VA"
+      },
+      {
+        "form": "어야",
+        "start": 7,
+        "len": 2,
+        "tag": "EC"
+      },
+      {
+        "form": "하",
+        "start": 9,
+        "len": 1,
+        "tag": "VX"
+      },
+      {
+        "form": "는",
+        "start": 10,
+        "len": 1,
+        "tag": "ETM"
+      },
+      {
+        "form": "거",
+        "start": 11,
+        "len": 1,
+        "tag": "NNB"
+      },
+      {
+        "form": "이",
+        "start": 12,
+        "len": 1,
+        "tag": "VCP"
+      },
+      {
+        "form": "ᆷ",
+        "start": 12,
+        "len": 1,
+        "tag": "ETN"
+      },
+      {
+        "form": "은",
+        "start": 13,
+        "len": 1,
+        "tag": "JX"
+      },
+      {
+        "form": "아니",
+        "start": 15,
+        "len": 2,
+        "tag": "VCN"
+      },
+      {
+        "form": "ᆷ",
+        "start": 16,
+        "len": 1,
+        "tag": "EF"
+      }
+    ],
+    "events": [
+      {
+        "event": {
+          "source_id": "comment:0:clause:0",
+          "event_id": "comment:0:clause:0:5:17:cue:5",
+          "parent_event_id": "comment:0:clause:0:claim:0",
+          "start": 5,
+          "end": 17,
+          "predicate": "좆같아야하는거임은 아님",
+          "predicate_span": [
+            5,
+            17
+          ],
+          "actor": "self",
+          "grammatical_subject": {
+            "actor": "other:초대남",
+            "text": "초대남이",
+            "span": [
+              0,
+              4
+            ],
+            "explicit": true
+          },
+          "objects": [],
+          "polarity": "positive",
+          "evaluation_polarity": "pos",
+          "realization": "actual",
+          "assertion_span": [
+            -1,
+            -1
+          ],
+          "kind": "evaluate",
+          "evidence_kind": "cue",
+          "speaker": "self",
+          "claim_id": "comment:0:clause:0:claim:0",
+          "evidence_text": "초대남이 좆같아야하는거임은 아님",
+          "support_adoption_event_ids": [
+            "comment:0:clause:0:claim:0:direct"
+          ],
+          "final_support": true,
+          "surface_realization": "actual",
+          "evidence_offset": 0,
+          "binding_text": "초대남이 좆같아야하는거임은 아님",
+          "binding_offset": 0,
+          "temporal_scope": "unmarked",
+          "temporal_evidence_span": [
+            -1,
+            -1
+          ],
+          "realization_source": "cue_token_construction",
+          "realization_frame": "clause",
+          "attribution": "unit_speaker_default",
+          "attribution_evidence_span": [
+            -1,
+            -1
+          ],
+          "support_attribution": "unit_speaker_direct",
+          "claim_attachment": "claim",
+          "evidence_view_id": "comment:0:clause:0:view:act",
+          "binding_view_id": "comment:0:clause:0:view:binding"
+        },
+        "verified_subject_target": ""
+      }
+    ],
+    "notes": "[작성자 발화·원문 귀속]\n- 작성자 발화: 「개돌 신작 초대남이 너무 좆같은데」\n- 작성자 발화: 「좀 사람새끼처럼 생겨야지」\n[댓글 발화·원문 귀속]\n- 댓글 작성자 ㅇㅇ: 「초대남이 좆같아야하는거임은 아님」\n[원문] 개돌 신작 초대남이 너무 좆같은데 / 좀 사람새끼처럼 생겨야지",
+    "identity_reason": "[최종 판정]\n- 글 분류: general\n- 공식 제목: 미확정\n[원문에 근거한 설명]\n글쓴이는 제목에서 비유나 인상으로 의견을 표현한다. 비유의 내용을 실제 동일성이나 확인된 사실로 바꾸지 않는다. 근거가 된 제목 표현은 「개돌 신작 초대남이 너무 좆같은데」이다.\n[작성자 발화·원문 귀속]\n- 작성자 발화: 「개돌 신작 초대남이 너무 좆같은데」\n- 작성자 발화: 「좀 사람새끼처럼 생겨야지」\n[댓글 발화·원문 귀속]\n- 댓글 작성자 ㅇㅇ: 「초대남이 좆같아야하는거임은 아님」\n[원문] 개돌 신작 초대남이 너무 좆같은데 / 좀 사람새끼처럼 생겨야지",
+    "native_verification": true
+  }
+]

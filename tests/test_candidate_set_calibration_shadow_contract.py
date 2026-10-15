@@ -10,6 +10,7 @@ from pathlib import Path
 
 from src.llm_batch.grounding.candidate_set_calibration_shadow import (
     CALIBRATED_BOUND_STATUS,
+    CALIBRATION_POLICY_SCHEMA_V4,
     CALIBRATION_SHADOW_SCHEMA,
     CALIBRATION_UNAVAILABLE_SCHEMA,
     CalibrationArtifact,
@@ -332,6 +333,72 @@ def _two_row_predictions(base, manifest, artifact, policy, *, candidate_scores, 
 
 
 class CandidateSetCalibrationShadowContractTests(unittest.TestCase):
+    def test_actual_policy_v4_binds_interval_protocol(self):
+        policy = _policy(
+            policy_scope="FROZEN_ACTUAL_PRE_REGISTERED",
+            min_candidate_recall_lower_bound=0.01,
+            min_nil_precision_lower_bound=0.01,
+            min_nil_recall_lower_bound=0.01,
+        )
+        payload = policy.to_dict()
+        self.assertEqual(CALIBRATION_POLICY_SCHEMA_V4, payload["schema_version"])
+        self.assertEqual(30, payload["min_bootstrap_groups"])
+        self.assertEqual(2_000, payload["min_bootstrap_replicates"])
+        self.assertEqual(
+            "CLUSTER_BOOTSTRAP_PERCENTILE",
+            payload["cluster_interval_method"],
+        )
+        for field_name, replacement in (
+            ("top_label_accuracy_denominator", "NON_ABSTAIN_ROWS"),
+            ("min_bootstrap_groups", 31),
+            ("min_bootstrap_replicates", 2_001),
+        ):
+            forged = dict(payload)
+            forged[field_name] = replacement
+            with self.assertRaisesRegex(ValueError, "fingerprint mismatch"):
+                CalibrationEvaluationPolicy(**forged)
+
+        legacy_values = {
+            key: value
+            for key, value in payload.items()
+            if key
+            not in {
+                "policy_sha256",
+                "min_bootstrap_groups",
+                "min_bootstrap_replicates",
+                "cluster_interval_method",
+            }
+        }
+        legacy_values["schema_version"] = "candidate_set_calibration_policy_v3"
+        legacy = CalibrationEvaluationPolicy.create(**legacy_values)
+        self.assertEqual("candidate_set_calibration_policy_v3", legacy.schema_version)
+
+    def test_legacy_v2_v3_policy_hashes_remain_stable(self):
+        synthetic_v2 = _policy()
+        self.assertEqual(
+            "9d8ade20391e693c47c591b14c0d9a22c5276846cd91a2438c48303326b1c1b3",
+            synthetic_v2.policy_sha256,
+        )
+        self.assertEqual(
+            synthetic_v2.to_dict(),
+            CalibrationEvaluationPolicy(**synthetic_v2.to_dict()).to_dict(),
+        )
+        actual_v3 = _policy(
+            policy_scope="FROZEN_ACTUAL_PRE_REGISTERED",
+            schema_version="candidate_set_calibration_policy_v3",
+            min_candidate_recall_lower_bound=0.01,
+            min_nil_precision_lower_bound=0.01,
+            min_nil_recall_lower_bound=0.01,
+        )
+        self.assertEqual(
+            "e0fdd130deb7beb6e058fb0eceb6996727c621241f2087bb030d019e2dc8ed9a",
+            actual_v3.policy_sha256,
+        )
+        self.assertEqual(
+            actual_v3.to_dict(),
+            CalibrationEvaluationPolicy(**actual_v3.to_dict()).to_dict(),
+        )
+
     def test_complete_bound_shadow_uses_candidate_nil_simplex_without_public_effect(self):
         base = _base_shadow()
         candidate_label = base.event_probabilities[0].label
@@ -835,18 +902,9 @@ class CandidateSetCalibrationShadowContractTests(unittest.TestCase):
             actual_bootstrap_seed=7,
             actual_bootstrap_replicates=100,
         )
-        self.assertEqual("GO_FROZEN_ACTUAL_SHADOW_ONLY", report["status"])
-        self.assertTrue(report["point_metric_checks"]["target_coverage_attained"])
-        self.assertTrue(report["point_metric_checks"]["selective_risk_upper"])
-        self.assertTrue(report["interval_metric_checks_passed"])
-        self.assertTrue(
-            report["interval_metric_checks"][
-                "paired_selective_risk_upper_bound"
-            ]
-        )
+        self.assertEqual("NOT_ESTIMABLE_ACTUAL_INTERVAL_PROTOCOL", report["status"])
+        self.assertIn("at least 2000 integer bootstrap replicates", report["reason"])
         self.assertFalse(report["conversion_allowed"])
-        self.assertEqual(2, report["top_label_accuracy_receipt"]["denominator"])
-        self.assertTrue(report["cluster_bootstrap"]["estimable"])
         repeated = evaluate_frozen_holdout(
             split_manifest=manifest, shadows=after, base_shadows=bases, score_vectors=scores,
             calibration_artifact=artifact, baseline_shadows=baseline,
@@ -858,7 +916,7 @@ class CandidateSetCalibrationShadowContractTests(unittest.TestCase):
             actual_readback_manifest=readback, actual_bootstrap_seed=7,
             actual_bootstrap_replicates=100, actual_readback_root=str(root),
         )
-        self.assertEqual(report["cluster_bootstrap"], repeated["cluster_bootstrap"])
+        self.assertEqual(report, repeated)
         missing = evaluate_frozen_holdout(
             split_manifest=manifest, shadows=after, base_shadows=bases, score_vectors=scores,
             calibration_artifact=artifact, policy=policy, evidence_mode="FROZEN_ACTUAL",
@@ -961,6 +1019,249 @@ class CandidateSetCalibrationShadowContractTests(unittest.TestCase):
             actual_bootstrap_seed=7, actual_bootstrap_replicates=100,
         )
         self.assertEqual("NOT_ESTIMABLE_ACTUAL_READBACK_INVALID", wrong_baseline_report["status"])
+
+    def test_frozen_actual_v4_success_keeps_selected_point_ci_and_paired_gates_aligned(self):
+        base = _base_shadow()
+        candidate_label = base.event_probabilities[0].label
+        for denominator in ("ALL_FROZEN_ROWS", "NON_ABSTAIN_ROWS"):
+            with self.subTest(denominator=denominator), tempfile.TemporaryDirectory() as directory:
+                policy = _policy(
+                    policy_scope="FROZEN_ACTUAL_PRE_REGISTERED",
+                    top_label_accuracy_denominator=denominator,
+                    min_candidate_recall_lower_bound=0.01,
+                    min_nil_precision_lower_bound=0.01,
+                    min_nil_recall_lower_bound=0.01,
+                )
+                seed_manifest = _split_manifest(
+                    candidate_label,
+                    base.candidate_set.candidate_set_fingerprint,
+                )
+                assignments = [
+                    item
+                    for item in seed_manifest.assignments
+                    if item.split != "FROZEN_HOLDOUT"
+                ]
+                for index in range(30):
+                    truth_kind = "CANDIDATE" if index % 2 == 0 else "NIL"
+                    truth_label = candidate_label if truth_kind == "CANDIDATE" else NIL_LABEL
+                    assignments.append(
+                        CalibrationSplitAssignment(
+                            example_id=f"actual-{index:02d}",
+                            post_id=str(1_000 + index),
+                            split_group_id=f"independent-group-{index:02d}",
+                            content_fingerprint=_canonical_hash({"content": index}),
+                            source_group_fingerprint=_canonical_hash({"source": index}),
+                            split="FROZEN_HOLDOUT",
+                            truth_kind=truth_kind,
+                            truth_label=truth_label,
+                            label_provenance_sha256=SHA_C,
+                            candidate_set_fingerprint=base.candidate_set.candidate_set_fingerprint,
+                            gold_work_fingerprint=("3" * 64 if truth_kind == "CANDIDATE" else None),
+                            binding_status=("UNIQUE" if truth_kind == "CANDIDATE" else "NOT_APPLICABLE"),
+                            matched_candidate_ids=((candidate_label,) if truth_kind == "CANDIDATE" else ()),
+                        )
+                    )
+                manifest = CalibrationSplitManifest.create(
+                    assignments=tuple(assignments),
+                    source_label_ledger_sha256=SHA_D,
+                    assignment_seed_sha256=SHA_E,
+                )
+                artifact = _artifact(manifest, policy)
+                baseline_artifact = _artifact(
+                    manifest,
+                    policy,
+                    scorer_fingerprint="9" * 64,
+                )
+                frozen = [
+                    item for item in manifest.assignments if item.split == "FROZEN_HOLDOUT"
+                ]
+                bases = {}
+                scores = {}
+                after = {}
+                baseline_bases = {}
+                baseline_scores = {}
+                baseline = {}
+                for index, assignment in enumerate(frozen):
+                    abstain = index >= 20
+                    if abstain:
+                        raw_scores = (0.0, 0.0)
+                    elif assignment.truth_kind == "CANDIDATE":
+                        raw_scores = (3.0, 0.0)
+                    else:
+                        raw_scores = (0.0, 3.0)
+                    score = _score(
+                        base,
+                        artifact,
+                        example_id=assignment.example_id,
+                        post_id=assignment.post_id,
+                        raw_scores=raw_scores,
+                    )
+                    baseline_score = _score(
+                        base,
+                        baseline_artifact,
+                        example_id=assignment.example_id,
+                        post_id=assignment.post_id,
+                        raw_scores=raw_scores,
+                    )
+                    bases[assignment.example_id] = base
+                    scores[assignment.example_id] = score
+                    after[assignment.example_id] = _build_bound(
+                        base, score, artifact, policy, manifest
+                    )
+                    baseline_bases[assignment.example_id] = base
+                    baseline_scores[assignment.example_id] = baseline_score
+                    baseline[assignment.example_id] = _build_bound(
+                        base, baseline_score, baseline_artifact, policy, manifest
+                    )
+
+                root = Path(directory)
+                expected = [
+                    {"example_id": item.example_id, "post_id": item.post_id}
+                    for item in frozen
+                ]
+                producer_rows = []
+                prediction_rows = []
+                baseline_rows = []
+                for item in frozen:
+                    shadow = after[item.example_id]
+                    before_shadow = baseline[item.example_id]
+                    source_sha = "8" * 64
+                    producer_rows.append(
+                        {
+                            "example_id": item.example_id,
+                            "post_id": item.post_id,
+                            "generation_status": "COMPLETE",
+                            "candidate_set_fingerprint": shadow.candidate_set_fingerprint,
+                            "generation_proof_fingerprint": shadow.generation_proof_fingerprint,
+                            "source_digest_sha256": source_sha,
+                        }
+                    )
+                    for target, value in (
+                        (prediction_rows, shadow),
+                        (baseline_rows, before_shadow),
+                    ):
+                        target.append(
+                            {
+                                "example_id": item.example_id,
+                                "post_id": item.post_id,
+                                "group": item.split_group_id,
+                                "probabilities": {
+                                    probability.label: probability.probability_mass
+                                    for probability in value.event_probabilities
+                                },
+                                "shadow_fingerprint": value.shadow_fingerprint,
+                                "score_vector_sha256": value.score_vector_sha256,
+                                "candidate_set_fingerprint": value.candidate_set_fingerprint,
+                                "generation_proof_fingerprint": value.generation_proof_fingerprint,
+                                "source_digest_sha256": source_sha,
+                            }
+                        )
+                for name, rows in (
+                    ("expected", expected),
+                    ("producer", producer_rows),
+                    ("prediction", prediction_rows),
+                    ("baseline", baseline_rows),
+                ):
+                    (root / f"{name}.jsonl").write_text(
+                        "\n".join(
+                            json.dumps(row, ensure_ascii=False, sort_keys=True)
+                            for row in rows
+                        )
+                        + "\n",
+                        encoding="utf-8",
+                    )
+                refs = {
+                    "expected_universe": snapshot_artifact(
+                        root, "expected_universe", "expected.jsonl", jsonl=True
+                    ),
+                    "producer": snapshot_artifact(
+                        root, "producer", "producer.jsonl", jsonl=True
+                    ),
+                    "prediction": snapshot_artifact(
+                        root, "prediction", "prediction.jsonl", jsonl=True
+                    ),
+                    "baseline_prediction": snapshot_artifact(
+                        root, "baseline_prediction", "baseline.jsonl", jsonl=True
+                    ),
+                }
+                readback = build_readback_manifest(
+                    run_spec_sha256=SHA_A,
+                    artifacts=refs,
+                    expected_universe=expected_universe_readback(expected),
+                    producer_coverage=producer_coverage_receipt(expected, producer_rows),
+                    prediction=prediction_payload_readback(expected, prediction_rows),
+                    baseline_prediction=prediction_payload_readback(expected, baseline_rows),
+                    source_digest_sha256="8" * 64,
+                    metric_protocol_sha256=policy.policy_sha256,
+                    bootstrap_seed=7,
+                    bootstrap_replicates=2_000,
+                )
+                receipt = FrozenActualEvidenceReceipt.create(
+                    run_spec_sha256=SHA_A,
+                    split_manifest_sha256=manifest.manifest_sha256,
+                    source_label_ledger_sha256=manifest.source_label_ledger_sha256,
+                    expected_universe_artifact_sha256=refs["expected_universe"].sha256,
+                    prediction_artifact_sha256=refs["prediction"].sha256,
+                    baseline_prediction_artifact_sha256=refs["baseline_prediction"].sha256,
+                    producer_receipt_artifact_sha256=refs["producer"].sha256,
+                    readback_manifest_sha256=readback["manifest_sha256"],
+                    evaluation_plan_sha256=readback["evaluation_plan_sha256"],
+                    calibrator_fit_receipt_sha256=artifact.calibrator_fit_receipt_sha256,
+                    baseline_calibrator_fit_receipt_sha256=baseline_artifact.calibrator_fit_receipt_sha256,
+                    generation_proof_set_sha256=_canonical_hash(
+                        sorted(
+                            score.generation_proof_fingerprint
+                            for score in scores.values()
+                        )
+                    ),
+                    metric_protocol_sha256=policy.policy_sha256,
+                )
+                report = evaluate_frozen_holdout(
+                    split_manifest=manifest,
+                    shadows=after,
+                    base_shadows=bases,
+                    score_vectors=scores,
+                    calibration_artifact=artifact,
+                    baseline_shadows=baseline,
+                    baseline_base_shadows=baseline_bases,
+                    baseline_score_vectors=baseline_scores,
+                    baseline_calibration_artifact=baseline_artifact,
+                    policy=policy,
+                    evidence_mode="FROZEN_ACTUAL",
+                    actual_evidence_receipt=receipt,
+                    prediction_artifact_sha256=refs["prediction"].sha256,
+                    baseline_prediction_artifact_sha256=refs["baseline_prediction"].sha256,
+                    run_spec_sha256=SHA_A,
+                    producer_receipt_artifact_sha256=refs["producer"].sha256,
+                    actual_readback_manifest=readback,
+                    actual_readback_root=str(root),
+                    actual_bootstrap_seed=7,
+                    actual_bootstrap_replicates=2_000,
+                )
+                self.assertEqual("GO_FROZEN_ACTUAL_SHADOW_ONLY", report["status"])
+                self.assertTrue(report["interval_metric_checks_passed"])
+                self.assertFalse(report["conversion_allowed"])
+                selected = report["top_label_accuracy_receipt"]
+                dual = report["top_label_accuracy_receipts"][denominator]
+                self.assertEqual(denominator, selected["denominator_policy"])
+                self.assertEqual(report["metrics"]["top_label_accuracy"], selected["value"])
+                self.assertEqual(
+                    report["cluster_bootstrap"]["point_estimate"]["top_label_accuracy"],
+                    selected["value"],
+                )
+                self.assertEqual(selected["cluster_ci"], dual["cluster_ci"])
+                self.assertEqual(policy.policy_sha256, dual["interval_protocol"]["policy_sha256"])
+                self.assertEqual(
+                    {
+                        "top_label_accuracy",
+                        "brier",
+                        "log_loss",
+                        "ece",
+                        "selective_risk",
+                        "aurc",
+                    },
+                    set(policy.paired_delta_ci_bounds),
+                )
 
     def test_small_sample_and_missing_truth_candidate_keep_all_headline_metrics_null(self):
         base = _base_shadow()

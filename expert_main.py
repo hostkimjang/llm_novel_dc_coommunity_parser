@@ -29,6 +29,15 @@ from pathlib import Path
 from typing import List, Dict, Any, Callable, Iterable, Mapping, Optional, Tuple
 from urllib.parse import parse_qs, urlsplit, urlunsplit
 
+# Resolve project imports before a reused virtualenv's editable installation.
+# Adding this path later cannot replace an already imported llm_batch package.
+sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
+
+from llm_batch.runtime.attempt_failure import (
+    preserve_rejected_publication, drain_failed_workers, close_worker_logs,
+    record_attempt_failure, note_secondary,
+)
+
 try:
     from llm_batch.promotion_gate import (
         PUBLISH_CONTRACT_VERSION,
@@ -237,7 +246,7 @@ _PUBLICATION_DECISION_ENV_PREFIXES = (
 )
 
 # 대시보드 비활성화 플래그: --no-dashboard
-_NO_DASHBOARD = "--no-dashboard" in sys.argv
+_NO_DASHBOARD = __name__ == "__main__" and "--no-dashboard" in sys.argv
 
 
 def _initialize_recovery_activation_runtime(
@@ -285,8 +294,44 @@ def _initialize_recovery_activation_runtime(
     return hmac_key, registry, "READY", mode
 
 
+
+def _publication_slang_input_binding(enabled: bool, input_sha256: Optional[str]) -> Dict[str, Any]:
+    if type(enabled) is not bool:
+        raise ValueError("slang DB enabled state must be actual bool")
+    if not enabled:
+        if input_sha256 is not None:
+            raise ValueError("disabled slang DB input must be explicit null")
+        mode, status = "OFF", "OFF_NOT_READ"
+    else:
+        mode, status = "MUTABLE_WRITE", "PRESENT_SNAPSHOT" if input_sha256 is not None else "ABSENT_NOT_FOUND"
+        if input_sha256 is not None and re.fullmatch(r"[0-9a-f]{64}", input_sha256) is None:
+            raise ValueError("slang DB snapshot SHA invalid")
+    return {"schema_version": "publication_slang_input_binding_v1", "access_mode": mode, "status": status, "enabled": enabled, "input_read": input_sha256 is not None, "input_sha256": input_sha256}
+
+
+def _prebound_execution_measurement(environment: Mapping[str, str], config: Mapping[str, Any]) -> Dict[str, Any]:
+    from src.llm_batch.measurement.paired_measurement_readback import read_prebound_execution_measurement
+    path = str(environment.get("PIPELINE_MEASUREMENT_RUN_SPEC_PATH") or "").strip()
+    file_sha = str(environment.get("PIPELINE_MEASUREMENT_RUN_SPEC_FILE_SHA256") or "").strip()
+    if not path or not file_sha:
+        raise ValueError("strict paired measurement requires actual RunSpec path/file SHA")
+    bound = read_prebound_execution_measurement(run_spec_path=path, file_sha256=file_sha, self_sha256=config["run_spec_sha256"], pair_id=config["pair_id"], arm=config["arm"])
+    for field, expected in bound["expected_measurement_fields"].items():
+        if field in {"execution_envelope_policy", "execution_policy_binding"}:
+            continue
+        if field not in config or config[field] != expected:
+            raise ValueError(f"prebound measurement {field} mismatch")
+    result = {"execution_envelope_policy": bound["execution_envelope_policy"], "run_spec_file_binding": bound["run_spec_file_binding"]}
+    if "execution_policy_binding" in bound:
+        result["execution_policy_binding"] = dict(bound["execution_policy_binding"])
+    return result
+
+
 def _decision_call_measurement_config(
     environment: Optional[Mapping[str, str]] = None,
+    *,
+    community_knowledge_read_only: bool = False,
+    native_recovery_frozen: bool = False,
 ) -> Dict[str, Any]:
     """Normalize fail-closed bindings for future paired call-cost runs.
 
@@ -340,6 +385,8 @@ def _decision_call_measurement_config(
         raise ValueError(
             f"{_MEASUREMENT_EARLY_ROUTE_MODE_ENV} must be OFF or SOURCE_ONLY_V1"
         )
+    if community_knowledge_read_only and early_route_mode != _EARLY_ROUTE_MODE_OFF:
+        raise ValueError("커뮤니티 READ_ONLY는 모델 입력을 변경하므로 source-only early route와 함께 사용할 수 없습니다")
     mutable_context_mode = str(
         env.get(
             _MEASUREMENT_MUTABLE_CONTEXT_MODE_ENV,
@@ -354,6 +401,8 @@ def _decision_call_measurement_config(
         raise ValueError(
             f"{_MEASUREMENT_MUTABLE_CONTEXT_MODE_ENV} must be NORMAL or FROZEN_OFF"
         )
+    if community_knowledge_read_only or native_recovery_frozen:
+        mutable_context_mode = _MEASUREMENT_MUTABLE_CONTEXT_FROZEN_OFF
     raw_slang_mode = str(env.get("PIPELINE_SLANG_DB", "0") or "0").strip().lower()
     if raw_slang_mode in {"0", "off", "false", "no"}:
         measurement_slang_access_mode = "OFF"
@@ -361,6 +410,8 @@ def _decision_call_measurement_config(
         measurement_slang_access_mode = "READ_ONLY"
     else:
         measurement_slang_access_mode = "MUTABLE_WRITE"
+    if community_knowledge_read_only:
+        measurement_slang_access_mode = "OFF"
     bindings = (run_spec_sha256, pair_id, arm)
     if all(bindings):
         binding_status = "BOUND"
@@ -408,13 +459,13 @@ def _decision_call_measurement_config(
         "schema_version": "paired_measurement_mutable_context_binding_v1",
         "mutable_context_mode": mutable_context_mode,
         "batch_context_enabled": not (
-            mode == "REQUIRED"
-            and mutable_context_mode == _MEASUREMENT_MUTABLE_CONTEXT_FROZEN_OFF
+            community_knowledge_read_only or native_recovery_frozen or (mode == "REQUIRED"
+            and mutable_context_mode == _MEASUREMENT_MUTABLE_CONTEXT_FROZEN_OFF)
         ),
         "slang_access_mode": measurement_slang_access_mode,
-        "central_slang_db_write_allowed": False if mode == "REQUIRED" else None,
+        "central_slang_db_write_allowed": False if mode == "REQUIRED" or community_knowledge_read_only or native_recovery_frozen else None,
     }
-    return {
+    config = {
         "mode": mode,
         "run_spec_sha256": run_spec_sha256 or None,
         "pair_id": pair_id or None,
@@ -447,12 +498,18 @@ def _decision_call_measurement_config(
             mutable_context_mode == _MEASUREMENT_MUTABLE_CONTEXT_FROZEN_OFF
         ),
         "slang_access_mode": measurement_slang_access_mode,
-        "central_slang_db_write_allowed": False if mode == "REQUIRED" else None,
+        "central_slang_db_write_allowed": False if mode == "REQUIRED" or community_knowledge_read_only or native_recovery_frozen else None,
         "mutable_context_binding": mutable_context_binding,
         "mutable_context_binding_sha256": early_route_canonical_hash(
             mutable_context_binding
         ),
     }
+    has_spec_file_binding = any(env.get(key) for key in ("PIPELINE_MEASUREMENT_RUN_SPEC_PATH", "PIPELINE_MEASUREMENT_RUN_SPEC_FILE_SHA256"))
+    if has_spec_file_binding and mode == "REQUIRED" and execution_mode == _MEASUREMENT_EXECUTION_FRESH_STRICT:
+        config.update(_prebound_execution_measurement(env, config))
+    elif has_spec_file_binding:
+        raise ValueError("RunSpec file binding is valid only for strict paired REQUIRED mode")
+    return config
 
 
 def _measurement_execution_source(
@@ -1535,9 +1592,10 @@ def _learn_batch_context_from_canonical_publication(
     )
     learning_kwargs: Dict[str, Any] = {}
     if envelope is not None:
+        from llm_batch.grounding.munpia_author_byline import author_for_identity
         learning_kwargs = {
             "decoded_terms": envelope["decoded_terms"],
-            "identified_author": envelope["identified_author"],
+            "identified_author": author_for_identity(envelope, analysis_result.get("identity")),
             "identified_characters": envelope["identified_characters"],
         }
     batch_context.learn_from_result(dict(canonical_result), **learning_kwargs)
@@ -1590,13 +1648,18 @@ def _preview_publication_decision(
         expected_post_id=post_id,
     )
     if reference_receipt is not None:
-        validate_publication_result_decision(
-            result_item,
-            reference_receipt,
-            expected_scope_id=publication_scope_id,
-            expected_input_index=input_index,
-            expected_post_id=post_id,
-        )
+        try:
+            validate_publication_result_decision(
+                result_item,
+                reference_receipt,
+                expected_scope_id=publication_scope_id,
+                expected_input_index=input_index,
+                expected_post_id=post_id,
+            )
+        except PublicationCommitError as error:
+            # 실제 비교에 쓰인 preview만 진단에 넘긴다. validator/원장은 불변이다.
+            error.current_publication_preview = receipt
+            raise
     return receipt
 
 
@@ -1690,8 +1753,49 @@ def _build_arg_parser(*, add_help: bool) -> argparse.ArgumentParser:
     parser.add_argument("input", nargs="?", default=None, help="입력 JSONL 파일 경로")
     parser.add_argument("--input", dest="input_flag", default=None, help="입력 JSONL 파일 경로 (--input 형식)")
     parser.add_argument("--output", "-o", default=None, help="출력 JSON 파일 경로")
+    parser.add_argument("--recovery-simulation-plan", default=None, help="일반 분석과 분리된 고정 합성 복구 계획 JSON")
+    parser.add_argument("--recovery-provider-plan", default=None, help="일반 분석과 분리된 명시 provider 근거 수집 계획 JSON")
+    parser.add_argument("--recovery-provider-plan-sha256", default=None, help="provider 계획 파일의 사전 고정 raw SHA-256")
+    parser.add_argument("--recovery-hmac-key-file", default=None, help="기존 감사 key 읽기 전용 경로(ASCII hex64)")
+    parser.add_argument("--recovery-attempt-id", default=None, help="명시적인 새 복구 attempt ID")
+    parser.add_argument("--recovery-session-id", default=None, help="명시적인 복구 session ID")
+    parser.add_argument("--native-recovery", choices=["OFF", "ON"], default=None,
+                        help="일반 분석 완료 뒤 같은 호출의 문맥으로 별도 native 복구 실행(기본 OFF)")
+    parser.add_argument("--native-recovery-policy", default=None, help="자동 native 복구의 명시 예산·endpoint·wire 정책 JSON")
+    parser.add_argument("--native-recovery-policy-sha256", default=None, help="자동 native 정책 파일의 고정 raw SHA-256")
     parser.add_argument("--parallel", "-p", type=int, default=1, help="최대 병렬 처리 워커 수 (기본: 1, 실제 워커 수는 입력 post 수로 상한 조정)")
     parser.add_argument("--no-dashboard", action="store_true", help="대시보드 비활성화")
+    parser.add_argument("--execution-profile", choices=["general", "low-load-validation", "paired-measurement"],
+                        default=None, help="실행 설정 묶음. 개별 CLI·환경 설정이 프로필 기본값보다 우선")
+    parser.add_argument("--decision-call-ledger", choices=["OFF", "SHADOW", "REQUIRED"], default=None,
+                        help="호출 장부 모드. REQUIRED는 기존 측정 결속 검증을 그대로 수행")
+    parser.add_argument("--context-diagnostics", choices=["on", "off"], default=None,
+                        help="원문 문맥·발화 구조의 크기 제한 진단 저장")
+    parser.add_argument("--candidate-retrieval", choices=["OFF", "SHADOW"], default="OFF",
+                        help="고정 작품 corpus의 후보 회수 관측. 기본 OFF, 기존 판정에 반영하지 않음")
+    parser.add_argument("--candidate-corpus", default=None, help="명시적으로 고정한 작품 corpus JSON 경로")
+    parser.add_argument("--candidate-corpus-sha256", default=None, help="corpus 파일의 사전 고정 SHA-256")
+    parser.add_argument("--candidate-retrieval-top-k", type=int, default=20, help="관측할 양수 점수 후보 수 상한 (1~100)")
+    parser.add_argument("--candidate-reranker", choices=["OFF", "SHADOW"], default=None,
+                        help="R2 고정 후보의 재정렬 관측. 기본 OFF, 공개 판정에는 반영하지 않음")
+    parser.add_argument("--reranker-manifest", default=None, help="명시적으로 고정한 scorer manifest 경로")
+    parser.add_argument("--reranker-manifest-sha256", default=None, help="scorer manifest의 사전 고정 SHA-256")
+    parser.add_argument("--candidate-semantics", choices=["OFF", "SHADOW"], default=None,
+                        help="고정 후보의 선택 전 의미 역할·검증 별칭 관측. 기본 OFF, 점수·교정 입력 미사용")
+    parser.add_argument("--semantic-alias-bundle", default=None, help="고정 R3·corpus 원문을 포함한 별칭 근거 bundle")
+    parser.add_argument("--semantic-alias-bundle-sha256", default=None, help="별칭 근거 bundle의 사전 고정 SHA-256")
+    parser.add_argument("--candidate-calibration", choices=["OFF", "SHADOW"], default=None,
+                        help="명시적으로 결속된 FROZEN 행의 교정 관측. 기본 OFF, 공개 판정에는 반영하지 않음")
+    parser.add_argument("--calibration-bundle", default=None, help="고정 source/ID/graph와 CAL artifact bundle 경로")
+    parser.add_argument("--calibration-bundle-sha256", default=None, help="calibration bundle의 사전 고정 SHA-256")
+    parser.add_argument("--candidate-inference", choices=["OFF", "SHADOW"], default=None,
+                        help="일반 입력 R2 후보·NIL의 고정 교정 관측. 기본 OFF, 공개 판정에는 반영하지 않음")
+    parser.add_argument("--inference-bundle", default=None, help="고정 모델/CAL과 현재 corpus 원문·출처를 연결한 bundle")
+    parser.add_argument("--inference-bundle-sha256", default=None, help="inference bundle의 사전 고정 SHA-256")
+    parser.add_argument("--community-knowledge", choices=["OFF", "READ_ONLY"], default=None,
+                        help="커뮤니티 후보 지식 문맥. 기본 OFF, READ_ONLY는 Slang DB·배치 학습 비활성")
+    parser.add_argument("--community-snapshot", default=None, help="고정 커뮤니티 snapshot manifest 경로")
+    parser.add_argument("--community-snapshot-sha256", default=None, help="snapshot manifest의 사전 고정 SHA-256")
     parser.add_argument(
         "--server-type", "-s",
         choices=["llama", "vllm"],
@@ -1769,23 +1873,162 @@ def _build_arg_parser(*, add_help: bool) -> argparse.ArgumentParser:
     return parser
 
 
-def _parse_args() -> argparse.Namespace:
-    if any(arg in {"-h", "--help"} for arg in sys.argv[1:]):
+def _parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
+    effective_argv = sys.argv[1:] if argv is None else argv
+    if any(arg in {"-h", "--help"} for arg in effective_argv):
         _build_arg_parser(add_help=True).print_help(sys.stderr)
         raise SystemExit(0)
 
     parser = _build_arg_parser(add_help=False)
+    # argparse가 지원하던 -pN·옵션 축약까지 실제 parse 결과에서 구분한다.
+    parser.set_defaults(parallel=None)
     # 알 수 없는 인자 무시 (기존 호환성)
-    args, _ = parser.parse_known_args()
+    args, unknown = parser.parse_known_args(effective_argv)
+    args.native_recovery_extra_arguments = tuple(arg for arg in unknown if arg.startswith("--native-recovery"))
+    args.parallel_explicit = args.parallel is not None
+    if args.parallel is None:
+        args.parallel = 1
+    # --input 플래그가 positional input보다 우선
+    if args.input_flag:
+        args.input = args.input_flag
+    recovery_flags = ("--recovery-simulation-plan", "--recovery-provider-plan",
+                      "--recovery-provider-plan-sha256", "--recovery-hmac-key-file",
+                      "--recovery-attempt-id", "--recovery-session-id")
+    args.recovery_requested = any(getattr(args, flag[2:].replace("-", "_")) is not None
+                                  for flag in recovery_flags) or any(
+        arg.startswith("--recovery-") for arg in effective_argv)
+    args.recovery_extra_arguments = ()
+    if args.recovery_requested:
+        recovery_parser = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
+        for flag in recovery_flags:
+            recovery_parser.add_argument(flag)
+        _, extras = recovery_parser.parse_known_args(effective_argv)
+        args.recovery_extra_arguments = tuple(extras)
     return args
 
-_CLI_ARGS = _parse_args()
-# --input 플래그가 positional input보다 우선
-if _CLI_ARGS.input_flag:
-    _CLI_ARGS.input = _CLI_ARGS.input_flag
+
+def _resolve_native_recovery_options(args, environment: Mapping[str, str]) -> Optional[Dict[str, Any]]:
+    """OFF는 정책 파일과 native 모듈을 읽지 않는다. ON은 worker 준비 전에 검산한다."""
+    mode = getattr(args, "native_recovery", None)
+    if mode is None:
+        mode = str(environment.get("EXPERT_NATIVE_RECOVERY", "OFF")).strip().upper()
+    if mode not in {"OFF", "ON"} or getattr(args, "native_recovery_extra_arguments", ()):
+        raise ValueError("NATIVE_RECOVERY_MODE_OR_OPTION_INVALID")
+    if mode == "OFF":
+        return None
+    if getattr(args, "recovery_requested", False):
+        raise ValueError("NATIVE_RECOVERY_ONLY_COMMAND_CONFLICT")
+    if getattr(args, "no_dashboard", False):
+        raise ValueError("NATIVE_RECOVERY_DASHBOARD_REQUIRED")
+    if (str(environment.get(_MEASUREMENT_EXECUTION_MODE_ENV, "NORMAL")).strip().upper() != "NORMAL"
+            or str(environment.get(_MEASUREMENT_EARLY_ROUTE_MODE_ENV, "OFF")).strip().upper() != "OFF"
+            or getattr(args, "execution_profile", None) == "paired-measurement"
+            or environment.get("EXPERT_EXECUTION_PROFILE", "").strip() == "paired-measurement"
+            or any(str(environment.get(key, "")).strip() for key in (
+                _MEASUREMENT_RUN_SPEC_SHA256_ENV, _MEASUREMENT_PAIR_ID_ENV, _MEASUREMENT_ARM_ENV,
+                "PIPELINE_MEASUREMENT_RUN_SPEC_PATH", "PIPELINE_MEASUREMENT_RUN_SPEC_FILE_SHA256",
+                "PIPELINE_PAIRED_EXECUTION_POLICY_PATH", "PIPELINE_PAIRED_EXECUTION_POLICY_SHA256"))):
+        raise ValueError("NATIVE_RECOVERY_MEASUREMENT_CONFLICT")
+    if str(environment.get(_RECOVERY_ACTIVATION_MODE_ENV, "OFF")).strip().upper() != "AUDIT_ONLY":
+        raise ValueError("NATIVE_RECOVERY_AUDIT_ONLY_REQUIRED")
+    slang = getattr(args, "slang_db", None)
+    if slang is None:
+        slang = environment.get("PIPELINE_SLANG_DB", "0")
+    if str(slang).strip().lower() not in {"0", "off", "false", "no"}:
+        raise ValueError("NATIVE_RECOVERY_MUTABLE_SLANG_FORBIDDEN")
+    path = getattr(args, "native_recovery_policy", None) or environment.get("EXPERT_NATIVE_RECOVERY_POLICY")
+    pin = getattr(args, "native_recovery_policy_sha256", None) or environment.get("EXPERT_NATIVE_RECOVERY_POLICY_SHA256")
+    if not isinstance(path, str) or not path.strip() or not isinstance(pin, str) or not re.fullmatch(r"[a-f0-9]{64}", pin):
+        raise ValueError("NATIVE_RECOVERY_PINNED_POLICY_REQUIRED")
+    from tools.run_recovery_execution_readback import _file
+    from llm_batch.measurement.recovery_execution_readback import read_strict_json
+    from llm_batch.runtime.recovery_native_batch import validate_native_batch_policy
+    policy_path = _file(path, 65536)
+    raw = policy_path.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != pin:
+        raise ValueError("NATIVE_RECOVERY_POLICY_SHA_MISMATCH")
+    policy = validate_native_batch_policy(read_strict_json(raw))
+    if _file(policy_path, 65536).read_bytes() != raw:
+        raise ValueError("NATIVE_RECOVERY_POLICY_CHANGED")
+    return {"mode": "ON", "policy": policy, "policy_path": str(policy_path), "policy_file_sha256": pin}
+
+
+def _process_post_with_optional_native_capture(pipeline, post, *, input_index: int, batch):
+    """한 worker 호출의 문맥만 반환하며 공유 pipeline의 마지막 문맥을 조회하지 않는다."""
+    if batch is None or not batch.admitted(input_index, post.post_id):
+        return pipeline.process_post(post), None
+    return pipeline.process_post_with_recovery_context(post)
+
+
+def _native_recovery_manifest_fields(options, output_path) -> Dict[str, Any]:
+    if options is None:
+        return {}
+    return {"native_recovery_policy": copy.deepcopy(options["policy"]),
+            "native_recovery_policy_file_sha256": options["policy_file_sha256"],
+            "native_recovery_view_path": str(Path(output_path).with_name(Path(output_path).stem + "_recovery_native_view.json").resolve()),
+            "native_recovery_application_mode": "SEPARATE_RESULT_ONLY",
+            "native_recovery_mutable_learning": "FROZEN_OFF"}
+
+
+def _resolve_recovery_provider_options(args, environment: Mapping[str, str]) -> Optional[Dict[str, str]]:
+    """provider 명령만 분리한다. 원래 HOLD 판정이나 합성 실행을 활성화하지 않는다."""
+    fields = {"plan_path": "recovery_provider_plan", "plan_sha256": "recovery_provider_plan_sha256",
+              "hmac_key_path": "recovery_hmac_key_file", "attempt_id": "recovery_attempt_id",
+              "session_id": "recovery_session_id"}
+    if all(getattr(args, field, None) is None for field in
+           ("recovery_provider_plan", "recovery_provider_plan_sha256")):
+        return None
+    values = {key: getattr(args, field, None) for key, field in fields.items()}
+    if any(type(value) is not str or not value.strip() for value in values.values()):
+        raise ValueError("provider 근거 수집은 plan·raw SHA·기존 key·attempt·session 다섯 옵션을 모두 명시해야 합니다")
+    if re.fullmatch(r"[0-9a-f]{64}", values["plan_sha256"]) is None:
+        raise ValueError("provider 계획 SHA-256은 소문자 64hex여야 합니다")
+    if getattr(args, "recovery_simulation_plan", None) is not None:
+        raise ValueError("provider 근거 수집과 합성 복구 계획을 혼합할 수 없습니다")
+    if getattr(args, "recovery_extra_arguments", ()) or any(getattr(args, key, None) for key in
+            ("input", "input_flag", "output", "no_dashboard")):
+        raise ValueError("provider 명령에는 입력·출력·모델·no-dashboard 등 일반 실행 옵션을 혼합할 수 없습니다")
+    measurement_mode = str(environment.get(_MEASUREMENT_EXECUTION_MODE_ENV, "NORMAL")).strip().upper()
+    if measurement_mode != _MEASUREMENT_EXECUTION_NORMAL or any(
+        str(environment.get(key, "")).strip() for key in (
+            _MEASUREMENT_RUN_SPEC_SHA256_ENV, _MEASUREMENT_PAIR_ID_ENV, _MEASUREMENT_ARM_ENV,
+            "PIPELINE_MEASUREMENT_RUN_SPEC_PATH", "PIPELINE_MEASUREMENT_RUN_SPEC_FILE_SHA256",
+            "PIPELINE_PAIRED_EXECUTION_POLICY_PATH", "PIPELINE_PAIRED_EXECUTION_POLICY_SHA256")):
+        raise ValueError("provider 근거 수집은 fresh/paired 계측 실행과 혼합할 수 없습니다")
+    if str(environment.get("EXPERT_EXECUTION_PROFILE", "")).strip() == "paired-measurement":
+        raise ValueError("provider 근거 수집은 paired-measurement 프로필로 실행할 수 없습니다")
+    return values
+
+
+def _resolve_recovery_simulation_options(args, environment: Mapping[str, str]) -> Optional[Dict[str, str]]:
+    """별도 합성 명령만 선택한다. OFF에서는 파일·key·provider에 접근하지 않는다."""
+    fields = {"plan_path": "recovery_simulation_plan", "hmac_key_path": "recovery_hmac_key_file",
+              "attempt_id": "recovery_attempt_id", "session_id": "recovery_session_id"}
+    values = {key: getattr(args, field, None) for key, field in fields.items()}
+    if not getattr(args, "recovery_requested", False) and all(value is None for value in values.values()):
+        return None
+    if any(type(value) is not str or not value.strip() for value in values.values()):
+        raise ValueError("합성 복구는 recovery plan·기존 key·attempt·session 네 옵션을 모두 명시해야 합니다")
+    if getattr(args, "recovery_extra_arguments", ()):
+        raise ValueError("합성 복구 명령에는 입력·출력·모델·no-dashboard 등 일반 실행 옵션을 혼합할 수 없습니다")
+    if (getattr(args, "input", None) or getattr(args, "input_flag", None)
+            or getattr(args, "output", None) or getattr(args, "no_dashboard", False)):
+        raise ValueError("합성 복구는 입력/출력 없이 기존 standalone 대시보드를 사용합니다")
+    measurement_mode = str(environment.get(_MEASUREMENT_EXECUTION_MODE_ENV, "NORMAL")).strip().upper()
+    if measurement_mode != _MEASUREMENT_EXECUTION_NORMAL or any(
+        str(environment.get(key, "")).strip() for key in (
+            _MEASUREMENT_RUN_SPEC_SHA256_ENV, _MEASUREMENT_PAIR_ID_ENV, _MEASUREMENT_ARM_ENV,
+            "PIPELINE_MEASUREMENT_RUN_SPEC_PATH", "PIPELINE_MEASUREMENT_RUN_SPEC_FILE_SHA256",
+            "PIPELINE_PAIRED_EXECUTION_POLICY_PATH", "PIPELINE_PAIRED_EXECUTION_POLICY_SHA256")):
+        raise ValueError("합성 복구는 fresh/paired 계측 실행과 혼합할 수 없습니다")
+    if str(environment.get("EXPERT_EXECUTION_PROFILE", "")).strip() == "paired-measurement":
+        raise ValueError("합성 복구는 paired-measurement 프로필로 실행할 수 없습니다")
+    return values
+
+_CLI_ARGS = _parse_args() if __name__ == "__main__" else _parse_args([])
 def _default_llm_model_for_server_type(server_type: Optional[str]) -> str:
     if str(server_type or "").strip().lower() == "vllm":
-        return "bg-digitalservices/Gemma-4-26B-A4B-it-NVFP4"
+        return "nvidia/Gemma-4-26B-A4B-NVFP4"
     return "google/gemma-4-26B-A4B-it"
 
 
@@ -1881,6 +2124,32 @@ def _promotion_gate_state_candidate_payload(*sources: Any) -> Dict[str, Any]:
         }
         return payload
     return {}
+
+
+class _FinalSourceContextResult(dict):
+    """행별 원래 output을 저장 경계까지 운반한다. JSON에는 dict 내용만 저장한다."""
+
+    def __init__(self, payload: Dict[str, Any], *, output, verifier, native_capture=None):
+        super().__init__(payload)
+        if not callable(verifier):
+            raise TypeError("final source serializer verifier required")
+        self._source_output = output
+        self._source_verifier = verifier
+        self._native_capture = native_capture
+        self.verify_stored_payload(self, stage="post_wrapper")
+
+    def take_native_capture(self):
+        capture, self._native_capture = self._native_capture, None
+        return capture
+
+    def verify_stored_payload(self, payload: Mapping[str, Any], *, stage: str):
+        if not isinstance(payload, Mapping) or "analysis_result" not in payload:
+            raise ValueError(f"final source stored analysis_result missing at {stage}")
+        observation = self._source_verifier(
+            self._source_output, payload["analysis_result"], stage=stage,
+        )
+        self._source_output.__dict__["_final_source_context_receipt"]["trace_observation"](observation)
+        return observation
 
 
 def _enforce_publish_contract_trace_convergence(result_dict: Dict[str, Any]) -> bool:
@@ -9425,6 +9694,112 @@ def _demote_unverified_image_ocr_publication_contract(
     return changed
 
 
+def _sync_reader_explanation_to_publish_contract(
+    identity: Dict[str, Any], decision: Dict[str, Any]
+) -> None:
+    """Align generated reader text with the final typed publication decision."""
+    published = decision.get("publish_allowed") is True
+    candidate_only = (
+        decision.get("status") == "candidate_only"
+        and decision.get("candidate_preserved") is True
+        and not published
+    )
+    if not published and not candidate_only:
+        return
+    public_title = str(decision.get("official_title") or "").strip()
+    if published and not public_title:
+        return
+
+    def _rewrite_section(text: str, start: str, end: str, rewrite: Callable[[str], str]) -> str:
+        start_at = text.find(start)
+        if start_at < 0:
+            return text
+        end_at = text.find(end, start_at + len(start))
+        if end_at < 0:
+            return text
+        return text[:start_at] + rewrite(text[start_at:end_at]) + text[end_at:]
+
+    def _rewrite_reason(text: str) -> str:
+        def _summary(section: str) -> str:
+            replacement = (
+                f"- 공식 제목: '{public_title}'"
+                if published else "- 공식 제목: 미확정"
+            )
+            return re.sub(r"- 공식 제목: '[^'\n]+'", lambda _match: replacement, section)
+
+        def _final(section: str) -> str:
+            if published:
+                section = re.sub(
+                    r"- 제목/본문 앵커와 검색 근거를 종합하여 '[^'\n]+'\s+관련 작품 토론으로 판정했습니다\.",
+                    lambda _match: (
+                        f"- 제목/본문 앵커와 검색 근거를 종합하여 '{public_title}' "
+                        "관련 작품 토론으로 판정했습니다."
+                    ),
+                    section,
+                )
+                return re.sub(
+                    r"- 최종 공식 제목은 '[^'\n]+'로 확정됨\.",
+                    lambda _match: f"- 최종 공식 제목은 '{public_title}'로 확정됨.",
+                    section,
+                )
+            section = re.sub(
+                r"- 제목/본문 앵커와 검색 근거를 종합하여 '[^'\n]+'\s+관련 작품 토론으로 판정했습니다\.",
+                "- 작품 관련 단서는 있으나 주작품의 공식 제목은 최종 공개 계약에서 보류했습니다.",
+                section,
+            )
+            section = re.sub(
+                r"- 최종 공식 제목은 '[^'\n]+'로 확정됨\.",
+                "- 최종 공개: 제목·URL 보류, 작품 후보 보존.",
+                section,
+            )
+            if "- image_ocr_title_evidence: false" in text:
+                section = re.sub(
+                    r"이미지 직접 근거\(OCR/표지\)에서도 '[^'\n]+'를 확인했습니다\.",
+                    "이미지의 OCR/표지 문자열은 후보 단서로 보존하되 공식 제목 공개 근거로 채택하지 않았습니다.",
+                    section,
+                )
+            return section
+
+        text = _rewrite_section(text, "[판정 요약]", "[원문 해석]", _summary)
+        return _rewrite_section(text, "[최종 종합]", "[근거 스코어]", _final)
+
+    reason_lines = identity.get("reason_lines")
+    if isinstance(reason_lines, list) and all(isinstance(line, str) for line in reason_lines):
+        original = "\n".join(reason_lines)
+        updated = _rewrite_reason(original)
+        if updated != original:
+            identity["reason_lines"] = updated.split("\n")
+            if not isinstance(identity.get("reason"), str):
+                identity["reason"] = updated
+    if isinstance(identity.get("reason"), str):
+        original = identity["reason"]
+        updated = _rewrite_reason(original)
+        if updated != original:
+            identity["reason"] = updated
+
+    subject = identity.get("primary_subject_text")
+    if not isinstance(subject, str):
+        return
+    match = re.fullmatch(
+        r"메인 화제는 '([^']+)' (감상/평가|관련 작품 토론|캐릭터/장면 반응)입니다\.",
+        subject.strip(),
+    )
+    if not match:
+        return
+    if published:
+        identity["primary_subject_text"] = f"메인 화제는 '{public_title}' {match.group(2)}입니다."
+    else:
+        topic_by_type = {
+            "anticipation": "향후 전개 예상",
+            "character_talk": "인물·장면에 관한 반응",
+            "review": "작품에 관한 감상·평가",
+        }
+        topic = topic_by_type.get(str(identity.get("discussion_type") or ""), "작품 관련 논의")
+        identity["primary_subject_text"] = (
+            f"메인 화제는 {topic}이며, 주작품의 공식 제목은 보류했습니다."
+        )
+
+
 def _reapply_authoritative_publish_contract(result_dict: Dict[str, Any]) -> bool:
     """Finish serialization with typed state/evidence recomputation or a safe HOLD."""
     if not isinstance(result_dict, dict):
@@ -9715,8 +10090,46 @@ def _reapply_authoritative_publish_contract(result_dict: Dict[str, Any]) -> bool
             )
     if not recomputed.decision.publish_allowed:
         identity["is_resolved_work_discussion"] = False
+    _sync_reader_explanation_to_publish_contract(identity, recomputed.decision.to_dict())
     after = json.dumps(identity, ensure_ascii=False, sort_keys=True, default=str)
     return before != after
+
+
+def _sync_analysis_notes_to_final_publication(result_dict: Dict[str, Any]) -> bool:
+    """Remove an asserted title from reader notes after a final publication hold."""
+    identity = result_dict.get("identity") if isinstance(result_dict, dict) else None
+    analysis = result_dict.get("analysis") if isinstance(result_dict, dict) else None
+    if not isinstance(identity, dict) or not isinstance(analysis, dict):
+        return False
+    notes = str(analysis.get("notes") or "").strip()
+    if not notes:
+        return False
+    novel = identity.get("novel_identity") or {}
+    decision = identity.get("promotion_decision") or {}
+    published = bool(
+        isinstance(decision, dict)
+        and decision.get("publish_allowed") is True
+        and isinstance(novel, dict)
+        and str(novel.get("official_title") or "").strip()
+    )
+    if published:
+        return False
+    asserted_title = bool(
+        re.search(r"-\s*공식\s*제목:\s*['\"“‘]", notes)
+        or re.search(
+            r"최종\s*공식\s*제목은\s*['\"“‘][^\n]{1,150}(?:로\s*)?확정(?:됨|되었)",
+            notes,
+        )
+        or re.search(r"['\"“‘][^\n]{1,150}['\"”’]\s*관련\s*작품\s*토론으로\s*판정", notes)
+    )
+    if not asserted_title:
+        return False
+    safe_reason = str(identity.get("reason") or "").strip()
+    replacement = safe_reason or "[정합성 교정] 최종 공개 계약에서 작품 제목·URL을 보류했습니다."
+    if replacement == notes:
+        return False
+    analysis["notes"] = replacement
+    return True
 
 
 def _sync_final_publication_ledger_contract(result_dict: Dict[str, Any], post_title: Optional[str] = None) -> bool:
@@ -9759,7 +10172,8 @@ def _sync_final_publication_ledger_contract(result_dict: Dict[str, Any], post_ti
         )
     )
     if v2_marker:
-        return _reapply_authoritative_publish_contract(result_dict)
+        changed = _reapply_authoritative_publish_contract(result_dict)
+        return _sync_analysis_notes_to_final_publication(result_dict) or changed
 
     changed = _demote_unsafe_url_title_verified_publication_contract(result_dict, post_title=post_title)
     if _demote_context_only_thematic_overlap_publication_contract(result_dict, post_title=post_title):
@@ -9795,6 +10209,8 @@ def _sync_final_publication_ledger_contract(result_dict: Dict[str, Any], post_ti
     if _demote_platform_meta_image_title_publication_contract(result_dict, post_title=post_title):
         changed = True
     if _enforce_publish_contract_trace_convergence(result_dict):
+        changed = True
+    if _sync_analysis_notes_to_final_publication(result_dict):
         changed = True
     return changed
 
@@ -9895,25 +10311,12 @@ def _public_comment_metadata(
         return norm in {"ㅇㅇ", "익명", "유동", "무명", "anonymous", "anon", "unknown", "-"}
 
     def _is_post_author_comment(author: str, ip: str) -> bool:
-        if post_ip_text and ip and ip == post_ip_text:
-            if not post_author_text or not author or author == post_author_text or _is_generic_author(post_author_text):
-                return True
-        if post_author_text and author and author == post_author_text:
-            if _is_generic_author(author) or _is_generic_author(post_author_text):
-                return False
-            if post_ip_text and ip and ip != post_ip_text and _is_generic_author(author):
-                return False
-            if post_ip_text and not ip and _is_generic_author(author):
-                return False
-            return True
+        # 표시명/IP 일치는 인증된 작성자 관계가 아니다.
         return False
 
     def _post_author_match_unverified(author: str, ip: str) -> bool:
-        if not post_author_text or not author or author != post_author_text:
-            return False
-        if not (_is_generic_author(author) or _is_generic_author(post_author_text)):
-            return False
-        return not (post_ip_text and ip and ip == post_ip_text)
+        return bool((post_author_text and author and author == post_author_text)
+                    or (post_ip_text and ip and ip == post_ip_text))
 
     def _speaker_label(author: str, ip: str) -> str:
         nonlocal next_speaker_idx
@@ -10660,6 +11063,43 @@ def _detect_external_dashboard(default_port: int) -> Optional[str]:
     return None
 
 
+def _require_paired_dashboard_ready(url: str, mode: str) -> None:
+    """v3 provider 진입 전에 실제 서버와 포워딩 인증 경로를 확인한다."""
+    import httpx
+    parts = urlsplit(url)
+    if (mode not in {"embedded", "standalone_forward"} or parts.scheme != "http"
+            or parts.hostname not in {"127.0.0.1", "localhost", "::1"}
+            or parts.username or parts.password or parts.query or parts.fragment or parts.path not in {"", "/"}):
+        raise ValueError("paired dashboard must be a ready local monitor")
+    origin = url.rstrip("/")
+    for attempt in range(5):
+        try:
+            response = httpx.get(origin + "/api/health", timeout=httpx.Timeout(0.5, connect=0.2))
+            response.raise_for_status()
+            data = response.json()
+            ready = (isinstance(data, dict) and data.get("ok") is True
+                     and data.get("service") == "expert-pipeline-monitor")
+            if mode == "embedded":
+                ready = ready and data.get("standalone") is False and type(data.get("pid")) is int and data["pid"] == os.getpid()
+            else:
+                ready = ready and data.get("standalone") is True
+                if ready:
+                    response = httpx.post(origin + "/api/ingest", json={"items": []},
+                        headers={"X-Ingest-Token": os.getenv("DASHBOARD_INGEST_TOKEN", "").strip()},
+                        timeout=httpx.Timeout(0.5, connect=0.2))
+                    response.raise_for_status()
+                    receipt = response.json()
+                    ready = (isinstance(receipt, dict) and receipt.get("ok") is True
+                             and type(receipt.get("accepted")) is int and receipt["accepted"] == 0)
+            if ready:
+                return
+        except (httpx.HTTPError, ValueError, TypeError):
+            pass
+        if attempt < 4:
+            time.sleep(0.1)
+    raise ValueError("paired dashboard readiness/forwarding handshake failed")
+
+
 def _allow_missing_shard_auto_scale_up() -> bool:
     """헬스체크에서 빠진 로컬 autogen shard를 증분 기동(up)해도 되는지 여부.
 
@@ -11073,7 +11513,75 @@ def _memo_local_shard_status(repo_root: Path, memo_path: Path, items: Optional[L
 
 def main() -> None:
     global _PARALLEL, _INPUT_POST_COUNT
+    global _REQUESTED_PARALLEL_RAW, _REQUESTED_PARALLEL, _PARALLEL_CAP_META
+    global _MODEL_PARALLEL_MAX, _MODEL_PARALLEL_CAP_APPLIED
     repo_root = Path(__file__).resolve().parent
+    _native_recovery_options = _resolve_native_recovery_options(_CLI_ARGS, os.environ)
+    provider_options = _resolve_recovery_provider_options(_CLI_ARGS, os.environ)
+    if provider_options is not None:
+        from tools.run_recovery_provider import run_recovery_provider
+        provider_result = run_recovery_provider(**provider_options, root=repo_root / "out")
+        print(json.dumps(provider_result, ensure_ascii=False))
+        return
+    recovery_options = _resolve_recovery_simulation_options(_CLI_ARGS, os.environ)
+    if recovery_options is not None:
+        from tools.run_recovery_simulation import run_recovery_simulation
+        recovery_result = run_recovery_simulation(**recovery_options, root=repo_root / "out")
+        print(json.dumps(recovery_result, ensure_ascii=False))
+        return
+    from llm_batch.runtime.execution_config import (
+        resolve_execution_settings, apply_profile_resources, build_execution_config, source_snapshot,
+    )
+    from llm_batch.grounding.source_context_diagnostics import (
+        export_source_context_diagnostics, diagnostics_policy,
+    )
+    from llm_batch.runtime.candidate_retrieval import (
+        prepare_candidate_retrieval, candidate_retrieval_policy_fields, export_candidate_retrieval_fields,
+    )
+    from llm_batch.runtime.community_knowledge import (
+        resolve_community_knowledge_settings, prepare_community_knowledge,
+        community_knowledge_policy_fields, community_knowledge_decision_fields,
+        export_community_knowledge_fields,
+    )
+    from llm_batch.runtime.candidate_reranker import (
+        resolve_candidate_reranker_settings, prepare_candidate_reranker,
+        candidate_reranker_policy_fields, export_candidate_reranker_fields,
+    )
+    from llm_batch.runtime.candidate_semantics import (
+        resolve_candidate_semantics_settings, prepare_candidate_semantics,
+        candidate_semantics_policy_fields, export_candidate_semantics_fields,
+    )
+    from llm_batch.runtime.candidate_calibration import (
+        resolve_candidate_calibration_settings, prepare_candidate_calibration,
+        candidate_calibration_policy_fields, export_candidate_calibration_fields,
+    )
+    from llm_batch.runtime.candidate_inference import (
+        resolve_candidate_inference_settings, prepare_candidate_inference,
+        candidate_inference_policy_fields, export_candidate_inference_fields,
+    )
+    _execution_settings = resolve_execution_settings(_CLI_ARGS, dict(os.environ))
+    if _native_recovery_options is not None:
+        os.environ["PIPELINE_NATIVE_RECOVERY_MUTABLE_CONTEXT_FROZEN"] = "1"
+    os.environ.update(_execution_settings["environment_updates"])
+    _execution_resources = apply_profile_resources(_execution_settings["profile"], os.environ)
+    _candidate_retrieval_observer = prepare_candidate_retrieval(_CLI_ARGS)
+    _candidate_reranker_settings = resolve_candidate_reranker_settings(_CLI_ARGS, dict(os.environ))
+    _candidate_reranker = prepare_candidate_reranker(_candidate_reranker_settings)
+    _candidate_calibration_settings = resolve_candidate_calibration_settings(_CLI_ARGS, dict(os.environ))
+    _candidate_calibration = prepare_candidate_calibration(_candidate_calibration_settings, _candidate_reranker)
+    _candidate_inference_settings = resolve_candidate_inference_settings(_CLI_ARGS, dict(os.environ))
+    _candidate_inference = prepare_candidate_inference(_candidate_inference_settings, _candidate_reranker)
+    _candidate_semantics_settings = resolve_candidate_semantics_settings(_CLI_ARGS, dict(os.environ))
+    _candidate_semantics = prepare_candidate_semantics(_candidate_semantics_settings)
+    _community_knowledge_settings = resolve_community_knowledge_settings(_CLI_ARGS, dict(os.environ))
+    _community_knowledge_snapshot = prepare_community_knowledge(_community_knowledge_settings)
+    _execution_source = source_snapshot(Path(__file__))
+    _context_diagnostics_enabled = _execution_settings["settings"]["context_diagnostics"]["value"]
+    _REQUESTED_PARALLEL_RAW = _execution_settings["settings"]["requested_parallel"]["value"]
+    _PARALLEL_CAP_META = _apply_model_parallel_cap(_REQUESTED_PARALLEL_RAW, _PARALLEL_POLICY_MODEL)
+    _REQUESTED_PARALLEL = int(_PARALLEL_CAP_META["requested_parallel"])
+    _MODEL_PARALLEL_MAX = _PARALLEL_CAP_META["model_parallel_max"]
+    _MODEL_PARALLEL_CAP_APPLIED = bool(_PARALLEL_CAP_META["model_parallel_cap_applied"])
 
     # PowerShell/Windows 콘솔/리다이렉트 인코딩 이슈 완화
     os.environ.setdefault("PYTHONUTF8", "1")
@@ -11236,6 +11744,9 @@ def main() -> None:
     )
     _set_env("LLM_VLM_MAX_TOKENS", os.environ.get("LLM_VLM_MAX_TOKENS", "12288"))
     _set_env("PIPELINE_SLANG_DB", _resolve_toggle(_CLI_ARGS.slang_db, env_key="PIPELINE_SLANG_DB", default="0"))
+    if _community_knowledge_snapshot is not None:
+        _set_env("PIPELINE_SLANG_DB", "0")
+        print("[config] community_knowledge=READ_ONLY: Slang DB와 배치 학습 OFF", file=sys.stderr, flush=True)
     _set_env(
         "PIPELINE_SLANG_DB_PATH",
         str(_CLI_ARGS.slang_db_path if _CLI_ARGS.slang_db_path is not None else os.getenv("PIPELINE_SLANG_DB_PATH", "slang_db/slang_db.json")),
@@ -11277,11 +11788,11 @@ def main() -> None:
             # 참고용 기존 Qwen 설정
             #_set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "Sehyo/Qwen3.5-35B-A3B-NVFP4"))
             #_set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "AxionML/Qwen3.5-35B-A3B-NVFP4"))
-            _set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "unsloth/gemma-4-26B-A4B-it-NVFP4"))
             _set_env(
                 "LLM_MODEL",
                 _CLI_ARGS.llm_model
-                or os.getenv("LLM_MODEL", _default_llm_model_for_server_type(LLM_SERVER_TYPE)),
+                or os.getenv("LLM_MODEL")
+                or _default_llm_model_for_server_type(LLM_SERVER_TYPE),
             )
             #_set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "bg-digitalservices/Gemma-4-E4B-it-NVFP4"))
             #_set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "cyankiwi/gemma-4-26B-A4B-it-AWQ-4bit"))
@@ -11398,7 +11909,10 @@ def main() -> None:
 
     # 타임스탬프 기반 파일명
     # 초 단위만 쓰면 같은 초에 두 런이 시작될 때 로그/결과 파일이 충돌한다.
-    ts = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+    _planned_run_id = os.getenv("EXPERT_RUN_ID", "").strip()
+    if _planned_run_id and not re.fullmatch(r"\d{8}_\d{6}_\d{6}", _planned_run_id):
+        raise ValueError("EXPERT_RUN_ID must use YYYYMMDD_HHMMSS_microseconds")
+    ts = _planned_run_id or datetime.now().strftime("%Y%m%d_%H%M%S_%f")
     _prompt_version = os.getenv("PIPELINE_PROMPT_VERSION", "2026-03-30-semantic-contract-v1").strip() or "unknown"
     _reuse_health_filter_meta: Dict[str, Any] = {}
 
@@ -11444,7 +11958,42 @@ def main() -> None:
         if _scope_slang_db_snapshot_bytes is not None
         else None
     )
-    _decision_call_measurement = _decision_call_measurement_config()
+    _scope_slang_db_input_binding = _publication_slang_input_binding(_scope_slang_db_enabled, _scope_slang_db_sha256)
+    _decision_call_measurement = _decision_call_measurement_config(
+        community_knowledge_read_only=_community_knowledge_snapshot is not None,
+        native_recovery_frozen=_native_recovery_options is not None,
+    )
+    _paired_policy = None
+    _paired_session = None
+    if _decision_call_measurement.get("execution_policy_binding") is not None:
+        from llm_batch.runtime.paired_execution import (
+            PairedExecutionSession, FreshHealthProbe, generation_fingerprint, prompt_fingerprint,
+        )
+        from llm_batch.measurement.paired_execution_policy import read_execution_policy, endpoint_pool_fingerprint
+        _paired_binding = _decision_call_measurement["execution_policy_binding"]
+        _paired_policy = read_execution_policy(_paired_binding["path"], expected_sha256=_paired_binding["file_sha256"],
+                                              expected_policy_sha256=_paired_binding["policy_sha256"])["policy"]
+        if (_execution_settings["profile"] != "low-load-validation"
+                or _REQUESTED_PARALLEL_RAW != _paired_policy["config_projection"]["requested_parallel"]
+                or _PARALLEL != _paired_policy["config_projection"]["effective_parallel"]
+                or _NO_DASHBOARD or not _CLI_ARGS.reuse_shards_only
+                or _candidate_retrieval_observer is not None or _candidate_reranker is not None
+                or _community_knowledge_snapshot is not None or _candidate_calibration is not None
+                or _candidate_semantics is not None
+                or _candidate_inference is not None
+                or _decision_call_measurement["slang_access_mode"] != "OFF"):
+            raise ValueError("low-load paired 실행에는 정책의 병렬도·대시보드·reuse-only·연구 기능 OFF·Slang OFF가 필요합니다")
+        _paired_pool = _get_mcp_endpoint_pool()
+        _paired_runtime_policy = _paired_policy["config_projection"]["runtime"]
+        if (endpoint_pool_fingerprint(_paired_pool) != _paired_runtime_policy["mcp_endpoint_pool_sha256"]
+                or _env_bool_runtime("MCP_CLIENT_ENDPOINT_FAILOVER", default=True)
+                or _allow_local_shard_auto_up() or _allow_local_shard_recreate() or _allow_missing_shard_auto_scale_up()
+                or _mcp_goal_run_light_health_mode()
+                or not _env_bool_runtime("MCP_HEALTH_INCLUDE_SEARCH", default=_default_mcp_health_include_search())
+                or min(len(_paired_pool), int(os.getenv("MCP_HEALTH_WORKERS", "12"))) != 1
+                or _mcp_health_required_ok_count(_paired_pool) != 1
+                or _mcp_health_probe_batch_size(_paired_pool, required_ok_count=1, health_workers=1) != 1):
+            raise ValueError("low-load paired 실행의 고정 endpoint·직렬 search health 정책 불일치")
     _decision_ledger_v2_shadow = _decision_ledger_v2_shadow_config(
         _decision_call_measurement
     )
@@ -11495,6 +12044,7 @@ def main() -> None:
         "decision_call_measurement": _decision_call_measurement,
         "decision_ledger_v2_shadow": _decision_ledger_v2_shadow,
     }
+    _run_config_payload.update(community_knowledge_decision_fields(_community_knowledge_snapshot))
     _config_hash = hashlib.sha256(
         json.dumps(_run_config_payload, ensure_ascii=False, sort_keys=True).encode("utf-8")
     ).hexdigest()[:12]
@@ -11582,8 +12132,36 @@ def main() -> None:
             handle.write(text)
             handle.flush()
             os.fsync(handle.fileno())
-        os.replace(tmp_path, path)
+        retry_deadline = time.monotonic() + 2.0
+        retry_delay = 0.02
+        retry_count = 0
+        while True:
+            try:
+                os.replace(tmp_path, path)
+                break
+            except OSError as error:
+                # Windows readers may briefly deny delete-sharing during replace.
+                # Keep both files intact and bound retries, including access denied.
+                if os.name != "nt" or getattr(error, "winerror", None) not in {5, 32, 33}:
+                    raise
+                remaining = retry_deadline - time.monotonic()
+                if remaining <= 0:
+                    raise
+                time.sleep(min(retry_delay, remaining))
+                if time.monotonic() >= retry_deadline:
+                    raise
+                retry_count += 1
+                retry_delay = min(retry_delay * 2.0, 0.2)
         _fsync_parent_directory(path)
+        if retry_count:
+            try:
+                print(
+                    "[atomic_replace_recovered] "
+                    + json.dumps({"file": path.name, "retry_count": retry_count}, ensure_ascii=False),
+                    file=sys.stderr,
+                )
+            except (OSError, ValueError):
+                pass
 
     def _atomic_write_json(path: Path, payload: Any, *, indent: int = 2) -> None:
         _atomic_write_text(
@@ -11772,6 +12350,57 @@ def main() -> None:
         _dashboard_url = ""
         _dashboard_standalone_forwarding = False
         _dashboard_start_error = ""
+        _attempt_started_at_epoch = time.time()
+        _attempt_failure_state = {"shutdown_status": "NOT_STARTED"}
+        _monitor = None
+
+        def _report_attempt_failure(error, shutdown_status, values):
+            try:
+                # 생성자 실패는 batch_start보다 먼저 발생할 수 있다. 실패를
+                # 기존 standalone 실행에 섞지 않도록 이 시도의 결속부터 보낸다.
+                if _monitor is not None and getattr(_monitor, "run_id", ts) != ts:
+                    _monitor.emit("batch_prepare", {
+                        "run_id": ts,
+                        "publication_scope_id": values.get("publication_scope_id"),
+                        "output_file": str(out_result_path.resolve()),
+                        "input_file": str(INPUT_PATH.name),
+                        "total": len(posts), "parallel_count": _PARALLEL,
+                        "started_at_epoch": _attempt_started_at_epoch,
+                    })
+            except BaseException as secondary:
+                note_secondary(_attempt_failure_state, error, "failure_binding", secondary)
+            try:
+                record_attempt_failure(
+                    state=_attempt_failure_state, error=error,
+                    manifest_path=result_manifest_path, output_file=out_result_path, run_id=ts,
+                    publication_scope_id=values.get("publication_scope_id"),
+                    input_sha256=_input_snapshot_sha256, total=len(posts),
+                    flushed=len(values.get("results", [])),
+                    pending=len(values.get("_pending_results", {})),
+                    failed=max(values.get("_failed_count", 0), values.get("_sequential_failed_count", 0)),
+                    parallel_count=_PARALLEL, started_at_epoch=_attempt_started_at_epoch,
+                    shutdown_status=shutdown_status,
+                    attempt_configuration={"config_hash": _config_hash,
+                                           "run_config_payload": copy.deepcopy(_run_config_payload)},
+                    monitor=_monitor,
+                )
+            except BaseException as secondary:
+                note_secondary(_attempt_failure_state, error, "failure_reporting", secondary)
+
+        def _record_fresh_rejection(error, result_item, input_index, post_id):
+            try:
+                _attempt_failure_state.update(input_index=input_index, post_id=post_id)
+                reference = _publication_reference_by_index.get(input_index)
+                preserve_rejected_publication(
+                    state=_attempt_failure_state, error=error, output_file=out_result_path,
+                    run_id=ts, publication_scope_id=publication_scope_id,
+                    input_sha256=_input_snapshot_sha256, input_index=input_index, post_id=post_id,
+                    result=result_item, reference_result=reference[0] if reference else None,
+                    reference_receipt=reference[1] if reference else None,
+                )
+            except BaseException as secondary:
+                note_secondary(_attempt_failure_state, error, "rejected_row_context", secondary)
+
         try:
             # 대시보드 서버 기동 (외부 standalone 대시보드 감지 시 양보 + 포워딩)
             if not _NO_DASHBOARD:
@@ -11829,6 +12458,31 @@ def main() -> None:
             else:
                 _monitor = None
 
+            def _execution_config_snapshot() -> Dict[str, Any]:
+                if _paired_policy and (_monitor is None or _dashboard_mode not in {"embedded", "standalone_forward"}):
+                    raise ValueError("low-load paired 실행의 실제 대시보드가 준비되지 않았습니다")
+                if _paired_policy:
+                    _require_paired_dashboard_ready(_dashboard_url, _dashboard_mode)
+                config = build_execution_config(
+                    resolve_execution_settings(_CLI_ARGS, dict(os.environ)) if _paired_policy else _execution_settings,
+                    source=source_snapshot(Path(__file__)) if _paired_policy else _execution_source,
+                    resources=_execution_resources,
+                    requested_parallel=_REQUESTED_PARALLEL_RAW, effective_parallel=_PARALLEL,
+                    dashboard_enabled=not _NO_DASHBOARD, dashboard_mode=_dashboard_mode,
+                    dashboard_url=_dashboard_url, output_file=str(out_result_path.resolve()),
+                    image_post_count=image_post_count, image_review_ready=vlm_ocr_semantic_review_ready,
+                    image_skip_reasons=vlm_ocr_semantic_review_skip_reason_codes,
+                    measurement_mode=_decision_call_measurement.get("execution_mode", "NORMAL"),
+                )
+                config.update(candidate_retrieval_policy_fields(_candidate_retrieval_observer, corpus_path=_CLI_ARGS.candidate_corpus))
+                config.update(candidate_reranker_policy_fields(_candidate_reranker, _candidate_reranker_settings))
+                config.update(candidate_calibration_policy_fields(_candidate_calibration, _candidate_calibration_settings))
+                config.update(candidate_inference_policy_fields(_candidate_inference, _candidate_inference_settings))
+                config.update(candidate_semantics_policy_fields(_candidate_semantics, _candidate_semantics_settings))
+                config.update(community_knowledge_policy_fields(_community_knowledge_snapshot, _community_knowledge_settings))
+                config.update(_native_recovery_manifest_fields(_native_recovery_options, out_result_path))
+                return config
+
             print(f"[expert_main] 로그 저장: {log_path}", file=sys.stderr, flush=True)
             print(f"[expert_main] 결과 저장: {out_result_path}", file=sys.stderr, flush=True)
             print(f"[expert_main] LLM_MODE: {LLM_MODE}", file=sys.stderr, flush=True)
@@ -11842,7 +12496,7 @@ def main() -> None:
             # 프로젝트 src를 path에 추가
             sys.path.insert(0, str(repo_root / "src"))
 
-            from llm_batch.agentic_pipeline import AgenticPipeline
+            from llm_batch.agentic_pipeline import AgenticPipeline, NegativeDetailRetryCoordinator
             from llm_batch.ledger.decision_call_events import (
                 DecisionCallLedgerRegistry,
                 RowAttemptScope,
@@ -12297,6 +12951,9 @@ def main() -> None:
             _config_hash = hashlib.sha256(
                 json.dumps(_run_config_payload, ensure_ascii=False, sort_keys=True).encode("utf-8")
             ).hexdigest()[:12]
+            print("[expert_main] 유효 실행 설정: " + json.dumps(
+                _execution_config_snapshot(), ensure_ascii=False, sort_keys=True,
+            ), file=sys.stderr, flush=True)
 
             for _idx, _endpoint in enumerate(_mcp_endpoint_pool):
                 _hc = _health_ok.get(_endpoint)
@@ -12696,14 +13353,16 @@ def main() -> None:
 
             # ─── 배치 컨텍스트 메모리 (포스트 간 지식 공유) ──
             _measurement_context_frozen = bool(
-                _decision_call_measurement["mode"] == "REQUIRED"
-                and _decision_call_measurement.get("mutable_context_frozen")
+                _community_knowledge_snapshot is not None
+                or _native_recovery_options is not None
+                or (_decision_call_measurement["mode"] == "REQUIRED"
+                    and _decision_call_measurement.get("mutable_context_frozen"))
             )
             _batch_context = BatchContextMemory(enabled=not _measurement_context_frozen)
             print(
                 (
                     "🧊 BatchContextMemory 비활성화 "
-                    "(paired REQUIRED FROZEN_OFF; cross-row mutable state 차단)"
+                    "(paired FROZEN_OFF·커뮤니티 READ_ONLY·native 복구; 포스트 간 학습 차단)"
                     if _measurement_context_frozen
                     else "🧠 BatchContextMemory 활성화 (포스트 간 약칭/작가/캐릭터 공유)"
                 ),
@@ -12790,6 +13449,8 @@ def main() -> None:
                 created: bool,
             ) -> None:
                 nonlocal _next_batch_context_learning_idx
+                if _community_knowledge_snapshot is not None:
+                    return
                 if input_index < _next_batch_context_learning_idx:
                     if created:
                         raise PublicationCommitError(
@@ -12834,7 +13495,88 @@ def main() -> None:
                         flush=True,
                     )
 
+            # v3 관측은 provider 호출 전에 실제 설정·정책·시작 자원을 확인한다.
+            _paired_clients = []
+            _paired_mcp_clients = []
+            if _paired_policy is not None:
+                _paired_settings_client = LLMClient()
+
+                def _paired_runtime_fields():
+                    if (_env_bool_runtime("MCP_CLIENT_ENDPOINT_FAILOVER", default=True)
+                            or any(client.endpoint_failover for client in _paired_mcp_clients)):
+                        raise ValueError("low-load paired 실행에는 endpoint failover OFF가 필요합니다")
+                    clients = _paired_clients or [_paired_settings_client]
+                    fingerprints = {generation_fingerprint(client, os.environ) for client in clients}
+                    identities = {(client.model, client.endpoint) for client in clients}
+                    if len(fingerprints) != 1 or len(identities) != 1:
+                        raise ValueError("paired worker model/generation 설정 불일치")
+                    model, endpoint = next(iter(identities))
+                    return {
+                        "llm_model": model, "llm_endpoint": endpoint,
+                        "generation_config_sha256": next(iter(fingerprints)),
+                        "prompt_sha256": prompt_fingerprint(repo_root),
+                        "publication_config_sha256": _publication_config_hash,
+                        "publication_decision_environment_sha256": early_route_canonical_hash(_publication_decision_environment(dict(os.environ))),
+                        "mcp_endpoint_pool_sha256": endpoint_pool_fingerprint(_get_mcp_endpoint_pool()),
+                        "mcp_health_workers": _health_workers,
+                        "mcp_health_probe_batch_size": _health_probe_batch_size,
+                        "mcp_health_required_ok_count": _health_required_ok,
+                        "mcp_health_include_search": _health_include_search,
+                        "mcp_health_light_mode": _health_light_mode,
+                        "mcp_reuse_shards_only": bool(_CLI_ARGS.reuse_shards_only),
+                        "mcp_auto_up_shards": _allow_local_shard_auto_up(),
+                        "mcp_auto_recreate_shards": _allow_local_shard_recreate(),
+                        "mcp_auto_scale_up_missing_shards": _allow_missing_shard_auto_scale_up(),
+                        "mutable_context_mode": _decision_call_measurement["mutable_context_mode"],
+                        "batch_context_enabled": bool(_batch_context.enabled),
+                        "central_slang_db_write_allowed": bool(_slang_db_enabled),
+                        "slang_mode": _decision_call_measurement["slang_access_mode"],
+                        "slang_snapshot_sha256": _scope_slang_db_sha256,
+                        "candidate_retrieval_mode": _CLI_ARGS.candidate_retrieval,
+                        "community_knowledge_mode": _community_knowledge_settings["mode"],
+                        "candidate_reranker_mode": _candidate_reranker_settings["mode"],
+                    }
+
+                def _paired_check_health(endpoint):
+                    client = MCPClient(endpoint=endpoint)
+                    if client.endpoint_failover:
+                        raise ValueError("paired health client endpoint failover must be OFF")
+                    return client.health_check(timeout=_health_timeout, include_search=True)
+
+                _paired_health = FreshHealthProbe(endpoints=_get_mcp_endpoint_pool,
+                    checker=_paired_check_health,
+                    max_age_seconds=_paired_policy["health"]["max_age_seconds"])
+                _paired_session = PairedExecutionSession(measurement=_decision_call_measurement,
+                    run_id=ts, input_sha256=_input_snapshot_sha256, publication_scope_id=publication_scope_id,
+                    execution_config=_execution_config_snapshot, runtime_fields=_paired_runtime_fields, health=_paired_health,
+                    input_post_ids=([post.post_id for post in posts]
+                        if _paired_policy["config_projection"].get("input_post_count") is not None else None))
+                _paired_session.start()
+
             # ─── 워커 팩토리 ──────────────────────────────
+            _negative_detail_retry_coordinator = NegativeDetailRetryCoordinator()
+            _native_recovery_batch = None
+            if _native_recovery_options is not None:
+                from llm_batch.runtime.recovery_native_batch import NativeRecoveryBatchCoordinator
+                if _monitor is None or _dashboard_mode not in {"embedded", "standalone_forward"}:
+                    raise ValueError("NATIVE_RECOVERY_DASHBOARD_UNAVAILABLE")
+                if _recovery_activation_effective_mode != "AUDIT_ONLY" or _recovery_activation_status != "READY":
+                    raise ValueError("NATIVE_RECOVERY_AUDIT_UNAVAILABLE")
+                _native_recovery_batch = NativeRecoveryBatchCoordinator(
+                    policy=_native_recovery_options["policy"],
+                    input_post_ids=[post.post_id for post in posts],
+                    input_snapshot_bytes=_input_snapshot_bytes, input_path=INPUT_PATH.resolve(),
+                    output_dir=out_result_path.resolve().with_name(out_result_path.stem + "_native_recovery"),
+                    root=OUT_DIR.resolve(), hmac_key_path=recovery_activation_hmac_key_path.resolve(),
+                    dashboard_url=_dashboard_url, event_bus=_monitor, cancelled=_shutdown_event.is_set,
+                    run_id=ts, publication_scope_id=publication_scope_id,
+                )
+                for _native_replay_index, (_native_replay_result, _native_replay_receipt) in _publication_replay_by_index.items():
+                    _native_recovery_batch.accept_committed(
+                        _native_replay_index, _native_replay_receipt.post_id, None,
+                        result=_native_replay_result, receipt=_native_replay_receipt, created=False,
+                    )
+
             def _create_pipeline(worker_id: int = 0) -> AgenticPipeline:
                 """워커별 독립 LLMClient/MCPClient/Pipeline 인스턴스 생성"""
                 if decision_call_ledger_registry.enabled:
@@ -12843,8 +13585,14 @@ def main() -> None:
                     )
                 else:
                     _llm = LLMClient()
+                if _paired_policy is not None:
+                    _paired_clients.append(_llm)
+                    _paired_session.manifest_fields()
                 _endpoint = _mcp_endpoint_pool[worker_id % len(_mcp_endpoint_pool)]
                 _mcp = MCPClient(endpoint=_endpoint)
+                if _paired_policy is not None:
+                    _paired_mcp_clients.append(_mcp)
+                    _paired_session.manifest_fields()
                 _pipe = AgenticPipeline(
                     llm=_llm,
                     mcp=_mcp,
@@ -12855,7 +13603,18 @@ def main() -> None:
                     batch_context=_batch_context,
                     recent_post_index=_recent_post_index,
                     batch_context_learning_enabled=False,
+                    negative_detail_retry_coordinator=_negative_detail_retry_coordinator,
+                    candidate_retrieval_shadow=_candidate_retrieval_observer,
+                    community_knowledge=_community_knowledge_snapshot,
+                    candidate_reranker_shadow=_candidate_reranker,
+                    candidate_calibration=_candidate_calibration,
+                    candidate_inference=_candidate_inference,
+                    candidate_semantics=_candidate_semantics,
                 )
+                _pipe.orchestrator.run_id = ts
+                if _native_recovery_options is not None:
+                    _pipe._use_session_knowledge = False
+                    _pipe.enable_active_learning_queue = False
                 print(f"[expert_main] worker W{worker_id} -> MCP shard {_endpoint}", file=sys.stderr, flush=True)
                 return _pipe
 
@@ -12878,6 +13637,71 @@ def main() -> None:
             def _closure_frame(value: Any) -> Optional[Dict[str, Any]]:
                 candidate = value[0] if isinstance(value, tuple) and value else value
                 return dict(candidate) if isinstance(candidate, Mapping) else None
+
+            def _candidate_retrieval_row_fields(result: Any, index: int, post_id: Any) -> Dict[str, Any]:
+                return export_candidate_retrieval_fields(
+                    result, _candidate_retrieval_observer,
+                    binding={"run_id": ts, "input_index": index, "post_id": post_id,
+                             "attempt_id": _decision_call_row_attempt_id(index, post_id),
+                             "publication_scope_id": publication_scope_id},
+                )
+
+            def _candidate_reranker_row_fields(result: Any, index: int, post_id: Any) -> Dict[str, Any]:
+                return export_candidate_reranker_fields(
+                    result, _candidate_reranker,
+                    binding={"run_id": ts, "input_index": index, "post_id": post_id,
+                             "attempt_id": _decision_call_row_attempt_id(index, post_id),
+                             "publication_scope_id": publication_scope_id},
+                )
+
+            def _candidate_semantics_row_fields(result: Any, index: int, post: Any) -> Dict[str, Any]:
+                post_id = post.post_id
+                return export_candidate_semantics_fields(result, _candidate_semantics,
+                    binding={"run_id": ts, "input_index": index, "post_id": post_id,
+                             "attempt_id": _decision_call_row_attempt_id(index, post_id),
+                             "publication_scope_id": publication_scope_id},
+                    output_dir=OUT_DIR, input_snapshot_sha256=_input_snapshot_sha256,
+                    current_post=post, retrieval_observer=_candidate_retrieval_observer,
+                    scorer=_candidate_reranker, calibration_observer=_candidate_calibration)
+
+            def _candidate_inference_row_fields(result: Any, index: int, post: Any) -> Dict[str, Any]:
+                return export_candidate_inference_fields(result, _candidate_inference,
+                    binding={"run_id": ts, "input_index": index, "post_id": post.post_id,
+                             "attempt_id": _decision_call_row_attempt_id(index, post.post_id),
+                             "publication_scope_id": publication_scope_id},
+                    output_dir=OUT_DIR, input_snapshot_sha256=_input_snapshot_sha256,
+                    current_post=post, retrieval_observer=_candidate_retrieval_observer,
+                    semantic_observer=_candidate_semantics)
+
+            def _candidate_calibration_row_fields(result: Any, index: int, post: Any) -> Dict[str, Any]:
+                post_id = post.post_id
+                semantic_capture_required = (_candidate_reranker is not None
+                    and _candidate_reranker.summary().get("semantic_input_required") is True)
+                if _candidate_calibration is None and not semantic_capture_required:
+                    return {}
+                from llm_batch.runtime.candidate_capture import export_candidate_capture_fields
+                binding = {"run_id": ts, "input_index": index, "post_id": post_id,
+                           "attempt_id": _decision_call_row_attempt_id(index, post_id),
+                           "publication_scope_id": publication_scope_id}
+                capture_fields = export_candidate_capture_fields(
+                    result, _candidate_reranker, binding=binding, output_dir=OUT_DIR,
+                    input_snapshot_sha256=_input_snapshot_sha256,
+                    current_post=post, retrieval_observer=_candidate_retrieval_observer,
+                    semantic_observer=_candidate_semantics,
+                )
+                calibration_fields = export_candidate_calibration_fields(
+                    result, _candidate_calibration, binding=binding,
+                    capture_receipt=capture_fields.get("candidate_reranker_capture"),
+                ) if _candidate_calibration is not None else {}
+                return {**capture_fields, **calibration_fields}
+
+            def _community_knowledge_row_fields(result: Any, index: int, post_id: Any) -> Dict[str, Any]:
+                return export_community_knowledge_fields(
+                    result, _community_knowledge_snapshot,
+                    binding={"run_id": ts, "input_index": index, "post_id": post_id,
+                             "attempt_id": _decision_call_row_attempt_id(index, post_id),
+                             "publication_scope_id": publication_scope_id},
+                )
 
             def _record_decision_call_closure(
                 *,
@@ -13151,7 +13975,8 @@ def main() -> None:
                         not isinstance(ledger_ref, Mapping)
                         or str(ledger_ref.get("closure_kind") or "") != "ROW_SEAL"
                         or not isinstance(row_summary, Mapping)
-                        or not bool(row_summary.get("writer_complete"))
+                        # Usage completeness governs KPI estimation, not sealed call lineage.
+                        or bool(row_summary.get("trace_errors"))
                     ):
                         receipt = entry.get("attempt_receipt")
                         if isinstance(receipt, dict):
@@ -13191,6 +14016,9 @@ def main() -> None:
             ) -> Dict[str, Any]:
                 """한 포스트를 처리하고 full_result dict 반환"""
                 w_tag = f"W{worker_id}" if _PARALLEL > 1 else ""
+                if _paired_session is not None:
+                    _paired_session.start_row(input_index=index, post_id=post.post_id,
+                                              attempt_id=_decision_call_row_attempt_id(index, post.post_id))
                 
                 # 원본 데이터 추출
                 content_texts = []
@@ -13277,6 +14105,13 @@ def main() -> None:
                         post.post_id,
                     )
                 _early_route_skipped = False
+                _native_capture = None
+                def _process_full():
+                    nonlocal _native_capture
+                    output, _native_capture = _process_post_with_optional_native_capture(
+                        pipeline, post, input_index=index, batch=_native_recovery_batch,
+                    )
+                    return output
                 _authoritative_reference_loader: Optional[
                     Callable[[], Mapping[str, Any]]
                 ] = None
@@ -13299,7 +14134,7 @@ def main() -> None:
                         measurement_config=_decision_call_measurement,
                         publication_scope_id=publication_scope_id,
                         input_index=index,
-                        process_full=lambda: pipeline.process_post(post),
+                        process_full=_process_full,
                         authoritative_reference_loader=(
                             _authoritative_reference_loader
                         ),
@@ -13371,6 +14206,17 @@ def main() -> None:
                         "semantic_review_router_receipt",
                         "semantic_recovery_plan_receipt",
                         "fresh375_run_binding_token",
+                        "candidate_retrieval_shadow",
+                        "candidate_reranker_shadow",
+                        "candidate_reranker_capture",
+                        "candidate_calibration_shadow",
+                        "candidate_reranker_inference",
+                        "candidate_inference_capture",
+                        "candidate_reranker_semantics",
+                        "candidate_reranker_semantics_capture",
+                        "paired_execution_observation",
+                        "paired_execution_runtime_fields",
+                        "community_knowledge_readback",
                     ):
                         run_meta.pop(stale_key, None)
                     run_meta.update(
@@ -13383,6 +14229,16 @@ def main() -> None:
                                 else str(log_path)
                             ),
                             "main_log_file": str(log_path),
+                            "execution_config": _execution_config_snapshot(),
+                            "source_context_diagnostics": export_source_context_diagnostics(
+                                None, enabled=_context_diagnostics_enabled,
+                            ),
+                            **_candidate_retrieval_row_fields(None, index, post.post_id),
+                            **_candidate_reranker_row_fields(None, index, post.post_id),
+                            **_candidate_calibration_row_fields(None, index, post),
+                            **_candidate_inference_row_fields(None, index, post),
+                            **_candidate_semantics_row_fields(None, index, post),
+                            **_community_knowledge_row_fields(None, index, post.post_id),
                             "decision_call_measurement": dict(
                                 _decision_call_measurement
                             ),
@@ -13395,8 +14251,12 @@ def main() -> None:
                             **_decision_call_run_meta_fields(index),
                         }
                     )
+                    if _paired_session is not None:
+                        run_meta.update(_paired_session.finish_row(input_index=index, post_id=post.post_id))
                     return full_result
                 result_dict = result.model_dump() if hasattr(result, "model_dump") else dict(result)
+                source_observation = pipeline.verify_final_source_context_serialization(result, result_dict, stage="model_dump")
+                pipeline._trace_final_source_observation(source_observation)
                 identity_dict = result_dict.get("identity")
                 if isinstance(identity_dict, dict):
                     authoritative_v2 = has_authoritative_publish_contract(identity_dict)
@@ -13457,7 +14317,12 @@ def main() -> None:
                 _ctx_token: Dict[str, Any] = {}
                 try:
                     _last_ctx = pipeline.orchestrator._last_ctx
-                    if _last_ctx and hasattr(_last_ctx, "token_usage"):
+                    if (
+                        _last_ctx is not None
+                        and type(getattr(_last_ctx, "post_id", None)) is type(post.post_id)
+                        and getattr(_last_ctx, "post_id", None) == post.post_id
+                        and hasattr(_last_ctx, "token_usage")
+                    ):
                         _ctx_token = dict(_last_ctx.token_usage)
                 except Exception:
                     _ctx_token = {}
@@ -13558,12 +14423,22 @@ def main() -> None:
                     "analysis_result": result_dict,
                     "run_meta": {
                         **_runtime_binding_echo_fields(),
+                        "execution_config": _execution_config_snapshot(),
+                        "source_context_diagnostics": export_source_context_diagnostics(
+                            result, enabled=_context_diagnostics_enabled,
+                        ),
+                        **_candidate_retrieval_row_fields(result, index, post.post_id),
+                        **_candidate_reranker_row_fields(result, index, post.post_id),
+                        **_candidate_calibration_row_fields(result, index, post),
+                        **_candidate_inference_row_fields(result, index, post),
+                        **_candidate_semantics_row_fields(result, index, post),
+                        **_community_knowledge_row_fields(result, index, post.post_id),
                         "run_id": ts,
                         "model": os.getenv("LLM_MODEL", ""),
                         "llm_mode": LLM_MODE,
                         "llm_endpoint": os.getenv("LLM_ENDPOINT", ""),
                         "prompt_version": _prompt_version,
-                        "config_hash": _config_hash,
+                        "config_hash": _publication_config_hash,
                         "requested_parallel_raw": _REQUESTED_PARALLEL_RAW,
                         "requested_parallel": _REQUESTED_PARALLEL,
                         "effective_parallel": _PARALLEL,
@@ -13600,6 +14475,8 @@ def main() -> None:
                         "main_log_file": str(log_path),
                     },
                 }
+                if _paired_session is not None:
+                    full_result["run_meta"].update(_paired_session.finish_row(input_index=index, post_id=post.post_id))
                 if getattr(post, "judge_seed", None):
                     full_result["_judge_seed"] = getattr(post, "judge_seed", None)
                 if getattr(post, "projection_followup", None):
@@ -13629,6 +14506,13 @@ def main() -> None:
                         "content": content_texts[:20],
                         "comments": comment_texts[:30],
                         "is_relevant": _identity.get("is_relevant"),
+                        "identity_state": _identity.get("identity_state"),
+                        "is_novel_related": _identity.get("is_novel_related"),
+                        "is_resolved_work_discussion": _identity.get("is_resolved_work_discussion"),
+                        "title_resolution_state": _identity.get("title_resolution_state"),
+                        "title_resolution_allowed": _identity.get("title_resolution_allowed"),
+                        "primary_subject_type": _identity.get("primary_subject_type"),
+                        "primary_subject_text": _identity.get("primary_subject_text"),
                         "official_title": _novel_id.get("official_title"),
                         "confidence": _novel_id.get("confidence"),
                         "discussion_type": _identity.get("discussion_type"),
@@ -13658,9 +14542,14 @@ def main() -> None:
                     _monitor.emit("search_stats", {
                         "hits": getattr(pipeline, '_search_cache_hits', 0),
                         "misses": getattr(pipeline, '_search_cache_misses', 0),
+                        "worker_id": worker_id,
                     })
 
-                return full_result
+                return _FinalSourceContextResult(
+                    full_result, output=result,
+                    verifier=pipeline.verify_final_source_context_serialization,
+                    native_capture=_native_capture,
+                )
 
             # ─── 메인 처리 루프 ───────────────────────────
             results = []
@@ -13673,6 +14562,8 @@ def main() -> None:
                 post_id: Any,
             ):
                 """Main-thread durable terminal decision owner."""
+                if isinstance(result_item, _FinalSourceContextResult):
+                    result_item.verify_stored_payload(result_item, stage="before_publication_commit")
                 preview = None
                 early_route_decision = _early_route_decision_for_index(global_idx)
                 reference = _publication_reference_by_index.get(global_idx)
@@ -13890,6 +14781,8 @@ def main() -> None:
                         raise PublicationCommitError(
                             "final attempt-local metadata changed publication decision ID"
                         )
+                    if isinstance(result_item, _FinalSourceContextResult):
+                        result_item.verify_stored_payload(result_item, stage="fresh_stored_payload")
                     return final_receipt, False, result_item
                 receipt, created = commit_publication_result(
                     result_item,
@@ -13914,17 +14807,26 @@ def main() -> None:
                     index=global_idx,
                     decision_id=receipt.decision_id,
                 )
-                _attach_decision_call_run_meta(result_item, index=global_idx)
-                _attach_early_route_run_meta(result_item, index=global_idx)
-                canonical_result = (
-                    result_item
-                    if created
-                    else publication_commit_registry.result(post_id)
-                )
+                # The owner WAL has already sealed the exact result bytes.
+                # Publication-link completion belongs to the external call
+                # ledger; attaching it here would invalidate the stored-row
+                # receipt even though the semantic decision stayed the same.
+                canonical_result = publication_commit_registry.result(post_id)
                 if not isinstance(canonical_result, dict):
                     raise PublicationCommitError(
                         "authoritative publication WAL row is missing"
                     )
+                if isinstance(result_item, _FinalSourceContextResult):
+                    canonical_observation = result_item.verify_stored_payload(canonical_result, stage="canonical_stored_payload")
+                    # 이 지점만 방금 읽은 실제 registry.result 객체와 검증 반환을 연결한다.
+                    canonical_observation["canonical_publication_payload_json_sha256"] = hashlib.sha256(
+                        json.dumps(canonical_result, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8")
+                    ).hexdigest()
+                    canonical_observation["canonical_publication_payload_object_id"] = id(canonical_result)
+                    canonical_observation["canonical_publication_registry_object_id"] = id(publication_commit_registry)
+                    canonical_observation["canonical_publication_decision_id"] = receipt.decision_id
+                    canonical_observation["canonical_publication_read"] = "ACTUAL_REGISTRY_RESULT"
+                    result_item._source_output.__dict__["_final_source_context_receipt"]["trace_observation"](canonical_observation)
                 validate_publication_result_commit(
                     canonical_result,
                     receipt,
@@ -13942,6 +14844,12 @@ def main() -> None:
                     publication_receipt=receipt,
                     created=created,
                 )
+                if _native_recovery_batch is not None:
+                    _native_recovery_batch.accept_committed(
+                        global_idx, post_id,
+                        result_item.take_native_capture() if isinstance(result_item, _FinalSourceContextResult) else None,
+                        result=canonical_result, receipt=receipt, created=created,
+                    )
                 return receipt, created, canonical_result
 
             # 📊 대시보드: batch_start
@@ -13949,8 +14857,15 @@ def main() -> None:
                 _monitor.emit("batch_start", {
                     "total": len(posts),
                     "input_file": str(INPUT_PATH.name),
-                    "output_file": str(out_result_path.name),
+                    # 상세 조회가 다른 run의 동명/최근 결과로 폴백하지 않도록
+                    # 현재 run의 중첩 출력 경로를 그대로 대시보드에 결속한다.
+                    "output_file": str(out_result_path.resolve()),
                     "parallel_count": _PARALLEL,
+                    "execution_config": _execution_config_snapshot(),
+                    "run_id": ts, "publication_scope_id": publication_scope_id,
+                    "started_at_epoch": _attempt_started_at_epoch,
+                    **({"policy_sha256": early_route_canonical_hash(_native_recovery_options["policy"])}
+                       if _native_recovery_options is not None else {}),
                 })
 
             # ─── 병렬 모드: 컴팩트 CLI 진행 표시 ───────────
@@ -14126,6 +15041,16 @@ def main() -> None:
                 ).hexdigest()
                 return {
                     **_runtime_binding_echo_fields(),
+                    "execution_config": _execution_config_snapshot(),
+                    **_native_recovery_manifest_fields(_native_recovery_options, out_result_path),
+                    **(_paired_session.manifest_fields() if _paired_session is not None else {}),
+                    "source_context_diagnostics_policy": diagnostics_policy(_context_diagnostics_enabled),
+                    **candidate_retrieval_policy_fields(_candidate_retrieval_observer, corpus_path=_CLI_ARGS.candidate_corpus),
+                    **candidate_reranker_policy_fields(_candidate_reranker, _candidate_reranker_settings),
+                    **candidate_calibration_policy_fields(_candidate_calibration, _candidate_calibration_settings),
+                    **candidate_inference_policy_fields(_candidate_inference, _candidate_inference_settings),
+                    **candidate_semantics_policy_fields(_candidate_semantics, _candidate_semantics_settings),
+                    **community_knowledge_policy_fields(_community_knowledge_snapshot, _community_knowledge_settings),
                     "requested_parallel_raw": _REQUESTED_PARALLEL_RAW,
                     "requested_parallel": _REQUESTED_PARALLEL,
                     "effective_parallel": _PARALLEL,
@@ -14254,6 +15179,10 @@ def main() -> None:
                         publication_scope_descriptor.descriptor_sha256
                     ),
                     "publication_config_sha256": _publication_config_hash,
+                    "attempt_configuration": {
+                        "config_hash": _config_hash,
+                        "run_config_payload": copy.deepcopy(_run_config_payload),
+                    },
                     "publication_scope_config": str(publication_scope_config_path),
                     "publication_scope_config_sha256": (
                         _publication_scope_config_sha256
@@ -14263,6 +15192,7 @@ def main() -> None:
                     ),
                     "publication_slang_db_path": str(_scope_slang_db_path),
                     "publication_slang_db_input_sha256": _scope_slang_db_sha256,
+                    "publication_slang_db_input_binding": dict(_scope_slang_db_input_binding),
                     "publication_slang_db_work_path": str(slang_db_work_path),
                     "publication_slang_db_delayed_writeback": bool(_slang_db_enabled),
                     "publication_slang_db_promotion_policy": (
@@ -14507,11 +15437,17 @@ def main() -> None:
                             full_result = _process_one(
                                 post, i, len(posts), pipeline, worker_id=0
                             )
-                            publication_commit, _, full_result = _commit_final_result(
-                                full_result,
-                                global_idx=i,
-                                post_id=post.post_id,
-                            )
+                            try:
+                                publication_commit, _, full_result = _commit_final_result(
+                                    full_result,
+                                    global_idx=i,
+                                    post_id=post.post_id,
+                                )
+                            except PublicationCommitError as error:
+                                if _decision_call_measurement.get("fresh_execution_required"):
+                                    _sequential_failed_count += 1
+                                    _record_fresh_rejection(error, full_result, i, post.post_id)
+                                raise
                             _slang_db_manager.record_result(full_result)
                             checkpoint_status = (
                                 "failed"
@@ -14844,6 +15780,10 @@ def main() -> None:
                         except Exception as e:
                             _failed_count += 1
                             failure_counted = True
+                            if _decision_call_measurement.get("fresh_execution_required"):
+                                _attempt_failure_state.update(input_index=gidx, post_id=pid)
+                                _worker_pool.put(wid_done)
+                                raise
                             full_result = {
                                 "post_id": pid,
                                 "title": "",
@@ -14866,6 +15806,10 @@ def main() -> None:
                             if not failure_counted:
                                 _failed_count += 1
                                 failure_counted = True
+                            if _decision_call_measurement.get("fresh_execution_required"):
+                                _worker_pool.put(wid_done)
+                                _record_fresh_rejection(commit_error, full_result, gidx, pid)
+                                raise
                             full_result = {
                                 "post_id": pid,
                                 "title": "",
@@ -14963,7 +15907,7 @@ def main() -> None:
 
                     # 혹시 남은 것 마저 수거
                     _collect_done(futures)
-                    executor.shutdown(wait=False)
+                    executor.shutdown(wait=True, cancel_futures=True)
 
                 except KeyboardInterrupt:
                     _cli_progress("\n⚠️  Ctrl+C 감지 — 종료 중...")
@@ -14972,15 +15916,41 @@ def main() -> None:
                     for fut in list(futures.keys()):
                         fut.cancel()
                     _collect_done(futures)
-                    executor.shutdown(wait=False)
+                    executor.shutdown(wait=True, cancel_futures=True)
 
                 finally:
-                    # 워커 로그 파일 닫기
-                    for wf in _worker_log_files:
-                        try:
-                            wf.close()
-                        except Exception:
-                            pass
+                    _parallel_error = sys.exc_info()[1]
+                    if isinstance(_parallel_error, Exception):
+                        # 먼저 실패를 기록한다. mid-call 취소가 없어 drain은 오래 걸릴 수 있다.
+                        _shutdown_event.set()
+                        _report_attempt_failure(_parallel_error, "DRAINING", locals())
+                        _attempt_failure_state["shutdown_status"] = drain_failed_workers(
+                            executor=_executor_ref, futures=locals().get("futures", {}),
+                            stop_event=_shutdown_event, state=_attempt_failure_state,
+                            error=_parallel_error,
+                        )
+                        if _attempt_failure_state["shutdown_status"] in {"DRAINED", "NOT_STARTED"}:
+                            close_worker_logs(_worker_log_files, state=_attempt_failure_state,
+                                              error=_parallel_error)
+                            _attempt_failure_state["worker_logs_closed"] = True
+                    elif _parallel_error is not None:
+                        # drain 중 두 번째 Ctrl+C도 살아 있는 로그를 닫는 근거가 아니다.
+                        _attempt_failure_state["shutdown_status"] = drain_failed_workers(
+                            executor=_executor_ref, futures=locals().get("futures", {}),
+                            stop_event=_shutdown_event, state=_attempt_failure_state,
+                            error=_parallel_error,
+                        )
+                        if _attempt_failure_state["shutdown_status"] in {"DRAINED", "NOT_STARTED"}:
+                            close_worker_logs(_worker_log_files, state=_attempt_failure_state,
+                                              error=_parallel_error)
+                    else:
+                        _attempt_failure_state["shutdown_status"] = "DRAINED"
+                        # 정상/기존 Ctrl+C 분기에서도 worker 종료 이후에만 로그를 닫는다.
+                        for wf in _worker_log_files:
+                            try:
+                                wf.close()
+                            except Exception:
+                                pass
                     _parallel_mode = False
 
                 # 셧다운 시 결과 저장 후 즉시 종료 (httpx 스레드 강제 종료)
@@ -15059,6 +16029,8 @@ def main() -> None:
                 and _slang_publish_ready
                 and slang_db_work_path.is_file()
             )
+            if _paired_session is not None:
+                _paired_session.finish()
             _terminal_artifacts_finalized = True
             if _PARALLEL > 1:
                 _write_manifest()
@@ -15090,6 +16062,15 @@ def main() -> None:
                         ),
                     },
                 )
+            if _native_recovery_batch is not None:
+                _native_recovery_report = _native_recovery_batch.drain(
+                    result_path=out_result_path.resolve(), manifest_path=result_manifest_path.resolve(),
+                    publication_wal_path=publication_commit_journal_path.resolve(),
+                    scope_descriptor_path=publication_commit_registry.scope_descriptor_path.resolve(),
+                    activation_journal_path=recovery_activation_journal_path.resolve(),
+                )
+                print("[expert_main] native 복구: " + str(_native_recovery_report["status"])
+                      + " (별도 결과, 원래 공개 판정 유지)", file=sys.stderr, flush=True)
             total_elapsed = time.time() - total_start
             print(f"\n{'='*70}", file=sys.stderr, flush=True)
             print(f"✅ 처리 완료!", file=sys.stderr, flush=True)
@@ -15143,8 +16124,17 @@ def main() -> None:
                     "elapsed": round(total_elapsed, 1),
                 })
 
+        except Exception as error:
+            _shutdown_event.set()
+            # inner finally에서 drain했다면 다시 작업을 수거/commit하지 않는다.
+            if (_attempt_failure_state["shutdown_status"] == "NOT_STARTED"
+                    and not _attempt_failure_state.get("worker_logs_closed")):
+                close_worker_logs(locals().get("_worker_log_files", []),
+                                  state=_attempt_failure_state, error=error)
+            _report_attempt_failure(error, _attempt_failure_state["shutdown_status"], locals())
+            raise
         finally:
-            # 외부 대시보드 포워딩 종료: 잔여 critical 이벤트(batch_complete 포함) flush
+            # 실패/완료 이벤트를 flush한 뒤 stdout/stderr를 복구한다.
             if _dashboard_forwarder is not None:
                 try:
                     _dashboard_forwarder.flush_and_stop(timeout=5.0)

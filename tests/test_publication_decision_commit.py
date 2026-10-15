@@ -22,7 +22,9 @@ from src.llm_batch.domain.batch_context import (
     BatchContextMemory,
 )
 from src.llm_batch.experts.orchestrator import ExpertType
-from src.llm_batch.domain.models import PickvelOutputItemV2
+from src.llm_batch.domain.models import PickvelOutputItemV2, PostInput
+from src.llm_batch.domain.alias_learning import capture_alias_source
+from alias_learning_test_inputs import source_and_experts
 
 from src.llm_batch.promotion_gate import (
     EvidenceRecord,
@@ -67,6 +69,11 @@ class _RecordingBatchContext:
 
 class _EnvelopeContext:
     def __init__(self) -> None:
+        self.post_data, self._source_decoder, self._source_verification = source_and_experts(
+            "정식 작품", "작품약칭", post_id=101)
+        self.post_id = self.post_data["post_id"]
+        self._batch_alias_original_source = capture_alias_source(self.post_data)
+        self.search_results = []
         self.snippet_hints = {
             "author_hints": [
                 {
@@ -87,10 +94,13 @@ class _EnvelopeContext:
     def get_expert_output(self, expert_type):
         if expert_type == ExpertType.DECODER:
             return {
+                **deepcopy(self._source_decoder),
                 "decoded_terms": [
                     {
+                        **deepcopy(self._source_decoder["decoded_terms"][0]),
                         "original": "작품약칭",
                         "best_match": {
+                            **deepcopy(self._source_decoder["decoded_terms"][0]["best_match"]),
                             "title": "정식 작품",
                             "raw_snippet": "DO_NOT_PERSIST_MATCH_SNIPPET",
                         },
@@ -102,6 +112,7 @@ class _EnvelopeContext:
         if expert_type == ExpertType.VERIFIER:
             return {
                 "verification_result": {
+                    **deepcopy(self._source_verification),
                     "confirmed_characters": [
                         "주인공",
                         "주인공",
@@ -1078,7 +1089,8 @@ class PublicationDecisionCommitTest(unittest.TestCase):
         self,
     ) -> None:
         pipeline = AgenticPipeline(llm=_DummyLLM(), mcp=_DummyMCP())
-        envelope = pipeline._build_batch_context_learning_envelope(_EnvelopeContext())
+        context = _EnvelopeContext()
+        envelope = pipeline._build_batch_context_learning_envelope(context)
         serialized_model = PickvelOutputItemV2(
             post_id=101,
             identity={"is_relevant": True},
@@ -1089,6 +1101,9 @@ class PublicationDecisionCommitTest(unittest.TestCase):
             publish=True,
             candidate_title="정식 작품",
         )
+        for key in ("post_id", "title", "content_blocks", "comments"):
+            canonical_result[key] = deepcopy(context.post_data[key])
+        canonical_result["content"] = [b["text"] for b in context.post_data["content_blocks"]]
         canonical_result["analysis_result"]["batch_context_learning_envelope"] = (
             serialized_model["batch_context_learning_envelope"]
         )
@@ -1136,7 +1151,8 @@ class PublicationDecisionCommitTest(unittest.TestCase):
 
     def test_learning_envelope_is_bounded_allowlisted_json_safe_and_omits_namu_raw(self) -> None:
         pipeline = AgenticPipeline(llm=_DummyLLM(), mcp=_DummyMCP())
-        envelope = pipeline._build_batch_context_learning_envelope(_EnvelopeContext())
+        context = _EnvelopeContext()
+        envelope = pipeline._build_batch_context_learning_envelope(context)
         serialized = json.dumps(envelope, ensure_ascii=False, sort_keys=True)
 
         self.assertEqual(
@@ -1153,7 +1169,8 @@ class PublicationDecisionCommitTest(unittest.TestCase):
             },
         )
         self.assertEqual(
-            envelope["decoded_terms"],
+            [{"original": term["original"], "source_role": term["source_role"],
+              "best_match": {"title": term["best_match"]["title"]}} for term in envelope["decoded_terms"]],
             [
                 {
                     "original": "작품약칭",
@@ -1162,6 +1179,29 @@ class PublicationDecisionCommitTest(unittest.TestCase):
                 }
             ],
         )
+        self.assertEqual(envelope["decoded_terms"][0]["best_match"]["confidence"], "high")
+        self.assertEqual(
+            set(envelope["decoded_terms"][0]),
+            {"original", "source_role", "best_match", "learning_evidence"},
+        )
+        self.assertEqual(
+            set(envelope["decoded_terms"][0]["best_match"]),
+            {"title", "confidence"},
+        )
+        proof = envelope["decoded_terms"][0]["learning_evidence"]
+        self.assertEqual(
+            set(proof),
+            {
+                "schema_version", "post_id", "source_path", "source_span",
+                "source_text_sha256", "source_corpus_sha256", "relation_kind",
+                "alias", "title", "decoder_confidence", "verifier_confidence",
+                "alias_confidence",
+            },
+        )
+        self.assertEqual(proof["schema_version"], "source_bound_alias_learning_v3")
+        self.assertEqual(proof["post_id"], context.post_id)
+        self.assertEqual(proof["source_path"], "/content_blocks/0/text")
+        self.assertEqual((proof["decoder_confidence"], proof["verifier_confidence"], proof["alias_confidence"]), (3, 3, 3))
         self.assertEqual(envelope["identified_author"], "테스트 작가")
         self.assertEqual(
             len(envelope["identified_characters"]),
@@ -1277,7 +1317,7 @@ class PublicationDecisionCommitTest(unittest.TestCase):
 
         ctx = SimpleNamespace()
         result = SimpleNamespace(identity=SimpleNamespace(is_relevant=True))
-        post = SimpleNamespace(post_id=301, title="테스트")
+        post = PostInput(post_id=301, title="테스트", content_blocks=[], comments=[])
         with patch.object(pipeline.orchestrator, "process", return_value=ctx), patch.object(
             pipeline, "_post_to_dict", return_value={}
         ), patch.object(pipeline, "_extract_comments", return_value=[]), patch.object(

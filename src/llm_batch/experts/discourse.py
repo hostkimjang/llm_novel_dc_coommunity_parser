@@ -13,6 +13,7 @@ import time
 from typing import Any, Dict, List, Optional
 
 from .decoder import KNOWN_ABBREVIATIONS
+from .source_spans import author_text_spans, has_direct_author_recommendation_request
 from .utils import parse_json_with_think_removal, _ts, KNOWN_TITLE_ABBREVIATIONS
 from ..prompts.prompt_router import build_discourse_system_prompt
 from ..domain.rules import surface_expression_reread_notes, surface_expression_reread_public_notes
@@ -98,6 +99,22 @@ Korean Morpheme Analysis for Domain Detection:
 
 **STEP 2: INTENT CLASSIFICATION**
 What is the poster trying to achieve?
+
+원문 발화 계약: intent, speech_act, target_kind, real_subject, reasoning을 쓰기 전에
+제목·본문의 작성자 발화와 인용문·타인 댓글·검색 정보를 분리하라. 질문·부정·전언의
+대상 구절을 확인하고, 남의 불만이나 인용된 주장을 글쓴이의 의견으로 바꾸지 말 것.
+author_spans는 작성자 원문, quoted_evidence는 인용·타인 발화,
+image_evidence는 OCR·이미지 요약이다. 보조 증거를 작성자 발화로 취급하지 말 것.
+image_topic_relation을 확인하라. 작성자가 이미지를 직접 가리키거나 이미지 속
+고유 제목을 원문에서 지목한 경우에만 이미지의 OCR·요약으로 작성자 주제를
+바꿀 수 있다. 이미지가 본문의 유일한 첨부물이어도 독립된 작성자 제목·감상을
+이미지의 다른 매체나 고유명으로 치환하지 말 것. promotion_eligible=false는
+작품 제목 공개 근거의 제한이지 이미지 주제 자체를 부정하지 않는다.
+비교 질문은 실제 비교 대상과 기준을 유지하고 매체·작품·장르 능력을 서로 바꾸지 말 것.
+질문이 둘 이상이면 각각 보존하라. 장르 소재가 도입에 등장해도 실제 질문이 독자 행동,
+행사 반응, 이미지 제목·출처라면 그 대상을 real_subject에 적어라.
+검색에서 얻은 이름은 원문에 등장한 단어라고 서술하지 말고, 어원이 명시되지 않은
+제목 표현의 유래를 추측으로 확정하지 말 것. 설명에는 출처가 확인되는 짧은 근거 구절을 붙여라.
 
 Intents:
 - **discuss_work**: Analyzing/reviewing a SPECIFIC creative work (제목, 캐릭터, 줄거리 등 고유 정보 포함)
@@ -280,6 +297,10 @@ You must output VALID JSON only. No markdown, no extra text.
     ],
     
     "real_subject": "string",  // What is this post REALLY about? (Korean, 1 sentence)
+    "author_question_span": "string | null",  // 작성자 원문 질문 구절을 정확히 복사. 인용·댓글·이미지면 null
+    "author_question_target": "string | null",  // 질문의 일반 대상. 불확실하면 null
+    "author_recommendation_span": "string | null",  // 작성자의 직접 추천 요청 문장 전체를 정확히 복사
+    "author_recommendation_is_direct": boolean,  // 부정·인용·전언·자기계획이면 false
     "reasoning": "string"  // Detailed reasoning for your analysis (Korean, 2-3 sentences)
   }}
 }}
@@ -309,6 +330,7 @@ TASK:
 4. Analyze discourse coherence using the 5 principles (Domain Coherence, Topic Continuity, Content Specificity, Speaker Engagement, Contextual Semantics)
 5. Determine what this post is REALLY about
 6. Design investigative search queries based on your uncertainty analysis
+7. Copy any direct author question span and the full recommendation sentence exactly from author_spans. Keep the question's ordinary target; quoted, negated, reported, or third-party recommendation speech is not a direct request.
 
 RETURN ONLY THE JSON OUTPUT.
 """
@@ -373,7 +395,9 @@ class DiscourseAnalyzer:
                 gatekeeper_result=gatekeeper_result,
                 ctx=ctx,
             )
-            result = self._sanitize_result(result, post_json=post_json)
+            result = self._sanitize_result(
+                result, post_json=post_json, gatekeeper_result=gatekeeper_result,
+            )
             elapsed = time.time() - start_time
             
             analysis = result.get("discourse_analysis", {})
@@ -401,6 +425,7 @@ class DiscourseAnalyzer:
         result: Any,
         *,
         post_json: Dict[str, Any] | None = None,
+        gatekeeper_result: Dict[str, Any] | None = None,
     ) -> Dict[str, Any]:
         """
         Sanitize malformed discourse output.
@@ -476,9 +501,16 @@ class DiscourseAnalyzer:
             analysis["speech_act"] = str(speech_act).strip().lower()
             analysis["target_kind"] = str(target_kind).strip().lower()
 
+        self._attach_source_bound_question_receipt(analysis, post_json, analysis)
+        self._attach_source_bound_recommendation_request(analysis, post_json, analysis)
+        analysis = self._guard_unbound_image_topic(analysis, post_json, gatekeeper_result)
         analysis = self._apply_semantic_seed_review(analysis, post_json)
+        analysis = self._guard_unbound_image_topic(analysis, post_json, gatekeeper_result)
         analysis = self._sanitize_surface_paraphrase_context(analysis, post_json)
         analysis = self._apply_short_worklike_recovery(analysis, post_json)
+        analysis = self._correct_friend_ip_banter_domain(
+            analysis, post_json, gatekeeper_result,
+        )
 
         # 매체(웹툰/애니 등) 과단정 완화:
         # 본문/댓글에 매체 단서가 없는데 결과 텍스트가 특정 매체를 확정하면
@@ -486,6 +518,61 @@ class DiscourseAnalyzer:
         analysis = self._sanitize_speculative_medium_claims(analysis, post_json)
 
         return {"discourse_analysis": analysis}
+
+    @staticmethod
+    def _correct_friend_ip_banter_domain(
+        analysis: Dict[str, Any],
+        post_json: Dict[str, Any] | None,
+        gatekeeper_result: Dict[str, Any] | None,
+    ) -> Dict[str, Any]:
+        """Do not turn an IP/friend joke into literature via gallery context."""
+        if str(analysis.get("primary_domain") or "").strip().lower() != "novel_literature":
+            return analysis
+        if not isinstance(post_json, dict) or not isinstance(gatekeeper_result, dict):
+            return analysis
+        gatekeeper = gatekeeper_result.get("gatekeeping") or gatekeeper_result
+        if not isinstance(gatekeeper, dict):
+            return analysis
+        entities = gatekeeper.get("detected_entities") or {}
+        if not isinstance(entities, dict):
+            return analysis
+        review = analysis.get("semantic_seed_review") or {}
+        if not isinstance(review, dict) or review.get("is_specific_work_discussion") is not False:
+            return analysis
+        if (
+            gatekeeper.get("is_noise") is not True
+            or str(gatekeeper.get("post_type") or "").strip().lower() not in {"community_banter", "noise"}
+            or any(entities.get(key) for key in ("possible_titles", "possible_authors", "possible_characters"))
+            or str(analysis.get("intent") or "").strip().lower() != "make_joke"
+            or str(analysis.get("target_kind") or "").strip().lower() not in {"none", "community"}
+            or str(review.get("recommended_target_kind") or "").strip().lower() != "community"
+        ):
+            return analysis
+
+        title = str(post_json.get("title") or "")
+        body = " ".join(str(item or "") for item in (post_json.get("content") or []))
+        comments = " ".join(str(item or "") for item in (post_json.get("comments") or []))
+        original = " ".join((title, body, comments))
+        if not (
+            re.search(r"친구|찐친|인맥|우정", title)
+            and re.search(r"친구|찐친|너희|니들|통피", body + " " + comments)
+            and re.search(r"(?:\b\d{1,3}\.\d{1,3}\b|통피|아이피|\bIP\b)", original, re.IGNORECASE)
+        ):
+            return analysis
+        if re.search(r"웹소설|장르소설|소설|작품|주인공|캐릭터|연재|작가|회차|웹툰|만화", original):
+            return analysis
+
+        analysis["primary_domain"] = "relationships"
+        analysis["domain_confidence"] = "medium"
+        analysis["domain_evidence"] = ["친구 관계", "IP/통피 농담"]
+        analysis["real_subject"] = "IP와 닉네임을 친구로 부르는 커뮤니티 농담"
+        analysis["coherence_reason"] = "친구를 나열한 본문과 IP에 대한 댓글이 같은 농담을 이어간다."
+        analysis["reasoning"] = "작품·인물·작가 단서는 없고 친구와 IP에 관한 농담이다."
+        warnings = [str(item) for item in (analysis.get("warnings") or [])]
+        if "realworld_friend_ip_banter_domain_corrected" not in warnings:
+            warnings.append("realworld_friend_ip_banter_domain_corrected")
+        analysis["warnings"] = warnings
+        return analysis
 
     @staticmethod
     def _semantic_seed_norm(value: Any) -> str:
@@ -704,18 +791,26 @@ class DiscourseAnalyzer:
             "post_id": post_json.get("post_id"),
             "title": post_json.get("title", ""),
             "content": post_json.get("content", [])[:4],
+            "author_spans": post_json.get("author_spans", [])[:8],
+            "quoted_evidence": post_json.get("quoted_evidence", [])[:8],
+            "image_evidence": post_json.get("image_evidence", [])[:8],
+            "image_topic_relation": post_json.get("image_topic_relation", {}),
             "comments": post_json.get("comments", [])[:8],
             "comment_context": comment_context[:8],
             "comment_dialogue_context": comment_dialogue_context[:8],
             "surface_paraphrase_notes": surface_public_notes,
             "current_intent": analysis.get("intent"),
             "current_target_kind": analysis.get("target_kind"),
+            "current_real_subject": analysis.get("real_subject"),
             "title_seed_candidates": title_terms,
             "search_suggestions": suggestions,
         }
         user_prompt = f"""아래 게시글의 작품명/별칭 후보 seed가 실제 검색할 가치가 있는지 재검토하세요.
 목표는 작품 매칭이 아니라, 1차 담론 분석이 문장 일부·인명처럼 보이는 표면·일반 반응을 작품 seed로 과승격했는지 확인하는 것입니다.
 숨은 사고과정은 쓰지 말고 공개 가능한 짧은 근거만 JSON으로 답하세요.
+
+author_spans는 작성자 원문이다. quoted_evidence는 인용·타인 발화, image_evidence는 OCR·이미지 증거이며 둘 다 작성자 직접 발화가 아니다. 인용·전언은 문맥으로 읽되 글쓴이의 추천 요청이나 의견으로 바꾸지 마세요. image_topic_relation이 unbound이면 OCR·이미지 고유명을 작성자의 주제·매체·검색 seed로 치환하지 마세요. 직접 이미지 지시나 동일 고유 제목의 원문 지목이 있으면 이미지는 주제 근거일 수 있습니다. promotion_eligible=false만으로 이미지 주제를 부정하지 마세요.
+작품 seed를 낮추더라도 작성자의 직접 추천 요청이나 질문 대상을 바꾸지 마세요. 직접 추천 요청은 author_spans에서 문장 전체를, 질문은 원문 구절을 정확히 복사하세요. 부정·인용·제3자 전언·자기계획은 직접 추천 요청이 아니라고 표시하세요. 질문의 일반 대상이 current_real_subject와 충돌하면 question_target_conflict=true로 표시하세요. 불확실하면 구절/대상을 비우세요.
 
 판정 원칙:
 - title_seed_candidates가 실제 작품명/약칭이면 keep.
@@ -745,8 +840,13 @@ OUTPUT JSON:
   "post_intent": "게시글의 자연어 의도 1문장",
   "content_interpretation": "표현 오타/축약 패턴(범용)으로만 설명하고, 특정 표면어 치환을 단정하지 않는 1문장",
   "is_specific_work_discussion": true,
-  "recommended_intent": "discuss_work | express_opinion | ask_question | make_joke | other",
+  "recommended_intent": "discuss_work | request_recommendation | express_opinion | ask_question | make_joke | other",
   "recommended_target_kind": "work | character | author | trope | community | unknown",
+  "author_recommendation_span": "작성자 직접 추천 요청 문장 전체의 정확한 원문 또는 null",
+  "author_recommendation_is_direct": true,
+  "author_question_span": "작성자 질문의 정확한 원문 구절 또는 null",
+  "author_question_target": "질문의 일반 대상 서술 또는 null",
+  "question_target_conflict": false,
   "title_seed_reviews": [
     {{"surface": "후보", "decision": "keep | context_only | drop", "confidence": "high | medium | low", "reason": "짧은 근거"}}
   ],
@@ -782,6 +882,267 @@ OUTPUT JSON:
             )
         return None
 
+    @staticmethod
+    def _verified_author_span(
+        post_json: Dict[str, Any] | None, excerpt: Any, *, require_full_line: bool = False,
+    ) -> Optional[Dict[str, Any]]:
+        """Accept a model quotation only when it occurs verbatim in author text."""
+        if not isinstance(post_json, dict) or not isinstance(excerpt, str):
+            return None
+        quoted = excerpt.strip()
+        if not quoted or len(quoted) > 300:
+            return None
+        if quoted.startswith((">", "“", '"', "‘", "'")):
+            return None
+        for span in post_json.get("author_spans") or []:
+            if not isinstance(span, dict) or span.get("speaker") != "author":
+                continue
+            text = str(span.get("text") or "")
+            offset = text.find(quoted)
+            while offset >= 0:
+                line_start = text.rfind("\n", 0, offset) + 1
+                line_end = text.find("\n", offset)
+                if line_end < 0:
+                    line_end = len(text)
+                line = text[line_start:line_end].strip()
+                line_prefix = text[line_start:offset].strip()
+                inside_quote = (
+                    line_prefix.startswith((">", "“", '"', "‘", "'"))
+                    or line_prefix.count('"') % 2 == 1
+                    or line_prefix.count("“") > line_prefix.count("”")
+                    or line_prefix.count("‘") > line_prefix.count("’")
+                )
+                full_line = line.rstrip(" \t?？!！.,。~") == quoted.rstrip(" \t?？!！.,。~")
+                if not inside_quote and (not require_full_line or full_line):
+                    return {
+                        "span": quoted,
+                        "source": str(span.get("source") or "author_body"),
+                        "speaker": "author",
+                        "modality": "text",
+                        "position": span.get("position"),
+                    }
+                offset = text.find(quoted, offset + len(quoted))
+        return None
+
+    def _attach_source_bound_question_receipt(
+        self,
+        analysis: Dict[str, Any],
+        post_json: Dict[str, Any] | None,
+        candidate: Dict[str, Any],
+    ) -> None:
+        source = self._verified_author_span(post_json, candidate.get("author_question_span"))
+        if source is None:
+            prior = analysis.get("source_bound_question_receipt")
+            if isinstance(prior, dict) and candidate.get("question_target_conflict") is True:
+                prior["target_conflict"] = True
+            return
+        target = str(candidate.get("author_question_target") or "").strip()[:300]
+        prior = analysis.get("source_bound_question_receipt")
+        if not isinstance(prior, dict):
+            prior = {}
+        targets = [str(item) for item in prior.get("target_candidates") or [] if str(item).strip()]
+        if target and target not in targets:
+            targets.append(target)
+        conflict = bool(candidate.get("question_target_conflict") is True)
+        if prior.get("span") and prior.get("span") != source["span"]:
+            conflict = True
+        if prior.get("target_conflict") is True:
+            conflict = True
+        analysis["source_bound_question_receipt"] = {
+            **source,
+            "target_description": target or str(prior.get("target_description") or ""),
+            "target_candidates": targets[:3],
+            "target_conflict": conflict,
+            "verification_level": "exact_author_excerpt_model_target",
+        }
+
+    def _attach_source_bound_recommendation_request(
+        self,
+        analysis: Dict[str, Any],
+        post_json: Dict[str, Any] | None,
+        candidate: Dict[str, Any],
+    ) -> None:
+        if "author_recommendation_is_direct" not in candidate:
+            return
+        source = self._verified_author_span(
+            post_json, candidate.get("author_recommendation_span"), require_full_line=True,
+        )
+        direct = bool(
+            candidate.get("author_recommendation_is_direct") is True
+            and source is not None
+            and has_direct_author_recommendation_request({"title": source["span"]})
+        )
+        analysis["source_bound_recommendation_request"] = bool(direct)
+        if direct:
+            analysis["source_bound_recommendation_receipt"] = {
+                **source,
+                "verification_level": "full_line_author_excerpt_and_direct_rule",
+            }
+        else:
+            analysis.pop("source_bound_recommendation_receipt", None)
+
+    def _image_topic_relation(self, post_json: Dict[str, Any]) -> Dict[str, Any]:
+        """Bind an image topic to an author reference, never to adjacency alone."""
+        images = [
+            item for item in (post_json.get("image_evidence") or [])
+            if isinstance(item, dict)
+        ]
+        if not images:
+            return {"state": "no_image", "source": "author_spans"}
+        spans = [
+            item for item in (post_json.get("author_spans") or [])
+            if isinstance(item, dict) and item.get("source") in {"author_title", "author_body"}
+        ]
+        author_text = " ".join(str(item.get("text") or "") for item in spans)
+        author_norm = self._semantic_seed_norm(author_text)
+        image_titles = list(dict.fromkeys(
+            str(item.get("explicit_work_title") or "").strip()
+            for item in images if str(item.get("explicit_work_title") or "").strip()
+        ))
+        shared_title = next((
+            title for title in image_titles
+            if len(self._semantic_seed_norm(title)) >= 4
+            and self._semantic_seed_norm(title) in author_norm
+        ), "")
+        if shared_title:
+            return {
+                "state": "author_names_image_title", "source": "author_spans",
+                "matched_title": shared_title,
+            }
+        # A deictic title with no independent body points at the attachment;
+        # a serialized-work title plus a separate opinion does not.
+        title = str(post_json.get("title") or "").strip()
+        body = [str(item or "").strip() for item in (post_json.get("content") or []) if str(item or "").strip()]
+        image_reference = bool(re.search(
+            r"(?:이미지|사진|그림|짤|표지|캡처|스크린샷|삽화)(?:을|를|이|가|은|는|에|의|에서|부터|좀|\b)"
+            r"|(?:이|그|저)(?:거|것)(?:를|을|이|가|은|는|\b)",
+            author_text,
+        ))
+        if image_reference and (not body or re.search(
+            r"(?:이미지|사진|그림|짤|표지|캡처|스크린샷|삽화)", author_text,
+        )):
+            return {"state": "direct_author_image_reference", "source": "author_spans"}
+        return {"state": "unbound", "source": "image_evidence"}
+
+    def _guard_unbound_image_topic(
+        self,
+        analysis: Dict[str, Any],
+        post_json: Dict[str, Any] | None,
+        gatekeeper_result: Dict[str, Any] | None,
+    ) -> Dict[str, Any]:
+        """Keep an unbound image entity from replacing an author-led subject."""
+        if not isinstance(post_json, dict):
+            return analysis
+        prior_guarded = (analysis.get("image_topic_relation") or {}).get("guard_applied") is True
+        relation = post_json.get("image_topic_relation") or self._image_topic_relation(post_json)
+        analysis["image_topic_relation"] = dict(relation)
+        if relation.get("state") != "unbound":
+            return analysis
+        author_title = str(post_json.get("title") or "").strip()
+        author_body = [str(item or "").strip() for item in post_json.get("content") or [] if str(item or "").strip()]
+        if not author_title and not author_body:
+            return analysis
+        author_norm = self._semantic_seed_norm(" ".join([author_title, *author_body]))
+        images = [item for item in post_json.get("image_evidence") or [] if isinstance(item, dict)]
+        image_norm = self._semantic_seed_norm(" ".join(
+            str(item.get("text") or "") + " " + str(item.get("explicit_work_title") or "")
+            for item in images
+        ))
+        image_titles = [
+            str(item.get("explicit_work_title") or "").strip() for item in images
+            if str(item.get("explicit_work_title") or "").strip()
+        ]
+        evidence = [str(item or "").strip() for item in analysis.get("domain_evidence") or [] if isinstance(item, str)]
+        image_only = [
+            item for item in evidence
+            if len(self._semantic_seed_norm(item)) >= 3
+            and self._semantic_seed_norm(item) in image_norm
+            and self._semantic_seed_norm(item) not in author_norm
+        ]
+        author_supported = [
+            item for item in evidence
+            if len(self._semantic_seed_norm(item)) >= 3
+            and self._semantic_seed_norm(item) in author_norm
+        ]
+        subject_norm = self._semantic_seed_norm(analysis.get("real_subject"))
+        named_image_subject = any(
+            len(self._semantic_seed_norm(title)) >= 4
+            and self._semantic_seed_norm(title) in subject_norm
+            and self._semantic_seed_norm(title) not in author_norm
+            for title in image_titles
+        )
+        image_driven_claim = named_image_subject or bool(
+            image_only and not author_supported
+            and len(image_only) * 2 >= max(1, len(evidence))
+        )
+        if not prior_guarded and not image_driven_claim:
+            return analysis
+
+        gatekeeper = gatekeeper_result or {}
+        if isinstance(gatekeeper, dict):
+            gatekeeper = gatekeeper.get("gatekeeping") or gatekeeper
+        if not isinstance(gatekeeper, dict):
+            gatekeeper = {}
+        serialized_author_subject = bool(re.search(
+            r"(?:이번|지난|다음|최신|전|후)\s*(?:화|회|편|챕터|에피소드)",
+            author_title,
+        ))
+        author_work_context = bool(
+            serialized_author_subject
+            and gatekeeper.get("is_noise") is not True
+            and str(gatekeeper.get("post_type") or "").strip().lower() == "work_discussion"
+        )
+        analysis["primary_domain"] = "novel_literature" if author_work_context else "unknown"
+        analysis["domain_confidence"] = "medium" if author_work_context else "low"
+        analysis["domain_evidence"] = [author_title, *author_body[:2]] if author_title else author_body[:3]
+        analysis["real_subject"] = author_title or author_body[0]
+        if author_work_context:
+            analysis["target_kind"] = "work"
+            author_question = isinstance(analysis.get("source_bound_question_receipt"), dict)
+            author_recommendation = analysis.get("source_bound_recommendation_request") is True
+            if not author_question and not author_recommendation:
+                analysis["intent"] = "discuss_work"
+            analysis["intent_confidence"] = "medium"
+        else:
+            analysis["target_kind"] = "unknown"
+        analysis["coherence_reason"] = "작성자 제목·본문의 대상과 이미지 OCR·요약의 대상 관계가 확인되지 않음"
+        analysis["reasoning"] = "작성자 원문의 주제를 유지하고 이미지의 독립 고유명은 별도 보조 증거로 보류함"
+        analysis["consistency_note"] = analysis["coherence_reason"]
+        analysis["title_body_consistency"] = None
+        analysis["search_suggestions"] = [
+            item for item in (analysis.get("search_suggestions") or [])
+            if isinstance(item, dict)
+            and not any(
+                self._semantic_seed_norm(title) in self._semantic_seed_norm(item.get("query"))
+                for title in image_titles if len(self._semantic_seed_norm(title)) >= 4
+            )
+        ]
+        analysis["title_novel_terms"] = [
+            term for term in (analysis.get("title_novel_terms") or [])
+            if not any(
+                self._semantic_seed_norm(term) == self._semantic_seed_norm(title)
+                for title in image_titles if len(self._semantic_seed_norm(title)) >= 4
+            )
+        ]
+        review = analysis.get("semantic_seed_review")
+        if isinstance(review, dict) and author_work_context:
+            review["is_specific_work_discussion"] = True
+            review["image_topic_relation_hold"] = True
+            if not author_question and not author_recommendation:
+                review["recommended_intent"] = "discuss_work"
+                review["recommended_target_kind"] = "work"
+            warnings = analysis.get("warnings")
+            if isinstance(warnings, list):
+                analysis["warnings"] = [
+                    warning for warning in warnings
+                    if warning != "semantic_seed_review_specific_work_denied"
+                ]
+        analysis["image_topic_relation"] = {
+            **relation, "guard_applied": True, "author_work_context": author_work_context,
+            "image_only_domain_evidence": image_only[:8],
+        }
+        return analysis
+
     def _apply_semantic_seed_review(
         self,
         analysis: Dict[str, Any],
@@ -795,7 +1156,17 @@ OUTPUT JSON:
         review = self._call_semantic_seed_review(analysis, post_json)
         if not isinstance(review, dict):
             return analysis
+        if type(review.get("is_specific_work_discussion")) is not bool:
+            print("[semantic_seed_review_invalid] " + json.dumps({
+                "post_id": post_json.get("post_id"),
+                "reason": "missing_or_non_boolean_specific_work_decision",
+                "field_present": "is_specific_work_discussion" in review,
+                "decision_type": type(review.get("is_specific_work_discussion")).__name__,
+            }, ensure_ascii=False, sort_keys=True), file=sys.stderr, flush=True)
+            return analysis
 
+        self._attach_source_bound_question_receipt(analysis, post_json, review)
+        self._attach_source_bound_recommendation_request(analysis, post_json, review)
         analysis["semantic_seed_review"] = {
             "post_intent": str(review.get("post_intent") or "")[:300],
             "content_interpretation": str(review.get("content_interpretation") or "")[:300],
@@ -946,7 +1317,10 @@ OUTPUT JSON:
                 analysis["semantic_seed_review"]["is_specific_work_discussion"] = False
         if not specific_work and not analysis.get("title_novel_terms"):
             recommended_intent = _decision(review.get("recommended_intent"))
-            if recommended_intent in {"express_opinion", "ask_question", "make_joke", "other"}:
+            if analysis.get("source_bound_recommendation_request") is True:
+                analysis["intent"] = "request_recommendation"
+                analysis["intent_confidence"] = "medium"
+            elif recommended_intent in {"express_opinion", "ask_question", "make_joke", "other"}:
                 analysis["intent"] = recommended_intent
                 analysis["intent_confidence"] = "medium"
             elif str(analysis.get("intent") or "").strip().lower() == "discuss_work":
@@ -959,7 +1333,14 @@ OUTPUT JSON:
             elif str(analysis.get("target_kind") or "").strip().lower() == "work":
                 analysis["target_kind"] = "unknown"
 
-            if not str(analysis.get("real_subject") or "").strip():
+            question_receipt = analysis.get("source_bound_question_receipt") or {}
+            if (
+                isinstance(question_receipt, dict)
+                and question_receipt.get("target_description")
+                and question_receipt.get("target_conflict") is not True
+            ):
+                analysis["real_subject"] = str(question_receipt["target_description"])[:300]
+            elif not str(analysis.get("real_subject") or "").strip():
                 analysis["real_subject"] = str(
                     review.get("content_interpretation")
                     or review.get("post_intent")
@@ -1003,6 +1384,10 @@ OUTPUT JSON:
             for item in (analysis.get("warnings") or [])
             if str(item or "").strip()
         ]
+        specific_work_confirmed = bool(
+            isinstance(semantic_review, dict)
+            and semantic_review.get("is_specific_work_discussion") is True
+        )
         review_allows_sanitize = bool(
             isinstance(semantic_review, dict)
             and semantic_review.get("is_specific_work_discussion") is False
@@ -1057,7 +1442,7 @@ OUTPUT JSON:
 
         surface_expression_context = bool(note_norms)
         character_like_terms: List[str] = []
-        if surface_expression_context:
+        if surface_expression_context and not specific_work_confirmed:
             next_terms: List[str] = []
             for term in kept_terms:
                 term_norm = _norm(term)
@@ -1131,7 +1516,7 @@ OUTPUT JSON:
                         note_norm and (note_norm in query_norm or query_norm in note_norm)
                         for note_norm in note_norms
                     )
-                    if generic_surface_probe or mentions_context_term or mentions_note:
+                    if (generic_surface_probe and not specific_work_confirmed) or mentions_context_term or mentions_note:
                         removed_suggestions.append(query)
                         continue
                     filtered_suggestions.append(suggestion)
@@ -1212,6 +1597,12 @@ OUTPUT JSON:
     ) -> Dict[str, str]:
         title = str((post_json or {}).get("title") or "").strip()
         content = " ".join(str(x or "") for x in ((post_json or {}).get("content") or []))
+        if not content:
+            content = " ".join(
+                str(item.get("text") or "")
+                for item in ((post_json or {}).get("image_evidence") or [])
+                if isinstance(item, dict)
+            )
         merged = f"{title} {content}".strip()
         merged_nospace = re.sub(r"\s+", "", merged)
         intent = str(analysis.get("intent") or "").strip().lower()
@@ -1263,13 +1654,85 @@ OUTPUT JSON:
         }
     
     def _build_post_json(self, post: Dict[str, Any], comments: List[str]) -> Dict[str, Any]:
-        """Build simplified post JSON for analysis."""
-        content_texts = []
-        for block in post.get("content_blocks", []):
-            if isinstance(block, dict) and block.get("text"):
-                content_texts.append(block["text"])
-            elif isinstance(block, str):
-                content_texts.append(block)
+        """Keep author words separate from derived image evidence."""
+        author_spans = author_text_spans(post)
+        content_texts = [span["text"] for span in author_spans if span["source"] == "author_body"]
+        quoted_evidence: List[Dict[str, Any]] = []
+        for index, block in enumerate(post.get("content_blocks") or []):
+            if not isinstance(block, dict):
+                continue
+            modality = str(block.get("type") or "text").strip().lower()
+            if modality not in {"text", "quote", "blockquote"}:
+                continue
+            quoted = block.get("is_quote") is True or block.get("quoted") is True or modality in {"quote", "blockquote"}
+            speaker = str(block.get("speaker") or "").strip()
+            if not quoted and speaker.lower() in {"", "author", "post_author"}:
+                continue
+            provenance = " ".join(
+                str(block.get(key) or "")
+                for key in ("source", "origin", "provenance", "generated_source")
+            ).lower()
+            if any(token in provenance for token in ("ocr", "vlm", "generated", "summary", "image", "search", "link_preview")):
+                continue
+            if any(block.get(key) for key in ("url", "image_url", "href", "src")):
+                continue
+            text = str(block.get("text") or block.get("content") or "")
+            if text.strip():
+                quoted_evidence.append({
+                    "text": text,
+                    "source": "post_quote" if quoted else "reported_speaker",
+                    "original_source": str(block.get("source") or block.get("origin") or ""),
+                    "speaker": speaker or "unknown_quoted_speaker",
+                    "modality": "quoted_text",
+                    "position": index,
+                })
+        image_evidence: List[Dict[str, Any]] = []
+        for index, item in enumerate(post.get("image_enrichment") or []):
+            if not isinstance(item, dict):
+                continue
+            try:
+                position = int(item.get("block_index"))
+            except (TypeError, ValueError):
+                position = index
+            image_fields = {
+                "source": "image_enrichment",
+                "speaker": "image",
+                "position": position,
+                "source_url": str(item.get("source_url") or "").strip(),
+                "promotion_eligible": item.get("promotion_eligible") is True,
+                "title_role": str(item.get("title_role") or "unknown").strip(),
+                "explicit_work_title": str(item.get("explicit_work_title") or "").strip()[:160],
+                "explicit_author_name": str(item.get("explicit_author_name") or "").strip()[:120],
+            }
+            before = len(image_evidence)
+            for field, modality in (("ocr_text", "ocr_text"), ("visual_summary", "image_summary")):
+                value = str(item.get(field) or "").strip()
+                if not value:
+                    continue
+                image_evidence.append({
+                    **image_fields,
+                    "text": value[:900],
+                    "modality": modality,
+                })
+            if len(image_evidence) == before:
+                image_evidence.append({**image_fields, "text": "", "modality": "image_metadata"})
+        if not image_evidence:
+            for index, block in enumerate(post.get("content_blocks") or []):
+                if not isinstance(block, dict):
+                    continue
+                modality = str(block.get("type") or "").strip().lower()
+                if modality not in {"ocr_text", "image_summary", "image"}:
+                    continue
+                image_evidence.append({
+                    "text": str(block.get("text") or "")[:900],
+                    "source": "content_block_image",
+                    "speaker": "image",
+                    "modality": modality,
+                    "position": index,
+                    "source_url": str(block.get("url") or block.get("image_url") or "").strip(),
+                    "promotion_eligible": False,
+                    "title_role": "unknown",
+                })
         
         result = {
             "post_id": post.get("post_id"),
@@ -1278,6 +1741,9 @@ OUTPUT JSON:
             "post_author": post.get("post_author") or post.get("author", ""),
             "author": post.get("author", ""),
             "content": content_texts,
+            "author_spans": author_spans[:16],
+            "quoted_evidence": quoted_evidence[:12],
+            "image_evidence": image_evidence[:12],
             "comments": comments[:15],  # More comments for better context
         }
         comment_context = post.get("comment_context_lines") or []
@@ -1289,6 +1755,7 @@ OUTPUT JSON:
         surface_notes = post.get("surface_paraphrase_notes") or []
         if surface_notes:
             result["surface_paraphrase_notes"] = surface_notes[:10]
+        result["image_topic_relation"] = self._image_topic_relation(result)
         return result
     
     def _call_llm(
@@ -1369,6 +1836,10 @@ OUTPUT JSON:
             ordered.extend(_tokens(t))
         for c in post_json.get("content") or []:
             ordered.extend(_tokens(str(c)))
+        if not post_json.get("content"):
+            for item in post_json.get("image_evidence") or []:
+                if isinstance(item, dict):
+                    ordered.extend(_tokens(str(item.get("text") or "")))
         for cm in (post_json.get("comments") or [])[:8]:
             ordered.extend(_tokens(str(cm)))
 

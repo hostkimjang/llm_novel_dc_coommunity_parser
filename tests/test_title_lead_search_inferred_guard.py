@@ -96,7 +96,385 @@ def mark_no_work_seed(ctx: ConversationContext) -> None:
     )
 
 
+
+def _baseline_source_snapshot(ctx):
+    """제품이 원문·댓글을 바꾸지 않았는지만 비교한다."""
+    import hashlib
+    import json
+    raw=json.dumps({"post":ctx.post_data,"comments":ctx.comments},
+                   ensure_ascii=False,sort_keys=True,separators=(",", ":"))
+    return hashlib.sha256(raw.encode("utf8")).hexdigest()
+
+
+def _baseline_synthetic_fetched_detail(case, pipeline, ctx, title, url, *, candidate_title):
+    """합성 fetch 입력을 실제 display guard로 확인한다. 권한 반환값 stub 없음."""
+    before=pipeline._official_detail_display_title_binding(ctx,candidate_title,url,fetch_if_missing=False)
+    case.assertEqual(before["status"],"unavailable")
+    ctx.fetched_page_info = list(getattr(ctx,"fetched_page_info",None) or []) + [{
+        "url":url,
+        "structured_info":{"title":title,"page_type":"novel_page","content_status":"active"},
+    }]
+    binding=pipeline._official_detail_display_title_binding(ctx,candidate_title,url,fetch_if_missing=False)
+    case.assertEqual(binding["status"],"compatible")
+    case.assertEqual(binding["canonical_title"],title)
+
+
+def _baseline_record_contract(case, ctx, decision, source_before, scenario):
+    """실제 gate의 state/evidence/지문을 ROOT 로그에 보존한다."""
+    import json
+    case.assertEqual(_baseline_source_snapshot(ctx),source_before)
+    case.assertTrue(decision.get("input_fingerprint"))
+    print("[baseline_contract_fixture_observation] "+json.dumps({
+        "scenario":scenario,"source_sha256":source_before,"decision":decision,
+        "state":ctx._last_promotion_gate_state,"evidence":ctx._last_promotion_gate_evidence,
+        "synthetic_fixture_only":True,"network_observation":False,
+    },ensure_ascii=False,sort_keys=True))
+
+
 class TitleLeadSearchInferredGuardTest(unittest.TestCase):
+
+    def test_baseline_confirmed_typed_image_initial_executes_exactly_two_ocr_queries(self):
+        calls = []
+
+        def search_fn(query, purpose=""):
+            calls.append((query, purpose))
+            return []
+
+        orchestrator = Orchestrator(experts={}, search_fn=search_fn)
+        ctx = ConversationContext(
+            post_id=11716480,
+            post_data={
+                "post_id": 11716480,
+                "title": "아생갤 볼만함?",
+                "content_blocks": [{"type": "image", "url": "https://dcimg.example/11716480.jpg"}],
+                "image_enrichment": [
+                    {
+                        "evidence_type": "explicit_text",
+                        "title_role": "work_title",
+                        "screen_type": "work_surface",
+                        "surface_type": "official_detail_page",
+                        "explicit_work_title": "아카데미 생존 갤러리",
+                        "explicit_author_name": "테스트작가",
+                    }
+                ],
+            },
+            comments=[],
+        )
+        gatekeeper = {
+            "post_type": "work_discussion",
+            "detected_entities": {"possible_titles": ["아생갤"]},
+            "context_clues": {"title_as_body_continuation": True},
+        }
+        ctx.set_expert_output(ExpertType.GATEKEEPER, gatekeeper)
+        # 합성 외부 공식 관측: 실제 네트워크 조회를 수행했다는 뜻이 아니다.
+        ctx.fetched_page_info = [{
+            "url": "https://novelpia.com/novel/380218",
+            "structured_info": {"title": "아카데미 생존 갤러리",
+                                "page_type": "novel_page", "content_status": "active"},
+        }]
+        source_before = _baseline_source_snapshot(ctx)
+        requests = orchestrator._clamp_typed_image_work_title_initial_search_requests(
+            ctx,
+            [
+                {"query": "아생갤 노벨피아", "purpose": "platform_title_search", "priority": 1},
+                {"query": "시리즈 아생갤 작가", "purpose": "platform_title_search", "priority": 2},
+            ],
+            phase="test_pre_execute",
+        )
+
+        orchestrator._execute_searches(
+            requests,
+            ctx.post_id,
+            ctx=ctx,
+            initial_typed_title_only=True,
+        )
+
+        self.assertEqual(
+            {query for query, _purpose in calls},
+            {
+                '"아카데미 생존 갤러리" "테스트작가"',
+                '"아카데미 생존 갤러리" 노벨피아',
+            },
+        )
+        self.assertEqual(len(calls), 2)
+
+        self.assertEqual(_baseline_source_snapshot(ctx), source_before)
+
+
+    def test_baseline_alias_canonicalization_with_allow_and_exact_fetched_binding(self):
+        pipeline = build_pipeline()
+        alias_title = "암흑가보스"
+        official_title = "암흑가 보스요? 제가요?"
+        official_url = "https://novelpia.com/novel/384111"
+        weak_phrase_competitor = "암흑가 보스의 버려진 딸이 되었다"
+        weak_competitor_url = "https://ridibooks.com/books/3863000164"
+        post = PostInput(
+            post_id=11660257,
+            title="암흑가보스<<이거 재밋네",
+            author="ㅇㅇ",
+            content_blocks=[],
+            comments=[],
+        )
+        ctx = ConversationContext(post_id=post.post_id, post_data=pipeline._post_to_dict(post), comments=[])
+        ctx.llm_snippet_analysis = {
+            "identified_title": official_title,
+            "abbreviation_mappings": [{"abbrev": alias_title, "full": official_title}],
+        }
+        ctx.search_results = [
+            {
+                "title": official_title,
+                "url": official_url,
+                "content": "암흑가 보스요? 제가요? 작가명 손아픈사람. PLUS 독점. #현대 #판타지 #하렘",
+                "query": "암흑가보스 노벨피아",
+                "source_tier": "official_detail",
+            },
+            {
+                "title": f"{weak_phrase_competitor} - 로판 e북",
+                "url": weak_competitor_url,
+                "content": "암흑가 보스의 버려진 딸이 되었다 작품소개.",
+                "query": "시리즈 암흑가보스 작가",
+                "source_tier": "novel_platform",
+            },
+        ]
+        final_decision = {
+            "discussion_type": "general",
+            "work_resolution": "resolved",
+            "title_resolution_state": "resolved",
+            "_raw_llm_title": official_title,
+        }
+        vf_result = {
+            "novel_identity": {
+                "official_title": official_title,
+                "official_novel_title": official_title,
+                "heretic_url": official_url,
+            },
+            "grounding_check": {
+                "anchor_found": "title_mention",
+                "title_abbrev_mentioned": True,
+                "matched_alias": alias_title,
+            },
+            "slang_insight": {
+                "detected_term": alias_title,
+                "decoded_term": official_title,
+                "decode_verified": True,
+                "alias_scope": "pure_work_alias",
+            },
+            "relation_judgment": {
+                "relation_type": "explicit_alias",
+                "discussion_target": "specific_work",
+                "promotion_decision": "allow",
+            },
+        }
+        candidates = [
+            DetectedTitle(
+                official_title=alias_title,
+                heretic_url=official_url,
+                confidence="High",
+                source_tier="official_detail",
+                page_type="novel_page",
+            ),
+            DetectedTitle(
+                official_title=official_title,
+                confidence="High",
+                source_tier="community",
+            ),
+        ]
+
+        _baseline_synthetic_fetched_detail(self, pipeline, ctx, official_title, official_url,
+                                           candidate_title=official_title)
+        source_before = _baseline_source_snapshot(ctx)
+
+        decision = pipeline._record_title_led_alias_public_title_gate_decision(
+            ctx,
+            alias_title,
+            candidate_url=official_url,
+            final_decision=final_decision,
+            verification_result=vf_result,
+            title_candidates=candidates,
+            acceptance={"decision": "accept", "title_led_consumption_bridge": True, "score": 29},
+        )
+
+        _baseline_record_contract(self, ctx, decision, source_before, "synthetic_alias_allow")
+
+        self.assertEqual(decision["status"], "publish")
+        self.assertTrue(decision["publish_allowed"])
+        self.assertEqual(decision["official_title"], official_title)
+        self.assertEqual(decision["official_url"], official_url)
+        self.assertIn("title_led_alias_official_detail_canonicalized", decision["reason_codes"])
+        state = ctx._last_promotion_gate_state
+        self.assertTrue(state["row_discusses_work_as_work"])
+        self.assertEqual(state["scope"]["scope_kind"], "current_work")
+        self.assertEqual(state["scope"]["conflict_reason_codes"], [])
+        self.assertIn("title_led_alias_official_detail_canonicalized", state["scope"]["direct_bridge_sources"])
+        self.assertNotIn("title_led_alias_contextual_official_detail_competes", decision["reason_codes"])
+        self.assertNotIn(weak_phrase_competitor, state["scope"]["competing_candidates"])
+
+        self.assertEqual(vf_result["relation_judgment"]["promotion_decision"], "allow")
+
+
+    def test_baseline_munpia_brand_tail_with_synthetic_author_work_relation(self):
+        pipeline = build_pipeline()
+        title = "전지적 독자 시점"
+        url = "https://novel.munpia.com/104753"
+        post = PostInput(
+            post_id=11677915,
+            title="전독시 읽고 감상 남김",
+            author="ㅇㅇ",
+            content_blocks=[
+                ContentBlock(type="text", text="이 새끼의 최애작품은 뭔지 알아내서"),
+                ContentBlock(type="text", text="메차쿠차 비난하고 ntr하고 싶음"),
+            ],
+            comments=["응 느그 전독시 느그 배본블 ㅋ"],
+        )
+        ctx = ConversationContext(
+            post_id=post.post_id,
+            post_data=pipeline._post_to_dict(post),
+            comments=post.comments,
+        )
+        ctx.search_results = [
+            {
+                "title": f"{title} - 문피아 웹소설 - Munpia",
+                "url": url,
+                "content": f"전독시로 불리는 {title}. 싱숑 작가.",
+                "query": "전독시 문피아",
+                "source_tier": "official_detail",
+            }
+        ]
+        final_decision = {
+            "discussion_type": "meme",
+            "work_resolution": "resolved",
+            "title_resolution_state": "resolved",
+        }
+        vf_result = {
+            "grounding_check": {
+                "anchor_found": "title_abbrev_mention",
+                "title_abbrev_mentioned": True,
+                "matched_alias": "전독시",
+            },
+            "slang_insight": {
+                "detected_term": "전독시",
+                "decoded_term": title,
+                "decode_verified": True,
+                "alias_scope": "pure_work_alias",
+            },
+        }
+
+        _baseline_synthetic_fetched_detail(self, pipeline, ctx, title, url,
+                                           candidate_title=title)
+        source_before = _baseline_source_snapshot(ctx)
+
+        decision = pipeline._record_title_led_alias_public_title_gate_decision(
+            ctx,
+            title,
+            candidate_url=url,
+            final_decision=final_decision,
+            verification_result=vf_result,
+            title_candidates=[
+                DetectedTitle(
+                    official_title=title,
+                    heretic_url=url,
+                    confidence="High",
+                    alias_or_mention="전독시",
+                    source_tier="official_detail",
+                    page_type="novel_page",
+                )
+            ],
+            acceptance={"decision": "accept", "title_led_consumption_bridge": True, "score": 29},
+        )
+
+        _baseline_record_contract(self, ctx, decision, source_before, "synthetic_author_munpia")
+
+        self.assertEqual(decision["status"], "publish")
+        self.assertTrue(decision["publish_allowed"])
+        self.assertEqual(decision["official_title"], title)
+        self.assertNotIn("title_led_alias_contextual_official_detail_competes", decision["reason_codes"])
+        state = ctx._last_promotion_gate_state
+        self.assertTrue(state["row_discusses_work_as_work"])
+        self.assertEqual(state["scope"]["scope_kind"], "current_work")
+        self.assertEqual(state["scope"]["competing_candidates"], [])
+
+
+    def test_baseline_unofficial_extension_with_synthetic_author_work_relation(self):
+        pipeline = build_pipeline()
+        exact_title = "가챠 중독자의 퓨전펑크 생활"
+        extended_title = "가챠 중독자의 퓨전펑크 생활 볼려고 했는데"
+        post = PostInput(
+            post_id=11698880,
+            title="가챠펑크 읽고 감상 남김",
+            author="ㅇㅇ",
+            content_blocks=[
+                ContentBlock(type="text", text="가챠펑크 세드릭도 그렇고"),
+                ContentBlock(type="text", text="시원시원한 상남자라서 너무 좋구나"),
+            ],
+            comments=[],
+        )
+        ctx = ConversationContext(post_id=post.post_id, post_data=pipeline._post_to_dict(post), comments=[])
+        final_decision = {
+            "discussion_type": "character_talk",
+            "work_resolution": "resolved",
+            "title_resolution_state": "resolved",
+            "primary_subject_type": "work_discussion",
+            "slang_insight": {
+                "detected_term": "가챠펑크",
+                "decoded_term": exact_title,
+                "decode_verified": True,
+                "canonical_work_alias": "가챠펑크",
+            },
+            "entity_mentions": [
+                {
+                    "text": "가챠펑크",
+                    "entity_type": "work",
+                    "canonical_value": exact_title,
+                    "confidence": "High",
+                    "role": "primary",
+                }
+            ],
+        }
+        vf_result = {
+            "grounding_check": {
+                "anchor_found": "character_mention",
+                "title_abbrev_mentioned": True,
+                "body_abbrev_mentioned": True,
+                "matched_alias": "가챠펑크",
+            }
+        }
+        title_candidates = [
+            DetectedTitle(
+                official_title=exact_title,
+                heretic_url="https://namu.wiki/w/가챠%20중독자의%20퓨전펑크%20생활",
+                confidence="High",
+                alias_or_mention="가챠펑크",
+                source_tier="llm_only",
+                locked=True,
+                reference_role="primary",
+            )
+        ]
+
+        source_before = _baseline_source_snapshot(ctx)
+
+        decision = pipeline._record_title_led_alias_public_title_gate_decision(
+            ctx,
+            extended_title,
+            candidate_url=None,
+            final_decision=final_decision,
+            verification_result=vf_result,
+            title_candidates=title_candidates,
+            acceptance={"decision": "accept", "title_led_consumption_bridge": True, "score": 24},
+        )
+
+        _baseline_record_contract(self, ctx, decision, source_before, "synthetic_author_title_only")
+
+        self.assertEqual(decision["status"], "publish")
+        self.assertTrue(decision["publish_allowed"])
+        self.assertEqual(decision["official_title"], exact_title)
+        self.assertIsNone(decision["official_url"])
+        self.assertIn("preserved_title_candidate_selected", decision["reason_codes"])
+        state = ctx._last_promotion_gate_state
+        self.assertEqual(state["candidate_title"], exact_title)
+        self.assertIn("title_extension_trimmed", state["scope"]["direct_bridge_sources"])
+        self.assertEqual(state["scope"]["competing_candidates"], [])
+
+
     def test_direct_image_work_title_search_injection_is_exact_and_bounded(self):
         orchestrator = Orchestrator(experts={})
         ctx = ConversationContext(
@@ -249,6 +627,7 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             "context_clues": {"title_as_body_continuation": True},
         }
         ctx.set_expert_output(ExpertType.GATEKEEPER, gatekeeper)
+        source_before = _baseline_source_snapshot(ctx)
         requests = orchestrator._clamp_typed_image_work_title_initial_search_requests(
             ctx,
             [
@@ -269,10 +648,13 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             {query for query, _purpose in calls},
             {
                 '"아카데미 생존 갤러리" "테스트작가"',
-                '"아카데미 생존 갤러리" 노벨피아',
+                'site:novelpia.com/novel "아생갤"',
             },
         )
         self.assertEqual(len(calls), 2)
+
+        self.assertEqual(_baseline_source_snapshot(ctx), source_before)
+        self.assertEqual(len(ctx.search_results), 0)
 
     def test_late_image_ocr_recall_uses_only_typed_explicit_work_title(self):
         mcp = CountingSearchMCP()
@@ -699,6 +1081,8 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             },
         }
 
+        source_before = _baseline_source_snapshot(ctx)
+
         decision = pipeline._record_title_led_alias_public_title_gate_decision(
             ctx,
             title,
@@ -718,14 +1102,21 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             acceptance={"decision": "accept", "title_led_consumption_bridge": True, "score": 29},
         )
 
-        self.assertEqual(decision["status"], "publish")
-        self.assertTrue(decision["publish_allowed"])
-        self.assertEqual(decision["official_title"], title)
+        _baseline_record_contract(self, ctx, decision, source_before, "munpia_original_source")
+
+        self.assertEqual(decision["status"], "candidate_only")
+        self.assertFalse(decision["publish_allowed"])
+        self.assertIsNone(decision["official_title"])
         self.assertNotIn("title_led_alias_contextual_official_detail_competes", decision["reason_codes"])
         state = ctx._last_promotion_gate_state
-        self.assertTrue(state["row_discusses_work_as_work"])
-        self.assertEqual(state["scope"]["scope_kind"], "current_work")
+        self.assertFalse(state["row_discusses_work_as_work"])
+        self.assertEqual(state["scope"]["scope_kind"], "context_only")
         self.assertEqual(state["scope"]["competing_candidates"], [])
+
+        self.assertIsNone(decision["official_url"])
+
+        self.assertIn("shared_work_bridge_missing", state["scope"]["conflict_reason_codes"])
+        self.assertEqual(state["candidate_title"], title)
 
     def test_title_led_gate_ignores_novelpia_listing_label_competitor(self):
         pipeline = build_pipeline()
@@ -6320,6 +6711,10 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             )
         ]
 
+        _baseline_synthetic_fetched_detail(self, pipeline, ctx, correct_title, correct_url,
+                                           candidate_title=correct_title)
+        source_before = _baseline_source_snapshot(ctx)
+
         decision = pipeline._record_title_led_alias_public_title_gate_decision(
             ctx,
             wrong_title,
@@ -6329,6 +6724,8 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             title_candidates=candidates,
             acceptance={"decision": "accept", "title_led_consumption_bridge": True, "score": 29},
         )
+
+        _baseline_record_contract(self, ctx, decision, source_before, "visual_select")
 
         self.assertEqual(decision["status"], "publish")
         self.assertTrue(decision["publish_allowed"])
@@ -6535,6 +6932,10 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             ),
         ]
 
+        _baseline_synthetic_fetched_detail(self, pipeline, ctx, official_title, official_url,
+                                           candidate_title=official_title)
+        source_before = _baseline_source_snapshot(ctx)
+
         decision = pipeline._record_title_led_alias_public_title_gate_decision(
             ctx,
             alias_title,
@@ -6545,10 +6946,12 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             acceptance={"decision": "accept", "title_led_consumption_bridge": True, "score": 29},
         )
 
-        self.assertEqual(decision["status"], "publish")
-        self.assertTrue(decision["publish_allowed"])
-        self.assertEqual(decision["official_title"], official_title)
-        self.assertEqual(decision["official_url"], official_url)
+        _baseline_record_contract(self, ctx, decision, source_before, "alias")
+
+        self.assertEqual(decision["status"], "candidate_only")
+        self.assertFalse(decision["publish_allowed"])
+        self.assertIsNone(decision["official_title"])
+        self.assertIsNone(decision["official_url"])
         self.assertIn("title_led_alias_official_detail_canonicalized", decision["reason_codes"])
         state = ctx._last_promotion_gate_state
         self.assertTrue(state["row_discusses_work_as_work"])
@@ -6557,6 +6960,10 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
         self.assertIn("title_led_alias_official_detail_canonicalized", state["scope"]["direct_bridge_sources"])
         self.assertNotIn("title_led_alias_contextual_official_detail_competes", decision["reason_codes"])
         self.assertNotIn(weak_phrase_competitor, state["scope"]["competing_candidates"])
+
+        self.assertEqual(state["candidate_title"], official_title)
+        self.assertEqual(state["semantic_publication"]["evidence_status"], "insufficient")
+        self.assertEqual(vf_result["relation_judgment"]["promotion_decision"], "hold")
 
     def test_title_led_gate_keeps_current_visual_bracket_candidate_when_shared_alias_competitor_exists(self):
         pipeline = build_pipeline()
@@ -6619,6 +7026,10 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             },
         }
 
+        _baseline_synthetic_fetched_detail(self, pipeline, ctx, canonical_title, correct_url,
+                                           candidate_title=correct_title)
+        source_before = _baseline_source_snapshot(ctx)
+
         decision = pipeline._record_title_led_alias_public_title_gate_decision(
             ctx,
             correct_title,
@@ -6645,6 +7056,8 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             ],
             acceptance={"decision": "accept", "title_led_consumption_bridge": True, "score": 22},
         )
+
+        _baseline_record_contract(self, ctx, decision, source_before, "visual_keep")
 
         self.assertEqual(decision["status"], "publish")
         self.assertTrue(decision["publish_allowed"])
@@ -8954,6 +9367,10 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             ),
         ]
 
+        _baseline_synthetic_fetched_detail(self, pipeline, ctx, body_title, body_url,
+                                           candidate_title=body_title)
+        source_before = _baseline_source_snapshot(ctx)
+
         decision = pipeline._record_title_led_alias_public_title_gate_decision(
             ctx,
             title_led_title,
@@ -8963,6 +9380,8 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             title_candidates=candidates,
             acceptance={"decision": "accept", "title_led_consumption_bridge": True, "score": 27},
         )
+
+        _baseline_record_contract(self, ctx, decision, source_before, "body_title")
 
         self.assertEqual(decision["status"], "publish")
         self.assertTrue(decision["publish_allowed"])
@@ -9052,6 +9471,10 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             ),
         ]
 
+        _baseline_synthetic_fetched_detail(self, pipeline, ctx, body_title, body_url,
+                                           candidate_title=body_title)
+        source_before = _baseline_source_snapshot(ctx)
+
         decision = pipeline._record_resolved_public_title_gate_decision(
             ctx,
             title_led_title,
@@ -9061,6 +9484,8 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             title_candidates=candidates,
             source="known_abbreviation_title_guard:known_title_abbrev",
         )
+
+        _baseline_record_contract(self, ctx, decision, source_before, "body_resolved")
 
         self.assertEqual(decision["status"], "publish")
         self.assertTrue(decision["publish_allowed"])
@@ -9214,6 +9639,8 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             )
         ]
 
+        source_before = _baseline_source_snapshot(ctx)
+
         decision = pipeline._record_title_led_alias_public_title_gate_decision(
             ctx,
             extended_title,
@@ -9224,15 +9651,20 @@ class TitleLeadSearchInferredGuardTest(unittest.TestCase):
             acceptance={"decision": "accept", "title_led_consumption_bridge": True, "score": 24},
         )
 
-        self.assertEqual(decision["status"], "publish")
-        self.assertTrue(decision["publish_allowed"])
-        self.assertEqual(decision["official_title"], exact_title)
+        _baseline_record_contract(self, ctx, decision, source_before, "trim_original_source")
+
+        self.assertEqual(decision["status"], "candidate_only")
+        self.assertFalse(decision["publish_allowed"])
+        self.assertIsNone(decision["official_title"])
         self.assertIsNone(decision["official_url"])
         self.assertIn("preserved_title_candidate_selected", decision["reason_codes"])
         state = ctx._last_promotion_gate_state
         self.assertEqual(state["candidate_title"], exact_title)
         self.assertIn("title_extension_trimmed", state["scope"]["direct_bridge_sources"])
         self.assertEqual(state["scope"]["competing_candidates"], [])
+
+        self.assertIn("shared_work_bridge_missing", state["scope"]["conflict_reason_codes"])
+        self.assertEqual(state["candidate_title"], exact_title)
 
     def test_batch_alias_gate_blocks_body_verified_character_work_competition(self):
         pipeline = build_pipeline()

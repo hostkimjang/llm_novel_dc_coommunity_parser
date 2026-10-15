@@ -16,6 +16,19 @@ from typing import Any, Iterable, Mapping, Sequence
 
 SCHEMA_VERSION = "calibration-actual-readback-v2"
 PROBABILITY_SCALE = 1_000_000
+_BOOTSTRAP_GATED_METRICS = (
+    "top_label_accuracy",
+    "brier",
+    "log_loss",
+    "ece",
+    "selective_risk",
+    "aurc",
+)
+_BOOTSTRAP_REPORT_METRICS = (
+    *_BOOTSTRAP_GATED_METRICS,
+    "top_label_accuracy_all_rows",
+    "top_label_accuracy_non_abstain",
+)
 
 
 def canonical_bytes(value: Any) -> bytes:
@@ -305,7 +318,15 @@ def cluster_bootstrap(rows: Sequence[Mapping[str, Any]], *, seed: int, replicate
     if top_label_accuracy_denominator not in {"ALL_FROZEN_ROWS", "NON_ABSTAIN_ROWS"}:
         raise ValueError("unsupported top_label_accuracy_denominator")
     if not rows or min_group_count <= 0:
-        return {"estimable": False, "reason": "EMPTY_ROWS_OR_INVALID_GROUP_LIMIT", "intervals": {}}
+        return {
+            "estimable": False,
+            "reason": "EMPTY_ROWS_OR_INVALID_GROUP_LIMIT",
+            "replicates": replicates,
+            "group_count": 0,
+            "min_group_count": min_group_count,
+            "interval_method": "CLUSTER_BOOTSTRAP_PERCENTILE",
+            "intervals": {},
+        }
     def validate_metric_rows(values: Sequence[Mapping[str, Any]], label: str) -> None:
         ids = [r.get("example_id") for r in values]
         if (
@@ -341,32 +362,62 @@ def cluster_bootstrap(rows: Sequence[Mapping[str, Any]], *, seed: int, replicate
             raise ValueError("missing bootstrap group")
         groups.setdefault(group, []).append(row)
     if len(groups) < min_group_count or replicates < 100 or not 0 < alpha < 1:
-        return {"estimable": False, "reason": "INSUFFICIENT_GROUPS_OR_REPLICATES", "intervals": {}}
+        return {
+            "estimable": False,
+            "reason": "INSUFFICIENT_GROUPS_OR_REPLICATES",
+            "replicates": replicates,
+            "group_count": len(groups),
+            "min_group_count": min_group_count,
+            "interval_method": "CLUSTER_BOOTSTRAP_PERCENTILE",
+            "intervals": {},
+        }
     if baseline_rows is not None:
         validate_metric_rows(baseline_rows, "baseline")
         by_id = {str(r.get("example_id")): r for r in baseline_rows}
         if len(by_id) != len(baseline_rows) or set(by_id) != {str(r.get("example_id")) for r in rows} or any(str(b.get("group")) != str(r.get("group")) for r in rows for b in [by_id.get(str(r.get("example_id")), {})]):
-            return {"estimable": False, "reason": "BASELINE_ROW_MISMATCH", "intervals": {}}
+            return {
+                "estimable": False,
+                "reason": "BASELINE_ROW_MISMATCH",
+                "replicates": replicates,
+                "group_count": len(groups),
+                "min_group_count": min_group_count,
+                "interval_method": "CLUSTER_BOOTSTRAP_PERCENTILE",
+                "intervals": {},
+            }
         if sum(not bool(r["abstain"]) for r in baseline_rows) != sum(not bool(r["abstain"]) for r in rows):
-            return {"estimable": False, "reason": "BASELINE_COVERAGE_MISMATCH", "intervals": {}}
+            return {
+                "estimable": False,
+                "reason": "BASELINE_COVERAGE_MISMATCH",
+                "replicates": replicates,
+                "group_count": len(groups),
+                "min_group_count": min_group_count,
+                "interval_method": "CLUSTER_BOOTSTRAP_PERCENTILE",
+                "intervals": {},
+            }
     rng = random.Random(seed)
     keys = sorted(groups)
-    samples: dict[str, list[float]] = {k: [] for k in ("top_label_accuracy", "brier", "log_loss", "ece", "selective_risk", "aurc")}
-    delta_values: dict[str, list[float]] = {k: [] for k in ("top_label_accuracy", "brier", "log_loss", "ece", "selective_risk", "aurc")}
+    samples: dict[str, list[float]] = {
+        key: [] for key in _BOOTSTRAP_REPORT_METRICS
+    }
+    delta_values: dict[str, list[float]] = {
+        key: [] for key in _BOOTSTRAP_REPORT_METRICS
+    }
     def calc(sample: list[Mapping[str, Any]]) -> dict[str, float]:
         n = len(sample)
         if any(not isinstance(r.get("correct"), bool) or not isinstance(r.get("abstain", False), bool) for r in sample): raise ValueError("correct/abstain must be bool")
         if any(not isinstance(r.get("example_id"), str) or not r.get("example_id") or not isinstance(r.get("group"), str) or not r.get("group") for r in sample): raise ValueError("invalid row identity")
         if any(_finite(r["confidence"]) < 0 or _finite(r["confidence"]) > 1 or _finite(r["risk_score"]) < 0 or _finite(r["risk_score"]) > 1 or _finite(r["brier"]) < 0 or _finite(r["log_loss"]) < 0 for r in sample): raise ValueError("metric out of bounds")
-        accuracy_rows = (
-            sample
-            if top_label_accuracy_denominator == "ALL_FROZEN_ROWS"
-            else [r for r in sample if not bool(r["abstain"])]
+        covered = [r for r in sample if not bool(r["abstain"])]
+        all_rows_accuracy = sum(bool(r["correct"]) for r in sample) / n
+        non_abstain_accuracy = (
+            sum(bool(r["correct"]) for r in covered) / len(covered)
+            if covered
+            else float("nan")
         )
         acc = (
-            sum(bool(r["correct"]) for r in accuracy_rows) / len(accuracy_rows)
-            if accuracy_rows
-            else float("nan")
+            all_rows_accuracy
+            if top_label_accuracy_denominator == "ALL_FROZEN_ROWS"
+            else non_abstain_accuracy
         )
         brier = sum(_finite(r["brier"]) for r in sample) / n
         loss = sum(_finite(r["log_loss"]) for r in sample) / n
@@ -374,13 +425,21 @@ def cluster_bootstrap(rows: Sequence[Mapping[str, Any]], *, seed: int, replicate
         for left, right in zip(bins, bins[1:]):
             members = [r for r in sample if left <= _finite(r["confidence"]) < right or (_finite(r["confidence"]) == 1 and right == 1)]
             if members: ece += len(members) / n * abs(sum(_finite(r["confidence"]) for r in members) / len(members) - sum(bool(r["correct"]) for r in members) / len(members))
-        covered = [r for r in sample if not bool(r.get("abstain", False))]
         risk = sum(not bool(r["correct"]) for r in covered) / len(covered) if covered else float("nan")
         ranked = sorted(sample, key=lambda r: (_finite(r.get("risk_score", 0.0)), str(r.get("example_id"))))
         errors = 0; curve = []
         for i, r in enumerate(ranked, 1):
             errors += int(not bool(r["correct"])); curve.append(errors / i)
-        return {"top_label_accuracy": acc, "brier": brier, "log_loss": loss, "ece": ece, "selective_risk": risk, "aurc": sum(curve) / n}
+        return {
+            "top_label_accuracy": acc,
+            "top_label_accuracy_all_rows": all_rows_accuracy,
+            "top_label_accuracy_non_abstain": non_abstain_accuracy,
+            "brier": brier,
+            "log_loss": loss,
+            "ece": ece,
+            "selective_risk": risk,
+            "aurc": sum(curve) / n,
+        }
     for _ in range(replicates):
         sample = [row for key in rng.choices(keys, k=len(keys)) for row in groups[key]]
         values = calc(sample)
@@ -398,15 +457,32 @@ def cluster_bootstrap(rows: Sequence[Mapping[str, Any]], *, seed: int, replicate
         values.sort(); return {"value": point_value, "bootstrap_mean": statistics.fmean(values), "lower": values[int(qlo * (len(values)-1))], "upper": values[int(qhi * (len(values)-1))], "estimable": True}
     point = calc(list(rows))
     intervals = {k: interval(v, point[k]) for k, v in samples.items()}
-    all_estimable = all(item["estimable"] for item in intervals.values()) and math.isfinite(point["selective_risk"])
-    result = {"estimable": all_estimable, "seed": seed, "replicates": replicates, "group_count": len(groups), "alpha": alpha, "ece_bin_edges": list(edges), "top_label_accuracy_denominator": top_label_accuracy_denominator, "point_estimate": point, "interval_method": "CLUSTER_BOOTSTRAP_PERCENTILE", "intervals": intervals}
+    all_estimable = all(
+        intervals[key]["estimable"] for key in _BOOTSTRAP_GATED_METRICS
+    ) and math.isfinite(point["selective_risk"])
+    result = {
+        "estimable": all_estimable,
+        "seed": seed,
+        "replicates": replicates,
+        "group_count": len(groups),
+        "min_group_count": min_group_count,
+        "alpha": alpha,
+        "ece_bin_edges": list(edges),
+        "top_label_accuracy_denominator": top_label_accuracy_denominator,
+        "point_estimate": point,
+        "interval_method": "CLUSTER_BOOTSTRAP_PERCENTILE",
+        "intervals": intervals,
+    }
     if baseline_rows is not None:
         baseline_point = calc(list(baseline_rows))
         paired_point = {key: point[key] - baseline_point[key] for key in delta_values}
         result["baseline_point_estimate"] = baseline_point
         result["paired_point_estimate"] = paired_point
         result["paired_deltas"] = {key: interval(values, paired_point[key]) for key, values in delta_values.items()}
-        result["estimable"] = result["estimable"] and all(item["estimable"] for item in result["paired_deltas"].values())
+        result["estimable"] = result["estimable"] and all(
+            result["paired_deltas"][key]["estimable"]
+            for key in _BOOTSTRAP_GATED_METRICS
+        )
     return result
 
 

@@ -58,6 +58,19 @@ _ATTEMPT_LOCAL_RUN_META_KEYS = frozenset(
         "semantic_review_router_receipt",
         "semantic_recovery_plan_receipt",
         "fresh375_run_binding_token",
+        "execution_config",
+        "source_context_diagnostics",
+        "candidate_retrieval_shadow",
+        "candidate_reranker_shadow",
+        "candidate_reranker_capture",
+        "candidate_calibration_shadow",
+        "candidate_reranker_inference",
+        "candidate_inference_capture",
+        "candidate_reranker_semantics",
+        "candidate_reranker_semantics_capture",
+        "paired_execution_observation",
+        "paired_execution_runtime_fields",
+        "community_knowledge_readback",
     }
 )
 

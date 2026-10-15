@@ -180,6 +180,19 @@ def render_korean_report(report: Mapping[str, Any]) -> str:
         ]
     )
     lines.extend(f"- {item}" for item in report["limitations"])
+    protocol = report.get("execution_protocol")
+    if isinstance(protocol, Mapping):
+        lines.extend([
+            "", ("## 명시적 v4 병렬12 저부하 관측"
+                 if protocol["run_spec_schema_version"] == "paired-pipeline-measurement-runspec-v4"
+                 else "## 명시적 v3 저부하 관측"), "",
+            f"- 실행 프로필: `{protocol['profile']}`, 요청/유효 병렬도: `{protocol['requested_parallel']}/{protocol['effective_parallel']}`",
+            f"- 정책 raw SHA: `{protocol['policy_binding']['file_sha256']}`",
+            f"- 정책 self SHA: `{protocol['policy_binding']['policy_sha256']}`",
+            f"- 관측 범위: `{protocol['observation_scope']}`, arm별 행: `{protocol['observed_row_count_per_arm']}`",
+            f"- 시작·종료 자원/설정 검산: `{gates['low_load_policy_and_start_end_observations']}`",
+            "- 두 시점의 관측은 실행 중 모든 순간이나 실제 품질·금액 비용의 증명이 아니다.",
+        ])
     lines.extend(
         [
             "- 현재 상태는 `REVIEW-LOCKED`, `full_scan_approval=false`다.",
@@ -231,6 +244,8 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--source-manifest")
     parser.add_argument("--pair-id")
     parser.add_argument("--slang-access-mode", choices=("OFF", "READ_ONLY"), default="OFF")
+    parser.add_argument("--run-spec-schema", choices=("paired-pipeline-measurement-runspec-v1", "paired-pipeline-measurement-runspec-v2", "paired-pipeline-measurement-runspec-v3", "paired-pipeline-measurement-runspec-v4"), default="paired-pipeline-measurement-runspec-v1")
+    parser.add_argument("--execution-policy", help="v3/v4에 필수인 사전 고정 저부하 정책 JSON")
     parser.add_argument("--run-spec")
     parser.add_argument("--before-manifest")
     parser.add_argument("--after-manifest")
@@ -259,6 +274,8 @@ def main() -> None:
             source_manifest_path=args.source_manifest,
             pair_id=args.pair_id,
             slang_access_mode=args.slang_access_mode,
+            run_spec_schema_version=args.run_spec_schema,
+            execution_policy_path=args.execution_policy,
         )
         output = Path(args.freeze_run_spec).resolve()
         _exclusive_write_run_spec(output, spec)

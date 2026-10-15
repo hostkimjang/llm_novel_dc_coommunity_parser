@@ -1,0 +1,698 @@
+{
+  "schema_version": "source65_builder_partial_context_v1",
+  "scope": "PARTIAL_SAVED_EVIDENCE_PROJECTION_NOT_RUNTIME_CONTEXT_CAPTURE",
+  "run_id": "20261013_181711_146907",
+  "publication_scope_id": "c4b9d6d290ef318d58a68b1243790dc00cd90cb17d8508c01b08aca7dce7f001",
+  "input_index1": 65,
+  "post_id": 8952048,
+  "source_canonical_sha256": "181153f95322cdd9b846829f2e13cf14985f3be410a8fff116913dbcc17c4aed",
+  "result_canonical_sha256": "081143f15431357b7bc0e6202c55fe4809993f15730973f6b9365fc3da4ce3bc",
+  "source_post": {
+    "author": "ㅇㅇ",
+    "content_blocks": [
+      {
+        "type": "image",
+        "url": "https://dcimg1.dcinside.com/viewimage.php?id=2ab8de34e0dc37b06bb3&no=24b0d769e1d32ca73ce981fa11d0283174e253ba7e9967bde184fb606775bfb8240fa4f1abde33be2d56e9cce1bdafc912b2a5e90c232dd75bb803cea34ff17f1eae9738ab76b3b5332b62d4044e4de43e2c32a2619e8b12f69f9a34ab34b3be7f92eb517e66dd96"
+      },
+      {
+        "text": "양산형 초절정들?",
+        "type": "text"
+      }
+    ],
+    "created_at": "2024-07-09 16:47:34",
+    "gallery_id": "genrenovel",
+    "page_no": 49710,
+    "post_id": 8952048,
+    "title": "천산에서 유진광 눈 멀게 할 애가 누가 있나",
+    "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=8952048"
+  },
+  "source_comments": [],
+  "saved_expert_outputs_in_order": [
+    {
+      "expert": "gatekeeper",
+      "excerpt_line1": 120,
+      "worker_line1": 6534,
+      "parsed_json_canonical_sha256": "38c6957855d1c6b914788663b89b9f2f935e2d843e1b50c521df02ed93ff5f6e",
+      "value": {
+        "is_noise": true,
+        "noise_reason": "이미지 전용 게시글 (이미지 2개, 텍스트 9자) - 소설 작품 논의 불가",
+        "post_type": "image_post",
+        "detected_entities": {
+          "possible_titles": [
+            "천산",
+            "유진광"
+          ],
+          "possible_authors": [],
+          "possible_characters": [
+            "유진광"
+          ],
+          "platforms_mentioned": []
+        },
+        "key_terms": [
+          "천산",
+          "유진광",
+          "양산형 초절정"
+        ],
+        "context_clues": {
+          "has_url_in_comments": false,
+          "has_specific_names": true,
+          "is_asking_recommendation": false,
+          "is_spoiler_discussion": false,
+          "title_as_body_continuation": true,
+          "title_body_joined_text": "천산에서 유진광 눈 멀게 할 애가 누가 있나 [이미지 OCR] /* 텍스트 없음 */ 양산형 초절정들?",
+          "title_body_first_line": "[이미지 OCR] /* 텍스트 없음 */"
+        },
+        "search_requests": [
+          {
+            "query": "천산 유진광 웹소설",
+            "purpose": "official_title_verify",
+            "priority": 1
+          },
+          {
+            "query": "유진광 캐릭터 웹소설",
+            "purpose": "character_verify",
+            "priority": 1
+          },
+          {
+            "query": "천산 유진광 리뷰",
+            "purpose": "title_search_community",
+            "priority": 1
+          },
+          {
+            "query": "양산형 초절정 웹소설",
+            "purpose": "term_definition",
+            "priority": 2
+          }
+        ],
+        "confidence": "medium",
+        "notes": "제목의 '천산'과 '유진광'이 특정 작품의 배경 또는 캐릭터명일 가능성이 매우 높음. 본문의 '양산형 초절정'은 해당 작품의 전개나 설정을 비판하는 표현으로 보임. '유진광'이 캐릭터 이름인지, 혹은 작품의 일부인지 확인하기 위해 검색이 필요함."
+      }
+    },
+    {
+      "expert": "discourse",
+      "excerpt_line1": 311,
+      "worker_line1": 6725,
+      "parsed_json_canonical_sha256": "4e4f8bd7b61d2045697aca28d159853b9fea10ca767175ff98832146922a147d",
+      "value": {
+        "discourse_analysis": {
+          "primary_domain": "novel_literature",
+          "domain_confidence": "high",
+          "domain_evidence": [
+            "천산",
+            "유진광",
+            "양산형",
+            "초절정"
+          ],
+          "secondary_domains": [],
+          "intent": "discuss_genre",
+          "intent_confidence": "medium",
+          "speech_act": "question",
+          "target_kind": "genre",
+          "is_coherent": true,
+          "coherence_reason": "제목에서 특정 상황(천산, 유진광)을 제시하고 본문에서 그에 대응하는 장르적 요소(양산형 초절정)를 질문하며 담론이 이어짐",
+          "title_novel_terms": [
+            "천산"
+          ],
+          "title_body_consistency": true,
+          "consistency_note": null,
+          "is_association_not_discussion": false,
+          "association_evidence": null,
+          "search_suggestions": [
+            {
+              "query": "천산 유진광 웹소설",
+              "purpose": "To identify the specific work containing characters named 'Cheonsan' and 'Yujingwang'.",
+              "priority": 1
+            },
+            {
+              "query": "유진광 천산 초절정",
+              "purpose": "To verify if these terms are character names or setting elements within a specific novel.",
+              "priority": 2
+            }
+          ],
+          "real_subject": "특정 작품의 캐릭터(유진광)와 배경(천산)을 바탕으로, 해당 수준을 압도할 만한 '양산형 초절정' 캐릭터가 존재하는지에 대한 의문",
+          "author_question_span": "양산형 초절정들?",
+          "author_question_target": "양산형 초절정 캐릭터들의 존재 여부",
+          "author_recommendation_span": null,
+          "author_recommendation_is_direct": false,
+          "reasoning": "제목의 '천산'과 '유진광'은 무협/판타지 웹소설의 고유 명사(배경 및 인물)로 판단되며, 본문의 '양산형 초절정'은 특정 작품의 캐릭터 급을 논하는 장르적 표현임. 작성자는 특정 작품 내의 파워 밸런스나 캐릭터 유형에 대해 질문하고 있음.",
+          "source_bound_question_receipt": {
+            "span": "유진광 눈 멀게 할 애가 누가 있나",
+            "source": "author_title",
+            "speaker": "author",
+            "modality": "text",
+            "position": 0,
+            "target_description": "유진광을 압도할 수 있는 캐릭터",
+            "target_candidates": [
+              "양산형 초절정 캐릭터들의 존재 여부",
+              "유진광을 압도할 수 있는 캐릭터"
+            ],
+            "target_conflict": true,
+            "verification_level": "exact_author_excerpt_model_target"
+          },
+          "source_bound_recommendation_request": false,
+          "image_topic_relation": {
+            "state": "unbound",
+            "source": "image_evidence"
+          },
+          "semantic_seed_review": {
+            "post_intent": "특정 인물과 배경을 언급하며 해당 수준을 압도할 만한 캐릭터의 존재 여부에 대해 의문을 제기함",
+            "content_interpretation": "인명 및 지명처럼 보이는 표면어가 포함되어 있으나 작품 고유 앵커로서의 확정적 근거는 부족함",
+            "is_specific_work_discussion": true,
+            "recommended_intent": "express_opinion",
+            "recommended_target_kind": "character",
+            "warnings": []
+          },
+          "warnings": [
+            "semantic_seed_review_non_title_terms_removed"
+          ],
+          "semantic_seed_review_context_terms": [
+            "유진광"
+          ]
+        }
+      }
+    },
+    {
+      "expert": "gatekeeper",
+      "excerpt_line1": 393,
+      "worker_line1": 6807,
+      "parsed_json_canonical_sha256": "b41ea0d36777aafbce69d73dcb30b69d7af8ca1c2e3bb627a19645d370ee9040",
+      "value": {
+        "is_noise": false,
+        "noise_reason": null,
+        "post_type": "image_post",
+        "detected_entities": {
+          "possible_titles": [
+            "천산",
+            "유진광"
+          ],
+          "possible_authors": [],
+          "possible_characters": [
+            "유진광"
+          ],
+          "platforms_mentioned": []
+        },
+        "key_terms": [
+          "천산",
+          "유진광",
+          "양산형 초절정"
+        ],
+        "context_clues": {
+          "has_url_in_comments": false,
+          "has_specific_names": true,
+          "is_asking_recommendation": false,
+          "is_spoiler_discussion": false,
+          "title_as_body_continuation": true,
+          "title_body_joined_text": "천산에서 유진광 눈 멀게 할 애가 누가 있나 [이미지 OCR] /* 텍스트 없음 */ 양산형 초절정들?",
+          "title_body_first_line": "[이미지 OCR] /* 텍스트 없음 */"
+        },
+        "search_requests": [
+          {
+            "query": "천산 유진광 웹소설",
+            "purpose": "official_title_verify",
+            "priority": 1
+          },
+          {
+            "query": "유진광 캐릭터 웹소설",
+            "purpose": "character_verify",
+            "priority": 1
+          },
+          {
+            "query": "천산 유진광 리뷰",
+            "purpose": "title_search_community",
+            "priority": 1
+          },
+          {
+            "query": "양산형 초절정 웹소설",
+            "purpose": "term_definition",
+            "priority": 2
+          }
+        ],
+        "confidence": "medium",
+        "notes": "제목의 '천산'과 '유진광'이 특정 작품의 배경 또는 캐릭터명일 가능성이 매우 높음. 본문의 '양산형 초절정'은 해당 작품의 전개나 설정을 비판하는 표현으로 보임. '유진광'이 캐릭터 이름인지, 혹은 작품의 일부인지 확인하기 위해 검색이 필요함."
+      }
+    },
+    {
+      "expert": "decoder",
+      "excerpt_line1": 809,
+      "worker_line1": 7223,
+      "parsed_json_canonical_sha256": "969ec244ebe599cdb8dd64c94ac7ca1f34548161320acb497c83208b7581de63",
+      "value": {
+        "decoded_terms": [
+          {
+            "original": "천산",
+            "morphemes": [
+              "천산"
+            ],
+            "interpretations": [
+              {
+                "type": "general_noun",
+                "value": "천산 (하늘의 산 또는 특정 지명)",
+                "evidence": null,
+                "context_fit": "low"
+              }
+            ],
+            "candidates": [],
+            "best_match": {
+              "title": null,
+              "confidence": "none"
+            },
+            "grounding": {
+              "is_grounded": true,
+              "anchor_type": "title_mention",
+              "anchor_evidence": "게시글 제목에 '천산' 직접 존재"
+            },
+            "is_author_name": false,
+            "author_info": null,
+            "_alias_bridge_pending": true
+          },
+          {
+            "original": "유진광",
+            "morphemes": [
+              "유진광"
+            ],
+            "interpretations": [
+              {
+                "type": "character_name",
+                "value": "유진광",
+                "evidence": "[E001] 나무위키 '당문전/등장인물' 문서 내 유진광 언급",
+                "context_fit": "high"
+              }
+            ],
+            "candidates": [
+              {
+                "official_novel_title": "당문전",
+                "url": "https://namu.wiki/w/%EB%8B%B9%EB%AC%B8%EC%A0%84/%EB%93%B1%EC%9E%A5%EC%9D%B8%EB%AC%BC",
+                "platform": "namu.wiki",
+                "decode_logic": "본문의 '유진광'이 검색 결과 [E001]의 '당문전' 등장인물과 일치함",
+                "morphological_score": 1.0,
+                "genre_match": {
+                  "source_genre": null,
+                  "target_genre": "무협",
+                  "is_match": true
+                },
+                "search_evidence": "나무위키 등장인물 문서에 '유진광'이 명시됨"
+              }
+            ],
+            "best_match": {
+              "title": "당문전",
+              "confidence": "low"
+            },
+            "grounding": {
+              "is_grounded": true,
+              "anchor_type": "character_mention",
+              "anchor_evidence": "유진광 눈 멀게 할 애가 누가 있나"
+            },
+            "is_author_name": false,
+            "author_info": null
+          },
+          {
+            "original": "양산형 초절정",
+            "morphemes": [
+              "양산형",
+              "초절정"
+            ],
+            "interpretations": [
+              {
+                "type": "slang",
+                "value": "양산형 초절정 (클리셰를 비판하는 표현)",
+                "evidence": null,
+                "context_fit": "high"
+              }
+            ],
+            "candidates": [],
+            "best_match": {
+              "title": null,
+              "confidence": "none"
+            },
+            "grounding": {
+              "is_grounded": true,
+              "anchor_type": "none",
+              "anchor_evidence": "양산형 초절정들?"
+            },
+            "is_author_name": false,
+            "author_info": null
+          }
+        ],
+        "unresolved_terms": [],
+        "self_questions": [
+          "'천산'이 작품의 배경(지명)인가 아니면 별개의 작품명인가?",
+          "'유진광'이 '당문전'의 캐릭터라는 확신을 가질 수 있는가?"
+        ],
+        "needs_verification": false,
+        "verification_search": null,
+        "overall_confidence": "low",
+        "notes": "치환 읽기 : '천산(배경/지명)에서 유진광(캐릭터) 눈 멀게 할 애가 누가 있나 양산형 초절정(클리셰)들?' : 본문의 '유진광'이 검색 결과 [E001]의 웹소설 '당문전' 등장인물로 확인됨. '천산'은 해당 장르(무협)에서 흔히 쓰이는 지명 혹은 설정으로 보이며, '양산형 초절정'은 특정 전개를 비판하는 커뮤니티 용어임. 따라서 이 글은 '당문전'의 특정 캐릭터와 관련된 전개/설정을 논하는 작품 토론임."
+      }
+    },
+    {
+      "expert": "verifier",
+      "excerpt_line1": 1012,
+      "worker_line1": 7426,
+      "parsed_json_canonical_sha256": "2505cc366d2143cfabd092e50c3c78cf9263f797be101328d46f38e156b32c21",
+      "value": {
+        "verification_result": {
+          "is_relevant": true,
+          "is_novel_discussion": true,
+          "novel_identity": {
+            "official_novel_title": null,
+            "heretic_url": null,
+            "confidence": "Low",
+            "evidence_type": "wiki"
+          },
+          "grounding_check": {
+            "decoder_grounded": true,
+            "anchor_found": "character_mention",
+            "anchor_text": "유진광",
+            "grounding_issue": null
+          },
+          "counter_arguments": [
+            {
+              "issue": "제목의 '천산'이 일반 지명일 가능성",
+              "severity": "minor",
+              "action": "note_only"
+            },
+            {
+              "issue": "character_title_collision",
+              "severity": "major",
+              "action": "nullify_title",
+              "explanation": "'당문전'은(는) short title + 캐릭터 언급 충돌 패턴으로 작품 제목 오인 가능성이 높음."
+            }
+          ],
+          "author_info": null,
+          "rejection_reason": null,
+          "evidence_chain": [
+            {
+              "source": "E001",
+              "content": "웹소설 '당문전'의 등장인물 중 '유진광'이 명시됨",
+              "supports": "본문 제목의 '유진광'과 일치함"
+            },
+            {
+              "source": "joined_text",
+              "content": "천산에서 유진광 눈 멀게 할 애가 누가 있나... 양산형 초절정들?",
+              "supports": "특정 캐릭터(유진광)를 지칭하며 작품 내 전개/캐릭터 수준을 비판함"
+            }
+          ],
+          "slang_insight": {
+            "detected_term": "양산형 초절정",
+            "decoded_term": null,
+            "decode_verified": false,
+            "cultural_context": "무협 장르에서 흔히 보이는 클리셰적인 강함을 비꼬는 커뮤니티 용어",
+            "canonical_work_alias": null,
+            "alias_scope": null,
+            "attached_entity_text": null,
+            "attached_entity_type": null,
+            "store_in_slang_db": false,
+            "store_reason": "trope_term"
+          },
+          "unresolved_from_decoder": [],
+          "inference": {
+            "type": "작품 토론",
+            "topic": "특정 캐릭터(유진광)의 위상 및 작품 전개에 대한 비판적 감상"
+          }
+        },
+        "final_confidence": "high",
+        "reason": "제목과 본문에 언급된 '유진광'이라는 고유명사가 검색 결과[E001]를 통해 웹소설 '당문전'의 등장인물임이 명확히 확인됩니다. '천산'은 무협 배경의 일반 지명이나, '유진광'이라는 구체적인 캐릭터 앵커가 존재하므로 키워드 우연 일치가 아닌 특정 작품에 대한 토론으로 판단됩니다. '양산형 초절정'은 해당 작품의 파워 인플레이션이나 캐릭터 설정을 비판하는 맥락의 커뮤니티 용어로 해석됩니다."
+      }
+    },
+    {
+      "expert": "synthesizer",
+      "excerpt_line1": 1159,
+      "worker_line1": 7573,
+      "parsed_json_canonical_sha256": "479f59bd1f339ef4270953da0b99b72419a51676d346bd91c5efe70a857b7fd0",
+      "value": {
+        "reinterpretation": {
+          "post_intent": "웹소설 '당문전'의 캐릭터 유진광의 압도적인 실력(또는 위상)을 강조하며, 그를 능가하거나 눈 멀게 할 만한 인물이 존재하지 않는다는 점을 과시하는 글",
+          "text_analysis": [
+            {
+              "segment": "천산에서 유진광 눈 멀게 할 애가 누가 있나",
+              "interpretation": "'천산'이라는 배경 혹은 맥락 속에서, '유진광'이라는 인물의 존재감이 너무나 독보적이어서 그를 압도하거나 시야를 가릴 만큼 강력한 인물이 보이지 않는다.",
+              "evidence_source": "search"
+            },
+            {
+              "segment": "양산형 초절정들?",
+              "interpretation": "유진광의 압도적인 수준과 대비하여, 흔히 보이는 평범하고 전형적인(양산형) 고수(초절정)들은 유진광의 상대가 되지 않는다는 비판적/비교적 표현.",
+              "evidence_source": "decoder"
+            }
+          ],
+          "comment_insights": []
+        },
+        "hidden_references": [
+          {
+            "text": "유진광",
+            "reference_type": "character",
+            "matched_to": "웹소설 '당문전'의 등장인물 유진광",
+            "evidence": "[E001] 검색 결과에서 유진광이 당문전의 등장인물로 명시됨"
+          },
+          {
+            "text": "천산",
+            "reference_type": "setting",
+            "matched_to": "작품 내 배경 또는 무협 세계관의 지명",
+            "evidence": "검색 결과에 직접적인 천산-유진광 관계는 없으나, 무협 장르의 일반적 배경으로 추정됨"
+          }
+        ],
+        "evidence_alignment": {
+          "decoder_match": "strong",
+          "decoder_reason": "Decoder가 식별한 '유진광'과 '당문전'이 검색 결과 [E001]과 정확히 일치함",
+          "verifier_match": "partial",
+          "verifier_reason": "Verifier는 제목의 '천산'이 일반 지명일 가능성을 경고했으나, 캐릭터명 '유진광'과의 결합을 통해 작품 특정의 근거를 확보함",
+          "overall_coherence": "high"
+        },
+        "confidence_assessment": {
+          "is_about_identified_work": true,
+          "confidence": "High",
+          "reasoning": "제목의 핵심 키워드인 '유진광'이 검색 증거 [E001]을 통해 웹소설 '당문전'의 캐릭터임이 명확히 확인되었으며, 본문의 '양산형 초절정'이라는 표현이 무협 웹소설의 캐릭터 급 나누기 문맥과 완벽히 부합함",
+          "alternative_interpretation": null
+        },
+        "synthesis_summary": "본 포스트는 웹소설 '당문전'의 등장인물인 '유진광'의 압도적인 위상을 찬양하는 글입니다. 작성자는 '유진광'을 눈 멀게 할 인물이 없다고 언급하며, 일반적인 무협 소설의 고수들을 '양산형 초절정'이라 칭하며 유진광과 격을 달리합니다. 검색 증거 [E001]을 통해 '유진광'이 '당문전'의 캐릭터임을 확증할 수 있습니다.",
+        "elapsed": 119.76004219055176
+      }
+    },
+    {
+      "expert": "arbiter",
+      "excerpt_line1": 1422,
+      "worker_line1": 7836,
+      "parsed_json_canonical_sha256": "f97da625e8c5935ab1686debaa1543af8814d7163bb0746c58f38baa5f919ca0",
+      "value": {
+        "final_decision": {
+          "is_relevant": true,
+          "is_novel_discussion": true,
+          "official_novel_title": "당문전",
+          "suspected_titles": [
+            {
+              "title": "당문전",
+              "confidence": "High",
+              "reason": "제목의 핵심 키워드인 '유진광'이 검색 결과(E001)를 통해 '당문전'의 등장인물임이 확인됨"
+            }
+          ],
+          "heretic_url": null,
+          "confidence": "High",
+          "discussion_type": "character_talk",
+          "_raw_llm_relevant": true,
+          "_raw_llm_title": "당문전",
+          "_raw_llm_confidence": "High",
+          "_raw_llm_discussion_type": "character_talk",
+          "official_title": "당문전",
+          "_hypothesis_top": "single_work",
+          "_hypothesis_margin": 0.483,
+          "_title_deliberately_null": false
+        },
+        "expert_consensus": {
+          "unanimous": false,
+          "agreeing_experts": [
+            "Decoder",
+            "Verifier"
+          ],
+          "dissenting_experts": [
+            "Gatekeeper"
+          ]
+        },
+        "conflict_resolution": [
+          {
+            "issue": "게시글의 성격 규정 (이미지 전용 뻘글 vs 작품 토론)",
+            "expert_opinions": {
+              "gatekeeper": "image_post (텍스트 부족으로 인한 노이즈 판정)",
+              "decoder": "title=None (낮은 신뢰도)",
+              "verifier": "relevant=True (작품 관련성 인정)"
+            },
+            "arbiter_decision": "character_talk (작품 토론)",
+            "reasoning": "Gatekeeper는 텍스트 양이 적어 이미지 포스트로 분류했으나, 제목에 포함된 '유진광'이라는 고유명사가 검색을 통해 특정 작품('당문전')의 캐릭터로 명확히 식별되므로, 이는 단순한 뻘글이 아닌 특정 캐릭터에 대한 감상을 담은 작품 토론으로 보는 것이 타당함."
+          }
+        ],
+        "metadata_synthesis": {
+          "detected_author": null,
+          "detected_characters": [
+            "유진광"
+          ],
+          "micro_tags": [
+            "무협",
+            "초절정",
+            "천산"
+          ],
+          "sentiment": "Positive",
+          "is_nsfw": false,
+          "spoiler_level": "none"
+        },
+        "final_reasoning": "[Multi-Expert Deliberation] 투표: 관련=7/비관련=0, 증거점수=2.5, 최종=관련(confidence=High).\n[Primary] 이 게시글은 웹소설 '당문전'의 등장인물인 '유진광'의 압도적인 무력을 찬양하며, 일반적인 무협 소설의 고수들을 '양산형 초절정'이라 비하하여 유진광과의 격차를 강조하는 글이다. 작성자는 '천산에서 유진광의 눈을 멀게 할 인물이 있겠느냐'는 수사적 질문을 통해 해당 캐릭터의 강력함을 드러내고 있다.\n\n핵심 키워드인 '유진광'은 검색 증거 [E001]을 통해 웹소설 '당문전'의 주요 등장인물임이 확증되었다. 또한 본문에 언급된 '양산형 초절정'이라는 표현은 무협 장르에서 흔히 쓰이는 클리셰를 비판하며 특정 캐릭터의 위상을 높이기 위한 맥락으로 사용되었음을 알 수 있다. '천산' 역시 무협 세계관의 배경 지명으로서 작품의 분위기와 일치한다.\n\n전문가 분석 과정에서 Gatekeeper는 텍스트가 매우 적다는 이유로 이미지 전용 포스트(noise)로 분류하였으나, Verifier와 Decoder의 분석을 종합했을 때 제목의 '유진광'이라는 고유명사가 가진 정보값이 매우 결정적이다. 검색을 통해 이 용어가 특정 작품의 캐릭터로 연결되는 순간, 이 글은 단순한 커뮤니티 잡담을 넘어 특정 작품의 캐릭터에 대한 구체적인 감상을 담은 담론으로 전환된다.\n\n따라서 본 게시글은 '유진광'이라는 캐릭터의 위상에 대해 이야기하고 있으므로, is_relevant=true이며 discussion_type은 캐릭터에 대한 감상을 나타내는 'character_talk'로 판정한다.\n[Jury majority] 1. [본문 이해] 이 게시글은 웹소설 '당문전'의 등장인물인 '유진광'의 압도적인 무력을 찬양하는 글입니다. 작성자는 '천산에서 유진광의 눈을 멀게 할 인물이 있겠느냐'라는 수사적 질문을 통해 해당 캐릭터가 세계관 내에서 얼마나 강력한지를 강조하고 있으며, 본문의 '양산형 초절정들?'이라는 문구는 일반적인 무협 소설의 강자들과 유진광 사이의 격차를 조롱하며 캐릭터의 위상을 높이는 맥락으로 사용되었습니다.\n\n2. [핵심 키워드 해독] 제목의 핵심 키워드인 '유진광'은 검색 결과 및 전문가 분석을 통해 웹소설 '당문전'의 주요 등장인물임이 명확히 확인되었습니다. 또한 '천산'은 무협 장르의 전형적인 배경 지명으로서, 작품의 장르적 특성과 일치합니다.\n\n3. [검색/증거 분석] Decoder가 제시한 '당문전' 후보와 Verifier가 포착한 '유진광'이라는 고유명사가 결합하여 강력한 증거를 형성합니다. 비록 본문에 직접적인 플랫폼 URL이나 긴 줄거리는 없으나, '유진광'이라는 이름 자체가 해당 작품을 가리키는 고유한 식별자(Anchor) 역할을 수행하고 있습니다.\n\n4. [전문가 합의/충돌] Gatekeeper는 텍스트가 부족하다는 이유로 이미지 전용 게시글(noise)로 분류하였으나, 이는 정보의 밀도를 간과한 판단입니다. Decoder와 Verifier가 공통적으로 작품과의 연결성을 인지하고 있으므로, 고유명사의 정보 가치를 우선하여 관련성 있는 토론으로 판정하였습니다.\n\n5. [판단 근거 종합] 제목의 인물명과 본문의 장르적 비유('초절정')가 하나의 담론(캐릭터의 강함)으로 완벽하게 결합되어 있습니다. 이는 단순한 단어의 중첩이 아니라, 특정 캐릭터의 서사적 위치를 논하는 전형적인 팬덤의 반응 패턴입니다.\n\n6. [결론] 따라서 이 글은 웹소설 '당문전'의 캐릭터 '유진광'에 대한 감상을 다루는 실제 작품 토론 게시글로 판정합니다.\n[Judge] 본 게시글은 텍스트가 매우 적고 이미지 위주로 구성되어 있어 Gatekeeper가 'noise'로 분류한 타당성이 충분합니다. 그러나 핵심 키워드인 '유진광'이 웹소설 <당문전>의 고유한 등장인물임이 검색 증거를 통해 확인되었고, 문장의 맥락('천산에서 ~ 할 애가 누가 있나', '양산형 초절정')이 특정 캐릭터의 무력을 찬양하는 전형적인 팬덤 내 담론 형식을 띠고 있습니다. 따라서 이를 단순 노이즈로 치부하기보다는 소설과 관련된 팬덤 차원의 언급(adjacent_meta_or_fandom)으로 보는 것이 적절합니다. 다만, 게시글 자체가 작품의 서사나 설정을 직접적으로 논하는 것이 아니라 캐릭터에 대한 짧은 감탄/밈(meme) 성격이 강하므로, 작품명을 공식 제목(official_novel_title)으로 확정하여 매핑하기에는 근거가 부족합니다. 즉, 관련성은 인정되나 작품명 추출은 유보하는 것이 데이터의 정확성을 높이는 길입니다.",
+        "evidence_chain": [
+          {
+            "source": "E001",
+            "content": "당문전/등장인물 - 나무위키 (유진광 확인)",
+            "weight": "high"
+          },
+          {
+            "source": "Title/Body",
+            "content": "'유진광' 및 '양산형 초절정' 키워드 존재",
+            "weight": "high"
+          }
+        ],
+        "_deliberation": {
+          "method": "full_deliberation_ABC",
+          "evidence_score": {
+            "total_score": 2.5,
+            "relevance_probability": "low",
+            "positive_signals": [
+              {
+                "signal": "discourse_novel",
+                "detail": "novel_literature"
+              },
+              {
+                "signal": "verifier_relevant",
+                "detail": "title=None"
+              },
+              {
+                "signal": "verifier_anchor",
+                "detail": "anchor found"
+              }
+            ],
+            "negative_signals": [
+              {
+                "signal": "gatekeeper_noise_overridden",
+                "detail": "original_reason=이미지 전용 게시글 (이미지 2개, 텍스트 9자) - 소설 작품 논의 불가, override=discourse_novel_literature"
+              },
+              {
+                "signal": "decoder_low",
+                "detail": "title=None"
+              }
+            ],
+            "expert_agreement": 0.33,
+            "conflict_detected": true,
+            "conflict_details": [
+              "Gatekeeper=originally_noise (overridden by discourse_novel_literature)"
+            ],
+            "recommendation": "WEAK: 관련성 증거가 약합니다. 신중한 판단이 필요합니다."
+          },
+          "conflict_detected": true,
+          "jury_votes": {
+            "relevant": 3,
+            "irrelevant": 0
+          },
+          "debate_advocate_conf": "Medium",
+          "debate_skeptic_conf": "High",
+          "elapsed": 901.6
+        }
+      }
+    }
+  ],
+  "e001": {
+    "domain": "namu.wiki",
+    "eid": "E001",
+    "purpose": "official_title_verify",
+    "query": "천산 유진광 웹소설",
+    "rank": 1,
+    "snippet": "개요 웹소설 당문전의 등장인물을 정리한 문서. 2. 당무진 본작의 주인공 자세한 내용은 당무진 문서를 참고하십시오. 2.1. 당가장 당제선 당무진의 아버지. 괜찮은 실력의 의원으로... 있던 유진광과 마주쳤다. 사정을 들은 유진광이 반용궐의 도박장에 피해를 줘서 미안하다고 사과하자 그걸 기회로 여겼는지 유진광과 의기투합하여 본인과 경쟁하는 도박장들을 털었다....",
+    "source_rank": 1,
+    "source_tier": "wiki",
+    "title": "당문전/등장인물 - 나무위키",
+    "url": "https://namu.wiki/w/%EB%8B%B9%EB%AC%B8%EC%A0%84/%EB%93%B1%EC%9E%A5%EC%9D%B8%EB%AC%BC"
+  },
+  "image_evidence_catalog": [
+    {
+      "block_index": 0,
+      "eid": "IMG001",
+      "evidence_type": "character_visual_only",
+      "ocr_text": "/* 텍스트 없음 */",
+      "promotion_eligible": false,
+      "rank": 1,
+      "source_url": "https://dcimg1.dcinside.com/viewimage.php?id=2ab8de34e0dc37b06bb3&no=24b0d769e1d32ca73ce981fa11d0283174e253ba7e9967bde184fb606775bfb8240fa4f1abde33be2d56e9cce1bdafc912b2a5e90c232dd75bb803cea34ff17f1eae9738ab76b3b5332b62d4044e4de43e2c32a2619e8b12f69f9a34ab34b3be7f92eb517e66dd96",
+      "title_role": "unknown",
+      "visual_summary": "눈물을 흘리며 겁에 질린 표정을 짓고 있는 어린 아이 캐릭터의 흑백 만화 스타일 일러스트레이션"
+    }
+  ],
+  "stored_public_identity": {
+    "heretic_url": null,
+    "official_title": null
+  },
+  "stored_title_ranked_snapshot": {
+    "cap": 6,
+    "count_basis": "normalized_title_unique_after_policy_prune",
+    "emitted_source_count": 0,
+    "metadata_fingerprint": "f51eafcdb58549828abc657b311790529327787b7b62cc6b5b307a68b282bff7",
+    "observed_sources_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "reason_codes": [
+      "upstream_completeness_unknown"
+    ],
+    "retained_sources_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "schema_version": "title_candidate_generation_v1",
+    "scope": "title_candidate_ranked_inventory",
+    "source_key_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "status": "UNKNOWN",
+    "unique_valid_source_count": 0,
+    "upstream_completeness": "UNKNOWN"
+  },
+  "stored_title_ranked_sources": [],
+  "projection_notes": {
+    "expert_outputs": "7개를 보존 순서대로 set_expert_output. 마지막 Gatekeeper가 동일 expert key를 대체하며 이는 공개된 저장 순서 투영이다.",
+    "post_data": "source_post deepcopy에 image_enrichment key만 추가. 원문 title/content_blocks/댓글은 변경하지 않는다. OCR 블록 주입은 하지 않는다.",
+    "image_enrichment": "저장 public image_evidence_catalog 항목 그대로 복사. compact catalog이므로 원래 runtime VLM dict/이미지 bytes 복원이 아니다.",
+    "search_results": "저장 E001 dict 한 개 그대로 복사. snippet→content 변환 없음. 나머지 검색이나 fetched 원형을 복원한 것이 아니다.",
+    "suspected_titles": "저장 최종 Arbiter final_decision.suspected_titles를 deepcopy. 실제 ctx.suspected_titles 캡처는 아니며 누락 producer 메모리 투영이다.",
+    "discourse_warning": "discuss_genre(medium): 같은 worker 7961행 로그에 관측된 문자열.",
+    "discourse_intent": "저장 Discourse discourse_analysis.intent 그대로.",
+    "primary_domain": "저장 Discourse discourse_analysis.primary_domain 그대로."
+  },
+  "unknown_runtime_fields": {
+    "candidate_evidence": "UNKNOWN; ConversationContext 기본 빈 dict가 부분 구성에 사용됨. 실제 당시 빈 dict였다는 뜻 아님.",
+    "fetched_page_info": "UNKNOWN; 생성자 기본값을 변경하지 않음. 런타임 fetch cache/entries 재생 없음.",
+    "verified_character_work_links": "UNKNOWN; 별도 생성/가짜 parenthetical proof 주입 없음.",
+    "_canonical_relevance_lock_title": "UNKNOWN; 별도 설정하지 않음.",
+    "llm_snippet_analysis": "UNKNOWN_AFTER_POSTPROCESS; 완결 전문가 결과7개와 별개인 내부 snippet 객체를 합성하지 않음.",
+    "_final_source_original_inputs": "UNKNOWN_RUNTIME_CAPTURE; 이 부분 context에서 private capture를 위조하지 않음.",
+    "full_candidate_buckets_and_producer_receipts": "UNKNOWN; stage count로 ctx 객체를 역구성하지 않음.",
+    "derived_post_OCR_block": "원형 runtime 삽입 bytes 미보존. 원문에 새 블록을 쓰지 않음."
+  },
+  "cases": [
+    {
+      "name": "baseline_false_partial",
+      "is_relevant": false,
+      "interpretation": "관측 J2 이후 false 상태를 이용한 부분 입력. 원형 전체 재생이 아니다."
+    },
+    {
+      "name": "counterfactual_true_partial",
+      "is_relevant": true,
+      "interpretation": "조기 반환 뒤 내부 upsert를 구분하기 위한 명시 합성 대조. 실제 런 상태나 기대 공개값이 아니다."
+    }
+  ],
+  "common_builder_arguments": {
+    "official_title": null,
+    "heretic_url": null,
+    "confidence": "None",
+    "max_items": 6
+  },
+  "argument_provenance": {
+    "official_title": "J2 로그 기각 및 최종 publicnull 관측; 정확 builder locals 미보존",
+    "heretic_url": "저장 Arbiter/최종 publicnull",
+    "confidence": "J2 코드의 confidence=None 문자열 대입에 따른 명시 추론; 실제 builder locals 미보존",
+    "max_items": "실제 저장 ranked snapshot cap6 및 builder default",
+    "vf_result": "저장 Verifier verification_result 전체 deepcopy; 이후 runtime 변경 미복원"
+  },
+  "immutable_input_refs": {
+    "out/source_remaining65_72_audit_v1/evidence/packet_65.json": "ffd5710700e0b2dc389068f81af1e6d2cf999f778413ae888d21d6839cf44001",
+    "out/source_remaining65_72_audit_v1/evidence/saved_experts_65.json": "74d5d07b25eec10cf3b8a93a9365d46f19ea3bd33832ec99f20d8f6a7e95d126",
+    "out/source_remaining65_72_audit_v1/evidence/worker_65.log": "b79e5bf390825fedaafc97c26af6c36e3a681f1af62864409271b99c6ea42c25",
+    "out/source_remaining65_72_audit_v1/evidence/worker_65_binding.json": "cdbf5f1eb4fb827b2646f133f2e51313f6bb95f5d10236a867663c935bab9815",
+    "out/source65_candidate_loss_audit_v1/receipt.json": "e195f26c07680128a6e1cc906db7a2c9f33042c8dd9d679db66082276c190c97",
+    "out/source_remaining_repairs_application_v2/application_001/receipt.json": "b6411791b0755aae83f840738e3cef84d87a434a778bd231c78347bb9511c362",
+    "out/r5_attempt_failure_validation_v1/run_remaining_integrated_v2_001/receipt.json": "00300579580aebc444931e5d5270a8d59d1d391ca462941bd46c5024eaaab082"
+  },
+  "new12_status_at_preparation": "NOT_STARTED_PER_ROOT_AUTOMATIC_APPROVAL_REJECTION"
+}

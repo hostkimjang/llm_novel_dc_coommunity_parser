@@ -38,6 +38,8 @@ from .candidate_set_shadow import (
 CALIBRATION_SPLIT_MANIFEST_SCHEMA = "candidate_set_calibration_split_manifest_v1"
 CALIBRATION_POLICY_SCHEMA = "candidate_set_calibration_policy_v2"
 CALIBRATION_POLICY_SCHEMA_V3 = "candidate_set_calibration_policy_v3"
+CALIBRATION_POLICY_SCHEMA_V4 = "candidate_set_calibration_policy_v4"
+CALIBRATION_EVALUATION_SCHEMA = "candidate_set_calibration_evaluation_v2"
 TOP_LABEL_DENOMINATOR_ALL_FROZEN_ROWS = "ALL_FROZEN_ROWS"
 TOP_LABEL_DENOMINATOR_NON_ABSTAIN_ROWS = "NON_ABSTAIN_ROWS"
 TOP_LABEL_DENOMINATOR_VALUES = frozenset(
@@ -47,7 +49,9 @@ TOP_LABEL_DENOMINATOR_VALUES = frozenset(
     }
 )
 CALIBRATION_FIT_RECEIPT_SCHEMA = "candidate_set_calibration_fit_receipt_v1"
+CALIBRATION_FIT_RECEIPT_SCHEMA_V2 = "candidate_set_calibration_fit_receipt_v2"
 CALIBRATION_ARTIFACT_SCHEMA = "candidate_set_calibration_artifact_v1"
+CALIBRATION_ARTIFACT_SCHEMA_V2 = "candidate_set_calibration_artifact_v2"
 FROZEN_ACTUAL_EVIDENCE_SCHEMA = "candidate_set_frozen_actual_evidence_receipt_v2"
 EVENT_SCORE_VECTOR_SCHEMA = "candidate_set_event_score_vector_v1"
 CALIBRATION_SHADOW_SCHEMA = "candidate_set_calibration_shadow_v1"
@@ -56,6 +60,9 @@ CALIBRATED_BOUND_STATUS = "CALIBRATED_SHADOW_BOUND"
 PROBABILITY_SCALE = 1_000_000
 CALIBRATION_SPLITS = ("DEV", "CALIBRATION", "FROZEN_HOLDOUT")
 CALIBRATION_EVIDENCE_MODES = ("SYNTHETIC_CONTRACT_ONLY", "FROZEN_ACTUAL")
+FROZEN_ACTUAL_MIN_BOOTSTRAP_GROUPS = 30
+FROZEN_ACTUAL_MIN_BOOTSTRAP_REPLICATES = 2_000
+FROZEN_ACTUAL_INTERVAL_METHOD = "CLUSTER_BOOTSTRAP_PERCENTILE"
 _SHA256_LENGTH = 64
 
 
@@ -361,6 +368,9 @@ class CalibrationEvaluationPolicy:
     policy_sha256: str
     schema_version: str = CALIBRATION_POLICY_SCHEMA
     top_label_accuracy_denominator: str = TOP_LABEL_DENOMINATOR_ALL_FROZEN_ROWS
+    min_bootstrap_groups: int = FROZEN_ACTUAL_MIN_BOOTSTRAP_GROUPS
+    min_bootstrap_replicates: int = FROZEN_ACTUAL_MIN_BOOTSTRAP_REPLICATES
+    cluster_interval_method: str = FROZEN_ACTUAL_INTERVAL_METHOD
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "fixed_bin_edges", tuple(float(value) for value in self.fixed_bin_edges))
@@ -455,17 +465,34 @@ class CalibrationEvaluationPolicy:
         if self.schema_version not in {
             CALIBRATION_POLICY_SCHEMA,
             CALIBRATION_POLICY_SCHEMA_V3,
+            CALIBRATION_POLICY_SCHEMA_V4,
         }:
             raise ValueError("unsupported calibration policy schema")
         if self.top_label_accuracy_denominator not in TOP_LABEL_DENOMINATOR_VALUES:
             raise ValueError("unsupported top_label_accuracy_denominator")
         if (
             self.policy_scope == "FROZEN_ACTUAL_PRE_REGISTERED"
-            and self.schema_version != CALIBRATION_POLICY_SCHEMA_V3
+            and self.schema_version
+            not in {CALIBRATION_POLICY_SCHEMA_V3, CALIBRATION_POLICY_SCHEMA_V4}
         ):
             raise ValueError(
-                "FROZEN_ACTUAL policy requires explicit v3 top_label_accuracy denominator"
+                "FROZEN_ACTUAL policy requires explicit v3 or v4 protocol"
             )
+        for field_name in ("min_bootstrap_groups", "min_bootstrap_replicates"):
+            value = _strict_nonnegative_int(getattr(self, field_name), field_name)
+            if value <= 0:
+                raise ValueError(f"{field_name} must be positive")
+        if self.cluster_interval_method != FROZEN_ACTUAL_INTERVAL_METHOD:
+            raise ValueError("unsupported cluster_interval_method")
+        if self.schema_version == CALIBRATION_POLICY_SCHEMA_V4:
+            if self.min_bootstrap_groups < FROZEN_ACTUAL_MIN_BOOTSTRAP_GROUPS:
+                raise ValueError(
+                    "v4 min_bootstrap_groups is below the structural floor"
+                )
+            if self.min_bootstrap_replicates < FROZEN_ACTUAL_MIN_BOOTSTRAP_REPLICATES:
+                raise ValueError(
+                    "v4 min_bootstrap_replicates is below the structural floor"
+                )
         _require_sha256(self.policy_sha256, "policy_sha256")
         if self.policy_sha256 != _canonical_hash(self.payload_without_policy_sha256()):
             raise ValueError("calibration policy fingerprint mismatch")
@@ -475,7 +502,7 @@ class CalibrationEvaluationPolicy:
         values.setdefault(
             "schema_version",
             (
-                CALIBRATION_POLICY_SCHEMA_V3
+                CALIBRATION_POLICY_SCHEMA_V4
                 if values.get("policy_scope") == "FROZEN_ACTUAL_PRE_REGISTERED"
                 else CALIBRATION_POLICY_SCHEMA
             ),
@@ -484,12 +511,30 @@ class CalibrationEvaluationPolicy:
             "top_label_accuracy_denominator",
             TOP_LABEL_DENOMINATOR_ALL_FROZEN_ROWS,
         )
+        values.setdefault(
+            "min_bootstrap_groups",
+            FROZEN_ACTUAL_MIN_BOOTSTRAP_GROUPS,
+        )
+        values.setdefault(
+            "min_bootstrap_replicates",
+            FROZEN_ACTUAL_MIN_BOOTSTRAP_REPLICATES,
+        )
+        values.setdefault("cluster_interval_method", FROZEN_ACTUAL_INTERVAL_METHOD)
         serialized_values = {
             key: list(value) if key == "fixed_bin_edges" else value
             for key, value in values.items()
             if not (
                 key == "top_label_accuracy_denominator"
                 and values["schema_version"] == CALIBRATION_POLICY_SCHEMA
+            )
+            and not (
+                key
+                in {
+                    "min_bootstrap_groups",
+                    "min_bootstrap_replicates",
+                    "cluster_interval_method",
+                }
+                and values["schema_version"] != CALIBRATION_POLICY_SCHEMA_V4
             )
         }
         payload = {
@@ -523,9 +568,20 @@ class CalibrationEvaluationPolicy:
             "policy_scope": self.policy_scope,
             "policy_origin": self.policy_origin,
         }
-        if self.schema_version == CALIBRATION_POLICY_SCHEMA_V3:
+        if self.schema_version in {
+            CALIBRATION_POLICY_SCHEMA_V3,
+            CALIBRATION_POLICY_SCHEMA_V4,
+        }:
             payload["top_label_accuracy_denominator"] = (
                 self.top_label_accuracy_denominator
+            )
+        if self.schema_version == CALIBRATION_POLICY_SCHEMA_V4:
+            payload.update(
+                {
+                    "min_bootstrap_groups": self.min_bootstrap_groups,
+                    "min_bootstrap_replicates": self.min_bootstrap_replicates,
+                    "cluster_interval_method": self.cluster_interval_method,
+                }
             )
         return payload
 
@@ -550,6 +606,7 @@ class CalibrationFitReceipt:
     fit_split: str = "CALIBRATION"
     status: str = "VALID"
     schema_version: str = CALIBRATION_FIT_RECEIPT_SCHEMA
+    learning_evidence: Optional[Mapping[str, Any]] = None
 
     def __post_init__(self) -> None:
         for field_name in (
@@ -589,8 +646,21 @@ class CalibrationFitReceipt:
         object.__setattr__(self, "temperature", temperature)
         if self.fit_split != "CALIBRATION" or self.status != "VALID":
             raise ValueError("calibration fit receipt status/split is invalid")
-        if self.schema_version != CALIBRATION_FIT_RECEIPT_SCHEMA:
+        if self.schema_version not in (CALIBRATION_FIT_RECEIPT_SCHEMA, CALIBRATION_FIT_RECEIPT_SCHEMA_V2):
             raise ValueError("unsupported calibration fit receipt schema")
+        if self.schema_version == CALIBRATION_FIT_RECEIPT_SCHEMA:
+            if self.learning_evidence is not None:
+                raise ValueError("legacy fit receipt cannot contain learned fit evidence")
+        else:
+            if not isinstance(self.learning_evidence, Mapping):
+                raise ValueError("learned fit receipt requires learning evidence")
+            try:
+                raw = json.dumps(dict(self.learning_evidence), ensure_ascii=False, allow_nan=False).encode("utf-8")
+                if len(raw) > 8 * 1024 * 1024:
+                    raise ValueError("learning evidence byte limit")
+                object.__setattr__(self, "learning_evidence", MappingProxyType(json.loads(raw)))
+            except (TypeError, UnicodeError, RecursionError, OverflowError) as exc:
+                raise ValueError("learning evidence must be finite JSON") from exc
 
     @classmethod
     def create(cls, **values: Any) -> "CalibrationFitReceipt":
@@ -603,7 +673,7 @@ class CalibrationFitReceipt:
         return cls(**values, receipt_sha256=_canonical_hash(payload))
 
     def payload_without_receipt_sha256(self) -> dict[str, Any]:
-        return {
+        payload = {
             "schema_version": self.schema_version,
             "split_manifest_sha256": self.split_manifest_sha256,
             "calibration_split_fingerprint": self.calibration_split_fingerprint,
@@ -619,6 +689,9 @@ class CalibrationFitReceipt:
             "fit_split": self.fit_split,
             "status": self.status,
         }
+        if self.schema_version == CALIBRATION_FIT_RECEIPT_SCHEMA_V2:
+            payload["learning_evidence"] = json.loads(json.dumps(dict(self.learning_evidence), ensure_ascii=False, allow_nan=False))
+        return payload
 
     def validate_against(
         self,
@@ -678,6 +751,9 @@ class CalibrationFitReceipt:
             raise ValueError("DEV policy split must contain only resolved labels")
         if len(dev_rows) < policy.min_dev_rows or min(dev_counts.values()) < policy.min_dev_per_truth_class:
             raise ValueError("DEV sample is below the pre-registered minimum")
+        if self.schema_version == CALIBRATION_FIT_RECEIPT_SCHEMA_V2:
+            from .candidate_reranker_calibration import validate_fit_evidence
+            validate_fit_evidence(self.learning_evidence, self, split_manifest=split_manifest, policy=policy)
 
     def to_dict(self) -> dict[str, Any]:
         return {**self.payload_without_receipt_sha256(), "receipt_sha256": self.receipt_sha256}
@@ -717,10 +793,19 @@ class CalibrationArtifact:
         object.__setattr__(self, "temperature", temperature)
         if self.fit_split != "CALIBRATION" or self.evaluation_split != "FROZEN_HOLDOUT":
             raise ValueError("calibration artifact split roles are invalid")
-        if self.status != "VALID" or self.schema_version != CALIBRATION_ARTIFACT_SCHEMA:
+        if self.status != "VALID" or self.schema_version not in (CALIBRATION_ARTIFACT_SCHEMA, CALIBRATION_ARTIFACT_SCHEMA_V2):
             raise ValueError("calibration artifact status/schema is invalid")
         if not isinstance(self.fit_receipt, CalibrationFitReceipt):
             raise ValueError("calibration artifact requires a typed fit receipt")
+        expected_fit_schema = (CALIBRATION_FIT_RECEIPT_SCHEMA_V2 if self.schema_version == CALIBRATION_ARTIFACT_SCHEMA_V2
+                               else CALIBRATION_FIT_RECEIPT_SCHEMA)
+        if self.fit_receipt.schema_version != expected_fit_schema:
+            raise ValueError("calibration artifact/fit receipt schema mismatch")
+        if self.schema_version == CALIBRATION_ARTIFACT_SCHEMA_V2 and (
+            self.split_manifest_sha256 != self.fit_receipt.split_manifest_sha256
+            or self.calibration_split_fingerprint != self.fit_receipt.calibration_split_fingerprint
+        ):
+            raise ValueError("learned calibration artifact/fit split mismatch")
         if (
             self.fit_receipt.scorer_fingerprint != self.scorer_fingerprint
             or self.fit_receipt.method != self.method
@@ -762,17 +847,50 @@ class CalibrationArtifact:
     def validate(self) -> None:
         if self.artifact_sha256 != _canonical_hash(self.payload_without_artifact_sha256()):
             raise ValueError("calibration artifact fingerprint mismatch")
+        if self.schema_version == CALIBRATION_ARTIFACT_SCHEMA_V2:
+            if self.fit_receipt.receipt_sha256 != _canonical_hash(self.fit_receipt.payload_without_receipt_sha256()):
+                raise ValueError("calibration fit receipt fingerprint mismatch")
+            from .candidate_reranker_calibration import validate_fit_evidence
+            validate_fit_evidence(self.fit_receipt.learning_evidence, self.fit_receipt, artifact=self)
 
     def validate_against(
         self,
         split_manifest: CalibrationSplitManifest,
         policy: CalibrationEvaluationPolicy,
     ) -> None:
-        self.validate()
+        # v2의 optimizer 재생 검산은 아래 context-bound receipt 검사에서 한 번 수행한다.
+        if self.artifact_sha256 != _canonical_hash(self.payload_without_artifact_sha256()):
+            raise ValueError("calibration artifact fingerprint mismatch")
+        if self.schema_version == CALIBRATION_ARTIFACT_SCHEMA_V2 and (
+            self.split_manifest_sha256 != split_manifest.manifest_sha256
+            or self.calibration_split_fingerprint != split_manifest.split_fingerprints["CALIBRATION"]
+            or self.frozen_holdout_fingerprint != split_manifest.split_fingerprints["FROZEN_HOLDOUT"]
+            or self.policy_sha256 != policy.policy_sha256
+        ):
+            raise ValueError("learned calibration artifact context mismatch")
         self.fit_receipt.validate_against(split_manifest, policy)
 
     def to_dict(self) -> dict[str, Any]:
         return {**self.payload_without_artifact_sha256(), "artifact_sha256": self.artifact_sha256}
+
+
+def calibration_artifact_from_dict(value: Any) -> CalibrationArtifact:
+    """기존 v1 또는 실제 학습 근거를 내장한 v2를 재판독·검산한다."""
+    if not isinstance(value, Mapping):
+        raise ValueError("calibration artifact must be an object")
+    try:
+        raw = json.dumps(dict(value), ensure_ascii=False, allow_nan=False).encode("utf-8")
+        if len(raw) > 16 * 1024 * 1024:
+            raise ValueError("calibration artifact byte limit")
+        payload = json.loads(raw)
+        fit_payload = payload.pop("fit_receipt", None)
+        if not isinstance(fit_payload, dict):
+            raise ValueError("calibration artifact fit receipt missing")
+        artifact = CalibrationArtifact(**payload, fit_receipt=CalibrationFitReceipt(**fit_payload))
+        artifact.validate()
+        return artifact
+    except (TypeError, ValueError, UnicodeError, RecursionError, OverflowError) as exc:
+        raise ValueError(f"invalid calibration artifact: {exc}") from exc
 
 
 @dataclass(frozen=True)
@@ -1436,6 +1554,8 @@ def calibration_shadow_from_dict(value: Any) -> CalibrationShadow:
 
 _METRIC_NAMES = (
     "top_label_accuracy",
+    "top_label_accuracy_all_rows",
+    "top_label_accuracy_non_abstain",
     "multiclass_brier",
     "log_loss",
     "top_label_ece",
@@ -1555,7 +1675,7 @@ def _early_evaluation(
     candidate_recall: Optional[dict[str, Any]] = None,
 ) -> dict[str, Any]:
     return {
-        "schema_version": "candidate_set_calibration_evaluation_v1",
+        "schema_version": CALIBRATION_EVALUATION_SCHEMA,
         "status": status,
         "reason": reason,
         "frozen_count": frozen_count,
@@ -1639,6 +1759,18 @@ def _metric_bundle(
     errors = sum(not row["correct"] for row in covered)
     coverage = len(covered) / count
     selective_risk = errors / len(covered) if covered else None
+    top_label_accuracy_all_rows = sum(row["correct"] for row in rows) / count
+    top_label_accuracy_non_abstain = (
+        sum(row["correct"] for row in covered) / len(covered)
+        if covered
+        else None
+    )
+    top_label_accuracy = (
+        top_label_accuracy_all_rows
+        if policy.top_label_accuracy_denominator
+        == TOP_LABEL_DENOMINATOR_ALL_FROZEN_ROWS
+        else top_label_accuracy_non_abstain
+    )
     _, risk_upper = _clopper_pearson_interval(errors, len(covered), policy.alpha, one_sided=True)
     ranked = sorted(rows, key=lambda row: (row["risk_score"], row["example_id"]))
     target_count = max(1, math.ceil(policy.target_coverage * count))
@@ -1661,7 +1793,9 @@ def _metric_bundle(
     nil_recall_interval = _clopper_pearson_interval(true_positive, true_positive + false_negative, policy.alpha)
     return {
         "metrics": {
-            "top_label_accuracy": sum(row["correct"] for row in rows) / count,
+            "top_label_accuracy": top_label_accuracy,
+            "top_label_accuracy_all_rows": top_label_accuracy_all_rows,
+            "top_label_accuracy_non_abstain": top_label_accuracy_non_abstain,
             "multiclass_brier": sum(row["brier"] for row in rows) / count,
             "log_loss": sum(row["log_loss"] for row in rows) / count,
             "top_label_ece": ece,
@@ -1685,6 +1819,8 @@ def _metric_bundle(
             "rows": count,
             "covered": len(covered),
             "errors": errors,
+            "top_label_correct_all_rows": sum(row["correct"] for row in rows),
+            "top_label_correct_non_abstain": sum(row["correct"] for row in covered),
             "target_count": target_count,
             "target_errors": target_errors,
             "nil_tp": true_positive,
@@ -2183,6 +2319,13 @@ def evaluate_frozen_holdout(
     if evidence_mode == "FROZEN_ACTUAL":
         if baseline_bundle is None or baseline_shadows is None:
             return _early_evaluation(status="NOT_ESTIMABLE_ACTUAL_BASELINE_MISSING", reason="same-row baseline is required for actual confidence intervals", frozen_count=len(frozen), candidate_recall=recall)
+        if policy.schema_version != CALIBRATION_POLICY_SCHEMA_V4:
+            return _early_evaluation(
+                status="NOT_ESTIMABLE_ACTUAL_INTERVAL_PROTOCOL_UNBOUND",
+                reason="FROZEN_ACTUAL requires a v4 hash-bound interval protocol",
+                frozen_count=len(frozen),
+                candidate_recall=recall,
+            )
         def _bootstrap_rows(source: Mapping[str, CalibrationShadow]) -> list[dict[str, Any]]:
             output: list[dict[str, Any]] = []
             for assignment in frozen:
@@ -2201,6 +2344,23 @@ def evaluate_frozen_holdout(
                     "log_loss": -math.log(probabilities[truth]),
                 })
             return output
+        if (
+            isinstance(actual_bootstrap_seed, bool)
+            or not isinstance(actual_bootstrap_seed, int)
+            or actual_bootstrap_seed < 0
+            or isinstance(actual_bootstrap_replicates, bool)
+            or not isinstance(actual_bootstrap_replicates, int)
+            or actual_bootstrap_replicates < policy.min_bootstrap_replicates
+        ):
+            return _early_evaluation(
+                status="NOT_ESTIMABLE_ACTUAL_INTERVAL_PROTOCOL",
+                reason=(
+                    "FROZEN_ACTUAL requires a non-negative integer seed and at least "
+                    f"{policy.min_bootstrap_replicates} integer bootstrap replicates"
+                ),
+                frozen_count=len(frozen),
+                candidate_recall=recall,
+            )
         try:
             actual_bootstrap = cluster_bootstrap(
                 _bootstrap_rows(shadows),
@@ -2208,7 +2368,7 @@ def evaluate_frozen_holdout(
                 seed=actual_bootstrap_seed,
                 replicates=actual_bootstrap_replicates,
                 alpha=policy.alpha,
-                min_group_count=2,
+                min_group_count=policy.min_bootstrap_groups,
                 ece_bin_edges=policy.fixed_bin_edges,
                 top_label_accuracy_denominator=(
                     policy.top_label_accuracy_denominator
@@ -2216,6 +2376,19 @@ def evaluate_frozen_holdout(
             )
         except (KeyError, TypeError, ValueError, ArithmeticError) as error:
             return _early_evaluation(status="NOT_ESTIMABLE_ACTUAL_INTERVAL_INVALID", reason=str(error), frozen_count=len(frozen), candidate_recall=recall)
+        if (
+            actual_bootstrap.get("interval_method")
+            != policy.cluster_interval_method
+            or actual_bootstrap.get("min_group_count")
+            != policy.min_bootstrap_groups
+            or actual_bootstrap.get("replicates") != actual_bootstrap_replicates
+        ):
+            return _early_evaluation(
+                status="NOT_ESTIMABLE_ACTUAL_INTERVAL_PROTOCOL_MISMATCH",
+                reason="cluster bootstrap output does not match the hash-bound policy protocol",
+                frozen_count=len(frozen),
+                candidate_recall=recall,
+            )
         if not actual_bootstrap.get("estimable"):
             return _early_evaluation(status="NOT_ESTIMABLE_ACTUAL_INTERVALS", reason=str(actual_bootstrap.get("reason") or "cluster bootstrap intervals are incomplete"), frozen_count=len(frozen), candidate_recall=recall)
     retrieval_violations = sum(
@@ -2282,10 +2455,82 @@ def evaluate_frozen_holdout(
         else:
             status = "NO_GO_METRIC_GATES"
             conversion_reason = "one or more pre-registered metric gates failed"
-    correct_count = sum(shadows[item.example_id].selected_label == item.truth_label for item in frozen)
-    accuracy_interval = actual_bootstrap["intervals"]["top_label_accuracy"] if actual_bootstrap is not None else None
+    all_correct_count = sum(
+        shadows[item.example_id].selected_label == item.truth_label for item in frozen
+    )
+    covered_assignments = [
+        item
+        for item in frozen
+        if shadows[item.example_id].action != SHADOW_ACTION_ABSTAIN
+    ]
+    covered_correct_count = sum(
+        shadows[item.example_id].selected_label == item.truth_label
+        for item in covered_assignments
+    )
+    accuracy_receipts = {
+        TOP_LABEL_DENOMINATOR_ALL_FROZEN_ROWS: {
+            "denominator_policy": TOP_LABEL_DENOMINATOR_ALL_FROZEN_ROWS,
+            "numerator": all_correct_count,
+            "denominator": len(frozen),
+            "value": all_correct_count / len(frozen),
+            "percent": 100.0 * all_correct_count / len(frozen),
+            "cluster_ci": (
+                actual_bootstrap["intervals"]["top_label_accuracy_all_rows"]
+                if actual_bootstrap is not None
+                else None
+            ),
+            "interval_protocol": {
+                "method": policy.cluster_interval_method,
+                "min_groups": policy.min_bootstrap_groups,
+                "replicates": actual_bootstrap_replicates,
+                "policy_sha256": policy.policy_sha256,
+            },
+        },
+        TOP_LABEL_DENOMINATOR_NON_ABSTAIN_ROWS: {
+            "denominator_policy": TOP_LABEL_DENOMINATOR_NON_ABSTAIN_ROWS,
+            "numerator": covered_correct_count,
+            "denominator": len(covered_assignments),
+            "value": (
+                covered_correct_count / len(covered_assignments)
+                if covered_assignments
+                else None
+            ),
+            "percent": (
+                100.0 * covered_correct_count / len(covered_assignments)
+                if covered_assignments
+                else None
+            ),
+            "cluster_ci": (
+                actual_bootstrap["intervals"][
+                    "top_label_accuracy_non_abstain"
+                ]
+                if actual_bootstrap is not None
+                else None
+            ),
+            "interval_protocol": {
+                "method": policy.cluster_interval_method,
+                "min_groups": policy.min_bootstrap_groups,
+                "replicates": actual_bootstrap_replicates,
+                "policy_sha256": policy.policy_sha256,
+            },
+        },
+    }
+    selected_accuracy_receipt = dict(
+        accuracy_receipts[policy.top_label_accuracy_denominator]
+    )
+    selected_accuracy_receipt.update(
+        {
+            "denominator_policy": policy.top_label_accuracy_denominator,
+            "confidence_level": 1.0 - policy.alpha,
+            "cluster_ci": (
+                actual_bootstrap["intervals"]["top_label_accuracy"]
+                if actual_bootstrap is not None
+                else None
+            ),
+        }
+    )
     return {
-        "schema_version": "candidate_set_calibration_evaluation_v1",
+        "schema_version": CALIBRATION_EVALUATION_SCHEMA,
         "status": status,
         "evidence_mode": evidence_mode,
         "frozen_count": len(frozen),
@@ -2294,14 +2539,12 @@ def evaluate_frozen_holdout(
         "metrics": metrics,
         "intervals": bundle["intervals"],
         "cluster_bootstrap": actual_bootstrap,
-        "top_label_accuracy_receipt": ({
-            "numerator": correct_count,
-            "denominator": len(frozen),
-            "value": correct_count / len(frozen),
-            "percent": 100.0 * correct_count / len(frozen),
-            "confidence_level": 1.0 - policy.alpha,
-            "cluster_ci": accuracy_interval,
-        } if actual_bootstrap is not None else None),
+        "top_label_accuracy_receipt": (
+            selected_accuracy_receipt if actual_bootstrap is not None else None
+        ),
+        "top_label_accuracy_receipts": (
+            accuracy_receipts if actual_bootstrap is not None else None
+        ),
         "ece_bins": bundle["ece_bins"],
         "counts": {**bundle["counts"], "retrieval_failclose_violations": retrieval_violations},
         "baseline_metrics": baseline_bundle["metrics"] if baseline_bundle is not None else None,

@@ -1,0 +1,4087 @@
+{
+  "scope": "SAVED_SOURCE_FINAL_ROW_EXPERT_JSON_PARTIAL_CONTEXT_NOT_ORIGINAL_RUNTIME",
+  "human_gold": false,
+  "packet": {
+    "checkpoint_result": {
+      "analysis_result": {
+        "analysis": {
+          "detected_titles": [],
+          "is_nsfw": false,
+          "micro_tags": [
+            "취향",
+            "주인공",
+            "전투스타일"
+          ],
+          "notes": "[발화 해석]\n- 발화 유형: 의견\n- 대상: 장르·트로프\n[작성자 발화·원문 귀속]\n- 장르·서사 의견: 「뭔가 실뜨기하는 주인공이 땡김」\n- 작성자 발화: 「도황처럼 실뜨기로 스테이크 큐브하는것도 괜찮고」\n- 작성자 발화: 「사소리처럼 인형사도 좋고」\n- 작성자 발화: 「약먹마처럼 유사스파이더맨하는것도 괜찮다」\n[댓글 발화·원문 귀속]\n- 댓글 작성자 ㅇㅇ: 「실뜨기 초고수 노진구」\n[원문] 뭔가 실뜨기하는 주인공이 땡김 / 도황처럼 실뜨기로 스테이크 큐브하는것도 괜찮고 / 사소리처럼 인형사도 좋고 / 약먹마처럼 유사스파이더맨하는것도 괜찮다",
+          "nsfw_assessment_reason": "MODEL_BOOLEAN_REPORTED",
+          "nsfw_assessment_status": "MODEL_REPORTED",
+          "sentiment_profile": {
+            "drift_risk": "Unknown",
+            "pacing": "Unknown",
+            "sentiment": "Neutral"
+          },
+          "user_segment": null
+        },
+        "batch_context_learning_envelope": {
+          "decoded_terms": [],
+          "identified_author": null,
+          "identified_characters": [],
+          "schema_version": "batch_context_learning_envelope_v1"
+        },
+        "identity": {
+          "anchor_strength": "low",
+          "anchor_type": "genre",
+          "blocked_official_title": null,
+          "blocked_official_title_url": null,
+          "candidate_audit_lint": [],
+          "candidate_generation_miss": false,
+          "candidate_ledger": {
+            "candidate_audit_lint_reasons": [],
+            "candidate_generation": {
+              "cap": 24,
+              "count_basis": "normalized_title_url_role_unique",
+              "emitted_source_count": 4,
+              "metadata_fingerprint": "9900ae3ca3ab2ebaf8598d6478eb82a73c51a2144a6b37e737342a60e9fbb75a",
+              "observed_sources_fingerprint": "82f1a0de41711b24dd27912acdb951b4c92815c44c878923c982475ff864a4bd",
+              "reason_codes": [
+                "upstream_completeness_unknown"
+              ],
+              "retained_sources_fingerprint": "82f1a0de41711b24dd27912acdb951b4c92815c44c878923c982475ff864a4bd",
+              "schema_version": "candidate_generation_v1",
+              "scope": "serializer_preservation_inventory",
+              "source_key_fingerprint": "5167c065f507aaa6c9a94bbe0093debfcfec7b1a7efa161a7fb34fe754f2d238",
+              "status": "UNKNOWN",
+              "unique_valid_source_count": 4,
+              "upstream_completeness": "UNKNOWN"
+            },
+            "candidate_generation_proof": {
+              "complete_receipt_count": 2,
+              "extra_receipt_count": 0,
+              "local_snapshot_count": 2,
+              "local_truncated_count": 0,
+              "metadata_fingerprint": "de744a6fd9ba3702cfc92bae7503c3e732d0d6b955ae0354f69fbce5f7e37dcf",
+              "missing_receipt_count": 19,
+              "observed_producers": [
+                "fetch",
+                "search"
+              ],
+              "plan_count": 11,
+              "plan_set_fingerprint": "8909acc29d69738deaf7cade473612b065df569b6b32d2aa6e44928618ccbb9d",
+              "planned_operation_count": 39,
+              "reason_codes": [
+                "bounded_plan_unfinished",
+                "bounded_producer_proof_truncated",
+                "planned_operation_receipt_missing",
+                "producer_receipt_truncated",
+                "producer_receipt_unknown"
+              ],
+              "receipt_count": 20,
+              "receipt_set_fingerprint": "67b5c426a49de2ba9d14b0a51fccdc0e1237ab014bc27c79c3bb916d6689e096",
+              "required_producers": [
+                "fetch",
+                "search"
+              ],
+              "schema_version": "candidate_generation_proof_v1",
+              "scope": "bounded_candidate_generation_proof",
+              "status": "TRUNCATED",
+              "truncated_receipt_count": 15,
+              "unfinished_plan_count": 7,
+              "unknown_receipt_count": 3,
+              "upstream_completeness": "UNKNOWN"
+            },
+            "candidate_ledger_status": "promotion_blocked",
+            "candidate_producer_plans": [
+              {
+                "enumeration_finished": false,
+                "metadata_fingerprint": "d08ea922af7cd69c44be220074df2dfe3d9284f8b920ab7fd30c01338ba99d4b",
+                "occurrence": 1,
+                "plan_fingerprint": "0a7282a9cf65f04f41d2a7d24ac061d476ab86ac92db9f466709764e25dfdf8b",
+                "planned_operation_count": 16,
+                "planned_operation_fingerprints": [
+                  "ff651388dfbbc4890b8d04b89fb2c691256090dced78a08d9f788e0579389f92",
+                  "65d23446701a579ce5928b24c89a0fdf6e33577d40f155dce8534a00d067e94d",
+                  "cdb6c1d50db8f1d7ff7bdfc239bb6bc06f87a54aa4d9fa844c36b389efb25deb",
+                  "89d552de2714a4a6803257cf80a297b1d381b9859a0587c3becc387046db7628",
+                  "d195107b3c2f20d3dd7e0aed31b6b231b933339e95f320f1775721baf6575045",
+                  "88fb18347fe13e40b6d76faeed1e25370bc03c035bb79850eb6992927668dd0f",
+                  "b94681541a61611046802ec918a3e19105aff99f0b025d88315df5cce42232db",
+                  "610e1a1277b1d60bc32151d2771b6386c6c19cd44ad1308985f6d76d7c81e6ed",
+                  "bce40fe333392bdd372f8c131adb302138b3726d3591788601c51ad52e9d8795",
+                  "6e3412d0d50860c3d6fba12cf35e88ae9bb1eba9f01120e9e602a11c0eb93934",
+                  "62ab556551cc6cc41067f48fea470cf3a2d600a2e0988aa1e1e5eae85ba84052",
+                  "1f771fee16f68bf83cfbf04a063c1443063a6005ad9f3c56ab9cb9e0a1d176fa",
+                  "fe19e50afec673d76b4a6526fa57076b981592598b08a6576db836651cba9fbf",
+                  "09612a0edb7e3e39328ebbfe19c2a4512cece242762c18857f2f22c65c6b7c58",
+                  "a7584a0e0897e0e0515e4b8b42ea170ae303565fcb70533816e0c892cb00edaa",
+                  "b8dc76ca394f01b6329e6b05363a899a1c2f4aef2a5b03980427124ddab5ccdc"
+                ],
+                "producer": "search",
+                "reason_codes": [
+                  "bounded_plan_unfinished"
+                ],
+                "schema_version": "candidate_producer_plan_v1",
+                "scope": "bounded_candidate_producer_plan"
+              },
+              {
+                "enumeration_finished": false,
+                "metadata_fingerprint": "ded90aaf88cbe98cf0ff7b89c011d8324f0b5eaf2760dcb72496324d87096507",
+                "occurrence": 2,
+                "plan_fingerprint": "fdff025cfb788458d4637efd77f1776407ef8df42c6710c006935fca52f94169",
+                "planned_operation_count": 6,
+                "planned_operation_fingerprints": [
+                  "40988a4b8dfba4cf7500bdbeb5e5a5d1bd3b3001fe838de36180a4f786a4c75f",
+                  "7084d56248a1c9ef3edd58c19415bd0f6c1ef18c5abe31a40396b87ae6353233",
+                  "8e1aaf1081724a7521dea28e72003e8b8b6df938f193f9523476dae17977f594",
+                  "bcba3d69a3f771ee1ba6bbc54d591f1fddcfe5360c09c603b72850c44875264c",
+                  "02100d8a14cab283257912cd4371af9c69217e8511112a6ee5d4332e9b8cde98",
+                  "673e637a8ff9a7b2d2d1c328a21c4c0640712f5e4b9795cd92336ec930401cf1"
+                ],
+                "producer": "search",
+                "reason_codes": [
+                  "bounded_plan_unfinished"
+                ],
+                "schema_version": "candidate_producer_plan_v1",
+                "scope": "bounded_candidate_producer_plan"
+              },
+              {
+                "enumeration_finished": true,
+                "metadata_fingerprint": "29214f0cdb32dbe4cc6a15bf59db2e4a36b33b9a5efc26ae1cb157b63a55dc77",
+                "occurrence": 2,
+                "plan_fingerprint": "94414e3964a2e74a4c6f57d0227dd6c66b69e76883750efc76a9d157d2ef3522",
+                "planned_operation_count": 1,
+                "planned_operation_fingerprints": [
+                  "75dd6cc82304c292c9a253022eca8630ba88ca3675fb08faa95877eb9d71ed71"
+                ],
+                "producer": "fetch",
+                "reason_codes": [
+                  "bounded_plan_finished"
+                ],
+                "schema_version": "candidate_producer_plan_v1",
+                "scope": "bounded_candidate_producer_plan"
+              },
+              {
+                "enumeration_finished": true,
+                "metadata_fingerprint": "20479108a4df68eeda8c75cbdac102852bd439e738a4e57f8f2c02fb3d6962ea",
+                "occurrence": 1,
+                "plan_fingerprint": "62784b93b4423e55491d7ec7251f8e8d8e2700d3064ae868dfd216f5a306f729",
+                "planned_operation_count": 1,
+                "planned_operation_fingerprints": [
+                  "ab25b8470a5a906f0d5f997ed959d86ddd11c73ab8285517cb3cb5bf89fb7b7d"
+                ],
+                "producer": "fetch",
+                "reason_codes": [
+                  "bounded_plan_finished"
+                ],
+                "schema_version": "candidate_producer_plan_v1",
+                "scope": "bounded_candidate_producer_plan"
+              },
+              {
+                "enumeration_finished": false,
+                "metadata_fingerprint": "b6595243e3b568faf25a2f2506fcd4df45e02c3e82b30ea3b7b4e64ee03e5276",
+                "occurrence": 3,
+                "plan_fingerprint": "c19d69c7a971f258ddf755c009b3b18bbf9c6ab535072a7d5a4f851e56e1b864",
+                "planned_operation_count": 6,
+                "planned_operation_fingerprints": [
+                  "eb4ab85397e9cbda4f9bc5fc24e22a053b13e493725c42c2b326ac5105376468",
+                  "0c2ce2f0ce7e3fb285d91e58466346840aecd85c17d58397b2ab602377b32f42",
+                  "0099e158fa0efcce4b97e6ea754ffb7c5b6fe3aa784115d791e9ff9ffd0cce78",
+                  "4e5a5bc1fc42cae56c5879f7b2010d286f0066355e3df2dc8bc75b116e75134b",
+                  "98287dda0b73f1aea1dd0ca54c0f1eb20173a60c137c6603e5792037a3af0fff",
+                  "b8bb7b690fa4367b4fac57d62ba33f9cb45d32ffb828c9dd373fd12a7b679a36"
+                ],
+                "producer": "search",
+                "reason_codes": [
+                  "bounded_plan_unfinished"
+                ],
+                "schema_version": "candidate_producer_plan_v1",
+                "scope": "bounded_candidate_producer_plan"
+              },
+              {
+                "enumeration_finished": false,
+                "metadata_fingerprint": "aa2b33e88e4222b7c70c0bf6cc4be20d64107bca6cfff9172c1c6f0f6327ccfe",
+                "occurrence": 4,
+                "plan_fingerprint": "a90018dfd0569e4daedaa75ad35bdb2fb22234477cd69784aa4e7b660ced1a77",
+                "planned_operation_count": 2,
+                "planned_operation_fingerprints": [
+                  "50fdc17916795a3b4ee80197110516e9df4f3fc0fae747ca3d03ad52de060c36",
+                  "a27678392bb5402ad99b2c33ca6ddd432d70980cb2ca7750f99b3ed59b15b88e"
+                ],
+                "producer": "search",
+                "reason_codes": [
+                  "bounded_plan_unfinished"
+                ],
+                "schema_version": "candidate_producer_plan_v1",
+                "scope": "bounded_candidate_producer_plan"
+              },
+              {
+                "enumeration_finished": true,
+                "metadata_fingerprint": "2be66c3d6d552dd89577d81a3d3339fb30a6e665b172b7c8be9386968d2f3b76",
+                "occurrence": 3,
+                "plan_fingerprint": "568903e4793a5672e8f3775df142b4993cafbea4d4d453da275c0e54f9dc91ba",
+                "planned_operation_count": 1,
+                "planned_operation_fingerprints": [
+                  "61d2da5cb24035a1c0be08930d74c6bcd3d680e9ccbcc04f8ebfc42082829d7a"
+                ],
+                "producer": "fetch",
+                "reason_codes": [
+                  "bounded_plan_finished"
+                ],
+                "schema_version": "candidate_producer_plan_v1",
+                "scope": "bounded_candidate_producer_plan"
+              },
+              {
+                "enumeration_finished": true,
+                "metadata_fingerprint": "1b6116b5c2d38876cfe52d9f359efb9b1e63b00e049e47d7254091a1ad1a7a3b",
+                "occurrence": 4,
+                "plan_fingerprint": "c9637b0f6465000f92ea75085aa238d5a6a14d8580a7f69edb1d999df028b9ce",
+                "planned_operation_count": 1,
+                "planned_operation_fingerprints": [
+                  "c2281d3d89ef39ca50dffb289b53fc26d4938af8cf12e9d77a179d1ce88585e4"
+                ],
+                "producer": "fetch",
+                "reason_codes": [
+                  "bounded_plan_finished"
+                ],
+                "schema_version": "candidate_producer_plan_v1",
+                "scope": "bounded_candidate_producer_plan"
+              },
+              {
+                "enumeration_finished": false,
+                "metadata_fingerprint": "42ec7c2c10a33ada28831c703b7d4c7f5369b484e476922c9b55f9a75a3f6bc9",
+                "occurrence": 5,
+                "plan_fingerprint": "c97845f5405d5b610e9f7bc4318b89eb82f523418d48d2ec5e687fc51ed721c3",
+                "planned_operation_count": 3,
+                "planned_operation_fingerprints": [
+                  "742c029d92e8c8cce1e73368a5247181850c28da20e8f3ab13a7eec072780c89",
+                  "4a7eda704b2167cf15a8d8061d560012d28d4a58e516d2ebc33d7e67cdc8802f",
+                  "6d891a9aec19958e2e7c8d63951313e467147efa08cc9d6f221e988f416e6a56"
+                ],
+                "producer": "search",
+                "reason_codes": [
+                  "bounded_plan_unfinished"
+                ],
+                "schema_version": "candidate_producer_plan_v1",
+                "scope": "bounded_candidate_producer_plan"
+              },
+              {
+                "enumeration_finished": false,
+                "metadata_fingerprint": "e040df699e2a58045a28ab6642ae4cd03e3e7e0c35aacd55f696656d33b93099",
+                "occurrence": 6,
+                "plan_fingerprint": "8b050fe8805885f49765b3449570456a2b5b803135a306ea296a2ad2bf8ca97d",
+                "planned_operation_count": 1,
+                "planned_operation_fingerprints": [
+                  "b8a526324c6721a6bf15fdbba0d62cda7cfdf86ffbac50532d2237554673dfbc"
+                ],
+                "producer": "search",
+                "reason_codes": [
+                  "bounded_plan_unfinished"
+                ],
+                "schema_version": "candidate_producer_plan_v1",
+                "scope": "bounded_candidate_producer_plan"
+              },
+              {
+                "enumeration_finished": false,
+                "metadata_fingerprint": "706c42d6a690e1835c9208de250d1336c0a68c45c5806360d80586c5b60ea8b5",
+                "occurrence": 7,
+                "plan_fingerprint": "23f2a0882f5d8891b9c9b7b97e3fca9fd2c892d800a712aaf4d145939d285414",
+                "planned_operation_count": 1,
+                "planned_operation_fingerprints": [
+                  "b8a526324c6721a6bf15fdbba0d62cda7cfdf86ffbac50532d2237554673dfbc"
+                ],
+                "producer": "search",
+                "reason_codes": [
+                  "bounded_plan_unfinished"
+                ],
+                "schema_version": "candidate_producer_plan_v1",
+                "scope": "bounded_candidate_producer_plan"
+              }
+            ],
+            "candidate_producer_receipts": [
+              {
+                "accepted_count": 10,
+                "attempted_count": 1,
+                "degraded": false,
+                "enumeration_finished": true,
+                "error_status": "NONE",
+                "from_cache": false,
+                "input_fingerprint": "ff651388dfbbc4890b8d04b89fb2c691256090dced78a08d9f788e0579389f92",
+                "metadata_fingerprint": "2c5a7df139bcab6b9023f7af325b84dd0559f6cce043ad800dead68a61b2168d",
+                "occurrence": 1,
+                "operation_id": "7ddba6bda7eeeb96466915370b88de1e719a17be3a50444e3446b27590f5682e",
+                "output_fingerprint": "3b163196605db1aa9a46dc26f24326f0751ed4ba965877f0a9d758421b9ddd88",
+                "plan_fingerprint": "0a7282a9cf65f04f41d2a7d24ac061d476ab86ac92db9f466709764e25dfdf8b",
+                "possible_throttle": false,
+                "producer": "search",
+                "raw_count": 25,
+                "reason_codes": [
+                  "bounded_operation_finished",
+                  "producer_output_truncated"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "TRUNCATED"
+              },
+              {
+                "accepted_count": 10,
+                "attempted_count": 1,
+                "degraded": false,
+                "enumeration_finished": true,
+                "error_status": "NONE",
+                "from_cache": false,
+                "input_fingerprint": "cdb6c1d50db8f1d7ff7bdfc239bb6bc06f87a54aa4d9fa844c36b389efb25deb",
+                "metadata_fingerprint": "4338f266df670c6468467bd661163c459ff0a397c0688ce052816c951d2568a3",
+                "occurrence": 2,
+                "operation_id": "b60b06b7a7e69ab181ae079b2916fe25ea6eb3a2143b373495f6daa0069924e8",
+                "output_fingerprint": "acf7744bee36bb920fbf96958914a5bad59c552ca1fd1649427efbcce5789c2e",
+                "plan_fingerprint": "0a7282a9cf65f04f41d2a7d24ac061d476ab86ac92db9f466709764e25dfdf8b",
+                "possible_throttle": false,
+                "producer": "search",
+                "raw_count": 10,
+                "reason_codes": [
+                  "bounded_operation_finished"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "COMPLETE"
+              },
+              {
+                "accepted_count": 7,
+                "attempted_count": 1,
+                "degraded": false,
+                "enumeration_finished": true,
+                "error_status": "NONE",
+                "from_cache": false,
+                "input_fingerprint": "89d552de2714a4a6803257cf80a297b1d381b9859a0587c3becc387046db7628",
+                "metadata_fingerprint": "b9b2a884e3c1458b5b4392686fc85640e575b61b416f02a8f107d776692f17ab",
+                "occurrence": 3,
+                "operation_id": "bef1d238effc8427924eba2d1c7743744099bcc2a3fc746c94d1c6792a5ca2eb",
+                "output_fingerprint": "a871c0f87d1db1645fc8c13ab215016f168c6efe1f4f3bd1791f89e2eb9e850b",
+                "plan_fingerprint": "0a7282a9cf65f04f41d2a7d24ac061d476ab86ac92db9f466709764e25dfdf8b",
+                "possible_throttle": false,
+                "producer": "search",
+                "raw_count": 25,
+                "reason_codes": [
+                  "bounded_operation_finished",
+                  "producer_output_truncated"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "TRUNCATED"
+              },
+              {
+                "accepted_count": 10,
+                "attempted_count": 1,
+                "degraded": false,
+                "enumeration_finished": true,
+                "error_status": "NONE",
+                "from_cache": false,
+                "input_fingerprint": "b94681541a61611046802ec918a3e19105aff99f0b025d88315df5cce42232db",
+                "metadata_fingerprint": "075ade2beef7ad595ab9c96baae02e18ed13339300c67a0de883b6ebc9c8a3e3",
+                "occurrence": 4,
+                "operation_id": "d76517f90c59501632c039bcad5941cb716388b1b3b02390f1b829649c212593",
+                "output_fingerprint": "c86d5e16f060a1640d0aa42e31da9be2fbdd1096e22755aa1a28a9c8936961c5",
+                "plan_fingerprint": "0a7282a9cf65f04f41d2a7d24ac061d476ab86ac92db9f466709764e25dfdf8b",
+                "possible_throttle": false,
+                "producer": "search",
+                "raw_count": 25,
+                "reason_codes": [
+                  "bounded_operation_finished",
+                  "producer_output_truncated"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "TRUNCATED"
+              },
+              {
+                "accepted_count": 10,
+                "attempted_count": 1,
+                "degraded": false,
+                "enumeration_finished": true,
+                "error_status": "NONE",
+                "from_cache": false,
+                "input_fingerprint": "610e1a1277b1d60bc32151d2771b6386c6c19cd44ad1308985f6d76d7c81e6ed",
+                "metadata_fingerprint": "261f12215f6e2a53d141edbbdca09359a246de316ab7089559183ae5db939681",
+                "occurrence": 5,
+                "operation_id": "12c2e316e3de1261f0171ffebe29b7ed023674ec2180c9d1e50494c69720eaee",
+                "output_fingerprint": "47cdc0219f774a826d774b4fadffa53e5c0b6cfa5168e9d3ccf19e2440f823d9",
+                "plan_fingerprint": "0a7282a9cf65f04f41d2a7d24ac061d476ab86ac92db9f466709764e25dfdf8b",
+                "possible_throttle": false,
+                "producer": "search",
+                "raw_count": 25,
+                "reason_codes": [
+                  "bounded_operation_finished",
+                  "producer_output_truncated"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "TRUNCATED"
+              },
+              {
+                "accepted_count": 10,
+                "attempted_count": 1,
+                "degraded": false,
+                "enumeration_finished": true,
+                "error_status": "NONE",
+                "from_cache": false,
+                "input_fingerprint": "bce40fe333392bdd372f8c131adb302138b3726d3591788601c51ad52e9d8795",
+                "metadata_fingerprint": "a653d35c10a7849a2c642ecba7e8a92bd51ebba5ec28bc2fa85a8424955e1f14",
+                "occurrence": 6,
+                "operation_id": "69258b3cfd9255dec0305695896a19718093f1979656be699978a5f0f999784d",
+                "output_fingerprint": "445b3aac91899a881e2375f5e481e6ab3864af4271f2b86d64660a83bfd4d1d7",
+                "plan_fingerprint": "0a7282a9cf65f04f41d2a7d24ac061d476ab86ac92db9f466709764e25dfdf8b",
+                "possible_throttle": false,
+                "producer": "search",
+                "raw_count": 25,
+                "reason_codes": [
+                  "bounded_operation_finished",
+                  "producer_output_truncated"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "TRUNCATED"
+              },
+              {
+                "accepted_count": 9,
+                "attempted_count": 1,
+                "degraded": false,
+                "enumeration_finished": true,
+                "error_status": "NONE",
+                "from_cache": false,
+                "input_fingerprint": "40988a4b8dfba4cf7500bdbeb5e5a5d1bd3b3001fe838de36180a4f786a4c75f",
+                "metadata_fingerprint": "7f09ebcbd1f7a5255975fccc3c59724a3fd0247bedc51e83de77e1c2753cb1bb",
+                "occurrence": 7,
+                "operation_id": "4cda572356c8567ad5fd68da10f6c2236cca331d74d3c1d84efa351d45e278a9",
+                "output_fingerprint": "0ec07b42c51531389e6ced915e7c4acf3d803fae7ee839e9669770dbcf57fd04",
+                "plan_fingerprint": "fdff025cfb788458d4637efd77f1776407ef8df42c6710c006935fca52f94169",
+                "possible_throttle": false,
+                "producer": "search",
+                "raw_count": 10,
+                "reason_codes": [
+                  "bounded_operation_finished",
+                  "producer_output_truncated"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "TRUNCATED"
+              },
+              {
+                "accepted_count": 10,
+                "attempted_count": 1,
+                "degraded": false,
+                "enumeration_finished": true,
+                "error_status": "NONE",
+                "from_cache": false,
+                "input_fingerprint": "7084d56248a1c9ef3edd58c19415bd0f6c1ef18c5abe31a40396b87ae6353233",
+                "metadata_fingerprint": "155785a631bfc5681cabb449c83505b6715060347f824e23968c663ac403413d",
+                "occurrence": 8,
+                "operation_id": "1a4cd5076eb83aa3b1aa39bd87da23f444b07a1c5509017ae37a446d9ed9c2f1",
+                "output_fingerprint": "45d95fec63ccb3a4b4cdc1c910b66e9e745af36ecf749456e16ac2d8e18fa7f3",
+                "plan_fingerprint": "fdff025cfb788458d4637efd77f1776407ef8df42c6710c006935fca52f94169",
+                "possible_throttle": false,
+                "producer": "search",
+                "raw_count": 12,
+                "reason_codes": [
+                  "bounded_operation_finished",
+                  "producer_output_truncated"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "TRUNCATED"
+              },
+              {
+                "accepted_count": 1,
+                "attempted_count": 0,
+                "degraded": false,
+                "enumeration_finished": false,
+                "error_status": "MISSING_META",
+                "from_cache": true,
+                "input_fingerprint": "75dd6cc82304c292c9a253022eca8630ba88ca3675fb08faa95877eb9d71ed71",
+                "metadata_fingerprint": "95153d919c1b10ca82bcd73c5880a3cbf32023fc6d3bd1ea79ea500f9f76b279",
+                "occurrence": 9,
+                "operation_id": "45928197e4e8266b2ac96c406aa0b81195a8aa4762ec20d6fe0e97de48b90d5a",
+                "output_fingerprint": "3e9c051eef78f3682d5b4845db7ff3ea694f9225c88540568f0e8fdf6f09b971",
+                "plan_fingerprint": "94414e3964a2e74a4c6f57d0227dd6c66b69e76883750efc76a9d157d2ef3522",
+                "possible_throttle": false,
+                "producer": "fetch",
+                "raw_count": 1,
+                "reason_codes": [
+                  "bounded_operation_unfinished",
+                  "cache_origin_proof_missing",
+                  "cache_replay",
+                  "producer_meta_missing"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "UNKNOWN"
+              },
+              {
+                "accepted_count": 1,
+                "attempted_count": 1,
+                "degraded": false,
+                "enumeration_finished": true,
+                "error_status": "NONE",
+                "from_cache": false,
+                "input_fingerprint": "ab25b8470a5a906f0d5f997ed959d86ddd11c73ab8285517cb3cb5bf89fb7b7d",
+                "metadata_fingerprint": "9d535c75129c3199ddcb922e46597e8e0bbfc455de8f52f6143915c6f2e8a60f",
+                "occurrence": 10,
+                "operation_id": "89f9fb4d3f5dccb360f6232c4329458372cfcd666b24e56604e67bd0a01bbd8b",
+                "output_fingerprint": "22c80e02d3c4cb5e9074146c50e1e373000e1869454dc1b38176766a8921dec3",
+                "plan_fingerprint": "62784b93b4423e55491d7ec7251f8e8d8e2700d3064ae868dfd216f5a306f729",
+                "possible_throttle": false,
+                "producer": "fetch",
+                "raw_count": 1,
+                "reason_codes": [
+                  "bounded_operation_finished"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "COMPLETE"
+              },
+              {
+                "accepted_count": 3,
+                "attempted_count": 1,
+                "degraded": false,
+                "enumeration_finished": true,
+                "error_status": "NONE",
+                "from_cache": false,
+                "input_fingerprint": "eb4ab85397e9cbda4f9bc5fc24e22a053b13e493725c42c2b326ac5105376468",
+                "metadata_fingerprint": "aa02ee418d77e4ddcaa46c9c04d672cf8296f72eda2f546d841c5ec41ed4d9b7",
+                "occurrence": 11,
+                "operation_id": "7783d7440ac57959b60ba72eb24b2113956e6d64c279d46cb8fc7e29d3bf4065",
+                "output_fingerprint": "843496c30bcbd0d5166da8f627e0c5f50b118a403f9f4ab3068d67bd96e17634",
+                "plan_fingerprint": "c19d69c7a971f258ddf755c009b3b18bbf9c6ab535072a7d5a4f851e56e1b864",
+                "possible_throttle": false,
+                "producer": "search",
+                "raw_count": 25,
+                "reason_codes": [
+                  "bounded_operation_finished",
+                  "producer_output_truncated"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "TRUNCATED"
+              },
+              {
+                "accepted_count": 10,
+                "attempted_count": 1,
+                "degraded": false,
+                "enumeration_finished": true,
+                "error_status": "NONE",
+                "from_cache": false,
+                "input_fingerprint": "0c2ce2f0ce7e3fb285d91e58466346840aecd85c17d58397b2ab602377b32f42",
+                "metadata_fingerprint": "897b8113b0faf7758e7fb7ca76e89e04d1401209d8e8cbf6666adc695fe6cb30",
+                "occurrence": 12,
+                "operation_id": "76224397c60d8f51c18d5390e0c5ed2e19dfd3147907445f0cdce58147135c54",
+                "output_fingerprint": "8395fb72cf8e77ebacd5b678e9f0cacff2ae34aee615543340649aebdc5c4a92",
+                "plan_fingerprint": "c19d69c7a971f258ddf755c009b3b18bbf9c6ab535072a7d5a4f851e56e1b864",
+                "possible_throttle": false,
+                "producer": "search",
+                "raw_count": 25,
+                "reason_codes": [
+                  "bounded_operation_finished",
+                  "producer_output_truncated"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "TRUNCATED"
+              },
+              {
+                "accepted_count": 4,
+                "attempted_count": 1,
+                "degraded": false,
+                "enumeration_finished": true,
+                "error_status": "NONE",
+                "from_cache": false,
+                "input_fingerprint": "50fdc17916795a3b4ee80197110516e9df4f3fc0fae747ca3d03ad52de060c36",
+                "metadata_fingerprint": "69d6a0c800d9e2404fe4f2c78c5203bb0944631015eaa422ab8ba683230e917a",
+                "occurrence": 13,
+                "operation_id": "b175de8611fa733dce951e35f42e8467b951a466ce47e60413c25457736ff7e7",
+                "output_fingerprint": "eedd79eec88eee581a0948ec44ef7f1d12f19c451e2db3bed0af8634a0a89ed8",
+                "plan_fingerprint": "a90018dfd0569e4daedaa75ad35bdb2fb22234477cd69784aa4e7b660ced1a77",
+                "possible_throttle": false,
+                "producer": "search",
+                "raw_count": 14,
+                "reason_codes": [
+                  "bounded_operation_finished",
+                  "producer_output_truncated"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "TRUNCATED"
+              },
+              {
+                "accepted_count": 4,
+                "attempted_count": 1,
+                "degraded": false,
+                "enumeration_finished": true,
+                "error_status": "NONE",
+                "from_cache": false,
+                "input_fingerprint": "a27678392bb5402ad99b2c33ca6ddd432d70980cb2ca7750f99b3ed59b15b88e",
+                "metadata_fingerprint": "263b74fb6c16f9a7bf1e98435cbd1cd160ad062854b0429bc1c9504b032a33e2",
+                "occurrence": 14,
+                "operation_id": "7d16b5d4ccbae08491a0b9ef272e66ad3fd9bc5002d50229344b23af930161ee",
+                "output_fingerprint": "7b821d72b945fd3699ef5523ce77ce3463951c3b5b98f6dc5108001780a8545a",
+                "plan_fingerprint": "a90018dfd0569e4daedaa75ad35bdb2fb22234477cd69784aa4e7b660ced1a77",
+                "possible_throttle": false,
+                "producer": "search",
+                "raw_count": 25,
+                "reason_codes": [
+                  "bounded_operation_finished",
+                  "producer_output_truncated"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "TRUNCATED"
+              },
+              {
+                "accepted_count": 1,
+                "attempted_count": 0,
+                "degraded": false,
+                "enumeration_finished": false,
+                "error_status": "MISSING_META",
+                "from_cache": true,
+                "input_fingerprint": "61d2da5cb24035a1c0be08930d74c6bcd3d680e9ccbcc04f8ebfc42082829d7a",
+                "metadata_fingerprint": "4a5747bc2d4951afa0908324695d9b93f45011b661102503809be9fdf092187d",
+                "occurrence": 15,
+                "operation_id": "afb3b590ebdc47c9433b2d41ed30e119e4f65758dfec0d2b67a6c4b6e416d471",
+                "output_fingerprint": "2855353c425522d9cce7e4b01d0ac6dc5e999f30c4d0ebb4f7da78eae2955785",
+                "plan_fingerprint": "568903e4793a5672e8f3775df142b4993cafbea4d4d453da275c0e54f9dc91ba",
+                "possible_throttle": false,
+                "producer": "fetch",
+                "raw_count": 1,
+                "reason_codes": [
+                  "bounded_operation_unfinished",
+                  "cache_origin_proof_missing",
+                  "cache_replay",
+                  "producer_meta_missing"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "UNKNOWN"
+              },
+              {
+                "accepted_count": 1,
+                "attempted_count": 1,
+                "degraded": false,
+                "enumeration_finished": true,
+                "error_status": "NONE",
+                "from_cache": true,
+                "input_fingerprint": "c2281d3d89ef39ca50dffb289b53fc26d4938af8cf12e9d77a179d1ce88585e4",
+                "metadata_fingerprint": "e9d413a8bd12c914ec7a35d4abf68bbc3e67c12723a02cdc3bd7fd6ef0a47a60",
+                "occurrence": 16,
+                "operation_id": "05425e43d2e1d5309aa2d99f496e4b6dba09bd5859bd91dfe4961b00c57de92b",
+                "output_fingerprint": "2386563cf6f46ef255762f47c7b50661cd9cf175caba642803612caee5dff574",
+                "plan_fingerprint": "c9637b0f6465000f92ea75085aa238d5a6a14d8580a7f69edb1d999df028b9ce",
+                "possible_throttle": false,
+                "producer": "fetch",
+                "raw_count": 1,
+                "reason_codes": [
+                  "bounded_operation_finished",
+                  "cache_origin_proof_missing",
+                  "cache_replay"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "UNKNOWN"
+              },
+              {
+                "accepted_count": 7,
+                "attempted_count": 1,
+                "degraded": false,
+                "enumeration_finished": true,
+                "error_status": "NONE",
+                "from_cache": false,
+                "input_fingerprint": "742c029d92e8c8cce1e73368a5247181850c28da20e8f3ab13a7eec072780c89",
+                "metadata_fingerprint": "186a6dc8567d4c4d45a738e3fc233c07ba89e1b605dd0f92af219dbc82f2526a",
+                "occurrence": 17,
+                "operation_id": "5e95f521e3c78943ecd97eea91c6c46f58160c96959c7520ff8d031f27dfeed1",
+                "output_fingerprint": "99a3661f8c8fd0bead698ea6bfe1c6ed91314607d5e613221f840464bcf7f3e9",
+                "plan_fingerprint": "c97845f5405d5b610e9f7bc4318b89eb82f523418d48d2ec5e687fc51ed721c3",
+                "possible_throttle": false,
+                "producer": "search",
+                "raw_count": 25,
+                "reason_codes": [
+                  "bounded_operation_finished",
+                  "producer_output_truncated"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "TRUNCATED"
+              },
+              {
+                "accepted_count": 2,
+                "attempted_count": 1,
+                "degraded": false,
+                "enumeration_finished": true,
+                "error_status": "NONE",
+                "from_cache": false,
+                "input_fingerprint": "4a7eda704b2167cf15a8d8061d560012d28d4a58e516d2ebc33d7e67cdc8802f",
+                "metadata_fingerprint": "600f2ee2e68d1e64f40b9b3508cd35249600122e3f01e2ff78fd00eadc966210",
+                "occurrence": 18,
+                "operation_id": "9d8c0b0d45a155cee2c2f21d3bb6e2914bb61dc7a9597cbeefd21f553044b9d8",
+                "output_fingerprint": "ff870e1f39051c17993cd554324551228b63ea6d6fd712888cfbc0d385e2577b",
+                "plan_fingerprint": "c97845f5405d5b610e9f7bc4318b89eb82f523418d48d2ec5e687fc51ed721c3",
+                "possible_throttle": false,
+                "producer": "search",
+                "raw_count": 25,
+                "reason_codes": [
+                  "bounded_operation_finished",
+                  "producer_output_truncated"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "TRUNCATED"
+              },
+              {
+                "accepted_count": 0,
+                "attempted_count": 1,
+                "degraded": false,
+                "enumeration_finished": true,
+                "error_status": "NONE",
+                "from_cache": false,
+                "input_fingerprint": "b8a526324c6721a6bf15fdbba0d62cda7cfdf86ffbac50532d2237554673dfbc",
+                "metadata_fingerprint": "65823dec9bd1ac3731e920607c77b47e67944c48491e8a983cc18ac365bc5cc1",
+                "occurrence": 19,
+                "operation_id": "7d781a2d3ac4eb9ab1b65bc060788eaf37692960d0381d13428d148f0d20c595",
+                "output_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+                "plan_fingerprint": "8b050fe8805885f49765b3449570456a2b5b803135a306ea296a2ad2bf8ca97d",
+                "possible_throttle": false,
+                "producer": "search",
+                "raw_count": 10,
+                "reason_codes": [
+                  "bounded_operation_finished",
+                  "producer_output_truncated"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "TRUNCATED"
+              },
+              {
+                "accepted_count": 0,
+                "attempted_count": 1,
+                "degraded": false,
+                "enumeration_finished": true,
+                "error_status": "NONE",
+                "from_cache": false,
+                "input_fingerprint": "b8a526324c6721a6bf15fdbba0d62cda7cfdf86ffbac50532d2237554673dfbc",
+                "metadata_fingerprint": "d4d9091e2f55ce05ae3863b99167ce3d9096bcc2518665bcb246eac5f7386a90",
+                "occurrence": 20,
+                "operation_id": "8e3bee5d8c7eef140f28138607852a5fc85e0251818923ff438c9db3d089c902",
+                "output_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+                "plan_fingerprint": "23f2a0882f5d8891b9c9b7b97e3fca9fd2c892d800a712aaf4d145939d285414",
+                "possible_throttle": false,
+                "producer": "search",
+                "raw_count": 17,
+                "reason_codes": [
+                  "bounded_operation_finished",
+                  "producer_output_truncated"
+                ],
+                "schema_version": "candidate_producer_receipt_v1",
+                "scope": "bounded_candidate_producer_operation",
+                "status": "TRUNCATED"
+              }
+            ],
+            "candidate_set_shadow": {
+              "action": "NOT_EVALUATED",
+              "action_applied": false,
+              "baseline_decision_fingerprint": "17e885abcee3668eec8a45c853909bf42e16596bdf9e2356765b07248e450e01",
+              "baseline_selected_candidate_id": null,
+              "candidate_set": {
+                "candidate_inventory_count_hint": 2,
+                "candidate_set_fingerprint": "2e2410a20e88c49e639824502fc3203299a210ff729d7819683463494a187ddd",
+                "candidate_set_recall_status": "NOT_EVALUABLE_GENERATION_UNKNOWN",
+                "candidates": [
+                  {
+                    "aliases": [
+                      "약먹마"
+                    ],
+                    "baseline_selected": false,
+                    "candidate_id": "cand_70bd5755dc517c66de7283a6bd7b651fb1a5d58895b8a94c0b8af482f29b0ddb",
+                    "event_eligible": true,
+                    "evidence_kinds": [
+                      "candidate_preservation"
+                    ],
+                    "identity_conflict": false,
+                    "local_preservation_types": [],
+                    "negative_evidence": [
+                      "candidate_preservation_only_no_official_detail"
+                    ],
+                    "option_kind": "WORK_CANDIDATE",
+                    "preservation_roles": [
+                      "title_candidate"
+                    ],
+                    "promotion_policies": [],
+                    "publish_support_present": false,
+                    "reason_codes": [
+                      "candidate_inventory_preserved_without_selection"
+                    ],
+                    "reference_roles": [
+                      "candidate"
+                    ],
+                    "source_fields": [
+                      "candidate_preservation_sources",
+                      "promotion_gate_evidence"
+                    ],
+                    "source_tiers": [
+                      "mixed"
+                    ],
+                    "titles": [
+                      "약먹는 천재마법사"
+                    ],
+                    "urls": []
+                  },
+                  {
+                    "aliases": [],
+                    "baseline_selected": false,
+                    "candidate_id": "cand_8722c748483034ea7a6304a2c8817682fbbc7f9ce5b3a607cb47d0002fb4343a",
+                    "event_eligible": false,
+                    "evidence_kinds": [
+                      "candidate_preservation"
+                    ],
+                    "identity_conflict": false,
+                    "local_preservation_types": [],
+                    "negative_evidence": [
+                      "candidate_source_missing_url"
+                    ],
+                    "option_kind": "OBSERVED_LATE_SURFACE",
+                    "preservation_roles": [
+                      "mentioned_work",
+                      "secondary_reference",
+                      "title_candidate"
+                    ],
+                    "promotion_policies": [],
+                    "publish_support_present": false,
+                    "reason_codes": [
+                      "candidate_inventory_preserved_without_selection"
+                    ],
+                    "reference_roles": [
+                      "mentioned"
+                    ],
+                    "source_fields": [
+                      "candidate_preservation_sources",
+                      "promotion_gate_evidence",
+                      "secondary_reference_works"
+                    ],
+                    "source_tiers": [
+                      "llm_only"
+                    ],
+                    "titles": [
+                      "실눈이라고 흑막은 아니에요!"
+                    ],
+                    "urls": []
+                  }
+                ],
+                "event_candidate_count": 1,
+                "generation_cap": 6,
+                "generation_status": "UNKNOWN",
+                "integrity_status": "GO",
+                "nil_label": "__NIL__",
+                "observation_fingerprint": "908554183b03ded39d6de7756c1ed402f1a2ef2b530764a682823972c7e2a30c",
+                "observation_signatures": [
+                  "1c344018e9812211a2d1195c904ad622e7e1fa01fd1f4d5aedc291c0c5f69744",
+                  "1ca05ee9c612bd3e1e8248d43cccc8f4685fa7e13ab3fe62a3c1d609ae5be19e",
+                  "8b6bd82f21f15bf3465fc94e5d0eff2c21e956f01e505e4b512d4064eef5d5fc",
+                  "cedc813d048b9e0b41eaf3f7f1a4bff2b81a6bc131df42d88d3d50cb385076b3",
+                  "d0a3c15d42c66e6e705377b8b193d05141b85ed54c6383a8f9184d7caf01a3b9",
+                  "d903fedc9929df81c1070ff77de14302b71cffe967a64286354104c0c9313957",
+                  "de32389cc220ecd04d71391fed8dbe6afade092a66363c02d5a17111a1c5b883"
+                ],
+                "observed_late_surface_count": 1,
+                "reason_codes": [
+                  "candidate_generation_completeness_unknown",
+                  "late_surfaces_preserved_outside_authoritative_event_space",
+                  "multiple_candidates_present"
+                ],
+                "schema_version": "candidate_set_v1",
+                "source_candidate_pair_count": 2,
+                "source_record_count": 7,
+                "typed_inventory_pair_count": 2,
+                "unlinked_surface_count": 0,
+                "work_candidate_count": 1
+              },
+              "event_probabilities": [
+                {
+                  "label": "cand_70bd5755dc517c66de7283a6bd7b651fb1a5d58895b8a94c0b8af482f29b0ddb",
+                  "probability": null
+                },
+                {
+                  "label": "__NIL__",
+                  "probability": null
+                }
+              ],
+              "input_fingerprint": "872a3b10b4c6d9b5e7a8d075641bba793c6f868a76103c50e8ec5fcec129f9c9",
+              "operational_effect": "NONE_SHADOW_ONLY",
+              "probability_status": "NOT_AVAILABLE_UNCALIBRATED",
+              "reason_codes": [
+                "candidate_generation_completeness_unknown",
+                "late_surfaces_preserved_outside_authoritative_event_space",
+                "multiple_candidates_present",
+                "probability_uncalibrated",
+                "shadow_action_not_applied"
+              ],
+              "schema_version": "candidate_set_nil_shadow_v1",
+              "selected_label": null,
+              "shadow_fingerprint": "d56e1aae664a19009174521e957d4ff5feebddc01bf133f3eac774eb03427e6f"
+            },
+            "candidate_stage_receipts": [
+              {
+                "cap": 8,
+                "count_basis": "normalized_title_unique_before_stage_row_cap",
+                "emitted_source_count": 1,
+                "metadata_fingerprint": "f05a5c16594e67ccf3e427497307f0eee3213df57b376b566285e0481dec1ada",
+                "observed_source_count": 1,
+                "observed_sources_fingerprint": "a65223338a75f4825b28eb3bda930bdd57f28c28770958cf132b16b462c6f29b",
+                "occurrence": 1,
+                "producer": "gatekeeper",
+                "reason_codes": [
+                  "upstream_completeness_unknown"
+                ],
+                "retained_source_count": 1,
+                "retained_sources_fingerprint": "a65223338a75f4825b28eb3bda930bdd57f28c28770958cf132b16b462c6f29b",
+                "schema_version": "candidate_stage_receipt_v1",
+                "scope": "expert_stage_candidate_inventory",
+                "source_key_fingerprint": "a65223338a75f4825b28eb3bda930bdd57f28c28770958cf132b16b462c6f29b",
+                "stage": "comment_title_candidates",
+                "status": "UNKNOWN",
+                "unique_valid_source_count": 1,
+                "upstream_completeness": "UNKNOWN"
+              },
+              {
+                "cap": 5,
+                "count_basis": "normalized_title_unique_before_stage_row_cap",
+                "emitted_source_count": 0,
+                "metadata_fingerprint": "ba485e8391970c44e1c5682179f0356ba42eed142bd6ba0b591637f2c9f152ca",
+                "observed_source_count": 0,
+                "observed_sources_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+                "occurrence": 1,
+                "producer": "decoder",
+                "reason_codes": [
+                  "upstream_completeness_unknown"
+                ],
+                "retained_source_count": 0,
+                "retained_sources_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+                "schema_version": "candidate_stage_receipt_v1",
+                "scope": "expert_stage_candidate_inventory",
+                "source_key_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+                "stage": "new_suspected_titles",
+                "status": "UNKNOWN",
+                "unique_valid_source_count": 0,
+                "upstream_completeness": "UNKNOWN"
+              },
+              {
+                "cap": 5,
+                "count_basis": "normalized_title_unique_before_stage_row_cap",
+                "emitted_source_count": 1,
+                "metadata_fingerprint": "884bf356f7047b56523dea547e3dd5a3d44ea5b80f0de19b32490a68b711c1e8",
+                "observed_source_count": 1,
+                "observed_sources_fingerprint": "006f93613405c4a51a4617561270ab4da2034f8f5db648c58898fa7fe762d1af",
+                "occurrence": 1,
+                "producer": "arbiter",
+                "reason_codes": [
+                  "upstream_completeness_unknown"
+                ],
+                "retained_source_count": 1,
+                "retained_sources_fingerprint": "006f93613405c4a51a4617561270ab4da2034f8f5db648c58898fa7fe762d1af",
+                "schema_version": "candidate_stage_receipt_v1",
+                "scope": "expert_stage_candidate_inventory",
+                "source_key_fingerprint": "006f93613405c4a51a4617561270ab4da2034f8f5db648c58898fa7fe762d1af",
+                "stage": "candidate_merge",
+                "status": "UNKNOWN",
+                "unique_valid_source_count": 1,
+                "upstream_completeness": "UNKNOWN"
+              },
+              {
+                "cap": 5,
+                "count_basis": "normalized_title_unique_before_stage_row_cap",
+                "emitted_source_count": 1,
+                "metadata_fingerprint": "46556925ae1082c20e8feb5221be41ad6ae3006814f82c39254ca205c4129d2f",
+                "observed_source_count": 1,
+                "observed_sources_fingerprint": "006f93613405c4a51a4617561270ab4da2034f8f5db648c58898fa7fe762d1af",
+                "occurrence": 1,
+                "producer": "arbiter",
+                "reason_codes": [
+                  "upstream_completeness_unknown"
+                ],
+                "retained_source_count": 1,
+                "retained_sources_fingerprint": "006f93613405c4a51a4617561270ab4da2034f8f5db648c58898fa7fe762d1af",
+                "schema_version": "candidate_stage_receipt_v1",
+                "scope": "expert_stage_candidate_inventory",
+                "source_key_fingerprint": "006f93613405c4a51a4617561270ab4da2034f8f5db648c58898fa7fe762d1af",
+                "stage": "llm_candidate_merge",
+                "status": "UNKNOWN",
+                "unique_valid_source_count": 1,
+                "upstream_completeness": "UNKNOWN"
+              }
+            ],
+            "hold_without_candidates": false,
+            "identity_consistency_lint_reasons": [],
+            "official_title_lint_reasons": [],
+            "output_consistency_lint_reasons": [],
+            "promotion_blocked": true,
+            "promotion_decision": {
+              "bypassed_gate": false,
+              "candidate_preserved": true,
+              "contract_version": "promotion_contract_v2",
+              "input_fingerprint": "141a92f03436c2549c95d3da460f8766649be4fa2df391b472750c5cc2f7fb8e",
+              "official_title": null,
+              "official_url": null,
+              "publish_allowed": false,
+              "reason_codes": [
+                "no_public_candidate_title",
+                "candidate_inventory_preserved_without_selection",
+                "row_discussion_missing",
+                "title_resolution_state_not_publishable",
+                "work_resolution_not_publishable",
+                "scope_unknown",
+                "scope_not_current_work",
+                "serializer_candidate_inventory_hold",
+                "candidate_inventory_unselected"
+              ],
+              "scope": {
+                "competing_candidates": [],
+                "confidence": "low",
+                "conflict_reason_codes": [
+                  "serializer_candidate_inventory_hold",
+                  "candidate_inventory_unselected"
+                ],
+                "direct_bridge_sources": [],
+                "scope_kind": "unknown"
+              },
+              "status": "candidate_only"
+            },
+            "promotion_gate_evidence": [
+              {
+                "candidate_title": "실눈이라고 흑막은 아니에요!",
+                "candidate_url": "",
+                "kind": "candidate_preservation",
+                "reason_code": "candidate_inventory_preserved_without_selection",
+                "source_path_or_snippet": "실눈이라고 흑막은 아니에요!",
+                "strength": "medium",
+                "supports_publish": false,
+                "title_url_match": null
+              },
+              {
+                "candidate_title": "약먹는 천재마법사",
+                "candidate_url": "",
+                "kind": "candidate_preservation",
+                "reason_code": "candidate_inventory_preserved_without_selection",
+                "source_path_or_snippet": "약먹는 천재마법사",
+                "strength": "medium",
+                "supports_publish": false,
+                "title_url_match": null
+              }
+            ],
+            "promotion_gate_state": {
+              "candidate_inventory_count": 2,
+              "candidate_title": "",
+              "candidate_url": "",
+              "caveated_alias_boundary": false,
+              "discussion_type": "trope_discussion",
+              "official_title_exists": false,
+              "post_id": 11383108,
+              "prior_variance_quarantine": false,
+              "row_discusses_work_as_work": false,
+              "same_title_source_movement": false,
+              "scope": {
+                "competing_candidates": [],
+                "confidence": "low",
+                "conflict_reason_codes": [
+                  "serializer_candidate_inventory_hold",
+                  "candidate_inventory_unselected"
+                ],
+                "direct_bridge_sources": [],
+                "scope_kind": "unknown"
+              },
+              "source": "serializer_candidate_inventory_preserved",
+              "title_resolution_state": "adjacent",
+              "work_resolution": "none"
+            },
+            "publish_contract_input_fingerprint": "141a92f03436c2549c95d3da460f8766649be4fa2df391b472750c5cc2f7fb8e",
+            "publish_contract_trace": {
+              "bypassed_gate": false,
+              "contract_version": "promotion_contract_v2",
+              "gate_decision": {
+                "bypassed_gate": false,
+                "candidate_preserved": true,
+                "contract_version": "promotion_contract_v2",
+                "input_fingerprint": "141a92f03436c2549c95d3da460f8766649be4fa2df391b472750c5cc2f7fb8e",
+                "official_title": null,
+                "official_url": null,
+                "publish_allowed": false,
+                "reason_codes": [
+                  "no_public_candidate_title",
+                  "candidate_inventory_preserved_without_selection",
+                  "row_discussion_missing",
+                  "title_resolution_state_not_publishable",
+                  "work_resolution_not_publishable",
+                  "scope_unknown",
+                  "scope_not_current_work",
+                  "serializer_candidate_inventory_hold",
+                  "candidate_inventory_unselected"
+                ],
+                "scope": {
+                  "competing_candidates": [],
+                  "confidence": "low",
+                  "conflict_reason_codes": [
+                    "serializer_candidate_inventory_hold",
+                    "candidate_inventory_unselected"
+                  ],
+                  "direct_bridge_sources": [],
+                  "scope_kind": "unknown"
+                },
+                "status": "candidate_only"
+              },
+              "input_fingerprint": "141a92f03436c2549c95d3da460f8766649be4fa2df391b472750c5cc2f7fb8e",
+              "post_gate_identity": {
+                "candidate_ledger_status": "promotion_blocked",
+                "official_title": null,
+                "official_url": null,
+                "title_resolution_allowed": false,
+                "title_resolution_state": "adjacent",
+                "work_resolution": "none"
+              },
+              "pre_gate_candidate": {
+                "candidate_ledger_status": null,
+                "official_title": null,
+                "official_url": null,
+                "title_resolution_allowed": null,
+                "title_resolution_state": null,
+                "work_resolution": null
+              },
+              "reason_codes": [
+                "no_public_candidate_title",
+                "candidate_inventory_preserved_without_selection",
+                "row_discussion_missing",
+                "title_resolution_state_not_publishable",
+                "work_resolution_not_publishable",
+                "scope_unknown",
+                "scope_not_current_work",
+                "serializer_candidate_inventory_hold",
+                "candidate_inventory_unselected"
+              ],
+              "scope_state": {
+                "competing_candidates": [],
+                "confidence": "low",
+                "conflict_reason_codes": [
+                  "serializer_candidate_inventory_hold",
+                  "candidate_inventory_unselected"
+                ],
+                "direct_bridge_sources": [],
+                "scope_kind": "unknown"
+              }
+            },
+            "publish_contract_version": "promotion_contract_v2",
+            "publish_ledger": {
+              "candidate_preservation": {
+                "candidate_ledger_status": null,
+                "official_title": null,
+                "official_url": null,
+                "title_resolution_allowed": null,
+                "title_resolution_state": null,
+                "work_resolution": null
+              },
+              "gate_decision": {
+                "bypassed_gate": false,
+                "candidate_preserved": true,
+                "contract_version": "promotion_contract_v2",
+                "input_fingerprint": "141a92f03436c2549c95d3da460f8766649be4fa2df391b472750c5cc2f7fb8e",
+                "official_title": null,
+                "official_url": null,
+                "publish_allowed": false,
+                "reason_codes": [
+                  "no_public_candidate_title",
+                  "candidate_inventory_preserved_without_selection",
+                  "row_discussion_missing",
+                  "title_resolution_state_not_publishable",
+                  "work_resolution_not_publishable",
+                  "scope_unknown",
+                  "scope_not_current_work",
+                  "serializer_candidate_inventory_hold",
+                  "candidate_inventory_unselected"
+                ],
+                "scope": {
+                  "competing_candidates": [],
+                  "confidence": "low",
+                  "conflict_reason_codes": [
+                    "serializer_candidate_inventory_hold",
+                    "candidate_inventory_unselected"
+                  ],
+                  "direct_bridge_sources": [],
+                  "scope_kind": "unknown"
+                },
+                "status": "candidate_only"
+              },
+              "public_publish": {
+                "candidate_ledger_status": "promotion_blocked",
+                "official_title": null,
+                "official_url": null,
+                "title_resolution_allowed": false,
+                "title_resolution_state": "adjacent",
+                "work_resolution": "none"
+              }
+            },
+            "safe_resolved": false,
+            "title_candidate_generation": {
+              "cap": 6,
+              "count_basis": "normalized_title_unique_after_policy_prune",
+              "emitted_source_count": 0,
+              "metadata_fingerprint": "f51eafcdb58549828abc657b311790529327787b7b62cc6b5b307a68b282bff7",
+              "observed_sources_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "reason_codes": [
+                "upstream_completeness_unknown"
+              ],
+              "retained_sources_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "schema_version": "title_candidate_generation_v1",
+              "scope": "title_candidate_ranked_inventory",
+              "source_key_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "status": "UNKNOWN",
+              "unique_valid_source_count": 0,
+              "upstream_completeness": "UNKNOWN"
+            },
+            "title_candidate_generation_retained_sources": [],
+            "title_resolution_allowed": false,
+            "title_resolution_state": "adjacent",
+            "work_resolution": "none"
+          },
+          "candidate_ledger_status": "promotion_blocked",
+          "candidate_preservation_sources": [
+            {
+              "confidence": "High",
+              "negative_evidence": [
+                "candidate_source_missing_url"
+              ],
+              "official_title": "실눈이라고 흑막은 아니에요!",
+              "preservation_role": "title_candidate",
+              "reference_role": "mentioned",
+              "source_tier": "llm_only"
+            },
+            {
+              "alias_or_mention": "약먹마",
+              "confidence": "Medium",
+              "negative_evidence": [
+                "candidate_preservation_only_no_official_detail"
+              ],
+              "official_title": "약먹는 천재마법사",
+              "preservation_role": "title_candidate",
+              "reference_role": "candidate",
+              "source_tier": "mixed"
+            },
+            {
+              "confidence": "High",
+              "negative_evidence": [
+                "candidate_source_missing_url"
+              ],
+              "official_title": "실눈이라고 흑막은 아니에요!",
+              "preservation_role": "mentioned_work",
+              "reference_role": "mentioned",
+              "source_tier": "llm_only"
+            },
+            {
+              "confidence": "High",
+              "negative_evidence": [
+                "candidate_source_missing_url"
+              ],
+              "official_title": "실눈이라고 흑막은 아니에요!",
+              "preservation_role": "secondary_reference",
+              "reference_role": "mentioned",
+              "source_tier": "llm_only"
+            }
+          ],
+          "comparison_target": null,
+          "consistency_flags": [
+            "notes_demoted_for_unresolved",
+            "batch_memory_alias_rescue_blocked_nonwork_context",
+            "batch_memory_alias_rescue_blocked_genre_context",
+            "known_title_abbreviation_candidate_preserved"
+          ],
+          "context_sources": [
+            "title",
+            "body",
+            "comments",
+            "search"
+          ],
+          "discussion_type": "trope_discussion",
+          "entity_mentions": [
+            {
+              "canonical_value": null,
+              "confidence": "High",
+              "entity_type": "work",
+              "role": "candidate",
+              "source": "title_candidates",
+              "text": "실눈이라고 흑막은 아니에요!"
+            },
+            {
+              "canonical_value": null,
+              "confidence": "Medium",
+              "entity_type": "character",
+              "role": "character_focus",
+              "source": "gatekeeper",
+              "text": "사소리"
+            }
+          ],
+          "evidence": null,
+          "future_watch_target": null,
+          "hold_unresolved": false,
+          "hold_without_candidates": false,
+          "identity_consistency_lint": [],
+          "identity_state": "adjacent_relevant",
+          "image_enrichment_limitations": null,
+          "image_evidence_catalog": null,
+          "image_fetch_count": null,
+          "image_fetch_success": null,
+          "inference": null,
+          "is_novel_related": true,
+          "is_relevant": false,
+          "is_resolved_work_discussion": false,
+          "mentioned_works": null,
+          "novel_identity": {
+            "heretic_url": null,
+            "official_title": null
+          },
+          "ocr_enabled": null,
+          "official_title_lint": [],
+          "output_consistency_lint": [],
+          "primary_subject_text": "실뜨기하는 주인공에 대한 선호.",
+          "primary_subject_type": "genre_discussion",
+          "primary_work": null,
+          "promotion_blocked": true,
+          "promotion_decision": {
+            "bypassed_gate": false,
+            "candidate_preserved": true,
+            "contract_version": "promotion_contract_v2",
+            "input_fingerprint": "141a92f03436c2549c95d3da460f8766649be4fa2df391b472750c5cc2f7fb8e",
+            "official_title": null,
+            "official_url": null,
+            "publish_allowed": false,
+            "reason_codes": [
+              "no_public_candidate_title",
+              "candidate_inventory_preserved_without_selection",
+              "row_discussion_missing",
+              "title_resolution_state_not_publishable",
+              "work_resolution_not_publishable",
+              "scope_unknown",
+              "scope_not_current_work",
+              "serializer_candidate_inventory_hold",
+              "candidate_inventory_unselected"
+            ],
+            "scope": {
+              "competing_candidates": [],
+              "confidence": "low",
+              "conflict_reason_codes": [
+                "serializer_candidate_inventory_hold",
+                "candidate_inventory_unselected"
+              ],
+              "direct_bridge_sources": [],
+              "scope_kind": "unknown"
+            },
+            "status": "candidate_only"
+          },
+          "promotion_gate_evidence": [
+            {
+              "candidate_title": "실눈이라고 흑막은 아니에요!",
+              "candidate_url": "",
+              "kind": "candidate_preservation",
+              "reason_code": "candidate_inventory_preserved_without_selection",
+              "source_path_or_snippet": "실눈이라고 흑막은 아니에요!",
+              "strength": "medium",
+              "supports_publish": false,
+              "title_url_match": null
+            },
+            {
+              "candidate_title": "약먹는 천재마법사",
+              "candidate_url": "",
+              "kind": "candidate_preservation",
+              "reason_code": "candidate_inventory_preserved_without_selection",
+              "source_path_or_snippet": "약먹는 천재마법사",
+              "strength": "medium",
+              "supports_publish": false,
+              "title_url_match": null
+            }
+          ],
+          "promotion_gate_state": {
+            "candidate_inventory_count": 2,
+            "candidate_title": "",
+            "candidate_url": "",
+            "caveated_alias_boundary": false,
+            "discussion_type": "trope_discussion",
+            "official_title_exists": false,
+            "post_id": 11383108,
+            "prior_variance_quarantine": false,
+            "row_discusses_work_as_work": false,
+            "same_title_source_movement": false,
+            "scope": {
+              "competing_candidates": [],
+              "confidence": "low",
+              "conflict_reason_codes": [
+                "serializer_candidate_inventory_hold",
+                "candidate_inventory_unselected"
+              ],
+              "direct_bridge_sources": [],
+              "scope_kind": "unknown"
+            },
+            "source": "serializer_candidate_inventory_preserved",
+            "title_resolution_state": "adjacent",
+            "work_resolution": "none"
+          },
+          "publish_contract_input_fingerprint": "141a92f03436c2549c95d3da460f8766649be4fa2df391b472750c5cc2f7fb8e",
+          "publish_contract_trace": {
+            "bypassed_gate": false,
+            "contract_version": "promotion_contract_v2",
+            "gate_decision": {
+              "bypassed_gate": false,
+              "candidate_preserved": true,
+              "contract_version": "promotion_contract_v2",
+              "input_fingerprint": "141a92f03436c2549c95d3da460f8766649be4fa2df391b472750c5cc2f7fb8e",
+              "official_title": null,
+              "official_url": null,
+              "publish_allowed": false,
+              "reason_codes": [
+                "no_public_candidate_title",
+                "candidate_inventory_preserved_without_selection",
+                "row_discussion_missing",
+                "title_resolution_state_not_publishable",
+                "work_resolution_not_publishable",
+                "scope_unknown",
+                "scope_not_current_work",
+                "serializer_candidate_inventory_hold",
+                "candidate_inventory_unselected"
+              ],
+              "scope": {
+                "competing_candidates": [],
+                "confidence": "low",
+                "conflict_reason_codes": [
+                  "serializer_candidate_inventory_hold",
+                  "candidate_inventory_unselected"
+                ],
+                "direct_bridge_sources": [],
+                "scope_kind": "unknown"
+              },
+              "status": "candidate_only"
+            },
+            "input_fingerprint": "141a92f03436c2549c95d3da460f8766649be4fa2df391b472750c5cc2f7fb8e",
+            "post_gate_identity": {
+              "candidate_ledger_status": "promotion_blocked",
+              "official_title": null,
+              "official_url": null,
+              "title_resolution_allowed": false,
+              "title_resolution_state": "adjacent",
+              "work_resolution": "none"
+            },
+            "pre_gate_candidate": {
+              "candidate_ledger_status": null,
+              "official_title": null,
+              "official_url": null,
+              "title_resolution_allowed": null,
+              "title_resolution_state": null,
+              "work_resolution": null
+            },
+            "reason_codes": [
+              "no_public_candidate_title",
+              "candidate_inventory_preserved_without_selection",
+              "row_discussion_missing",
+              "title_resolution_state_not_publishable",
+              "work_resolution_not_publishable",
+              "scope_unknown",
+              "scope_not_current_work",
+              "serializer_candidate_inventory_hold",
+              "candidate_inventory_unselected"
+            ],
+            "scope_state": {
+              "competing_candidates": [],
+              "confidence": "low",
+              "conflict_reason_codes": [
+                "serializer_candidate_inventory_hold",
+                "candidate_inventory_unselected"
+              ],
+              "direct_bridge_sources": [],
+              "scope_kind": "unknown"
+            }
+          },
+          "publish_contract_version": "promotion_contract_v2",
+          "publish_ledger": {
+            "candidate_preservation": {
+              "candidate_ledger_status": null,
+              "official_title": null,
+              "official_url": null,
+              "title_resolution_allowed": null,
+              "title_resolution_state": null,
+              "work_resolution": null
+            },
+            "gate_decision": {
+              "bypassed_gate": false,
+              "candidate_preserved": true,
+              "contract_version": "promotion_contract_v2",
+              "input_fingerprint": "141a92f03436c2549c95d3da460f8766649be4fa2df391b472750c5cc2f7fb8e",
+              "official_title": null,
+              "official_url": null,
+              "publish_allowed": false,
+              "reason_codes": [
+                "no_public_candidate_title",
+                "candidate_inventory_preserved_without_selection",
+                "row_discussion_missing",
+                "title_resolution_state_not_publishable",
+                "work_resolution_not_publishable",
+                "scope_unknown",
+                "scope_not_current_work",
+                "serializer_candidate_inventory_hold",
+                "candidate_inventory_unselected"
+              ],
+              "scope": {
+                "competing_candidates": [],
+                "confidence": "low",
+                "conflict_reason_codes": [
+                  "serializer_candidate_inventory_hold",
+                  "candidate_inventory_unselected"
+                ],
+                "direct_bridge_sources": [],
+                "scope_kind": "unknown"
+              },
+              "status": "candidate_only"
+            },
+            "public_publish": {
+              "candidate_ledger_status": "promotion_blocked",
+              "official_title": null,
+              "official_url": null,
+              "title_resolution_allowed": false,
+              "title_resolution_state": "adjacent",
+              "work_resolution": "none"
+            }
+          },
+          "reason": "[최종 판정]\n- 글 분류: trope_discussion\n- 제목 판정: adjacent\n- 공식 제목: 미확정\n[원문에 근거한 설명]\n글쓴이는 제목에서 실뜨기하는 주인공에 대한 선호를 밝힌다. 원문의 선호를 특정 작품의 설정이나 이미 읽은 경험으로 확정하지 않는다.\n[발화 해석]\n- 발화 유형: 의견\n- 대상: 장르·트로프\n[작성자 발화·원문 귀속]\n- 장르·서사 의견: 「뭔가 실뜨기하는 주인공이 땡김」\n- 작성자 발화: 「도황처럼 실뜨기로 스테이크 큐브하는것도 괜찮고」\n- 작성자 발화: 「사소리처럼 인형사도 좋고」\n- 작성자 발화: 「약먹마처럼 유사스파이더맨하는것도 괜찮다」\n[댓글 발화·원문 귀속]\n- 댓글 작성자 ㅇㅇ: 「실뜨기 초고수 노진구」\n[원문] 뭔가 실뜨기하는 주인공이 땡김 / 도황처럼 실뜨기로 스테이크 큐브하는것도 괜찮고 / 사소리처럼 인형사도 좋고 / 약먹마처럼 유사스파이더맨하는것도 괜찮다",
+          "reason_lines": [
+            "[최종 판정]",
+            "- 글 분류: trope_discussion",
+            "- 제목 판정: adjacent",
+            "- 공식 제목: 미확정",
+            "[원문에 근거한 설명]",
+            "글쓴이는 제목에서 실뜨기하는 주인공에 대한 선호를 밝힌다. 원문의 선호를 특정 작품의 설정이나 이미 읽은 경험으로 확정하지 않는다.",
+            "[발화 해석]",
+            "- 발화 유형: 의견",
+            "- 대상: 장르·트로프",
+            "[작성자 발화·원문 귀속]",
+            "- 장르·서사 의견: 「뭔가 실뜨기하는 주인공이 땡김」",
+            "- 작성자 발화: 「도황처럼 실뜨기로 스테이크 큐브하는것도 괜찮고」",
+            "- 작성자 발화: 「사소리처럼 인형사도 좋고」",
+            "- 작성자 발화: 「약먹마처럼 유사스파이더맨하는것도 괜찮다」",
+            "[댓글 발화·원문 귀속]",
+            "- 댓글 작성자 ㅇㅇ: 「실뜨기 초고수 노진구」",
+            "[원문] 뭔가 실뜨기하는 주인공이 땡김 / 도황처럼 실뜨기로 스테이크 큐브하는것도 괜찮고 / 사소리처럼 인형사도 좋고 / 약먹마처럼 유사스파이더맨하는것도 괜찮다"
+          ],
+          "recommendation_candidates": null,
+          "relevance_scope": "adjacent",
+          "safe_resolved": false,
+          "search_evidence_catalog": [
+            {
+              "domain": "m.munpia.com",
+              "eid": "E001",
+              "purpose": "compound_title_character_split_search",
+              "query": "스테이크 큐브 웹소설",
+              "rank": 1,
+              "snippet": "이어서 두툼한··· 큐브 스테이크 형식으로 잘라둔 척아이롤과 새우가 웍 안으로 미끄러져 들어갔다. - 화악! 손목의 스냅을 이용해 웍을 허공으로 튕겨 올리자, 고압 버너의 시뻘건 불길이 웍 안으로 빨려 들어가며 식재료를 집어삼키는 듯한 모습이었다. 전생의 기억 덕분에 있는 온도를 눈빛만으로 읽어내던 드워프의 감각. 불을 다루는 데 있어서 나를 능가할 자는 이...",
+              "source_rank": 1,
+              "source_tier": "platform_reader_page",
+              "title": "웹소설의 유토피아, 글세상 문피아",
+              "url": "https://m.munpia.com/novel/viewer/591880/8699280"
+            },
+            {
+              "domain": "namu.wiki",
+              "eid": "E002",
+              "purpose": "compound_title_character_split_search",
+              "query": "스테이크 큐브 웹소설",
+              "rank": 2,
+              "snippet": "개요 한국의 아카데미 TS물 웹소설. 작가는 별불꽃. 빙의당함과 동시에 TS된 여주 아르테 이시스가, 자신 외의 사람들은 전부 작가가 마음대로 움직이는 소설 속 인형이라고 생각하며 거리낌없이 행동하다가 점점 진실을 깨닫는 과정의 심리 묘사가... 허나 문제는 그런 명목으로 주인공과 작가가 하는 짓거리들이 마수와 대화를 시도한다거나, 사람을 큐브 스테이크마냥...",
+              "source_rank": 2,
+              "source_tier": "wiki",
+              "title": "실눈이라고 흑막은 아니에요!",
+              "url": "https://namu.wiki/w/%EC%8B%A4%EB%88%88%EC%9D%B4%EB%9D%BC%EA%B3%A0%20%ED%9D%91%EB%A7%89%EC%9D%80%20%EC%95%84%EB%8B%88%EC%97%90%EC%9A%94!"
+            },
+            {
+              "domain": "www.joara.com",
+              "eid": "E003",
+              "purpose": "compound_title_character_split_search",
+              "query": "스테이크 큐브 웹소설",
+              "rank": 3,
+              "snippet": "조아라 웹소설 메뉴 [프리파라] 동경 걱지 패러디 [닌타마] 호접지몽 타타1430 패러디 [ 헌터x헌터 ] 히소카로소이다 안녕히가신창오 패러디 [해리포터] 그 소녀가 돌아왔다. 사유리Sayuri 패러디 [귀멸의 칼날] 큐브 스테이크가 되고 싶지 않아요 han91 패러디 [원피스] All for Her 정ㆍ 패러디 [하이큐]네임포비아 고료 패러디 [괴담출근×마비] 그래서 제...",
+              "source_rank": 3,
+              "source_tier": "web",
+              "title": "조아라 웹소설 메뉴",
+              "url": "http://www.joara.com/main/shortcut/genre/parody/all?category=9,6&api_key=mw_8ba234e7801ba288554ca07ae44c7&ver=3.2.0&device=mw&deviceuid=mw&devicetoken=mw&token=mw&offset=25&page=323&icd=0&store=all&age_constrict=all&orderby=redate&gnb_idx=5&page=327"
+            },
+            {
+              "domain": "namu.wiki",
+              "eid": "E004",
+              "purpose": "ambiguous_title_track",
+              "query": "실뜨기 정식 제목",
+              "rank": 4,
+              "snippet": "2026년 1월 18일 · 1. 개요 [편집] 실뜨기 는 고리 모양의 끈 을 이용해서 하는 놀이 이다. 주로 털실을 묶어서 많이 한다. 실이 너무 짧으면 …자세히 읽기",
+              "source_rank": 4,
+              "source_tier": "wiki",
+              "title": "실뜨기 - 나무위키",
+              "url": "https://namu.wiki/w/%EC%8B%A4%EB%9C%A8%EA%B8%B0"
+            },
+            {
+              "domain": "namu.wiki",
+              "eid": "E005",
+              "purpose": "ambiguous_title_track",
+              "query": "실뜨기 정식 제목",
+              "rank": 5,
+              "snippet": "tva 1기 9화에서 나나미와 사자 계약을 하여 정식으로 나나미의 두 번째 사자가 된다. tva 1기 11화에서 하계를 둘러보고 오겠다며 도쿄로 외출을 나가는데 사이비한테 잡혀서 강매... 전담 성우가 부른 'ひとりあやとり(혼자 실뜨기)', '神酒PARTY(신주PARTY)', 'ひとしずく(한 방울)'라는 제목의 캐릭터송이 있다. 2015년, 2016년에 공연한 오늘부터 신령님 뮤지컬의 미즈키 배우는...",
+              "source_rank": 5,
+              "source_tier": "wiki",
+              "title": "미즈키(오늘부터 신령님)",
+              "url": "https://namu.wiki/w/%EB%AF%B8%EC%A6%88%ED%82%A4(%EC%98%A4%EB%8A%98%EB%B6%80%ED%84%B0%20%EC%8B%A0%EB%A0%B9%EB%8B%98)"
+            },
+            {
+              "domain": "namu.wiki",
+              "eid": "E006",
+              "purpose": "character_event_reverse_track",
+              "query": "뭔가 사소리 웹소설",
+              "rank": 6,
+              "snippet": "유년기 현재의 악명과는 다르게 어렸을 적의 사소리는 여타 아이들과 다름없이 어머니와 아버지의 사랑을 받는 평범한 아이였다. 어느 날 아버지와 어머니는 임무를 수행하던 중 하얀이빨 하타케 사쿠모에게 살해당한다. 사소리는 그것을 모른 채... 치요는 손자의 다친 마음을 위로하기 위해 사소리에게 꼭두각시 인형을 보여주고 공방을 마음대로 사용해도 된다고...",
+              "source_rank": 6,
+              "source_tier": "wiki",
+              "title": "사소리(나루토)/작중 행적",
+              "url": "https://namu.wiki/w/%EC%82%AC%EC%86%8C%EB%A6%AC(%EB%82%98%EB%A3%A8%ED%86%A0)/%EC%9E%91%EC%A4%91%20%ED%96%89%EC%A0%81"
+            },
+            {
+              "domain": "www.fmkorea.com",
+              "eid": "E007",
+              "purpose": "character_event_reverse_track",
+              "query": "뭔가 사소리 웹소설",
+              "rank": 7,
+              "snippet": "2026.01.04.2부시작하면서 뭔가 싸하더라;; 맨처음에 데이다라,사소리 처음등장할때 난 엄청 궁금했음 과연 얼마나 대단한 포스를 보여줄지;; 근데 생각보다 너무약해서 충격먹음 거기다가 뭔가... 솔직히 아무런 기대를 안하고봤음 많은사람들이 페인전까지는 명작이라고 말을 많이하는데 난 납득을 못함 그전에 이미 너무 실망해서;; 최종장은 뭐 다들 망작인거 아니깐 패스하고",
+              "source_rank": 7,
+              "source_tier": "web",
+              "title": "난 나루토 재밌는지 잘 모르겠다 - 웹툰/웹소설/만화",
+              "url": "https://www.fmkorea.com/9347561326"
+            },
+            {
+              "domain": "gall.dcinside.com",
+              "eid": "E008",
+              "purpose": "ambiguous_title_track",
+              "query": "실뜨기 웹소설",
+              "rank": 8,
+              "snippet": "2024.12.02.노진구(노비노비타) 스펙)-실뜨기(보육사 또는 유치원정교사/ 뜨개질사/ 바느질/ 재봉사/ 수선사/ 세탁소 사장)-사격(사격선수/ 말단 하급 경찰공무원/ 자위대 자경대원)-만화(만화가, 아동동화 작가, 웹소설 또는 라노",
+              "source_rank": 8,
+              "source_tier": "community",
+              "title": "게으른 노진구보다 못하다면 개추 주셈 - 게으름 마이너 갤러리",
+              "url": "https://gall.dcinside.com/mgallery/board/view/?id=laziness&no=350"
+            },
+            {
+              "domain": "gall.dcinside.com",
+              "eid": "E009",
+              "purpose": "character_event_reverse_track",
+              "query": "뭔가 사소리 웹소설",
+              "rank": 9,
+              "snippet": "2024.06.14.잘못된 내용 포함될 수 있는 웹소설 원작서 주요 말장난 몇개 해설. 혼자 편집해 보면서 정리해온거라 이 말장난 해설이 맞나 모르지만, 지적 당해야 틀린걸 아니 - 산라쿠 : 주인공의... 그대로 - 사소리스노마타 : 드립 재료는 일야성(一夜城) 스노마타(墨俣城), 도요토미 히데요시가 하룻밤만에 축성했다는 전설을 지닌 나무로 만든 요새 같은 성에 앞에는 전갈을...",
+              "source_rank": 9,
+              "source_tier": "community",
+              "title": "개인적인 원작 말장난 해설 + 샹프로 소설 편집판 1장 (1) - 샹그릴라 프론티어 ....",
+              "url": "https://gall.dcinside.com/mgallery/board/view/?id=shangpro&no=884"
+            },
+            {
+              "domain": "gall.dcinside.com",
+              "eid": "E010",
+              "purpose": "ambiguous_title_track",
+              "query": "실뜨기 웹소설",
+              "rank": 10,
+              "snippet": "2024.12.23.내용은 주인공이 상점능력으로 인생역전하는 내용인데 골드로 마법상점에서 물품사고 레벨업하는게 주된 흐름이였습니다. 초반에 실뜨기 바늘사서 목도리로 돈버는게 기억에 남는데 혹시 아시는분 계십니까~ ㅠㅠ 카카오 연재작 입니다.",
+              "source_rank": 10,
+              "source_tier": "community",
+              "title": "작품 하나 찾아주실분 ㅠㅠ 제목이 도저히기억안나요 - 웹소설 연재 마이너 갤....",
+              "url": "https://gall.dcinside.com/mgallery/board/view/?id=tgijjdd&no=1038195"
+            },
+            {
+              "domain": "namu.wiki",
+              "eid": "E011",
+              "purpose": "title_search_community",
+              "query": "유사스파이더맨 사소리",
+              "rank": 11,
+              "snippet": "2026년 9월 17일 · 유사성 등 둘 이상의 사물 혹은 개념이 비슷할 때 사용하지만 유사품, 유사과학, 유사역사학 등의 단어에서 볼 수 있듯 … [본문] 최근 변경최근 토론 특수 기능 # 유사 최근 수정 시각: 2026-04-05 14:47:51 6 편집 편집 IP 우회 수단(프록시 서버, VPN, Tor 등)이나 IDC 대역 IP로 접속하셨습니다. (#11759424) (VPN이나 iCloud의 비공개 릴레이를 사용 중인 경우 나타날 수 있습니다.) 잘못된 IDC 대역 차단이라고 생각하시는 경우 **게시판**에 문의하시길 바랍니다. 닫기 토론역사 분류 * 동음이의어 * 성씨/일본 * 이름/일본 * 한자어 * 멸칭 1. 동음이의어 1.1. 類似1.2. 流沙1.3. 類斯1.4. 有司1.5. 儒士1.6. 儒奢1.7. 幽思1.8. 攸司1....",
+              "source_rank": 11,
+              "source_tier": "wiki",
+              "title": "유사 - 나무위키",
+              "url": "https://namu.wiki/w/%EC%9C%A0%EC%82%AC"
+            },
+            {
+              "domain": "namu.wiki",
+              "eid": "E012",
+              "purpose": "title_search_community",
+              "query": "유사스파이더맨 사소리",
+              "rank": 12,
+              "snippet": "뮤지컬 라파치니의 정원도 유사한 이야기를 다루고 있다. 4.2. 게임 게임에서는 가공의 독을 많이 표현해왔지만 역시 현실과는 거리가 멀다. 해독제를 투여해도 치료되려면 오랜 시간이 걸리는 현실과 달리 게임에서는 중독되더라도 회복물약이나 해독제 한모금으로 아주 쉽게 해결된다. 시간이 지나면 자연스럽게 독의 효과가 사라지는 경우도 많고, 난이도가 있는 RPG라...[본문] 최근 변경최근 토론 특수 기능 # 독극물/창작물 최근 수정 시각: 2026-10-11 11:24:28 10 편집토론역사 분류 * 속성 * 창작물 * 독 * 초능력 상위 문서: 독극물 1. 개요2. 묘사3. 색상4. 매체에서 4.1. 문학4.2. 게임 5. 독 조작6. 가공의 독극물7. 캐릭터 ## 1. 개요[]( 창작물에서 다루어지는 독극물에 대한 문서. 독극물이 독립된...",
+              "source_rank": 12,
+              "source_tier": "wiki",
+              "title": "독극물/창작물 - 나무위키",
+              "url": "https://namu.wiki/w/%EB%8F%85%EA%B7%B9%EB%AC%BC/%EC%B0%BD%EC%9E%91%EB%AC%BC"
+            },
+            {
+              "domain": "novel.naver.com",
+              "eid": "E013",
+              "purpose": "compound_title_character_split_search",
+              "query": "스테이크 큐브 웹소설",
+              "rank": 13,
+              "snippet": "2026.05.19.하연의 말에 인태의 젓가락이 멈췄다. 다시 움직였지만, 목 아래로 서늘한 열감이 흘러내렸다. 그녀가 기억하고 있었다. 자신의 알레르기를. 젓가락으로 연신 뒤적거리던 큐브 스테이크와 치즈가 올라간 구운 아스파라거스. 아무래도 그 소스에 와인이 들어 있었던 모양이다. 인태는 와인과 치즈를 함께 먹으면 알레르기 반응이 올라왔다. 하연과 첫 데이트 날, 파인다이닝에서 .....",
+              "source_rank": 13,
+              "source_tier": "web",
+              "title": "6화. 진상, 개 같은 봄날",
+              "url": "https://novel.naver.com/challenge/detail?novelId=1228319&volumeNo=6"
+            },
+            {
+              "domain": "talkerstalk.tistory.com",
+              "eid": "E014",
+              "purpose": "ambiguous_title_track",
+              "query": "실뜨기 정식 제목",
+              "rank": 14,
+              "snippet": "2020년 11월 5일 · 실뜨기 알아보기. 실뜨기 하는 방법. 어릴 때 실이나 줄을 가지고 동네나 학교에서 친구들과 실뜨기를 하던 기억들이 …",
+              "source_rank": 14,
+              "source_tier": "web",
+              "title": "실뜨기 알아보기. 실뜨기 하는 방법.",
+              "url": "https://talkerstalk.tistory.com/216"
+            },
+            {
+              "domain": "www.instiz.net",
+              "eid": "E015",
+              "purpose": "character_event_reverse_track",
+              "query": "뭔가 사소리 웹소설",
+              "rank": 15,
+              "snippet": "2013.08.19.게시된 카테고리 BL웹툰/웹소설 주의할점이나 키워드만 써놓을게!! 나도 내일 개학이라서 ㅋㅋㅋ 안써놓은건 기억안나는거라고 생각해줰ㅋㅋㅋㅋ 색깔칠한건 그중에서도... 변화-114 사소리 동생여주 ,나루토→헌터 강철/해리 penance-37,완 외국분 소설 허락맡고 번역한소설, 마지막부분에 있는 플라스크속의 작은난쟁이 걔랑 싸우다가 에드랑 알이...",
+              "source_rank": 15,
+              "source_tier": "web",
+              "title": "조아라 소설 추천 목록 (패러디많음주의 해리포터많음주의) - 인스티즈(instiz) BL....",
+              "url": "https://www.instiz.net/name/4349084"
+            },
+            {
+              "domain": "stay.visitseoul.net",
+              "eid": "E016",
+              "purpose": "compound_title_character_split_search",
+              "query": "스테이 크큐브 웹소설",
+              "rank": 16,
+              "snippet": "서울스테이는 서울시내 25개 자치구에서 등록증을 발급받아 운영하고 있는 '외국인관광 도시민박업'과 '한옥체험업'이 등록할 수 있으며 등록 …",
+              "source_rank": 16,
+              "source_tier": "web",
+              "title": "서울스테이 - Seoul",
+              "url": "https://stay.visitseoul.net/cms/index"
+            },
+            {
+              "domain": "piuri.com",
+              "eid": "E017",
+              "purpose": "compound_title_character_split_search",
+              "query": "스테이크 큐브 웹소설",
+              "rank": 17,
+              "snippet": "작품설명 ; 자그마치 10년 세월이야! 당신 볼 때마다 심장에 사리가 생길 지경이라고! 부모의 무관심 속에 방치된 채 삐뚤어진 삶을 살아가던 태성그룹 회장의 외아들 서강우. 아버지를 향한 반항심에 무심코 집을 나와 내려갔던 부산에서 그는 자신의 메말랐던 인생을 바꿔 준 여자를 만났다. 우연히 들어간 평범한 분식집 <라면에 김밥>의 주인이자 정에 목말랐던 그를 진심으로....",
+              "source_rank": 17,
+              "source_tier": "web",
+              "title": "라면과 스테이크 - 19금 로맨스소설",
+              "url": "https://piuri.com/item.php?it_id=98837"
+            },
+            {
+              "domain": "www.dmitory.com",
+              "eid": "E018",
+              "purpose": "character_event_reverse_track",
+              "query": "뭔가 사소리 웹소설",
+              "rank": 18,
+              "snippet": "2018.06.11.요즘 패테기가 왔나 뭘 읽어도 재미없어서 선작목록과 습작목록 훓어보면서 연중된 작품과 완결된 작품의 비율 차이를... 흥미롭고 사소리랑 싸우는 장면도 인상깊었음. 중닌 시험에서 사쿠라vs사스케에서 사쿠라가 시전한 토둔 미로랑 사쿠라... 노마십가 블리치 패러디인데 쿠하츠=굴림 전문 작가라는 공식이 세워졌을 정도로 주인공이 엄청 구르기로 유명한 소설이었지.....",
+              "source_rank": 18,
+              "source_tier": "web",
+              "title": "노벨정원 - 톨들이 생각하는 추억의 패러디는 뭐야?",
+              "url": "https://www.dmitory.com/novel/25925299"
+            },
+            {
+              "domain": "www.dmitory.com",
+              "eid": "E019",
+              "purpose": "character_event_reverse_track",
+              "query": "뭔가 사소리 웹소설",
+              "rank": 19,
+              "snippet": "2025.05.19.소년만화나 액션물 같은데서나 나올법한 느낌을 찾고 있는데... 이누야샤 반코츠x가영이나 나루토 사소리x사쿠라나 악역이라기엔 애매하지만 슬레이어즈 제로스x리나 이런 느낌... 이런 느낌의 남주여주는 없는걸까 로맨스 적어도 괜찮고 많아도 괜찮고 둘이 엮이기만 하면 뭐든 괜찮아 유치해도 잘 봄 플랫폼 안가림 장르 안가림 판무나 웹툰도 추천받음ㅠ",
+              "source_rank": 19,
+              "source_tier": "web",
+              "title": "노벨정원 - 악역남캐x선역여캐 느낌 나는 소설은 잘 없겠지?",
+              "url": "https://www.dmitory.com/novel/366214212"
+            },
+            {
+              "domain": "m.blog.naver.com",
+              "eid": "E020",
+              "purpose": "ambiguous_title_track",
+              "query": "실뜨기 정식 제목",
+              "rank": 20,
+              "snippet": "2025년 1월 20일 · 실뜨기 1인 놀이는 다양한 모양을 만들 수 있어요. 학교에서 전통놀이 시간에 배웠다면서 이것저것 만들어서 …",
+              "source_rank": 20,
+              "source_tier": "web",
+              "title": "아이와 함께 실뜨기놀이, 실뜨기 놀이 방법 - 네이버 블로그",
+              "url": "https://m.blog.naver.com/ira45/223728757666"
+            },
+            {
+              "domain": "blog.naver.com",
+              "eid": "E021",
+              "purpose": "ambiguous_title_track",
+              "query": "실뜨기 웹소설",
+              "rank": 21,
+              "snippet": "2025.07.12.10년 연재 웹소설을 원작으로 “소설 속 세계가 현실이 된다”는 파격 설정을 구현하기 위해 김병우 감독은 전체 컷의 80% 이상을 VFX로 설계했고, ‘신과함께’ ‘기생충’을 만든... 무술감독 정윤헌은 캐릭터별 성격을 반영해 ‘김독자’의 리얼 액션, ‘유중혁’의 미학적 액션, ‘유상아’의 실뜨기 모티프 액션을 각각 설계해 “VR게임을 보는 듯한 몰입감”을...",
+              "source_rank": 21,
+              "source_tier": "web",
+              "title": "웹소설의 신화를 스크린으로…‘전지적 독자 시점’ 제작 비하인드 대공개",
+              "url": "https://blog.naver.com/intery56/223930592486"
+            },
+            {
+              "domain": "m.blog.naver.com",
+              "eid": "E022",
+              "purpose": "ambiguous_title_track",
+              "query": "실뜨기 정식 제목",
+              "rank": 22,
+              "snippet": "2021년 8월 8일 · 요즘 집콕하는 시간이 많아진 아이들이, 혼자서 갖가지 모양을 만드는 혼자서 하는 실뜨기부터 한 번에 여러 모양을 …",
+              "source_rank": 22,
+              "source_tier": "web",
+              "title": "집콕놀이 어린이실뜨기 83가지 노하우 [놀면서 똑똑해지는 ...",
+              "url": "https://m.blog.naver.com/lovelylife7/222461995573"
+            },
+            {
+              "domain": "hanok.seoul.go.kr",
+              "eid": "E023",
+              "purpose": "compound_title_character_split_search",
+              "query": "스테이 크큐브 웹소설",
+              "rank": 23,
+              "snippet": "한옥체험업 숙소 구분, 이름, 주소, 상세보기 테이블입니다.",
+              "source_rank": 23,
+              "source_tier": "web",
+              "title": "서울한옥 관광 및 숙박 > 서울한옥스테이 | 서울한옥포털 - Seoul",
+              "url": "https://hanok.seoul.go.kr/front/kor/exp/expStay.do"
+            },
+            {
+              "domain": "www.sto.or.kr",
+              "eid": "E024",
+              "purpose": "compound_title_character_split_search",
+              "query": "스테이 크큐브 웹소설",
+              "rank": 24,
+              "snippet": "서울스테이는 서울시 소재 게스트하우스 브랜드입니다. 서울스테이에는 서울시내 25개 자치구에 등록한 ‘외국인관광 도시민박업’ 및 …",
+              "source_rank": 24,
+              "source_tier": "web",
+              "title": "관광상품 및 자원개발",
+              "url": "https://www.sto.or.kr/tourism01/view?stBusinessSeq=5"
+            }
+          ],
+          "search_health": {
+            "accepted": 80,
+            "cache_hits": 0,
+            "degraded": 0,
+            "degraded_recovered": 0,
+            "degraded_zero": 0,
+            "degraded_zero_suppressed": 0,
+            "direct_search_results": 0,
+            "direct_search_used": 0,
+            "fallback_recovered": 0,
+            "filtered": 38,
+            "headless_used": 0,
+            "queries_issued": 16,
+            "raw": 323,
+            "retried": 0,
+            "status": "ok",
+            "unrecovered_degraded": 0,
+            "upstream_zero": 3
+          },
+          "secondary_reference_works": [
+            {
+              "alias_or_mention": null,
+              "confidence": "High",
+              "content_status": null,
+              "heretic_url": null,
+              "locked": false,
+              "negative_evidence": [
+                "candidate_source_missing_url"
+              ],
+              "official_title": "실눈이라고 흑막은 아니에요!",
+              "page_type": null,
+              "reference_role": "mentioned",
+              "resolved_recall_anchor": null,
+              "source_tier": "llm_only"
+            }
+          ],
+          "slang_insight": null,
+          "subtype": "genre_trope_discussion",
+          "system_state": "clean",
+          "title_candidates": null,
+          "title_resolution_allowed": false,
+          "title_resolution_state": "adjacent",
+          "topicality": "adjacent_relevant",
+          "vlm_chunks_sent": null,
+          "vlm_enabled": null,
+          "vlm_enrichment_used": null,
+          "vlm_total_bytes": null,
+          "work_resolution": "none"
+        },
+        "post_id": 11383108
+      },
+      "author": "ㅇㅇ",
+      "author_ip": null,
+      "comment_context_lines": [
+        "#1 speaker=user1 author=ㅇㅇ role=author_match_unverified comment_id=39241928"
+      ],
+      "comment_dialogue_context_lines": [
+        "#1 speaker=user1 author=ㅇㅇ role=author_match_unverified comment_id=39241928 text=실뜨기 초고수 노진구"
+      ],
+      "comment_metadata": [
+        {
+          "author": "ㅇㅇ",
+          "comment_id": "39241928",
+          "created_at": "2025.11.16 16:48:55",
+          "gallery_id": "genrenovel",
+          "index": 0,
+          "ip": null,
+          "is_post_author": false,
+          "post_author_match_unverified": true,
+          "reply_level": 0,
+          "reply_to_comment_id": null,
+          "speaker": "user1"
+        }
+      ],
+      "comments": [
+        "실뜨기 초고수 노진구"
+      ],
+      "content": [
+        "도황처럼 실뜨기로 스테이크 큐브하는것도 괜찮고",
+        "사소리처럼 인형사도 좋고",
+        "약먹마처럼 유사스파이더맨하는것도 괜찮다"
+      ],
+      "content_blocks": [
+        {
+          "text": "도황처럼 실뜨기로 스테이크 큐브하는것도 괜찮고",
+          "type": "text"
+        },
+        {
+          "text": "사소리처럼 인형사도 좋고",
+          "type": "text"
+        },
+        {
+          "text": "약먹마처럼 유사스파이더맨하는것도 괜찮다",
+          "type": "text"
+        }
+      ],
+      "created_at": "2025-11-16 16:46:27",
+      "gallery_id": "genrenovel",
+      "image_count": 0,
+      "image_urls": [],
+      "ip": null,
+      "post_author": "ㅇㅇ",
+      "post_id": 11383108,
+      "post_ip": null,
+      "run_meta": {
+        "config_hash": "15ad54d962d7",
+        "decision_call_attempt_receipt": {
+          "closure_frame_sha256": "5940bed7fff5a047f9c6588c369c16c9d3da5bea5ea24198c124fb1d77128de2",
+          "event_root_sha256": "e0299e2e7572a0ac9a22f0a3920939673aafc7eb608a1693ba7e1015503180d2",
+          "publication_decision_id_preview": "e0eb996929d2340686419b7175f3a9a17ab46670c8076dabc933a54b628b1a3f",
+          "publication_link_decision_id": null,
+          "publication_link_frame_sha256": null,
+          "publication_link_status": "PENDING_EXTERNAL_LEDGER_LINK",
+          "publication_shadow_observation": null,
+          "row": {
+            "attempt_run_id": "20261013_181711_146907",
+            "input_index": 24,
+            "post_id": 11383108,
+            "publication_scope_id": "c4b9d6d290ef318d58a68b1243790dc00cd90cb17d8508c01b08aca7dce7f001",
+            "row_attempt_id": "0941c1276e543e8c04edf9edb73764a5fdaf6de248ba6ee3f048ebb6347e2613",
+            "schema_version": "decision_call_row_attempt_v1"
+          },
+          "schema_version": "decision_call_attempt_receipt_v1"
+        },
+        "decision_call_ledger": {
+          "closure_frame_sha256": "5940bed7fff5a047f9c6588c369c16c9d3da5bea5ea24198c124fb1d77128de2",
+          "closure_kind": "ROW_SEAL",
+          "event_frame_count": 30,
+          "event_root_sha256": "e0299e2e7572a0ac9a22f0a3920939673aafc7eb608a1693ba7e1015503180d2",
+          "ledger_scope_sha256": "56a28ef6a97a94dfb3c3b03a289802f4df215d54215148a5a2c5e06057779701",
+          "path": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\p4_current_followup_actual80_parallel12_20261013\\run\\result_decision_call_ledger",
+          "publication_scope_id": "c4b9d6d290ef318d58a68b1243790dc00cd90cb17d8508c01b08aca7dce7f001",
+          "row": {
+            "attempt_run_id": "20261013_181711_146907",
+            "input_index": 24,
+            "post_id": 11383108,
+            "publication_scope_id": "c4b9d6d290ef318d58a68b1243790dc00cd90cb17d8508c01b08aca7dce7f001",
+            "row_attempt_id": "0941c1276e543e8c04edf9edb73764a5fdaf6de248ba6ee3f048ebb6347e2613",
+            "schema_version": "decision_call_row_attempt_v1"
+          },
+          "schema_version": "decision_call_row_ledger_ref_v1"
+        },
+        "decision_call_ledger_summary": {
+          "actual_kpi_status": "PENDING_INDEPENDENT_READBACK",
+          "actual_metrics": {
+            "completion_tokens": null,
+            "expert_calls": null,
+            "prompt_tokens": null,
+            "total_tokens": null
+          },
+          "derived_observation": {
+            "completion_tokens": 13457,
+            "expert_calls": 15,
+            "prompt_tokens": 214690,
+            "retry_count": 0,
+            "text_calls": 15,
+            "total_tokens": 228147,
+            "vlm_calls": 0
+          },
+          "reason_codes": [
+            "INDEPENDENT_READBACK_NOT_BOUND"
+          ],
+          "schema_version": "decision_call_row_summary_v1",
+          "trace_errors": [],
+          "usage_status": "COMPLETE_PROVIDER_REPORTED",
+          "writer_complete": true
+        },
+        "decision_call_measurement": {
+          "actual_kpi_eligible": false,
+          "arm": null,
+          "binding_status": "UNBOUND",
+          "central_slang_db_write_allowed": null,
+          "early_route_enable_status": "DISABLED",
+          "early_route_enabled": false,
+          "early_route_mode": "OFF",
+          "execution_mode": "NORMAL",
+          "fresh_execution_required": false,
+          "mode": "SHADOW",
+          "mutable_context_binding": {
+            "batch_context_enabled": true,
+            "central_slang_db_write_allowed": null,
+            "mutable_context_mode": "NORMAL",
+            "schema_version": "paired_measurement_mutable_context_binding_v1",
+            "slang_access_mode": "OFF"
+          },
+          "mutable_context_binding_sha256": "ec8befe89c6308a5ad19c6535d44726ce2c227aaa41985d6f010c19ab8749812",
+          "mutable_context_frozen": false,
+          "mutable_context_mode": "NORMAL",
+          "pair_id": null,
+          "publication_decision_equivalence_required": false,
+          "run_spec_sha256": null,
+          "semantic_drift_observation": false,
+          "slang_access_mode": "OFF"
+        },
+        "decision_cost_trace": {
+          "action_applied": false,
+          "completion_tokens": 6435,
+          "expert_calls": null,
+          "input_index": 24,
+          "measurement_status": "PARTIAL_AGGREGATE_NO_CALL_EVENTS",
+          "model_tier": "nvidia/Gemma-4-26B-A4B-NVFP4",
+          "operational_effect": "NONE_SHADOW_ONLY",
+          "post_id": "11383108",
+          "processing_finished_at": "2026-10-13T18:42:58.346+09:00",
+          "processing_started_at": "2026-10-13T18:27:23.830+09:00",
+          "prompt_tokens": 121783,
+          "publication_scope_id": "c4b9d6d290ef318d58a68b1243790dc00cd90cb17d8508c01b08aca7dce7f001",
+          "retry_count": 0,
+          "run_id": "20261013_181711_146907",
+          "schema_version": "decision_cost_trace_v1",
+          "search_calls": 16,
+          "total_tokens": 128218,
+          "trace_sha256": "d5036d7338aec3e845a477c82a7462c56a30864b2256ef65654031bb8e57a43e",
+          "vlm_chunks": 0,
+          "wall_ms": 934516
+        },
+        "effective_parallel": 12,
+        "execution_config": {
+          "compression": {
+            "scope": "artifact_generation",
+            "status": "OFF_NOT_REQUESTED"
+          },
+          "dashboard": {
+            "enabled": true,
+            "mode": "standalone_forward",
+            "url": "http://127.0.0.1:18866"
+          },
+          "effective_parallel": 12,
+          "image_review": {
+            "image_post_count": 21,
+            "ready": true,
+            "skip_reason_codes": []
+          },
+          "measurement": {
+            "execution_mode": "NORMAL",
+            "formal_kpi_status": "NOT_ESTIMABLE"
+          },
+          "output_file": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\p4_current_followup_actual80_parallel12_20261013\\run\\result.json",
+          "profile": "low-load-validation",
+          "profile_source": "CLI",
+          "requested_parallel": 12,
+          "resources": {
+            "affinity_mask": 2,
+            "logical_cpu_count": 1,
+            "numeric_threads": {
+              "MKL_NUM_THREADS": "1",
+              "NUMEXPR_NUM_THREADS": "1",
+              "OMP_NUM_THREADS": "1",
+              "OPENBLAS_NUM_THREADS": "1",
+              "VECLIB_MAXIMUM_THREADS": "1"
+            },
+            "pid": 101484,
+            "priority_class": 16384,
+            "status": "LOW_LOAD_VERIFIED"
+          },
+          "schema_version": "expert_execution_config_v1",
+          "settings": {
+            "context_diagnostics": {
+              "source": "CLI",
+              "value": true
+            },
+            "ledger_mode": {
+              "source": "CLI",
+              "value": "SHADOW"
+            },
+            "ocr": {
+              "source": "CLI",
+              "value": true
+            },
+            "requested_parallel": {
+              "source": "CLI",
+              "value": 12
+            },
+            "vlm": {
+              "source": "CLI",
+              "value": true
+            }
+          },
+          "source": {
+            "entry_point": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\expert_main.py",
+            "entry_sha256": "6719cdea9b06e663989f864807c2f100e390dfa661e4ed2d00101994cadd322c",
+            "runtime_source_files": {
+              "expert_main.py": "6719cdea9b06e663989f864807c2f100e390dfa661e4ed2d00101994cadd322c",
+              "src/llm_batch/agentic_pipeline.py": "34136a11d74957178a4ea5bcd02914c21630414b91cf2a8f1a6b9340b836a8e8",
+              "src/llm_batch/experts/arbiter.py": "65f10436f1a21c3e5351135a773d133c26a3ee7083a63a23bf882aee1641956d",
+              "src/llm_batch/experts/decoder.py": "61d2116bfbdfd99ff6d0da81ecb20a905cac48ecf86e10dfa4e743bf7949c26f",
+              "src/llm_batch/experts/orchestrator.py": "1af96f5eb2e5fe1d7dc53d71e8804b7fd364a7f01364c3c5ae54852c54f04568",
+              "src/llm_batch/experts/synthesizer.py": "ba42dc34381209ba2a1ce4166805d64d56482198b37ec5a52504be5e1b57c1dd",
+              "src/llm_batch/experts/verifier.py": "ad175467a03b3addadbfb31c644569ee6b2f300a67c548df62c8d62a297c20e2",
+              "src/llm_batch/grounding/candidate_reranker_alias_evidence.py": "7b054d52e4e41d3a71a0ecfccb539d22f36d29414cdaebd52d697774146aa619",
+              "src/llm_batch/grounding/candidate_reranker_calibration.py": "adef55d267ad681963e14bfc80ba13b2dd598084f28d85d82ae094fcb5571aac",
+              "src/llm_batch/grounding/candidate_reranker_calibration_data.py": "d1f243490cf1e166cf4506659c1146a9e9b3e3608e903302c239ef1869018dca",
+              "src/llm_batch/grounding/candidate_reranker_calibration_inference.py": "f543a371f075c1e84790eba964912b97d73a02596f751b1e9c25aa0e967938b0",
+              "src/llm_batch/grounding/candidate_reranker_capture.py": "6b8bb2e01470e2450269e0e4d2a8f6ca4cf04844cf744109beef7eb213ca3de4",
+              "src/llm_batch/grounding/candidate_reranker_event_bridge.py": "c9bf880e0eb6a86be7598722cb3cd07956892ef6c22b95c2acde556872d04754",
+              "src/llm_batch/grounding/candidate_reranker_inference_graph.py": "fc62f68a2f7fcbd2a7d133b64671f4fefb7b3a5fef22c3da2708934f9cb96304",
+              "src/llm_batch/grounding/candidate_reranker_learned.py": "14a3c9052699293c7b76e4fa16725212355d1a2726a5f7f017b250e2e76905ac",
+              "src/llm_batch/grounding/candidate_reranker_nil_learned.py": "968609fd573e9857a1993bc321ecce180e180354cd942cff817781a5e48db3a5",
+              "src/llm_batch/grounding/candidate_reranker_roles.py": "4ed5182a14974e72979db57d559615ebd7643bd6a8c6a02b2779742a51b0a56b",
+              "src/llm_batch/grounding/candidate_reranker_semantic_input.py": "7168ab0ee24214cd518b8dbbb9f935ced0397af175bbd786253df1ee26fbd32e",
+              "src/llm_batch/grounding/candidate_reranker_semantics.py": "00ba2e3d1acffc05af8e9ceced860250944801cc4aab444ceddb32bdbd1cbb53",
+              "src/llm_batch/grounding/candidate_reranker_shadow.py": "1d110a652a2501d64b3f98925386018d789249301b1d3c80336bde09a0e15229",
+              "src/llm_batch/grounding/candidate_retrieval_shadow.py": "0f7e4893d26d9dd4115fe6e63fffce8cd0e6919a8a8deebe5bd749bffe758010",
+              "src/llm_batch/grounding/candidate_set_calibration_shadow.py": "365cb609699e81013fda40f730861bdeb2b93bf18bfc97e931b8ace550e8e5ff",
+              "src/llm_batch/grounding/candidate_set_shadow.py": "0a87e724eb78e5c0a636d17cb1598861bd24d80f15e9be1817b6ecf3b04b05e1",
+              "src/llm_batch/grounding/claim_scope_contract.py": "284afabb86e5bef4dd0b7c53b19b136c1faa35fab91f5843e2bb1de2ecb4620e",
+              "src/llm_batch/grounding/community_knowledge.py": "8142d2f6be7cb29971aedc6eba9cd89e1a1ffde13b74fa3d391931ef11b463c4",
+              "src/llm_batch/grounding/context_projection_contract.py": "ccc5d93e46488168ce89504ad9db77fdf60df222c3dc30f34df65e39c167355f",
+              "src/llm_batch/grounding/reranker_training_split.py": "1e4453ed08eb4213a57363c10d0e4e610fd3076d209fc0a66295f68143523cb8",
+              "src/llm_batch/grounding/source_context_diagnostics.py": "dc474fa74ed40982c702bfc50a0f50a881727f1c259fea38ffbed9d62bb9475c",
+              "src/llm_batch/grounding/source_context_explanation.py": "9927c304ed3ef62e8e9414e55894f85972ce9551919ff09583e00cb1654a9dff",
+              "src/llm_batch/grounding/source_speech_structure.py": "70059e67306151d9ba0cf91eb48eb8e5b610e46594ef5d8439759c4f9ea8eae9",
+              "src/llm_batch/ledger/recovery_native_journal.py": "36e68618b168ad063def750a21a95c8fa1f338b32ab834a47ca4297abf950bb0",
+              "src/llm_batch/ledger/recovery_provider_journal.py": "2a4d921922c9a7082d653acd2c7b1b11928fe430e99d129f6b530f459756913a",
+              "src/llm_batch/llm/client.py": "7ef656f68c8cc5c76b604dc1f99f800c679825dc84042bfc3a73628a37df1085",
+              "src/llm_batch/measurement/paired_execution_policy.py": "e94ba5ff5c54d1c127c33a585320a50142efb0cf22da378d40d281b186542181",
+              "src/llm_batch/measurement/paired_measurement_readback.py": "1c4adba5e19f7a8378ca5e45689dd0e55ee45b17bc4a12259e21fa5cdf8a3733",
+              "src/llm_batch/measurement/recovery_input_projection.py": "cf5617377ee99fce9f59dc27498a9885f64ca68936e08f2ff5d5047875b96591",
+              "src/llm_batch/measurement/recovery_native_source.py": "1f3fd174052d588a46e73ff0f9b787e94c4866d67fa225ae64f52e19e25df94c",
+              "src/llm_batch/measurement/recovery_provider_contract.py": "14841df266d5b19be2f904e81da8f6b06bf78e34e19e4ca169902e2a23c464e6",
+              "src/llm_batch/measurement/recovery_provider_readback.py": "2ef340c8f6c2e493b70c8117ce94ee0a016074c1a424627461d4c23ca7b8ec7b",
+              "src/llm_batch/monitor/recovery_native_view.py": "2be6d9030216c311fc92d4912b5683f2c79237126d63d4dc08a70b9adcbabbd3",
+              "src/llm_batch/monitor/recovery_provider_view.py": "3573a1fd1175b0d77efa58515c4e9bb38235b60466bd28bd5ba58f0cca2cd164",
+              "src/llm_batch/prompts/expert_prompts.py": "691e13a01a3fe2e61390d3b801aa8df791007bef02982be80045bc29ecddce74",
+              "src/llm_batch/runtime/candidate_calibration.py": "2f5d79c26980dee48351194618b3873da075ba0b873f17907007fd55062ba767",
+              "src/llm_batch/runtime/candidate_capture.py": "55ab630bfaba9a2297369f7f533f7c073e8a9c4ebbde100578d1ca5d392e5201",
+              "src/llm_batch/runtime/candidate_inference.py": "25ebe6a716a681d37b1233dae54e0ecf37d504b80673791aab09d505c07634a9",
+              "src/llm_batch/runtime/candidate_reranker.py": "df132311100ba1e906e9dc804a07276e7411f09bf38d5d22a35f407f5cfaea3e",
+              "src/llm_batch/runtime/candidate_retrieval.py": "61077f2f9e1785bd3efffec262a95f202f427cff065666fbb1b3a6b03700f45e",
+              "src/llm_batch/runtime/candidate_semantics.py": "89c63be4036a2fa9fb80a76ed294980c7ac278ef0891d91db8dbb5c37054841e",
+              "src/llm_batch/runtime/community_knowledge.py": "36ea0fb0d2f90b1566e2fd5b357bbf1dc023a90534f25c2c3cb87f8f8a3d9823",
+              "src/llm_batch/runtime/execution_config.py": "b195fa5152bc033b393b3df542d06cc64810670647f6e8b2cc5f12b7885f59aa",
+              "src/llm_batch/runtime/paired_execution.py": "2ae2794fc091ac18385c58f776c6f3879165feb864a0caee99e8b6e72183a5f5",
+              "src/llm_batch/runtime/recovery_native_batch.py": "0f224f08834bdaf97b4af05d3376e3fae8a6bbc45b8fab6c3468de87aff02428",
+              "src/llm_batch/runtime/recovery_native_context.py": "26d15f140119fe930d2d8f22e80d851706d189639bae44b654c7a53faa786fe5",
+              "src/llm_batch/runtime/recovery_native_io.py": "1ec5645dfa26aac3fecb9e3ce3b0e62d9586157b8cfd5caa41371253670fcc87",
+              "src/llm_batch/runtime/recovery_native_workflow.py": "fb2181c4e8c6025caf13b4e87c5785f0052b7a812187dae955863ad0e837b78b",
+              "src/llm_batch/runtime/recovery_provider_transport.py": "49cabbca7740c6ade64eb0a8a8e7cd5084ad236abf0a503e5f3d8cde129c6e05",
+              "src/llm_batch/runtime/recovery_transport.py": "cae8ecfa319e9d430356a270f290a8d2ff26414c9673116f26c20c365843e6e7",
+              "tools/build_candidate_inference_bundle.py": "f17b915011aaf29d9dc322531b3f685d5a7f020e68b1365f7924d5afde5e98af",
+              "tools/run_candidate_reranker_calibration.py": "30f189ce7943069c1d15e94ff5e68963fd03c2f1f8097c58691b8b331571cf30",
+              "tools/run_candidate_reranker_training.py": "d92441d1d1bb4266fd9b5ad0b8e8733da1170dc7714fde779ad46177e1050292",
+              "tools/run_recovery_provider.py": "9986d5104d6ab1083387f71508761737b181049166927b9bee9cfedaa82be938"
+            },
+            "runtime_source_sha256": "3aec8f3e5c47c09510bbe060b04f7c4855ce39f74d6bc3d2c37ce5a237dd4b9b",
+            "source_scope": "SELECTED_RUNTIME_FILES"
+          }
+        },
+        "llm_endpoint": "http://10.20.0.101:8000/",
+        "llm_mode": "remote",
+        "main_log_file": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\logs\\expert_run_20261013_181711_146907.log",
+        "mcp_endpoint_count_after_health_filter": 1,
+        "mcp_goal_run_health_filtered": false,
+        "mcp_health_attempts": 1,
+        "mcp_health_checked_endpoint_count": 1,
+        "mcp_health_failure_count": 0,
+        "mcp_health_include_search": true,
+        "mcp_health_light_mode": false,
+        "mcp_health_ok_count": 1,
+        "mcp_health_probe_batch_size": 1,
+        "mcp_health_probe_stopped_after_required_ok": false,
+        "mcp_health_required_ok_count": 1,
+        "mcp_health_search_max_latency_ms": 8000.0,
+        "mcp_health_search_min_results": 1,
+        "mcp_health_timeout_sec": 8.0,
+        "mcp_health_workers": 1,
+        "mcp_healthy_autogen_endpoint_filter": false,
+        "mcp_healthy_autogen_endpoint_filter_reason": "reuse_shards_only",
+        "mcp_healthy_endpoint_count": 1,
+        "mcp_healthy_endpoint_filter": false,
+        "mcp_healthy_endpoint_filter_autogen": false,
+        "mcp_healthy_endpoint_filter_reason": "reuse_shards_only",
+        "mcp_parallel_after_health_filter": 12,
+        "mcp_parallel_before_health_filter": 12,
+        "mcp_requested_endpoint_count_before_health_filter": 1,
+        "mcp_reuse_shards_only_health_filtered": false,
+        "measurement_execution_source": "NORMAL_PUBLICATION_OWNER",
+        "model": "nvidia/Gemma-4-26B-A4B-NVFP4",
+        "model_parallel_cap_applied": false,
+        "model_parallel_cap_model": "nvidia/Gemma-4-26B-A4B-NVFP4",
+        "model_parallel_max": null,
+        "parallel_policy": "effective_parallel=min(requested_parallel,input_post_count)",
+        "prompt_version": "2026-03-30-semantic-contract-v1",
+        "requested_parallel": 12,
+        "requested_parallel_raw": 12,
+        "run_id": "20261013_181711_146907",
+        "search_health": {
+          "accepted": 80,
+          "cache_hits": 0,
+          "degraded": 0,
+          "degraded_recovered": 0,
+          "degraded_zero": 0,
+          "degraded_zero_suppressed": 0,
+          "direct_search_results": 0,
+          "direct_search_used": 0,
+          "fallback_recovered": 0,
+          "filtered": 38,
+          "headless_used": 0,
+          "queries_issued": 16,
+          "raw": 323,
+          "retried": 0,
+          "status": "ok",
+          "unrecovered_degraded": 0,
+          "upstream_zero": 3
+        },
+        "semantic_recovery_plan_receipt": {
+          "attempt_run_id": "20261013_181711_146907",
+          "authority": "attempt_local_completed_result_evidence",
+          "input_index": 24,
+          "mode": "PLAN_ONLY",
+          "plan": {
+            "blocker_codes": [
+              "MISSING_PRIMARY"
+            ],
+            "canonical_bindings": [],
+            "media_action": "NO_MEDIA_ACTION",
+            "network_calls_executed": 0,
+            "primary_identity_count": 0,
+            "query_plan": {
+              "max_queries": 1,
+              "purposes": [
+                "RESOLVE_PRIMARY_RELATION"
+              ],
+              "query_execution_allowed": true,
+              "search_health": "ok"
+            },
+            "raw_ocr_evidence_count": 0,
+            "relationship_counts": {
+              "comparison": 0,
+              "mentioned": 1,
+              "previous": 0,
+              "primary": 0
+            },
+            "search_calls_executed": 0,
+            "state": "HOLD"
+          },
+          "plan_sha256": "938a8a6f88fb049a42d2710559a53b91e47ff95a5eb681d731ea93d0ce46cdf7",
+          "post_id": 11383108,
+          "public_apply": false,
+          "public_projection_sha256": "b0f71b0e130008016b5b017f3abffa5bc7acab72da3d196ae561752ebe459364",
+          "publication_decision_id": "e0eb996929d2340686419b7175f3a9a17ab46670c8076dabc933a54b628b1a3f",
+          "publication_scope_id": "c4b9d6d290ef318d58a68b1243790dc00cd90cb17d8508c01b08aca7dce7f001",
+          "receipt_sha256": "3c258654d4741640a4cae5d234115dce0e29aaf437a583e1aec9d35c8c193ade",
+          "rule_version": "p1_review_recovery_plan_v1",
+          "schema_version": "semantic_recovery_plan_receipt_v1",
+          "source_view": {
+            "candidate_evidence": [
+              {
+                "canonical_url": null,
+                "canonical_work_id": null,
+                "content_status": "",
+                "display_key_sha256": "5ca79ea33fc66333a70ab97e6a7e75315d90208bffee6a6cf1540d43b10253ff",
+                "has_display_title": true,
+                "page_type": "",
+                "relation_role": "mentioned",
+                "source_tier": "llm_only",
+                "stable_identity_status": "UNVERIFIED_RAW_EVIDENCE",
+                "verified_display_title": null
+              }
+            ],
+            "decision_reason_codes": [
+              "candidate_inventory_preserved_without_selection",
+              "candidate_inventory_unselected",
+              "no_public_candidate_title",
+              "row_discussion_missing",
+              "scope_not_current_work",
+              "scope_unknown",
+              "serializer_candidate_inventory_hold",
+              "title_resolution_state_not_publishable",
+              "work_resolution_not_publishable"
+            ],
+            "evidence_status": "COMPLETE",
+            "is_relevant": false,
+            "publish_allowed": false,
+            "raw_ocr_evidence_count": 0,
+            "search_health": "ok",
+            "semantic_publication": {
+              "evidence_status": "",
+              "media_domain_class": "",
+              "primary_work_status": ""
+            },
+            "work_resolution": "none"
+          },
+          "source_view_sha256": "0c648c458be65a773e76314ba6dfd37eddf4438b24a1fdbdb8ecc701684fe0ec",
+          "stable_result_sha256": "9d2012ecb7bcb0a0f4f13390d23d394974167c2a4cbed58eab300384fd0f250e"
+        },
+        "semantic_review_router_receipt": {
+          "attempt_run_id": "20261013_181711_146907",
+          "authority": "attempt_local_result_evidence",
+          "input_index": 24,
+          "mode": "REVIEW_ONLY",
+          "post_id": 11383108,
+          "public_apply": false,
+          "public_projection_sha256": "b0f71b0e130008016b5b017f3abffa5bc7acab72da3d196ae561752ebe459364",
+          "publication_decision_id": "e0eb996929d2340686419b7175f3a9a17ab46670c8076dabc933a54b628b1a3f",
+          "publication_scope_id": "c4b9d6d290ef318d58a68b1243790dc00cd90cb17d8508c01b08aca7dce7f001",
+          "receipt_sha256": "6c5863dc55b60efb4fa2577e632e5922a24065d82eb374a37fa8619b67eb55f9",
+          "router_decision_sha256": "96f2d3ef979effec9190bf74ee58d2d50ffe5e4e618ce5e711a314825756a576",
+          "rule_version": "strict_evidence_v2",
+          "schema_version": "semantic_review_router_receipt_v1",
+          "source_view": {
+            "candidate_preservation_present": true,
+            "comments_count": 1,
+            "consistency_flags": [
+              "batch_memory_alias_rescue_blocked_genre_context",
+              "batch_memory_alias_rescue_blocked_nonwork_context",
+              "known_title_abbreviation_candidate_preserved",
+              "notes_demoted_for_unresolved"
+            ],
+            "direct_ocr_evidence": {
+              "catalog_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "proposal_count": 0,
+              "proposal_set_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "source_payload_sha256": []
+            },
+            "evidence_status": "COMPLETE",
+            "image_count": 0,
+            "is_relevant": false,
+            "output_consistency_lint": [],
+            "publish_allowed": false,
+            "reason_codes": [
+              "candidate_inventory_preserved_without_selection",
+              "candidate_inventory_unselected",
+              "no_public_candidate_title",
+              "row_discussion_missing",
+              "scope_not_current_work",
+              "scope_unknown",
+              "serializer_candidate_inventory_hold",
+              "title_resolution_state_not_publishable",
+              "work_resolution_not_publishable"
+            ],
+            "scope_confidence": "low",
+            "title_candidates": [],
+            "work_resolution": "none"
+          },
+          "source_view_sha256": "60777332b391e2ab3b634fc64178d0410d769a54a84f33025b41483fbfe9fa98",
+          "stable_result_sha256": "9d2012ecb7bcb0a0f4f13390d23d394974167c2a4cbed58eab300384fd0f250e",
+          "state": "NO_REVIEW",
+          "trigger_codes": [],
+          "unknown_reason_codes": []
+        },
+        "source_context_diagnostics": {
+          "byte_count_basis": "UTF8_CANONICAL_JSON",
+          "capture_status": "single_binder",
+          "channels": [
+            {
+              "channel": "speech_act",
+              "field": "speech_act",
+              "index": -1,
+              "locations": [],
+              "rule": "opinion_cue_kind",
+              "value": "opinion",
+              "value_kind": "parser_label"
+            },
+            {
+              "channel": "target",
+              "field": "target_kind",
+              "index": -1,
+              "locations": [],
+              "rule": "opinion_cue_kind",
+              "value": "trope",
+              "value_kind": "parser_label"
+            }
+          ],
+          "explanation": {
+            "input_fingerprint": "023badca445f493f39e705343d64a723db27464447b098cf5f67b97c6ec3694d",
+            "proofs": [
+              {
+                "claim_id": "author:clause:0:claim:0",
+                "claim_kind": "own",
+                "claim_view": "claim",
+                "claimant": "self",
+                "event_ids": [
+                  "author:clause:0:14:16:cue:14"
+                ],
+                "final_support": true,
+                "predicate_spans": [
+                  [
+                    14,
+                    16
+                  ]
+                ],
+                "raw_path": "/title",
+                "raw_span": [
+                  0,
+                  16
+                ],
+                "rule": "source_exact_headline_desire",
+                "source_id": "author:clause:0",
+                "source_sha256": "aa3c15071da7d0f58934131e7644e442cce51b245041256c5cb8f77f06b3f530",
+                "sourcequote": "뭔가 실뜨기하는 주인공이 땡김"
+              }
+            ],
+            "source_kind": "deterministic_source_context",
+            "supported": true,
+            "unresolved": []
+          },
+          "ledgers": [
+            {
+              "claims": [
+                {
+                  "attribution": "direct_clause",
+                  "claim_id": "author:clause:0:claim:0",
+                  "evaluation_event_ids": [
+                    "author:clause:0:14:16:cue:14"
+                  ],
+                  "final_support": true,
+                  "initial_support": true,
+                  "kind": "own",
+                  "source_id": "author:clause:0",
+                  "span": [
+                    0,
+                    16
+                  ],
+                  "speaker": "self",
+                  "speaker_source": "unit_speaker",
+                  "support_attribution": "unit_speaker_direct",
+                  "text": "뭔가 실뜨기하는 주인공이 땡김"
+                },
+                {
+                  "attribution": "direct_clause",
+                  "claim_id": "author:clause:1:claim:1",
+                  "evaluation_event_ids": [],
+                  "final_support": true,
+                  "initial_support": true,
+                  "kind": "own",
+                  "source_id": "author:clause:1",
+                  "span": [
+                    0,
+                    25
+                  ],
+                  "speaker": "self",
+                  "speaker_source": "unit_speaker",
+                  "support_attribution": "unit_speaker_direct",
+                  "text": "도황처럼 실뜨기로 스테이크 큐브하는것도 괜찮고"
+                },
+                {
+                  "attribution": "direct_clause",
+                  "claim_id": "author:clause:2:claim:2",
+                  "evaluation_event_ids": [
+                    "author:clause:2:11:13:cue:11"
+                  ],
+                  "final_support": true,
+                  "initial_support": true,
+                  "kind": "own",
+                  "source_id": "author:clause:2",
+                  "span": [
+                    0,
+                    13
+                  ],
+                  "speaker": "self",
+                  "speaker_source": "unit_speaker",
+                  "support_attribution": "unit_speaker_direct",
+                  "text": "사소리처럼 인형사도 좋고"
+                },
+                {
+                  "attribution": "direct_clause",
+                  "claim_id": "author:clause:3:claim:3",
+                  "evaluation_event_ids": [],
+                  "final_support": true,
+                  "initial_support": true,
+                  "kind": "own",
+                  "source_id": "author:clause:3",
+                  "span": [
+                    0,
+                    21
+                  ],
+                  "speaker": "self",
+                  "speaker_source": "unit_speaker",
+                  "support_attribution": "unit_speaker_direct",
+                  "text": "약먹마처럼 유사스파이더맨하는것도 괜찮다"
+                }
+              ],
+              "evaluations": [
+                {
+                  "actor": "self",
+                  "assertion_span": [
+                    -1,
+                    -1
+                  ],
+                  "attribution": "unit_speaker_default",
+                  "claim_id": "author:clause:0:claim:0",
+                  "evaluation_polarity": "pos",
+                  "event_id": "author:clause:0:14:16:cue:14",
+                  "evidence_text": "뭔가 실뜨기하는 주인공이 땡김",
+                  "final_support": true,
+                  "grammatical_subject": {
+                    "actor": "other:주인공",
+                    "explicit": true,
+                    "span": [
+                      9,
+                      13
+                    ],
+                    "text": "주인공이"
+                  },
+                  "kind": "evaluate",
+                  "objects": [
+                    {
+                      "head": "뭔",
+                      "owner": "",
+                      "owner_span": [
+                        -1,
+                        -1
+                      ],
+                      "relation": "selects",
+                      "span": [
+                        0,
+                        2
+                      ],
+                      "text": "뭔가",
+                      "works": []
+                    }
+                  ],
+                  "parent_event_id": "author:clause:0:claim:0",
+                  "polarity": "positive",
+                  "predicate": "땡김",
+                  "predicate_span": [
+                    14,
+                    16
+                  ],
+                  "realization": "actual",
+                  "source_id": "author:clause:0",
+                  "speaker": "self",
+                  "support_attribution": "unit_speaker_direct",
+                  "temporal_scope": "unmarked"
+                },
+                {
+                  "actor": "self",
+                  "assertion_span": [
+                    -1,
+                    -1
+                  ],
+                  "attribution": "unit_speaker_default",
+                  "claim_id": "author:clause:2:claim:2",
+                  "evaluation_polarity": "pos",
+                  "event_id": "author:clause:2:11:13:cue:11",
+                  "evidence_text": "사소리처럼 인형사도 좋고",
+                  "final_support": true,
+                  "grammatical_subject": {
+                    "actor": "other:인형사",
+                    "explicit": true,
+                    "span": [
+                      6,
+                      10
+                    ],
+                    "text": "인형사도"
+                  },
+                  "kind": "evaluate",
+                  "objects": [],
+                  "parent_event_id": "author:clause:2:claim:2",
+                  "polarity": "positive",
+                  "predicate": "좋고",
+                  "predicate_span": [
+                    11,
+                    13
+                  ],
+                  "realization": "actual",
+                  "source_id": "author:clause:2",
+                  "speaker": "self",
+                  "support_attribution": "unit_speaker_direct",
+                  "temporal_scope": "unmarked"
+                }
+              ],
+              "graph_edges": [
+                {
+                  "recorded_by": "sources[0].parent_source_id",
+                  "relation": "source_in_unit",
+                  "source_id": "author:clause:0",
+                  "target_id": "author"
+                },
+                {
+                  "recorded_by": "sources[1].parent_source_id",
+                  "relation": "source_in_unit",
+                  "source_id": "author:clause:1",
+                  "target_id": "author"
+                },
+                {
+                  "recorded_by": "sources[2].parent_source_id",
+                  "relation": "source_in_unit",
+                  "source_id": "author:clause:2",
+                  "target_id": "author"
+                },
+                {
+                  "recorded_by": "sources[3].parent_source_id",
+                  "relation": "source_in_unit",
+                  "source_id": "author:clause:3",
+                  "target_id": "author"
+                },
+                {
+                  "recorded_by": "claims[0].source_id",
+                  "relation": "claim_in_source",
+                  "source_id": "author:clause:0:claim:0",
+                  "target_id": "author:clause:0"
+                },
+                {
+                  "recorded_by": "claims[0].initial_support",
+                  "relation": "direct_support_of",
+                  "source_id": "author:clause:0:claim:0:direct",
+                  "target_id": "author:clause:0:claim:0"
+                },
+                {
+                  "recorded_by": "claims[0].evaluation_event_ids[0]",
+                  "relation": "claim_evaluation",
+                  "source_id": "author:clause:0:claim:0",
+                  "target_id": "author:clause:0:14:16:cue:14"
+                },
+                {
+                  "recorded_by": "claims[0].active_adoption_event_ids[0]",
+                  "relation": "claim_active_support",
+                  "source_id": "author:clause:0:claim:0",
+                  "target_id": "author:clause:0:claim:0:direct"
+                },
+                {
+                  "recorded_by": "claims[1].source_id",
+                  "relation": "claim_in_source",
+                  "source_id": "author:clause:1:claim:1",
+                  "target_id": "author:clause:1"
+                },
+                {
+                  "recorded_by": "claims[1].initial_support",
+                  "relation": "direct_support_of",
+                  "source_id": "author:clause:1:claim:1:direct",
+                  "target_id": "author:clause:1:claim:1"
+                },
+                {
+                  "recorded_by": "claims[1].active_adoption_event_ids[0]",
+                  "relation": "claim_active_support",
+                  "source_id": "author:clause:1:claim:1",
+                  "target_id": "author:clause:1:claim:1:direct"
+                },
+                {
+                  "recorded_by": "claims[2].source_id",
+                  "relation": "claim_in_source",
+                  "source_id": "author:clause:2:claim:2",
+                  "target_id": "author:clause:2"
+                },
+                {
+                  "recorded_by": "claims[2].initial_support",
+                  "relation": "direct_support_of",
+                  "source_id": "author:clause:2:claim:2:direct",
+                  "target_id": "author:clause:2:claim:2"
+                },
+                {
+                  "recorded_by": "claims[2].evaluation_event_ids[0]",
+                  "relation": "claim_evaluation",
+                  "source_id": "author:clause:2:claim:2",
+                  "target_id": "author:clause:2:11:13:cue:11"
+                },
+                {
+                  "recorded_by": "claims[2].active_adoption_event_ids[0]",
+                  "relation": "claim_active_support",
+                  "source_id": "author:clause:2:claim:2",
+                  "target_id": "author:clause:2:claim:2:direct"
+                },
+                {
+                  "recorded_by": "claims[3].source_id",
+                  "relation": "claim_in_source",
+                  "source_id": "author:clause:3:claim:3",
+                  "target_id": "author:clause:3"
+                },
+                {
+                  "recorded_by": "claims[3].initial_support",
+                  "relation": "direct_support_of",
+                  "source_id": "author:clause:3:claim:3:direct",
+                  "target_id": "author:clause:3:claim:3"
+                },
+                {
+                  "recorded_by": "claims[3].active_adoption_event_ids[0]",
+                  "relation": "claim_active_support",
+                  "source_id": "author:clause:3:claim:3",
+                  "target_id": "author:clause:3:claim:3:direct"
+                },
+                {
+                  "recorded_by": "evaluations[0].source_id",
+                  "relation": "evaluation_in_source",
+                  "source_id": "author:clause:0:14:16:cue:14",
+                  "target_id": "author:clause:0"
+                },
+                {
+                  "recorded_by": "evaluations[0].parent_event_id",
+                  "relation": "evaluation_parent",
+                  "source_id": "author:clause:0:14:16:cue:14",
+                  "target_id": "author:clause:0:claim:0"
+                },
+                {
+                  "recorded_by": "evaluations[0].claim_id",
+                  "relation": "evaluation_claim",
+                  "source_id": "author:clause:0:14:16:cue:14",
+                  "target_id": "author:clause:0:claim:0"
+                },
+                {
+                  "recorded_by": "evaluations[0].support_adoption_event_ids[0]",
+                  "relation": "evaluation_support",
+                  "source_id": "author:clause:0:14:16:cue:14",
+                  "target_id": "author:clause:0:claim:0:direct"
+                },
+                {
+                  "recorded_by": "evaluations[1].source_id",
+                  "relation": "evaluation_in_source",
+                  "source_id": "author:clause:2:11:13:cue:11",
+                  "target_id": "author:clause:2"
+                },
+                {
+                  "recorded_by": "evaluations[1].parent_event_id",
+                  "relation": "evaluation_parent",
+                  "source_id": "author:clause:2:11:13:cue:11",
+                  "target_id": "author:clause:2:claim:2"
+                }
+              ],
+              "input_alignment": "caller_clauses_equal_parts",
+              "native_version": "context_projection_native_v33",
+              "source_id": "author",
+              "source_index": -1,
+              "source_role": "author",
+              "sources": [
+                {
+                  "carrier_alignment": "exact_enumeration",
+                  "original_index": 0,
+                  "parent_source_id": "author",
+                  "raw_path": "/title",
+                  "raw_text_span": [
+                    0,
+                    16
+                  ],
+                  "source_id": "author:clause:0",
+                  "source_index": 0,
+                  "source_origin": "post_title",
+                  "source_role": "author",
+                  "span": [
+                    0,
+                    16
+                  ],
+                  "text": "뭔가 실뜨기하는 주인공이 땡김"
+                },
+                {
+                  "carrier_alignment": "exact_enumeration",
+                  "original_index": 0,
+                  "parent_source_id": "author",
+                  "raw_path": "/content_blocks/0/text",
+                  "raw_text_span": [
+                    0,
+                    25
+                  ],
+                  "source_id": "author:clause:1",
+                  "source_index": 0,
+                  "source_origin": "body_line",
+                  "source_role": "author",
+                  "span": [
+                    0,
+                    25
+                  ],
+                  "text": "도황처럼 실뜨기로 스테이크 큐브하는것도 괜찮고"
+                },
+                {
+                  "carrier_alignment": "exact_enumeration",
+                  "original_index": 1,
+                  "parent_source_id": "author",
+                  "raw_path": "/content_blocks/1/text",
+                  "raw_text_span": [
+                    0,
+                    13
+                  ],
+                  "source_id": "author:clause:2",
+                  "source_index": 1,
+                  "source_origin": "body_line",
+                  "source_role": "author",
+                  "span": [
+                    0,
+                    13
+                  ],
+                  "text": "사소리처럼 인형사도 좋고"
+                },
+                {
+                  "carrier_alignment": "exact_enumeration",
+                  "original_index": 2,
+                  "parent_source_id": "author",
+                  "raw_path": "/content_blocks/2/text",
+                  "raw_text_span": [
+                    0,
+                    21
+                  ],
+                  "source_id": "author:clause:3",
+                  "source_index": 2,
+                  "source_origin": "body_line",
+                  "source_role": "author",
+                  "span": [
+                    0,
+                    21
+                  ],
+                  "text": "약먹마처럼 유사스파이더맨하는것도 괜찮다"
+                }
+              ]
+            },
+            {
+              "claims": [
+                {
+                  "attribution": "direct_clause",
+                  "claim_id": "comment:0:clause:0:claim:0",
+                  "evaluation_event_ids": [],
+                  "final_support": true,
+                  "initial_support": true,
+                  "kind": "own",
+                  "source_id": "comment:0:clause:0",
+                  "span": [
+                    0,
+                    11
+                  ],
+                  "speaker": "self",
+                  "speaker_source": "unit_speaker",
+                  "support_attribution": "unit_speaker_direct",
+                  "text": "실뜨기 초고수 노진구"
+                }
+              ],
+              "evaluations": [],
+              "graph_edges": [
+                {
+                  "recorded_by": "sources[0].parent_source_id",
+                  "relation": "source_in_unit",
+                  "source_id": "comment:0:clause:0",
+                  "target_id": "comment:0"
+                },
+                {
+                  "recorded_by": "claims[0].source_id",
+                  "relation": "claim_in_source",
+                  "source_id": "comment:0:clause:0:claim:0",
+                  "target_id": "comment:0:clause:0"
+                },
+                {
+                  "recorded_by": "claims[0].initial_support",
+                  "relation": "direct_support_of",
+                  "source_id": "comment:0:clause:0:claim:0:direct",
+                  "target_id": "comment:0:clause:0:claim:0"
+                },
+                {
+                  "recorded_by": "claims[0].active_adoption_event_ids[0]",
+                  "relation": "claim_active_support",
+                  "source_id": "comment:0:clause:0:claim:0",
+                  "target_id": "comment:0:clause:0:claim:0:direct"
+                }
+              ],
+              "input_alignment": "caller_clauses_equal_parts",
+              "native_version": "context_projection_native_v33",
+              "source_id": "comment:0",
+              "source_index": 0,
+              "source_role": "comment",
+              "sources": [
+                {
+                  "carrier_alignment": "exact_enumeration",
+                  "original_index": 0,
+                  "parent_source_id": "comment:0",
+                  "raw_path": "/comments/0/content",
+                  "raw_text_span": [
+                    0,
+                    11
+                  ],
+                  "source_id": "comment:0:clause:0",
+                  "source_index": 0,
+                  "source_origin": "comment",
+                  "source_role": "comment",
+                  "span": [
+                    0,
+                    11
+                  ],
+                  "text": "실뜨기 초고수 노진구"
+                }
+              ]
+            }
+          ],
+          "max_bytes": 65536,
+          "native_verification_status": "NATIVE_CALLBACK_TRUE",
+          "omitted_counts": {
+            "ledgers.graph_edges.items": 2
+          },
+          "projection": {
+            "excluded_works": [],
+            "fallback": false,
+            "reasons": [
+              "discourse_discuss_genre",
+              "core_hold:unsupported_content",
+              "core_drop:title_not_in_source",
+              "core_drop:title_not_in_source",
+              "core_drop:title_not_in_source"
+            ],
+            "reference_works": [],
+            "request_conditions": [],
+            "scope_hint": null,
+            "speech_act": "opinion",
+            "target_kind": "trope",
+            "target_media": "unknown",
+            "target_span": null,
+            "target_surface": null,
+            "work_relation_evidence": [],
+            "work_roles": []
+          },
+          "publication_authority": false,
+          "reason_codes": [
+            "FIELD_LIMIT"
+          ],
+          "schema_version": "source_context_diagnostics_v1",
+          "scope_state_guards": [
+            {
+              "applied": false,
+              "calls": 0,
+              "code": "FINAL_NONWORK_PRECONDITIONS_NOT_MET",
+              "first_rejection": null,
+              "gate": "surface_title_anchor",
+              "publication_authority": false,
+              "status": "SKIPPED"
+            },
+            {
+              "applied": false,
+              "calls": 1,
+              "code": "FINAL_IDENTITY_OR_CONTRACT",
+              "first_rejection": "FINAL_IDENTITY_OR_CONTRACT",
+              "gate": "propriety_question_scope",
+              "publication_authority": false,
+              "status": "REJECTED"
+            },
+            {
+              "applied": false,
+              "calls": 1,
+              "code": "GUARD_RETURNED_NO_PROOF",
+              "first_rejection": null,
+              "gate": "propriety_callback",
+              "publication_authority": false,
+              "status": "NOT_APPLIED"
+            }
+          ],
+          "status": "TRUNCATED"
+        },
+        "worker_id": 10,
+        "worker_log_file": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\logs\\expert_run_20261013_181711_146907_W10.log"
+      },
+      "title": "뭔가 실뜨기하는 주인공이 땡김",
+      "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11383108"
+    },
+    "index1": 24,
+    "post_id": 11383108,
+    "post_id_type": "int",
+    "publication_scope_id": "c4b9d6d290ef318d58a68b1243790dc00cd90cb17d8508c01b08aca7dce7f001",
+    "result_canonical_sha256": "23e288cba9cfc6eb97e69daadb72fbe1566e8a58775d77a6fe6b97fa3ab871a9",
+    "result_origin": "FINAL_RESULT_JSON",
+    "result_source_path": "C:\\Users\\kimjang\\Documents\\GitHub\\llm_novel_dc_coommunity_parser\\out\\p4_current_followup_actual80_parallel12_20261013\\run\\result.json",
+    "review_scope": "FINAL_BOUND_SOURCE_RESULT",
+    "review_status": "UNREVIEWED",
+    "run_id": "20261013_181711_146907",
+    "source_canonical_sha256": "a81c93d86119c71108edd36a167cf8e08ae63b1f1a04fe146d2100ed098f6eea",
+    "source_comments": [
+      {
+        "author": "ㅇㅇ",
+        "comment_id": "39241928",
+        "content": "실뜨기 초고수 노진구",
+        "content_html": "실뜨기 초고수 노진구",
+        "created_at": "2025.11.16 16:48:55",
+        "ip": "",
+        "post_id": 11383108,
+        "reply_level": 0,
+        "reply_to_comment_id": null
+      }
+    ],
+    "source_post": {
+      "author": "ㅇㅇ",
+      "content_blocks": [
+        {
+          "text": "도황처럼 실뜨기로 스테이크 큐브하는것도 괜찮고",
+          "type": "text"
+        },
+        {
+          "text": "사소리처럼 인형사도 좋고",
+          "type": "text"
+        },
+        {
+          "text": "약먹마처럼 유사스파이더맨하는것도 괜찮다",
+          "type": "text"
+        }
+      ],
+      "created_at": "2025-11-16 16:46:27",
+      "gallery_id": "genrenovel",
+      "page_no": 6270,
+      "post_id": 11383108,
+      "title": "뭔가 실뜨기하는 주인공이 땡김",
+      "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11383108"
+    }
+  },
+  "logged_experts": [
+    {
+      "expert": "gatekeeper",
+      "value": {
+        "is_noise": false,
+        "noise_reason": null,
+        "post_type": "work_discussion",
+        "detected_entities": {
+          "possible_titles": [
+            "도황",
+            "약먹마",
+            "사소리"
+          ],
+          "possible_authors": [],
+          "possible_characters": [
+            "사소리",
+            "노진구"
+          ],
+          "platforms_mentioned": []
+        },
+        "key_terms": [
+          "실뜨기",
+          "스테이크 큐브",
+          "인형사",
+          "유사스파이더맨"
+        ],
+        "context_clues": {
+          "has_url_in_comments": false,
+          "has_specific_names": true,
+          "is_asking_recommendation": false,
+          "is_spoiler_discussion": false,
+          "has_comment_title_answer": true,
+          "comment_title_candidates": [
+            "실뜨기 초고수 노진구"
+          ],
+          "comment_title_merge_candidates": [],
+          "comment_title_candidate_details": [
+            {
+              "text": "실뜨기 초고수 노진구",
+              "comment_index": 0,
+              "line_index": 0,
+              "speech_act": "unasserted_reaction",
+              "has_at_mention": false,
+              "reply_level": 0,
+              "reply_to_comment_id": null,
+              "author": "ㅇㅇ",
+              "title_assertion_basis": null
+            }
+          ],
+          "title_as_body_continuation": true,
+          "title_body_joined_text": "뭔가 실뜨기하는 주인공이 땡김 도황처럼 실뜨기로 스테이크 큐브하는것도 괜찮고 사소리처럼 인형사도 좋고",
+          "title_body_first_line": "도황처럼 실뜨기로 스테이크 큐브하는것도 괜찮고",
+          "is_comparison_post": true,
+          "comparison_type": "처럼",
+          "comparison_target": "도황",
+          "genre_discussion_flags": [
+            "body_comparison:도황:처럼"
+          ]
+        },
+        "search_requests": [
+          {
+            "query": "웹소설 도황 실뜨기",
+            "purpose": "official_title_verify",
+            "priority": 1
+          },
+          {
+            "query": "웹소설 약먹마 실뜨기",
+            "purpose": "official_title_verify",
+            "priority": 1
+          },
+          {
+            "query": "사소리 인형사 웹소설",
+            "purpose": "character_verify",
+            "priority": 2
+          },
+          {
+            "query": "도황 약먹마 사소리 리뷰",
+            "purpose": "title_search_community",
+            "priority": 1
+          }
+        ],
+        "confidence": "medium",
+        "notes": "작성자가 '도황', '약먹마', '사소리'라는 약어/명칭을 사용하여 특정 캐릭터의 행동 양식(실뜨기)에 대한 선호도를 표현함. '도황'과 '약먹마'는 웹소설 커뮤니티에서 통용되는 작품/캐릭터 약어로 추정되며, '사소리'는 특정 작품의 캐릭터로 보임. 다만 이들이 웹소설 캐릭터인지 혹은 타 매체(나루토 등)의 캐릭터를 비유로 든 것인지 명확한 확인을 위해 검색이 필요함."
+      },
+      "source_heading_line1": 2183,
+      "canonical_sha256": "4289e69575600d067ad2718f9a6810531efcd455f472874cd1e494d7b88a77cc"
+    },
+    {
+      "expert": "discourse",
+      "value": {
+        "discourse_analysis": {
+          "primary_domain": "novel_literature",
+          "domain_confidence": "high",
+          "domain_evidence": [
+            "주인공",
+            "도황",
+            "사소리",
+            "약먹마"
+          ],
+          "secondary_domains": [],
+          "intent": "discuss_genre",
+          "intent_confidence": "high",
+          "speech_act": "other",
+          "target_kind": "genre",
+          "is_coherent": true,
+          "coherence_reason": "제목에서 언급한 '실뜨기(실을 사용하는 능력)'라는 소재가 본문에서 구체적인 캐릭터 예시(도황, 사소리, 약먹마)를 통해 확장되며, 댓글에서도 해당 소재에 대한 유머러스한 반응이 이어짐.",
+          "title_novel_terms": [],
+          "title_body_consistency": true,
+          "consistency_note": null,
+          "is_association_not_discussion": false,
+          "association_evidence": null,
+          "search_suggestions": [
+            {
+              "query": "도황 실뜨기 스테이크 큐브",
+              "purpose": "To verify if '도황' refers to a specific character using thread-like abilities in a web novel.",
+              "priority": 1
+            },
+            {
+              "query": "사소리 인형사 웹소설",
+              "purpose": "To check if '사소리' is a character archetype or a specific name in the context of puppeteer tropes.",
+              "priority": 2
+            },
+            {
+              "query": "약먹마 유사스파이더맨",
+              "purpose": "To confirm the identity of '약먹마' and their connection to spider-man-like thread usage.",
+              "priority": 3
+            }
+          ],
+          "real_subject": "실(thread)이나 인형술을 사용하는 주인공 캐릭터 설정에 대한 선호와 관련 작품 예시",
+          "author_question_span": null,
+          "author_question_target": null,
+          "author_recommendation_span": null,
+          "author_recommendation_is_direct": false,
+          "reasoning": "작성자는 특정 작품 하나를 논하는 것이 아니라, '실을 사용하는 주인공'이라는 특정 능력/트로프(Trope)에 대한 자신의 취향을 밝히고 있습니다. 이를 뒷받침하기 위해 도황, 사소리, 약먹마 등 서로 다른 작품의 캐릭터들을 예시로 들어 해당 장르적 특성을 논하고 있습니다.",
+          "source_bound_recommendation_request": false,
+          "image_topic_relation": {
+            "state": "no_image",
+            "source": "author_spans"
+          }
+        }
+      },
+      "source_heading_line1": 2341,
+      "canonical_sha256": "4a0871a63aadbcdff6563c1391bd5b0003caf8f8d39d21a9c305d60ff2528b9f"
+    },
+    {
+      "expert": "decoder",
+      "value": {
+        "decoded_terms": [
+          {
+            "original": "실뜨기",
+            "morphemes": [
+              "실뜨기"
+            ],
+            "interpretations": [
+              {
+                "type": "general_noun",
+                "value": "실뜨기 (놀이)",
+                "evidence": "E004, E014, E020 등에서 전통 놀이로 설명됨",
+                "context_fit": "high"
+              },
+              {
+                "type": "slang",
+                "value": "실뜨기 (특정 캐릭터의 기술/행동 묘사)",
+                "evidence": "본문에서 '도황처럼 실뜨기로 스테이크 큐브하는 것'이라는 맥락으로 사용됨",
+                "context_fit": "high"
+              }
+            ],
+            "candidates": [
+              {
+                "official_novel_title": null,
+                "url": null,
+                "platform": null,
+                "decode_logic": "일반 명사 및 특정 행동 묘사로 사용됨",
+                "morphological_score": 1.0,
+                "genre_match": {
+                  "source_genre": null,
+                  "target_genre": null,
+                  "is_match": true
+                },
+                "search_evidence": "검색 결과 대부분 놀이 방법이나 일반 명사로 나타남"
+              }
+            ],
+            "best_match": {
+              "title": null,
+              "confidence": "none"
+            },
+            "grounding": {
+              "is_grounded": true,
+              "anchor_type": "plot_mention",
+              "anchor_evidence": "실뜨기로 스테이크 큐브하는것도 괜찮고"
+            },
+            "is_author_name": false,
+            "author_info": null
+          },
+          {
+            "original": "스테이크 큐브",
+            "morphemes": [
+              "스테이크",
+              "큐브"
+            ],
+            "interpretations": [
+              {
+                "type": "general_noun",
+                "value": "큐브 스테이크 (요리)",
+                "evidence": "E058, E061 등 요리 용어로 설명됨",
+                "context_fit": "high"
+              },
+              {
+                "type": "slang",
+                "value": "스테이크 큐브 (특정 작품 내의 잔혹한 묘사/밈)",
+                "evidence": "E002에서 '사람을 큐브 스테이크마냥...' 이라는 표현이 등장함",
+                "context_fit": "high"
+              }
+            ],
+            "candidates": [
+              {
+                "official_novel_title": "실눈이라고 흑막은 아니에요!",
+                "url": "https://namu.wiki/w/%EC%8B%A4%EB%88%88%EC%9D%B4%EB%9D%BC%EA%B3%A0%20%ED%9D%91%EB%A7%89%EC%9D%80%20%EC%95%84%EB%8B%AD%EC%97%90%EC%9A%94!",
+                "platform": "namu.wiki",
+                "decode_logic": "본문의 '스테이크 큐브'가 E002의 '큐브 스테이크마냥' 묘사와 일치함",
+                "morphological_score": 0.8,
+                "genre_match": {
+                  "source_genre": null,
+                  "target_genre": "아카데미 TS물",
+                  "is_match": true
+                },
+                "search_evidence": "E002에서 사람을 큐브 스테이크처럼 다루는 묘사가 확인됨"
+              }
+            ],
+            "best_match": {
+              "title": "실눈이라고 흑막은 아니에요!",
+              "confidence": "low"
+            },
+            "grounding": {
+              "is_grounded": true,
+              "anchor_type": "plot_mention",
+              "anchor_evidence": "실뜨기로 스테이크 큐브하는것도 괜찮고"
+            },
+            "is_author_name": false,
+            "author_info": null
+          },
+          {
+            "original": "인형사",
+            "morphemes": [
+              "인형사"
+            ],
+            "interpretations": [
+              {
+                "type": "general_noun",
+                "value": "인형사 (직업/능력)",
+                "evidence": "일반적인 직업명 또는 판타지 속 능력",
+                "context_fit": "high"
+              },
+              {
+                "type": "character_name",
+                "value": "사소리 (나루토의 인형사)",
+                "evidence": "E006, E030에서 사소리가 인형사(꼭두각시 술사)임이 명시됨",
+                "context_fit": "high"
+              }
+            ],
+            "candidates": [
+              {
+                "official_novel_title": null,
+                "url": null,
+                "platform": null,
+                "decode_logic": "장르적 클리셰 또는 캐릭터의 특징을 나타내는 일반 명사",
+                "morphological_score": 1.0,
+                "genre_match": {
+                  "source_genre": null,
+                  "target_genre": null,
+                  "is_match": true
+                },
+                "search_evidence": "사소리가 인형사라는 정보는 있으나 본문이 사소리 작품 자체를 논하는 것은 아님"
+              }
+            ],
+            "best_match": {
+              "title": null,
+              "confidence": "none"
+            },
+            "grounding": {
+              "is_grounded": true,
+              "anchor_type": "plot_mention",
+              "anchor_evidence": "사소리처럼 인형사도 좋고"
+            },
+            "is_author_name": false,
+            "author_info": null
+          },
+          {
+            "original": "유사스파이더맨",
+            "morphemes": [
+              "유사",
+              "스파이더맨"
+            ],
+            "interpretations": [
+              {
+                "type": "slang",
+                "value": "유사 스파이더맨 (특정 캐릭터의 행동/밈)",
+                "evidence": "본문에서 '약먹마처럼 유사스파이더맨하는것도'라고 언급됨",
+                "context_fit": "high"
+              }
+            ],
+            "candidates": [
+              {
+                "official_novel_title": null,
+                "url": null,
+                "platform": null,
+                "decode_logic": "특정 작품의 제목이 아니라 캐릭터의 행동 양식을 비유하는 슬랭/밈으로 판단됨",
+                "morphological_score": 0.7,
+                "genre_match": {
+                  "source_genre": null,
+                  "target_genre": null,
+                  "is_match": true
+                },
+                "search_evidence": "검색 결과에서 해당 용어가 정식 제목으로 나타나지 않음"
+              }
+            ],
+            "best_match": {
+              "title": null,
+              "confidence": "none"
+            },
+            "grounding": {
+              "is_grounded": true,
+              "anchor_type": "plot_mention",
+              "anchor_evidence": "약먹마처럼 유사스파이더맨하는것도 괜찮다"
+            },
+            "is_author_name": false,
+            "author_info": null
+          },
+          {
+            "original": "사소리",
+            "morphemes": [
+              "사소리"
+            ],
+            "interpretations": [
+              {
+                "type": "character_name",
+                "value": "사소리 (나루토 캐릭터)",
+                "evidence": "E006, E030에서 나루토의 인형사 캐릭터로 확인됨",
+                "context_fit": "high"
+              }
+            ],
+            "candidates": [
+              {
+                "official_novel_title": null,
+                "url": null,
+                "platform": null,
+                "decode_logic": "웹소설 작품이 아닌 타 매체(나루토)의 캐릭터를 비유로 사용함",
+                "morphological_score": 1.0,
+                "genre_match": {
+                  "source_genre": null,
+                  "target_genre": null,
+                  "is_match": true
+                },
+                "search_evidence": "사소리는 나루토의 빌런 캐릭터임"
+              }
+            ],
+            "best_match": {
+              "title": null,
+              "confidence": "none"
+            },
+            "grounding": {
+              "is_grounded": true,
+              "anchor_type": "character_mention",
+              "anchor_evidence": "사소리처럼 인형사도 좋고"
+            },
+            "is_author_name": false,
+            "author_info": null,
+            "_alias_bridge_pending": true
+          }
+        ],
+        "unresolved_terms": [
+          {
+            "term": "도황",
+            "context": "도황처럼 실뜨기로 스테이크 큐브하는것도 괜찮고",
+            "possible_types": [
+              "character",
+              "slang"
+            ],
+            "needs_search": true
+          },
+          {
+            "term": "약먹마",
+            "context": "약먹마처럼 유사스파이더맨하는것도 괜찮다",
+            "possible_types": [
+              "novel",
+              "character"
+            ],
+            "needs_search": true
+          }
+        ],
+        "self_questions": [
+          "'도황'과 '약먹마'가 각각 특정 캐릭터의 별칭인지 아니면 웹소설 작품의 약칭인지?",
+          "'스테이크 큐브'가 '실눈이라고 흑막은 아니에요!'의 핵심 키워드와 연결되는 것이 맞는지?"
+        ],
+        "needs_verification": true,
+        "verification_search": [
+          "웹소설 도황 뜻",
+          "웹소설 약먹마 정식명칭",
+          "도황 약먹마 캐릭터 비교"
+        ],
+        "overall_confidence": "low",
+        "notes": "치환 읽기 : 작성자는 '도황', '약먹마', '사소리'를 예시로 들어 자신이 선호하는 주인공의 행동 양식(실뜨기, 인형사, 유사스파이더맨 등)을 나열하고 있음. '사소리'는 나루토의 캐릭터로 확인되나, '도황'과 '약먹마'는 웹소설 관련 약어일 가능성이 높으므로 추가 검증이 필요함. '스테이크 큐브'는 특정 작품(실눈이라고 흑막은 아니에요!)의 잔혹한 묘사와 형태소상 일치하나, 글 전체의 주제는 특정 작품 토론이 아닌 '선호하는 주인공 유형'에 대한 잡담/추천 요청에 가까움."
+      },
+      "source_heading_line1": 3469,
+      "canonical_sha256": "7904ecf2b0170ec365996dab4c5872dc64f257ad6077d3c8b0ee04b81308ebbf"
+    },
+    {
+      "expert": "verifier",
+      "value": {
+        "verification_result": {
+          "is_relevant": true,
+          "is_novel_discussion": true,
+          "novel_identity": {
+            "official_novel_title": null,
+            "heretic_url": null,
+            "confidence": "Low",
+            "evidence_type": "none"
+          },
+          "grounding_check": {
+            "decoder_grounded": false,
+            "anchor_found": "search_only",
+            "anchor_text": null,
+            "grounding_issue": "Decoder가 '스테이크 큐브' 키워드로 특정 작품을 매칭했으나, 본문은 해당 작품의 내용을 논하는 것이 아니라 작성자가 선호하는 '상황/묘사'를 예시로 나열한 것임. 또한 '도황', '약먹마', '사소리'는 각각 다른 작품의 약칭/캐릭터로 보이며, 이들을 관통하는 단일 주제 작품은 없음."
+          },
+          "counter_arguments": [
+            {
+              "issue": "Decoder의 '실눈이라고 흑막은 아니에요!' 매칭 오류",
+              "severity": "critical",
+              "action": "reject"
+            },
+            {
+              "issue": "본문에 특정 작품의 고유 정보(줄거리, 캐릭터명, 작가명) 부재",
+              "severity": "major",
+              "action": "downgrade_confidence"
+            }
+          ],
+          "author_info": null,
+          "rejection_reason": null,
+          "evidence_chain": [
+            {
+              "source": "본문",
+              "content": "도황처럼 실뜨기로 스테이크 큐브하는것도 괜찮고, 사소리처럼 인형사도 좋고, 약먹마처럼 유사스파이더맨하는것도 괜찮다",
+              "supports": "작성자는 특정 작품이 아닌, '실뜨기/인형사/거미줄' 같은 연출을 사용하는 주인공 타입을 선호함을 나타냄 (예시 나열)"
+            }
+          ],
+          "slang_insight": [
+            {
+              "detected_term": "도황",
+              "decoded_term": "도망친 황제 (또는 특정 웹소설 캐릭터 약칭)",
+              "decode_verified": false,
+              "cultural_context": "웹소설 커뮤니티에서 사용되는 특정 캐릭터나 작품의 약칭으로 추정됨.",
+              "canonical_work_alias": null,
+              "alias_scope": "mixed_unknown",
+              "attached_entity_text": null,
+              "attached_entity_type": null,
+              "store_in_slang_db": false,
+              "store_reason": "exact_title_not_alias"
+            },
+            {
+              "detected_term": "약먹마",
+              "decoded_term": "약 먹는 마법사 (또는 특정 웹소설 약칭)",
+              "decode_verified": false,
+              "cultural_context": "웹소설 커뮤니티에서 사용되는 특정 작품의 약칭으로 추정됨.",
+              "canonical_work_alias": null,
+              "alias_scope": "mixed_unknown",
+              "attached_entity_text": null,
+              "attached_entity_type": null,
+              "store_in_slang_db": false,
+              "store_reason": "exact_title_not_alias"
+            }
+          ],
+          "unresolved_from_decoder": [
+            {
+              "term": "도황",
+              "verifier_interpretation": "특정 웹소설 캐릭터 또는 작품의 약칭",
+              "needs_search": true
+            },
+            {
+              "term": "약먹마",
+              "verifier_interpretation": "특정 웹소설 작품의 약칭",
+              "needs_search": true
+            }
+          ],
+          "inference": {
+            "type": "trope_discussion",
+            "topic": "실뜨기/인형사/거미줄 연출을 사용하는 주인공 타입에 대한 선호"
+          }
+        },
+        "final_confidence": "low",
+        "reason": "본문은 특정 작품 하나를 토론하는 것이 아니라, '도황', '사소리', '약먹마'라는 서로 다른 작품/캐릭터를 예시로 들어 '실뜨기나 인형사 같은 연출을 하는 주인공'이라는 특정 트로프(Trope)에 대한 개인적 취향을 나열하고 있습니다. Decoder가 '스테이크 큐브'라는 키워드만 보고 특정 작품을 매칭한 것은 전형적인 키워드 우연 일치 오류입니다. 따라서 단일 작품을 특정할 수 없으므로 official_title은 null로 처리하며, 주제는 작품 개별 토론이 아닌 트로프/연출 선호에 대한 담론입니다."
+      },
+      "source_heading_line1": 3950,
+      "canonical_sha256": "06b991a46df26c0648b5a7804bcb2b71f377f38e1bf5a98e6e44eb5f23e37879"
+    },
+    {
+      "expert": "synthesizer",
+      "value": {
+        "reinterpretation": {
+          "post_intent": "특정 캐릭터들의 전투 방식이나 연출(실뜨기, 인형사, 유사 스파이더맨)을 모티브로 한 주인공 캐릭터의 매력을 선호한다는 취향 공유",
+          "text_analysis": [
+            {
+              "segment": "도황처럼 실뜨기로 스테이크 큐브하는것도 괜찮고",
+              "interpretation": "캐릭터 '도황'이 실뜨기와 같은 동작을 통해 적을 '큐브 스테이크' 형태로 조각내는 잔혹하거나 독특한 연출을 선호함. 여기서 '스테이크 큐브'는 웹소설 [실눈이라고 흑막은 아니에요!]에서 사람을 큐브 스테이크마냥 다루는 묘사와 연결될 수 있으나, 문맥상 '도황'이라는 특정 캐릭터의 행위를 수식함.",
+              "evidence_source": "search"
+            },
+            {
+              "segment": "사소리처럼 인형사도 좋고",
+              "interpretation": "만화 [나루토]의 캐릭터 '사소리'가 사용하는 '꼭두각시 인형사'라는 전투 스타일/직업군을 선호함.",
+              "evidence_source": "search"
+            },
+            {
+              "segment": "약먹마처럼 유사스파이더맨하는것도 괜찮다",
+              "interpretation": "캐릭터 '약먹마'가 보여주는 '유사 스파이더맨'(거미줄 혹은 실을 이용한 이동/전투)과 같은 능력을 선호함.",
+              "evidence_source": "search"
+            }
+          ],
+          "comment_insights": [
+            {
+              "comment": "실뜨기 초고수 노진구",
+              "insight": "본문의 '실뜨기' 키워드를 받아 만화 [도라에몽]의 캐릭터 '노진구'를 언급하며 농담조로 반응함. 이는 작품 분석보다는 커뮤니티 특유의 가벼운 드립 맥락임."
+            }
+          ]
+        },
+        "hidden_references": [
+          {
+            "text": "사소리",
+            "reference_type": "character",
+            "matched_to": "나루토의 사소리",
+            "evidence": "[E006]에서 사소리가 꼭두각시 인형을 사용하는 캐릭터임이 확인됨."
+          },
+          {
+            "text": "스테이크 큐브",
+            "reference_type": "plot",
+            "matched_to": "실눈이라고 흑막은 아니에요!",
+            "evidence": "[E002]에서 주인공과 작가가 사람을 큐브 스테이크마냥 다루는 묘사가 등장함."
+          }
+        ],
+        "evidence_alignment": {
+          "decoder_match": "weak",
+          "decoder_reason": "Decoder가 '스테이크 큐브'를 특정 웹소설 제목으로 매칭했으나, 본문에서는 '도황'이라는 다른 주어와 결합된 행위로 쓰였으므로 직접적인 제목 매칭은 아님.",
+          "verifier_match": "weak",
+          "verifier_reason": "Verifier 역시 Decoder의 매칭 오류를 지적하며 본문에 특정 작품의 고유 정보가 부재함을 명시함.",
+          "overall_coherence": "medium"
+        },
+        "confidence_assessment": {
+          "is_about_identified_work": false,
+          "confidence": "Medium",
+          "reasoning": "이 포스트는 단일 작품에 대한 글이 아니라, 여러 작품(나루토 등)의 캐릭터 특징을 나열하며 자신이 좋아하는 '주인공의 전투 스타일'을 설명하는 취향 게시글임. 따라서 특정 하나의 작품을 식별하는 것은 불가능함.",
+          "alternative_interpretation": "여러 서브컬처 캐릭터의 공통된 '실/줄 사용' 속성을 가진 주인공 캐릭터들을 찾는 개인적 취향 고백."
+        },
+        "synthesis_summary": "본 포스트는 특정 작품 하나를 논하는 것이 아니라, '실뜨기', '인형사', '유사 스파이더맨'과 같이 실이나 줄을 활용하여 전투하는 주인공 캐릭터들에 대한 작성자의 취향을 나열한 글입니다. '사소리(나루토)'와 같은 명확한 캐릭터 참조가 포함되어 있으며, '스테이크 큐브'는 [실눈이라고 흑막은 아니에요!]의 묘사와 유사성이 있으나 문맥상 '도황'이라는 캐릭터의 행위로 기술되었습니다. 댓글은 이러한 맥락을 이어받아 '노진구'를 언급하는 커뮤니티식 유머로 대응하고 있습니다.",
+        "elapsed": 50.10255765914917
+      },
+      "source_heading_line1": 4128,
+      "canonical_sha256": "95e1bae5554900f0dc876d9e783571cb69530f6aca11d293607b12724834ed57"
+    },
+    {
+      "expert": "arbiter",
+      "value": {
+        "final_decision": {
+          "is_relevant": false,
+          "is_novel_discussion": false,
+          "official_novel_title": null,
+          "suspected_titles": [
+            {
+              "title": "실눈이라고 흑막은 아니에요!",
+              "confidence": "Low",
+              "reason": "본문의 '스테이크 큐브' 키워드가 해당 작품의 묘사와 유사하여 Decoder가 매칭했으나, 문맥상 도황(도플라밍고)의 행위로 서술됨"
+            }
+          ],
+          "heretic_url": null,
+          "confidence": "Medium",
+          "discussion_type": "genre_opinion",
+          "_raw_llm_relevant": false,
+          "_raw_llm_title": null,
+          "_raw_llm_confidence": "High",
+          "_raw_llm_discussion_type": "genre_opinion",
+          "_forced_upgrade_score": 0.0,
+          "_forced_upgrade_threshold": 0.62,
+          "_forced_upgrade_title": "실눈이라고 흑막은 아니에요!",
+          "_hypothesis_top": "genre_discussion",
+          "_hypothesis_margin": 0.127,
+          "official_title": null,
+          "_title_deliberately_null": true
+        },
+        "expert_consensus": {
+          "unanimous": false,
+          "agreeing_experts": [
+            "DiscourseAnalyzer"
+          ],
+          "dissenting_experts": [
+            "Decoder",
+            "Gatekeeper",
+            "Verifier"
+          ]
+        },
+        "conflict_resolution": [
+          {
+            "issue": "작품 식별 및 관련성 여부",
+            "expert_opinions": {
+              "gatekeeper": "work_discussion (medium)",
+              "decoder": "title=None (low)",
+              "verifier": "relevant=True (low)"
+            },
+            "arbiter_decision": "is_relevant=false, discussion_type='genre_opinion'",
+            "reasoning": "Decoder는 특정 작품을 찾지 못했고, Verifier는 관련성이 있다고 보았으나, 본문 분석 결과 특정 작품 하나를 주제로 삼은 것이 아니라 여러 캐릭터의 공통된 '전투 스타일(트로프)'에 대한 개인적 취향을 나열한 글임. 따라서 단일 작품 식별이 불가능하므로 비관련(장르/소재 의견)으로 판정함."
+          }
+        ],
+        "metadata_synthesis": {
+          "detected_author": null,
+          "detected_characters": [
+            "사소리",
+            "도황",
+            "노진구"
+          ],
+          "micro_tags": [
+            "취향",
+            "주인공",
+            "전투스타일"
+          ],
+          "sentiment": "Neutral",
+          "is_nsfw": false,
+          "spoiler_level": "none"
+        },
+        "final_reasoning": "[Multi-Expert Deliberation] 투표: 관련=2/비관련=5, 증거점수=3.0, 최종=비관련(confidence=Medium).\n[Primary] 이 게시글은 특정 웹소설 한 작품을 주제로 다루는 것이 아니라, '실뜨기'나 '인형사'와 같이 실 또는 줄을 활용하여 전투하는 주인공 캐릭터들에 대한 작성자의 개인적인 선호도를 나열한 글입니다. 작성자는 '도황(원피스의 도플라밍고)', '사소리(나루토의 사소리)', '약먹마(약 먹는 천재마법사)' 등 서로 다른 작품의 캐릭터들을 예시로 들며, 이들이 가진 공통적인 전투 메커니즘(전투 스타일)에 대해 언급하고 있습니다.\n\n핵심 키워드인 '스테이크 큐브'는 검색 결과 [실눈이라고 흑막은 아니에요!]라는 작품과 연관될 수 있으나, 본문 문맥상 이는 '도황처럼 스테이크 큐브하는 것'이라 명시되어 있어 해당 작품에 대한 토론이 아닌 도플라밍고의 행위에 대한 비유적 표현으로 해석됩니다. 또한 댓글에서 언급된 '노진구' 역시 본문의 '실뜨기' 키워드에 반응한 커뮤니티식 유머(드립)일 뿐, 특정 작품의 심도 있는 논의로 보기 어렵습니다.\n\n전문가들의 의견을 종합하면, Decoder는 제목에서 작품을 식별하지 못했고 Verifier는 관련성이 있다고 판단했으나, 담화 분석 결과 이 글의 본질은 특정 작품의 리뷰나 스포일러가 아닌 '특정 능력을 가진 주인공'이라는 소재/트로프에 대한 개인적 의견 표명입니다. 따라서 특정 작품을 확정할 수 없으며, 단일 작품에 대한 담론이 아닌 장르적 취향을 나타내는 'genre_opinion'으로 판정합니다.\n\n결론적으로, 본 게시물은 여러 작품의 캐릭터를 단순 예시로 활용하여 자신의 취향을 드러내는 글이므로, 특정 웹소설을 식별하여 연결하는 것은 부적절하며 is_relevant=false로 최종 결정합니다.\n[Jury majority] 1. [본문 이해] 이 게시글은 '실뜨기'와 같은 메커니즘을 사용하는 주인공 캐릭터에 대한 작성자의 개인적인 취향을 나열하고 있습니다. 작성자는 구체적으로 '도황(도플라밍고)', '사소리', '약먹마' 등 서로 다른 작품의 캐릭터들을 예시로 들며, 이들이 가진 독특한 전투 방식(실을 이용한 공격, 인형사, 유사 스파이더맨 등)이 매력적이라는 의견을 피력하고 있습니다. 댓글에서는 '실뜨기 초고수 노진구'라는 커뮤니티식 드립이 달린 상태입니다.\n\n2. [핵심 키워드 해독] 본문의 핵심 키워드는 '실뜨기', '스테이크 큐브', '인형사' 등입니다. '스테이크 큐브'는 검색 결과 특정 웹소설의 제목이나 내용과 연관될 가능성이 포착되었으나, 본문에서는 '도황처럼 스테이크 큐브하는 것'이라 명시되어 있어, 이는 특정 소설의 주제가 아니라 만화 '원피스'의 캐릭터 도플라밍고의 행위를 묘사하는 표현으로 해석됩니다. 또한 '도황', '사소리', '약먹마'는 각각 원피스, 나루토, 약 먹는 천재마법사를 지칭하는 커뮤니티 약칭으로 확인됩니다.\n\n3. [검색/증거 분석] Decoder는 '스테이크 큐브'라는 단어를 근거로 '실눈이라고 흑막은 아니에요!'라는 작품을 후보로 제시하였으나, Verifier의 분석에 따르면 본문 내에 해당 작품을 지칭하는 직접적인 고유명사나 서사적 연결 고리가 없습니다. 오히려 본문은 여러 매체의 캐릭터를 병렬적으로 배치하여 '실을 사용하는 주인공'이라는 공통된 트로프(Trope)를 논하고 있습니다.\n\n4. [전문가 합의/충돌] Gatekeeper는 이를 작품 토론으로 분류했으나, Verifier는 본문이 특정 작품 하나를 타겟팅하지 않고 여러 작품을 예시로 들고 있다는 점을 들어 관련성을 부정했습니다. Arbiter는 Verifier의 맥락 분석을 채택하여, 본문이 특정 작품의 팬덤 활동이나 리뷰가 아닌, 특정 전투 스타일(트로프)에 대한 일반적인 선호도 표현임을 확정했습니다.\n\n5. [판단 근거 종합] 게시글의 주어는 특정 작품이 아니라 '실뜨기하는 주인공'이라는 캐릭터 유형입니다. 본문에 등장하는 캐릭터들은 각기 다른 작품의 인물들이며, 이들을 통해 작성자가 원하는 '전투 메커니즘'이라는 추상적인 개념을 설명하고 있습니다. 따라서 이는 특정 작품에 대한 담론이 아니라, 웹소설 및 만화에서 나타나는 특정 전투 스타일(Trope)에 대한 의견 교환으로 보아야 합니다.\n\n6. [결론] 따라서 이 글은 특정 웹소설 작품을 식별하거나 그에 대해 논하는 글이 아니며, 특정 캐릭터 유형(트로프)에 대한 개인적 선호를 나타내는 글로 판정하여 is_relevant=false, discussion_type='trope_discussion'으로 결정합니다.\n[Judge] 본 게시글은 특정 웹소설 한 작품을 집중적으로 다루는 'direct_work_discussion'은 아니나, '약먹마(약 먹는 천재 마법사)'라는 명확한 웹소설 IP를 포함하여 다양한 서브컬처 캐릭터들의 전투 메커니즘(실/줄 활용)을 논하고 있습니다. 이는 웹소설 독자층이 공유하는 장르적 문법과 캐릭터 속성에 대한 담론이므로 'adjacent_meta_or_fandom' 범주에 해당하며, 관련성(is_relevant)은 인정됩니다. 다만, 작성자의 의도는 특정 작품의 정보를 전달하거나 리뷰하는 것이 아니라 여러 작품의 공통 기믹에 대한 개인적 취향을 나열하는 데 있으므로, 특정 작품명을 `official_novel_title`로 지정하는 것은 부적절합니다. 특히 Decoder가 시도했던 '실눈이라고 흑막은 아니에요!' 매칭은 문맥상 도플라밍고의 행위를 묘사한 비유적 표현('스테이크 큐브')을 오인한 명백한 오류임을 확인하였습니다.",
+        "evidence_chain": [
+          {
+            "source": "Body Text",
+            "content": "도황처럼 실뜨기로 스테이크 큐브하는것도 괜찮고 / 사소리처럼 인형사도 좋고 / 약먹마처럼 유사스파이더맨하는것도 괜찮다",
+            "weight": "high"
+          },
+          {
+            "source": "Search Result [E047]",
+            "content": "도황 - 나무위키 (원피스 도플라밍고 밈)",
+            "weight": "high"
+          },
+          {
+            "source": "Search Result [E006]",
+            "content": "사소리(나루토)/작중 행적",
+            "weight": "high"
+          },
+          {
+            "source": "Search Result [E073]",
+            "content": "약먹는 천재마법사",
+            "weight": "high"
+          }
+        ],
+        "_deliberation": {
+          "method": "full_deliberation_ABC",
+          "evidence_score": {
+            "total_score": 3.0,
+            "relevance_probability": "medium",
+            "positive_signals": [
+              {
+                "signal": "discourse_novel",
+                "detail": "novel_literature"
+              },
+              {
+                "signal": "verifier_relevant",
+                "detail": "title=None"
+              },
+              {
+                "signal": "verifier_anchor",
+                "detail": "anchor found"
+              }
+            ],
+            "negative_signals": [
+              {
+                "signal": "decoder_low",
+                "detail": "title=None"
+              },
+              {
+                "signal": "verifier_critical_counter",
+                "detail": "Decoder의 '실눈이라고 흑막은 아니에요!' 매칭 오류"
+              }
+            ],
+            "expert_agreement": 0.67,
+            "conflict_detected": true,
+            "conflict_details": [
+              "Verifier critical counter: Decoder의 '실눈이라고 흑막은 아니에요!' 매칭 오류"
+            ],
+            "recommendation": "MODERATE: 관련성 증거가 중간 수준입니다. 추가 맥락 분석이 필요합니다."
+          },
+          "conflict_detected": true,
+          "jury_votes": {
+            "relevant": 0,
+            "irrelevant": 3
+          },
+          "debate_advocate_conf": "Medium",
+          "debate_skeptic_conf": "High",
+          "elapsed": 349.8
+        }
+      },
+      "source_heading_line1": 4414,
+      "canonical_sha256": "e2ece6d339166d079d8491276cfe88155631ff9f21d97afd9eee6b8e1bd02ab7"
+    }
+  ],
+  "search_evidence_catalog": [
+    {
+      "domain": "m.munpia.com",
+      "eid": "E001",
+      "purpose": "compound_title_character_split_search",
+      "query": "스테이크 큐브 웹소설",
+      "rank": 1,
+      "snippet": "이어서 두툼한··· 큐브 스테이크 형식으로 잘라둔 척아이롤과 새우가 웍 안으로 미끄러져 들어갔다. - 화악! 손목의 스냅을 이용해 웍을 허공으로 튕겨 올리자, 고압 버너의 시뻘건 불길이 웍 안으로 빨려 들어가며 식재료를 집어삼키는 듯한 모습이었다. 전생의 기억 덕분에 있는 온도를 눈빛만으로 읽어내던 드워프의 감각. 불을 다루는 데 있어서 나를 능가할 자는 이...",
+      "source_rank": 1,
+      "source_tier": "platform_reader_page",
+      "title": "웹소설의 유토피아, 글세상 문피아",
+      "url": "https://m.munpia.com/novel/viewer/591880/8699280"
+    },
+    {
+      "domain": "namu.wiki",
+      "eid": "E002",
+      "purpose": "compound_title_character_split_search",
+      "query": "스테이크 큐브 웹소설",
+      "rank": 2,
+      "snippet": "개요 한국의 아카데미 TS물 웹소설. 작가는 별불꽃. 빙의당함과 동시에 TS된 여주 아르테 이시스가, 자신 외의 사람들은 전부 작가가 마음대로 움직이는 소설 속 인형이라고 생각하며 거리낌없이 행동하다가 점점 진실을 깨닫는 과정의 심리 묘사가... 허나 문제는 그런 명목으로 주인공과 작가가 하는 짓거리들이 마수와 대화를 시도한다거나, 사람을 큐브 스테이크마냥...",
+      "source_rank": 2,
+      "source_tier": "wiki",
+      "title": "실눈이라고 흑막은 아니에요!",
+      "url": "https://namu.wiki/w/%EC%8B%A4%EB%88%88%EC%9D%B4%EB%9D%BC%EA%B3%A0%20%ED%9D%91%EB%A7%89%EC%9D%80%20%EC%95%84%EB%8B%88%EC%97%90%EC%9A%94!"
+    },
+    {
+      "domain": "www.joara.com",
+      "eid": "E003",
+      "purpose": "compound_title_character_split_search",
+      "query": "스테이크 큐브 웹소설",
+      "rank": 3,
+      "snippet": "조아라 웹소설 메뉴 [프리파라] 동경 걱지 패러디 [닌타마] 호접지몽 타타1430 패러디 [ 헌터x헌터 ] 히소카로소이다 안녕히가신창오 패러디 [해리포터] 그 소녀가 돌아왔다. 사유리Sayuri 패러디 [귀멸의 칼날] 큐브 스테이크가 되고 싶지 않아요 han91 패러디 [원피스] All for Her 정ㆍ 패러디 [하이큐]네임포비아 고료 패러디 [괴담출근×마비] 그래서 제...",
+      "source_rank": 3,
+      "source_tier": "web",
+      "title": "조아라 웹소설 메뉴",
+      "url": "http://www.joara.com/main/shortcut/genre/parody/all?category=9,6&api_key=mw_8ba234e7801ba288554ca07ae44c7&ver=3.2.0&device=mw&deviceuid=mw&devicetoken=mw&token=mw&offset=25&page=323&icd=0&store=all&age_constrict=all&orderby=redate&gnb_idx=5&page=327"
+    },
+    {
+      "domain": "namu.wiki",
+      "eid": "E004",
+      "purpose": "ambiguous_title_track",
+      "query": "실뜨기 정식 제목",
+      "rank": 4,
+      "snippet": "2026년 1월 18일 · 1. 개요 [편집] 실뜨기 는 고리 모양의 끈 을 이용해서 하는 놀이 이다. 주로 털실을 묶어서 많이 한다. 실이 너무 짧으면 …자세히 읽기",
+      "source_rank": 4,
+      "source_tier": "wiki",
+      "title": "실뜨기 - 나무위키",
+      "url": "https://namu.wiki/w/%EC%8B%A4%EB%9C%A8%EA%B8%B0"
+    },
+    {
+      "domain": "namu.wiki",
+      "eid": "E005",
+      "purpose": "ambiguous_title_track",
+      "query": "실뜨기 정식 제목",
+      "rank": 5,
+      "snippet": "tva 1기 9화에서 나나미와 사자 계약을 하여 정식으로 나나미의 두 번째 사자가 된다. tva 1기 11화에서 하계를 둘러보고 오겠다며 도쿄로 외출을 나가는데 사이비한테 잡혀서 강매... 전담 성우가 부른 'ひとりあやとり(혼자 실뜨기)', '神酒PARTY(신주PARTY)', 'ひとしずく(한 방울)'라는 제목의 캐릭터송이 있다. 2015년, 2016년에 공연한 오늘부터 신령님 뮤지컬의 미즈키 배우는...",
+      "source_rank": 5,
+      "source_tier": "wiki",
+      "title": "미즈키(오늘부터 신령님)",
+      "url": "https://namu.wiki/w/%EB%AF%B8%EC%A6%88%ED%82%A4(%EC%98%A4%EB%8A%98%EB%B6%80%ED%84%B0%20%EC%8B%A0%EB%A0%B9%EB%8B%98)"
+    },
+    {
+      "domain": "namu.wiki",
+      "eid": "E006",
+      "purpose": "character_event_reverse_track",
+      "query": "뭔가 사소리 웹소설",
+      "rank": 6,
+      "snippet": "유년기 현재의 악명과는 다르게 어렸을 적의 사소리는 여타 아이들과 다름없이 어머니와 아버지의 사랑을 받는 평범한 아이였다. 어느 날 아버지와 어머니는 임무를 수행하던 중 하얀이빨 하타케 사쿠모에게 살해당한다. 사소리는 그것을 모른 채... 치요는 손자의 다친 마음을 위로하기 위해 사소리에게 꼭두각시 인형을 보여주고 공방을 마음대로 사용해도 된다고...",
+      "source_rank": 6,
+      "source_tier": "wiki",
+      "title": "사소리(나루토)/작중 행적",
+      "url": "https://namu.wiki/w/%EC%82%AC%EC%86%8C%EB%A6%AC(%EB%82%98%EB%A3%A8%ED%86%A0)/%EC%9E%91%EC%A4%91%20%ED%96%89%EC%A0%81"
+    },
+    {
+      "domain": "www.fmkorea.com",
+      "eid": "E007",
+      "purpose": "character_event_reverse_track",
+      "query": "뭔가 사소리 웹소설",
+      "rank": 7,
+      "snippet": "2026.01.04.2부시작하면서 뭔가 싸하더라;; 맨처음에 데이다라,사소리 처음등장할때 난 엄청 궁금했음 과연 얼마나 대단한 포스를 보여줄지;; 근데 생각보다 너무약해서 충격먹음 거기다가 뭔가... 솔직히 아무런 기대를 안하고봤음 많은사람들이 페인전까지는 명작이라고 말을 많이하는데 난 납득을 못함 그전에 이미 너무 실망해서;; 최종장은 뭐 다들 망작인거 아니깐 패스하고",
+      "source_rank": 7,
+      "source_tier": "web",
+      "title": "난 나루토 재밌는지 잘 모르겠다 - 웹툰/웹소설/만화",
+      "url": "https://www.fmkorea.com/9347561326"
+    },
+    {
+      "domain": "gall.dcinside.com",
+      "eid": "E008",
+      "purpose": "ambiguous_title_track",
+      "query": "실뜨기 웹소설",
+      "rank": 8,
+      "snippet": "2024.12.02.노진구(노비노비타) 스펙)-실뜨기(보육사 또는 유치원정교사/ 뜨개질사/ 바느질/ 재봉사/ 수선사/ 세탁소 사장)-사격(사격선수/ 말단 하급 경찰공무원/ 자위대 자경대원)-만화(만화가, 아동동화 작가, 웹소설 또는 라노",
+      "source_rank": 8,
+      "source_tier": "community",
+      "title": "게으른 노진구보다 못하다면 개추 주셈 - 게으름 마이너 갤러리",
+      "url": "https://gall.dcinside.com/mgallery/board/view/?id=laziness&no=350"
+    },
+    {
+      "domain": "gall.dcinside.com",
+      "eid": "E009",
+      "purpose": "character_event_reverse_track",
+      "query": "뭔가 사소리 웹소설",
+      "rank": 9,
+      "snippet": "2024.06.14.잘못된 내용 포함될 수 있는 웹소설 원작서 주요 말장난 몇개 해설. 혼자 편집해 보면서 정리해온거라 이 말장난 해설이 맞나 모르지만, 지적 당해야 틀린걸 아니 - 산라쿠 : 주인공의... 그대로 - 사소리스노마타 : 드립 재료는 일야성(一夜城) 스노마타(墨俣城), 도요토미 히데요시가 하룻밤만에 축성했다는 전설을 지닌 나무로 만든 요새 같은 성에 앞에는 전갈을...",
+      "source_rank": 9,
+      "source_tier": "community",
+      "title": "개인적인 원작 말장난 해설 + 샹프로 소설 편집판 1장 (1) - 샹그릴라 프론티어 ....",
+      "url": "https://gall.dcinside.com/mgallery/board/view/?id=shangpro&no=884"
+    },
+    {
+      "domain": "gall.dcinside.com",
+      "eid": "E010",
+      "purpose": "ambiguous_title_track",
+      "query": "실뜨기 웹소설",
+      "rank": 10,
+      "snippet": "2024.12.23.내용은 주인공이 상점능력으로 인생역전하는 내용인데 골드로 마법상점에서 물품사고 레벨업하는게 주된 흐름이였습니다. 초반에 실뜨기 바늘사서 목도리로 돈버는게 기억에 남는데 혹시 아시는분 계십니까~ ㅠㅠ 카카오 연재작 입니다.",
+      "source_rank": 10,
+      "source_tier": "community",
+      "title": "작품 하나 찾아주실분 ㅠㅠ 제목이 도저히기억안나요 - 웹소설 연재 마이너 갤....",
+      "url": "https://gall.dcinside.com/mgallery/board/view/?id=tgijjdd&no=1038195"
+    },
+    {
+      "domain": "namu.wiki",
+      "eid": "E011",
+      "purpose": "title_search_community",
+      "query": "유사스파이더맨 사소리",
+      "rank": 11,
+      "snippet": "2026년 9월 17일 · 유사성 등 둘 이상의 사물 혹은 개념이 비슷할 때 사용하지만 유사품, 유사과학, 유사역사학 등의 단어에서 볼 수 있듯 … [본문] 최근 변경최근 토론 특수 기능 # 유사 최근 수정 시각: 2026-04-05 14:47:51 6 편집 편집 IP 우회 수단(프록시 서버, VPN, Tor 등)이나 IDC 대역 IP로 접속하셨습니다. (#11759424) (VPN이나 iCloud의 비공개 릴레이를 사용 중인 경우 나타날 수 있습니다.) 잘못된 IDC 대역 차단이라고 생각하시는 경우 **게시판**에 문의하시길 바랍니다. 닫기 토론역사 분류 * 동음이의어 * 성씨/일본 * 이름/일본 * 한자어 * 멸칭 1. 동음이의어 1.1. 類似1.2. 流沙1.3. 類斯1.4. 有司1.5. 儒士1.6. 儒奢1.7. 幽思1.8. 攸司1....",
+      "source_rank": 11,
+      "source_tier": "wiki",
+      "title": "유사 - 나무위키",
+      "url": "https://namu.wiki/w/%EC%9C%A0%EC%82%AC"
+    },
+    {
+      "domain": "namu.wiki",
+      "eid": "E012",
+      "purpose": "title_search_community",
+      "query": "유사스파이더맨 사소리",
+      "rank": 12,
+      "snippet": "뮤지컬 라파치니의 정원도 유사한 이야기를 다루고 있다. 4.2. 게임 게임에서는 가공의 독을 많이 표현해왔지만 역시 현실과는 거리가 멀다. 해독제를 투여해도 치료되려면 오랜 시간이 걸리는 현실과 달리 게임에서는 중독되더라도 회복물약이나 해독제 한모금으로 아주 쉽게 해결된다. 시간이 지나면 자연스럽게 독의 효과가 사라지는 경우도 많고, 난이도가 있는 RPG라...[본문] 최근 변경최근 토론 특수 기능 # 독극물/창작물 최근 수정 시각: 2026-10-11 11:24:28 10 편집토론역사 분류 * 속성 * 창작물 * 독 * 초능력 상위 문서: 독극물 1. 개요2. 묘사3. 색상4. 매체에서 4.1. 문학4.2. 게임 5. 독 조작6. 가공의 독극물7. 캐릭터 ## 1. 개요[]( 창작물에서 다루어지는 독극물에 대한 문서. 독극물이 독립된...",
+      "source_rank": 12,
+      "source_tier": "wiki",
+      "title": "독극물/창작물 - 나무위키",
+      "url": "https://namu.wiki/w/%EB%8F%85%EA%B7%B9%EB%AC%BC/%EC%B0%BD%EC%9E%91%EB%AC%BC"
+    },
+    {
+      "domain": "novel.naver.com",
+      "eid": "E013",
+      "purpose": "compound_title_character_split_search",
+      "query": "스테이크 큐브 웹소설",
+      "rank": 13,
+      "snippet": "2026.05.19.하연의 말에 인태의 젓가락이 멈췄다. 다시 움직였지만, 목 아래로 서늘한 열감이 흘러내렸다. 그녀가 기억하고 있었다. 자신의 알레르기를. 젓가락으로 연신 뒤적거리던 큐브 스테이크와 치즈가 올라간 구운 아스파라거스. 아무래도 그 소스에 와인이 들어 있었던 모양이다. 인태는 와인과 치즈를 함께 먹으면 알레르기 반응이 올라왔다. 하연과 첫 데이트 날, 파인다이닝에서 .....",
+      "source_rank": 13,
+      "source_tier": "web",
+      "title": "6화. 진상, 개 같은 봄날",
+      "url": "https://novel.naver.com/challenge/detail?novelId=1228319&volumeNo=6"
+    },
+    {
+      "domain": "talkerstalk.tistory.com",
+      "eid": "E014",
+      "purpose": "ambiguous_title_track",
+      "query": "실뜨기 정식 제목",
+      "rank": 14,
+      "snippet": "2020년 11월 5일 · 실뜨기 알아보기. 실뜨기 하는 방법. 어릴 때 실이나 줄을 가지고 동네나 학교에서 친구들과 실뜨기를 하던 기억들이 …",
+      "source_rank": 14,
+      "source_tier": "web",
+      "title": "실뜨기 알아보기. 실뜨기 하는 방법.",
+      "url": "https://talkerstalk.tistory.com/216"
+    },
+    {
+      "domain": "www.instiz.net",
+      "eid": "E015",
+      "purpose": "character_event_reverse_track",
+      "query": "뭔가 사소리 웹소설",
+      "rank": 15,
+      "snippet": "2013.08.19.게시된 카테고리 BL웹툰/웹소설 주의할점이나 키워드만 써놓을게!! 나도 내일 개학이라서 ㅋㅋㅋ 안써놓은건 기억안나는거라고 생각해줰ㅋㅋㅋㅋ 색깔칠한건 그중에서도... 변화-114 사소리 동생여주 ,나루토→헌터 강철/해리 penance-37,완 외국분 소설 허락맡고 번역한소설, 마지막부분에 있는 플라스크속의 작은난쟁이 걔랑 싸우다가 에드랑 알이...",
+      "source_rank": 15,
+      "source_tier": "web",
+      "title": "조아라 소설 추천 목록 (패러디많음주의 해리포터많음주의) - 인스티즈(instiz) BL....",
+      "url": "https://www.instiz.net/name/4349084"
+    },
+    {
+      "domain": "stay.visitseoul.net",
+      "eid": "E016",
+      "purpose": "compound_title_character_split_search",
+      "query": "스테이 크큐브 웹소설",
+      "rank": 16,
+      "snippet": "서울스테이는 서울시내 25개 자치구에서 등록증을 발급받아 운영하고 있는 '외국인관광 도시민박업'과 '한옥체험업'이 등록할 수 있으며 등록 …",
+      "source_rank": 16,
+      "source_tier": "web",
+      "title": "서울스테이 - Seoul",
+      "url": "https://stay.visitseoul.net/cms/index"
+    },
+    {
+      "domain": "piuri.com",
+      "eid": "E017",
+      "purpose": "compound_title_character_split_search",
+      "query": "스테이크 큐브 웹소설",
+      "rank": 17,
+      "snippet": "작품설명 ; 자그마치 10년 세월이야! 당신 볼 때마다 심장에 사리가 생길 지경이라고! 부모의 무관심 속에 방치된 채 삐뚤어진 삶을 살아가던 태성그룹 회장의 외아들 서강우. 아버지를 향한 반항심에 무심코 집을 나와 내려갔던 부산에서 그는 자신의 메말랐던 인생을 바꿔 준 여자를 만났다. 우연히 들어간 평범한 분식집 <라면에 김밥>의 주인이자 정에 목말랐던 그를 진심으로....",
+      "source_rank": 17,
+      "source_tier": "web",
+      "title": "라면과 스테이크 - 19금 로맨스소설",
+      "url": "https://piuri.com/item.php?it_id=98837"
+    },
+    {
+      "domain": "www.dmitory.com",
+      "eid": "E018",
+      "purpose": "character_event_reverse_track",
+      "query": "뭔가 사소리 웹소설",
+      "rank": 18,
+      "snippet": "2018.06.11.요즘 패테기가 왔나 뭘 읽어도 재미없어서 선작목록과 습작목록 훓어보면서 연중된 작품과 완결된 작품의 비율 차이를... 흥미롭고 사소리랑 싸우는 장면도 인상깊었음. 중닌 시험에서 사쿠라vs사스케에서 사쿠라가 시전한 토둔 미로랑 사쿠라... 노마십가 블리치 패러디인데 쿠하츠=굴림 전문 작가라는 공식이 세워졌을 정도로 주인공이 엄청 구르기로 유명한 소설이었지.....",
+      "source_rank": 18,
+      "source_tier": "web",
+      "title": "노벨정원 - 톨들이 생각하는 추억의 패러디는 뭐야?",
+      "url": "https://www.dmitory.com/novel/25925299"
+    },
+    {
+      "domain": "www.dmitory.com",
+      "eid": "E019",
+      "purpose": "character_event_reverse_track",
+      "query": "뭔가 사소리 웹소설",
+      "rank": 19,
+      "snippet": "2025.05.19.소년만화나 액션물 같은데서나 나올법한 느낌을 찾고 있는데... 이누야샤 반코츠x가영이나 나루토 사소리x사쿠라나 악역이라기엔 애매하지만 슬레이어즈 제로스x리나 이런 느낌... 이런 느낌의 남주여주는 없는걸까 로맨스 적어도 괜찮고 많아도 괜찮고 둘이 엮이기만 하면 뭐든 괜찮아 유치해도 잘 봄 플랫폼 안가림 장르 안가림 판무나 웹툰도 추천받음ㅠ",
+      "source_rank": 19,
+      "source_tier": "web",
+      "title": "노벨정원 - 악역남캐x선역여캐 느낌 나는 소설은 잘 없겠지?",
+      "url": "https://www.dmitory.com/novel/366214212"
+    },
+    {
+      "domain": "m.blog.naver.com",
+      "eid": "E020",
+      "purpose": "ambiguous_title_track",
+      "query": "실뜨기 정식 제목",
+      "rank": 20,
+      "snippet": "2025년 1월 20일 · 실뜨기 1인 놀이는 다양한 모양을 만들 수 있어요. 학교에서 전통놀이 시간에 배웠다면서 이것저것 만들어서 …",
+      "source_rank": 20,
+      "source_tier": "web",
+      "title": "아이와 함께 실뜨기놀이, 실뜨기 놀이 방법 - 네이버 블로그",
+      "url": "https://m.blog.naver.com/ira45/223728757666"
+    },
+    {
+      "domain": "blog.naver.com",
+      "eid": "E021",
+      "purpose": "ambiguous_title_track",
+      "query": "실뜨기 웹소설",
+      "rank": 21,
+      "snippet": "2025.07.12.10년 연재 웹소설을 원작으로 “소설 속 세계가 현실이 된다”는 파격 설정을 구현하기 위해 김병우 감독은 전체 컷의 80% 이상을 VFX로 설계했고, ‘신과함께’ ‘기생충’을 만든... 무술감독 정윤헌은 캐릭터별 성격을 반영해 ‘김독자’의 리얼 액션, ‘유중혁’의 미학적 액션, ‘유상아’의 실뜨기 모티프 액션을 각각 설계해 “VR게임을 보는 듯한 몰입감”을...",
+      "source_rank": 21,
+      "source_tier": "web",
+      "title": "웹소설의 신화를 스크린으로…‘전지적 독자 시점’ 제작 비하인드 대공개",
+      "url": "https://blog.naver.com/intery56/223930592486"
+    },
+    {
+      "domain": "m.blog.naver.com",
+      "eid": "E022",
+      "purpose": "ambiguous_title_track",
+      "query": "실뜨기 정식 제목",
+      "rank": 22,
+      "snippet": "2021년 8월 8일 · 요즘 집콕하는 시간이 많아진 아이들이, 혼자서 갖가지 모양을 만드는 혼자서 하는 실뜨기부터 한 번에 여러 모양을 …",
+      "source_rank": 22,
+      "source_tier": "web",
+      "title": "집콕놀이 어린이실뜨기 83가지 노하우 [놀면서 똑똑해지는 ...",
+      "url": "https://m.blog.naver.com/lovelylife7/222461995573"
+    },
+    {
+      "domain": "hanok.seoul.go.kr",
+      "eid": "E023",
+      "purpose": "compound_title_character_split_search",
+      "query": "스테이 크큐브 웹소설",
+      "rank": 23,
+      "snippet": "한옥체험업 숙소 구분, 이름, 주소, 상세보기 테이블입니다.",
+      "source_rank": 23,
+      "source_tier": "web",
+      "title": "서울한옥 관광 및 숙박 > 서울한옥스테이 | 서울한옥포털 - Seoul",
+      "url": "https://hanok.seoul.go.kr/front/kor/exp/expStay.do"
+    },
+    {
+      "domain": "www.sto.or.kr",
+      "eid": "E024",
+      "purpose": "compound_title_character_split_search",
+      "query": "스테이 크큐브 웹소설",
+      "rank": 24,
+      "snippet": "서울스테이는 서울시 소재 게스트하우스 브랜드입니다. 서울스테이에는 서울시내 25개 자치구에 등록한 ‘외국인관광 도시민박업’ 및 …",
+      "source_rank": 24,
+      "source_tier": "web",
+      "title": "관광상품 및 자원개발",
+      "url": "https://www.sto.or.kr/tourism01/view?stBusinessSeq=5"
+    }
+  ],
+  "stored_candidate": {
+    "alias_or_mention": null,
+    "confidence": "High",
+    "content_status": null,
+    "heretic_url": null,
+    "locked": false,
+    "negative_evidence": [
+      "candidate_source_missing_url"
+    ],
+    "official_title": "실눈이라고 흑막은 아니에요!",
+    "page_type": null,
+    "reference_role": "mentioned",
+    "resolved_recall_anchor": null,
+    "source_tier": "llm_only"
+  },
+  "native_projection": {
+    "excluded_works": [],
+    "fallback": false,
+    "reasons": [
+      "discourse_discuss_genre",
+      "core_hold:unsupported_content",
+      "core_drop:title_not_in_source",
+      "core_drop:title_not_in_source",
+      "core_drop:title_not_in_source"
+    ],
+    "reference_works": [],
+    "request_conditions": [],
+    "scope_hint": null,
+    "speech_act": "opinion",
+    "target_kind": "trope",
+    "target_media": "unknown",
+    "target_span": null,
+    "target_surface": null,
+    "work_relation_evidence": [],
+    "work_roles": []
+  },
+  "source_bindings": {
+    "packet_file": "out/p4_quality_followup_20261013/actual80_current_followup_parallel12_v1/final_review_prep_v1/run_first/final_review_packets.jsonl",
+    "packet_file_sha256": "17ef83367385836b253f8acd72503de72df21b3c7a6cb55145600bcae80c9983",
+    "audit_receipt_sha256": "00581d7f396110a7615c0c6e9f4d8d38e063e0871fa6d3b9d5a91e2dbca7f5e1",
+    "worker_path": "logs/expert_run_20261013_181711_146907_W10.log",
+    "worker_file_sha256": "2f72baf556750973e8828de65f038a3fe3f11b364e3dcb5ece93864ff996dca7",
+    "segment_lines1": [
+      2077,
+      4646
+    ],
+    "segment_sha256": "28f70188d114bc2fdbbdb501d7c2ba0f39e0aeb67266c0812f9d78e1ad8da6ae"
+  },
+  "limits": [
+    "private caches/fetched original ctx absent",
+    "saved final candidate is consumer input not reconstructed producer trace",
+    "no original branch causal claim"
+  ]
+}

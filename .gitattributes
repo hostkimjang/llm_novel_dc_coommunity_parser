@@ -2,5 +2,5 @@
 * text=auto
 
 # 원시 fixture와 native marker resource의 바이트 보존
-/tests/fixtures/** -text
+/tests/fixtures/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 /native/p0_windows_owner_observer/bootstrap_candidate.bin binary

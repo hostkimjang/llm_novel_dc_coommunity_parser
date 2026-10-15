@@ -1,0 +1,61 @@
+{
+  "schema_version": "alias_memory_repair_fixed_fixtures_v1",
+  "files_sha256": {
+    "row_50.json": "776cc5177d055f7b522fae291c7d2ae5a5edace9e8aefa488fdbb03ddc8b1dcf",
+    "row_55.json": "6b6440157edcc12ec043a360b98c265e53294a1595cd65a499375a7fa415d545",
+    "row_56.json": "8c3b7f28acf8fbcd77dcaf2d86db9e489e551e38d84599bd34c81a3190506dbd",
+    "row_64.json": "17bbf6763dd9b99a2fbc50c3cd70799b4cb603e2ac30f4d3454b24870f966692",
+    "row_79.json": "1521b584b096ef127b26bc28eca172adce595370a06e2be375236b4df29e7c47",
+    "row_8.json": "3b737360feaf827f5caf2fd0deaa50035ae8f5e49732a050e1ab8f8d78bf3796"
+  },
+  "source_provenance": {
+    "final_packets_sha256": "7e2a5b70f6f3dd1809c825bdd446e7573dbaf949872eb8221f6c0537903637c2",
+    "checkpoint_sha256": "f3758405f8e433cfdf75df4f85486a557ccb9969ab0788e68d6d9eb9e386f4ae",
+    "rows": {
+      "8": {
+        "expert_source": "out\\p4_quality_followup_20261013\\source_alias8_memory_diagnostic_v1\\candidate\\tests\\fixtures\\alias8_memory_v1\\row8_experts.json",
+        "sha256": "6e8398f42ab2c98b086763458792bf5823483c20eee21e145f5c76431a2de2c9"
+      },
+      "50": {
+        "expert_source": "logs\\expert_run_20261013_060126_882644_W1.log",
+        "sha256": "66204cb24c1ce9f5d84b967eae40adba10464382fecc84daface4c0f9288fffc",
+        "scope_lines1": [
+          4024,
+          6197
+        ]
+      },
+      "55": {
+        "expert_source": "logs\\expert_run_20261013_060126_882644_W5.log",
+        "sha256": "ec9d6d149b9d0f5cf4976c2cb231302f6a3830c30f66c8021d38a2c8464183de",
+        "scope_lines1": [
+          4959,
+          6440
+        ]
+      },
+      "56": {
+        "expert_source": "logs\\expert_run_20261013_060126_882644_W11.log",
+        "sha256": "91909386a09ede8f5a18653ebe7d24049a6e8ee8c8e6aa606a523d3d86fddb40",
+        "scope_lines1": [
+          4373,
+          5757
+        ]
+      },
+      "64": {
+        "expert_source": "logs\\expert_run_20261013_060126_882644_W0.log",
+        "sha256": "62be1ad40774c17d18c6421729fec9ba5ccacff0f36d4a0753568f127fe1ee20",
+        "scope_lines1": [
+          5601,
+          7246
+        ]
+      },
+      "79": {
+        "expert_source": "logs\\expert_run_20261013_060126_882644_W0.log",
+        "sha256": "62be1ad40774c17d18c6421729fec9ba5ccacff0f36d4a0753568f127fe1ee20",
+        "scope_lines1": [
+          7247,
+          10176
+        ]
+      }
+    }
+  }
+}

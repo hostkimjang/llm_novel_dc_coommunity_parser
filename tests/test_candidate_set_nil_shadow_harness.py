@@ -95,17 +95,60 @@ class CandidateSetNilShadowHarnessTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "artifact sha256 mismatch"):
             validate_run_spec(path)
 
-    def test_frozen_parent_validation_accepts_historical_source_drift_but_not_malformed_record(self) -> None:
-        historical = Path(__file__).resolve().parents[1] / "out/candidate_set_nil_shadow_harness_20260711/v8/run_spec.json"
+    def test_new_runspec_binds_current_grounding_paths_and_exact_bytes(self) -> None:
+        path = self.spec_path()
+        spec, _, _ = validate_run_spec(path)
+        root = Path(__file__).resolve().parents[1]
+        artifacts = spec["implementation_contract"]["artifacts"]
+        for key in ("candidate_generation", "candidate_set_shadow", "candidate_audit"):
+            expected = f"src/llm_batch/grounding/{key}.py"
+            self.assertEqual(expected, artifacts[key]["path"])
+            self.assertEqual(_sha256_file(root / expected), artifacts[key]["sha256"])
+            self.assertEqual((root / expected).stat().st_size, artifacts[key]["bytes"])
+        # 자기 해시를 다시 계산해도 현재 구현 바이트를 바꾼 주장은 허용하지 않는다.
+        artifacts["candidate_set_shadow"]["sha256"] = "0" * 64
+        spec["implementation_contract"]["sha256"] = _canonical_hash({key: ref["sha256"] for key, ref in sorted(artifacts.items())})
+        spec["run_spec_sha256"] = _canonical_hash({key: value for key, value in spec.items() if key != "run_spec_sha256"})
+        forged = self.root / "forged-current-implementation.json"
+        forged.write_text(json.dumps(spec), encoding="utf-8")
         with self.assertRaisesRegex(ValueError, "artifact sha256 mismatch"):
-            validate_run_spec(historical)
-        frozen, rows, _ = validate_run_spec(historical, verify_implementation=False)
-        self.assertEqual(18, len(rows))
-        self.assertEqual("5b36fe5de439eb37d358b5a0e8185cdd61f610760676623086d92207abac16a9", frozen["run_spec_sha256"])
+            validate_run_spec(forged)
 
+    def test_frozen_contract_keeps_structural_checks_without_historical_fixture(self) -> None:
         path = self.spec_path()
         spec = json.loads(path.read_text(encoding="utf-8"))
         implementation = spec["implementation_contract"]
+        # 과거 형태의 지문은 합성 사본에서만 만든다. 기존 Golden18은 고치지 않는다.
+        implementation["artifacts"]["candidate_generation"]["path"] = "src/llm_batch/candidate_generation.py"
+        spec["run_spec_sha256"] = _canonical_hash(
+            {key: value for key, value in spec.items() if key != "run_spec_sha256"}
+        )
+        path.write_text(json.dumps(spec), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "artifact missing"):
+            validate_run_spec(path)
+        _, rows, _ = validate_run_spec(path, verify_implementation=False)
+        self.assertEqual(2, len(rows))
+        implementation["artifacts"]["candidate_generation"]["bytes"] = 0
+        spec["run_spec_sha256"] = _canonical_hash(
+            {key: value for key, value in spec.items() if key != "run_spec_sha256"}
+        )
+        path.write_text(json.dumps(spec), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "frozen implementation bytes invalid"):
+            validate_run_spec(path, verify_implementation=False)
+
+    def test_synthetic_frozen_parent_accepts_source_drift_but_not_malformed_record(self) -> None:
+        path = self.spec_path()
+        spec = json.loads(path.read_text(encoding="utf-8"))
+        implementation = spec["implementation_contract"]
+        implementation["artifacts"]["agentic_pipeline"]["sha256"] = "0" * 64
+        implementation["sha256"] = _canonical_hash({name: ref["sha256"] for name, ref in sorted(implementation["artifacts"].items())})
+        spec["run_spec_sha256"] = _canonical_hash({key: value for key, value in spec.items() if key != "run_spec_sha256"})
+        path.write_text(json.dumps(spec), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "artifact sha256 mismatch"):
+            validate_run_spec(path)
+        frozen, rows, _ = validate_run_spec(path, verify_implementation=False)
+        self.assertEqual(2, len(rows))
+        self.assertEqual(spec["run_spec_sha256"], frozen["run_spec_sha256"])
         implementation["artifacts"]["agentic_pipeline"]["bytes"] = 0
         implementation["sha256"] = _canonical_hash(
             {
@@ -119,6 +162,15 @@ class CandidateSetNilShadowHarnessTests(unittest.TestCase):
         path.write_text(json.dumps(spec), encoding="utf-8")
         with self.assertRaisesRegex(ValueError, "frozen implementation bytes invalid"):
             validate_run_spec(path, verify_implementation=False)
+
+    def test_bound_artifact_byte_drift_is_rejected_with_both_implementation_modes(self) -> None:
+        path = self.spec_path()
+        with self.ledger.open("ab") as stream:
+            stream.write(b"\n")
+        for verify in (True, False):
+            with self.subTest(verify_implementation=verify):
+                with self.assertRaisesRegex(ValueError, "artifact sha256 mismatch: label_ledger"):
+                    validate_run_spec(path, verify_implementation=verify)
 
     def test_self_hash_ledger_and_overwrite_are_rejected(self) -> None:
         path = self.spec_path()

@@ -30,6 +30,7 @@ import sys
 from pathlib import Path
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(_REPO_ROOT))
 sys.path.insert(0, str(_REPO_ROOT / "src"))
 
 # server.py import 전에 설정해야 /api/health 가 standalone=True 로 응답한다.

@@ -1,0 +1,319 @@
+{
+  "schema_version": "nsfw_assessment_source49_fixture_v1",
+  "data_kind": "STORED_ACTUAL_RUN_OBSERVATION_NOT_GOLD",
+  "input_index1": 49,
+  "post_id": 9788827,
+  "run_id": "20261012_145104_574531",
+  "records": {
+    "actual49": {
+      "post": {
+        "gallery_id": "genrenovel",
+        "post_id": 9788827,
+        "title": "장갤에서 주운짤인데 제목이뭘까",
+        "author": "ㅇㅇ",
+        "created_at": "2025-01-04 19:32:43",
+        "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=9788827",
+        "content_blocks": [
+          {
+            "type": "image",
+            "url": "https://dcimg1.dcinside.com/viewimage.php?id=2ab8de34e0dc37b06bb3&no=24b0d769e1d32ca73ce887fa11d02831f6239d61d5ffa4d5114270a7c42330e2e1a2af65aca53ba1e3aff305e1b20cccb9e778e3b39ca7dc621c2baf06ba5dc96c3329d08f9ef11a6ef654825fcc2b33ce2f5f9c123c585a54ba5ffdea8f7102312061"
+          },
+          {
+            "type": "text",
+            "text": "이런건 어디물어봐야할 지도 모르 겠음"
+          }
+        ],
+        "page_no": 35130
+      },
+      "comments": [
+        {
+          "comment_id": "33540715",
+          "author": "ㅇㅇ",
+          "content": "",
+          "content_html": "<img class=\"written_dccon \" src=\"https://dcimg5.dcinside.com/dccon.php?no=62b5df2be09d3ca567b1c5bc12d46b394aa3b1058c6e4d0ca41648b658e924732745fd77b9468f1b4a955fe1840c66c64c9eafdf32954a25e68f474f99b85835d7e986fe1845a9cea5\" conalt=\"사악한\" alt=\"사악한\" title=\"사악한\" data-dcconoverstatus=\"false\">",
+          "created_at": "2025.01.04 19:33:08",
+          "ip": "",
+          "reply_to_comment_id": null,
+          "reply_level": 0,
+          "post_id": 9788827
+        },
+        {
+          "comment_id": "33540716",
+          "author": "유다온",
+          "content": "에휴",
+          "content_html": "에휴",
+          "created_at": "2025.01.04 19:33:08",
+          "ip": "",
+          "reply_to_comment_id": null,
+          "reply_level": 0,
+          "post_id": 9788827
+        },
+        {
+          "comment_id": "33540717",
+          "author": "만인의연인초절정미녀윤찐빵",
+          "content": "우리한테도 묻지 말아다오  - dc App",
+          "content_html": "우리한테도 묻지 말아다오  - dc App",
+          "created_at": "2025.01.04 19:33:09",
+          "ip": "",
+          "reply_to_comment_id": null,
+          "reply_level": 0,
+          "post_id": 9788827
+        },
+        {
+          "comment_id": "33540718",
+          "author": "ㅇㅇ",
+          "content": "이거 작가 그림체 아는데",
+          "content_html": "이거 작가 그림체 아는데",
+          "created_at": "2025.01.04 19:33:11",
+          "ip": "",
+          "reply_to_comment_id": null,
+          "reply_level": 0,
+          "post_id": 9788827
+        },
+        {
+          "comment_id": "33540724",
+          "author": "ㅇㅇ",
+          "content": "근데 씨발아 좀",
+          "content_html": "근데 씨발아 좀",
+          "created_at": "2025.01.04 19:33:17",
+          "ip": "",
+          "reply_to_comment_id": null,
+          "reply_level": 0,
+          "post_id": 9788827
+        },
+        {
+          "comment_id": "33540785",
+          "author": "ㅇㅇ",
+          "content": "폴리우레탄같은데",
+          "content_html": "폴리우레탄같은데",
+          "created_at": "2025.01.04 19:37:31",
+          "ip": "",
+          "reply_to_comment_id": null,
+          "reply_level": 0,
+          "post_id": 9788827
+        }
+      ],
+      "experts": {
+        "gatekeeper": {
+          "is_noise": true,
+          "noise_reason": "본문과 댓글이 특정 웹소설이 아닌 성인 만화(망가)의 이미지에 대해 논하고 있음. 작성자는 이미지의 제목을 묻고 있으며, 댓글에서도 '그림체', '폴리우레탄(작품명 추정)' 등 시각 매체 관련 담론이 이루어지고 있으므로 웹소설 커뮤니티의 분석 대상에서 제외함.",
+          "post_type": "noise",
+          "detected_entities": {
+            "possible_titles": [
+              "폴리우레탄"
+            ],
+            "possible_authors": null,
+            "possible_characters": null,
+            "platforms_mentioned": []
+          },
+          "key_terms": [
+            "주운짤",
+            "제목",
+            "그림체",
+            "폴리우레탄"
+          ],
+          "context_clues": {
+            "has_url_in_comments": false,
+            "has_specific_names": true,
+            "is_asking_recommendation": false,
+            "is_spoiler_discussion": false,
+            "has_comment_title_answer": true,
+            "comment_title_candidates": [
+              "에휴",
+              "우리한테도 묻지 말아다오  - dc App",
+              "이거 작가 그림체 아는데",
+              "근데 씨발아 좀",
+              "폴리우레탄같은데"
+            ],
+            "comment_title_merge_candidates": [],
+            "comment_title_candidate_details": [
+              {
+                "text": "에휴",
+                "comment_index": 0,
+                "line_index": 0,
+                "speech_act": "unasserted_reaction",
+                "has_at_mention": false,
+                "reply_level": 0,
+                "reply_to_comment_id": null,
+                "author": "ㅇㅇ",
+                "title_assertion_basis": null
+              },
+              {
+                "text": "우리한테도 묻지 말아다오  - dc App",
+                "comment_index": 1,
+                "line_index": 0,
+                "speech_act": "explanation",
+                "has_at_mention": false,
+                "reply_level": 0,
+                "reply_to_comment_id": null,
+                "author": "유다온",
+                "title_assertion_basis": null
+              },
+              {
+                "text": "이거 작가 그림체 아는데",
+                "comment_index": 2,
+                "line_index": 0,
+                "speech_act": "unasserted_reaction",
+                "has_at_mention": false,
+                "reply_level": 0,
+                "reply_to_comment_id": null,
+                "author": "만인의연인초절정미녀윤찐빵",
+                "title_assertion_basis": null
+              },
+              {
+                "text": "근데 씨발아 좀",
+                "comment_index": 3,
+                "line_index": 0,
+                "speech_act": "unasserted_reaction",
+                "has_at_mention": false,
+                "reply_level": 0,
+                "reply_to_comment_id": null,
+                "author": "ㅇㅇ",
+                "title_assertion_basis": null
+              },
+              {
+                "text": "폴리우레탄같은데",
+                "comment_index": 4,
+                "line_index": 0,
+                "speech_act": "unasserted_reaction",
+                "has_at_mention": false,
+                "reply_level": 0,
+                "reply_to_comment_id": null,
+                "author": "ㅇㅇ",
+                "title_assertion_basis": null
+              }
+            ],
+            "title_as_body_continuation": true,
+            "title_body_joined_text": "장갤에서 주운짤인데 제목이뭘까 [이미지 OCR] 엄마아 쌀게에 내 정자 잔뜩 마셔어♥ 아기방 열려 버렸어. 이런건 어디물어봐야할 지도 모르 겠음",
+            "title_body_first_line": "[이미지 OCR] 엄마아 쌀게에 내 정자 잔뜩 마셔어♥ 아기방 열려 버렸어."
+          },
+          "search_requests": [],
+          "confidence": "high",
+          "notes": "이미지 요약 결과 '성인용 만화(망가)'로 확인됨. 댓글에서 언급된 '폴리우레탄'은 해당 만화의 제목으로 추정되나, 이는 웹소설이 아닌 시각 매체(만화)에 대한 담론이므로 is_noise=true 처리함."
+        },
+        "discourse": {
+          "discourse_analysis": {
+            "primary_domain": "manga_comics",
+            "domain_confidence": "medium",
+            "domain_evidence": [
+              "짤",
+              "제목이뭘까",
+              "성인용 만화(망가)",
+              "그림체",
+              "폴리우레탄"
+            ],
+            "secondary_domains": [
+              "adult_content"
+            ],
+            "intent": "ask_question",
+            "intent_confidence": "high",
+            "speech_act": "question",
+            "target_kind": "work",
+            "is_coherent": true,
+            "coherence_reason": "제목에서 이미지의 제목을 묻고 있으며, 본문에서 질문의 막막함을 표현하고, 댓글에서 특정 작가나 작품명(폴리우레탄)을 언급하며 답변을 시도하므로 일관된 담론을 형성함.",
+            "title_novel_terms": [],
+            "title_body_consistency": true,
+            "consistency_note": "본문/댓글 매체 단서 부족으로 매체 판정을 보수적으로 조정",
+            "is_association_not_discussion": false,
+            "association_evidence": null,
+            "search_suggestions": [
+              {
+                "query": "폴리우레탄 작품",
+                "purpose": "To verify if 'Polyurethane' mentioned in comments is a work title or author name.",
+                "priority": 1
+              },
+              {
+                "query": "엄마아 쌀게에 내 정자 잔뜩 마셔어",
+                "purpose": "To identify the work using the specific dialogue found in the image OCR.",
+                "priority": 2
+              }
+            ],
+            "real_subject": "이미지 속 성인 작품(매체 미확정)(또는 작가)의 제목 찾기",
+            "author_question_span": "제목이뭘까",
+            "author_question_target": "이미지에 포함된 성인 만화 작품명",
+            "author_recommendation_span": null,
+            "author_recommendation_is_direct": false,
+            "reasoning": "작성자는 커뮤니티에서 가져온 이미지(짤)를 보고 해당 작품의 제목이 무엇인지 묻고 있습니다. 이미지 OCR 결과와 댓글의 '폴리우레탄'이라는 언급을 통해 특정 성인 작품(매체 미확정) 작품을 식별하려는 의도가 명확합니다.",
+            "source_bound_question_receipt": {
+              "span": "제목이뭘까",
+              "source": "author_title",
+              "speaker": "author",
+              "modality": "text",
+              "position": 0,
+              "target_description": "이미지에 포함된 성인 만화 작품명",
+              "target_candidates": [
+                "이미지에 포함된 성인 만화 작품명"
+              ],
+              "target_conflict": false,
+              "verification_level": "exact_author_excerpt_model_target"
+            },
+            "source_bound_recommendation_request": false,
+            "image_topic_relation": {
+              "state": "unbound",
+              "source": "image_evidence"
+            }
+          }
+        }
+      }
+    }
+  },
+  "stored_image_projection": {
+    "image_evidence_catalog": [
+      {
+        "block_index": 0,
+        "eid": "IMG001",
+        "evidence_type": "character_visual_only",
+        "ocr_text": "엄마아 쌀게에 내 정자 잔뜩 마셔어♥ 아기방 열려 버렸어.",
+        "promotion_eligible": false,
+        "rank": 1,
+        "source_url": "https://dcimg1.dcinside.com/viewimage.php?id=2ab8de34e0dc37b06bb3&no=24b0d769e1d32ca73ce887fa11d02831f6239d61d5ffa4d5114270a7c42330e2e1a2af65aca53ba1e3aff305e1b20cccb9e778e3b39ca7dc621c2baf06ba5dc96c3329d08f9ef11a6ef654825fcc2b33ce2f5f9c123c585a54ba5ffdea8f7102312061",
+        "title_role": "unknown",
+        "visual_summary": "성인용 만화(망가)의 한 장면으로 보이는 흑백 일러스트. 눈물을 흘리며 표정이 일그러진 여성 캐릭터의 얼굴이 클로즈업되어 있음."
+      }
+    ],
+    "image_enrichment_limitations": [
+      "이미지 내에 작품 제목이나 작가 이름이 명시되지 않아 작품을 특정할 수 없음",
+      "대사 내용과 작화 스타일만으로 추정해야 하므로 정확도가 낮음"
+    ],
+    "image_fetch_count": 1,
+    "image_fetch_success": 1,
+    "ocr_enabled": true,
+    "vlm_chunks_sent": 1,
+    "vlm_enabled": true,
+    "vlm_enrichment_used": true,
+    "vlm_total_bytes": 38323
+  },
+  "stored_public_analysis": {
+    "detected_titles": [],
+    "is_nsfw": false,
+    "micro_tags": [],
+    "notes": "[작성자 발화·원문 귀속]\n- 작성자 질문: 「장갤에서 주운짤인데 제목이뭘까」\n- 작성자 발화: 「이런건 어디물어봐야할 지도 모르 겠음」\n[댓글 발화·원문 귀속]\n- 댓글 작성자 유다온: 「에휴」\n- 댓글 작성자 만인의연인초절정미녀윤찐빵: 「우리한테도 묻지 말아다오  - dc App」\n- 댓글 작성자 ㅇㅇ: 「이거 작가 그림체 아는데」\n- 댓글 작성자 ㅇㅇ: 「근데 씨발아 좀」\n- 댓글 작성자 ㅇㅇ: 「폴리우레탄같은데」\n[원문] 장갤에서 주운짤인데 제목이뭘까 / 이런건 어디물어봐야할 지도 모르 겠음",
+    "sentiment_profile": null,
+    "user_segment": null
+  },
+  "missing_experts": [
+    "decoder",
+    "verifier",
+    "synthesizer",
+    "arbiter"
+  ],
+  "proposed_expected_contract": {
+    "analysis.is_nsfw": false,
+    "analysis.nsfw_assessment_status": "NOT_EVALUATED",
+    "basis": "No Arbiter metadata; stored image projection does not satisfy current positive fallback. This is evaluation coverage, not pixel truth."
+  },
+  "replay_scope": "PARTIAL_STORED_CONTEXT_SERIALIZER_INTEGRATION_NOT_EXECUTED",
+  "not_reconstructed": [
+    "complete original ConversationContext",
+    "raw full VLM response",
+    "raw downloaded image bytes",
+    "native object identity/nonce",
+    "all search/fetch raw payloads"
+  ],
+  "human_gold_count": 0,
+  "image_pixels_reviewed": false,
+  "rights_status": "UNKNOWN",
+  "quality_gate": "REVIEW",
+  "publication_authority": false,
+  "formal_kpi_status": "NOT_ESTIMABLE"
+}

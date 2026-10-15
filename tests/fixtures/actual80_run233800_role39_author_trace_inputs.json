@@ -1,0 +1,232 @@
+{
+  "schema_version": "role39_author_trace_observations_v2",
+  "run_id": "20261012_233800_447943",
+  "publication_scope_id": "b67420bb3207d177cfb521bbbcdd0742ed06e50a0a0009e4d7c63812cca3e06c",
+  "index1": 39,
+  "post_id": 10388511,
+  "fixture_path": "out/p4_quality_followup_20261013/source_role39_candidate_v2/candidate/tests/fixtures/actual80_run233800_role39_saved_experts.json",
+  "fixture_sha256": "a5eff4d2943391d22bdf2bbfeb5bbb179f77728bc7d3699919b5d90036ee6456",
+  "source_canonical_sha256": "42013c6b127f72eddf824999df69cd2ad5cfbb4157d06b971625c5bdfcf9ce47",
+  "result_canonical_sha256": "5e6061459a0fccb99a8086f2d576930f1d0c279017a261e97951619cd3b59fad",
+  "raw_expert_author_fields": {
+    "arbiter_discussion_type": "review",
+    "metadata_detected_author": null,
+    "verifier_author_info": null,
+    "gatekeeper_authors": [],
+    "decoder_all_is_author_name_false": true,
+    "decoder_author_interpretations": [
+      {
+        "original": "리샤",
+        "interpretation": {
+          "type": "author_name",
+          "value": "리샤",
+          "evidence": "검색 결과 E022에서 '작가는 리샤'라는 정보가 발견됨",
+          "context_fit": "medium"
+        }
+      }
+    ]
+  },
+  "logged_snippet_analyzer": {
+    "json_start_line1": 3954,
+    "json_end_line1": 4003,
+    "value": {
+      "post_intent": "work_discussion",
+      "post_intent_reason": "게시글 제목의 '판수대'가 검색 결과에서 특정 작품의 줄임말로 확인되며, 본문에 캐릭터명(리샤)과 구체적인 줄거리 정보가 포함되어 있음.",
+      "identified_title": "판타지 수학대전",
+      "identified_author": null,
+      "identified_category": "manga",
+      "relevant_authors": [],
+      "irrelevant_authors": [
+        "라테마"
+      ],
+      "abbreviation_mappings": [
+        {
+          "abbrev": "판수대",
+          "full": "판타지 수학대전"
+        }
+      ],
+      "relevant_characters": [
+        "리샤",
+        "케이",
+        "미나",
+        "카림"
+      ],
+      "entity_role_hints": [
+        {
+          "term": "판수대",
+          "role": "work_alias",
+          "resolved_to": "판타지 수학대전",
+          "related_title": null,
+          "confidence": "high",
+          "evidence_ids": [
+            "E002",
+            "E006",
+            "E009",
+            "E010",
+            "E011"
+          ]
+        },
+        {
+          "term": "리샤",
+          "role": "character_name",
+          "resolved_to": null,
+          "related_title": "판타지 수학대전",
+          "confidence": "high",
+          "evidence_ids": [
+            "E009",
+            "E010"
+          ]
+        }
+      ]
+    },
+    "value_canonical_sha256": "98169dec560990a80f419c19e397ec05339ce6de1b6e5fa7171ed43bb3af2207",
+    "final_ctx_object_not_captured": true
+  },
+  "logged_synthesizer_missing_in_role_fixture": {
+    "marker_line1": 6004,
+    "value": {
+      "reinterpretation": {
+        "post_intent": "웹소설 '타락한 성녀님의 구원 방법'의 캐릭터 리샤(리샤르)가 타락하는 서사적 비중이 지나치게 낮음을 비판함",
+        "text_analysis": [
+          {
+            "segment": "판수대 리샤 타락도 비중 좆도 없는것도 웃겼음",
+            "interpretation": "'판수대'는 '양판소(양산형 판타지 소설)'를 의미하는 커뮤니티 은어이며, '리샤'는 작품 '타락한 성녀님의 구원 방법'의 등장인물 '리샤르'의 약칭임. 성녀가 타락하는 핵심 사건의 비중이 너무 적음을 지적함.",
+            "evidence_source": "search|verifier"
+          },
+          {
+            "segment": "어떻게 여신의 딸이라 불리던 성녀가 신을 저버리고 타락했는데 전적이 잡몹들 처리가 끝",
+            "interpretation": "작품의 주요 플롯인 '성녀의 타락'이 발생했음에도 불구하고, 그 과정이나 결과가 별다른 위협 없이 단순한 전투(잡몹 처리)로 치부된 것에 대한 허탈함을 표현함.",
+            "evidence_source": "verifier|search"
+          }
+        ],
+        "comment_insights": [
+          {
+            "comment": "디오니소스<<이새낀 걍 꼴려서 타락시킨거냐고(진짜임)",
+            "insight": "작품 내에서 성녀를 타락시킨 원인 혹은 관련 인물로 '디오니소스'라는 명칭이 언급됨을 시사함."
+          },
+          {
+            "comment": "케이랑 미나가 워낙 꼴려서 딴년 볼 시간이 업서",
+            "insight": "작품 내에 '케이', '미나'라는 다른 매력적인 캐릭터들이 존재하며, 독자들이 이들에게 집중하고 있음을 보여줌."
+          },
+          {
+            "comment": "사제가 전직했더니 힐도 못쓰면 왜 전직한거임 ㄹㅇ",
+            "insight": "캐릭터의 설정 변화(전직/타락) 이후 능력치(힐)가 상실된 것에 대한 설정 오류 혹은 개연성 문제를 지적함."
+          },
+          {
+            "comment": "동료들도 어 왔어 이런 취급임ㅋㅋ 약간 스킨 갈아끼운 취급",
+            "insight": "캐릭터의 타락이라는 중대한 변화가 주변 인물들에게 아무런 영향이나 충격을 주지 못하고 형식적으로만 다뤄지는 상황을 비판함."
+          }
+        ]
+      },
+      "hidden_references": [
+        {
+          "text": "판수대",
+          "reference_type": "setting",
+          "matched_to": "양산형 판타지 소설 (양판소)",
+          "evidence": "Decoder는 이를 특정 작품인 '판타지 수학대전'으로 오인했으나, 문맥상 '양판소'의 변형된 은어로 쓰였으며 이는 검색 결과 [E018]의 양판소 개념과 연결됨. 본문에서 특정 작품의 고유명사가 아닌 장르적 비하 용어로 사용됨."
+        },
+        {
+          "text": "리샤",
+          "reference_type": "character",
+          "matched_to": "리샤르 (타락한 성녀님의 구원 방법)",
+          "evidence": "검색 결과 [E019]에서 '리샤르'가 성녀 세실의 조력자 혹은 관련 인물로 등장하며, '성녀의 타락'이라는 핵심 키워드가 일치함."
+        }
+      ],
+      "evidence_alignment": {
+        "decoder_match": "partial",
+        "decoder_reason": "Decoder는 '판수대'를 특정 작품명으로 식별했으나, 이는 문맥상 '양판소'를 뜻하는 은어이며 실제 주제 작품은 Verifier가 찾은 작품임.",
+        "verifier_match": "strong",
+        "verifier_reason": "리샤(리샤르), 성녀의 타락, 줄거리의 일치도가 매우 높음.",
+        "overall_coherence": "high"
+      },
+      "confidence_assessment": {
+        "is_about_identified_work": true,
+        "confidence": "Max",
+        "reasoning": "본문의 '리샤', '성녀 타락' 키워드와 댓글의 '디오니소스', '케이', '미나' 등의 인물 언급이 Verifier가 식별한 '타락한 성녀님의 구원 방법'의 맥락 및 캐릭터 구성과 완벽하게 부합함.",
+        "alternative_interpretation": null
+      },
+      "synthesis_summary": "본 포스트는 웹소설 '타락한 성녀님의 구원 방법'의 캐릭터 '리샤르'가 타락하는 서사의 비중이 지나치게 낮고 가볍게 다뤄진 점을 비판하는 글입니다. 작성자는 '판수대'라는 표현을 사용하여 해당 작품이 양산형 판타지(양판소)의 전개를 따르고 있음을 비꼬고 있습니다. 댓글에서는 디오니소스, 케이, 미나 등 작품 내 인물들을 언급하며 캐릭터의 설정 변화와 서사적 개연성에 대해 논의하고 있습니다.",
+      "elapsed": 115.37257719039917
+    },
+    "value_canonical_sha256": "60b6a80a2777d299243a9365793d0068548bf18ec71eebd1c57c5d33b324d953",
+    "auto_injected_into_original_fixture": false
+  },
+  "stored_final_batch_envelope": {
+    "decoded_terms": [
+      {
+        "best_match": {
+          "title": "판타지 수학 대전"
+        },
+        "is_author_name": false,
+        "original": "판수대"
+      },
+      {
+        "is_author_name": false,
+        "original": "리샤"
+      },
+      {
+        "is_author_name": false,
+        "original": "타락"
+      },
+      {
+        "is_author_name": false,
+        "original": "성녀"
+      },
+      {
+        "is_author_name": false,
+        "original": "디오니소스"
+      }
+    ],
+    "identified_author": null,
+    "identified_characters": [],
+    "schema_version": "batch_context_learning_envelope_v1"
+  },
+  "final_taxonomy": {
+    "discussion_type": "author_talk",
+    "subtype": "review_reaction",
+    "topicality": "core_relevant",
+    "primary_subject_type": "work_discussion"
+  },
+  "final_consistency_flags": [
+    "weak_anchor_noncanonical_title_blocked",
+    "external_ip_unresolved_hold_blocked",
+    "notes_demoted_for_unresolved",
+    "official_url_recall_gate_recovered",
+    "title_body_search_result:악녀를 갱생시켜라",
+    "title_body_official_detail_anchor",
+    "batch_memory_alias_rescue_blocked_by_author_meta",
+    "stable_batch_alias_conflict_corrected",
+    "search_title_conflict_with_stable_alias",
+    "final_semantic_reread_reviewed",
+    "final_semantic_reread_official_recall_guarded_resolution",
+    "stable_alias_conflict_ambiguous_bridge_hold",
+    "stable_alias_conflict_weak_relation_hold",
+    "weak_alias_surface_public_title_bridge",
+    "ocr_explicit_title_unresolved"
+  ],
+  "selected_runtime_log_lines": {
+    "6451": "[00:27:27.004|W10] 🔁 canonical suspect 보정: '판타지 수학 대전' -> '디오니소스'",
+    "6493": "[00:29:44.643|W10] 🧠 final semantic reread demotion blocked by official recall support: title='타락한 성녀님의 구원 방법[선공개]'"
+  },
+  "line10445_outer_type_set": [
+    "anticipation",
+    "author_talk",
+    "character_talk",
+    "general",
+    "general_discussion",
+    "meme",
+    "review",
+    "spoiler"
+  ],
+  "line10445_inner_type_set": [
+    "",
+    "community_banter",
+    "noise",
+    "off_topic",
+    "undecodable_reference"
+  ],
+  "line10445_sets_disjoint": true,
+  "full_source_carrier_runtime_snapshot": "NOT_STORED",
+  "actual_snippet_hints_author_list": "NOT_STORED",
+  "actual_first_author_talk_assignment": "NOT_PROVEN"
+}

@@ -472,7 +472,7 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--dashboard-port", type=int, default=8093)
     parser.add_argument("--llm-endpoint", default="http://10.20.0.101:8000/")
     parser.add_argument(
-        "--llm-model", default="unsloth/gemma-4-26B-A4B-it-NVFP4"
+        "--llm-model", default="nvidia/Gemma-4-26B-A4B-NVFP4"
     )
     parser.add_argument("--python", default=str(ROOT / "venv/bin/python"))
     return parser

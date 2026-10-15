@@ -1,0 +1,15 @@
+{
+  "scope": "SOURCE_RECENT_INDEX_AND_GUARD_CONTROL_NOT_LIVE_REPLAY",
+  "files_sha256": {
+    "scope55_57_evidence.json": "4cc2d755728b1ff9ee8c3353324a2b4fe61d8e4bb5a7869715350fd29185d204",
+    "source80.json": "c9c7deaed84db633e2c76d461a056e043c3c7b41c0a6dd5181bb48d35b0b6864"
+  },
+  "support_sha256": {
+    "tests/test_source_bound_surface_title_state.py": "a0612c228f37b79e7b1f028fc1f237d10ca012aaee9e2d1efa46396a6d9ea988",
+    "tests/test_source_general_context_state.py": "5e50caa78e7905b174d6f37e73a1137f0f3046ec7804b0569a604083bbca1422",
+    "tests/test_source_bound_propriety_question_state.py": "55ad2e7f0910c929ed0f49f3aecda1089e16710b29e7263d54fad5a99498d055",
+    "tests/fixtures/actual80_run191128_semantic55_saved_experts.json": "a0ed4376b0e69dfb78eb86f559a9322c10699cc7d2304e77d2749bda464f6985",
+    "tests/fixtures/actual80_run233800_general_state_saved_experts.json": "f5babea982f5fe629b57bff3b878402f9fb1087a524d9a5b1990ffa5770ced72",
+    "tests/fixtures/actual80_run191128_semantic57_saved_experts.json": "5abd7aaa2c44abb0c6815d9a7f9bd9166d80294170bd3021fe1857d8fb5f2d46"
+  }
+}

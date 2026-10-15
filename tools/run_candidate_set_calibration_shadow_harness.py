@@ -223,14 +223,20 @@ def _implementation_contract() -> dict[str, Any]:
     refs = {
         "harness_tool": _artifact_ref(Path(__file__)),
         "calibration_contract": _artifact_ref(
-            ROOT / "src/llm_batch/candidate_set_calibration_shadow.py"
+            ROOT / "src/llm_batch/grounding/candidate_set_calibration_shadow.py"
         ),
-        "candidate_set_shadow": _artifact_ref(ROOT / "src/llm_batch/candidate_set_shadow.py"),
+        "learned_calibration_solver": _artifact_ref(
+            ROOT / "src/llm_batch/grounding/candidate_reranker_calibration.py"
+        ),
+        "learned_calibration_events": _artifact_ref(
+            ROOT / "src/llm_batch/grounding/candidate_reranker_calibration_data.py"
+        ),
+        "candidate_set_shadow": _artifact_ref(ROOT / "src/llm_batch/grounding/candidate_set_shadow.py"),
         "actual_artifact_readback": _artifact_ref(
-            ROOT / "src/llm_batch/calibration_actual_readback.py"
+            ROOT / "src/llm_batch/grounding/calibration_actual_readback.py"
         ),
         "dataset_readiness_contract": _artifact_ref(
-            ROOT / "src/llm_batch/calibration_dataset_readiness.py"
+            ROOT / "src/llm_batch/grounding/calibration_dataset_readiness.py"
         ),
         "dataset_readiness_tool": _artifact_ref(
             ROOT / "tools/run_calibration_dataset_readiness.py"
@@ -2437,19 +2443,8 @@ def _bound_jsonl_rows(
 
 
 def _calibration_artifact_from_dict(value: Mapping[str, Any]) -> CalibrationArtifact:
-    if not isinstance(value, Mapping):
-        raise ValueError("calibration artifact must be an object")
-    payload = dict(value)
-    fit_payload = payload.pop("fit_receipt", None)
-    if not isinstance(fit_payload, Mapping):
-        raise ValueError("calibration artifact fit receipt missing")
-    try:
-        fit = CalibrationFitReceipt(**dict(fit_payload))
-        artifact = CalibrationArtifact(**payload, fit_receipt=fit)
-        artifact.validate()
-        return artifact
-    except (TypeError, ValueError) as exc:
-        raise ValueError(f"invalid calibration artifact: {exc}") from exc
+    from src.llm_batch.grounding.candidate_set_calibration_shadow import calibration_artifact_from_dict
+    return calibration_artifact_from_dict(value)
 
 
 def _score_vector_from_dict(value: Mapping[str, Any]) -> EventScoreVector:

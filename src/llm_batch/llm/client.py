@@ -3,6 +3,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import json
+import math
 import os
 import queue
 import select
@@ -12,10 +13,13 @@ import threading
 import time
 import socket
 import uuid
+from collections import deque
 from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
+from urllib.parse import urlsplit
 from typing import Any, Callable, Dict, Iterator, List, Literal, Optional, TypeVar
 
 import httpx
@@ -423,6 +427,156 @@ def request_llm_server_resume(source: str = "external") -> bool:
     return _LLM_SERVER_SUSPEND_CONTROLLER.request_resume(source=source)
 
 
+def _llm_http_concurrency_limit() -> int:
+    """한 프로세스에서 같은 모델 endpoint로 열 수 있는 HTTP 전송 수."""
+    return max(1, min(64, _env_int("LLM_HTTP_CONCURRENCY", 4)))
+
+
+def _llm_endpoint_key(url: str) -> str:
+    parsed = urlsplit(url)
+    scheme = parsed.scheme.lower()
+    host = (parsed.hostname or "").lower()
+    if host in {"localhost", "::1"}:
+        host = "127.0.0.1"
+    port = parsed.port or (443 if scheme == "https" else 80)
+    # 자격 정보와 query는 공유 키나 로그에 남기지 않는다. 서로 다른 base path는 유지한다.
+    path = parsed.path.rstrip("/")
+    return f"{scheme}://{host}:{port}{path}"
+
+
+def _retry_after_seconds(response: Any) -> Optional[float]:
+    """429의 Retry-After 정수 초 또는 HTTP-date를 대기 시간으로 읽는다."""
+    if getattr(response, "status_code", None) != 429:
+        return None
+    headers = getattr(response, "headers", {})
+    raw = headers.get("Retry-After")
+    if not isinstance(raw, str) or not raw.strip():
+        return None
+    raw = raw.strip()
+    try:
+        if raw.isascii() and raw.isdigit():
+            value = float(raw)
+        else:
+            when = parsedate_to_datetime(raw)
+            if when.tzinfo is None:
+                when = when.replace(tzinfo=timezone.utc)
+            value = max(0.0, when.timestamp() - time.time())
+        return value if math.isfinite(value) else None
+    except (ValueError, TypeError, OverflowError):
+        return None
+
+
+class _LLMEndpointAdmissionState:
+    def __init__(self) -> None:
+        self.cv = threading.Condition()
+        self.active = 0
+        self.waiters: deque[object] = deque()
+        self.cooldown_until = 0.0
+
+
+_llm_endpoint_states: Dict[str, _LLMEndpointAdmissionState] = {}
+_llm_endpoint_states_lock = threading.Lock()
+
+
+def _log_llm_admission(event: str, **data: Any) -> None:
+    try:
+        print("[llm_http_admission] " + json.dumps(
+            {"event": event, **data}, ensure_ascii=False, sort_keys=True,
+        ), file=sys.stderr, flush=True)
+    except Exception:
+        # 관측 출력 실패가 전송이나 슬롯 반환을 바꾸지 않게 한다.
+        pass
+
+
+@contextmanager
+def _llm_http_admission(url: str) -> Iterator[_LLMEndpointAdmissionState]:
+    key = _llm_endpoint_key(url)
+    with _llm_endpoint_states_lock:
+        state = _llm_endpoint_states.setdefault(key, _LLMEndpointAdmissionState())
+    ticket = object()
+    transport_id = uuid.uuid4().hex
+    queued_at = time.monotonic()
+    admitted = False
+    with state.cv:
+        state.waiters.append(ticket)
+    try:
+        while True:
+            # 대기 중에도 기존 사용자 중단/승인 게이트를 존중한다.
+            _LLM_SERVER_SUSPEND_CONTROLLER.wait_if_paused()
+            with state.cv:
+                remaining = state.cooldown_until - time.monotonic()
+                limit = _llm_http_concurrency_limit()
+                if state.waiters[0] is ticket and state.active < limit and remaining <= 0:
+                    state.waiters.popleft()
+                    state.active += 1
+                    active = state.active
+                    admitted = True
+                    admitted_at = time.monotonic()
+                    admitted_at_ns = time.time_ns()
+                    state.cv.notify_all()
+                    break
+                state.cv.wait(timeout=min(0.2, remaining) if remaining > 0 else 0.2)
+        _log_llm_admission(
+            "ACQUIRED", transport_id=transport_id, endpoint=key, limit=limit,
+            active=active, queue_ms=round((admitted_at - queued_at) * 1000, 3),
+            at_ns=admitted_at_ns,
+        )
+        yield state
+    finally:
+        with state.cv:
+            if admitted:
+                released_at = time.monotonic()
+                released_at_ns = time.time_ns()
+                state.active -= 1
+            else:
+                state.waiters.remove(ticket)
+            state.cv.notify_all()
+        if admitted:
+            _log_llm_admission(
+                "RELEASED", transport_id=transport_id, endpoint=key,
+                http_ms=round((released_at - admitted_at) * 1000, 3),
+                at_ns=released_at_ns,
+            )
+
+
+def _record_llm_backpressure(state: _LLMEndpointAdmissionState, response: Any) -> None:
+    if getattr(response, "status_code", None) != 429:
+        return
+    delay = _retry_after_seconds(response)
+    if delay is None:
+        try:
+            delay = float(os.getenv("LLM_RETRY_DELAY", "2"))
+        except (ValueError, TypeError):
+            delay = 2.0
+        if not math.isfinite(delay) or delay < 0:
+            delay = 2.0
+    with state.cv:
+        state.cooldown_until = max(state.cooldown_until, time.monotonic() + delay)
+        state.cv.notify_all()
+    _log_llm_admission("BACKPRESSURE", status_code=429, retry_after_seconds=delay)
+
+
+def _model_http_post(url: str, **kwargs: Any) -> httpx.Response:
+    with _llm_http_admission(url) as state:
+        # httpx.post는 응답 본문을 읽고 내부 client를 닫은 뒤 반환한다.
+        response = httpx.post(url, **kwargs)
+        _record_llm_backpressure(state, response)
+        return response
+
+
+@contextmanager
+def _model_http_stream(
+    method: str, url: str, *, on_admitted: Callable[[], None], **kwargs: Any,
+) -> Iterator[httpx.Response]:
+    # 이 context 자체가 usage drain reader로 넘어간다. 함수의 조기 반환 시점에
+    # 슬롯을 풀지 않고 실제 HTTP context 종료까지 같은 소유자가 유지한다.
+    with _llm_http_admission(url) as state:
+        on_admitted()
+        with httpx.stream(method, url, **kwargs) as response:
+            _record_llm_backpressure(state, response)
+            yield response
+
+
 def retry_with_backoff(
     func: Callable[[], T],
     max_retries: int = 3,
@@ -515,6 +669,10 @@ def retry_with_backoff(
             
             # 재시도 가능한 에러 (5xx, 네트워크 에러 등)
             delay = base_delay * (2 ** attempt)  # 2초, 4초, 8초
+            if isinstance(e, httpx.HTTPStatusError):
+                retry_after = _retry_after_seconds(e.response)
+                if retry_after is not None:
+                    delay = max(delay, retry_after)
             if on_retry:
                 on_retry(attempt + 1, e)
             else:
@@ -1031,6 +1189,7 @@ class LLMClient:
         _usage_drain_thread: Optional[threading.Thread] = None
         _usage_drain_usage_seen = False
         _usage_drain_cleanup_status = "NOT_ATTEMPTED"
+        _usage_drain_read_deadline_armed = threading.Event()
 
         class _UsageDrainStreamContext:
             """하드캡 뒤 response close 소유권을 drain reader에 넘기는 래퍼."""
@@ -1075,10 +1234,17 @@ class LLMClient:
         self_outer = self
         _stream_context: Optional[_UsageDrainStreamContext] = None
 
+        def _stream_admitted() -> None:
+            nonlocal _start, last_progress_log_at
+            # 로컬 대기를 서버의 첫 토큰 지연으로 세어 정상 응답을 버리지 않는다.
+            _start = _time.time()
+            last_progress_log_at = _start
+
         try:
             # httpx streaming with iter_text() for better SSE handling
             _stream_context = _UsageDrainStreamContext(
-                httpx.stream("POST", url, json=stream_body, timeout=_stream_timeout)
+                _model_http_stream("POST", url, on_admitted=_stream_admitted,
+                                   json=stream_body, timeout=_stream_timeout)
             )
             with _stream_context as response:
                 response.raise_for_status()
@@ -1086,6 +1252,11 @@ class LLMClient:
                 def _abort_usage_drain_transport() -> None:
                     """response lock을 거치지 않고 blocked recv를 깨우는 bounded cleanup."""
                     nonlocal _usage_drain_cleanup_status
+                    if _usage_drain_read_deadline_armed.is_set():
+                        # reader가 유한 read 뒤 같은 스레드에서 닫는다. 다른 스레드의
+                        # blocked recv에 shutdown/close를 겹치지 않는다.
+                        _usage_drain_cleanup_status = "READ_DEADLINE_PENDING"
+                        return
                     try:
                         extensions = getattr(response, "extensions", {})
                         network_stream = (
@@ -1133,9 +1304,62 @@ class LLMClient:
                             continue
                     return False
 
+                def _arm_usage_drain_read_deadline() -> Callable[[], None]:
+                    """reader가 다음 read를 시작하기 전에만 제한 시간을 설치한다."""
+                    extensions = getattr(response, "extensions", {})
+                    network_stream = extensions.get("network_stream") if isinstance(extensions, dict) else None
+                    if network_stream is None or extensions.get("http_version") == b"HTTP/2":
+                        return lambda: None
+                    assert _usage_drain_started_at is not None
+                    deadline = _usage_drain_started_at + _USAGE_DRAIN_MAX_SECONDS
+
+                    def read_timeout(original: Optional[float]) -> float:
+                        remaining = deadline - _time.monotonic()
+                        if remaining <= 0:
+                            raise httpx.ReadTimeout(f"{tag} provider usage drain read deadline")
+                        limit = min(_USAGE_DRAIN_SIGNAL_IDLE_TIMEOUT_S, remaining)
+                        return min(limit, original) if original is not None else limit
+
+                    original_read = getattr(network_stream, "read", None)
+                    if callable(original_read):
+                        # httpcore는 read마다 timeout을 다시 설정한다. 이 response의
+                        # stream 인스턴스만 감싸고 reader 종료 전에 원래 속성을 복구한다.
+                        missing = object()
+                        previous = getattr(network_stream, "__dict__", {}).get("read", missing)
+
+                        def bounded_read(max_bytes: int, timeout: Optional[float] = None) -> bytes:
+                            return original_read(max_bytes, timeout=read_timeout(timeout))
+
+                        try:
+                            network_stream.read = bounded_read
+                        except (AttributeError, TypeError):
+                            return lambda: None
+
+                        def restore() -> None:
+                            if previous is missing:
+                                del network_stream.read
+                            else:
+                                network_stream.read = previous
+
+                        _usage_drain_read_deadline_armed.set()
+                        return restore
+
+                    # network_stream.read가 없는 socket 기반 adapter도 reader 진입 전에
+                    # 유한 timeout을 설정할 수 있다. 이 경로는 다른 스레드의 recv를 건드리지 않는다.
+                    get_info = getattr(network_stream, "get_extra_info", None)
+                    raw_socket = get_info("socket") if callable(get_info) else None
+                    if isinstance(raw_socket, socket.socket):
+                        original_timeout = raw_socket.gettimeout()
+                        raw_socket.settimeout(read_timeout(original_timeout))
+                        _usage_drain_read_deadline_armed.set()
+                        return lambda: raw_socket.settimeout(original_timeout)
+                    return lambda: None
+
                 def _pump_usage_drain() -> None:
                     assert _usage_drain_queue is not None
+                    restore_read = lambda: None
                     try:
+                        restore_read = _arm_usage_drain_read_deadline()
                         for drain_chunk in _stream_text_iterator:
                             if not _enqueue_usage_drain("chunk", drain_chunk):
                                 return
@@ -1144,8 +1368,14 @@ class LLMClient:
                     else:
                         _enqueue_usage_drain("eof", None)
                     finally:
-                        assert _stream_context is not None
-                        _stream_context.close_from_drain()
+                        try:
+                            restore_read()
+                        except (AttributeError, OSError):
+                            # 이미 닫힌 소켓이나 adapter 속성의 복구 실패도 context close를 막지 않는다.
+                            pass
+                        finally:
+                            assert _stream_context is not None
+                            _stream_context.close_from_drain()
 
                 while True:
                     if _usage_drain_complete:
@@ -1842,7 +2072,7 @@ class LLMClient:
                 _start = _time.time()
                 ts = self._timestamp()
                 print(f"[{ts}][llm] nonstream fallback 시작...", file=sys.stderr, flush=True)
-                response = httpx.post(url, json=self._replace_lone_surrogates(body), timeout=self.timeout_s)
+                response = _model_http_post(url, json=self._replace_lone_surrogates(body), timeout=self.timeout_s)
                 response.raise_for_status()
                 data = response.json()
                 _elapsed = _time.time() - _start
@@ -1921,7 +2151,7 @@ class LLMClient:
             ts = self._timestamp()
             print(f"[{ts}][llm] ▶ {tag} 요청 시작...", file=sys.stderr, flush=True)
             
-            response = httpx.post(url, json=self._replace_lone_surrogates(body), timeout=self.timeout_s)
+            response = _model_http_post(url, json=self._replace_lone_surrogates(body), timeout=self.timeout_s)
             response.raise_for_status()
             data = response.json()
             
@@ -2338,7 +2568,7 @@ class LLMClient:
         body = self._adapt_body_for_server(body)
         
         def _do_http():
-            response = httpx.post(url, json=body, timeout=self.timeout_s)
+            response = _model_http_post(url, json=body, timeout=self.timeout_s)
             response.raise_for_status()
             data = response.json()
             self.last_usage = data.get("usage") if isinstance(data, dict) else None
@@ -2743,7 +2973,7 @@ ws ::= [ \t\n\r]*
             )
 
         def _do_http() -> Dict[str, Any]:
-            resp = httpx.post(url, json=body, timeout=self.timeout_s)
+            resp = _model_http_post(url, json=body, timeout=self.timeout_s)
             resp.raise_for_status()
             data = resp.json()
             usage = data.get("usage") if isinstance(data, dict) else None
@@ -2852,7 +3082,7 @@ ws ::= [ \t\n\r]*
         body = self._adapt_body_for_server(body)
 
         def _do_http() -> Dict[str, Any]:
-            resp = httpx.post(url, json=body, timeout=self.timeout_s)
+            resp = _model_http_post(url, json=body, timeout=self.timeout_s)
             resp.raise_for_status()
             data = resp.json()
             usage = data.get("usage") if isinstance(data, dict) else None
@@ -3059,7 +3289,7 @@ ws ::= [ \t\n\r]*
             )
         
         def _do_http():
-            resp = httpx.post(url, json=body, timeout=self.timeout_s)
+            resp = _model_http_post(url, json=body, timeout=self.timeout_s)
             resp.raise_for_status()
             data = resp.json()
             usage = data.get("usage") if isinstance(data, dict) else None
@@ -3237,7 +3467,7 @@ ws ::= [ \t\n\r]*
             )
         
         def _do_http():
-            resp = httpx.post(url, json=body, timeout=self.timeout_s)
+            resp = _model_http_post(url, json=body, timeout=self.timeout_s)
             resp.raise_for_status()
             data = resp.json()
             self.last_usage = data.get("usage") if isinstance(data, dict) else None
@@ -3424,7 +3654,7 @@ ws ::= [ \t\n\r]*
             )
 
         def _do_http():
-            resp = httpx.post(url, json=body, timeout=self.timeout_s)
+            resp = _model_http_post(url, json=body, timeout=self.timeout_s)
             resp.raise_for_status()
             data = resp.json()
             usage = data.get("usage") if isinstance(data, dict) else None
@@ -3640,7 +3870,7 @@ ws ::= [ \t\n\r]*
             )
         
         def _do_http():
-            resp = httpx.post(url, json=body, timeout=self.timeout_s)
+            resp = _model_http_post(url, json=body, timeout=self.timeout_s)
             resp.raise_for_status()
             data = resp.json()
             self.last_usage = data.get("usage") if isinstance(data, dict) else None

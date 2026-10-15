@@ -10,6 +10,13 @@ from __future__ import annotations
 import re
 from difflib import SequenceMatcher
 from typing import Any, Dict, Iterable, List, Optional
+from urllib.parse import parse_qsl, urlsplit
+
+from .image_title_conflict import (
+    uncertain_ocr_title_variants,
+    projected_unresolved_ocr_alias_conflict_authority_blocked,
+    unresolved_ocr_alias_conflict_negative_title_variants,
+)
 
 
 RECALL_TYPES = {"under_resolved", "under_resolved_false_negative"}
@@ -110,12 +117,14 @@ TITLE_LED_WORK_CONSUMPTION_RE = re.compile(
     r"재(?:밌|밋)(?:게\s*봤|네|다|음|냐|나|어|었|더라|긴|고|게)?|"
     r"재(?:미있|미잇)(?:네|다|음|냐|나|어|었|더라|긴|고|게)?)"
 )
+MUNPIA_URL_TOKEN_RE = re.compile(
+    r"(?i)(?<![\w./:@?=&%+\-])(?:https?://)?"
+    r"(?:(?:www|m|mm|novel|m\.novel)\.)?munpia\.com"
+    r"(?=[:/?#\s<>\"']|$)[^\s<>\"']*"
+)
 OFFICIAL_DETAIL_URL_RE = re.compile(
     r"(?i)"
     r"(?:novelpia\.com/novel/\d+|book\.novelpia\.com/novel/\d+|"
-    r"(?:m\.)?novel\.munpia\.com/\d+|m\.munpia\.com/novel/detail/\d+|"
-    r"(?:m|mm)\.munpia\.com/\?menu=novel&id=\d+|"
-    r"page\.kakao\.com/content/\d+|"
     r"series\.naver\.com/novel/detail\.series\?productNo=\d+|"
     r"ridibooks\.com/books/\d+)"
 )
@@ -875,11 +884,97 @@ def _matches_judge_expected_title_member(
     return False
 
 
+def _canonical_munpia_detail_url(value: str) -> str:
+    """Return a work URL candidate; route identity is not fetched title evidence."""
+    if not value or any(char.isspace() for char in value):
+        return ""
+    try:
+        parts = urlsplit(value)
+        host = (parts.hostname or "").lower()
+        if parts.scheme.lower() not in {"http", "https"}:
+            return ""
+        if host not in {
+            "munpia.com", "www.munpia.com", "m.munpia.com", "mm.munpia.com",
+            "novel.munpia.com", "m.novel.munpia.com",
+        }:
+            return ""
+        if parts.username is not None or parts.password is not None or parts.port is not None or "#" in value:
+            return ""
+        pairs = parse_qsl(parts.query, keep_blank_values=True)
+    except ValueError:
+        return ""
+    keys = [key.lower() for key, _ in pairs]
+    if len(keys) != len(set(keys)):
+        return ""
+    query = {key.lower(): item for key, item in pairs}
+    path = parts.path or "/"
+
+    if host in {"m.munpia.com", "mm.munpia.com"} and path == "/":
+        if query.get("menu", "").lower() != "novel":
+            return ""
+        work_id = query.get("id", "")
+        if not re.fullmatch(r"[1-9][0-9]*", work_id):
+            return ""
+        if "action" in query and query["action"].lower() != "view":
+            return ""
+        allowed = {"menu", "id", "action", "entry_id", "entry_seq", "ref"}
+        if any(key not in allowed and not key.startswith("utm_") for key in query):
+            return ""
+        if "entry_id" in query and not re.fullmatch(r"(?:next|prev|[1-9][0-9]*)", query["entry_id"]):
+            return ""
+        if "entry_seq" in query and not re.fullmatch(r"-?[0-9]+", query["entry_seq"]):
+            return ""
+        # The navigation parameters are not proof of a fetched work page.
+        # Keep the existing legacy-to-mobile candidate normalization.
+        return f"https://m.munpia.com/novel/detail/{work_id}"
+
+    if any(key != "ref" and not key.startswith("utm_") for key, _ in pairs):
+        return ""
+    if host in {"munpia.com", "www.munpia.com", "m.munpia.com"}:
+        match = re.fullmatch(r"/novel/detail/([1-9][0-9]*)/?", path)
+        return f"https://{host}/novel/detail/{match.group(1)}" if match else ""
+    if host in {"novel.munpia.com", "m.novel.munpia.com"}:
+        match = re.fullmatch(r"/([1-9][0-9]*)/?", path)
+        return f"https://{host}/{match.group(1)}" if match else ""
+    return ""
+
+
 def _official_detail_url(value: Any) -> str:
     text = _safe_str(value)
     if not text:
         return ""
-    match = OFFICIAL_DETAIL_URL_RE.search(text)
+    # Kakao는 전체 URL token을 먼저 검사한다. /content/id prefix만 추출하면
+    # viewer·댓글탭이 존재하지 않는 작품 상세 근거로 잘린다.
+    from llm_batch.kakao_routes import is_kakao_work_detail_url
+    for kakao_match in re.finditer(r"(?i)(?<![\w./:@?=&%+\-])(?:https?://)?(?:page\.kakao\.com|kakao\.page)[^\s<>\"']*", text):
+        kakao_url = kakao_match.group(0)
+        if not kakao_url.lower().startswith(("http://", "https://")):
+            kakao_url = "https://" + kakao_url
+        if is_kakao_work_detail_url(kakao_url):
+            return kakao_url
+        # 문장/Markdown의 닫는 구두점만 제외한다. query/fragment 값은 수정하지 않는다.
+        if "?" not in kakao_url and "#" not in kakao_url:
+            without_punctuation = kakao_url.rstrip(".,;!)]}")
+            if is_kakao_work_detail_url(without_punctuation):
+                return without_punctuation
+    munpia_url = ""
+    munpia_start = None
+    munpia_spans = []
+    for token in MUNPIA_URL_TOKEN_RE.finditer(text):
+        munpia_spans.append(token.span())
+        value = token.group(0)
+        if not value.lower().startswith(("http://", "https://")):
+            value = "https://" + value
+        candidate = _canonical_munpia_detail_url(value)
+        if not candidate and "?" not in value and "#" not in value:
+            candidate = _canonical_munpia_detail_url(value.rstrip(".,;!)]}"))
+        if candidate and munpia_start is None:
+            munpia_url, munpia_start = candidate, token.start()
+    # An invalid Munpia token must not borrow an embedded redirect URL.
+    match = next((item for item in OFFICIAL_DETAIL_URL_RE.finditer(text)
+                  if not any(start <= item.start() < end for start, end in munpia_spans)), None)
+    if munpia_url and (match is None or munpia_start < match.start()):
+        return munpia_url
     if not match:
         return ""
     url = match.group(0)
@@ -887,11 +982,6 @@ def _official_detail_url(value: Any) -> str:
         return ""
     if not url.startswith(("http://", "https://")):
         url = "https://" + url
-    if "page.kakao.com/content/" in url:
-        return url.split("?", 1)[0]
-    munpia_menu_match = re.search(r"(?i)(?:m|mm)\.munpia\.com/\?menu=novel&id=(\d+)", url)
-    if munpia_menu_match:
-        return f"https://m.munpia.com/novel/detail/{munpia_menu_match.group(1)}"
     if "series.naver.com/novel/detail.series" in url:
         product_match = re.search(r"productNo=\d+", url)
         return "https://series.naver.com/novel/detail.series?" + product_match.group(0) if product_match else ""
@@ -1124,6 +1214,8 @@ def _direct_hard_title_surface(identity: Dict[str, Any], title: Any) -> bool:
         if title_key in _compact_title(identity.get(field)):
             return True
     for item in _safe_dicts(identity.get("image_evidence_catalog")):
+        if projected_unresolved_ocr_alias_conflict_authority_blocked(item):
+            continue
         image_title = candidate_name(
             {
                 "title": item.get("explicit_work_title")
@@ -1791,6 +1883,8 @@ def title_noisy_ocr_resolved_by_official_evidence(identity: Dict[str, Any]) -> b
 def _explicit_image_work_titles(identity: Dict[str, Any]) -> List[str]:
     titles: List[str] = []
     for evidence in _safe_dicts(identity.get("image_evidence_catalog")):
+        if projected_unresolved_ocr_alias_conflict_authority_blocked(evidence):
+            continue
         if evidence.get("promotion_eligible") is not True:
             continue
         if _safe_str(evidence.get("title_role")).lower() != "work_title":
@@ -2523,6 +2617,8 @@ def _confirmed_alias_flags(identity: Dict[str, Any]) -> List[str]:
 def _explicit_promoted_image_titles(identity: Dict[str, Any]) -> List[str]:
     titles: List[str] = []
     for evidence in _safe_dicts(identity.get("image_evidence_catalog")):
+        if projected_unresolved_ocr_alias_conflict_authority_blocked(evidence):
+            continue
         if evidence.get("promotion_eligible") is not True:
             continue
         if _safe_str(evidence.get("title_role")).lower() != "work_title":
@@ -3416,6 +3512,29 @@ def apply_weak_public_title_bridge_guard(identity: Dict[str, Any], post_title: A
         return []
     if identity.get("title_resolution_allowed") is False:
         return []
+    if any(
+        _compact_title(title) == _compact_title(variant)
+        for variant in uncertain_ocr_title_variants(identity.get("image_evidence_catalog"))
+    ):
+        return _demote_official_title_to_hold(
+            identity,
+            reason="unresolved_ocr_reread_variant_public_title",
+            state="ocr_explicit_title_unresolved",
+        )
+    if any(
+        _compact_title(title) == _compact_title(variant)
+        for variant in unresolved_ocr_alias_conflict_negative_title_variants(
+            identity.get("image_evidence_catalog")
+        )
+    ) and not (
+        official_search_supports_title(identity, title)
+        or _direct_hard_title_surface(identity, title)
+    ):
+        return _demote_official_title_to_hold(
+            identity,
+            reason="unverified_unresolved_ocr_alias_conflict_title_without_official_support",
+            state="ocr_explicit_title_unresolved",
+        )
 
     anchor_type = _safe_str(identity.get("anchor_type")).lower()
     anchor_strength = _safe_str(identity.get("anchor_strength")).lower()
@@ -3438,7 +3557,20 @@ def apply_weak_public_title_bridge_guard(identity: Dict[str, Any], post_title: A
         and not official_search_supports_title(identity, title)
         and not _confirmed_alias_flags(identity)
         and not _explicit_promoted_image_titles(identity)
-        and not _safe_list(novel_identity.get("alias_resolution_sources"))
+        and not any(
+            isinstance(source, dict)
+            and source.get("matched_surface_kind") != "consumed_alias_hit"
+            and (
+                _safe_str(source.get("alias_resolution_source")), _safe_str(source.get("source_registry"))
+            ) in {
+                ("known_abbreviation", "KNOWN_ABBREVIATIONS"),
+                ("known_title_abbreviation", "KNOWN_TITLE_ABBREVIATIONS"),
+                ("slang_dictionary", "SLANG_DICTIONARY"),
+            }
+            and _safe_str(source.get("alias"))
+            and _compact_title(source.get("canonical_title")) == _compact_title(title)
+            for source in _safe_list(novel_identity.get("alias_resolution_sources"))
+        )
     ):
         if _known_abbreviation_exact_title_exempts_weak_source_bridge(identity, post_title, title):
             return []

@@ -1,0 +1,8 @@
+{
+  "scope": "STATIC_INDEPENDENT_F3_NOT_EXECUTED",
+  "human_gold": false,
+  "source_review_receipt_sha256": "07e652e4213931eea2492df32c5af06005f09c81b8a497c591e801b4caf5b445",
+  "files_sha256": {
+    "review_counterexample.json": "37a0966ec0c480f7a79ddad0ea55119df7315cef70e373b8a8f36bb663c6c484"
+  }
+}

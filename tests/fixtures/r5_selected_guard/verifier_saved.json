@@ -1,0 +1,107 @@
+{
+  "is_relevant": true,
+  "is_novel_discussion": true,
+  "novel_identity": {
+    "official_novel_title": "나 혼자만 레벨업",
+    "heretic_url": "https://www.munpia.com/novel/detail/191240",
+    "confidence": "High",
+    "evidence_type": "search_platform_url"
+  },
+  "grounding_check": {
+    "decoder_grounded": true,
+    "anchor_found": "title_mention",
+    "anchor_text": "나혼렙",
+    "grounding_issue": null,
+    "title_abbrev_mentioned": true,
+    "matched_alias": "나혼렙"
+  },
+  "counter_arguments": [],
+  "author_info": null,
+  "rejection_reason": null,
+  "evidence_chain": [
+    {
+      "source": "post_title",
+      "content": "나혼렙 재밌냐",
+      "supports": "작품 약칭 '나혼렙'을 통해 주제가 '나 혼자만 레벨업'임을 명시함"
+    },
+    {
+      "source": "post_content",
+      "content": "웹툰판은... 소설판은... 주인공 유형(박제후 꺼 같은)을 싫어해서 접었음.",
+      "supports": "웹툰과 소설의 차이점, 주인공의 성격 변화 등 구체적인 작품 감상을 서술함"
+    },
+    {
+      "source": "E008",
+      "content": "나 혼자만 레벨업 [D] (문피아)",
+      "supports": "검색 결과에서 '나혼렙'의 정식 명칭인 '나 혼자만 레벨업'과 문피아 플랫폼 URL 확인"
+    }
+  ],
+  "slang_insight": {
+    "detected_term": "나혼렙",
+    "decoded_term": "나 혼자만 레벨업",
+    "decode_verified": true,
+    "cultural_context": "웹소설 '나 혼자만 레벨업'의 대중적인 축약어",
+    "canonical_work_alias": "나혼렙",
+    "alias_scope": "pure_work_alias",
+    "attached_entity_text": null,
+    "attached_entity_type": null,
+    "store_in_slang_db": true,
+    "store_reason": "pure_work_alias"
+  },
+  "unresolved_from_decoder": [],
+  "inference": {
+    "type": "review",
+    "topic": "나 혼자만 레벨업의 웹툰 및 소설판 감상"
+  },
+  "relation_judgment": {
+    "relation_type": "work_specific_nickname",
+    "discussion_target": "specific_work",
+    "promotion_decision": "allow",
+    "confidence": "high",
+    "reason": "게시글 제목에 사용된 '나혼렙'은 '나 혼자만 레벨업'의 통용되는 약칭이며, 본문에서 웹툰판과 소설판의 캐릭터 및 전개 방식(성진우 등 특정 캐릭터를 연상시키는 맥락)을 구체적으로 언급하며 해당 작품에 대한 감상을 논하고 있음. 검색 결과에서도 '나혼렙'이 해당 작품의 공식 상세 페이지 및 관련 패러디물 제목에서 명시적인 별칭으로 사용됨이 확인됨.",
+    "key_evidence": [
+      "게시글 제목 및 본문의 '나혼렙' 약칭 사용",
+      "검색 근거 1번: 조아라 패러디 작품 제목에 '[나혼렙]' 명시",
+      "검색 근거 3, 4, 5번: '나 혼자만 레벨업' 정식 타이틀과 검색어 일치",
+      "검색 근거 6번: 블로그 리뷰 등에서 '나혼렙'을 '나 혼자만 레벨업'의 약칭으로 사용함이 드러남"
+    ],
+    "observed_aliases": [
+      "나혼렙"
+    ],
+    "evidence_summary": {
+      "total_items": 6,
+      "official_detail_count": 5,
+      "community_post_count": 0,
+      "listing_or_category_count": 0,
+      "explicit_alias_bridge_count": 0
+    },
+    "search_support_summary": {
+      "official_exact_title_count": 4,
+      "official_alias_context_count": 1,
+      "community_alias_support_count": 2,
+      "community_alias_character_context_count": 0,
+      "community_alias_character_context_urls": [],
+      "post_alias_character_context": false,
+      "explicit_alias_bridge_count": 0,
+      "source_bound_alias_assertion_count": 0,
+      "source_bound_alias_assertion_url": null,
+      "support_channel_count": 2,
+      "support_purposes": [
+        "alias_bridge_search",
+        "alias_raw_probe"
+      ],
+      "alias_in_post_count": 1,
+      "best_official_url": "https://www.joara.com/book/1829469",
+      "converged_official_signal": true,
+      "bridge_quality": "weak",
+      "closed_bridge": false,
+      "related_anchor_hit_count": 0,
+      "author_context_match_count": 0,
+      "character_context_match_count": 0,
+      "matched_related_anchor_terms": [],
+      "author_context_anchor_terms": []
+    },
+    "post_direct_grounding": false,
+    "generic_relation_only": false,
+    "qualified_topic_hold": false
+  }
+}

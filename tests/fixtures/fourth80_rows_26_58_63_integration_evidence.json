@@ -1,0 +1,2805 @@
+{
+  "schema": "fourth80_rows_26_58_63_frozen_integration_evidence_v1",
+  "run_id": "20260929_123423_566457",
+  "scope_ko": "v11 실제 런의 원문·동일 런 W 로그에 기록된 단계별 최종 JSON·저장 판정·검색 장부를 재사용하는 증거 fixture. 새 실행 결과나 개선 증명은 아니다.",
+  "source_paths": {
+    "raw_evidence": "out/sol_expanded80_20260928/next80_fourth_actual/raw_evidence.json",
+    "adjudicated_labels": "out/astra_v11_actual80_review_20260929/ADJUDICATED_LABELS.json"
+  },
+  "source_sha256": {
+    "raw_evidence": "33afd0549bc03b491ceadcba28286e4d717d97638d767ea871120d5d0c03a3ea",
+    "adjudicated_labels": "17f437d8db4be4114a921418b669f3f6b052b759179730efa901fbbaa9478e87"
+  },
+  "records": {
+    "26": {
+      "post_id": "11290502",
+      "raw_row_index_zero_based": 25,
+      "source_log": {
+        "path": "logs/expert_run_20260929_123423_566457_W7.log",
+        "sha256": "a0a57f1e3f19c862924e6c3b321538e344707f158576abccf2c218552660cef4",
+        "expert_output_marker": "[📊 stage] 결과 JSON:",
+        "extraction_scope_lines": [
+          1650,
+          4500
+        ]
+      },
+      "source_receipt": {
+        "path": "out/sol_post_v11_patch_20260929/ROW26_SOURCE_RECEIPT_KO.md",
+        "sha256": "9d0aaface69e61db5dd10c28a3a650575b61fb888dc37667b5f1ada10ecdad0a"
+      },
+      "original_post_full": {
+        "gallery_id": "genrenovel",
+        "post_id": 11290502,
+        "title": "'가짜 장례식' 씬이 보고싶다",
+        "author": "ㅇㅇ",
+        "created_at": "2025-10-28 12:32:53",
+        "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=11290502",
+        "content_blocks": [
+          {
+            "type": "text",
+            "text": "약관동의같은거 추천해줘"
+          },
+          {
+            "type": "text",
+            "text": "근본있는 유열이 보고싶어"
+          }
+        ],
+        "page_no": 7950
+      },
+      "original_comments_full": [
+        {
+          "comment_id": "38900090",
+          "author": "레이니시즌",
+          "content": "이건 라노토벌이네요",
+          "content_html": "이건 라노토벌이네요",
+          "created_at": "2025.10.28 12:33:10",
+          "ip": "",
+          "reply_to_comment_id": null,
+          "reply_level": 0,
+          "post_id": 11290502
+        }
+      ],
+      "sealed_expert_outputs": {
+        "gatekeeper": [
+          {
+            "line": 1739,
+            "data": {
+              "is_noise": false,
+              "noise_reason": null,
+              "post_type": "recommendation",
+              "detected_entities": {
+                "possible_titles": [
+                  "약관동의",
+                  "가짜 장례식"
+                ],
+                "possible_authors": [],
+                "possible_characters": [
+                  "유열이"
+                ],
+                "platforms_mentioned": []
+              },
+              "key_terms": [
+                "가짜 장례식",
+                "약관동의",
+                "유열이",
+                "라노토벌"
+              ],
+              "context_clues": {
+                "has_url_in_comments": false,
+                "has_specific_names": true,
+                "is_asking_recommendation": true,
+                "is_spoiler_discussion": false,
+                "has_comment_title_answer": true,
+                "comment_title_candidates": [
+                  "이건 라노토벌이네요"
+                ],
+                "comment_title_merge_candidates": [],
+                "comment_title_candidate_details": [
+                  {
+                    "text": "이건 라노토벌이네요",
+                    "comment_index": 0,
+                    "line_index": 0,
+                    "speech_act": "explanation",
+                    "has_at_mention": false,
+                    "reply_level": 0,
+                    "reply_to_comment_id": null,
+                    "author": "레이니시즌",
+                    "title_assertion_basis": null
+                  }
+                ],
+                "title_as_body_continuation": true,
+                "title_body_joined_text": "'가짜 장례식' 씬이 보고싶다 약관동의같은거 추천해줘 근본있는 유열이 보고싶어",
+                "title_body_first_line": "약관동의같은거 추천해줘",
+                "is_recommendation_request": true,
+                "genre_discussion_flags": [
+                  "recommendation_request:llm_intent"
+                ]
+              },
+              "search_requests": [
+                {
+                  "query": "웹소설 '약관동의'",
+                  "purpose": "official_title_verify",
+                  "priority": 1
+                },
+                {
+                  "query": "'가짜 장례식' 씬 웹소설",
+                  "purpose": "title_search_community",
+                  "priority": 1
+                },
+                {
+                  "query": "'유열이' 캐릭터 웹소설",
+                  "purpose": "character_verify",
+                  "priority": 2
+                },
+                {
+                  "query": "라노토벌 웹소설",
+                  "purpose": "title_search_community",
+                  "priority": 1
+                }
+              ],
+              "confidence": "medium",
+              "notes": "제목에서 언급된 '가짜 장례식' 씬과 본문의 '약관동의'는 특정 작품을 지칭하는 것으로 보임. 본문에서 '추천해줘'라고 명시적으로 요청하고 있으므로 post_type은 recommendation임. 댓글의 '라노토벌'은 작성자가 찾는 작품의 특징이나 별칭일 가능성이 높으므로 함께 검색 필요. '유열이'는 캐릭터명으로 추정됨."
+            }
+          }
+        ],
+        "discourse": [
+          {
+            "line": 1947,
+            "data": {
+              "discourse_analysis": {
+                "primary_domain": "novel_literature",
+                "domain_confidence": "high",
+                "domain_evidence": [
+                  "가짜 장례식 씬",
+                  "추천해줘",
+                  "유열",
+                  "라노토벌"
+                ],
+                "secondary_domains": [],
+                "intent": "request_recommendation",
+                "intent_confidence": "medium",
+                "speech_act": "other",
+                "target_kind": "unknown",
+                "is_coherent": true,
+                "coherence_reason": "제목에서 특정 클리셰(가짜 장례식)를 언급하며 욕구를 드러내고, 본문에서 구체적인 작품명('약관동의')과 선호하는 분위기('근본있는 유열')를 언급하며 추천을 요청하고 있음. 댓글 또한 해당 맥락에 반응함.",
+                "title_novel_terms": [],
+                "title_body_consistency": true,
+                "consistency_note": null,
+                "is_association_not_discussion": false,
+                "association_evidence": null,
+                "search_suggestions": [
+                  {
+                    "query": "웹소설 약관동의",
+                    "purpose": "To verify if '약관동의' is a specific web novel title mentioned by the author.",
+                    "priority": 1
+                  },
+                  {
+                    "query": "웹소설 유열",
+                    "purpose": "To understand the context of '유열' (likely a character name or a specific trope/feeling) in web novels.",
+                    "priority": 2
+                  }
+                ],
+                "real_subject": "웹소설",
+                "author_question_span": "약관동의같은거 추천해줘",
+                "author_question_target": "웹소설",
+                "author_recommendation_span": "약관동의같은거 추천해줘",
+                "author_recommendation_is_direct": true,
+                "reasoning": "작성자는 '가짜 장례식'이라는 특정 장면(클리셰)이 포함된 작품을 원하며, '약관동의'라는 작품과 유사한 스타일이나 '유열'이라는 키워드와 관련된 작품을 추천해달라고 요청하고 있습니다. 댓글의 '라노토벌'은 특정 작품이나 장르적 분류를 지칭하는 것으로 보입니다.",
+                "source_bound_question_receipt": {
+                  "span": "약관동의같은거 추천해줘",
+                  "source": "author_body",
+                  "speaker": "author",
+                  "modality": "text",
+                  "position": 0,
+                  "target_description": "웹소설",
+                  "target_candidates": [
+                    "웹소설"
+                  ],
+                  "target_conflict": false,
+                  "verification_level": "exact_author_excerpt_model_target"
+                },
+                "source_bound_recommendation_request": true,
+                "source_bound_recommendation_receipt": {
+                  "span": "약관동의같은거 추천해줘",
+                  "source": "author_body",
+                  "speaker": "author",
+                  "modality": "text",
+                  "position": 0,
+                  "verification_level": "full_line_author_excerpt_and_direct_rule"
+                },
+                "image_topic_relation": {
+                  "state": "no_image",
+                  "source": "author_spans"
+                },
+                "semantic_seed_review": {
+                  "post_intent": "특정 클리셰와 분위기를 가진 웹소설 추천을 요청하는 글",
+                  "content_interpretation": "작성자가 특정 장면(가짜 장례식)과 캐릭터/분위기(유열)를 언급하며 작품 추천을 구하고 있음",
+                  "is_specific_work_discussion": false,
+                  "recommended_intent": "request_recommendation",
+                  "recommended_target_kind": "work",
+                  "warnings": []
+                },
+                "warnings": [
+                  "semantic_seed_review_non_title_terms_removed",
+                  "semantic_seed_review_specific_work_denied"
+                ],
+                "semantic_seed_review_context_terms": [
+                  "가짜 장례식"
+                ]
+              }
+            }
+          }
+        ],
+        "decoder": [
+          {
+            "line": 3272,
+            "data": {
+              "decoded_terms": [
+                {
+                  "original": "가짜 장례식",
+                  "morphemes": [
+                    "가짜",
+                    "장례식"
+                  ],
+                  "interpretations": [
+                    {
+                      "type": "novel_title",
+                      "value": "악역을 위한 장례식은 없다",
+                      "evidence": "검색 결과 E001, E002에서 '악역을 위한 장례식은 없다'라는 제목이 확인됨. 본문의 '가짜 장례식 씬'이라는 표현과 '장례식' 키워드가 형태소적으로 일치함.",
+                      "context_fit": "medium"
+                    },
+                    {
+                      "type": "general_noun",
+                      "value": "가짜 장례식",
+                      "evidence": "검색 결과 E044, E050 등에서 영화나 일반적인 상황의 '가짜 장례식'이 언급됨.",
+                      "context_fit": "low"
+                    }
+                  ],
+                  "candidates": [
+                    {
+                      "official_novel_title": "장례 의식",
+                      "url": null,
+                      "platform": "naver",
+                      "decode_logic": "본문의 '가짜 장례식 씬'이 특정 작품의 명장면을 지칭하는 것으로 보이며, 검색 결과에서 '장례식' 키워드를 포함한 가장 유력한 웹소설 제목인 '악역을 위한 장례식은 없다'와 매칭됨.",
+                      "morphological_score": 0.8,
+                      "genre_match": {
+                        "source_genre": null,
+                        "target_genre": "BL",
+                        "is_match": true
+                      },
+                      "search_evidence": "E001, E002"
+                    }
+                  ],
+                  "best_match": {
+                    "title": "장례 의식",
+                    "confidence": "medium"
+                  },
+                  "grounding": {
+                    "is_grounded": true,
+                    "anchor_type": "plot_mention",
+                    "anchor_evidence": "'가짜 장례식' 씬이 보고싶다"
+                  },
+                  "is_author_name": false,
+                  "author_info": null
+                },
+                {
+                  "original": "약관동의",
+                  "morphemes": [
+                    "약관동의"
+                  ],
+                  "interpretations": [
+                    {
+                      "type": "novel_title",
+                      "value": "약관 동의는 신중히",
+                      "evidence": "검색 결과 및 Wiki 문서(E081)에서 '약관 동의는 신중히'라는 작품명이 확인됨.",
+                      "context_fit": "high"
+                    }
+                  ],
+                  "candidates": [
+                    {
+                      "official_novel_title": "약관 동의는 신중히",
+                      "url": "https://namu.wiki/w/%EC%95%BD%EA%B4%80%20%EB%8F%99%EC%9D%98%EB%8A%94%20%EC%8B%A0%EC%A4%91%ED%9E%88",
+                      "platform": "novelpia",
+                      "decode_logic": "본문에서 '약관동의같은거 추천해줘'라고 언급하며 비교 대상으로 사용함. 검색 결과에서 '약관 동의는 신중히'라는 정식 명칭이 확인됨.",
+                      "morphological_score": 1.0,
+                      "genre_match": {
+                        "source_genre": null,
+                        "target_genre": "fanfic",
+                        "is_match": true
+                      },
+                      "search_evidence": "E081"
+                    }
+                  ],
+                  "best_match": {
+                    "title": "약관 동의는 신중히",
+                    "confidence": "high"
+                  },
+                  "grounding": {
+                    "is_grounded": true,
+                    "anchor_type": "title_mention",
+                    "anchor_evidence": "약관동의같은거 추천해줘"
+                  },
+                  "is_author_name": false,
+                  "author_info": null
+                },
+                {
+                  "original": "유열이",
+                  "morphemes": [
+                    "유열이"
+                  ],
+                  "interpretations": [
+                    {
+                      "type": "character_name",
+                      "value": "유열",
+                      "evidence": "본문에서 '근본있는 유열이'라고 지칭함. 특정 작품의 캐릭터로 추정됨.",
+                      "context_fit": "high"
+                    }
+                  ],
+                  "candidates": [],
+                  "best_match": {
+                    "title": null,
+                    "confidence": "none"
+                  },
+                  "grounding": {
+                    "is_grounded": true,
+                    "anchor_type": "character_mention",
+                    "anchor_evidence": "근본있는 유열이 보고싶어"
+                  },
+                  "is_author_name": false,
+                  "author_info": null
+                },
+                {
+                  "original": "라노토벌",
+                  "morphems": [
+                    "라노",
+                    "토벌"
+                  ],
+                  "interpretations": [
+                    {
+                      "type": "novel_title",
+                      "value": "라노토벌 (추정)",
+                      "evidence": "댓글에서 '이건 라노토벌이네요'라고 언급함. 특정 작품의 약칭으로 보임.",
+                      "context_fit": "high"
+                    }
+                  ],
+                  "candidates": [],
+                  "best_match": {
+                    "title": null,
+                    "confidence": "low"
+                  },
+                  "grounding": {
+                    "is_grounded": true,
+                    "anchor_type": "title_mention",
+                    "anchor_evidence": "이건 라노토벌이네요"
+                  },
+                  "is_author_name": false,
+                  "author_info": null
+                }
+              ],
+              "unresolved_terms": [
+                {
+                  "term": "유열이",
+                  "context": "근본있는 유열이 보고싶어",
+                  "possible_types": [
+                    "character",
+                    "novel"
+                  ],
+                  "needs_search": true
+                },
+                {
+                  "term": "라노토벌",
+                  "context": "이건 라노토벌이네요",
+                  "possible_types": [
+                    "novel"
+                  ],
+                  "needs_search": true
+                }
+              ],
+              "self_questions": [
+                "'유열이'가 특정 작품의 캐릭터명인가 아니면 작가의 별칭인가?",
+                "'라노토벌'이 어떤 작품의 축약어인지 정식 명칭을 찾을 수 있는가?"
+              ],
+              "needs_verification": true,
+              "verification_search": [
+                "웹소설 '유열이' 캐릭터",
+                "웹소설 '라노토벌' 정식명칭",
+                "라노토벌 웹소설 리뷰"
+              ],
+              "overall_confidence": "medium",
+              "notes": "치환 읽기 : '가짜 장례식' 씬과 '약관동의'를 언급하며 유사한 스타일의 작품 추천을 요청하고 있음. '가짜 장례식'은 '악역을 위한 장례식은 없다'로, '약관동의'는 '약관 동의는 신중히'로 해석됨. 다만 '유열이'와 '라노토벌'은 댓글에서 핵심적인 단서로 등장하나 현재 검색 결과만으로는 정식 명칭 확정이 어려워 미해결 용어로 분류함.",
+              "request_expert": "verifier",
+              "request_reason": "댓글에서 언급된 '라노토벌'과 '유열이'가 특정 작품을 가리키는 강력한 단서이나, 현재 검색 결과에서 정식 제목과의 연결 고리가 부족함.",
+              "request_context": {
+                "question": "'라노토벌'과 '유열이'가 각각 어떤 웹소설의 약칭과 캐릭터명인지 검증이 필요합니다.",
+                "uncertain_terms": [
+                  "유열이",
+                  "라노토벌"
+                ]
+              }
+            }
+          }
+        ],
+        "verifier": [
+          {
+            "line": 3587,
+            "data": {
+              "verification_result": {
+                "is_relevant": false,
+                "is_novel_discussion": false,
+                "novel_identity": {
+                  "official_novel_title": null,
+                  "official_title": null,
+                  "heretic_url": null,
+                  "confidence": "Low",
+                  "evidence_type": "converged_search_bootstrap",
+                  "notes": "search convergence bootstrap (official_search)",
+                  "search_support_summary": {
+                    "official_exact_title_count": 4,
+                    "official_alias_context_count": 0,
+                    "community_alias_support_count": 1,
+                    "explicit_alias_bridge_count": 0,
+                    "source_bound_alias_assertion_count": 0,
+                    "source_bound_alias_assertion_url": null,
+                    "support_channel_count": 2,
+                    "support_purposes": [
+                      "alias_bridge_search",
+                      "title_anchor_official_probe"
+                    ],
+                    "alias_in_post_count": 4,
+                    "best_official_url": "https://ridibooks.com/books/102125435",
+                    "converged_official_signal": true,
+                    "bridge_quality": "weak",
+                    "closed_bridge": false,
+                    "related_anchor_hit_count": 0,
+                    "author_context_match_count": 0,
+                    "character_context_match_count": 0,
+                    "matched_related_anchor_terms": [],
+                    "author_context_anchor_terms": []
+                  }
+                },
+                "grounding_check": {
+                  "decoder_grounded": true,
+                  "anchor_found": "title_mention",
+                  "anchor_text": "약관동의",
+                  "grounding_issue": "Decoder가 식별한 작품들은 본문의 추천 요청 대상일 뿐, 포스트의 주제가 아님"
+                },
+                "counter_arguments": [
+                  {
+                    "issue": "포스트의 의도가 특정 작품에 대한 토론이 아닌 '추천 요청'임",
+                    "severity": "critical",
+                    "action": "reject"
+                  },
+                  {
+                    "issue": "제목 및 본문에 언급된 작품명은 비교/예시를 위한 참조 대상임",
+                    "severity": "major",
+                    "action": "reject"
+                  },
+                  {
+                    "issue": "relation_judge:thematic_overlap_only",
+                    "severity": "critical",
+                    "action": "nullify_title",
+                    "explanation": "게시글의 작성자는 특정 작품을 지칭하는 것이 아니라, '가짜 장례식' 씬이 포함된 작품과 '약관동의'라는 키워드가 포함된 작품(약관 동의는 신중히)을 예시로 들며 유사한 스타일의 다른 작품을 추천해달라고 요청하고 있음. '가짜 장례식'은 후보 작품의 제목 일부와 겹치지만, 이는 작품의 특정 장면(trope/scene)을 묘사한 표현일 뿐 해당 작품을 직접 지칭하는 약칭이나 별칭이라는 명시적 근거(explicit alias bridge)가 없음. 따라서 게시글의 담론 대상은 특정 작품이 아닌 추천 요청(recommendation request)이며, 후보 제목을 승격할 수 없음."
+                  }
+                ],
+                "author_info": null,
+                "rejection_reason": "게시글의 작성자는 특정 작품을 지칭하는 것이 아니라, '가짜 장례식' 씬이 포함된 작품과 '약관동의'라는 키워드가 포함된 작품(약관 동의는 신중히)을 예시로 들며 유사한 스타일의 다른 작품을 추천해달라고 요청하고 있음. '가짜 장례식'은 후보 작품의 제목 일부와 겹치지만, 이는 작품의 특정 장면(trope/scene)을 묘사한 표현일 뿐 해당 작품을 직접 지칭하는 약칭이나 별칭이라는 명시적 근거(explicit alias bridge)가 없음. 따라서 게시글의 담론 대상은 특정 작품이 아닌 추천 요청(recommendation request)이며, 후보 제목을 승격할 수 없음.",
+                "evidence_chain": [
+                  {
+                    "source": "content",
+                    "content": "약관동의같은거 추천해줘",
+                    "supports": "작성자의 의도가 추천 요청임을 명시함"
+                  },
+                  {
+                    "source": "title",
+                    "content": "'가짜 장례식' 씬이 보고싶다",
+                    "supports": "특정 장면(트로프)을 언급하며 유사한 작품을 찾는 맥락"
+                  }
+                ],
+                "slang_insight": null,
+                "unresolved_from_decoder": [
+                  {
+                    "term": "유열이",
+                    "verifier_interpretation": "특정 캐릭터명 혹은 커뮤니티 은어로 추정되나, 추천 요청 문맥 내에서 사용됨",
+                    "needs_search": false
+                  },
+                  {
+                    "term": "라노토벌",
+                    "verifier_interpretation": "댓글에서 언급된 용어로, 특정 작품군이나 장르를 지칭하는 은어로 보임",
+                    "needs_search": false
+                  }
+                ],
+                "inference": {
+                  "type": "noise",
+                  "topic": "특정 작품 단정 불가"
+                },
+                "relation_judgment": {
+                  "relation_type": "thematic_overlap_only",
+                  "discussion_target": "mixed_or_uncertain",
+                  "promotion_decision": "reject",
+                  "confidence": "high",
+                  "reason": "게시글의 작성자는 특정 작품을 지칭하는 것이 아니라, '가짜 장례식' 씬이 포함된 작품과 '약관동의'라는 키워드가 포함된 작품(약관 동의는 신중히)을 예시로 들며 유사한 스타일의 다른 작품을 추천해달라고 요청하고 있음. '가짜 장례식'은 후보 작품의 제목 일부와 겹치지만, 이는 작품의 특정 장면(trope/scene)을 묘사한 표현일 뿐 해당 작품을 직접 지칭하는 약칭이나 별칭이라는 명시적 근거(explicit alias bridge)가 없음. 따라서 게시글의 담론 대상은 특정 작품이 아닌 추천 요청(recommendation request)이며, 후보 제목을 승격할 수 없음.",
+                  "key_evidence": [
+                    "게시글 본문이 '...같은거 추천해줘'라며 추천을 요청하는 문맥임",
+                    "Decoder 요약에서 '가짜 장례식'을 '장례 의식'으로, '약관동의'를 '약관 동의는 신중히'로 해석하며 이를 비교/예시 대상으로 분류함",
+                    "Verifier에서 언급되었듯, 언급된 작품들은 포스트의 주제가 아닌 추천 대상(reference)임",
+                    "후보 제목과 게시글 내 단어 간의 명시적인 약칭 연결 고리(explicit alias bridge)가 존재하지 않음"
+                  ],
+                  "observed_aliases": [],
+                  "evidence_summary": {
+                    "total_items": 6,
+                    "official_detail_count": 6,
+                    "community_post_count": 0,
+                    "listing_or_category_count": 0,
+                    "explicit_alias_bridge_count": 0
+                  },
+                  "search_support_summary": {
+                    "official_exact_title_count": 4,
+                    "official_alias_context_count": 0,
+                    "community_alias_support_count": 0,
+                    "explicit_alias_bridge_count": 0,
+                    "source_bound_alias_assertion_count": 0,
+                    "source_bound_alias_assertion_url": null,
+                    "support_channel_count": 2,
+                    "support_purposes": [
+                      "alias_bridge_search",
+                      "title_anchor_official_probe"
+                    ],
+                    "alias_in_post_count": 0,
+                    "best_official_url": "https://ridibooks.com/books/102125435",
+                    "converged_official_signal": false,
+                    "bridge_quality": "weak",
+                    "closed_bridge": false,
+                    "related_anchor_hit_count": 0,
+                    "author_context_match_count": 0,
+                    "character_context_match_count": 0,
+                    "matched_related_anchor_terms": [],
+                    "author_context_anchor_terms": []
+                  },
+                  "post_direct_grounding": false,
+                  "generic_relation_only": false
+                }
+              },
+              "final_confidence": "high",
+              "reason": "게시글의 화행(Speech Act)이 '-해줘', '-보고싶다'와 같이 불특정 다수에게 정보를 요구하는 '추천 요청'입니다. Decoder가 '약관 동의는 신중히'와 '악역을 위한 장례식은 없다'를 찾아낸 것은 정확하지만, 이 작품들은 작성자가 참고 모델로 제시한 대상일 뿐 글의 주제(Subject)가 아닙니다. 따라서 is_relevant=false로 판정합니다."
+            }
+          },
+          {
+            "line": 3864,
+            "data": {
+              "verification_result": {
+                "is_relevant": false,
+                "is_novel_discussion": false,
+                "novel_identity": {
+                  "official_novel_title": null,
+                  "official_title": null,
+                  "heretic_url": null,
+                  "confidence": "Low",
+                  "evidence_type": "converged_search_bootstrap",
+                  "notes": "search convergence bootstrap (official_search)",
+                  "search_support_summary": {
+                    "official_exact_title_count": 4,
+                    "official_alias_context_count": 0,
+                    "community_alias_support_count": 1,
+                    "explicit_alias_bridge_count": 0,
+                    "source_bound_alias_assertion_count": 0,
+                    "source_bound_alias_assertion_url": null,
+                    "support_channel_count": 2,
+                    "support_purposes": [
+                      "alias_bridge_search",
+                      "title_anchor_official_probe"
+                    ],
+                    "alias_in_post_count": 4,
+                    "best_official_url": "https://ridibooks.com/books/102125435",
+                    "converged_official_signal": true,
+                    "bridge_quality": "weak",
+                    "closed_bridge": false,
+                    "related_anchor_hit_count": 0,
+                    "author_context_match_count": 0,
+                    "character_context_match_count": 0,
+                    "matched_related_anchor_terms": [],
+                    "author_context_anchor_terms": []
+                  }
+                },
+                "grounding_check": {
+                  "decoder_grounded": true,
+                  "anchor_found": "title_mention",
+                  "anchor_text": "'가짜 장례식' 씬이 보고싶다",
+                  "grounding_issue": "Decoder가 '가짜 장례식'을 특정 작품(장례 의식)으로 매칭했으나, 본문 맥락상 이는 특정 작품의 제목이 아니라 '특정 장면(Scene)'에 대한 묘사 또는 예시일 가능성이 높음. 또한 본문은 '약관동의같은거 추천해줘'라는 문장을 통해 명확히 '추천 요청' 화행을 보임."
+                },
+                "counter_arguments": [
+                  {
+                    "issue": "게시글의 목적이 작품 토론이 아닌 추천 요청임",
+                    "severity": "critical",
+                    "action": "reject"
+                  },
+                  {
+                    "issue": "제목의 '가짜 장례식'은 작품명이 아닌 특정 장면(Scene)을 지칭하는 묘사적 표현임",
+                    "severity": "major",
+                    "action": "reject"
+                  },
+                  {
+                    "issue": "relation_judge:thematic_overlap_only",
+                    "severity": "critical",
+                    "action": "nullify_title",
+                    "explanation": "게시글의 작성자는 '가짜 장례식' 씬이 포함된 작품과 '약관동의'와 유사한 분위기의 작품을 추천해달라고 요청하고 있다. 여기서 '가짜 장례식'은 후보 작품인 '악역을 위한 장례식은 없다'를 지칭하는 약칭이라기보다, 특정 장면(Scene)의 내용을 묘사하는 표현으로 사용되었다. 또한 게시글의 화행 자체가 특정 작품에 대한 언급이 아닌 '유사 작품 추천 요청'이므로, 해당 표현을 특정 작품의 공식 명칭이나 약칭으로 승격할 근거가 부족하다."
+                  }
+                ],
+                "author_info": null,
+                "rejection_reason": "게시글의 작성자는 '가짜 장례식' 씬이 포함된 작품과 '약관동의'와 유사한 분위기의 작품을 추천해달라고 요청하고 있다. 여기서 '가짜 장례식'은 후보 작품인 '악역을 위한 장례식은 없다'를 지칭하는 약칭이라기보다, 특정 장면(Scene)의 내용을 묘사하는 표현으로 사용되었다. 또한 게시글의 화행 자체가 특정 작품에 대한 언급이 아닌 '유사 작품 추천 요청'이므로, 해당 표현을 특정 작품의 공식 명칭이나 약칭으로 승격할 근거가 부족하다.",
+                "evidence_chain": [
+                  {
+                    "source": "content",
+                    "content": "약관동의같은거 추천해줘",
+                    "supports": "글의 화행이 '추천 요청'임을 명시함"
+                  },
+                  {
+                    "source": "comments",
+                    "content": "이건 라노토벌이네요",
+                    "supports": "댓글은 추천 요청에 대한 답변(응답)이지, 게시글 자체의 주제를 논하는 것이 아님"
+                  }
+                ],
+                "slang_insight": null,
+                "unresolved_from_decoder": [
+                  {
+                    "term": "유열이",
+                    "verifier_interpretation": "특정 캐릭터명 혹은 커뮤니티 은어일 가능성이 있으나, 추천 요청 문맥에서는 구체적 대상 식별이 어려움",
+                    "needs_search": false
+                  },
+                  {
+                    "term": "라노토벌",
+                    "verifier_interpretation": "댓글에서 언급된 용어로, 특정 작품군이나 장르를 일컫는 커뮤니티 약어(예: 라노벨+토벌물 등)로 추정됨",
+                    "needs_search": false
+                  }
+                ],
+                "inference": {
+                  "type": "noise",
+                  "topic": "특정 작품 단정 불가"
+                },
+                "relation_judgment": {
+                  "relation_type": "thematic_overlap_only",
+                  "discussion_target": "mixed_or_uncertain",
+                  "promotion_decision": "reject",
+                  "confidence": "high",
+                  "reason": "게시글의 작성자는 '가짜 장례식' 씬이 포함된 작품과 '약관동의'와 유사한 분위기의 작품을 추천해달라고 요청하고 있다. 여기서 '가짜 장례식'은 후보 작품인 '악역을 위한 장례식은 없다'를 지칭하는 약칭이라기보다, 특정 장면(Scene)의 내용을 묘사하는 표현으로 사용되었다. 또한 게시글의 화행 자체가 특정 작품에 대한 언급이 아닌 '유사 작품 추천 요청'이므로, 해당 표현을 특정 작품의 공식 명칭이나 약칭으로 승격할 근거가 부족하다.",
+                  "key_evidence": [
+                    "본문 문맥상 '가짜 장례식'은 작품명이 아닌 '가짜 장례식 씬(scene)'이라는 특정 상황을 지칭함",
+                    "게시글의 목적이 특정 작품에 대한 논의가 아닌 유사 작품 추천 요청(recommendation)임",
+                    "후보 작품명과 게시글 내 표현 사이의 명시적인 약칭/줄임말 연결 고리(explicit alias bridge)가 존재하지 않음"
+                  ],
+                  "observed_aliases": [],
+                  "evidence_summary": {
+                    "total_items": 6,
+                    "official_detail_count": 6,
+                    "community_post_count": 0,
+                    "listing_or_category_count": 0,
+                    "explicit_alias_bridge_count": 0
+                  },
+                  "search_support_summary": {
+                    "official_exact_title_count": 4,
+                    "official_alias_context_count": 0,
+                    "community_alias_support_count": 0,
+                    "explicit_alias_bridge_count": 0,
+                    "source_bound_alias_assertion_count": 0,
+                    "source_bound_alias_assertion_url": null,
+                    "support_channel_count": 2,
+                    "support_purposes": [
+                      "alias_bridge_search",
+                      "title_anchor_official_probe"
+                    ],
+                    "alias_in_post_count": 0,
+                    "best_official_url": "https://ridibooks.com/books/102125435",
+                    "converged_official_signal": false,
+                    "bridge_quality": "weak",
+                    "closed_bridge": false,
+                    "related_anchor_hit_count": 0,
+                    "author_context_match_count": 0,
+                    "character_context_match_count": 0,
+                    "matched_related_anchor_terms": [],
+                    "author_context_anchor_terms": []
+                  },
+                  "post_direct_grounding": false,
+                  "generic_relation_only": false
+                }
+              },
+              "final_confidence": "high",
+              "reason": "게시글의 핵심 화행이 '-해줘', '추천해줘'와 같은 명령/요청형 어미를 포함하고 있어, 특정 작품에 대한 담론이 아닌 '추천 요청'으로 분류됩니다. Decoder가 검색 결과(약관 동의는 신중히, 악역을 위한 장례식은 없다)를 바탕으로 작품을 식별하려 시도했으나, 이는 작성자가 원하는 '장면의 특징'을 키워드로 검색하여 나타난 우연한 일치(Keyword Coincidence)일 뿐, 작성자가 해당 작품들을 주제로 글을 쓴 것이 아닙니다. 따라서 is_relevant=false입니다."
+            }
+          }
+        ],
+        "synthesizer": [
+          {
+            "line": 4093,
+            "data": {
+              "reinterpretation": {
+                "post_intent": "특정 분위기(가짜 장례식 씬)와 특정 작품(약관동의)을 선호하는 독자가 유사한 성향의 웹소설 추천을 요청함",
+                "text_analysis": [
+                  {
+                    "segment": "'가짜 장례식' 씬이 보고싶다",
+                    "interpretation": "특정 작품의 제목이라기보다, 독자가 선호하는 특정 서사적 장치나 연출(예: 죽음 혹은 가짜 상황을 이용한 감정적 피폐/카타르시스)을 지칭함. 다만, 검색 결과 [E001], [E002]에서 '악역을 위한 장례식은 없다'라는 작품이 확인되나, Verifier의 판단대로 이는 장면 묘사일 가능성이 높음.",
+                    "evidence_source": "verifier"
+                  },
+                  {
+                    "segment": "약관동의같은거 추천해줘",
+                    "interpretation": "웹소설 '약관 동의는 신중히'와 유사한 분위기나 키워드를 가진 작품을 추천해달라는 요청임.",
+                    "evidence_source": "search"
+                  },
+                  {
+                    "segment": "근본있는 유열이",
+                    "interpretation": "작성자가 선호하는 특정 캐릭터('유열이') 혹은 특정 작가의 스타일을 지칭하는 것으로 보이나, 제공된 증거 내에서 '유열이'라는 이름의 캐릭터나 작가는 명확히 식별되지 않음.",
+                    "evidence_source": "decoder"
+                  }
+                ],
+                "comment_insights": [
+                  {
+                    "comment": "이건 라노토벌이네요",
+                    "insight": "댓글 작성자는 게시글의 취지(추천 요청)에 반응하여, 해당 취향이 특정 작품인 '라노토벌'과 유사하다고 의견을 제시함. '라노토벌'은 검색 결과에 나타나지 않는 고유 명사 또는 커뮤니티 약칭으로 추정됨."
+                  }
+                ]
+              },
+              "hidden_references": [
+                {
+                  "text": "약관동의",
+                  "reference_type": "title",
+                  "matched_to": "약관 동의는 신중히",
+                  "evidence": "Discourse 분석 및 검색 결과에서 '약관 동의는 신중히'라는 작품명이 확인됨"
+                }
+              ],
+              "evidence_alignment": {
+                "decoder_match": "partial",
+                "decoder_reason": "Decoder는 '약관동의'를 작품명으로 잘 식별했으나, '유열이'와 '라노토벌'에 대해서는 정보를 찾지 못함",
+                "verifier_match": "strong",
+                "verifier_reason": "Verifier는 제목의 '가짜 장례식'이 작품명이 아닌 묘사적 표현임을 정확히 지적하며 추천 요청 맥락을 파악함",
+                "overall_coherence": "high"
+              },
+              "confidence_assessment": {
+                "is_about_identified_work": false,
+                "confidence": "High",
+                "reasoning": "이 포스트는 특정 하나의 작품을 논하는 글이 아니라, '약관 동의는 신중히'라는 작품을 기준으로 유사한 취향의 작품을 찾는 '추천 요청글'임. 따라서 단일 작품 식별보다는 '취향의 공유'가 핵심임.",
+                "alternative_interpretation": null
+              },
+              "synthesis_summary": "본 포스트는 특정 작품 '약관 동의는 신중히'와 유사한 분위기를 가진 웹소설을 추천받기 위한 게시글입니다. 작성자는 '가짜 장례식'이라는 특정 서사적 연출(Scene)을 선호한다고 언급했으며, 댓글에서는 이러한 취향이 '라노토벌'이라는 작품과 유사하다는 의견이 달렸습니다. 전체적으로 특정 작품에 대한 비평이 아닌, 개인의 취향을 기반으로 한 커뮤니티 내 추천 요청 맥락을 띠고 있습니다.",
+              "elapsed": 127.58453917503357
+            }
+          }
+        ],
+        "arbiter": [
+          {
+            "line": 4375,
+            "data": {
+              "final_decision": {
+                "is_relevant": false,
+                "is_novel_discussion": false,
+                "official_novel_title": null,
+                "suspected_titles": [
+                  {
+                    "title": "약관 동의는 신중히",
+                    "confidence": "High",
+                    "reason": "본문의 '약관동의'라는 키워드가 검색 결과 E081을 통해 해당 작품으로 강력하게 매칭됨"
+                  },
+                  {
+                    "title": "악역을 위한 장례식은 없다",
+                    "confidence": "Medium",
+                    "reason": "제목의 '가짜 장례식'이 검색 결과 E001, E002 등의 '장례식' 키워드와 연관될 가능성이 있음"
+                  }
+                ],
+                "heretic_url": null,
+                "confidence": "Medium",
+                "discussion_type": "recommendation",
+                "_raw_llm_relevant": false,
+                "_raw_llm_title": null,
+                "_raw_llm_confidence": "High",
+                "_raw_llm_discussion_type": "recommendation",
+                "official_title": null,
+                "final_reasoning": "[거부권] 게시글 제목: ''가짜 장례식' 씬이 보고싶다', 본문: '약관동의같은거 추천해줘 근본있는 유열이 보고싶어'\nDecoder: '가짜 장례식'을(를) '장례 의식'(medium)로 식별; '약관동의'을(를) '약관 동의는 신중히'(high)로 식별 | Verifier: 비관련 판정 — 게시글의 작성자는 '가짜 장례식' 씬이 포함된 작품과 '약관동의'와 유사한 분위기의 작품을 추천해달라고 요청하고 있다. 여기서 '가짜 장례식'은 후보 작품인 '악역을 위한 장례식은 없다'를 지칭하는 약칭이라기보다, 특정 장면(Scene)의 내용을 묘사하는 표현으로 사용되었다. 또한 게시글의 화행 자체가 특정 작품에 대한 언급이 아닌 '유사 작품 추천 요청'이므로, 해당 표현을 특정 작품의 공식 명칭이나 약칭으로 승격할 근거가 부족하다. | 핵심 반론: 게시글의 목적이 작품 토론이 아닌 추천 요청임; relation_judge:thematic_overlap_only | Discourse: intent=request_recommendation\n검색 증강 분석: 검색 쿼리 17건 수행('가짜 장례식 씬이 노벨피아', '가짜 장례식 씬이', '보고싶다', '가짜장례식', '가짜 장례식 씬이 웹소설', '가짜장례식 웹소설 문피아', '가짜장례식 웹소설 노벨피아', '가짜장례식 웹소설 시리즈', '가짜장례식씬 웹소설 문피아', '가짜장례식씬 웹소설 노벨피아', '가짜장례식씬 웹소설 시리즈', '가짜장례식씬 웹소설 카카오페이지', '약관동의 악역을 위한 장례식은 없다 웹소설', '가짜 작가 작품', '가짜장례식 줄임', '제국이 진짜로 망하기 시작했다 site:novelpia.com OR site:munpia.com OR site:page.kakao.com', '약관 동의는 신중히 site:novelpia.com OR site:munpia.com OR site:page.kakao.com'). 스니펫 분석기 판정: '특정 작품 토론' — 본문에 '약관동의', '유열이' 등 특정 작품 및 캐릭터 고유 명사가 등장하여 장르 일반론이 아닌 특정 작품에 대한 언급임이 확인됨., 캐릭터: 유열이. 소설플랫폼 결과 8건(E001 ridibooks.com: '악역을 위한 장례식은 없다 - BL 소설 e북'; E003 namu.wiki: '이순재 - 나무위키'; E005 novelpia.com: '로맨스'; E010 series.naver.com: '로맨스 웹소설 : 네이버 시리즈'; E020 munpia.com: '진짜가 된 가짜'; E022 novel.munpia.com: '상태창인 척하는 AI가 가짜 퀘스트를 준다'; E024 m.munpia.com: '웹소설의 유토피아, 글세상 문피아'; E074 mm.munpia.com: '흉성의 화신 - 웹소설 문피아'). 커뮤니티 결과 2건(E011 gall.dcinside.com: '내가 장례식장 범인 맞춘 이유 ㅋㅋㅋㅋㅋㅋ - 크라임씬 갤러리'; E072 fmkorea.com: 'ㅅㅍ)나... 어쩌면 조교 당하고 있는 걸지도?! 탑툰 신작 '최면어플이 가짜였다' ....') — 소설 공식 출처 아님. '장례 의식' 증거: 본문증거유형: plot_mention (미검증).\n판단: 검색에서 '장례 의식'을(를) 찾았으나 본문에 해당 작품의 고유 정보가 없어 매칭 불가.\n이 글은 특정 소설에 대한 토론이 아닌 것으로 판정됨.",
+                "_title_null_block_reasons": [
+                  "memory_query_forced_upgrade_guard",
+                  "multi_work_guard",
+                  "recommendation_guard"
+                ],
+                "notes": "[Verifier 거부권] 게시글의 작성자는 '가짜 장례식' 씬이 포함된 작품과 '약관동의'와 유사한 분위기의 작품을 추천해달라고 요청하고 있다. 여기서 '가짜 장례식'은 후보 작품인 '악역을 위한 장례식은 없다'를 지칭하는 약칭이라기보다, 특정 장면(Scene)의 내용을 묘사하는 표현으로 사용되었다. 또한 게시글의 화행 자체가 특정 작품에 대한 언급이 아닌 '유사 작품 추천 요청'이므로, 해당 표현을 특정 작품의 공식 명칭이나 약칭으로 승격할 근거가 부족하다.. [multi_work 가드] 복수 작품 맥락 감지 (decoder_multi_titles:2, question_tone). [recommendation 가드] 추천 요청 화행 감지 (gatekeeper_post_type, gatekeeper_context_clue, discourse_intent)",
+                "_hypothesis_top": "recommendation",
+                "_hypothesis_margin": 0.216,
+                "_title_deliberately_null": true
+              },
+              "expert_consensus": {
+                "unanimous": false,
+                "agreeing_experts": [
+                  "Gatekeeper"
+                ],
+                "dissenting_experts": [
+                  "Decoder",
+                  "Verifier"
+                ]
+              },
+              "conflict_resolution": [
+                {
+                  "issue": "is_relevant 여부 및 주제 판정",
+                  "expert_opinions": {
+                    "gatekeeper": "recommendation (유형은 맞으나 관련성은 판단 유보)",
+                    "decoder": "작품 식별 시도 (장례 의식 등)",
+                    "verifier": "is_relevant=false (거부권 발동)"
+                  },
+                  "arbiter_decision": "is_relevant=false",
+                  "reasoning": "Decoder가 '약관동의'를 통해 특정 작품을 식별해냈으나, Verifier의 분석대로 이 글의 본질적 목적은 특정 작품에 대한 토론이 아니라 '유사한 작품을 찾아달라'는 추천 요청(Recommendation)임. 화용론적 관점에서 게시글의 주체는 작품이 아닌 '추천 요청 행위' 자체에 있으므로 is_relevant=false로 판정함."
+                }
+              ],
+              "metadata_synthesis": {
+                "detected_author": null,
+                "detected_characters": [],
+                "micro_tags": [
+                  "recommendation",
+                  "scene_preference"
+                ],
+                "sentiment": "Neutral",
+                "is_nsfw": false,
+                "spoiler_level": "none"
+              },
+              "final_reasoning": "[Multi-Expert Deliberation] 투표: 관련=2/비관련=5, 증거점수=0.5, 최종=비관련(confidence=Medium).\n[Primary] [거부권] 게시글 제목: ''가짜 장례식' 씬이 보고싶다', 본문: '약관동의같은거 추천해줘 근본있는 유열이 보고싶어'\nDecoder: '가짜 장례식'을(를) '장례 의식'(medium)로 식별; '약관동의'을(를) '약관 동의는 신중히'(high)로 식별 | Verifier: 비관련 판정 — 게시글의 작성자는 '가짜 장례식' 씬이 포함된 작품과 '약관동의'와 유사한 분위기의 작품을 추천해달라고 요청하고 있다. 여기서 '가짜 장례식'은 후보 작품인 '악역을 위한 장례식은 없다'를 지칭하는 약칭이라기보다, 특정 장면(Scene)의 내용을 묘사하는 표현으로 사용되었다. 또한 게시글의 화행 자체가 특정 작품에 대한 언급이 아닌 '유사 작품 추천 요청'이므로, 해당 표현을 특정 작품의 공식 명칭이나 약칭으로 승격할 근거가 부족하다. | 핵심 반론: 게시글의 목적이 작품 토론이 아닌 추천 요청임; relation_judge:thematic_overlap_only | Discourse: intent=request_recommendation\n검색 증강 분석: 검색 쿼리 17건 수행('가짜 장례식 씬이 노벨피아', '가짜 장례식 씬이', '보고싶다', '가짜장례식', '가짜 장례식 씬이 웹소설', '가짜장례식 웹소설 문피아', '가짜장례식 웹소설 노벨피아', '가짜장례식 웹소설 시리즈', '가짜장례식씬 웹소설 문피아', '가짜장례식씬 웹소설 노벨피아', '가짜장례식씬 웹소설 시리즈', '가짜장례식씬 웹소설 카카오페이지', '약관동의 악역을 위한 장례식은 없다 웹소설', '가짜 작가 작품', '가짜장례식 줄임', '제국이 진짜로 망하기 시작했다 site:novelpia.com OR site:munpia.com OR site:page.kakao.com', '약관 동의는 신중히 site:novelpia.com OR site:munpia.com OR site:page.kakao.com'). 스니펫 분석기 판정: '특정 작품 토론' — 본문에 '약관동의', '유열이' 등 특정 작품 및 캐릭터 고유 명사가 등장하여 장르 일반론이 아닌 특정 작품에 대한 언급임이 확인됨., 캐릭터: 유열이. 소설플랫폼 결과 8건(E001 ridibooks.com: '악역을 위한 장례식은 없다 - BL 소설 e북'; E003 namu.wiki: '이순재 - 나무위키'; E005 novelpia.com: '로맨스'; E010 series.naver.com: '로맨스 웹소설 : 네이버 시리즈'; E020 munpia.com: '진짜가 된 가짜'; E022 novel.munpia.com: '상태창인 척하는 AI가 가짜 퀘스트를 준다'; E024 m.munpia.com: '웹소설의 유토피아, 글세상 문피아'; E074 mm.munpia.com: '흉성의 화신 - 웹소설 문피아'). 커뮤니티 결과 2건(E011 gall.dcinside.com: '내가 장례식장 범인 맞춘 이유 ㅋㅋㅋㅋㅋㅋ - 크라임씬 갤러리'; E072 fmkorea.com: 'ㅅㅍ)나... 어쩌면 조교 당하고 있는 걸지도?! 탑툰 신작 '최면어플이 가짜였다' ....') — 소설 공식 출처 아님. '장례 의식' 증거: 본문증거유형: plot_mention (미검증).\n판단: 검색에서 '장례 의식'을(를) 찾았으나 본문에 해당 작품의 고유 정보가 없어 매칭 불가.\n이 글은 특정 소설에 대한 토론이 아닌 것으로 판정됨.\n[Jury majority] 이 게시글은 작성자가 특정 장면('가짜 장례식' 씬)이나 특정 분위기('약관동의'와 유사한 느낌, '근본 있는 유열')를 가진 웹소설을 추천해달라고 요청하는 글이다. 제목에서 언급된 '가짜 장례식'은 특정 작품의 고유 명칭이라기보다 작성자가 원하는 서사적 상황을 묘사한 표현으로 보이며, 본문의 '약관동의같은거' 역시 Decoder에 의해 특정 작품인 '약관 동의는 신중히'로 매칭될 가능성이 있으나, 문맥상 해당 작품을 논하는 것이 아니라 그 작품과 유사한 성격의 다른 작품을 찾아달라는 비교 대상(Reference)으로 사용되었다.\n\n핵심 키워드 분석 결과, '약관동의'는 검색을 통해 특정 소설 제목으로 확인되지만, 본문에서의 쓰임새는 'A와 같은 것(Something like A)'이라는 형식을 취하고 있어 추천의 기준점으로 기능한다. 또한 '유열'은 커뮤니티에서 즐거움을 뜻하는 은어로 사용되었으며, 이는 특정 작품의 이름이 아닌 감상 상태를 나타낸다. 댓글에서 언급된 '라노토벌' 역시 특정 장르적 특성을 지칭하는 것으로 보이나, 이를 통해 특정 작품을 확정할 수 있는 직접적인 앵커(캐릭터명, 작가명, 공식 URL 등)는 발견되지 않는다.\n\n전문가 분석에서 Verifier는 강력한 거부권(Veto)을 행사하며 이 글이 작품에 대한 담론이 아닌 '추천 요청'임을 명시했다. Decoder는 제목의 키워드를 바탕으로 후보군을 제시했으나, 이들은 모두 본문의 요청 사항을 뒷받침하는 예시일 뿐 게시글의 주된 논의 대상(Subject)이 아니다. 따라서 특정 작품을 주제로 한 토론으로 볼 수 없다.\n\n결론적으로, 이 게시글은 특정 작품을 식별하여 그 내용을 논하는 'Work Discussion'이 아니라, 사용자의 취향을 전달하며 정보를 구하는 'Recommendation' 요청 글이므로 is_relevant=false 및 discussion_type=recommendation으로 최종 판정한다.\n[Judge] 본 게시글은 특정 작품에 대한 직접적인 비평이나 토론을 목적으로 하는 것이 아니라, 작성자가 선호하는 특정 서사적 연출('가짜 장례식' 씬)과 분위기('약관동의'와 유사한 결)를 가진 작품을 추천받고자 하는 '추천 요청' 글입니다. Advocate는 '가짜 장례식'이 특정 작품의 내부 개념(Work Internal Concept)일 가능성을 제기하며 관련성을 주장했으나, Skeptic의 반론대로 이는 웹소설에서 흔히 쓰이는 클리셰적 장면 묘사로 해석하는 것이 훨씬 타당합니다. 또한 '약관동의'라는 구체적인 제목이 언급되었으나, 이는 비교 대상(Reference)으로 사용되었을 뿐 해당 작품 자체에 대한 담론을 형성하고 있지 않습니다. 따라서 이 글은 특정 작품을 지칭하는 것이 아니라, 특정 장르적 문법과 감성을 공유하는 작품군에 대한 '취향 기반의 메타적 담론'으로 분류하는 것이 적절합니다. 관련성(is_relevant)은 인정하되, 특정 작품명을 추출할 근거가 없으므로 title은 null로 처리합니다.",
+              "evidence_chain": [
+                {
+                  "source": "Body text",
+                  "content": "'약관동의같은거 추천해줘'",
+                  "weight": "high"
+                },
+                {
+                  "source": "Search Result E081",
+                  "content": "약관 동의는 신중히 (나무위키/검색 결과)",
+                  "weight": "high"
+                },
+                {
+                  "source": "Comment",
+                  "content": "'이건 라노토벌이네요' (답변으로서의 성격)",
+                  "weight": "medium"
+                }
+              ],
+              "_deliberation": {
+                "method": "full_deliberation_ABC",
+                "evidence_score": {
+                  "total_score": 0.5,
+                  "relevance_probability": "low",
+                  "positive_signals": [
+                    {
+                      "signal": "discourse_novel",
+                      "detail": "novel_literature"
+                    },
+                    {
+                      "signal": "decoder_medium",
+                      "detail": "title=None"
+                    },
+                    {
+                      "signal": "verifier_anchor",
+                      "detail": "anchor found"
+                    }
+                  ],
+                  "negative_signals": [
+                    {
+                      "signal": "verifier_irrelevant",
+                      "detail": "conf="
+                    },
+                    {
+                      "signal": "verifier_critical_counter",
+                      "detail": "게시글의 목적이 작품 토론이 아닌 추천 요청임; relation_judge:thematic_overlap_only"
+                    }
+                  ],
+                  "expert_agreement": 0.67,
+                  "conflict_detected": true,
+                  "conflict_details": [
+                    "Verifier critical counter: 게시글의 목적이 작품 토론이 아닌 추천 요청임; relation_judge:thematic_overlap_only"
+                  ],
+                  "recommendation": "WEAK: 관련성 증거가 약합니다. 신중한 판단이 필요합니다."
+                },
+                "conflict_detected": true,
+                "jury_votes": {
+                  "relevant": 0,
+                  "irrelevant": 3
+                },
+                "debate_advocate_conf": "Medium",
+                "debate_skeptic_conf": "High",
+                "elapsed": 536.4
+              }
+            }
+          }
+        ]
+      },
+      "observed_final": {
+        "identity": {
+          "is_novel_related": true,
+          "is_relevant": false,
+          "discussion_type": "recommendation",
+          "subtype": "recommendation_request",
+          "topicality": "adjacent_relevant",
+          "primary_subject_text": "작성자의 추천 요청: '가짜 장례식' 씬이 보고싶다 / 약관동의같은거 추천해줘 / 근본있는 유열이 보고싶어",
+          "reason": "[판정 요약]\n- 작성자의 직접 추천 요청이며 단일 작품의 토론은 아닙니다.\n- 공식 작품 제목: 미확정\n[원문 근거]\n- 작성자 발화와 조건: '가짜 장례식' 씬이 보고싶다 / 약관동의같은거 추천해줘 / 근본있는 유열이 보고싶어\n[최종 종합]\n- 요청 조건을 작품명이나 장르 일반론으로 바꾸지 않습니다.",
+          "novel_identity": {
+            "heretic_url": null,
+            "official_title": null
+          },
+          "primary_work": null,
+          "secondary_reference_works": [],
+          "comparison_target": null,
+          "recommendation_candidates": [
+            {
+              "alias_or_mention": "라노토벌",
+              "confidence": "Low",
+              "content_status": null,
+              "heretic_url": null,
+              "locked": null,
+              "negative_evidence": [
+                "comment_answer_preservation_only"
+              ],
+              "official_title": "라노토벌",
+              "page_type": null,
+              "reference_role": "candidate",
+              "resolved_recall_anchor": null,
+              "source_tier": "community"
+            }
+          ],
+          "mentioned_works": null,
+          "title_candidates": null,
+          "entity_mentions": [
+            {
+              "canonical_value": null,
+              "confidence": "Medium",
+              "entity_type": "character",
+              "role": "character_focus",
+              "source": "gatekeeper",
+              "text": "유열이"
+            },
+            {
+              "canonical_value": null,
+              "confidence": "None",
+              "entity_type": "character",
+              "role": "character_focus",
+              "source": "decoder",
+              "text": "유열"
+            },
+            {
+              "canonical_value": null,
+              "confidence": "Medium",
+              "entity_type": "other",
+              "role": "candidate",
+              "source": "fetch",
+              "text": "천재단역"
+            },
+            {
+              "canonical_value": null,
+              "confidence": "Medium",
+              "entity_type": "other",
+              "role": "candidate",
+              "source": "fetch",
+              "text": "연애편지"
+            },
+            {
+              "canonical_value": null,
+              "confidence": "Medium",
+              "entity_type": "other",
+              "role": "candidate",
+              "source": "fetch",
+              "text": "엑스트라"
+            },
+            {
+              "canonical_value": null,
+              "confidence": "Medium",
+              "entity_type": "other",
+              "role": "candidate",
+              "source": "fetch",
+              "text": "공무원"
+            },
+            {
+              "canonical_value": null,
+              "confidence": "Medium",
+              "entity_type": "other",
+              "role": "candidate",
+              "source": "fetch",
+              "text": "가다"
+            },
+            {
+              "canonical_value": null,
+              "confidence": "Medium",
+              "entity_type": "other",
+              "role": "candidate",
+              "source": "fetch",
+              "text": "바란다"
+            },
+            {
+              "canonical_value": null,
+              "confidence": "Medium",
+              "entity_type": "other",
+              "role": "candidate",
+              "source": "fetch",
+              "text": "리뷰"
+            },
+            {
+              "canonical_value": null,
+              "confidence": "Medium",
+              "entity_type": "other",
+              "role": "candidate",
+              "source": "fetch",
+              "text": "전형"
+            }
+          ],
+          "candidate_preservation_sources": [
+            {
+              "alias_or_mention": "가짜 장례식",
+              "confidence": "High",
+              "negative_evidence": [
+                "candidate_source_missing_url"
+              ],
+              "official_title": "장례 의식",
+              "preservation_role": "title_candidate",
+              "reference_role": "future_watch_target",
+              "source_tier": "llm_only"
+            },
+            {
+              "alias_or_mention": "라노토벌",
+              "confidence": "Low",
+              "local_preservation_type": "comment_answer_hold",
+              "negative_evidence": [
+                "comment_answer_preservation_only"
+              ],
+              "official_title": "라노토벌",
+              "preservation_role": "recommendation_candidate",
+              "promotion_policy": "hold_without_promotion",
+              "reference_role": "candidate",
+              "source_tier": "community"
+            }
+          ],
+          "context_sources": [
+            "title",
+            "body",
+            "comments",
+            "search"
+          ],
+          "search_health": {
+            "accepted": 98,
+            "cache_hits": 0,
+            "degraded": 0,
+            "degraded_recovered": 0,
+            "degraded_zero": 0,
+            "degraded_zero_suppressed": 0,
+            "direct_search_results": 0,
+            "direct_search_used": 0,
+            "fallback_recovered": 0,
+            "filtered": 4,
+            "headless_used": 0,
+            "queries_issued": 15,
+            "raw": 351,
+            "retried": 0,
+            "status": "ok",
+            "unrecovered_degraded": 0,
+            "upstream_zero": 2
+          },
+          "promotion_decision": {
+            "bypassed_gate": false,
+            "candidate_preserved": true,
+            "contract_version": "promotion_contract_v2",
+            "input_fingerprint": "ca98a96ceacf1a46126d734a8557afcce8c5a4f1c6892ef915e7c520aae4c09c",
+            "official_title": null,
+            "official_url": null,
+            "publish_allowed": false,
+            "reason_codes": [
+              "no_public_candidate_title",
+              "candidate_inventory_preserved_without_selection",
+              "row_discussion_missing",
+              "title_resolution_state_not_publishable",
+              "work_resolution_not_publishable",
+              "scope_unknown",
+              "scope_not_current_work",
+              "serializer_candidate_inventory_hold",
+              "candidate_inventory_unselected"
+            ],
+            "scope": {
+              "competing_candidates": [],
+              "confidence": "low",
+              "conflict_reason_codes": [
+                "serializer_candidate_inventory_hold",
+                "candidate_inventory_unselected"
+              ],
+              "direct_bridge_sources": [],
+              "scope_kind": "unknown"
+            },
+            "status": "candidate_only"
+          }
+        },
+        "analysis": {
+          "detected_titles": [],
+          "is_nsfw": false,
+          "micro_tags": [
+            "recommendation",
+            "scene_preference"
+          ],
+          "notes": "[판정 요약]\n- 작성자의 직접 추천 요청이며 단일 작품의 토론은 아닙니다.\n- 공식 작품 제목: 미확정\n[원문 근거]\n- 작성자 발화와 조건: '가짜 장례식' 씬이 보고싶다 / 약관동의같은거 추천해줘 / 근본있는 유열이 보고싶어\n[최종 종합]\n- 요청 조건을 작품명이나 장르 일반론으로 바꾸지 않습니다.",
+          "sentiment_profile": {
+            "drift_risk": "Unknown",
+            "pacing": "Unknown",
+            "sentiment": "Neutral"
+          },
+          "user_segment": null
+        }
+      },
+      "stored_search_evidence_catalog": [
+        {
+          "domain": "ridibooks.com",
+          "eid": "E001",
+          "purpose": "title_anchor_official_probe",
+          "query": "가짜 장례식 씬이 웹소설",
+          "rank": 1,
+          "snippet": "리디 접속이 원활하지 않습니다. 강제 새로 고침(Ctrl F5)이나 브라우저 캐시 삭제를 진행해주세요. 계속해서 문제가 발생한다면 리디 접속 테스트를 통해 원인을 파악하고 대응 방법을 안내드리겠습니다. 테스트 페이지로 이동하기",
+          "source_rank": 1,
+          "source_tier": "novel_platform",
+          "title": "악역을 위한 장례식은 없다 - BL 소설 e북",
+          "url": "https://ridibooks.com/books/102125435"
+        },
+        {
+          "domain": "page.kakao.com",
+          "eid": "E002",
+          "purpose": "title_anchor_official_probe",
+          "query": "가짜 장례식 씬이 웹소설",
+          "rank": 2,
+          "snippet": "회차 목록",
+          "source_rank": 2,
+          "source_tier": "novel_platform",
+          "title": "악역을 위한 장례식은 없다 [개정판] - 웹소설",
+          "url": "https://page.kakao.com/content/67396581"
+        },
+        {
+          "domain": "namu.wiki",
+          "eid": "E003",
+          "purpose": "title_anchor_official_probe",
+          "query": "가짜 장례식 씬이 웹소설",
+          "rank": 3,
+          "snippet": "빈소도 서울아산병원 장례식장에 마련되었으며, 일반인 조문객들을 위한 빈소는 KBS 별관에 마련되었다. 마지막 영정사진은 그가 생전 자주 이용했던 서재에서 찍은 화보로 정해졌다. 장례는 처음 가족장이었다가 이후 변경되어 예술인연합회 협회장으로 치렀다. 생전 위상이 워낙 높았기 때문에, 이전 최고령 연예인 송해와 같이 사후 금관문화훈장을 추서 받을...",
+          "source_rank": 3,
+          "source_tier": "wiki",
+          "title": "이순재 - 나무위키",
+          "url": "https://namu.wiki/w/%EC%9D%B4%EC%88%9C%EC%9E%AC"
+        },
+        {
+          "domain": "namu.wiki",
+          "eid": "E004",
+          "purpose": "title_anchor_exact_probe",
+          "query": "가짜 장례식 씬이",
+          "rank": 4,
+          "snippet": "만년에는 통일교에 귀의했으며 장례식 때는 전국의 조폭들이 다 몰려왔다. 깨알같은 인천상수의 조화가 보인다. 그런데 사진을 자세히 보면 '승화식'이란 단어가 보이는데 이는 통일교의 장례식이다. 그렇지만 조일환과 친분이 있는 정통 개신교 목사들도 왔다. 3. 기타 1996년 2월 2일자 KBS 2TV <그때 그 사건>에서는 배우 선동혁이 연기했다. 김영태, 낙화유수, 오상사와...",
+          "source_rank": 4,
+          "source_tier": "wiki",
+          "title": "조일환(1938)",
+          "url": "https://namu.wiki/w/%EC%A1%B0%EC%9D%BC%ED%99%98(1938)"
+        },
+        {
+          "domain": "novelpia.com",
+          "eid": "E005",
+          "purpose": "title_anchor_official_probe",
+          "query": "가짜 장례식 씬이 노벨피아",
+          "rank": 5,
+          "snippet": "4년 동안 이어진 가짜 연애. 이제는 가짜 남자친구가 아니라 진짜 남자친구가 되고 싶어 고백했다. 하지만 돌아온 대답은. \"우린 원래 계약이었잖아.\" 그래서 ; “너… 설마 나 좋아하냐?” “씨, 개씨발 씨발, 씨발놈아 존나게 좋아하아아아악──!!” ; 또다시 데릴사위가 되다. “생활비 필요하면 언제든지 말해.” 이제부터는 제 주인님으로 모시겠습니다. # 일러스트는 AI로 제 ....",
+          "source_rank": 5,
+          "source_tier": "web",
+          "title": "로맨스",
+          "url": "https://novelpia.com/plus/new/view/1/%EB%A1%9C%EB%A7%A8%EC%8A%A4"
+        },
+        {
+          "domain": "namu.wiki",
+          "eid": "E006",
+          "purpose": "title_anchor_exact_probe",
+          "query": "보고싶다",
+          "rank": 6,
+          "snippet": "2026년 6월 9일 · '보고 싶다'라는 가사를 'VOGO 쉽다'로 바꾼 등의 개사가 돋보인다. 2021-22시즌 청주 KB 스타즈 의 리그 통합 우승 기념 …",
+          "source_rank": 6,
+          "source_tier": "wiki",
+          "title": "보고싶다 (노래) - 나무위키",
+          "url": "https://namu.wiki/w/%EB%B3%B4%EA%B3%A0%EC%8B%B6%EB%8B%A4(%EB%85%B8%EB%9E%98)"
+        },
+        {
+          "domain": "namu.wiki",
+          "eid": "E007",
+          "purpose": "title_anchor_exact_probe",
+          "query": "보고싶다",
+          "rank": 7,
+          "snippet": "2012년11월 7일부터 2013년1월 17일까지 방영한 MBC드라마. 먼저 박유천은 마약 , 윤은혜는 디자인표절, 장미인애 역시 마약 사건 때문에 박유천처럼 출연정지를 먹으면서 셋 다 현재는 정상적으로 활동을 하지 못하는 상태이다.[본문] 최근 변경최근 토론 특수 기능) \"검색\") \"이동\") ) # 보고싶다(드라마)) 최근 수정 시각: 2026-09-15 14:48:19 1 \"내 문서함에 추가\")편집)토론 \"토론\")역사 \"역사\") 분류 * 보고싶다(드라마)) * 2012년 드라마 * 2013년 드라마 * 2013년 종영 * MBC 수목 드라마 ) **수목 미니시리즈** --- [ 펼치기 · 접기 ] | 2011~2015 --- ) (2011) | ) \"로열패밀리\\(드라마\\)\") (2011) | ) (2011) | ) \"넌 내게 반했어\\...",
+          "source_rank": 7,
+          "source_tier": "wiki",
+          "title": "보고싶다 (드라마) - 나무위키",
+          "url": "https://namu.wiki/w/%EB%B3%B4%EA%B3%A0%EC%8B%B6%EB%8B%A4(%EB%93%9C%EB%9D%BC%EB%A7%88)"
+        },
+        {
+          "domain": "namu.wiki",
+          "eid": "E008",
+          "purpose": "title_anchor_official_probe",
+          "query": "가짜 장례식 씬이 웹소설",
+          "rank": 8,
+          "snippet": "기본적으로 동명의 한국 웹소설이 원작이나, 스튜디오드래곤이 자사에서 제작했던 동명의 한국 드라마를 직접 리메이크한 작품이다. 코시바 후우카와 사토 타케루가 주연을... 그리고 원작에서는 토모야(박민환)한테 병원비 갖고 오라고 독촉하다가 몰래 병실을 나가는 씬이었지만 본인의 죽음이 다가오자 유언장을 작성하였고 외출 허가를 받고 외출하다...[본문] 한 것으로 나오며 이혼한 후에도 본인의 가게에 불쑥 찾아와 딸을 맡기는 전처에게 따지지 않고 딸을 케어해 주는 상당히 가정적인 모습으로 나온다. 또한 미사의 어머니 대신 오리지널 캐릭터인 아버지의 동거녀가 등장하는데 처음에는 레이나의 어머니가 레이나를 맡기는 바람에 온천 여행을 못 갔다며 아쉬워했지만 어머니에게 학대를 당하는 어린 레이나를 안타깝게 여기고 자신의 끈 팔찌에 관심을 보이자 '이 팔...",
+          "source_rank": 8,
+          "source_tier": "wiki",
+          "title": "내 남편과 결혼해줘(일본 드라마)",
+          "url": "https://namu.wiki/w/%EB%82%B4%20%EB%82%A8%ED%8E%B8%EA%B3%BC%20%EA%B2%B0%ED%98%BC%ED%95%B4%EC%A4%98(%EC%9D%BC%EB%B3%B8%20%EB%93%9C%EB%9D%BC%EB%A7%88)"
+        },
+        {
+          "domain": "namu.wiki",
+          "eid": "E009",
+          "purpose": "title_anchor_exact_probe",
+          "query": "가짜 장례식 씬이",
+          "rank": 9,
+          "snippet": "장례지도사 ★ 장가장의 장례를 진행한 인물이다. 장고모 ★ 장가장의 여동생으로 뒤늦게 장례식에 도착한 후 마지막으로 오빠의 얼굴을 보여달라고 부탁했는데 해당 부탁으로 관이 열려 장막둥의 시신이 발견되었다. 나변호 ★ 장가장과 독대하던 변호사. 사건이 끝난 이후 장가장의 유언장을 발표하였다. 3. 전개 3.1. 용의자 알리바이 피해자 사망 추정 시간 2012년...[본문] 일 뿐이었다. 따라서 하루빨리 장막둥을 치워버리고 '진짜 후계자'인 김연인과 재결합하여 완벽한 재벌가 안주인이 되겠다는 결론에 도달했을 것이다. 실제로 주며늘은 정확히 이러한 야욕을 품고 장막둥을 제거하기 위해 한 차례 범행을 시도했던 전적까지 있기 때문에 한 번 죽이려 했던 인물을 두 번인들 못 죽일 리 없다는 점에서, 그녀의 범행 가능성은 높았다. [ 스포일러 ] 심...",
+          "source_rank": 9,
+          "source_tier": "wiki",
+          "title": "크라임씬 제로/장례식장 살인사건",
+          "url": "https://namu.wiki/w/%ED%81%AC%EB%9D%BC%EC%9E%84%EC%94%AC%20%EC%A0%9C%EB%A1%9C/%EC%9E%A5%EB%A1%80%EC%8B%9D%EC%9E%A5%20%EC%82%B4%EC%9D%B8%EC%82%AC%EA%B1%B4"
+        },
+        {
+          "domain": "series.naver.com",
+          "eid": "E010",
+          "purpose": "platform_title_search",
+          "query": "가짜장례식 웹소설 시리즈",
+          "rank": 10,
+          "snippet": "시리즈 로맨스 웹소설을 만나보세요. ... 아내의 장례식장에 아내가 찾아왔다(113화/완결) 10.0 | 즈자카 | 2025.04.01. | 5화 무료 결혼한 지 1년. 남편 세준과의 첫 여행을 고대하던 지영.작은 배를 타고 즐기던 로맨틱한... | 3화 무료 태초의 모습을 봐 버린 죄로 딱 5분만 가짜 애인 역할을 해주려던 것뿐인데.너무 최선을 다해버렸다. “하… 송주은 씨.” 그저 입술과 입술이 맞닿았다 ....",
+          "source_rank": 10,
+          "source_tier": "web",
+          "title": "로맨스 웹소설 : 네이버 시리즈",
+          "url": "https://series.naver.com/novel/categoryProductList.series?categoryTypeCode=genre&genreCode=201&orderTypeCode=star_score&is&isFinished=false&page=5"
+        },
+        {
+          "domain": "gall.dcinside.com",
+          "eid": "E011",
+          "purpose": "title_anchor_exact_probe",
+          "query": "가짜 장례식 씬이",
+          "rank": 11,
+          "snippet": "2025.09.24.김연인은 죽이기 전에 막둥쿵야가 가짜 아들이고 본인이 진짜 아들이라고 알았을텐데 굳이 막둥쿵냐를 왜 죽일까 싶었다 ㅋㅋㅋㅋㅋㅋㅋㅋ 본인이 진짜 아들되고 회사 후계자가 될 가능성 + 주며늴 가질 수 있는데 ㅋㅋㅋ 전혀 상관없는 스토리 ㅋㅋㅋㅋ",
+          "source_rank": 11,
+          "source_tier": "community",
+          "title": "내가 장례식장 범인 맞춘 이유 ㅋㅋㅋㅋㅋㅋ - 크라임씬 갤러리",
+          "url": "https://gall.dcinside.com/board/view/?id=crimescene&no=61619"
+        },
+        {
+          "domain": "gall.dcinside.com",
+          "eid": "E012",
+          "purpose": "title_anchor_exact_probe",
+          "query": "가짜 장례식 씬이",
+          "rank": 12,
+          "snippet": "2025.09.30.스포주의 ㅣㅣㅣ 폐병원은 장동민이랑 김지윤 둘 중 하나로 좁혔는데 내가 알고 있는 피겜 장동민은 이렇게 혼자 삽파고 그러는 이미지가 아니라 횡성수설하길래 범인인줄 알았음 범인 단서는 사람들이 못 찾은거고 장례식장은 김지훈이랑 주현영이었는데 5시 10분에 김지훈이 들어갔다는 거랑 손목에 토 때문에 김지훈 박았음 ㅋ 나처럼 틀린 사람?",
+          "source_rank": 12,
+          "source_tier": "community",
+          "title": "(스포주의) 나 폐병원이랑 장례식장 둘다 틀렸음 이유는 - 크라임씬 갤러리",
+          "url": "https://gall.dcinside.com/board/view/?id=crimescene&no=64515"
+        },
+        {
+          "domain": "namu.wiki",
+          "eid": "E013",
+          "purpose": "platform_title_search",
+          "query": "가짜장례식 웹소설 노벨피아",
+          "rank": 13,
+          "snippet": "이후 <회귀자와 맹인 성녀>를 집필하여 2021 노벨피아 우주최강 웹소설 공모전 우수상을 수상하여 큰 성공을 거두는데 성공하였다. 문피아에서 <신들의 장례지도사>를 연재했지만... 성적으로 연중하고 현재는 지옥에서 돌아온 게임 디렉터를 다시 연재하고 2023 지상최대 웹소설 공모전에서 대상을 수상하며 문피아에 성공적으로 들어서게 되었다. 5. 작품 papapa의 소설 [본문] 최근 변경최근 토론 특수 기능 # papapa 최근 수정 시각: 2025-12-10 09:52:55 7 편집토론역사 분류 * 대한민국의 소설가 * 웹소설 작가 * 성인 웹소설 작가 * 판타지 작가 * 나무위키 웹소설 프로젝트 1. 개요2. 수상3. 특징4. 활동5. 작품 ## 1. 개요[]( 노벨피아, 문피아에서 활동하는 대한민국의 웹소설 작가이다. 노벨피아 필명은...",
+          "source_rank": 13,
+          "source_tier": "wiki",
+          "title": "papapa - 나무위키",
+          "url": "https://namu.wiki/w/papapa"
+        },
+        {
+          "domain": "namu.wiki",
+          "eid": "E014",
+          "purpose": "platform_title_search",
+          "query": "가짜장례식 웹소설 노벨피아",
+          "rank": 14,
+          "snippet": "하지만 마학간에선 분노할 수밖에 없었다 제일 좋아하는 스토리 취향은 가짜 피폐적인 전개라고 한다. 예시로 주인공이 엄청 심적으로 힘들어하며 괴로워하지만 결과적으론 상황 자체는 좋게 흘러가는 전개 같은 것이라고 한다. 그래서인지 보통 그런 작품들의 경우 크게 호평해 줄 때가 많다. 3. 리뷰한 웹소설들 대채로 카카오페이지, 노벨피아, 네이버 시리즈, 문피아...[본문] 설원입니다, 하루살이, 사상 최강의 보안관을 제외한 글쟁이S의 작품은 모두 완결까지 읽었다고 한다.~~하지만마학간에선 분노할 수밖에 없었다~~ 제일 좋아하는 스토리 취향은 가짜 피폐적인 전개라고 한다. 예시로 주인공이 엄청 심적으로 힘들어하며 괴로워하지만 결과적으론 상황 자체는 좋게 흘러가는 전개 같은 것이라고 한다. 그래서인지 보통 그런 작품들의 경우 크게 호평해 줄 때가...",
+          "source_rank": 14,
+          "source_tier": "wiki",
+          "title": "판충 - 나무위키",
+          "url": "https://namu.wiki/w/%ED%8C%90%EC%B6%A9"
+        },
+        {
+          "domain": "ridibooks.com",
+          "eid": "E015",
+          "purpose": "platform_title_search",
+          "query": "가짜장례식 웹소설 시리즈",
+          "rank": 15,
+          "snippet": "리디 접속이 원활하지 않습니다. 강제 새로 고침(Ctrl F5)이나 브라우저 캐시 삭제를 진행해주세요. 계속해서 문제가 발생한다면 리디 접속 테스트를 통해 원인을 파악하고 대응 방법을 안내드리겠습니다. 테스트 페이지로 이동하기",
+          "source_rank": 15,
+          "source_tier": "novel_platform",
+          "title": "가짜 결혼 - BL 소설 e북",
+          "url": "https://ridibooks.com/books/3092013937"
+        },
+        {
+          "domain": "ridibooks.com",
+          "eid": "E016",
+          "purpose": "platform_title_search",
+          "query": "가짜장례식 웹소설 시리즈",
+          "rank": 16,
+          "snippet": "업데이트 : 2026.03.25 업데이트, 출간 정보 : 2026.03.05 출간, 듣기 기능 : TTS(듣기) 지원, 파일 정보 : EPUB · 평균 0.6MB, ISBN : 9791173782299",
+          "source_rank": 16,
+          "source_tier": "novel_platform",
+          "title": "가짜 던전으로 고향 살리기",
+          "url": "https://ridibooks.com/books/1007136703"
+        },
+        {
+          "domain": "ridibooks.com",
+          "eid": "E017",
+          "purpose": "confident_title_platform_expansion",
+          "query": "가짜장례식씬 웹소설 시리즈",
+          "rank": 17,
+          "snippet": "리디 접속이 원활하지 않습니다. 강제 새로 고침(Ctrl F5)이나 브라우저 캐시 삭제를 진행해주세요. 계속해서 문제가 발생한다면 리디 접속 테스트를 통해 원인을 파악하고 대응 방법을 안내드리겠습니다. 테스트 페이지로 이동하기",
+          "source_rank": 17,
+          "source_tier": "novel_platform",
+          "title": "가짜에게 집착하는 이유 - 로판 웹소설 - 리디에만 있는 독점 작품!",
+          "url": "https://ridibooks.com/books/5097001283"
+        },
+        {
+          "domain": "page.kakao.com",
+          "eid": "E018",
+          "purpose": "platform_title_search",
+          "query": "가짜장례식 웹소설 시리즈",
+          "rank": 18,
+          "snippet": "회차 목록",
+          "source_rank": 18,
+          "source_tier": "novel_platform",
+          "title": "가짜 서점에서 흑막 바보로 살아남기 : 바보학개론 - 웹소설",
+          "url": "https://page.kakao.com/content/58742048"
+        },
+        {
+          "domain": "novelpia.com",
+          "eid": "E019",
+          "purpose": "platform_title_search",
+          "query": "가짜장례식 웹소설 노벨피아",
+          "rank": 19,
+          "snippet": "작가의 뇌절로 죽은 히로인이 되었다. 그것도 내 장례식이 지난 5년 후로. 다짜고짜 납치, 감금 되는건 그렇다 쳐도.. 순애 엔딩은... 진짜 용납할수 없어! ; 모든 일에는 일어나는 이유가 다 있는 거라고 했다. 씨발, 근데 내가 갑자기 여자가 된 것도 다 이유가 있는 걸까? ; 이번엔 완벽한 정점이 되겠다. (야광무너 작가님의 상업 무료 배포이미지를 사용하였습니다.) ...",
+          "source_rank": 19,
+          "source_tier": "web",
+          "title": "노벨피아",
+          "url": "https://novelpia.com/plus/view/date/97/TS"
+        },
+        {
+          "domain": "www.munpia.com",
+          "eid": "E020",
+          "purpose": "platform_title_search",
+          "query": "가짜장례식 웹소설 문피아",
+          "rank": 20,
+          "snippet": "최신순 · 1화부터 ; 1.등장인물 ; 2.프롤로그 가짜가 된 진짜 ; 3.돌아온 남자 ; 4.거짓으로 만든 행복 ; 5.잊힌 이름 ; 6.버려진 동생",
+          "source_rank": 20,
+          "source_tier": "novel_platform",
+          "title": "진짜가 된 가짜",
+          "url": "https://www.munpia.com/novel/detail/590860"
+        },
+        {
+          "domain": "www.munpia.com",
+          "eid": "E021",
+          "purpose": "platform_title_search",
+          "query": "가짜장례식 웹소설 문피아",
+          "rank": 21,
+          "snippet": "최신순 · 1화부터 ; 1.1. 사제 그리고리(1) ; 2.2. 사제 그리고리(2) ; 3.3. 불안한 감정 ; 4.4. 수녀 마르타 ; 5.5. 폴란드로 도망오다(1) ; 6.6. 폴란드로 도망오다(2) ; 7.7. 출정하라! ; 8.8. 세베르스키 공방전(1) ; 9.9. 세베르스키 공방전(2) ; 10.10. 도브리니치 전투(1)",
+          "source_rank": 21,
+          "source_tier": "novel_platform",
+          "title": "가짜 드미트리",
+          "url": "https://www.munpia.com/novel/detail/547576"
+        },
+        {
+          "domain": "novel.munpia.com",
+          "eid": "E022",
+          "purpose": "platform_title_search",
+          "query": "가짜장례식 웹소설 문피아",
+          "rank": 22,
+          "snippet": "무료웹소설 / 일반연재",
+          "source_rank": 22,
+          "source_tier": "web",
+          "title": "상태창인 척하는 AI가 가짜 퀘스트를 준다",
+          "url": "https://novel.munpia.com/568458/neSrl/8464030"
+        },
+        {
+          "domain": "novel.munpia.com",
+          "eid": "E023",
+          "purpose": "confident_title_platform_expansion",
+          "query": "가짜장례식씬 웹소설 문피아",
+          "rank": 23,
+          "snippet": "무료웹소설 / 일반연재",
+          "source_rank": 23,
+          "source_tier": "web",
+          "title": "가짜 마술사의 마법 같은 사랑 - 웹소설 문피아",
+          "url": "https://novel.munpia.com/576652/neSrl/8443388"
+        },
+        {
+          "domain": "m.munpia.com",
+          "eid": "E024",
+          "purpose": "platform_title_search",
+          "query": "가짜장례식 웹소설 문피아",
+          "rank": 24,
+          "snippet": "지금 빙의가 진짜인지 가짜인지 적응하고 뭐할 겨를이 없었다. 그는 정말 아사 직전이었다. “우선 빨리 팔아야 돼.” 그는 다시 펜촉을 잉크에 찍었다. 처음에는 손이 어색했다.... 거기에 도윤의 머릿속에는 현대 웹소설 작가로 몇 년 동안 갈고닦은 버릇이 박혀 있었다. 첫 장면에서 독자를 잡는다. 주인공의 문제를 빨리 보여준다. 목표를 던진다. 그리고 다음 장을 넘기지...",
+          "source_rank": 24,
+          "source_tier": "platform_reader_page",
+          "title": "웹소설의 유토피아, 글세상 문피아",
+          "url": "https://m.munpia.com/novel/viewer/578189/8411582"
+        }
+      ],
+      "search_timing": {
+        "timing": "전문가 단계 중 검색 실행. 저장 장부는 검색 결과의 사후 직렬화이며, E081 위키 fetch는 로그에만 나타나고 저장 장부에 없다.",
+        "expert_search_delivery": "검색 결과와 snippet 분석이 Decoder·Verifier보다 앞섰다. 모든 저장 장부 행이 각 전문가에게 전달됐다는 뜻은 아니다.",
+        "timeline_log_lines": {
+          "search_and_snippet": "2039-3041",
+          "decoder": "3038-3261",
+          "verifier_and_arbiter": "3466-4349",
+          "serialization": "4703-4714"
+        },
+        "unpersisted_search_observation": {
+          "evidence_id_in_decoder": "E081",
+          "kind": "wiki_candidate_only",
+          "source_log_lines": "2669-2671, 2693, 2875-2876, 3105-3117",
+          "bound_to_official_alias": false,
+          "bound_to_public_title_url": false,
+          "candidate_title": "약관 동의는 신중히",
+          "url": "https://namu.wiki/w/%EC%95%BD%EA%B4%80%20%EB%8F%99%EC%9D%98%EB%8A%94%20%EC%8B%A0%EC%A4%91%ED%9E%88"
+        }
+      },
+      "adjudicated_label": {
+        "index": 26,
+        "post_id": "11290502",
+        "cohort": "new64_UNJUDGED",
+        "A": "REPROCESS",
+        "A_reason_ko": "약관동의같은거라는 원문 비교 기준작이 참조 역할에 남지 않았다. 댓글 라노토벌 후보의 비공개 안전성과 별개다.",
+        "B": "REPROCESS",
+        "B_reason_ko": "추천 의도와 조건의 typed 보존은 개선됐다. 그러나 유열/유열이를 character_focus로 저장해 취향·정서 조건을 인물로 바꾼 역할 오류가 남는다. entity_mentions도 최종 의미 필드이므로 ACCEPT로 닫지 않는다.",
+        "overall": "REPROCESS",
+        "firstpasses": {
+          "sol_A": "REPROCESS",
+          "claude_A": "ACCEPT",
+          "sol_B": "ACCEPT",
+          "claude_B": "HOLD"
+        },
+        "cross_proposed": {
+          "A": "REPROCESS",
+          "B": "ACCEPT"
+        },
+        "astra_override_axes": [
+          "B"
+        ],
+        "raw_pointer": "raw_evidence.json#/rows/25"
+      },
+      "review_boundary_ko": "약관동의는 원문 직접 비교 기준 표면이다. 유열이·유열은 독립 인물 근거가 없다. 위키의 동명 후보를 공식 별칭이나 공개 제목·URL로 확정하지 않는다."
+    },
+    "58": {
+      "post_id": "9218178",
+      "raw_row_index_zero_based": 57,
+      "source_log": {
+        "path": "logs/expert_run_20260929_123423_566457_W13.log",
+        "sha256": "7b8c34e7536969a53a69e614fa8de82c5c044873e75996b398d5fbc23a7c1f44",
+        "expert_output_marker": "[📊 stage] 결과 JSON:",
+        "extraction_scope_lines": [
+          3400,
+          5100
+        ]
+      },
+      "source_receipt": {
+        "path": "out/sol_post_v11_patch_20260929/ROW58_SOURCE_RECEIPT_KO.md",
+        "sha256": "5ca9a7999f768cb7d0f4154ba0b307741fd6a6a827d16266a99910ed87413029"
+      },
+      "original_post_full": {
+        "gallery_id": "genrenovel",
+        "post_id": 9218178,
+        "title": "무친년 연재 바라지도 않음",
+        "author": "ㅇㅇ",
+        "created_at": "2024-08-31 21:40:36",
+        "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=9218178",
+        "content_blocks": [
+          {
+            "type": "text",
+            "text": "그냥 일기나 써서 올리면 좋겠다"
+          },
+          {
+            "type": "text",
+            "text": "- dc official App"
+          }
+        ],
+        "page_no": 45090
+      },
+      "original_comments_full": [
+        {
+          "comment_id": "31595984",
+          "author": "ㅇㅇ",
+          "content": "이틀만 더 쉬겠습니다",
+          "content_html": "이틀만 더 쉬겠습니다",
+          "created_at": "2024.08.31 21:40:55",
+          "ip": "",
+          "reply_to_comment_id": null,
+          "reply_level": 0,
+          "post_id": 9218178
+        }
+      ],
+      "sealed_expert_outputs": {
+        "gatekeeper": [
+          {
+            "line": 3480,
+            "data": {
+              "is_noise": false,
+              "noise_reason": null,
+              "post_type": "author_discussion",
+              "detected_entities": {
+                "possible_titles": [
+                  "무친년"
+                ],
+                "possible_authors": [],
+                "possible_characters": [],
+                "platforms_mentioned": []
+              },
+              "key_terms": [
+                "무친년",
+                "연재",
+                "일기"
+              ],
+              "context_clues": {
+                "has_url_in_comments": false,
+                "has_specific_names": true,
+                "is_asking_recommendation": false,
+                "is_spoiler_discussion": false,
+                "has_comment_title_answer": true,
+                "comment_title_candidates": [
+                  "이틀만 더 쉬겠습니다"
+                ],
+                "comment_title_merge_candidates": [],
+                "comment_title_candidate_details": [
+                  {
+                    "text": "이틀만 더 쉬겠습니다",
+                    "comment_index": 0,
+                    "line_index": 0,
+                    "speech_act": "explanation",
+                    "has_at_mention": false,
+                    "reply_level": 0,
+                    "reply_to_comment_id": null,
+                    "author": "ㅇㅇ",
+                    "title_assertion_basis": null
+                  }
+                ],
+                "title_as_body_continuation": true,
+                "title_body_joined_text": "무친년 연재 바라지도 않음 그냥 일기나 써서 올리면 좋겠다 - dc official App",
+                "title_body_first_line": "그냥 일기나 써서 올리면 좋겠다"
+              },
+              "search_requests": [
+                {
+                  "query": "무친년 웹소설",
+                  "purpose": "official_title_verify",
+                  "priority": 1
+                },
+                {
+                  "query": "무친년 작가",
+                  "purpose": "author_verify",
+                  "priority": 1
+                },
+                {
+                  "query": "무친년 리뷰",
+                  "purpose": "title_search_community",
+                  "priority": 1
+                }
+              ],
+              "confidence": "low",
+              "notes": "제목의 '무친년'이 특정 작품의 약칭(또는 비속어 섞인 별칭)일 가능성이 높음. 본문에서 '연재 바라지도 않음', '일기나 써서 올리면 좋겠다'라고 언급한 것으로 보아, 연재 주기가 매우 불규칙하거나 휴재가 잦은 특정 작가/작품에 대한 팬의 한탄 혹은 기대 섞인 반응으로 판단됨. '무친년'이 작품명인지, 아니면 작가를 지칭하는 은어인지 확인이 필요함."
+            }
+          }
+        ],
+        "discourse": [
+          {
+            "line": 3666,
+            "data": {
+              "discourse_analysis": {
+                "primary_domain": "novel_literature",
+                "domain_confidence": "high",
+                "domain_evidence": [
+                  "연재",
+                  "일기",
+                  "무친년"
+                ],
+                "secondary_domains": [],
+                "intent": "express_opinion",
+                "intent_confidence": "medium",
+                "speech_act": "complaint",
+                "target_kind": "author",
+                "is_coherent": true,
+                "coherence_reason": "제목에서 특정 작가(또는 작품의 캐릭터/작가)에 대한 불만을 표출하고, 본문에서 그에 대한 요구사항을 덧붙였으며, 댓글에서 해당 대상(작가로 추정)이 직접 답변하는 형태를 띠고 있어 담론이 일관됨",
+                "title_novel_terms": [],
+                "title_body_consistency": true,
+                "consistency_note": null,
+                "is_association_not_discussion": false,
+                "association_evidence": null,
+                "search_suggestions": [],
+                "real_subject": "특정 작가(또는 작품)의 연재 중단 또는 성실하지 못한 연재 태도에 대한 불만과 작가의 직접적인 반응",
+                "author_question_span": null,
+                "author_question_target": null,
+                "author_recommendation_span": null,
+                "author_recommendation_is_direct": false,
+                "reasoning": "제목의 '무친년'은 문맥상 특정 작품의 제목이거나 작가를 지칭하는 비속어 섞인 별칭으로 보이며, 본문의 '일기나 써서 올리면 좋겠다'는 연재를 제대로 하지 않는 것에 대한 냉소적 요구이다. 댓글에서 '이틀만 더 쉬겠습니다'라는 작가로 추정되는 인물의 답변이 달린 것으로 보아, 실제 작가와 독자 간의 상호작용이 일어난 담론이다.",
+                "source_bound_recommendation_request": false,
+                "image_topic_relation": {
+                  "state": "no_image",
+                  "source": "author_spans"
+                },
+                "semantic_seed_review": {
+                  "post_intent": "특정 작가의 연재 태도에 대한 불만과 일기 형식의 업로드를 바라는 의견 표명",
+                  "content_interpretation": "표현 오타/축약 패턴(범용)이 포함된 비속어 형태의 대상 지칭",
+                  "is_specific_work_discussion": false,
+                  "recommended_intent": "express_opinion",
+                  "recommended_target_kind": "author",
+                  "warnings": []
+                },
+                "warnings": [
+                  "semantic_seed_review_non_title_terms_removed",
+                  "semantic_seed_review_search_suggestions_removed",
+                  "semantic_seed_review_specific_work_denied"
+                ],
+                "semantic_seed_review_context_terms": [
+                  "무친년"
+                ]
+              }
+            }
+          }
+        ],
+        "decoder": [
+          {
+            "line": 3891,
+            "data": {
+              "decoded_terms": [
+                {
+                  "original": "무친년",
+                  "morphemes": [
+                    "무친년"
+                  ],
+                  "interpretations": [
+                    {
+                      "type": "slang",
+                      "value": "미친년 (비속어/감탄사)",
+                      "evidence": null,
+                      "context_fit": "low"
+                    },
+                    {
+                      "type": "author_name",
+                      "value": "특정 작가를 지칭하는 비속어 섞인 별칭",
+                      "evidence": "본문의 '연재 바라지도 않음', '일기나 써서 올리면 좋겠다'는 맥락이 불규칙한 연재를 하는 작가에 대한 팬의 반응임",
+                      "context_fit": "high"
+                    },
+                    {
+                      "type": "novel_title",
+                      "value": "무친년 (가상의 작품명)",
+                      "evidence": null,
+                      "context_fit": "low"
+                    }
+                  ],
+                  "candidates": [],
+                  "best_match": {
+                    "title": null,
+                    "confidence": "none"
+                  },
+                  "grounding": {
+                    "is_grounded": true,
+                    "anchor_type": "title_mention",
+                    "anchor_evidence": "게시글 제목에 '무친년' 직접 존재"
+                  },
+                  "is_author_name": false,
+                  "author_info": null
+                },
+                {
+                  "original": "연재",
+                  "morphemes": [
+                    "연재"
+                  ],
+                  "interpretations": [
+                    {
+                      "type": "general_noun",
+                      "value": "연재 (Serialization)",
+                      "evidence": null,
+                      "context_fit": "high"
+                    }
+                  ],
+                  "candidates": [],
+                  "best_match": {
+                    "title": null,
+                    "confidence": "none"
+                  },
+                  "grounding": {
+                    "is_grounded": true,
+                    "anchor_type": "title_mention",
+                    "anchor_evidence": "게시글 제목에 '연재' 직접 존재"
+                  },
+                  "is_author_name": false,
+                  "author_info": null
+                },
+                {
+                  "original": "일기",
+                  "morphemes": [
+                    "일기"
+                  ],
+                  "interpretations": [
+                    {
+                      "type": "general_noun",
+                      "value": "일기 (Diary)",
+                      "evidence": null,
+                      "context_fit": "high"
+                    }
+                  ],
+                  "candidates": [],
+                  "best_match": {
+                    "title": null,
+                    "confidence": "none"
+                  },
+                  "grounding": {
+                    "is_grounded": false,
+                    "anchor_type": "none",
+                    "anchor_evidence": null
+                  },
+                  "is_author_name": false,
+                  "author_info": null
+                }
+              ],
+              "unresolved_terms": [
+                {
+                  "term": "무친년",
+                  "context": "무친년 연재 바라지도 않음",
+                  "possible_types": [
+                    "author",
+                    "slang"
+                  ],
+                  "needs_search": true
+                }
+              ],
+              "self_questions": [
+                "'무친년'이 특정 작가를 비하하거나 애정을 담아 부르는 커뮤니티식 별칭인가?",
+                "본문의 '일기나 써서 올리면 좋겠다'는 표현이 특정 작가의 연재 패턴을 지칭하는가?"
+              ],
+              "needs_verification": true,
+              "verification_search": [
+                "무친년 작가 필명",
+                "무친년 웹소설 작가",
+                "무친년 일기 연재 작가"
+              ],
+              "overall_confidence": "none",
+              "notes": "치환 읽기 : '무친년'은 문맥상(연재 바라지도 않음, 일기나 써라) 특정 작가를 지칭하는 비속어 섞인 별칭일 가능성이 매우 높으나, 검색 결과에서 해당 용어가 작가의 필명이나 작품 약칭으로 명시된 증거를 찾지 못함. '무친년'이 일반적인 욕설인지, 특정 작가를 가리키는 고유한 커뮤니티 은어인지 확인이 필요함.",
+              "request_expert": "verifier",
+              "request_reason": "검색 결과에서 '무친년'이라는 키워드가 특정 작가나 작품과 연결되는 명확한 증거가 발견되지 않았습니다. 이 용어가 단순 비속어인지, 아니면 특정 작가를 지칭하는 은어인지 검증이 필요합니다.",
+              "request_context": {
+                "question": "'무친년'이 특정 웹소설 작가를 지칭하는 커뮤니티 은어인지 확인해 주세요.",
+                "uncertain_terms": [
+                  "무친년"
+                ]
+              }
+            }
+          },
+          {
+            "line": 4381,
+            "data": {
+              "decoded_terms": [
+                {
+                  "original": "무친년",
+                  "morphemes": [
+                    "무친년"
+                  ],
+                  "interpretations": [
+                    {
+                      "type": "slang",
+                      "value": "미친년 (비속어)",
+                      "evidence": "검색 결과에서 특정 작품명이나 작가명으로 매칭되는 명확한 근거가 발견되지 않음. 한국어 문맥상 '미친년'의 변형된 비속어로 해석될 가능성이 높음.",
+                      "context_fit": "low"
+                    },
+                    {
+                      "type": "novel_title",
+                      "value": "무친년 (추정 약칭)",
+                      "evidence": "게시글 제목의 위치와 '연재 바라지도 않음'이라는 문맥을 통해 특정 작품 혹은 작가를 지칭하는 커뮤니티식 약칭일 가능성 존재.",
+                      "context_fit": "medium"
+                    }
+                  ],
+                  "candidates": [],
+                  "best_match": {
+                    "title": null,
+                    "confidence": "none"
+                  },
+                  "grounding": {
+                    "is_grounded": true,
+                    "anchor_type": "title_mention",
+                    "anchor_evidence": "게시글 제목에 '무친년' 직접 존재"
+                  },
+                  "is_author_name": false,
+                  "author_info": null
+                },
+                {
+                  "original": "연재",
+                  "morphemes": [
+                    "연재"
+                  ],
+                  "interpretations": [
+                    {
+                      "type": "general_noun",
+                      "value": "연재 (Serialization)",
+                      "evidence": "웹소설의 연재 상태를 나타내는 일반 명사.",
+                      "context_fit": "high"
+                    }
+                  ],
+                  "candidates": [],
+                  "best_match": {
+                    "title": null,
+                    "confidence": "none"
+                  },
+                  "grounding": {
+                    "is_grounded": true,
+                    "anchor_type": "title_mention",
+                    "anchor_evidence": "게시글 제목에 '연재' 직접 존재"
+                  },
+                  "is_author_name": false,
+                  "author_info": null
+                },
+                {
+                  "original": "일기",
+                  "morphemes": [
+                    "일기"
+                  ],
+                  "interpretations": [
+                    {
+                      "type": "general_noun",
+                      "value": "일기 (Diary)",
+                      "evidence": "본문에서 '일기나 써서 올리면 좋겠다'라고 언급됨. 정기적인 소설 연재 대신 가벼운 기록물을 요구하는 맥락.",
+                      "context_fit": "high"
+                    }
+                  ],
+                  "candidates": [],
+                  "best_match": {
+                    "title": null,
+                    "confidence": "none"
+                  },
+                  "grounding": {
+                    "is_grounded": false,
+                    "anchor_type": "none",
+                    "anchor_evidence": null
+                  },
+                  "is_author_name": false,
+                  "author_info": null
+                }
+              ],
+              "unresolved_terms": [
+                {
+                  "term": "무친년",
+                  "context": "무친년 연재 바라지도 않음",
+                  "possible_types": [
+                    "novel",
+                    "author",
+                    "slang"
+                  ],
+                  "needs_search": true
+                }
+              ],
+              "self_questions": [
+                "'무친년'이 특정 작가의 필명인가, 아니면 작품의 약칭인가?",
+                "'무친년'이 단순히 비속어를 활용한 감탄사/밈인가?",
+                "댓글의 '이틀만 더 쉬겠습니다'가 작가의 직접적인 반응인가?"
+              ],
+              "needs_verification": true,
+              "verification_search": [
+                "무친년 작가 필명",
+                "무친년 웹소설 정식제목",
+                "무친년 캐릭터 이름",
+                "무친년 노벨피아",
+                "무친년 문피아"
+              ],
+              "overall_confidence": "none",
+              "notes": "치환 읽기 : '무친년'은 비속어(미친년)의 변형이거나 특정 대상의 매우 거친 약칭으로 보임. 맥락 추론 : 작성자는 특정 대상(작가 혹은 작품)의 불규칙한 연재에 대해 '차라리 일기라도 써달라'며 한탄하고 있음. 결론 : '무친년'이 무엇을 지칭하는지 검색 결과로 확인되지 않으므로 title=null 처리함.",
+              "request_expert": "verifier",
+              "request_reason": "검색 결과가 전무하여 '무친년'이 작품명인지, 작가명인지, 혹은 단순 비속어인지 판별이 불가능함.",
+              "request_context": {
+                "question": "'무친년'이라는 키워드가 특정 웹소설의 약칭이나 작가의 필명으로 사용되는 사례가 있는지 확인 부탁드립니다.",
+                "uncertain_terms": [
+                  "무친년"
+                ]
+              }
+            }
+          }
+        ],
+        "verifier": [
+          {
+            "line": 4126,
+            "data": {
+              "verification_result": {
+                "is_relevant": true,
+                "is_novel_discussion": true,
+                "novel_identity": {
+                  "official_novel_title": null,
+                  "heretic_url": null,
+                  "confidence": "Low",
+                  "evidence_type": "none"
+                },
+                "grounding_check": {
+                  "decoder_grounded": false,
+                  "anchor_found": "search_only",
+                  "anchor_text": null,
+                  "grounding_issue": "제목의 '무친년'이 특정 작가나 작품을 지칭하는 커뮤니티 은어/비속어로 강력히 추정되나, 검색 결과에서 해당 용어가 공식적인 작품명이나 작가 필명으로 매칭되는 증거가 없음"
+                },
+                "counter_arguments": [
+                  {
+                    "issue": "본문 내 고유 정보(캐릭터명, 줄거리, 작가명) 부재",
+                    "severity": "major",
+                    "action": "downgrade_confidence"
+                  },
+                  {
+                    "issue": "'무친년'이 특정 작품명이 아닌 작가를 향한 비속어 섞인 호칭일 가능성",
+                    "severity": "major",
+                    "action": "note_only"
+                  }
+                ],
+                "author_info": {
+                  "detected_author": null,
+                  "is_author_criticism": true
+                },
+                "rejection_reason": null,
+                "evidence_chain": [
+                  {
+                    "source": "post_content",
+                    "content": "무친년 연재 바라지도 않음 그냥 일기나 써서 올리면 좋겠다",
+                    "supports": "특정 대상(작가 또는 캐릭터)에 대한 강한 불만과 요구를 나타냄"
+                  }
+                ],
+                "slang_insight": {
+                  "detected_term": "무친년",
+                  "decoded_term": null,
+                  "decode_verified": false,
+                  "cultural_context": "문맥상 '미친년'의 변형된 비속어 표현으로 보이며, 웹소설 커뮤니티에서 특정 작가의 행보(연재 중단, 불성실한 연재 등)를 비난하거나, 혹은 특정 캐릭터의 성격이 매우 극단적임을 지칭할 때 사용하는 커뮤니티식 표현임. 다만, 이것이 특정 작품의 고유 약칭인지 아니면 단순 욕설인지 확정할 수 없음.",
+                  "canonical_work_alias": null,
+                  "alias_scope": "mixed_unknown",
+                  "attached_entity_text": "무친년",
+                  "attached_entity_type": "other",
+                  "store_in_slang_db": false,
+                  "store_reason": "sentence_like_alias_surface"
+                },
+                "unresolved_from_decoder": [
+                  {
+                    "term": "무친년",
+                    "verifier_interpretation": "특정 작가 혹은 캐릭터를 지칭하는 커뮤니티 은어/비속어",
+                    "needs_search": true
+                  }
+                ],
+                "inference": {
+                  "type": "author_talk",
+                  "topic": "특정 작가의 연재 태도에 대한 비판 및 요구"
+                }
+              },
+              "final_confidence": "low",
+              "reason": "게시글은 '무친년'이라는 표현을 통해 특정 대상(작가로 추정)의 연재 방식에 대해 강한 불만을 표출하고 있습니다. '연재 바라지도 않음', '일기나 써라'라는 문구는 전형적인 작가 비평(author_talk)의 형태를 띠고 있습니다. 하지만 '무친년'이 실제 작품의 약칭인지, 아니면 단순히 작가를 비하하는 표현인지 검색을 통해 명확히 검증되지 않았으며, 본문에 구체적인 작품명이나 작가명이 등장하지 않아 official_title을 특정할 수 없습니다. 따라서 관련성은 있으나(is_relevant=true) 작품 식별은 불가능한 상태입니다.",
+              "verification_search": "site:novelpia.com OR site:munpia.com \"무친년\"",
+              "request_expert": "decoder",
+              "request_reason": "제목의 '무친년'이 특정 작가의 필명이나 작품의 고유 약칭으로 사용되는 사례가 있는지 재검토 필요",
+              "request_context": {
+                "question": "'무친년'이 특정 웹소설 작가나 작품을 가리키는 고유한 커뮤니티 약칭인가요?",
+                "needs_clarification": [
+                  "무친년이 특정 작가의 별명인지",
+                  "무친년이 특정 작품의 약칭인지"
+                ]
+              }
+            }
+          },
+          {
+            "line": 4596,
+            "data": {
+              "verification_result": {
+                "is_relevant": true,
+                "is_novel_discussion": true,
+                "novel_identity": {
+                  "official_novel_title": null,
+                  "heretic_url": null,
+                  "confidence": "None",
+                  "evidence_type": "none"
+                },
+                "grounding_check": {
+                  "decoder_grounded": false,
+                  "anchor_found": "search_only",
+                  "anchor_text": null,
+                  "grounding_issue": "제목의 '무친년'이 특정 작품명인지 비속어(미친년)의 변형인지 불분명하며, 검색 결과에서 이를 특정 작품명으로 연결할 수 있는 고유 정보가 없음"
+                },
+                "counter_arguments": [
+                  {
+                    "issue": "제목의 '무친년'이 작품명이 아닌 비속어(미친년)의 변형일 가능성 매우 높음",
+                    "severity": "critical",
+                    "action": "reject"
+                  },
+                  {
+                    "issue": "본문에 캐릭터, 줄거리, 작가명 등 작품을 특정할 수 있는 고유 앵커가 전무함",
+                    "severity": "critical",
+                    "action": "reject"
+                  }
+                ],
+                "author_info": null,
+                "rejection_reason": "제목의 '무친년'은 비속어 '미친년'의 변형된 표현으로 보이며, 본문 내용 또한 특정 작품에 대한 구체적인 언급(캐릭터, 줄거리, 작가 등) 없이 연재 상태에 대한 한탄만을 담고 있어 특정 작품을 식별할 수 없습니다.",
+                "evidence_chain": [],
+                "slang_insight": {
+                  "detected_term": "무친년",
+                  "decoded_term": null,
+                  "decode_verified": false,
+                  "cultural_context": "커뮤니티에서 '미친년'을 변형하여 부르는 비속어이거나, 특정 대상을 향한 매우 거친 지칭어로 사용됨. 문맥상 연재를 불규칙하게 하는 작가를 비하하거나 강하게 한탄하는 용도로 쓰였을 가능성이 높음.",
+                  "canonical_work_alias": null,
+                  "alias_scope": "mixed_unknown",
+                  "attached_entity_text": "무친년",
+                  "attached_entity_type": "other",
+                  "store_in_slang_db": false,
+                  "store_reason": "sentence_like_alias_surface"
+                },
+                "unresolved_from_decoder": [
+                  {
+                    "term": "무친년",
+                    "verifier_interpretation": "비속어 '미친년'의 변형 또는 특정 대상에 대한 거친 지칭어",
+                    "needs_search": false
+                  }
+                ],
+                "inference": {
+                  "type": "author_talk",
+                  "topic": "작가의 불규칙한 연재에 대한 한탄"
+                }
+              },
+              "final_confidence": "none",
+              "reason": "제목의 '무친년'은 작품명이라기보다 비속어의 변형으로 판단되며, 본문 역시 '연재 바라지도 않음', '일기나 써라'와 같이 작가의 태도나 연재 방식에 대한 감정적 반응(작가 비평/한탄)을 나타냅니다. 검색을 통해서도 해당 용어가 포함된 특정 웹소설 제목을 찾을 수 없으므로, 작품 특정은 불가능합니다. 다만, 글의 맥락상 특정 작가(또는 작품)를 향한 비판적 태도를 보이는 것은 확인됩니다."
+            }
+          },
+          {
+            "line": 4751,
+            "data": {
+              "verification_result": {
+                "is_relevant": false,
+                "is_novel_discussion": false,
+                "novel_identity": null,
+                "grounding_check": {
+                  "decoder_grounded": false,
+                  "anchor_found": "none",
+                  "anchor_text": null,
+                  "grounding_issue": "검색 결과에서 '무친년'이라는 제목의 소설이 발견되지 않으며, 본문은 특정 작품에 대한 구체적 정보(캐릭터, 줄거리 등) 없이 작성자의 감정적 한탄만을 담고 있음"
+                },
+                "counter_arguments": [
+                  {
+                    "issue": "본문에 작품 고유 정보 전무",
+                    "severity": "critical",
+                    "action": "reject"
+                  },
+                  {
+                    "issue": "'무친년'은 비속어 '미친년'의 변형 또는 특정 대상을 향한 거친 지칭일 가능성이 높음",
+                    "severity": "major",
+                    "action": "reject"
+                  }
+                ],
+                "author_info": null,
+                "rejection_reason": "제목의 '무친년'은 특정 작품명이라기보다 비속어의 변형으로 보이며, 본문 내용 또한 캐릭터, 줄거리, 작가명 등 소설을 특정할 수 있는 고유 정보가 전혀 없는 단순 감상/한탄(연재 불만)에 불과함. 따라서 특정 작품에 대한 토론으로 볼 수 없음.",
+                "evidence_chain": [],
+                "slang_insight": {
+                  "detected_term": "무친년",
+                  "decoded_term": null,
+                  "decode_verified": false,
+                  "cultural_context": "비속어 '미친년'을 변형하여 사용한 것으로 보이며, 문맥상 연재를 불규칙하게 하는 작가를 비하하거나 강하게 한탄하는 표현으로 해석됨.",
+                  "canonical_work_alias": null,
+                  "alias_scope": null,
+                  "attached_entity_text": null,
+                  "attached_entity_type": null,
+                  "store_in_slang_db": false,
+                  "store_reason": "purely_slang_expression"
+                },
+                "unresolved_from_decoder": [
+                  {
+                    "term": "무친년",
+                    "verifier_interpretation": "비속어 '미친년'의 변형 혹은 특정 대상에 대한 거친 호칭",
+                    "needs_search": false
+                  }
+                ],
+                "inference": {
+                  "type": "community_banter",
+                  "topic": "연재 불만에 대한 한탄"
+                }
+              },
+              "final_confidence": "none",
+              "reason": "제목과 본문의 '무친년'은 검색 결과에서 확인되는 정식 소설 제목이 아니며, 비속어의 변형으로 판단됩니다. 또한 본문에는 캐릭터명, 줄거리, 작가명 등 소설을 특정할 수 있는 5종의 핵심 증거가 전혀 없으므로, 이는 특정 작품에 대한 토론이 아닌 커뮤니티 내의 단순한 감정 표출(뻘글/한탄)입니다."
+            }
+          },
+          {
+            "line": 4894,
+            "data": {
+              "verification_result": {
+                "is_relevant": false,
+                "is_novel_discussion": false,
+                "novel_identity": null,
+                "grounding_check": {
+                  "decoder_grounded": false,
+                  "anchor_found": "none",
+                  "anchor_text": null,
+                  "grounding_issue": "본문에 작품을 특정할 수 있는 고유 정보(캐릭터명, 줄거리, 작가명 등)가 전혀 없음"
+                },
+                "counter_arguments": [
+                  {
+                    "issue": "키워드 우연 일치 가능성",
+                    "severity": "critical",
+                    "action": "reject"
+                  },
+                  {
+                    "issue": "비속어/욕설 기반의 지칭",
+                    "severity": "major",
+                    "action": "reject"
+                  }
+                ],
+                "author_info": null,
+                "rejection_reason": "제목의 '무친년'은 특정 작품의 약칭이라기보다 비속어(미친년)의 변형된 표현으로 보이며, 본문과 댓글 모두 특정 작품이나 작가를 지칭하는 구체적인 근거(캐릭터명, 줄거리, 플랫폼 URL 등)를 포함하고 있지 않습니다. 따라서 이는 특정 작품에 대한 토론이 아닌, 불특정 대상에 대한 작성자의 감정적 한탄 또는 뻘글로 판단됩니다.",
+                "evidence_chain": [],
+                "slang_insight": {
+                  "detected_term": "무친년",
+                  "decoded_term": null,
+                  "decode_verified": false,
+                  "cultural_context": "한국 커뮤니티에서 '미친년'을 변형하여 사용하는 비속어로, 문맥상 연재가 불규칙한 작가를 비하하거나 강하게 한탄하는 용도로 사용됨.",
+                  "canonical_work_alias": null,
+                  "alias_scope": null,
+                  "attached_entity_text": null,
+                  "attached_entity_type": null,
+                  "store_in_slang_db": false,
+                  "store_reason": "purely_offensive_slang_or_non_persistent_term"
+                },
+                "unresolved_from_decoder": [
+                  {
+                    "term": "무친년",
+                    "verifier_interpretation": "비속어 '미친년'의 변형 혹은 특정 대상을 향한 거친 호칭",
+                    "needs_search": false
+                  }
+                ],
+                "inference": {
+                  "type": "community_banter",
+                  "topic": "작가의 불규칙한 연재에 대한 한탄"
+                }
+              },
+              "final_confidence": "high",
+              "reason": "제목의 '무친년'은 검색 결과에서 특정 웹소설 제목으로 매칭되지 않으며, 문법적으로도 비속어의 변형으로 해석되는 것이 타당합니다. 본문 내용('일기나 써서 올리면 좋겠다') 역시 특정 작품의 설정이나 캐릭터를 논하는 것이 아니라, 연재 상태에 대한 작성자의 주관적인 불만을 표출하는 것에 불과합니다. 5종의 본문 증거(캐릭터, 줄거리, 작가, 회차, URL)가 전무하므로 키워드 우연 일치 및 뻘글로 판정합니다."
+            }
+          }
+        ],
+        "arbiter": [
+          {
+            "line": 5055,
+            "data": {
+              "final_decision": {
+                "is_relevant": false,
+                "is_novel_discussion": false,
+                "official_novel_title": null,
+                "suspected_titles": [],
+                "heretic_url": null,
+                "confidence": "low",
+                "discussion_type": "community_banter",
+                "_raw_llm_relevant": false,
+                "_raw_llm_title": null,
+                "_raw_llm_confidence": "low",
+                "_raw_llm_discussion_type": "community_banter",
+                "official_title": null,
+                "notes": "[Verifier 거부권] 제목의 '무친년'은 특정 작품의 약칭이라기보다 비속어(미친년)의 변형된 표현으로 보이며, 본문과 댓글 모두 특정 작품이나 작가를 지칭하는 구체적인 근거(캐릭터명, 줄거리, 플랫폼 URL 등)를 포함하고 있지 않습니다. 따라서 이는 특정 작품에 대한 토론이 아닌, 불특정 대상에 대한 작성자의 감정적 한탄 또는 뻘글로 판단됩니다.",
+                "final_reasoning": "[거부권] 게시글 제목: '무친년 연재 바라지도 않음', 본문: '그냥 일기나 써서 올리면 좋겠다 - dc official App'\nDecoder: 특정 작품 식별 실패 | Verifier: 비관련 판정 — 제목의 '무친년'은 특정 작품의 약칭이라기보다 비속어(미친년)의 변형된 표현으로 보이며, 본문과 댓글 모두 특정 작품이나 작가를 지칭하는 구체적인 근거(캐릭터명, 줄거리, 플랫폼 URL 등)를 포함하고 있지 않습니다. 따라서 이는 특정 작품에 대한 토론이 아닌, 불특정 대상에 대한 작성자의 감정적 한탄 또는 뻘글로 판단됩니다. | 핵심 반론: 키워드 우연 일치 가능성 | Discourse: intent=express_opinion\n검색 증강 분석: 검색 쿼리 21건 수행('무친년 리뷰', '무친년 웹소설 노벨피아', '무친년 어디 나오는 캐릭터 웹소설', '무친년 작가', 'site:gall.dcinside.com 무친년', '무친년 장르소설', '무친년 노벨피아', '무친년 웹소설 문피아', '무친년 캐릭터 이름', '무친년 웹소설', '무친년 문피아', 'site:ruliweb.com 무친년', '무친년 웹소설 작가', '무친년 무슨 소설 웹소설', 'site:fmkorea.com 무친년', '무친년 일기 연재 작가', '무친년 작가 필명', '무친년연재', '무친년 웹소설 카카오페이지', '무친년 웹소설 시리즈', '무친년 웹소설 정식제목').\n판단: 본문에 작품 고유 정보(캐릭터명/줄거리/작가/회차) 없음.\n이 글은 특정 소설에 대한 토론이 아닌 것으로 판정됨.",
+                "_hypothesis_top": "noise",
+                "_hypothesis_margin": 0.43,
+                "_title_deliberately_null": true
+              },
+              "expert_consensus": {
+                "unanimous": false,
+                "agreeing_experts": [
+                  "Verifier"
+                ],
+                "dissenting_experts": [
+                  "Gatekeeper"
+                ]
+              },
+              "conflict_resolution": [
+                {
+                  "issue": "is_relevant 여부 및 주제 판정",
+                  "expert_opinions": {
+                    "gatekeeper": "author_discussion (low confidence)",
+                    "decoder": "None (식별 실패)",
+                    "verifier": "is_relevant=false (VETO 발동)"
+                  },
+                  "arbiter_decision": "is_relevant=false",
+                  "reasoning": "Decoder가 작품을 전혀 식별하지 못했으며, Verifier가 본문 맥락상 특정 작품에 대한 담론이 아닌 키워드 우연 일치 가능성을 경고하며 거부권을 행사함. Gatekeeper의 판단은 근거가 빈약하므로 Verifier의 판단을 수용함."
+                }
+              ],
+              "metadata_synthesis": {
+                "detected_author": null,
+                "detected_characters": [],
+                "micro_tags": [
+                  "opinion"
+                ],
+                "sentiment": "Negative",
+                "is_nsfw": false,
+                "spoiler_level": "none"
+              },
+              "final_reasoning": "[거부권] 게시글 제목: '무친년 연재 바라지도 않음', 본문: '그냥 일기나 써서 올리면 좋겠다 - dc official App'\nDecoder: 특정 작품 식별 실패 | Verifier: 비관련 판정 — 제목의 '무친년'은 특정 작품의 약칭이라기보다 비속어(미친년)의 변형된 표현으로 보이며, 본문과 댓글 모두 특정 작품이나 작가를 지칭하는 구체적인 근거(캐릭터명, 줄거리, 플랫폼 URL 등)를 포함하고 있지 않습니다. 따라서 이는 특정 작품에 대한 토론이 아닌, 불특정 대상에 대한 작성자의 감정적 한탄 또는 뻘글로 판단됩니다. | 핵심 반론: 키워드 우연 일치 가능성 | Discourse: intent=express_opinion\n검색 증강 분석: 검색 쿼리 21건 수행('무친년 리뷰', '무친년 웹소설 노벨피아', '무친년 어디 나오는 캐릭터 웹소설', '무친년 작가', 'site:gall.dcinside.com 무친년', '무친년 장르소설', '무친년 노벨피아', '무친년 웹소설 문피아', '무친년 캐릭터 이름', '무친년 웹소설', '무친년 문피아', 'site:ruliweb.com 무친년', '무친년 웹소설 작가', '무친년 무슨 소설 웹소설', 'site:fmkorea.com 무친년', '무친년 일기 연재 작가', '무친년 작가 필명', '무친년연재', '무친년 웹소설 카카오페이지', '무친년 웹소설 시리즈', '무친년 웹소설 정식제목').\n판단: 본문에 작품 고유 정보(캐릭터명/줄거리/작가/회차) 없음.\n이 글은 특정 소설에 대한 토론이 아닌 것으로 판정됨.",
+              "evidence_chain": [
+                {
+                  "source": "text_analysis",
+                  "content": "제목의 '무친년'은 작품명이 아닌 비속어로 사용된 맥락이 강함",
+                  "weight": "high"
+                },
+                {
+                  "source": "verifier_report",
+                  "content": "본문에 작품을 특정할 수 있는 고유 앵커(인명, 설정 등) 부재",
+                  "weight": "high"
+                },
+                {
+                  "source": "decoder_report",
+                  "content": "작품 식별 실패 (confidence: none)",
+                  "weight": "high"
+                }
+              ],
+              "_deliberation": {
+                "method": "evidence_scorer_only",
+                "evidence_score": {
+                  "total_score": -6.5,
+                  "relevance_probability": "very_low",
+                  "positive_signals": [
+                    {
+                      "signal": "discourse_novel",
+                      "detail": "novel_literature"
+                    },
+                    {
+                      "signal": "verifier_anchor",
+                      "detail": "anchor found"
+                    }
+                  ],
+                  "negative_signals": [
+                    {
+                      "signal": "decoder_none",
+                      "detail": "no identification"
+                    },
+                    {
+                      "signal": "verifier_irrelevant",
+                      "detail": "conf="
+                    },
+                    {
+                      "signal": "verifier_critical_counter",
+                      "detail": "키워드 우연 일치 가능성"
+                    },
+                    {
+                      "signal": "decoder_genre_collision",
+                      "detail": "'무친년' = novel_title + genre_term 동시 등장"
+                    }
+                  ],
+                  "expert_agreement": 0.33,
+                  "conflict_detected": true,
+                  "conflict_details": [
+                    "Verifier critical counter: 키워드 우연 일치 가능성",
+                    "Decoder genre collision: '무친년' 은 장르용어이자 동명 소설이 존재"
+                  ],
+                  "recommendation": "UNLIKELY_RELEVANT: 관련성 증거가 매우 약하거나 반증이 강합니다."
+                },
+                "conflict_detected": false,
+                "elapsed": 64.1
+              }
+            }
+          }
+        ]
+      },
+      "observed_final": {
+        "identity": {
+          "is_novel_related": true,
+          "is_relevant": false,
+          "discussion_type": "noise",
+          "subtype": "other_quarantine",
+          "topicality": "unrelated",
+          "primary_subject_text": "메인 화제는 특정 작품으로 잠기지 않는 일반 잡담/격리 대상입니다.",
+          "reason": "[판정 요약] - 판정: 비관련 - discussion_type: noise - 공식 제목: 미확정 - 핵심 결론: 제목 표현의 유래는 원문과 확인된 근거에서 알 수 없습니다. [원문 해석] - 제목: 무친년 연재 바라지도 않음 - 본문 요약: 그냥 일기나 써서 올리면 좋겠다 / - dc official App [근거 요약] - 작성자는 제목 표현의 뜻이나 유래를 직접 설명하지 않았습니다. [최종 종합] - 본문의 농담을 제목 표현의 확인된 어원으로 단정하지 않습니다.\n[근거 스코어]\n- total: -3\n- grounding_anchor: -2 (약한 앵커(none))\n- decoder_confidence: -2 (none)\n- decision_alignment: +1 (is_relevant=false, dt=noise)\n- executed_queries: 2 (단일 집계 소스)\n- effective_executed_queries: 3 (degraded+무결과 제외 보정치)\n- planned_unique_queries: 21 (참고치, 최종 집계는 executed_queries)\n- evidence_diversity: 0\n[범위 분리]\n- is_novel_related=true\n- is_resolved_work_discussion=false\n- title_resolution_state=context_only\n- title_resolution_allowed=false",
+          "novel_identity": {
+            "heretic_url": null,
+            "official_title": null
+          },
+          "primary_work": null,
+          "secondary_reference_works": [],
+          "comparison_target": null,
+          "recommendation_candidates": null,
+          "mentioned_works": null,
+          "title_candidates": null,
+          "entity_mentions": null,
+          "candidate_preservation_sources": [
+            {
+              "alias_or_mention": "무친년",
+              "confidence": "Medium",
+              "heretic_url": "https://novelpia.com/novel/337493",
+              "local_preservation_type": "blocked_batch_alias_hold",
+              "negative_evidence": [
+                "batch_alias_nonwork_context_hold_without_promotion"
+              ],
+              "official_title": "[무친년 단편 팬픽]이 무림의 천마는 나다",
+              "preservation_role": "recommendation_candidate",
+              "promotion_policy": "hold_without_promotion",
+              "reference_role": "candidate",
+              "source_tier": "official_detail"
+            }
+          ],
+          "context_sources": [
+            "title",
+            "body",
+            "comments"
+          ],
+          "search_health": {
+            "accepted": 21,
+            "cache_hits": 1,
+            "degraded": 0,
+            "degraded_recovered": 0,
+            "degraded_zero": 0,
+            "degraded_zero_suppressed": 0,
+            "direct_search_results": 0,
+            "direct_search_used": 0,
+            "fallback_recovered": 0,
+            "filtered": 44,
+            "headless_used": 0,
+            "queries_issued": 3,
+            "raw": 75,
+            "retried": 0,
+            "status": "ok",
+            "unrecovered_degraded": 0,
+            "upstream_zero": 0
+          },
+          "promotion_decision": {
+            "bypassed_gate": false,
+            "candidate_preserved": true,
+            "contract_version": "promotion_contract_v2",
+            "input_fingerprint": "866a46ef3f5f43d8ed7a3aae9cf04914d597bf20f3c8eab5f05c961113c23275",
+            "official_title": null,
+            "official_url": null,
+            "publish_allowed": false,
+            "reason_codes": [
+              "no_public_candidate_title",
+              "candidate_inventory_preserved_without_selection",
+              "row_discussion_missing",
+              "title_resolution_state_not_publishable",
+              "context_only",
+              "work_resolution_not_publishable",
+              "scope_unknown",
+              "scope_not_current_work",
+              "serializer_candidate_inventory_hold",
+              "candidate_inventory_unselected"
+            ],
+            "scope": {
+              "competing_candidates": [],
+              "confidence": "low",
+              "conflict_reason_codes": [
+                "serializer_candidate_inventory_hold",
+                "candidate_inventory_unselected"
+              ],
+              "direct_bridge_sources": [],
+              "scope_kind": "unknown"
+            },
+            "status": "candidate_only"
+          }
+        },
+        "analysis": {
+          "detected_titles": [],
+          "is_nsfw": false,
+          "micro_tags": [
+            "opinion"
+          ],
+          "notes": "[판정 요약] - 판정: 비관련 - discussion_type: noise - 공식 제목: 미확정 - 핵심 결론: 제목 표현의 유래는 원문과 확인된 근거에서 알 수 없습니다. [원문 해석] - 제목: 무친년 연재 바라지도 않음 - 본문 요약: 그냥 일기나 써서 올리면 좋겠다 / - dc official App [근거 요약] - 작성자는 제목 표현의 뜻이나 유래를 직접 설명하지 않았습니다. [최종 종합] - 본문의 농담을 제목 표현의 확인된 어원으로 단정하지 않습니다.\n[근거 스코어]\n- total: -3\n- grounding_anchor: -2 (약한 앵커(none))\n- decoder_confidence: -2 (none)\n- decision_alignment: +1 (is_relevant=false, dt=noise)\n- executed_queries: 2 (단일 집계 소스)\n- effective_executed_queries: 3 (degraded+무결과 제외 보정치)\n- planned_unique_queries: 21 (참고치, 최종 집계는 executed_queries)\n- evidence_diversity: 0\n[범위 분리]\n- is_novel_related=true\n- is_resolved_work_discussion=false\n- title_resolution_state=context_only\n- title_resolution_allowed=false",
+          "sentiment_profile": {
+            "drift_risk": "Unknown",
+            "pacing": "Unknown",
+            "sentiment": "Negative"
+          },
+          "user_segment": null
+        }
+      },
+      "stored_search_evidence_catalog": [
+        {
+          "domain": "namu.wiki",
+          "eid": "SR001",
+          "purpose": "title_alias_platform_recall",
+          "query": "무친년 노벨피아",
+          "rank": 1,
+          "snippet": "약칭은 '무친년', '이무미나' 다. 2. 줄거리 PV 처음 해 보는 무협 게임 속의 여캐가 되었다. 무협에 대해 아는 게... 연재 현황 노벨피아에서 2023년 8월 3일부터 챌린지 작품으로서 연재를 시작했다. 대략 400화까지는 매일 거의 2편을... 몇 년 전부터 큰 문제가 되는 전세사기와 유사하게 전세금이 위험한 상황이라 그동안의 잠적 휴재를 성토하던 독자들에게서...",
+          "source_rank": 1,
+          "source_tier": "wiki",
+          "title": "이 무림의 미친년은 나야",
+          "url": "https://namu.wiki/w/%EC%9D%B4%20%EB%AC%B4%EB%A6%BC%EC%9D%98%20%EB%AF%B8%EC%B9%9C%EB%85%84%EC%9D%80%20%EB%82%98%EC%95%BC"
+        },
+        {
+          "domain": "www.pixiv.net",
+          "eid": "SR002",
+          "purpose": "title_alias_platform_recall",
+          "query": "무친년 노벨피아",
+          "rank": 2,
+          "snippet": "2025.10.05.この作品 「추석 기념 무친년 팬아트」 は 「노벨피아」「이무림의미친년은나야」 等のタグがつけられた「693」さんのイラストです。 「추석 기념으로 한복입은 구녕이랑 뭉청이 그려봤습니다!이 조합 진짜 최고야」",
+          "source_rank": 2,
+          "source_tier": "non_novel_domain",
+          "title": "#노벨피아 추석 기념 무친년 팬아트 - 693의 일러스트",
+          "url": "https://www.pixiv.net/artworks/135887865"
+        },
+        {
+          "domain": "novelpia.com",
+          "eid": "SR003",
+          "purpose": "title_alias_platform_recall",
+          "query": "무친년 노벨피아",
+          "rank": 3,
+          "snippet": "천마 컨셉 롤플레잉으로 최고 난이도 엔딩까지 봤더니, 끝판왕 다 찍은 무협 게임 속 만렙캐가 되었다. 무협은 내 입 맛대로 본 것 밖에 없는데 말이다. [심심풀이 단편입니다.] [표지 출처는 네이버 웹툰 '마도전생기 91화' 입니다]",
+          "source_rank": 3,
+          "source_tier": "novel_platform",
+          "title": "노벨피아 - 웹소설로 꿈꾸는 세상! - [무친년 단편 팬픽]이 무림의 천마는 나다",
+          "url": "https://novelpia.com/novel/337493"
+        },
+        {
+          "domain": "gall.dcinside.com",
+          "eid": "SR004",
+          "purpose": "title_alias_platform_recall",
+          "query": "무친년 노벨피아",
+          "rank": 4,
+          "snippet": "2024.05.01.시리즈 소설만 보다가 무협좋아해서 노벨피아 입문으로 '이 무림의 미친년은 나야' 봤는데 나쁘지않았음. 노피아는 인기작들도 평균 필력이 좀 약한거같은데.. 필력좋고 너무 가볍지않으면서 볼만한소설 ㅊㅊ좀 TS는",
+          "source_rank": 4,
+          "source_tier": "community",
+          "title": "무친년으로 노벨피아 입문해보았다?? 이제 뭐?봄 - 장르소설 마이너 갤러리",
+          "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=8617366"
+        },
+        {
+          "domain": "novelpia.com",
+          "eid": "SR005",
+          "purpose": "title_alias_platform_recall",
+          "query": "무친년 노벨피아",
+          "rank": 5,
+          "snippet": "무친년 뭔가뭔가를 그리고 있습니다 둘기빵9 ; 그냥 심심해서. ; 무친년 여장남자중 최고지성 둘기빵9",
+          "source_rank": 5,
+          "source_tier": "web",
+          "title": "스케치 - 노벨피아",
+          "url": "https://novelpia.com/FANART/44"
+        },
+        {
+          "domain": "bbs.ruliweb.com",
+          "eid": "SR006",
+          "purpose": "title_alias_platform_recall",
+          "query": "무친년 노벨피아",
+          "rank": 6,
+          "snippet": "2025.02.26.그간 달려온거 생각하면 장기 휴재하는거야 충분히 할 수 있다고 생각하는데 매번 꼬박꼬박 공지해주던 사람이 갑자기 아무말 없으니까 걱정되네",
+          "source_rank": 6,
+          "source_tier": "web",
+          "title": "노벨피아 무친년 작가님 무슨 일 있나",
+          "url": "https://bbs.ruliweb.com/community/board/300143/read/69680824"
+        },
+        {
+          "domain": "thewiki.kr",
+          "eid": "SR007",
+          "purpose": "title_alias_platform_recall",
+          "query": "무친년 노벨피아",
+          "rank": 7,
+          "snippet": "이 무림의 미친년은 나야에 대한 문서, 한국의 퓨전 무협, 게임빙의물, TS 웹소설. 작가는 정통무협조와요. 약칭은 \\'무친년\\', \\'이무미나\\' 다. 자칭 ‘어려서 천자문을 떼고 소학을 랩으로 줄줄 읊으며 구립도서관 사서를 괴롭히면서 대학을 졸업한 무틀딱인 정통무협의 말학‘(출처: 23.08.18 공지). 모르는 것이 당연한 중원의 역사를 자세히...",
+          "source_rank": 7,
+          "source_tier": "web",
+          "title": "이 무림의 미친년은 나야",
+          "url": "https://thewiki.kr/w/%EC%9D%B4%20%EB%AC%B4%EB%A6%BC%EC%9D%98%20%EB%AF%B8%EC%B9%9C%EB%85%84%EC%9D%80%20%EB%82%98%EC%95%BC"
+        },
+        {
+          "domain": "gall.dcinside.com",
+          "eid": "SR008",
+          "purpose": "title_alias_platform_recall",
+          "query": "무친년 노벨피아",
+          "rank": 8,
+          "snippet": "2025.05.19.무친년 작가님 생일이시더라마침 견포희도 그려볼겸 기념으로 생일빵 그림 ㅋ픽시브엔 옷 없는 버전도 있음그럼 안녕https://www.pixiv.net/artworks/130563579 #노벨피아 무친년 희매 견포희 -",
+          "source_rank": 8,
+          "source_tier": "community",
+          "title": "무친년) 희매 그렸음 - 장르소설 마이너 갤러리",
+          "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=10425712"
+        },
+        {
+          "domain": "www.pixiv.net",
+          "eid": "SR009",
+          "purpose": "title_alias_platform_recall",
+          "query": "무친년 노벨피아",
+          "rank": 9,
+          "snippet": "2025.12.31.この作品 「무친년 겨울 팬아트」 は 「노벨피아」「이무림의미친년은나야」 等のタグがつけられた「693」さんのイラストです。 「크리스마스 기념으로 그렸던 팬아트 입니다.실수로 이미지 중복이 있어서 수정 후 재업 합니다.」",
+          "source_rank": 9,
+          "source_tier": "non_novel_domain",
+          "title": "#노벨피아 무친년 겨울 팬아트 - 693의 일러스트",
+          "url": "https://www.pixiv.net/artworks/139323120"
+        },
+        {
+          "domain": "gall.dcinside.com",
+          "eid": "SR010",
+          "purpose": "title_alias_platform_recall",
+          "query": "무친년 노벨피아",
+          "rank": 10,
+          "snippet": "2024.06.18.https://novelpia.com/novel/279694 노벨피아 - 웹소설로 꿈꾸는 세상! - [무친년 팬픽] 이 무림의 정상인은 나야자유연재작품 - 모드까지 설치한 무협 게임 속 남캐가 되었다.무협에 대해 어느",
+          "source_rank": 10,
+          "source_tier": "community",
+          "title": "무친년 패러디 <이 무림의 정상인은 나야> 리뷰.jpg - 장르소설 마이너 갤러리",
+          "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=8865188"
+        },
+        {
+          "domain": "novelpia.com",
+          "eid": "SR011",
+          "purpose": "title_alias_platform_recall",
+          "query": "바라지 노벨피아",
+          "rank": 11,
+          "snippet": "친구가 게임을 하나 만들어줬다. 이름은 '빙의 RPG' 그렇지만 뭐, 빙의 따위 존재할리가 없잖아? 그렇게 나는 최악의 게임에 빙의했다.",
+          "source_rank": 11,
+          "source_tier": "novel_platform",
+          "title": "노벨피아 - 웹소설로 꿈꾸는 세상! - 이딴 빙의 바라지도 않았습니다",
+          "url": "https://novelpia.com/novel/112136"
+        }
+      ],
+      "search_timing": {
+        "timing": "초기·추가 전문가 검색 계획은 차단됐다. 저장 SR001-SR011 검색은 Arbiter 종료 뒤 실행됐다.",
+        "expert_search_delivery": "Decoder·Verifier·Arbiter에 전달된 검색 결과는 0건이다. 저장 SR 장부를 이 전문가들의 입력으로 소급하지 않는다.",
+        "timeline_log_lines": {
+          "initial_search_blocked": "3719-3729",
+          "decoder": "3734-3768",
+          "additional_search_blocked": "3880-3885, 4019",
+          "arbiter": "4951-5047",
+          "post_arbiter_search": "5204-5238",
+          "publish_contract": "5239-5242"
+        },
+        "alias_evidence_scope": {
+          "SR001": "위키의 원작 후보 명시 별칭",
+          "SR007": "유사 계열 위키의 명시 별칭",
+          "SR004": "커뮤니티 독서 사용 맥락",
+          "SR003": "팬픽 작품 자체의 플랫폼 상세"
+        }
+      },
+      "adjudicated_label": {
+        "index": 58,
+        "post_id": "9218178",
+        "cohort": "new64_UNJUDGED",
+        "A": "REPROCESS",
+        "A_reason_ko": "저장 search_evidence_catalog의 SR001·SR007은 무친년을 이 무림의 미친년은 나야의 약칭으로 명시한다. SR004도 작품 독서 맥락을 뒷받침한다. 작가 호칭일 뿐이라는 교차 제안을 기각한다. 원작 후보는 사라지고 팬픽은 감사 장부에만 남았다.",
+        "B": "REPROCESS",
+        "B_reason_ko": "연재를 기다리는 대상에게 일기라도 써 달라는 독자 반응인데 뜻·어원 불명만으로 작품 무관 noise로 처리했다.",
+        "overall": "REPROCESS",
+        "firstpasses": {
+          "sol_A": "REPROCESS",
+          "claude_A": "ACCEPT",
+          "sol_B": "REPROCESS",
+          "claude_B": "REPROCESS"
+        },
+        "cross_proposed": {
+          "A": "REPROCESS",
+          "B": "REPROCESS"
+        },
+        "astra_override_axes": [
+          "A"
+        ],
+        "raw_pointer": "raw_evidence.json#/rows/57"
+      },
+      "review_boundary_ko": "무친년의 원작 별칭 후보와 독자의 연재·일기 반응을 내부에서 검토한다. 댓글 작성자를 작가로 확정하지 않고, 팬픽 상세를 원작 공식쌍이나 공개 근거로 쓰지 않는다."
+    },
+    "63": {
+      "post_id": "8988601",
+      "raw_row_index_zero_based": 62,
+      "source_log": {
+        "path": "logs/expert_run_20260929_123423_566457_W2.log",
+        "sha256": "38c235ac06368dfa84c9df40b2d2826d29ed64421bc149f0178e248fe469347a",
+        "expert_output_marker": "[📊 stage] 결과 JSON:",
+        "extraction_scope_lines": [
+          4170,
+          4350
+        ]
+      },
+      "source_receipt": {
+        "path": "out/sol_post_v11_patch_20260929/ROW63_SOURCE_RECEIPT_KO.md",
+        "sha256": "ce8827016f41b031e2a0536819aaf4dfe8569bd95f053a8ef797af660c5c95f6"
+      },
+      "original_post_full": {
+        "gallery_id": "genrenovel",
+        "post_id": 8988601,
+        "title": "별품소 비슷한 누낌 추천해조",
+        "author": "ㅇㅇ",
+        "created_at": "2024-07-17 17:18:16",
+        "url": "https://gall.dcinside.com/mgallery/board/view/?id=genrenovel&no=8988601",
+        "content_blocks": [
+          {
+            "type": "text",
+            "text": "ㅠㅠ"
+          }
+        ],
+        "page_no": 49080
+      },
+      "original_comments_full": [],
+      "sealed_expert_outputs": {
+        "gatekeeper": [
+          {
+            "line": 4174,
+            "data": {
+              "is_noise": false,
+              "noise_reason": null,
+              "post_type": "short_reaction",
+              "detected_entities": {
+                "possible_titles": [
+                  "별품소 비슷한 누낌 추천해조"
+                ],
+                "possible_authors": [],
+                "possible_characters": [],
+                "platforms_mentioned": []
+              },
+              "key_terms": [
+                "별품소 비슷한 누낌 추천해조"
+              ],
+              "context_clues": {
+                "short_post_fast_path": true,
+                "body_length": 2,
+                "body_text": "ㅠㅠ",
+                "short_post_title_surface": "별품소 비슷한 누낌 추천해조"
+              },
+              "search_requests": [],
+              "confidence": "medium",
+              "notes": "Short-post Fast-Path: body=2자, 제목 기반 판정 위임"
+            }
+          },
+          {
+            "line": 4320,
+            "data": {
+              "is_noise": true,
+              "noise_reason": "추천 요청형 게시글이며 작품 고유 앵커(회차/작품 URL/강한 인물-서사 접지)가 없어 특정 작품 토론으로 보기 어려움",
+              "post_type": "recommendation",
+              "detected_entities": {
+                "possible_titles": [],
+                "possible_authors": [],
+                "possible_characters": [],
+                "platforms_mentioned": []
+              },
+              "key_terms": [],
+              "context_clues": {
+                "short_post_fast_path": true,
+                "body_length": 2,
+                "body_text": "ㅠㅠ",
+                "short_post_title_surface": "별품소 비슷한 누낌 추천해조",
+                "is_recommendation_request": false
+              },
+              "search_requests": [],
+              "confidence": "medium",
+              "notes": "Short-post Fast-Path: body=2자, 제목 기반 판정 위임"
+            }
+          }
+        ],
+        "discourse": [
+          {
+            "line": 4268,
+            "data": {
+              "discourse_analysis": {
+                "primary_domain": "novel_literature",
+                "domain_confidence": "high",
+                "domain_evidence": [
+                  "별품소",
+                  "추천"
+                ],
+                "secondary_domains": [],
+                "intent": "request_recommendation",
+                "intent_confidence": "high",
+                "speech_act": "other",
+                "target_kind": "work",
+                "is_coherent": true,
+                "coherence_reason": "The title asks for recommendations similar to '별품소', and the body expresses emotional longing (ㅠㅠ), which is a common pattern in recommendation requests within novel communities.",
+                "title_novel_terms": [
+                  "별품소"
+                ],
+                "title_body_consistency": true,
+                "consistency_note": null,
+                "is_association_not_discussion": false,
+                "association_evidence": null,
+                "search_suggestions": [
+                  {
+                    "query": "웹소설 별품소",
+                    "purpose": "To identify the specific web novel referred to by the abbreviation '별품소'.",
+                    "priority": 1
+                  },
+                  {
+                    "query": "별품소 비슷한 소설 추천",
+                    "purpose": "To verify if '별품소' is a known work and see what kind of similar works are typically suggested.",
+                    "priority": 2
+                  }
+                ],
+                "real_subject": "'별품소'라는 작품과 유사한 느낌의 웹소설 추천 요청",
+                "author_question_span": null,
+                "author_question_target": "별품소와 비슷한 느낌의 작품",
+                "author_recommendation_span": "별품소 비슷한 누낌 추천해조",
+                "author_recommendation_is_direct": true,
+                "reasoning": "제목에서 '별품소'라는 특정 작품(또는 약칭)을 언급하며 비슷한 느낌의 작품을 추천해달라고 명시적으로 요청하고 있습니다. 본문의 'ㅠㅠ'는 해당 작품에 대한 애정이나 아쉬움을 나타내는 감정 표현으로 해석되어 추천 요청의 맥락을 보완합니다.",
+                "source_bound_recommendation_request": false,
+                "image_topic_relation": {
+                  "state": "no_image",
+                  "source": "author_spans"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "observed_final": {
+        "identity": {
+          "is_novel_related": true,
+          "is_relevant": false,
+          "discussion_type": "recommendation",
+          "subtype": "recommendation_request",
+          "topicality": "adjacent_relevant",
+          "primary_subject_text": "메인 화제는 웹소설 추천 요청이며, 추천받을 단일 작품은 미확정입니다.",
+          "reason": "[판정 요약] - 판정: 주변 관련 - discussion_type: recommendation - 공식 제목: 미확정 - work_resolution: none - 핵심 결론: 추천 요청, 감상 순서 질문, 또는 기억나는 작품/대사를 찾는 질의 성격이 강합니다. [원문 해석] - 제목: 별품소 비슷한 누낌 추천해조 - 본문 요약: ㅠㅠ - 메인 해석 축: 메인 화제는 웹소설 추천 요청이며, 추천받을 단일 작품은 미확정입니다. [근거 요약] - subtype: recommendation_request (추천 요청) - grounding_anchor: none - anchor_focus: 추천 요청/감상 순서 질문 [최종 종합] - 핵심 의도는 특정 작품 확정보다 추천/탐색/기억 회수 요청이므로 단일 공식 제목 고정을 보류합니다. [정합성 교정]\n- 최종 분류는 adjacent_relevant이며, 작품 주변 맥락은 인정하되 단일 공식 제목은 미확정으로 유지합니다.\n[근거 스코어]\n- total: -4\n- grounding_anchor: -2 (약한 앵커(none))\n- decoder_confidence: -2 (none)\n- evidence_diversity: 0\n[범위 분리]\n- is_novel_related=true\n- is_resolved_work_discussion=false\n- title_resolution_state=adjacent\n- title_resolution_allowed=false",
+          "novel_identity": {
+            "heretic_url": null,
+            "official_title": null
+          },
+          "primary_work": null,
+          "secondary_reference_works": [],
+          "comparison_target": null,
+          "recommendation_candidates": null,
+          "mentioned_works": null,
+          "title_candidates": null,
+          "entity_mentions": null,
+          "candidate_preservation_sources": null,
+          "context_sources": [
+            "title",
+            "body"
+          ],
+          "search_health": {
+            "accepted": 0,
+            "cache_hits": 0,
+            "degraded": 0,
+            "degraded_recovered": 0,
+            "degraded_zero": 0,
+            "degraded_zero_suppressed": 0,
+            "direct_search_results": 0,
+            "direct_search_used": 0,
+            "fallback_recovered": 0,
+            "filtered": 0,
+            "headless_used": 0,
+            "queries_issued": 0,
+            "raw": 0,
+            "retried": 0,
+            "status": "NOT_APPLICABLE",
+            "unrecovered_degraded": 0,
+            "upstream_zero": 0
+          },
+          "promotion_decision": {
+            "bypassed_gate": false,
+            "candidate_preserved": false,
+            "contract_version": "promotion_contract_v2",
+            "input_fingerprint": "6618f4d83ea0a98f8240af3a1262272e84e7c63f50080d3cab7f7c29405ca16a",
+            "official_title": null,
+            "official_url": null,
+            "publish_allowed": false,
+            "reason_codes": [
+              "no_candidate_title",
+              "row_discussion_missing",
+              "title_resolution_state_not_publishable",
+              "work_resolution_not_publishable",
+              "scope_unknown",
+              "scope_not_current_work",
+              "serializer_candidate_removed"
+            ],
+            "scope": {
+              "competing_candidates": [],
+              "confidence": "low",
+              "conflict_reason_codes": [
+                "serializer_candidate_removed"
+              ],
+              "direct_bridge_sources": [],
+              "scope_kind": "unknown"
+            },
+            "status": "reject"
+          }
+        },
+        "analysis": {
+          "detected_titles": [],
+          "is_nsfw": false,
+          "micro_tags": [],
+          "notes": "[판정 요약] - 판정: 주변 관련 - discussion_type: recommendation - 공식 제목: 미확정 - work_resolution: none - 핵심 결론: 추천 요청, 감상 순서 질문, 또는 기억나는 작품/대사를 찾는 질의 성격이 강합니다. [원문 해석] - 제목: 별품소 비슷한 누낌 추천해조 - 본문 요약: ㅠㅠ - 메인 해석 축: 메인 화제는 웹소설 추천 요청이며, 추천받을 단일 작품은 미확정입니다. [근거 요약] - subtype: recommendation_request (추천 요청) - grounding_anchor: none - anchor_focus: 추천 요청/감상 순서 질문 [최종 종합] - 핵심 의도는 특정 작품 확정보다 추천/탐색/기억 회수 요청이므로 단일 공식 제목 고정을 보류합니다. [정합성 교정]\n- 최종 분류는 adjacent_relevant이며, 작품 주변 맥락은 인정하되 단일 공식 제목은 미확정으로 유지합니다.\n[근거 스코어]\n- total: -4\n- grounding_anchor: -2 (약한 앵커(none))\n- decoder_confidence: -2 (none)\n- evidence_diversity: 0\n[범위 분리]\n- is_novel_related=true\n- is_resolved_work_discussion=false\n- title_resolution_state=adjacent\n- title_resolution_allowed=false",
+          "sentiment_profile": null,
+          "user_segment": null
+        }
+      },
+      "stored_search_evidence_catalog": [],
+      "search_timing": {
+        "timing": "Discourse의 별품소 확인 검색은 제안에 그쳤다. 추천요청 조기종료 뒤 실제 검색은 0건이다.",
+        "expert_search_delivery": "검색 결과가 전달되지 않았다. Decoder·Verifier·Arbiter 출력도 없다.",
+        "timeline_log_lines": {
+          "short_post_gatekeeper": "4172-4201",
+          "discourse": "4208-4315",
+          "early_exit": "4318-4346",
+          "serialization": "4348-4351"
+        }
+      },
+      "adjudicated_label": {
+        "index": 63,
+        "post_id": "8988601",
+        "cohort": "new64_UNJUDGED",
+        "A": "REPROCESS",
+        "A_reason_ko": "별품소 비슷한 작품을 찾는 원문에서 별품소 기준작이 후보·참조 역할에 남지 않았다.",
+        "B": "HOLD",
+        "B_reason_ko": "추천 enum의 정형 문구('추천 요청…성격이 강합니다')와 원문 복사뿐이다. 기준작 별품소라는 조건이 typed로 남지 않았다.",
+        "overall": "REPROCESS",
+        "firstpasses": {
+          "sol_A": "REPROCESS",
+          "claude_A": "HOLD",
+          "sol_B": "ACCEPT",
+          "claude_B": "HOLD"
+        },
+        "cross_proposed": {
+          "A": "REPROCESS",
+          "B": "HOLD"
+        },
+        "astra_override_axes": [],
+        "raw_pointer": "raw_evidence.json#/rows/62"
+      },
+      "review_boundary_ko": "별품소는 원문 직접 유사작 추천 기준 표면이다. 비공개 참조 역할과 추천 의도를 검토하되 공식 별칭·제목·URL은 확정하지 않는다."
+    }
+  }
+}

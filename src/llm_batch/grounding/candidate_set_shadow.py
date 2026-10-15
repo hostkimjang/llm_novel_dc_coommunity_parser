@@ -600,6 +600,43 @@ def _candidate_id(titles: Tuple[str, ...], urls: Tuple[str, ...]) -> str:
     return f"cand_{_canonical_hash(identity)}"
 
 
+def _has_observed_work_identity(item: _Observation) -> bool:
+    """Require a separate work observation, not typed preservation alone.
+
+    Eligibility is not publication or truth authority. The inventory bit is
+    retained for accounting, while model-only labels and diagnostic holds
+    cannot supply the missing work-identity observation.
+    """
+    if not item.title_key or item.alias_only or item.source_field == "promotion_gate_evidence":
+        return False
+    if item.promotion_policy in {"hold_without_promotion", "preserve_only"}:
+        return False
+    if item.local_preservation_type or set(item.negative_evidence).intersection({
+        "batch_alias_nonwork_context_hold_without_promotion",
+        "raw_source_work_surface_unresolved",
+        "comment_answer_preservation_only",
+        "short_alias_hold_without_promotion",
+        "character_setting_cluster_hold_without_promotion",
+    }):
+        return False
+    work_source_tiers = {"official_detail", "official_search", "community", "mixed"}
+    if item.source_tier and item.source_tier not in work_source_tiers:
+        return False
+    work_roles = {"primary", "mentioned", "comparison", "previous", "recommendation",
+                  "secondary_reference", "future_watch_target"}
+    if item.reference_role in work_roles and item.source_tier:
+        return True
+    # A detail-backed candidate need not already be the selected work.
+    if item.reference_role == "candidate" and item.canonical_url and item.source_tier == "official_detail":
+        return True
+    # Preserve the canonical member of an explicit alias pair, separately
+    # from its unlinked surface; 갤러리 may be part of a genuine work title.
+    return bool(
+        item.preservation_role in {"title_candidate", "ranked_title_candidate"}
+        and any(_title_key(alias) != item.title_key for alias in item.aliases)
+    )
+
+
 def build_candidate_set(
     state: GroundingState,
     evidence: Iterable[EvidenceRecord],
@@ -752,16 +789,15 @@ def build_candidate_set(
             or any("alias_hold" in value or "hold_without_promotion" in value for value in local_types)
         )
         strong_work_signal = any(
-            (item.baseline_selected or item.supports_publish or item.typed_inventory)
+            (item.baseline_selected or item.supports_publish or _has_observed_work_identity(item))
             and not item.alias_only
             for item in group
         )
-        typed_inventory_signal = any(item.typed_inventory for item in group)
         option_kind = (
             "UNLINKED_SURFACE"
             if explicit_unlinked and not strong_work_signal
             else "WORK_CANDIDATE"
-            if strong_work_signal or typed_inventory_signal
+            if strong_work_signal
             else "OBSERVED_LATE_SURFACE"
         )
         identity_conflict = len(urls) > 1

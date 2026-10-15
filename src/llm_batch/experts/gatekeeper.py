@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import sys
 import time
 from typing import Any, Dict, List, Optional
@@ -84,6 +85,61 @@ class GatekeeperExpert:
         
         # Build post JSON for prompt
         post_json = self._build_post_json(post, comments)
+        # 원본 OCR catalog와 원시 packet은 보존한다. 첫 모델 입력에서만 미결속 이름을 분리한다.
+        deferred_identity, prompt_images = [], []
+        image_names_by_url = {}
+        enrichment_names = []
+        for item in post.get("image_enrichment") or []:
+            if isinstance(item, dict):
+                names = {str(item.get(key) or "") for key in
+                         ("explicit_work_title", "explicit_author_name")}
+                enrichment_names.append(names)
+                source_url = str(item.get("source_url") or "")
+                if source_url:
+                    image_names_by_url.setdefault(source_url, set()).update(names)
+        enrichment_index = -1
+        for item in post_json.get("image_evidence", []):
+            if item.get("source_role") == "image_enrichment":
+                enrichment_index += 1
+            if self._image_identity_has_author_reference(
+                post_json["title"], post_json["content"], item,
+            ):
+                prompt_images.append(dict(item))
+                continue
+            deferred_identity.append(dict(item))
+            summary = str(item.get("visual_summary") or "")
+            if not summary and item.get("source_role") in {"image_summary", "image_description"}:
+                summary = str(item.get("text") or "")
+            names = image_names_by_url.get(str(item.get("source_url") or ""), set())
+            if item.get("source_role") == "image_enrichment":
+                names = names | enrichment_names[enrichment_index]
+            names = names | {str(item.get("explicit_work_title") or "")}
+            for name in sorted(names, key=len, reverse=True):
+                compact = re.sub(r"[^0-9A-Za-z가-힣]", "", name)
+                if len(compact) >= 2:
+                    pattern = r"[\s\W_]*".join(map(re.escape, compact))
+                    summary = re.sub(pattern, "[이미지 이름 보류]", summary, flags=re.I)
+            prompt_images.append({
+                "source_role": item.get("source_role"), "source_url": item.get("source_url", ""),
+                "title_role": "unknown", "promotion_eligible": False,
+                "identity_deferred": True, "visual_summary": summary,
+            })
+        if ctx is not None:
+            ctx._gatekeeper_deferred_image_identity = tuple(deferred_identity)
+        identity_post = post
+        if deferred_identity:
+            post_json["image_evidence"] = prompt_images
+            identity_post = dict(post)
+            identity_post["image_enrichment"] = [dict(item) for item in prompt_images
+                                                if item.get("source_role") == "image_enrichment"]
+            deferred_urls = {str(item.get("source_url") or "") for item in deferred_identity}
+            identity_post["content_blocks"] = [
+                {"type": "image", "url": block.get("url", ""), "identity_deferred": True}
+                if isinstance(block, dict)
+                and str(block.get("type") or "").lower() in {"ocr_text", "image_summary", "image_description"}
+                and (not block.get("url") or str(block.get("url")) in deferred_urls)
+                else block for block in post.get("content_blocks", [])
+            ]
         
         # Format prompt
         user_prompt = GATEKEEPER_PROMPT.format(
@@ -96,10 +152,11 @@ class GatekeeperExpert:
             # Call LLM
             result = self._call_llm(
                 user_prompt,
-                post=post,
+                post=identity_post,
                 comments=comments,
                 ctx=ctx,
             )
+            result = self._remove_unsupported_author_ip_claim(result, post, comments)
             
             # Enhance with Kiwi morphological analysis
             if self.use_kiwi:
@@ -108,13 +165,13 @@ class GatekeeperExpert:
                 result = self._merge_entities(result, kiwi_entities)
 
             # 약칭을 임의의 정식 제목으로 자동 완성하는 초기 오염을 정리한다.
-            result = self._prune_speculative_alias_expansions(result, post)
+            result = self._prune_speculative_alias_expansions(result, identity_post)
             
             # 🚨 코드 레벨 보강: 댓글에서 제목 답변 후보 추출
             result = self._postprocess_comment_titles(result, post, comments, ctx=ctx)
             
             # 🔥 이미지 전용 게시글 코드 레벨 감지
-            result = self._detect_image_only_post(result, post, ctx=ctx)
+            result = self._detect_image_only_post(result, identity_post, ctx=ctx)
             
             # 🆕 장르 접두사 태그 파싱 (TS), BL) 등)
             result = self._parse_genre_prefix_tags(result, post)
@@ -165,21 +222,86 @@ class GatekeeperExpert:
             # Return safe default
             return self._default_result(str(e))
     
+    @staticmethod
+    def _image_identity_has_author_reference(
+        title: str, content: List[str], item: Dict[str, Any],
+    ) -> bool:
+        """원문 고유 제목 또는 이미지 정체성 질문만 이름의 첫 소비를 허용한다."""
+        author_lines = [
+            line.strip() for part in [title, *content] for line in str(part).splitlines()
+            if line.strip() and not line.lstrip().startswith((">", '"', "“", "‘"))
+        ]
+        author_text = " ".join(author_lines)
+        normalize = lambda value: re.sub(r"[^0-9A-Za-z가-힣]", "", str(value or "").lower())
+        work_title = str(item.get("explicit_work_title") or "").strip()
+        name = normalize(work_title)
+        name_pattern = (r"(?<![0-9A-Za-z가-힣])" + r"[\s\W_]*".join(map(re.escape, name))
+                        + r"(?=$|[^0-9A-Za-z가-힣]|(?:은|는|이|가|을|를|의|도|만|에서|에게|로|와|과)(?=$|[^0-9A-Za-z가-힣]))")
+        if len(name) >= 4 and re.search(name_pattern, author_text, re.I):
+            return True
+        # 표지변경 알림/이미지 감상은 주제 근거일 수 있어도 제목-약어 proof는 아니다.
+        # 같은 원문 절의 이미지 지시 + 정체성 대상 + 질문/요청 술어만 허용한다.
+        for clause in re.findall(r"[^.!。?？\n]+[?？]?", author_text):
+            if re.search(r"(?:라고|냐고|인가고|뭐라고)\s*(?:물|질문|말)|(?:질문|말)(?:은|이)\s", clause):
+                continue
+            image_target = (r"(?:이미지|사진|그림|짤|표지|캡처|스크린샷|삽화)"
+                            r"\s*(?:속|내|안|의|에\s*(?:나온|있는))?\s*"
+                            r"(?:(?:소설|웹소설|작품|게임|만화)(?:의)?\s*)?")
+            identity_target = re.search(image_target + r"(?:제목|작품명|소설명|게임명|만화명|이름)", clause)
+            media_target = re.search(image_target + r"(?:무슨|어떤|어느)\s*(?:소설|웹소설|작품|게임|만화)", clause)
+            if not (identity_target or media_target):
+                continue
+            if re.search(
+                r"(?:제목|작품명|소설명|게임명|만화명|이름).{0,24}"
+                r"(?:뭐(?:야|임|지|냐|에요|예요)|뭔가요|무엇|뭘까|알려|알\s*수|[?？])"
+                r"|(?:무슨|어떤|어느)\s*(?:소설|웹소설|작품|게임|만화)"
+                r".{0,24}(?:[?？]|인지|인가|뭔지|알려|임(?:\s|$)|야(?:\s|$))",
+                clause,
+            ):
+                return True
+        return False
+
     def _build_post_json(self, post: Dict[str, Any], comments: List[str]) -> Dict[str, Any]:
         """Build simplified post JSON for the prompt."""
         # Extract text content
         content_texts = []
+        image_evidence = []
+        enriched_image_urls = {
+            str(item.get("source_url") or "").strip()
+            for item in (post.get("image_enrichment") or [])
+            if isinstance(item, dict) and str(item.get("source_url") or "").strip()
+        }
         image_count = 0
         total_blocks = 0
         for block in post.get("content_blocks", []):
             total_blocks += 1
             if isinstance(block, dict):
-                if block.get("text"):
-                    content_texts.append(block["text"])
-                elif block.get("type") == "image" or block.get("src"):
+                block_type = str(block.get("type") or "text").strip().lower()
+                if block_type == "image" or block.get("src"):
                     image_count += 1
+                elif block_type in {"ocr_text", "image_summary", "image_description"}:
+                    if block.get("text") and str(block.get("url") or "").strip() not in enriched_image_urls:
+                        image_evidence.append({
+                            "source_role": block_type,
+                            "text": str(block["text"]),
+                            "source_url": str(block.get("url") or ""),
+                        })
+                elif block.get("text"):
+                    content_texts.append(block["text"])
             elif isinstance(block, str):
                 content_texts.append(block)
+        for item in post.get("image_enrichment") or []:
+            if not isinstance(item, dict):
+                continue
+            image_evidence.append({
+                "source_role": "image_enrichment",
+                "explicit_work_title": str(item.get("explicit_work_title") or ""),
+                "title_role": str(item.get("title_role") or ""),
+                "promotion_eligible": item.get("promotion_eligible"),
+                "ocr_text": str(item.get("ocr_text") or ""),
+                "visual_summary": str(item.get("visual_summary") or ""),
+                "source_url": str(item.get("source_url") or ""),
+            })
         title_text = str(post.get("title", "") or "")
         title_body_joined = self._compose_title_body_joined(title_text, content_texts)
         
@@ -189,10 +311,19 @@ class GatekeeperExpert:
             "title": title_text,
             "post_author": post.get("post_author") or post.get("author", ""),
             "author": post.get("author", ""),
+            "post_ip": post.get("post_ip") or post.get("author_ip") or post.get("ip") or None,
             "content": content_texts,
             "title_body_joined_preview": title_body_joined,
             "comments": comments[:10],  # Limit comments
         }
+        if image_evidence:
+            result["image_evidence"] = image_evidence
+            result["image_evidence_usage"] = (
+                "이미지 OCR·요약은 이미지에서 나온 정보다. 제목·본문·댓글이 이미지를 "
+                "직접 질문하거나 평가하면 주제 근거로 사용할 수 있다. 그렇지 않으면 "
+                "이미지 속 작품명과 글의 주제를 동일시하지 않는다. promotion_eligible은 "
+                "제목 승격 표시이며 주제 여부를 뜻하지 않는다."
+            )
         comment_context = post.get("comment_context_lines") or []
         if comment_context:
             result["comment_context"] = comment_context[:10]
@@ -205,10 +336,158 @@ class GatekeeperExpert:
             result["_content_stats"] = {
                 "total_blocks": total_blocks,
                 "image_blocks": image_count,
-                "text_blocks": total_blocks - image_count,
+                "text_blocks": len(content_texts),
+                "image_evidence_blocks": len(image_evidence),
                 "is_image_dominant": image_count > 0 and len(content_texts) == 0,
             }
         
+        return result
+
+    @staticmethod
+    def _remove_unsupported_author_ip_claim(
+        result: Dict[str, Any], post: Dict[str, Any], comments: Optional[List[str]] = None
+    ) -> Dict[str, Any]:
+        """Keep IP claims bound to one original post span, comment, or author metadata."""
+        if not isinstance(result, dict) or not isinstance(post, dict):
+            return result
+        author_ips = {
+            str(post.get(key) or "").strip()
+            for key in ("post_ip", "author_ip", "ip")
+            if str(post.get(key) or "").strip()
+        }
+        post_spans = [str(post.get("title") or "")]
+        blocks = post.get("content_blocks") or []
+        for block in blocks:
+            post_spans.append(
+                str(block.get("text") or "") if isinstance(block, dict) else str(block or "")
+            )
+        if not blocks:
+            content = post.get("content") or []
+            if isinstance(content, list):
+                post_spans.extend(str(item or "") for item in content)
+            else:
+                post_spans.append(str(content))
+        comment_spans = [
+            str(comment.get("content") or comment.get("text") or "")
+            if isinstance(comment, dict) else str(comment or "")
+            for comment in (comments or [])
+        ]
+        claim = re.compile(r"(?:게시글\s*)?(?:작성자|글쓴이|게시자)(?:의)?\s*(?:IP|아이피)", re.IGNORECASE)
+        ip_shape = r"(?<![\d.])\d{1,3}(?:\.\d{1,3}){1,3}(?![\d.])"
+        ip_pattern = re.compile(ip_shape)
+        ip_assertion = re.compile(
+            r"(?:(?:원문|댓글)에\s*적힌\s*|(?:게시글\s*)?(?:작성자|글쓴이|게시자)(?:의)?\s*)?"
+            rf"(?:IP|아이피)\s*\(\s*(?P<ip>{ip_shape})\s*\)",
+            re.IGNORECASE,
+        )
+
+        def _in_span(ip: str, spans: List[str]) -> bool:
+            bounded = re.compile(rf"(?<![\d.]){re.escape(ip)}(?![\d.])")
+            return any(bounded.search(span) for span in spans)
+
+        def _separate_post_fragments(ip: str) -> Optional[tuple[str, str]]:
+            parts = ip.split(".")
+            for boundary in range(1, len(parts)):
+                left, right = ".".join(parts[:boundary]), ".".join(parts[boundary:])
+                for left_index, left_span in enumerate(post_spans):
+                    if not _in_span(left, [left_span]):
+                        continue
+                    if any(
+                        right_index != left_index and _in_span(right, [right_span])
+                        for right_index, right_span in enumerate(post_spans)
+                    ):
+                        return left, right
+            return None
+
+        def _replace_claim(match: re.Match[str], source: str) -> str:
+            after = source[match.end():].lstrip()
+            parenthetical = re.match(r"\(([^)]{0,100})\)", after)
+            claimed_ips = ip_pattern.findall(parenthetical.group(1)) if parenthetical else []
+            if not claimed_ips:
+                direct_value = re.match(
+                    r"(?:은|는|[:：])?\s*(\d{1,3}(?:\.\d{1,3}){1,3})(?!\d)",
+                    after,
+                )
+                if direct_value:
+                    claimed_ips = [direct_value.group(1)]
+                    remainder = after[direct_value.end():]
+                    while True:
+                        next_ip = re.match(
+                            r"\s*(?:,|와|과)\s*(\d{1,3}(?:\.\d{1,3}){1,3})(?!\d)",
+                            remainder,
+                        )
+                        if not next_ip:
+                            break
+                        claimed_ips.append(next_ip.group(1))
+                        remainder = remainder[next_ip.end():]
+            if (
+                not claimed_ips
+                and not author_ips
+                and not any(ip_pattern.search(span) for span in (*post_spans, *comment_spans))
+            ):
+                return match.group(0)
+            if author_ips and (not claimed_ips or all(ip in author_ips for ip in claimed_ips)):
+                return match.group(0)
+            if claimed_ips and all(_in_span(ip, comment_spans) for ip in claimed_ips) and not all(
+                _in_span(ip, post_spans) for ip in claimed_ips
+            ):
+                return "댓글에 적힌 IP"
+            return "원문에 적힌 IP"
+
+        def _replace_unsupported_ip(match: re.Match[str]) -> str:
+            ip = match.group("ip")
+            if ip in author_ips or _in_span(ip, post_spans) or _in_span(ip, comment_spans):
+                return match.group(0)
+            fragments = _separate_post_fragments(ip)
+            if fragments:
+                return f"원문에 따로 적힌 숫자 표면({fragments[0]} / {fragments[1]})"
+            return "원문에서 확인되지 않은 IP 표기"
+
+        def _parallel_friend_items() -> List[str]:
+            """Recognize a counted list of friends without merging adjacent items."""
+            title = str(post.get("title") or "")
+            if result.get("is_noise") is not True or str(result.get("post_type") or "") not in {
+                "community_banter", "noise"
+            }:
+                return []
+            if re.search(r"소설|작품|주인공|등장인물|캐릭터|회차|세계관", title):
+                return []
+            count_match = re.search(r"(?<!\d)(\d{1,2})\s*명", title)
+            if not count_match:
+                return []
+            items = [str(block.get("text") or "").strip() for block in blocks if isinstance(block, dict)]
+            if not items and not blocks:
+                items = [str(item or "").strip() for item in (post.get("content") or [])]
+            if len(items) < 5 or not re.search(r"너희.*친구", items[-1]):
+                return []
+            friends = items[:-1]
+            if len(friends) != int(count_match.group(1)):
+                return []
+            if sum(bool(re.fullmatch(r"\d{1,3}(?:\.\d{1,3}){1,3}", item)) for item in friends) < 2:
+                return []
+            if sum(item.endswith("쨩") for item in friends) < 2:
+                return []
+            original = " ".join([title, *items])
+            # An explicit source relation takes priority over list shape.
+            if re.search(r"\d{1,3}(?:\.\d{1,3}){1,3}\s*(?:은|는|=|→|:|의\s*별명은)\s*\S+쨩", original):
+                return []
+            return friends
+
+        parallel_friends = _parallel_friend_items()
+
+        for key in ("noise_reason", "notes"):
+            value = result.get(key)
+            if isinstance(value, str):
+                attributed = claim.sub(lambda match: _replace_claim(match, value), value)
+                cleaned = ip_assertion.sub(_replace_unsupported_ip, attributed)
+                if parallel_friends and re.search(r"(?:IP|아이피|숫자\s*표면)", cleaned, re.IGNORECASE) and (
+                    "의인화" in cleaned or "친구처럼" in cleaned or "쨩'이라고" in cleaned
+                ):
+                    cleaned = (
+                        f"본문은 {', '.join(parallel_friends)}을 각각 친구로 부르는 커뮤니티 농담이며, "
+                        "특정 작품을 논하는 글은 아닙니다."
+                    )
+                result[key] = cleaned
         return result
     
     def _call_llm(
@@ -655,6 +934,100 @@ class GatekeeperExpert:
         return result
     
     # ── 댓글 제목 후보 추출 ───────────────────────
+
+    def _explicit_work_title_relation_target(self, line: str, anchor: str) -> str:
+        """Extract the other title only from an affirmative alias assertion."""
+        line = str(line or "").strip()
+        anchor = str(anchor or "").strip()
+        if not line or not anchor or re.search(r"[?？]|(?:아님|아니다|아닌|틀림|불명|모름)", line):
+            return ""
+        escaped = re.escape(anchor)
+        patterns = (
+            rf"^\s*{escaped}(?:의)?\s*(?:정식\s*(?:제목|명칭)|풀네임|원제)\s*(?:은|는|:|：)?\s*(.+?)\s*$",
+            rf"^\s*{escaped}\s*(?:은|는|=|→|->)\s*(.+?)\s*(?:의)?\s*(?:약칭|줄임말)\s*$",
+            rf"^\s*{escaped}\s*(?:=|→|->)\s*(.+?)\s*$",
+            rf"^\s*(.+?)\s*(?:은|는|이|가)\s*{escaped}(?:의)?\s*(?:정식\s*(?:제목|명칭)|풀네임|원제)\s*$",
+            rf"^\s*(.+?)\s*=\s*{escaped}\s*$",
+        )
+        for pattern in patterns:
+            match = re.fullmatch(pattern, line)
+            if not match:
+                continue
+            target = match.group(1).strip().rstrip(". ")
+            if target != anchor and self._is_title_like_surface(target):
+                return target
+        return ""
+
+    def _explicit_comment_title_relation_basis(
+        self,
+        candidate: str,
+        post: Dict[str, Any],
+        raw_comment: str,
+        post_anchors: List[str],
+    ) -> str:
+        norm = lambda value: re.sub(r"[^0-9a-z가-힣]", "", str(value or "").lower())
+        candidate_norm = norm(candidate)
+        post_texts = [str(post.get("title") or post.get("normalized_title") or "")]
+        post_texts.extend(self._extract_text_blocks(post))
+        post_norm = norm(" ".join(post_texts))
+        for anchor in post_anchors:
+            anchor_norm = norm(anchor)
+            if not anchor_norm or anchor_norm == candidate_norm or anchor_norm not in post_norm:
+                continue
+            for text in post_texts:
+                for clause in re.split(r"[.!。！\n]", text):
+                    if norm(self._explicit_work_title_relation_target(clause, anchor)) == candidate_norm:
+                        return "post_alias_relation"
+            for clause in re.split(r"[.!。！\n]", raw_comment):
+                if norm(self._explicit_work_title_relation_target(clause, anchor)) == candidate_norm:
+                    return "explicit_comment_alias_relation"
+        return ""
+
+    @staticmethod
+    def _comment_title_assertion_basis(
+        candidate: str,
+        post: Dict[str, Any],
+        *,
+        post_anchors: Optional[List[str]] = None,
+    ) -> str:
+        """Require a post-side title request or an explicit local work relation."""
+        def norm(value: Any) -> str:
+            return re.sub(r"[^0-9a-z가-힣]", "", str(value or "").lower())
+
+        candidate_norm = norm(candidate)
+        if not candidate_norm:
+            return ""
+        post = post or {}
+        title = str(post.get("title") or post.get("normalized_title") or "")
+        body_parts: List[str] = []
+        for block in post.get("content_blocks") or []:
+            if isinstance(block, dict) and str(block.get("type") or "").lower() in {"text", "title"}:
+                body_parts.append(str(block.get("text") or ""))
+            elif isinstance(block, str):
+                body_parts.append(block)
+        for part in post.get("content") or []:
+            if isinstance(part, str):
+                body_parts.append(part)
+        post_text = " ".join([title, *body_parts])
+        post_norm = norm(post_text)
+
+        # Mere repetition in the body may be ordinary opinion. Reuse the
+        # surface only when Gatekeeper already named it as a work or the post
+        # explicitly relates it to a title/alias.
+        if candidate_norm in post_norm and candidate_norm in {norm(anchor) for anchor in (post_anchors or [])}:
+            return "post_title_anchor"
+        # The caller checks affirmative relation clauses separately. Do not
+        # infer a relation from two surfaces merely co-occurring in the packet.
+        if re.search(
+            r"(?:제목|작품명|소설명|원제|풀네임|정식\s*명칭)\s*(?:이|가|은|는)?\s*(?:뭐|무엇|뭔|알려|찾|궁금)|"
+            r"(?:제목|작품명|소설명|원제|풀네임)\s*[?？]|"
+            r"(?:무슨|어떤)\s*(?:작품|소설)|(?:이|그)\s*(?:작품|소설)\s*(?:제목|이름)\s*(?:뭐|무엇|뭔)",
+            post_text,
+            flags=re.IGNORECASE,
+        ):
+            return "post_title_request"
+
+        return ""
     
     def _postprocess_comment_titles(
         self,
@@ -696,6 +1069,11 @@ class GatekeeperExpert:
                 candidate_lines = [ln.strip() for ln in raw.splitlines() if ln.strip()]
 
             for line_idx, stripped in enumerate(candidate_lines):
+                for anchor in possible_titles:
+                    related_title = self._explicit_work_title_relation_target(stripped, str(anchor))
+                    if related_title:
+                        stripped = related_title
+                        break
                 if self._looks_like_repeated_reaction_comment(stripped):
                     continue
                 # 구조적으로 제목 후보가 될 수 있는지 먼저 검사
@@ -703,6 +1081,15 @@ class GatekeeperExpert:
                     continue
 
                 speech_act = self._classify_comment_speech_act(stripped)
+                assertion_basis = (
+                    self._explicit_comment_title_relation_basis(
+                        stripped, post, raw, list(possible_titles)
+                    )
+                    or self._comment_title_assertion_basis(stripped, post, post_anchors=possible_titles)
+                    if speech_act == "answer_like" else ""
+                )
+                if speech_act == "answer_like" and not assertion_basis:
+                    speech_act = "unasserted_reaction"
                 comment_title_candidates.append(stripped)
                 has_at_mention = stripped.startswith("@") or raw.lstrip().startswith("@") or "\n@" in raw or " @" in stripped
                 detail = {
@@ -714,6 +1101,7 @@ class GatekeeperExpert:
                     "reply_level": reply_level,
                     "reply_to_comment_id": reply_to_comment_id,
                     "author": author,
+                    "title_assertion_basis": assertion_basis or None,
                 }
                 comment_title_candidate_details.append(detail)
                 is_safe_merge = bool(

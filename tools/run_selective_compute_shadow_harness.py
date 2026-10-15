@@ -355,25 +355,25 @@ def _cost_baseline_summary(
 def _implementation_contract() -> dict[str, Any]:
     refs = {
         "harness_tool": _artifact_ref(Path(__file__)),
-        "routing_contract": _artifact_ref(ROOT / "src/llm_batch/selective_compute_shadow.py"),
+        "routing_contract": _artifact_ref(ROOT / "src/llm_batch/measurement/selective_compute_shadow.py"),
         "future_runtime_instrumentation": _artifact_ref(ROOT / "expert_main.py"),
         "runtime_call_graph": _artifact_ref(ROOT / "src/llm_batch/agentic_pipeline.py"),
-        "physical_call_ledger_contract": _artifact_ref(ROOT / "src/llm_batch/decision_call_events.py"),
+        "physical_call_ledger_contract": _artifact_ref(ROOT / "src/llm_batch/ledger/decision_call_events.py"),
         "physical_call_independent_reader": _artifact_ref(
-            ROOT / "src/llm_batch/decision_call_readback.py"
+            ROOT / "src/llm_batch/ledger/decision_call_readback.py"
         ),
-        "physical_call_wrapper": _artifact_ref(ROOT / "src/llm_batch/decision_tracing_llm.py"),
+        "physical_call_wrapper": _artifact_ref(ROOT / "src/llm_batch/ledger/decision_tracing_llm.py"),
         "after_source_only_router": _artifact_ref(
-            ROOT / "src/llm_batch/early_route_measurement.py"
+            ROOT / "src/llm_batch/measurement/early_route_measurement.py"
         ),
         "paired_measurement_reader": _artifact_ref(
-            ROOT / "src/llm_batch/paired_measurement_readback.py"
+            ROOT / "src/llm_batch/measurement/paired_measurement_readback.py"
         ),
         "paired_measurement_cli": _artifact_ref(
             ROOT / "tools/run_paired_measurement_readback.py"
         ),
         "physical_retry_observer": _artifact_ref(ROOT / "src/llm_batch/llm/client.py"),
-        "publication_cost_noninterference": _artifact_ref(ROOT / "src/llm_batch/publication_commit.py"),
+        "publication_cost_noninterference": _artifact_ref(ROOT / "src/llm_batch/ledger/publication_commit.py"),
         "recovery_tool": _artifact_ref(ROOT / "tools/recover_expert_run_from_checkpoint.py"),
         "contract_tests": _artifact_ref(ROOT / "tests/test_selective_compute_shadow_contract.py"),
         "harness_tests": _artifact_ref(ROOT / "tests/test_selective_compute_shadow_harness.py"),

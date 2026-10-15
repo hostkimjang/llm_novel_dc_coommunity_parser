@@ -7,6 +7,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
 from unittest.mock import patch
+from tests.candidate_shadow_graph_fixture import build_current_shadow_graph, new_graph_directory, artifact_ref, write_json
 
 from src.llm_batch.grounding.calibration_actual_readback import snapshot_artifact
 from src.llm_batch.grounding.calibration_dataset_readiness import (
@@ -43,24 +44,40 @@ from tools.run_candidate_set_calibration_shadow_harness import (
 
 
 ROOT = Path(__file__).resolve().parents[1]
-P1_RUN_SPEC = ROOT / "out/candidate_set_nil_shadow_harness_20260711/v8/run_spec.json"
-P1_COMPARISON = ROOT / "out/candidate_set_nil_shadow_harness_20260711/v8/comparison.json"
-P2_RUN_SPEC = ROOT / "out/publication_exact_once_harness_20260711/v8/run_spec.json"
-P2_COMPARISON = ROOT / "out/publication_exact_once_harness_20260711/v8/comparison.json"
-LABEL_LEDGER = ROOT / "docs/devs/p1_candidate_set_nil_golden18_label_ledger_20260711.json"
-DATASET_READINESS = ROOT / "out/candidate_set_calibration_dataset_readiness_20260712/v2/readiness.json"
 
 
 class CandidateSetCalibrationShadowHarnessTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.spec = create_run_spec(
-            parent_p1_run_spec_path=P1_RUN_SPEC,
-            parent_p1_comparison_path=P1_COMPARISON,
-            parent_p2_run_spec_path=P2_RUN_SPEC,
-            parent_p2_comparison_path=P2_COMPARISON,
-            label_ledger_path=LABEL_LEDGER,
-        )
+        directory = new_graph_directory()
+        cls.addClassCleanup(directory.cleanup)
+        cls.graph = build_current_shadow_graph(Path(directory.name))
+        cls.spec = json.loads(cls.graph.p3.read_text(encoding="utf-8"))
+
+    def test_current_p0_p1_producer_p2_p3_graph_roundtrips_with_exact_source_bytes(self):
+        from tests.candidate_shadow_graph_fixture import p0, p1, producer, p2, p3
+        for name, module in (("p0", p0), ("p1", p1), ("producer", producer), ("p2", p2), ("p3", p3)):
+            with self.subTest(stage=name):
+                spec = module.validate_run_spec(getattr(self.graph, name))[0]
+                for ref in spec["implementation_contract"]["artifacts"].values():
+                    self.assertEqual(ref, artifact_ref(ROOT / ref["path"]))
+        ready = json.loads(self.graph.readiness.read_text(encoding="utf-8"))
+        self.assertEqual("NO_GO_ACTUAL_DATASET_NOT_READY", ready["gate"])
+        self.assertEqual(0, ready["counts"]["ready_rows"])
+        self.assertEqual(18, ready["counts"]["source_rows"])
+        report = json.loads(self.graph.p3_comparison.read_text(encoding="utf-8"))
+        self.assertEqual(p3._comparison_semantic_payload(report), p3._comparison_semantic_payload(build_comparison(self.graph.p3)))
+
+    def test_rehashed_parent_comparison_semantic_tamper_is_rejected(self):
+        forged_comparison = json.loads(self.graph.p1_comparison.read_text(encoding="utf-8"))
+        forged_comparison["summary"]["all_probability_null"] = False
+        path = write_json(self.graph.root / "tampered-p1-comparison.json", forged_comparison)
+        forged = copy.deepcopy(self.spec)
+        forged["artifacts"]["parent_p1_comparison"] = artifact_ref(path)
+        forged["run_spec_sha256"] = _run_spec_self_hash(forged)
+        spec_path = write_json(self.graph.root / "tampered-parent-spec.json", forged)
+        with self.assertRaisesRegex(ValueError, "P1 parent comparison semantic replay mismatch"):
+            validate_run_spec(spec_path)
 
     def test_implementation_contract_binds_actual_readback_foundation(self):
         artifacts = _implementation_contract()["artifacts"]
@@ -221,9 +238,9 @@ class CandidateSetCalibrationShadowHarnessTests(unittest.TestCase):
             ):
                 build_bound_actual_readback_from_files(
                     artifact_root=ROOT,
-                    p1_run_spec_json=P1_RUN_SPEC.relative_to(ROOT).as_posix(),
-                    p1_comparison_json=P1_COMPARISON.relative_to(ROOT).as_posix(),
-                    label_ledger_json=LABEL_LEDGER.relative_to(ROOT).as_posix(),
+                    p1_run_spec_json=self.graph.p1.relative_to(ROOT).as_posix(),
+                    p1_comparison_json=self.graph.p1_comparison.relative_to(ROOT).as_posix(),
+                    label_ledger_json=self.graph.ledger.relative_to(ROOT).as_posix(),
                     actual_evaluation_policy_json=relative_policy,
                     split_manifest_json="not-read-before-readiness.json",
                     source_manifest_json="not-read-before-readiness.json",
@@ -298,9 +315,9 @@ class CandidateSetCalibrationShadowHarnessTests(unittest.TestCase):
             ]
             report = build_actual_preflight_report(
                 artifact_root=ROOT,
-                p1_run_spec_json=P1_RUN_SPEC.relative_to(ROOT).as_posix(),
-                p1_comparison_json=P1_COMPARISON.relative_to(ROOT).as_posix(),
-                label_ledger_json=LABEL_LEDGER.relative_to(ROOT).as_posix(),
+                p1_run_spec_json=self.graph.p1.relative_to(ROOT).as_posix(),
+                p1_comparison_json=self.graph.p1_comparison.relative_to(ROOT).as_posix(),
+                label_ledger_json=self.graph.ledger.relative_to(ROOT).as_posix(),
                 actual_evaluation_policy_json=policy_path.relative_to(ROOT).as_posix(),
                 split_manifest_json=f"{missing_prefix}/split.json",
                 source_manifest_json=f"{missing_prefix}/source.json",
@@ -701,7 +718,7 @@ class CandidateSetCalibrationShadowHarnessTests(unittest.TestCase):
                     baseline_rows=baseline_rows,
                 )
     def test_p3_rejects_self_rehashed_readiness_not_replayed_from_sources(self):
-        forged = json.loads(DATASET_READINESS.read_text(encoding="utf-8"))
+        forged = json.loads(self.graph.readiness.read_text(encoding="utf-8"))
         candidate = next(row for row in forged["rows"] if row["truth_kind"] == "CANDIDATE")
         candidate["expected_title"] = "출처와 다른 조작 제목"
         candidate["row_sha256"] = sha256_payload(
@@ -716,16 +733,16 @@ class CandidateSetCalibrationShadowHarnessTests(unittest.TestCase):
             path.write_text(json.dumps(forged, ensure_ascii=False), encoding="utf-8")
             with self.assertRaisesRegex(ValueError, "source replay mismatch"):
                 create_run_spec(
-                    parent_p1_run_spec_path=P1_RUN_SPEC,
-                    parent_p1_comparison_path=P1_COMPARISON,
-                    parent_p2_run_spec_path=P2_RUN_SPEC,
-                    parent_p2_comparison_path=P2_COMPARISON,
-                    label_ledger_path=LABEL_LEDGER,
+                    parent_p1_run_spec_path=self.graph.p1,
+                    parent_p1_comparison_path=self.graph.p1_comparison,
+                    parent_p2_run_spec_path=self.graph.p2,
+                    parent_p2_comparison_path=self.graph.p2_comparison,
+                    label_ledger_path=self.graph.ledger,
                     dataset_readiness_path=path,
                 )
 
     def test_p3_rejects_label_ledger_not_bound_by_p1(self):
-        forged = json.loads(LABEL_LEDGER.read_text(encoding="utf-8"))
+        forged = json.loads(self.graph.ledger.read_text(encoding="utf-8"))
         candidate = next(row for row in forged["rows"] if row["truth_kind"] == "CANDIDATE")
         candidate["expected_title"] = "P1과 다른 라벨"
         with TemporaryDirectory() as directory:
@@ -733,12 +750,12 @@ class CandidateSetCalibrationShadowHarnessTests(unittest.TestCase):
             path.write_text(json.dumps(forged, ensure_ascii=False), encoding="utf-8")
             with self.assertRaisesRegex(ValueError, "exact P1-bound artifact"):
                 create_run_spec(
-                    parent_p1_run_spec_path=P1_RUN_SPEC,
-                    parent_p1_comparison_path=P1_COMPARISON,
-                    parent_p2_run_spec_path=P2_RUN_SPEC,
-                    parent_p2_comparison_path=P2_COMPARISON,
+                    parent_p1_run_spec_path=self.graph.p1,
+                    parent_p1_comparison_path=self.graph.p1_comparison,
+                    parent_p2_run_spec_path=self.graph.p2,
+                    parent_p2_comparison_path=self.graph.p2_comparison,
                     label_ledger_path=path,
-                    dataset_readiness_path=DATASET_READINESS,
+                    dataset_readiness_path=self.graph.readiness,
                 )
 
     def test_status_validator_replays_readiness_and_p1_label_lineage(self):
@@ -756,7 +773,7 @@ class CandidateSetCalibrationShadowHarnessTests(unittest.TestCase):
 
         with TemporaryDirectory() as directory:
             root = Path(directory)
-            forged_readiness = json.loads(DATASET_READINESS.read_text(encoding="utf-8"))
+            forged_readiness = json.loads(self.graph.readiness.read_text(encoding="utf-8"))
             candidate = next(
                 row for row in forged_readiness["rows"] if row["truth_kind"] == "CANDIDATE"
             )
@@ -787,7 +804,7 @@ class CandidateSetCalibrationShadowHarnessTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "source replay mismatch"):
                 validate_run_spec(spec_path)
 
-            forged_ledger = json.loads(LABEL_LEDGER.read_text(encoding="utf-8"))
+            forged_ledger = json.loads(self.graph.ledger.read_text(encoding="utf-8"))
             forged_ledger["rows"][1]["expected_title"] = "status ledger 조작"
             ledger_path = root / "forged-ledger.json"
             ledger_path.write_text(
@@ -802,7 +819,7 @@ class CandidateSetCalibrationShadowHarnessTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "exact P1-bound artifact"):
                 validate_run_spec(spec_path)
 
-    def test_saved_golden18_stays_no_number_and_not_evaluable(self):
+    def test_saved_synthetic18_stays_no_number_and_not_evaluable(self):
         with TemporaryDirectory() as directory:
             path = write_run_spec(self.spec, Path(directory) / "run_spec.json")
             report = build_comparison(path)
@@ -903,6 +920,29 @@ class CandidateSetCalibrationShadowHarnessTests(unittest.TestCase):
             )
             with self.assertRaisesRegex(ValueError, "metric protocol|policy binding"):
                 validate_run_spec(policy_tampered_path)
+
+
+class CalibrationImplementationContractTests(unittest.TestCase):
+    def test_current_grounding_paths_and_default_remain_strict(self):
+        import inspect
+        from tools import run_candidate_set_calibration_shadow_harness as harness
+
+        self.assertIs(True, inspect.signature(validate_run_spec).parameters["verify_implementation"].default)
+        artifacts = _implementation_contract()["artifacts"]
+        expected = {"calibration_contract": "candidate_set_calibration_shadow.py",
+                    "candidate_set_shadow": "candidate_set_shadow.py",
+                    "actual_artifact_readback": "calibration_actual_readback.py",
+                    "dataset_readiness_contract": "calibration_dataset_readiness.py"}
+        for name, filename in expected.items():
+            relative = "src/llm_batch/grounding/" + filename
+            raw = (ROOT / relative).read_bytes()
+            self.assertEqual(relative, artifacts[name]["path"])
+            self.assertEqual(hashlib.sha256(raw).hexdigest(), artifacts[name]["sha256"])
+            self.assertEqual(len(raw), artifacts[name]["bytes"])
+        implementation = _implementation_contract()
+        implementation["artifacts"]["calibration_contract"]["bytes"] = 0
+        with self.assertRaisesRegex(ValueError, "frozen implementation bytes invalid"):
+            harness._validate_frozen_implementation_contract(implementation)
 
 
 if __name__ == "__main__":

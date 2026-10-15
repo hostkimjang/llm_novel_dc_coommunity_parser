@@ -1,0 +1,295 @@
+{
+  "status": "HISTORICAL_SOURCE_COMPATIBILITY_FIXTURE",
+  "human_gold": false,
+  "independent_holdout": false,
+  "rights_status": "UNKNOWN",
+  "visual_pixels_verified": false,
+  "records": {
+    "11706856": {
+      "source": {
+        "post_id": 11706856,
+        "title": "요세의 백합계의 슈퍼스타는 뭐임",
+        "author": "ㅇㅇ",
+        "content_blocks": [
+          {
+            "type": "text",
+            "text": "알려다오 장붕"
+          }
+        ],
+        "comments": [
+          "누드모드",
+          "",
+          "초 가구야 공주",
+          "내가 연인이 될 수 있을리 없잔ㄴㅎ아 무리무리무리!(무리가 아니었다?!)재밌게봄",
+          "너",
+          "",
+          "나",
+          "",
+          "@ㅇㅇ(58.29)\n고정닉이 없는 곳에서 이정도의 디시콘을",
+          "@아이아\n제-하하하!!! 짤도 달릴수 있다고"
+        ],
+        "comment_metadata": [
+          {
+            "index": 0,
+            "comment_id": "40436225",
+            "gallery_id": "genrenovel",
+            "author": "ㅇㅇ",
+            "ip": null,
+            "speaker": "user1",
+            "created_at": "01.26 04:58:07",
+            "reply_to_comment_id": null,
+            "reply_level": 0,
+            "is_post_author": false,
+            "post_author_match_unverified": true
+          },
+          {
+            "index": 1,
+            "comment_id": "40436248",
+            "gallery_id": "genrenovel",
+            "author": "ㅇㅇ",
+            "ip": "58.29",
+            "speaker": "user2",
+            "created_at": "01.26 05:00:01",
+            "reply_to_comment_id": null,
+            "reply_level": 0,
+            "is_post_author": false,
+            "post_author_match_unverified": true
+          },
+          {
+            "index": 2,
+            "comment_id": "40436228",
+            "gallery_id": "genrenovel",
+            "author": "커피소금빵",
+            "ip": null,
+            "speaker": "user3",
+            "created_at": "01.26 04:58:24",
+            "reply_to_comment_id": null,
+            "reply_level": 0,
+            "is_post_author": false,
+            "post_author_match_unverified": false
+          },
+          {
+            "index": 3,
+            "comment_id": "40436239",
+            "gallery_id": "genrenovel",
+            "author": "ㅇㅇ",
+            "ip": "58.29",
+            "speaker": "user2",
+            "created_at": "01.26 04:59:15",
+            "reply_to_comment_id": null,
+            "reply_level": 0,
+            "is_post_author": false,
+            "post_author_match_unverified": true
+          },
+          {
+            "index": 4,
+            "comment_id": "40436232",
+            "gallery_id": "genrenovel",
+            "author": "트리토돈",
+            "ip": null,
+            "speaker": "user4",
+            "created_at": "01.26 04:58:30",
+            "reply_to_comment_id": null,
+            "reply_level": 0,
+            "is_post_author": false,
+            "post_author_match_unverified": false
+          },
+          {
+            "index": 5,
+            "comment_id": "40436242",
+            "gallery_id": "genrenovel",
+            "author": "ㅇㅇ",
+            "ip": "58.29",
+            "speaker": "user2",
+            "created_at": "01.26 04:59:40",
+            "reply_to_comment_id": null,
+            "reply_level": 0,
+            "is_post_author": false,
+            "post_author_match_unverified": true
+          },
+          {
+            "index": 6,
+            "comment_id": "40436240",
+            "gallery_id": "genrenovel",
+            "author": "아이아",
+            "ip": null,
+            "speaker": "user5",
+            "created_at": "01.26 04:59:18",
+            "reply_to_comment_id": null,
+            "reply_level": 0,
+            "is_post_author": false,
+            "post_author_match_unverified": false
+          },
+          {
+            "index": 7,
+            "comment_id": "40436241",
+            "gallery_id": "genrenovel",
+            "author": "ㅇㅇ",
+            "ip": "58.29",
+            "speaker": "user2",
+            "created_at": "01.26 04:59:29",
+            "reply_to_comment_id": null,
+            "reply_level": 0,
+            "is_post_author": false,
+            "post_author_match_unverified": true
+          },
+          {
+            "index": 8,
+            "comment_id": "40436247",
+            "gallery_id": "genrenovel",
+            "author": "아이아",
+            "ip": null,
+            "speaker": "user5",
+            "created_at": "01.26 05:00:01",
+            "reply_to_comment_id": "40436241",
+            "reply_level": 1,
+            "is_post_author": false,
+            "post_author_match_unverified": false
+          },
+          {
+            "index": 9,
+            "comment_id": "40436256",
+            "gallery_id": "genrenovel",
+            "author": "ㅇㅇ",
+            "ip": "58.29",
+            "speaker": "user2",
+            "created_at": "01.26 05:00:30",
+            "reply_to_comment_id": "40436247",
+            "reply_level": 1,
+            "is_post_author": false,
+            "post_author_match_unverified": true
+          }
+        ]
+      },
+      "source_file": "out\\completed779_improvement_goal_20260622\\inputs\\hermes_loop4_text_url_comment.jsonl",
+      "source_file_sha256": "9addf3f505901a1d9cb7736e8872d9e38a2b8344ac4d1684ee87682be1a9b1b8",
+      "selected_source_sha256": "54120f164f14f7b734857f2117c7c59e132651a50dde36da6ffb2664b05b3fd8"
+    },
+    "11716478": {
+      "source": {
+        "post_id": 11716478,
+        "title": "근친물은 무조건 1장녀 2작은누나 3여동생 공식이네",
+        "author": "북부",
+        "content_blocks": [
+          {
+            "type": "image",
+            "url": "https://dcimg7.dcinside.co.kr/viewimage.php?id=2ab8de34e0dc37b06bb3&no=29bcc427b69d39b37ab0ccaf17dd6b6f62b51891c5c7132c135fd7cb90b237cd8de39bd6ae83253c2dca786bfd32438d18ecdd881cf5224e03b6cad1"
+          },
+          {
+            "type": "text",
+            "text": "항상 먼저 따먹히는건"
+          },
+          {
+            "type": "text",
+            "text": "만만한 작은누나고"
+          }
+        ],
+        "comments": [
+          "일단 뭐 보고 그말하는진 알겠다",
+          "ㄹㅇ",
+          "2작품이 똑같이 가길래...",
+          "@북부\n2개 제목 혹시 알려줄 수 있음?",
+          "@ㅇㅇ2(220.94)\n가족친화적게임 / 엄마가 낳은 정실들",
+          "@북부",
+          "2가 장난끼 많은 누나 3이 포근한 거유 누나인 경우도 있음"
+        ],
+        "comment_metadata": [
+          {
+            "index": 0,
+            "comment_id": "40473019",
+            "gallery_id": "genrenovel",
+            "author": "ㅇㅇ1",
+            "ip": "1.231",
+            "speaker": "user1",
+            "created_at": "01.28 11:50:01",
+            "reply_to_comment_id": null,
+            "reply_level": 0,
+            "is_post_author": false,
+            "post_author_match_unverified": false
+          },
+          {
+            "index": 1,
+            "comment_id": "40473023",
+            "gallery_id": "genrenovel",
+            "author": "ㅇㅇ",
+            "ip": null,
+            "speaker": "user2",
+            "created_at": "01.28 11:50:28",
+            "reply_to_comment_id": null,
+            "reply_level": 0,
+            "is_post_author": false,
+            "post_author_match_unverified": false
+          },
+          {
+            "index": 2,
+            "comment_id": "40473024",
+            "gallery_id": "genrenovel",
+            "author": "북부",
+            "ip": null,
+            "speaker": "post_author",
+            "created_at": "01.28 11:50:48",
+            "reply_to_comment_id": null,
+            "reply_level": 0,
+            "is_post_author": true,
+            "post_author_match_unverified": false
+          },
+          {
+            "index": 3,
+            "comment_id": "40480410",
+            "gallery_id": "genrenovel",
+            "author": "ㅇㅇ2",
+            "ip": "220.94",
+            "speaker": "user3",
+            "created_at": "01.28 19:34:56",
+            "reply_to_comment_id": "40473024",
+            "reply_level": 1,
+            "is_post_author": false,
+            "post_author_match_unverified": false
+          },
+          {
+            "index": 4,
+            "comment_id": "40480807",
+            "gallery_id": "genrenovel",
+            "author": "북부",
+            "ip": null,
+            "speaker": "post_author",
+            "created_at": "01.28 20:07:26",
+            "reply_to_comment_id": "40480410",
+            "reply_level": 1,
+            "is_post_author": true,
+            "post_author_match_unverified": false
+          },
+          {
+            "index": 5,
+            "comment_id": "40481025",
+            "gallery_id": "genrenovel",
+            "author": "ㅇㅇ2",
+            "ip": "220.94",
+            "speaker": "user3",
+            "created_at": "01.28 20:21:30",
+            "reply_to_comment_id": "40480807",
+            "reply_level": 1,
+            "is_post_author": false,
+            "post_author_match_unverified": false
+          },
+          {
+            "index": 6,
+            "comment_id": "40473028",
+            "gallery_id": "genrenovel",
+            "author": "메이즈",
+            "ip": null,
+            "speaker": "user4",
+            "created_at": "01.28 11:51:16",
+            "reply_to_comment_id": null,
+            "reply_level": 0,
+            "is_post_author": false,
+            "post_author_match_unverified": false
+          }
+        ]
+      },
+      "source_file": "out\\completed779_improvement_goal_20260622\\inputs\\hermes_loop4_image_ocr.jsonl",
+      "source_file_sha256": "c0ce095b57d150cbefaddc7b05f3b9561caccbc41bee7a45717addeab76fbc45",
+      "selected_source_sha256": "669f3dde3f9b95673612f84fd4c244888e0ec1a6c309d9910811640de04730ae"
+    }
+  }
+}

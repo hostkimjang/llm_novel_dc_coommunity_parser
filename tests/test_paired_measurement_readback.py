@@ -28,6 +28,7 @@ from src.llm_batch.measurement.selective_compute_shadow import (
 from src.llm_batch.measurement.paired_measurement_readback import (
     REFERENCE_COPY_COST_ONLY,
     RUN_SPEC_SCHEMA_VERSION,
+    LEGACY_RUN_SPEC_SCHEMA_VERSION,
     build_paired_measurement_run_spec,
     build_paired_measurement_readback,
     validate_paired_measurement_run_spec,
@@ -89,7 +90,15 @@ def _runtime_fields(input_count: int) -> dict:
         "mcp_healthy_endpoint_filter_reason": "reuse_shards_only",
         "publication_config_sha256": PUBLICATION_CONFIG_SHA,
         "publication_decision_environment_sha256": DECISION_ENVIRONMENT_SHA,
-        "publication_slang_db_input_sha256": SLANG_INPUT_SHA,
+        "publication_slang_db_input_sha256": None,
+        "publication_slang_db_input_binding": {
+            "schema_version": "publication_slang_input_binding_v1",
+            "access_mode": "OFF",
+            "status": "OFF_NOT_READ",
+            "enabled": False,
+            "input_read": False,
+            "input_sha256": None,
+        },
         "publication_release_fingerprint": RELEASE_FINGERPRINT,
     }
 
@@ -167,6 +176,7 @@ class PairedMeasurementReadbackTests(unittest.TestCase):
                 source_manifest_path=before,
                 pair_id=PAIR_ID,
                 slang_access_mode="OFF",
+                run_spec_schema_version=RUN_SPEC_SCHEMA_VERSION,
             )
             frozen = Path(tmp) / "frozen_run_spec.json"
             frozen.write_text(
@@ -198,12 +208,49 @@ class PairedMeasurementReadbackTests(unittest.TestCase):
                     json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
                     encoding="utf-8",
                 )
-                with self.assertRaises(ValueError):
+                expected = {
+                    "mcp_health_light_mode": "runtime readiness",
+                    "mcp_health_failure_count": "search/reuse-shards-only policy mismatch",
+                    "large_run_complete": "not large_run_complete",
+                }[field]
+                with self.assertRaisesRegex(ValueError, expected):
                     build_paired_measurement_run_spec(
                         input_path=input_path,
                         source_manifest_path=before,
                         pair_id=PAIR_ID,
+                        run_spec_schema_version=RUN_SPEC_SCHEMA_VERSION,
                     )
+
+    def test_current_revision_rejects_off_slang_snapshot_or_missing_binding(self) -> None:
+        for fault in ("snapshot", "missing_binding"):
+            with self.subTest(fault=fault), tempfile.TemporaryDirectory() as tmp:
+                before, _, _, _ = self._fixture(Path(tmp))
+                manifest = json.loads(before.read_text(encoding="utf-8"))
+                if fault == "snapshot":
+                    manifest["publication_slang_db_input_sha256"] = SLANG_INPUT_SHA
+                else:
+                    manifest.pop("publication_slang_db_input_binding")
+                before.write_text(json.dumps(manifest), encoding="utf-8")
+                with self.assertRaisesRegex(ValueError, "OFF slang input|binding mismatch"):
+                    build_paired_measurement_run_spec(
+                        input_path=_claimed_input_path(before), source_manifest_path=before,
+                        pair_id=PAIR_ID, run_spec_schema_version=RUN_SPEC_SCHEMA_VERSION,
+                    )
+
+    def test_legacy_builder_revision_remains_explicitly_supported(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            before, _, _, _ = self._fixture(Path(tmp))
+            manifest = json.loads(before.read_text(encoding="utf-8"))
+            manifest["publication_slang_db_input_sha256"] = SLANG_INPUT_SHA
+            manifest.pop("publication_slang_db_input_binding")
+            before.write_text(json.dumps(manifest), encoding="utf-8")
+            spec = build_paired_measurement_run_spec(
+                input_path=_claimed_input_path(before), source_manifest_path=before,
+                pair_id=PAIR_ID, run_spec_schema_version=LEGACY_RUN_SPEC_SCHEMA_VERSION,
+            )
+            target = Path(tmp) / "legacy_spec.json"
+            target.write_text(json.dumps(spec), encoding="utf-8")
+            self.assertEqual(validate_paired_measurement_run_spec(target)["schema_version"], LEGACY_RUN_SPEC_SCHEMA_VERSION)
 
     def _fixture(
         self,
@@ -212,7 +259,9 @@ class PairedMeasurementReadbackTests(unittest.TestCase):
         after_zero_indices: set[int] | None = None,
         input_format: str = "jsonl",
         input_post_ids: list[int] | None = None,
-        with_execution_envelope: bool = False,
+        with_execution_envelope: bool = True,
+        low_load: dict | None = None,
+        usage_provenance: str = "PROVIDER_REPORTED",
     ) -> tuple[Path, Path, Path, Path]:
         post_ids = [101, 102]
         serialized_post_ids = post_ids if input_post_ids is None else input_post_ids
@@ -256,6 +305,9 @@ class PairedMeasurementReadbackTests(unittest.TestCase):
             create_new=True,
         )
         runtime_fields = _runtime_fields(len(post_ids))
+        if low_load is not None:
+            runtime_fields.update(requested_parallel=low_load["execution_config"]["requested_parallel"],
+                                  effective_parallel=low_load["execution_config"]["effective_parallel"], mcp_health_ok_count=1)
         authoritative_results = {
             1: _valid_result(post_id=101, publish=False),
             2: _valid_result(post_id=102, publish=True),
@@ -287,8 +339,10 @@ class PairedMeasurementReadbackTests(unittest.TestCase):
                 "min_comparable_rows": 2,
             }
         arm_fields = _arm_measurement_fields()
+        if low_load is not None:
+            shared_measurement["execution_policy_binding"] = deepcopy(low_load["policy_binding"])
         run_spec = {
-            "schema_version": RUN_SPEC_SCHEMA_VERSION,
+            "schema_version": low_load.get("run_spec_schema", paired_readback_module.LOW_LOAD_RUN_SPEC_SCHEMA_VERSION) if low_load is not None else RUN_SPEC_SCHEMA_VERSION,
             "pair_id": PAIR_ID,
             "publication_scope_id": descriptor.publication_scope_id,
             "publication_input_snapshot_sha256": descriptor.input_file_sha256,
@@ -306,6 +360,8 @@ class PairedMeasurementReadbackTests(unittest.TestCase):
                 "full_scan_approval": False,
             },
         }
+        if low_load is not None:
+            run_spec["execution_policy"] = deepcopy(low_load["policy_binding"])
         run_spec["run_spec_sha256"] = _canonical_hash(run_spec)
         run_spec_path = root / "paired_run_spec.json"
         run_spec_path.write_text(
@@ -324,6 +380,14 @@ class PairedMeasurementReadbackTests(unittest.TestCase):
                 "run_spec_sha256": run_spec["run_spec_sha256"],
                 "pair_id": PAIR_ID,
                 "arm": arm,
+                "run_spec_file_binding": {
+                    "schema_version": "paired_measurement_runspec_file_binding_v1",
+                    "path": str(run_spec_path.resolve()),
+                    "file_sha256": hashlib.sha256(run_spec_path.read_bytes()).hexdigest(),
+                    "self_sha256": run_spec["run_spec_sha256"],
+                    "pair_id": PAIR_ID,
+                    "arm": arm,
+                },
             }
             ledger_path = root / f"{arm.lower()}_ledger"
             registry = DecisionCallLedgerRegistry(
@@ -368,10 +432,10 @@ class PairedMeasurementReadbackTests(unittest.TestCase):
                         terminal_status="SUCCEEDED",
                         resolved_model=runtime_fields["llm_model"],
                         response_sha256="2" * 64,
-                        usage_provenance="PROVIDER_REPORTED",
-                        prompt_tokens=10,
-                        completion_tokens=2,
-                        total_tokens=12,
+                        usage_provenance=usage_provenance,
+                        prompt_tokens=None if usage_provenance == "UNAVAILABLE" else 10,
+                        completion_tokens=None if usage_provenance == "UNAVAILABLE" else 2,
+                        total_tokens=None if usage_provenance == "UNAVAILABLE" else 12,
                         finished_at=FINISHED,
                         monotonic_finished_ns=1_100_000_000,
                     )
@@ -396,6 +460,13 @@ class PairedMeasurementReadbackTests(unittest.TestCase):
                     "decision_call_measurement": deepcopy(measurement),
                     "measurement_execution_source": "FRESH_EXECUTION_NO_PUBLIC_WRITE",
                 }
+                if low_load is not None:
+                    run_meta.update(
+                        execution_config=deepcopy(low_load["execution_config"]),
+                        paired_execution_runtime_fields=deepcopy(low_load["runtime_fields"]),
+                        paired_execution_observation=low_load["observation_factory"](
+                            arm, run_id, descriptor, index=index, post_id=post_id),
+                    )
                 if with_execution_envelope:
                     before_wall = 100 * index
                     wall_ms = before_wall if arm == "BEFORE" else 80 * index
@@ -546,6 +617,12 @@ class PairedMeasurementReadbackTests(unittest.TestCase):
                 "output_attempt_claim_sha256": hashlib.sha256(claim_bytes).hexdigest(),
                 **runtime_fields,
             }
+            if low_load is not None:
+                manifest.update(
+                    execution_config=deepcopy(low_load["execution_config"]),
+                    paired_execution_runtime_fields=deepcopy(low_load["runtime_fields"]),
+                    paired_execution_observation=low_load["observation_factory"](arm, run_id, descriptor),
+                )
             manifest_path = root / f"{arm.lower()}_manifest.json"
             manifest_path.write_text(
                 json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
