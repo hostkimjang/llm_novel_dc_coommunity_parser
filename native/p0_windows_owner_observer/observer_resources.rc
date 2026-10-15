@@ -1,0 +1,5 @@
+#include <windows.h>
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+
+OWNER_POLICY_P256_SPKI P0_OWNER_BOOTSTRAP_V2 "bootstrap_candidate.bin"

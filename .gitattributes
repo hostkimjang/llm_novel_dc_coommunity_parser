@@ -1,2 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# 원시 fixture와 native marker resource의 바이트 보존
+/tests/fixtures/** -text
+/native/p0_windows_owner_observer/bootstrap_candidate.bin binary

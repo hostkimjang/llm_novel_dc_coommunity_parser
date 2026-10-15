@@ -1,0 +1,38 @@
+{
+  "action_applied": false,
+  "authority": "SHADOW_ONLY",
+  "central_slang_db_write": false,
+  "context_decisions": {
+    "bytes": 39119,
+    "path": "p0_context_decision_contract_v1.jsonl",
+    "rows": 20,
+    "sha256": "a80dba214471de8ca192b27beea2060d4e84d34c0a279aaa3164bd85c56ff108"
+  },
+  "core_dependency_delta": [],
+  "external_retriever": "DISABLED_P0",
+  "fixture_origin": "SYNTHETIC_CONTRACT_ONLY",
+  "gate_scope": "P0_CONTRACT_FIXTURE_ONLY_METRICS_NOT_ESTIMABLE",
+  "manifest_sha256": "b0b2c9f8e5c1f47b6b63eef4113e2b133b2c06acdb647c7c35cd2b05d431b80f",
+  "noninterference_contract_scope": "DECLARED_NO_WRITE_FIELDS_ONLY",
+  "operational_effect": "NONE_SHADOW_ONLY",
+  "profile_counts": {
+    "COMMUNITY_STRUCTURED": 10,
+    "GENERIC_FALLBACK": 10,
+    "MEDIA_OCR": 10,
+    "OFFICIAL_STRUCTURED": 10
+  },
+  "public_apply": false,
+  "publication_wal_write": false,
+  "required_independence_groups": 30,
+  "schema_version": "p0_grounding_contract_fixture_manifest_v1",
+  "source_claims": {
+    "bytes": 85068,
+    "path": "p0_source_claim_contract_v1.jsonl",
+    "rows": 40,
+    "sha256": "5b71012a75d9f8c14d332b7b83d94183afa17ec646fd780560632b5bfb9a2795"
+  },
+  "track_counts": {
+    "A": 20,
+    "B": 20
+  }
+}

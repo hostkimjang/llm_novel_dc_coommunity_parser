@@ -1,0 +1,36 @@
+{
+  "actual_a_context_reviews": 0,
+  "annotation_events": {
+    "bytes": 6432,
+    "path": "p0_annotation_events_example_v1.jsonl",
+    "rows": 4,
+    "sha256": "8d26ba8193e7491099a298823b3bb2ad0a0b96a1c58904c716b84b950a9b3855"
+  },
+  "authority": "SHADOW_ONLY",
+  "b_sense_contexts": {
+    "bytes": 10357,
+    "path": "p0_b_sense_contract_example_v1.jsonl",
+    "rows": 4,
+    "sha256": "9a9b2ecb4073636efd2f179c21c8d5022ef481700acd0126ff46b33d65fa9695"
+  },
+  "central_slang_db_write": false,
+  "gate_scope": "ACTUAL_SCHEMA_CONTRACT_EXAMPLE_ONLY_METRICS_NOT_ESTIMABLE",
+  "manifest_sha256": "f8447c25f2e5da9216155bddc16c1e147a4e286d071994144dd4d0010bb2332d",
+  "p0_phase_exit": false,
+  "public_apply": false,
+  "publication_wal_write": false,
+  "record_origin": "ACTUAL_SCHEMA_CONTRACT_EXAMPLE_ONLY",
+  "schema_version": "p0_actual_contract_example_manifest_v1",
+  "source_claims": {
+    "bytes": 6202,
+    "path": "p0_source_claim_example_v1.jsonl",
+    "rows": 5,
+    "sha256": "4cbeba00e4a76dba13e61b2b5b5c9c49d2e577a2e715347a2018fc4d7e248e0c"
+  },
+  "source_snapshots": {
+    "bytes": 12873,
+    "path": "p0_source_snapshot_registry_example_v1.jsonl",
+    "rows": 5,
+    "sha256": "2e91750ae8a4dc85ca028fdba02d9ed596153ffa4f90e056d93e08b3bb372d3e"
+  }
+}
