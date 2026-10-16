@@ -2,6 +2,13 @@
 
 > 현재 상태는 [현재 상태 문서](CURRENT_STATUS_KO.md)를 따른다. 날짜별 기록과 `out/`·`logs/` 링크는 로컬 보존 자료이며 Git checkout에 포함되지 않을 수 있다.
 
+## 2026-10-16 main push와 로컬 브랜치 정리
+
+- [x] main을 origin에 정상 push하고 원격 main의 SHA를 검산했다.
+- [x] 로컬 브랜치2개의 모든 커밋이 main에 포함되고 다른 worktree에서 사용하지 않는지 확인한 뒤 일반 삭제했다.
+- [x] 기존 detached worktree·실행 원본을 보존하고 로컬 브랜치 main만 남겼다.
+- [x] 이후 main 직접 작업 기준을 AGENTS에 반영하고 정리 결과를 이력에 기록했다.
+
 ## 2026-10-16 로컬 main 병합 확인
 
 - [x] 원격 main을 fetch하고 작업 트리 clean·main 조상 관계·다른 worktree 미사용을 확인했다.

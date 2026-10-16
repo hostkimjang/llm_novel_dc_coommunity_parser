@@ -2,6 +2,12 @@
 
 > 현재 상태는 [현재 상태 문서](CURRENT_STATUS_KO.md)를 따른다. 날짜별 기록과 `out/`·`logs/` 링크는 로컬 보존 자료이며 Git checkout에 포함되지 않을 수 있다.
 
+## 2026-10-16 main 원격 반영과 로컬 브랜치 정리
+
+사용자 지시에 따라 `main`의 `144fc1b708f2c233cc9cc81ded3924bf8c982969`를 `origin/main`으로 push하고 원격 ref를 대조했다. main에 모두 포함된 로컬 `codex/grounding-community-handoff-20260901`과 `codex/source-layout-publish`는 독립 커밋0·worktree 사용0을 확인한 뒤 일반 삭제했다. 로컬 브랜치는 `main`만 유지한다.
+
+이후 기본 프로젝트의 개발·수정은 main에서 직접 진행하며 별도 작업 브랜치는 사용자 명시 요청을 따른다. 이 기준을 `AGENTS.md`에 기록했다. 원본 증거가 있는 기존 `233b` detached worktree는 보존한다. 제품 소스와 기존398 회귀 검증 범위, 의미·연구 후속 상태는 바꾸지 않았다. push·정리·최종 동기화 근거는 로컬 `out/main_push_cleanup_20261016_v1/`에 보관한다.
+
 ## 2026-10-16 로컬 main 브랜치 병합
 
 `codex/grounding-community-handoff-20260901`의 `a5a779213fb912e03ded74704f7596ff125b6eee`를 로컬 `main`에 fast-forward로 통합했다. 기존 main `de693eede2f376c6db728b91d7ca274afd71d5af` 이후의 WIP1개와 정리 커밋4개를 포함하며 충돌은0개다.
