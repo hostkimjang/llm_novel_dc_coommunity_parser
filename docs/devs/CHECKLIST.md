@@ -2,6 +2,13 @@
 
 > 현재 상태는 [현재 상태 문서](CURRENT_STATUS_KO.md)를 따른다. 날짜별 기록과 `out/`·`logs/` 링크는 로컬 보존 자료이며 Git checkout에 포함되지 않을 수 있다.
 
+## 2026-10-16 로컬 main 병합 확인
+
+- [x] 원격 main을 fetch하고 작업 트리 clean·main 조상 관계·다른 worktree 미사용을 확인했다.
+- [x] 작업 브랜치5커밋을 main에 충돌 없이 fast-forward하고 main으로 전환했다.
+- [x] 병합 직후 commit·tree 동일성과 보호 소스483파일을 대조해 기존398 회귀 검증의 적용 범위를 확인했다.
+- [x] 로컬 병합·원격 push 미수행·기존 의미/연구 후속 상태를 이력에 기록했다.
+
 <!-- r5-resolution-current:start -->
 
 ## 현재 상태 안내 — 2026-10-15

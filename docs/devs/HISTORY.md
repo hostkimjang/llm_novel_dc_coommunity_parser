@@ -2,6 +2,14 @@
 
 > 현재 상태는 [현재 상태 문서](CURRENT_STATUS_KO.md)를 따른다. 날짜별 기록과 `out/`·`logs/` 링크는 로컬 보존 자료이며 Git checkout에 포함되지 않을 수 있다.
 
+## 2026-10-16 로컬 main 브랜치 병합
+
+`codex/grounding-community-handoff-20260901`의 `a5a779213fb912e03ded74704f7596ff125b6eee`를 로컬 `main`에 fast-forward로 통합했다. 기존 main `de693eede2f376c6db728b91d7ca274afd71d5af` 이후의 WIP1개와 정리 커밋4개를 포함하며 충돌은0개다.
+
+병합 직후 main의 commit·tree는 작업 브랜치와 같고 보호 소스483파일의 바이트도 유지됐다. 새 checkout의 관련398 PASS·외부 소스 유입0 검증을 재사용한다. 이력·체크리스트 기록만 후속 문서 커밋으로 남긴다. 제품을 추가 변경하거나 의미 품질 승인을 확대하지 않았다.
+
+원격 main을 fetch해 기준을 확인했으며 이번 작업은 로컬 병합이다. `origin/main`은 위의 기존 main이고 push는 수행하지 않았다. 전체 의미 `REVIEW`, 정식 KPI `NOT_ESTIMABLE`, 기존5실패·독립 평가/R7 보류와 새 proposal/delta 실측 미관측을 유지한다. 상세 근거는 로컬 `out/main_merge_20261016_v1/`에 보관한다.
+
 <!-- r5-resolution-current:start -->
 
 ## 현재 상태 안내 — 2026-10-15
