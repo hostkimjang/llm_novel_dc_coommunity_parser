@@ -829,3 +829,6 @@ tests/inputs/test01.jsonl
 !/tests/test_llm_retry_observer.py
 !/tools/build_community_knowledge_snapshot.py
 !/tools/build_research_evaluation_snapshot.py
+
+# README 정리 전 작업 기록은 로컬에만 보존
+/docs/devs/archive/20261015/

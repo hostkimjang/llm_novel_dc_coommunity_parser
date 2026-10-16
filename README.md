@@ -2,12 +2,6 @@
 
 커뮤니티 게시글과 댓글에서 웹소설 작품·약어를 찾고, 검색 근거를 확인해 작품 식별과 담론 분석 결과를 저장합니다. 주 실행기는 `expert_main.py`이며 웹 대시보드에서 진행률, 분석 메모, 문맥 진단, 실행 이력을 확인할 수 있습니다.
 
-## 현재 상태
-
-2026-10-15 기준 **현재 80건으로 가능한 개발·검증을 완료했고 Goal은 `complete`입니다.** R5 실패 원인 수정, 관련 제품 회귀 398개, 저장 실패 사례 재생과 국소 실측·화면 확인을 마쳤습니다.
-
-전체 80건의 의미 품질은 `REVIEW`이며 정식 개선율은 `NOT_ESTIMABLE`입니다. 기존 회귀 실패 5건, 독립 성능평가와 R7 production 전환은 후속 범위입니다. 새 proposal/delta 분기의 실측 효과도 아직 관측되지 않았습니다. 수치의 범위와 증거는 [현재 상태와 남은 작업](docs/devs/CURRENT_STATUS_KO.md)을 기준으로 확인하세요.
-
 ## 빠른 시작
 
 Python 3.10 이상이 필요합니다. 저장소 루트에서 실행합니다.
@@ -17,7 +11,7 @@ python -m pip install -e .
 docker compose up -d --build
 ```
 
-현재 `expert_main`은 remote 모드로 실행합니다. 기본 서버가 로컬 환경과 다를 수 있으므로 접근 가능한 OpenAI 호환 서버 주소와 모델을 명시하세요.
+`expert_main`은 remote 모드로 실행합니다. 기본 서버가 로컬 환경과 다를 수 있으므로 접근 가능한 OpenAI 호환 서버 주소와 모델을 명시하세요.
 
 ```powershell
 $env:LLM_ENDPOINT = "http://localhost:8000"
@@ -25,7 +19,7 @@ $env:LLM_MODEL = "<서버가 제공하는 모델명>"
 python expert_main.py tests/inputs/sample.jsonl --parallel 12 --execution-profile low-load-validation --output out/example/result.json
 ```
 
-테스트·검증 실행의 요청 병렬도는 **12**, 대시보드는 **ON**을 사용합니다. 실제 병렬도는 입력 수와 사용 가능한 endpoint에 따라 줄어들 수 있으므로 manifest의 `requested_parallel`과 `effective_parallel`을 함께 확인하세요. 저부하 프로필은 CPU 자원 제한, 문맥 진단, 호출 원장 관측을 적용하며 개별 CLI·환경 설정이 프로필 기본값보다 우선합니다.
+`--parallel`은 워커 수의 상한이며 위 예시는 12로 설정합니다. 실제 병렬도는 입력 수와 사용 가능한 endpoint에 따라 줄어들 수 있으므로 manifest의 `requested_parallel`과 `effective_parallel`을 함께 확인하세요. 저부하 프로필은 CPU 자원 제한, 문맥 진단, 호출 원장 관측을 적용하며 개별 CLI·환경 설정이 프로필 기본값보다 우선합니다.
 
 `pyproject.toml`이 설치 의존성의 기준입니다. 별도 `requirement.txt`는 기존 환경의 고정 버전 목록이며 설치·CLI 계약과 동일한 목록으로 보지 않습니다.
 
@@ -62,7 +56,7 @@ JSONL 입력은 한 줄에 게시글 하나를 담습니다. 댓글은 생략할
 | 로그 | `logs/expert_run_<run_id>.log` | 전문가 협업과 실행 진단 |
 | worker 로그 | `logs/expert_run_<run_id>_W<N>.log` | 병렬 작업별 진단 |
 
-작품 후보와 실제 공개 제목·URL은 구분합니다. `HOLD`나 `context_only` 결과에도 원문·후보를 보존할 수 있으며, 정상 종료와 대시보드 완료 표시는 의미 품질 승인을 대신하지 않습니다.
+작품 후보와 공개 제목·URL은 별도 필드입니다. `HOLD`나 `context_only` 결과에는 문맥상 참조 후보가 남아 있을 수 있습니다.
 
 ## 구성과 설정
 
@@ -82,11 +76,9 @@ JSONL 입력은 한 줄에 게시글 하나를 담습니다. 댓글은 생략할
 
 | 목적 | 문서 |
 | --- | --- |
-| 완료 범위·남은 작업 | [현재 상태](docs/devs/CURRENT_STATUS_KO.md) · [목표](goal.md) |
-| 전문가·출력·실행 옵션 | [전문가 실행 안내](expert_readme.md) |
-| 개발 문서 찾기 | [개발 문서 허브](docs/devs/README.md) |
-| 전체 구조 | [아키텍처](docs/ARCHITECTURE.md) |
-| 변경·검증 절차 | [체크리스트](docs/devs/CHECKLIST.md) · [검증 기록](docs/devs/VERIFICATION_RESULTS.md) |
-| 변경 전 문서와 과거 실행법 | [정리 전 기록](docs/devs/archive/20261015/README.md) · [레거시](README_legacy_pipeline.md) |
-
-실행 결과·원문·상세 계측은 로컬 `out/`와 `logs/`에 보관합니다. Git에는 재사용 가능한 제품·도구·시험과 문서를 남깁니다. 보존 기준은 [코드 산출물 정책](docs/devs/CODE_ARTIFACT_CLEANUP_POLICY_KO.md)을 따릅니다.
+| 전문가 역할·실행 옵션 | [전문가 실행 안내](expert_readme.md) |
+| 시스템 구조 | [아키텍처](docs/ARCHITECTURE.md) · [소스 구조](docs/devs/SOURCE_LAYOUT_KO.md) |
+| 대시보드 사용·설정 | [대시보드 안내](docs/devs/EXPERT_DASHBOARD_DESIGN_KO.md) |
+| 검색 서비스 구성 | [검색·WARP 운영 안내](docs/warp_sharding.md) |
+| 기능별 기술 문서 | [개발 문서 안내](docs/devs/README.md) |
+| 순차 파이프라인 | [레거시 실행 안내](README_legacy_pipeline.md) |

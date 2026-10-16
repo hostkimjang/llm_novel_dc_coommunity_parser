@@ -27,4 +27,4 @@ Claude Opus 5.5의 두 차례 검토를 반영해 누적 Git 변경과 README·�
 
 ## 이력과 증거
 
-정리 전 목표와 당시 상태는 [목표 이력](docs/devs/archive/20261015/GOAL_KO.md), 기존 연구 목표는 [9월 이력](goal.history.20260906.md)에 보존했다. 로컬 최종 보고서는 `out/r5_resolution_20261014_v2/REPORT_KO.md`, Goal 완료 응답은 같은 폴더의 `finalization/goal_completion.json`이다.
+정리 전 목표와 당시 상태는 로컬 `docs/devs/archive/20261015/GOAL_KO.md`에 보존하며 Git에 포함하지 않는다. 기존 연구 목표는 [9월 이력](goal.history.20260906.md)에 있다. 로컬 최종 보고서는 `out/r5_resolution_20261014_v2/REPORT_KO.md`, Goal 완료 응답은 같은 폴더의 `finalization/goal_completion.json`이다.

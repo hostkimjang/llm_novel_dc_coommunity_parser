@@ -1,6 +1,6 @@
 # 전문가 실행 안내
 
-`expert_main.py`는 커뮤니티 원문·댓글을 읽고 여러 전문가의 판단과 검색 근거를 모아 작품·담론 분석 결과를 저장합니다. 설치와 기본 실행은 [README](README.md), 완료 범위는 [현재 상태](docs/devs/CURRENT_STATUS_KO.md)를 기준으로 합니다.
+`expert_main.py`는 커뮤니티 원문·댓글을 읽고 여러 전문가의 판단과 검색 근거를 모아 작품·담론 분석 결과를 저장합니다. 설치와 기본 실행은 [README](README.md)를 참고하세요.
 
 ## 처리 흐름
 
@@ -25,7 +25,7 @@ Orchestrator가 상황과 예산에 따라 다음 전문가·검색을 선택하
 | Synthesizer | 분산된 근거·댓글·참조 종합 |
 | Arbiter | 전문가 판단을 종합해 최종 분석안 작성 |
 
-구현은 [`src/llm_batch/experts/`](src/llm_batch/experts/)와 [`agentic_pipeline.py`](src/llm_batch/agentic_pipeline.py)에 있습니다. 오래된 코드 줄 수나 고정 반복 횟수를 현재 계약으로 사용하지 않습니다.
+구현은 [`src/llm_batch/experts/`](src/llm_batch/experts/)와 [`agentic_pipeline.py`](src/llm_batch/agentic_pipeline.py)에 있습니다.
 
 ## 입력·저장 계약
 
@@ -62,7 +62,7 @@ CLI·환경 변수·프로필·기본값 순서로 유효 설정이 정해집니
 
 진행률·활성 작업·로그, 분석 메모, NSFW 상태, 문맥 진단, 중첩 이력, 실행 설정과 종료 계측을 확인합니다. live 이벤트 토큰 합계와 manifest의 호출 원장 사용량은 수집 범위가 다르므로 각각의 표시를 따릅니다.
 
-이력 탐색에는 상한이 있습니다. 최근 current 런 24개 좌표 보존은 서버 메모리 범위이며 재시작 후 영구 복원을 보장하지 않습니다. `BOUND` 표시는 해당 저장 자료와의 결속을 뜻하며 품질 승인을 뜻하지 않습니다. [대시보드 운영 문서](docs/devs/EXPERT_DASHBOARD_DESIGN_KO.md)에 테마와 재시작 절차가 있습니다.
+이력 탐색에는 상한이 있습니다. 최근 current 런 24개 좌표 보존은 서버 메모리 범위이며 재시작 후 영구 복원을 보장하지 않습니다. `BOUND` 표시는 결과와 연결된 저장 자료의 일치를 뜻합니다. [대시보드 운영 문서](docs/devs/EXPERT_DASHBOARD_DESIGN_KO.md)에 테마와 재시작 절차가 있습니다.
 
 ## 후보 연구·복구 기능
 
@@ -74,4 +74,4 @@ CLI·환경 변수·프로필·기본값 순서로 유효 설정이 정해집니
 
 manifest의 실행 ID·입력·요청/실제 병렬도·종료 상태를 먼저 확인합니다. 개별 문제는 worker 로그, 원문·후보·출처, checkpoint·공개 원장을 함께 대조합니다. 같은 설정의 A/A 관측이나 정상 종료만으로 개선율·정답률을 만들지 않습니다.
 
-변경 범위에 맞는 회귀시험과 문서 링크를 확인하고 [검증 결과](docs/devs/VERIFICATION_RESULTS.md)에 범위를 남깁니다. 과거 상세 설명은 [정리 전 전문가 문서](docs/devs/archive/20261015/EXPERT_README_KO.md), 순차 실행기는 [레거시 안내](README_legacy_pipeline.md)에서 볼 수 있습니다.
+패키지별 구현은 [소스 구조](docs/devs/SOURCE_LAYOUT_KO.md), 순차 실행기는 [레거시 안내](README_legacy_pipeline.md)를 참고하세요.

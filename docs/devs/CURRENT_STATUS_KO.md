@@ -47,4 +47,4 @@ Git에 포함된 요구사항과 절차는 [개발 계획](EXPERT_DASHBOARD_DEVE
 | UI·기존 5개 실패 | 같은 폴더의 `dashboard_final55_v4_UI_RECEIPT.json`, `finalization/broad5_triage_v1/TRIAGE_KO.md` |
 | Goal 완료 응답 | 같은 폴더의 `finalization/goal_completion.json` |
 
-정리 전 README·목표·전문가 설명은 [문서 이력](archive/20261015/README.md)에 보존했다. 현재 문서·커밋 정리 내역은 [정리 기록](DOCS_GIT_CLEANUP_20261015_KO.md)을 따른다.
+정리 전 README·목표·전문가 설명은 로컬 `docs/devs/archive/20261015/`에 보존하며 Git에 포함하지 않는다. 현재 문서·커밋 정리 내역은 [정리 기록](DOCS_GIT_CLEANUP_20261015_KO.md)을 따른다.

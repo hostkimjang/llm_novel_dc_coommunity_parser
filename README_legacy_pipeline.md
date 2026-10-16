@@ -1,4 +1,4 @@
-> **레거시 파이프라인의 과거 설명입니다.** 현재 설치·실행은 [README](README.md), 전문가 실행은 [expert_main 안내](expert_readme.md), 완료 범위는 [현재 상태](docs/devs/CURRENT_STATUS_KO.md)를 따릅니다. 아래 명령·모델·판정 예시는 당시 기록입니다.
+> **레거시 순차 파이프라인 안내입니다.** 설치와 기본 실행은 [README](README.md)를, 전문가 협업 방식은 [전문가 실행 안내](expert_readme.md)를 참고하세요. 아래 명령과 모델 설정은 레거시 구현을 설명합니다.
 
 # LLM Novel Batch Pipeline
 
