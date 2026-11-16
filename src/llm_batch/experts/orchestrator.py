@@ -1165,13 +1165,13 @@ class ConversationContext:
         remaining = self.max_iterations - self.iteration
         if remaining <= 2:
             urgency = "CRITICAL"
-            message = "⚠️ 분석 시간 거의 다진! 즉시 최종 결론꾩텧해야 합니"
+            message = "⚠️ 분석 시간 거의 다 소진! 즉시 최종 결론을 도출해야 합니다."
         elif remaining <= 4:
             urgency = "HIGH"
-            message = "⚡ 분석 시간쇰쭏 많지 않은븯습니다 카테고리정리하고 결론을 준비하세요."
+            message = "⚡ 분석 시간이 얼마 남지 않았습니다. 카테고리를 정리하고 결론을 준비하세요."
         else:
             urgency = "NORMAL"
-            message = "충분분석 시간있습니다. 필요다른 Expert먭쾶 협력요청하세"
+            message = "충분한 분석 시간이 있습니다. 필요하면 다른 Expert에게 협력을 요청하세요."
 
         return {
             "current_step": self.iteration,
@@ -1315,7 +1315,7 @@ class ConversationContext:
                 title = novel_id.get("official_novel_title")
                 conf = novel_id.get("confidence")
                 grounding = vr.get("grounding_check") or {}
-                lines.append(f"  - 관련⑥꽦: {is_rel}")
+                lines.append(f"  - 관련성: {is_rel}")
                 lines.append(f"  - 작품: {title} (conf={conf})")
                 lines.append(
                     f"  - 접지: anchor={grounding.get('anchor_found')}, "
@@ -12527,7 +12527,7 @@ class Orchestrator:
                         if not ctx.discourse_warning:
                             ctx.discourse_warning = "weak_discourse_grounding(novel_literature)"
                         ctx.uncertainty_sources.append(
-                            f"DiscourseAnalyzer: novel_literature대굹 근거 접지 쏀븿 "
+                            f"DiscourseAnalyzer: novel_literature이나 근거 접지 약함 "
                             f"(hits={_disc_hit_count}, post_type={gk_post_type})"
                         )
                     else:
@@ -15476,7 +15476,7 @@ class Orchestrator:
                                                 if not ctx.discourse_warning:
                                                     ctx.discourse_warning = "decoder_forced_match(3rd_attempt)"
                                                 ctx.uncertainty_sources.append(
-                                                    "Decoder가 1차 2차에서 매칭 실패 후 3차에서 갑자기 매칭 → 신뢰도후보"
+                                                    "Decoder가 1차 2차에서 매칭 실패 후 3차에서 갑자기 매칭 → 신뢰도 낮은 후보"
                                                 )
 
                                     ctx.set_expert_output(ExpertType.DECODER, decoder_result_3)
@@ -17679,13 +17679,13 @@ Gatekeeper 추정 캐릭터: {gk_chars}
 - 존재하지 않는 번호([1], [2], [5] 등 임의 번호) 생성 금지.
 
 중요 규칙:
-0. **[최우 post_intent_analysis: 게시글 제목과본문먼저 분석섏뿬, 글'특정 작품 언급'몄 '장르/트로프일반로몄 판별하세**
+0. **[최우선] post_intent_analysis: 게시글 제목과 본문을 먼저 분석하여, 글이 '특정 작품 언급'인지 '장르/트로프 일반론'인지 판별하세요**
    판별 방법:
    - 제목에서 주제어를 추출 후 그것이 특정 작품의 고유명사인지, 장르/트로프 일반 개념인지
-   - 본문작품 고유 정보(캐릭고유명 구체줄거리 작가명 화감 번호)가 있는가
+   - 본문에 작품 고유 정보(캐릭터 고유명, 구체적 줄거리, 작가명, 회차 번호)가 있는가
    - 제목이 "[일반 개념]/[일반론적 서식]" 구조인 경우
    - 제목 첫머리에 커뮤니티 관용 말머리나 카테고리 표시인지 (작품명이 아님)
-   장르 일반론이면post_intent="genre_discussion", identified_category="genre_discussion"으로 설정
+   장르 일반론이면 post_intent="genre_discussion", identified_category="genre_discussion"으로 설정
    특정 작품 언급이면 post_intent="work_discussion"
 
    ** genre_discussion 판정 인수 확인:**
@@ -17707,11 +17707,11 @@ Gatekeeper 추정 캐릭터: {gk_chars}
    - 예: '머롱닥'이 작가 대롱닥의 커뮤니티 별칭이면 {{term:'머롱닥', role:'author_alias', resolved_to:'대롱닥'}}
    - 예: '지구판역'이 작품 줄임이면 {{term:'지구판역', role:'work_alias', resolved_to:'판타지에 지구 역사를 풀었다'}}
 6. identified_category: **먼저 post_intent를 확인하세요**
-   - post_intent가 "genre_discussion"이면: "genre_discussion" (장르/트로프일반로
+   - post_intent가 "genre_discussion"이면: "genre_discussion" (장르/트로프 일반론)
    - 소설이면, "web_novel"
    - VOCALOID 곡이면 "vocaloid_song"
    - 애니메이션이면, "anime"
-   - 만화/뱁댆이면: "manga"
+   - 만화/웹툰이면: "manga"
    - 게임이면: "game"
    - AA작품이면: "aa_work"
    - 판단 불가: "unknown"

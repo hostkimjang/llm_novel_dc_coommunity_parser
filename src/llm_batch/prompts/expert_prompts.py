@@ -284,7 +284,7 @@ LF_ARBITER = """\
 
 Decoder가 핵심 용어를 is_author_name=true로 식별한 경우:
 - 작가 비평/비교글로 판정 : official_novel_title=null
-- Verifier가 본문 예시에서 작품명을 렛어도 해당 작품은 주제가 아닔
+- Verifier가 본문 예시에서 작품명을 찾았어도 해당 작품은 주제가 아님
 - "[작품명] 같은거 써라" = 예시 참조일 뿐, 해당 작품이 토론 주제가 아님
 - 작가 비평 시: is_relevant=true, discussion_type="author_talk", official_novel_title=null
 
