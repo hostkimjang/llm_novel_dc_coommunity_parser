@@ -18,11 +18,11 @@
 | --- | --- |
 | 실행 설정·호출 계측 | [저부하 비교 계측](PAIRED_LOW_LOAD_MEASUREMENT_20261010_KO.md) |
 | 자동 복구 | [native 복구 연결](NATIVE_RECOVERY_AUTOMATION_20261010_KO.md) · [복구 실행](BOUNDED_RECOVERY_EXECUTION_20261010_KO.md) |
-| 후보 회수 | [후보 검색](CANDIDATE_RETRIEVAL_SHADOW_20261010_KO.md) |
+| 후보 회수 | [후보 회수 기록](CANDIDATE_RETRIEVAL_SHADOW_20261010_KO.md) |
 | 후보 재정렬·교정 | [재정렬과 교정](CANDIDATE_RERANKER_SHADOW_20261010_KO.md) · [inference 연결](R4_ACTUAL_BRIDGE_20261010_KO.md) |
 | 커뮤니티 지식 | [읽기 전용 지식 연결](COMMUNITY_KNOWLEDGE_READ_ONLY_20261010_KO.md) |
 | 분석 결과 검토 방법 | [스캔 결과 리뷰 안내](SCAN_RESULT_REVIEW_GUIDE.md) |
 
 ## 문서 작성
 
-기능·입출력·옵션이 바뀌면 해당 기술 문서를 함께 갱신합니다. README에는 프로젝트 소개와 사용법, 설정·기술 문서 탐색을 담습니다.
+기능·입출력·옵션이 바뀌면 해당 기술 문서를 함께 갱신합니다. README에는 프로젝트 소개와 사용법, 설정과 기술 문서 안내를 담습니다. 문서와 코드의 한국어 용어는 [한국어 표기 기준](SOURCE_LAYOUT_KO.md#한국어-표기-기준)을 따릅니다.

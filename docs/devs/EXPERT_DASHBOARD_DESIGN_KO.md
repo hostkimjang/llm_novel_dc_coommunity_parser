@@ -51,10 +51,10 @@ python tools/attach_manifest_dashboard.py --manifest out/example/result_manifest
 
 - 저장하지 않은 값은 `미기록`으로 둔다. 새 코드의 해석으로 과거 결과의 빈 값을 채우지 않는다.
 - NSFW는 true, false, 미기록, 형식 오류를 구분한다. 값이 `false`나 `0`이어도 숨기지 않는다.
-- 결과와 sidecar manifest의 결속은 행 단위로 확인한다. `BOUND`는 저장 자료가 서로 맞는다는 뜻이고 품질 승인이 아니다. 일부 필드가 빠지면 `PARTIAL`, manifest가 없거나 결과와 맞지 않으면 `MISSING`·`MISMATCH`를 그대로 보여 준다.
-- 행 저장 당시 호출 원장과 실행 종료 manifest의 계측은 따로 보여 준다. live 이벤트 토큰 합계와 manifest 사용량은 수집 범위가 다르다. 관측 토큰을 정식 KPI로 바꾸지 않으며 `NOT_ESTIMABLE`, null, `UNBOUND_PARTIAL`을 그대로 둔다.
-- 후보 회수·재정렬·의미 관측·교정·inference와 커뮤니티 지식 관측은 결과의 `run_meta`에 저장된 경우에만 상세에 표시한다. 큰 관측 자료는 목록과 SSE에 넣지 않는다. 빈 후보를 NIL 판정으로, 미교정 점수를 확률로 표시하지 않는다.
-- 복구 결과는 `run_meta`가 아니라 서버의 별도 reader가 읽어 `recovery_execution`, `recovery_provider_execution`, `recovery_native_execution`으로 붙인다. native 복구 reader는 aggregate와 원래 결과·manifest, 선택한 행의 SHA 결속을 검사하고 맞지 않으면 `MISSING`·`INVALID`로 표시한다. 복구는 원래 결과·manifest·WAL을 덮어쓰지 않는다.
+- 결과와 sidecar manifest가 서로 연결되는지는 행 단위로 확인한다. `BOUND`는 저장 자료가 서로 맞는다는 뜻이고 품질 승인이 아니다. 일부 필드가 빠지면 `PARTIAL`, manifest가 없거나 결과와 맞지 않으면 `MISSING`·`MISMATCH`를 그대로 보여 준다.
+- 행 저장 당시 호출 원장과 실행 종료 manifest의 계측은 따로 보여 준다. 실시간 이벤트로 합산한 토큰과 manifest 사용량은 집계 범위가 다르다. 기록된 토큰 수를 정식 KPI로 바꾸지 않으며 `NOT_ESTIMABLE`, null, `UNBOUND_PARTIAL`을 그대로 둔다.
+- 후보 회수·재정렬·의미 역할·교정·inference와 커뮤니티 지식 기록은 결과의 `run_meta`에 저장된 경우에만 상세에 표시한다. 큰 기록 자료는 목록과 SSE에 넣지 않는다. 빈 후보를 NIL 판정으로, 미교정 점수를 확률로 표시하지 않는다.
+- 복구 결과는 `run_meta`가 아니라 서버의 별도 reader가 읽어 `recovery_execution`, `recovery_provider_execution`, `recovery_native_execution`으로 붙인다. native 복구 reader는 aggregate가 원래 결과·manifest, 선택한 행과 SHA로 연결되는지 검사하고 맞지 않으면 `MISSING`·`INVALID`로 표시한다. 복구는 원래 결과·manifest·WAL을 덮어쓰지 않는다.
 
 ## 이력 탐색의 상한
 
@@ -63,11 +63,11 @@ python tools/attach_manifest_dashboard.py --manifest out/example/result_manifest
 | 목록 탐색 | 항목 50,000개, manifest 2,000개, 디렉터리 깊이 12, 결과 캐시 30초 |
 | 선택한 결과 파일 | 128MiB |
 | manifest 파일 | 2MiB |
-| 최근 current 실행 좌표 | 24개 |
+| 최근 current 실행 위치 | 24개 |
 
 탐색이 상한에 걸리면 `/api/runs` 응답의 `X-Run-Index-Truncated` 헤더가 `true`가 되고 화면에 일부 이력 생략 안내가 나온다. 상한을 넘거나 손상된 결과를 다른 최신 결과로 바꿔 보여 주지 않으며, 허용된 `out/` 경로 밖의 파일은 열지 않는다.
 
-서버가 실제 current로 관측한 실행 좌표 24개는 탐색 상한 밖에 있어도 이력 목록에 남는다. 이 보존은 서버 메모리 범위라서 서버를 재시작하면 사라진다.
+서버는 현재 실행(current)의 출력으로 확인한 위치를 최근 24개까지 따로 보존한다. 그래서 탐색 상한 밖에 있는 직전 실행도 이력 목록에 남는다. 이 보존 목록은 서버 메모리에만 있으므로 서버를 재시작하면 사라진다.
 
 ## 정적 자산
 
@@ -83,7 +83,7 @@ python tools/attach_manifest_dashboard.py --manifest out/example/result_manifest
 | [`tailwind.config.cjs`](../../tools/dashboard/tailwind.config.cjs) · [`input.css`](../../tools/dashboard/input.css) | Tailwind 생성 입력, HTML 스캔 경로, 동적 worker 클래스 safelist |
 | [`server.py`](../../src/llm_batch/monitor/server.py) | HTML, `/static` 자산, API, SSE 제공 |
 | [`slang_view.py`](../../src/llm_batch/monitor/slang_view.py) | Slang DB 파일 내용을 화면용 행·요약으로 변환 |
-| [`run_index.py`](../../src/llm_batch/monitor/run_index.py) | 실행 이력 탐색, 결과·manifest 결속, 최근 current 보존 |
+| [`run_index.py`](../../src/llm_batch/monitor/run_index.py) | 실행 이력 탐색, 결과와 manifest 연결, 최근 current 실행 보존 |
 
 `index.html`은 각 자산을 `/static/presentation.js?v=<토큰>`처럼 버전 토큰을 붙여 불러온다. JS나 CSS를 바꾸면 해당 토큰도 바꿔 이전 브라우저 캐시와 구분한다. 회귀시험이 `presentation.js` 토큰을 확인하므로 토큰을 바꾸면 `tests/test_dashboard_standalone.py`의 기대값도 같이 갱신한다.
 

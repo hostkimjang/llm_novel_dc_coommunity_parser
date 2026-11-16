@@ -43,7 +43,7 @@ diagnostic은 다음 read-only candidate evidence를 수집한다.
 - Authenticode/catalog chain 및 SPKI pin
 - external owner key와 signed observer receipt
 - trusted time·revocation freshness·rollback-resistant durable nonce
-- single-interval fixed store/host/watch 결속과 unnamed-stream exactness
+- single-interval fixed store/host/watch 연결과 unnamed-stream exactness
 - owner/actual/P0/production/full-scan authority
 
 WLDP의 UMCI flag가 true여도 exact active WDAC policy identity는 증명되지 않으므로 positive gate를 열지 않는다. System32 disk DLL hash도 target service의 mapped-image identity나 catalog membership 증거가 아니다.
