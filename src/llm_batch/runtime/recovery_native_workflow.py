@@ -1,7 +1,7 @@
 """저장 provider 근거와 살아 있는 pre-final 문맥의 명시 native 복구 진입점.
 
 기존 실행 결과를 덮어쓰지 않는다. 새 guard 결과와 publication WAL을 같은
-추가 I/O 예산 안에서 검산하고 저장한다. 완료 job만 재생할 수 있다.
+추가 I/O 예산 안에서 검증하고 저장한다. 완료 job만 재생할 수 있다.
 """
 from __future__ import annotations
 
@@ -44,7 +44,7 @@ def _file_ref(bound, path):
 
 
 def _validate_saved_result(bound, result, *, config, capture, binding):
-    """재생 시 private native 객체를 복원하지 않고 저장된 계약과 파일을 검산한다."""
+    """재생 시 private native 객체를 복원하지 않고 저장된 계약과 파일을 검증한다."""
     require(type(result) is dict and result.get("schema_version") == SCHEMA, "NATIVE_RESULT_SCHEMA")
     require(result.get("config") == config and result.get("binding") == binding, "NATIVE_RESULT_CONFIG")
     require(result.get("capture_sha256") == capture.capture_sha256, "NATIVE_RESULT_CAPTURE")

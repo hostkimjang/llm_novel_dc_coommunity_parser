@@ -26,10 +26,10 @@ def _file(path: str | Path, maximum: int) -> Path:
     path = Path(path).absolute()
     for component in (path, *path.parents):
         if component.is_symlink() or (hasattr(component, 'is_junction') and component.is_junction()):
-            raise ValueError('연결 경로는 판독 입력으로 허용하지 않습니다')
+            raise ValueError('연결 경로는 읽을 입력으로 허용하지 않습니다')
     info = path.stat()
     if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1 or info.st_size > maximum:
-        raise ValueError('판독 입력은 크기 제한 안의 단일 일반 파일이어야 합니다')
+        raise ValueError('읽을 입력은 크기 제한 안의 단일 일반 파일이어야 합니다')
     return path.resolve()
 
 
@@ -68,10 +68,10 @@ def write_readback_reports(*, plan_path: str | Path, hmac_key_path: str | Path,
             stream.flush()
             os.fsync(stream.fileno())
         if path.read_bytes() != raw:
-            raise OSError('보고서 저장 후 재판독 불일치')
+            raise OSError('보고서 저장 후 다시 읽은 내용이 다릅니다')
     validate_recovery_execution_readback(report, bound_plan=bound)
     if source.read_bytes() != source_raw or key_path.read_bytes() != key_raw:
-        raise ValueError('판독 중 계획 또는 기존 key 파일이 변경되었습니다')
+        raise ValueError('읽는 동안 계획 또는 기존 key 파일이 변경되었습니다')
     return {'status': report['verification_status'], 'execution_status': report['execution_status'],
             'actual_external_calls': 0,
             'outputs': [{'path': str(path), 'sha256': hashlib.sha256(raw).hexdigest(), 'bytes': len(raw)}
@@ -94,7 +94,7 @@ def main(argv=None) -> int:
         result = write_readback_reports(plan_path=args.plan, hmac_key_path=args.hmac_key_file,
             output_json=args.output_json, output_md=args.output_md, journal_path=args.journal)
     except (OSError, ValueError):
-        print('복구 기록 판독 실패: 입력 결속·권한·새 출력 경로를 확인하세요. 기존 자료는 변경하지 않습니다.', file=sys.stderr)
+        print('복구 기록 읽기 실패: 입력 연결 정보·권한·새 출력 경로를 확인하세요. 기존 자료는 변경하지 않습니다.', file=sys.stderr)
         return 1
     print(json.dumps(result, ensure_ascii=False))
     return 0

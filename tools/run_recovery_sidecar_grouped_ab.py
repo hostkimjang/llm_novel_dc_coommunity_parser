@@ -462,7 +462,7 @@ def _run_once(command: list[str], *, env: Mapping[str, str], output_path: Path) 
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="32행 recovery sidecar BEFORE/OFF↔AFTER/AUDIT_ONLY 반복 관측"
+        description="32행 recovery sidecar BEFORE/OFF↔AFTER/AUDIT_ONLY 반복 측정"
     )
     parser.add_argument("--input", default=str(DEFAULT_INPUT))
     parser.add_argument("--output-root", default=str(DEFAULT_ROOT))

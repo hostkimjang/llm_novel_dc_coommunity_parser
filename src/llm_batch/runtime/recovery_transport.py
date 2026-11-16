@@ -2,8 +2,8 @@
 
 reserve callback은 durable 저장 후에만 반환해야 한다. 이 모듈은 그 저장의
 진실을 독립 검증하지 않는다. 동일 job의 모든 attempt는 같은 gate를 사용한다.
-동기 HTTPX phase를 강제 중단하지 않으므로 총 deadline은 admission/사후 관측
-경계다. timeout·로컬 close·취소 관측은 원격 provider 중단 확인이 아니다.
+동기 HTTPX phase를 강제 중단하지 않으므로 총 deadline은 admission/사후 확인
+경계다. timeout·로컬 close·취소를 확인했다고 원격 provider가 중단된 것은 아니다.
 """
 from __future__ import annotations
 
@@ -103,7 +103,7 @@ class RecoveryTransportPolicy:
 
 @dataclass(frozen=True)
 class DurableReservation:
-    """예약 callback의 검산 완료 회신. 실제 durable 저장 책임은 callback 소유자다."""
+    """예약 callback의 검증 완료 응답. 실제 durable 저장 책임은 callback 소유자에게 있다."""
 
     reservation_id: str
     request_sha256: str
@@ -495,8 +495,8 @@ class RecoveryTransport:
         except Exception:
             # Includes local close/storage/transport implementation errors; never invent a timeout.
             status = "LOCAL_TRANSPORT_ERROR"
-        # 선택 hook: 완전히 관측한 원시 bytes만 저장한다. 기존 v1 호출에는 변화가 없다.
-        # 저장 실패도 전송 완료/성공으로 바꾸지 않으며 저장 시간은 아래 END 관측에 포함한다.
+        # 선택 hook: 끝까지 받은 원시 bytes만 저장한다. 기존 v1 호출에는 변화가 없다.
+        # 저장 실패도 전송 완료/성공으로 바꾸지 않으며 저장 시간은 아래 END 측정에 포함한다.
         if self._raw_response_sink is not None and response_complete and observed_bytes == len(received):
             try:
                 self._raw_response_sink(bytes(received))

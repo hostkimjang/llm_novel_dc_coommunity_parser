@@ -1,4 +1,4 @@
-"""고정 RunSpec v3를 검산하여 새 폴더에 실행 계획만 저장한다. 실행 기능 없음."""
+"""고정 RunSpec v3를 검증해 새 폴더에 실행 계획만 저장한다. 실행 기능 없음."""
 from __future__ import annotations
 
 import argparse
@@ -54,7 +54,7 @@ def build_low_load_paired_plan(
     """계획 파일만 exclusive 생성한다. health/서버/child/model 호출은 하지 않는다.
 
     실패 시 새 폴더의 부분 출력은 보존하며 기존 파일을 덮거나 자동 재시도하지 않는다.
-    계획 검산 PASS는 실제 서비스 준비·모델 측정·실행 승인을 의미하지 않는다.
+    계획 검증 PASS는 실제 서비스 준비·모델 측정·실행 승인을 의미하지 않는다.
     """
     spec_path, source_path = _path(run_spec_path), _path(source_manifest_path)
     input_file, interpreter = _path(input_path), _path(python_path)

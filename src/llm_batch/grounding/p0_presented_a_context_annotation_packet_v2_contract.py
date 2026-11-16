@@ -1,6 +1,6 @@
 """Presented A-context annotation packet V2의 memory-only shadow envelope.
 
-15개 선행 raw를 고정된 순서ㆍ경로ㆍmedia type으로 봉인한다. 이 계층은
+15개 선행 raw를 정해진 순서ㆍ경로ㆍmedia type으로 고정한다. 이 계층은
 event/result/reviewer/gold 또는 파일시스템ㆍ실행 권한을 만들지 않는다.
 """
 

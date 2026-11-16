@@ -9,7 +9,7 @@ expert_main이 시작 시 외부 대시보드(tools/dashboard_server.py)를 감�
 설계 원칙:
 - 파이프라인을 절대 블록하지 않는다 (deque maxlen = drop-oldest).
 - 외부 대시보드가 죽어도 드롭만 하고 계속 진행한다 (서킷 브레이커).
-- 복구 시 상태 스냅샷 리싱크로 유실분을 치유한다 (expert_main 쪽
+- 복구 시 상태 스냅샷 재동기화로 유실분을 복구한다 (expert_main 쪽
   MonitorState가 항상 정본이므로 가능).
 - forwarder 자체 경고는 sys.__stderr__로만 출력한다 — sys.stderr는
   expert_main의 _Tee를 거쳐 monitor.add_log → enqueue로 재진입하는
@@ -259,7 +259,7 @@ class DashboardForwarder:
         while not self._stop.wait(self._flush_interval):
             try:
                 if self._circuit_open:
-                    # down 상태: 주기적 health 프로브만, 복구 시 스냅샷 리싱크
+                    # down 상태: 주기적 health 프로브만, 복구 시 스냅샷 재동기화
                     if time.time() - self._last_post_ts < self._circuit_probe_interval:
                         continue
                     self._last_post_ts = time.time()
@@ -273,11 +273,11 @@ class DashboardForwarder:
                     # _last_snapshot_ts를 리셋하면 아래 주기 스냅샷 블록이
                     # 이번 iteration의 드레인된 배치 끝에 스냅샷을 붙인다.
                     self._last_snapshot_ts = 0.0
-                    self._warn("외부 대시보드 재연결 — 스냅샷 리싱크")
+                    self._warn("외부 대시보드 재연결 — 스냅샷 재동기화")
 
                 batch = self._drain_batch()
 
-                # 주기 스냅샷(드리프트 치유) — 평시 30초에 1회
+                # 주기 스냅샷(어긋난 상태 복구) — 평시 30초에 1회
                 now = time.time()
                 if now - self._last_snapshot_ts >= self._snapshot_interval:
                     self._last_snapshot_ts = now

@@ -1,4 +1,4 @@
-"""저장 provider 근거를 현재 원본과 재검산해 native 재검토에 전달한다."""
+"""저장된 provider 근거를 현재 원본과 다시 대조해 native 재검토에 전달한다."""
 from __future__ import annotations
 
 import hashlib

@@ -26,7 +26,7 @@ OUTCOMES = frozenset(("SUCCESS", "TRANSIENT_FAILURE", "PERMANENT_FAILURE",
 
 
 class BoundedRecoveryError(ValueError):
-    """검산/저장 오류이며 공개 성공이나 외부 실행을 허용하지 않는다."""
+    """검증/저장 오류. 공개 성공이나 외부 실행을 허용하지 않는다."""
 
     def __init__(self, code: str):
         self.code = code
@@ -66,7 +66,7 @@ def _canonical_bytes(value: Any) -> bytes:
 
 
 def _fixture_snapshot(fixture: Any) -> tuple[dict, str]:
-    """검산 후 별도 JSON 사본을 만든다. 임의 callback을 fixture로 받지 않는다."""
+    """검증한 뒤 별도 JSON 사본을 만든다. 임의 callback을 fixture로 받지 않는다."""
     _require(type(fixture) is dict, "FIXTURE_OBJECT_REQUIRED")
     raw = _canonical_bytes(fixture)
     _require(len(raw) <= MAX_FIXTURE_BYTES, "FIXTURE_BYTE_LIMIT")
@@ -118,7 +118,7 @@ class _NeverCancelled:
 
 
 class _Observation:
-    """clock/cancellation 반환값과 예외를 관측하며 누락을 성공으로 채우지 않는다."""
+    """clock/cancellation의 반환값과 예외를 확인하며, 빠진 값을 성공으로 채우지 않는다."""
 
     def __init__(self, clock, cancellation):
         self.clock = _SystemClock() if clock is None else clock
@@ -187,7 +187,7 @@ class _Stop(Exception):
 
 class _Execution:
     def __init__(self, bound_plan, fixture, journal, attempt_id, session_id, clock, cancellation):
-        # 준비 검산·원본 읽기·lock 대기까지 현재 attempt 시간에 포함한다.
+        # 준비 단계 검증·원본 읽기·lock 대기까지 현재 attempt 시간에 포함한다.
         self.observation = _Observation(clock, cancellation)
         _require(type(bound_plan) is BoundRecoveryPlan, "BOUND_PLAN_REQUIRED")
         _require(type(journal) is RecoveryExecutionJournal, "JOURNAL_REQUIRED")
@@ -226,7 +226,7 @@ class _Execution:
         return state
 
     def _fixture_events(self, state):
-        """과거 실패도 고정 응답과 대조하여 재봉인한 retry 가능성을 받아들이지 않는다."""
+        """과거 실패도 고정 응답과 대조한다. 다시 고정해 retry할 수 있게 만든 상태는 받아들이지 않는다."""
         fixtures = {a["action_id"]: a["responses"] for a in self.fixture["actions"]}
         elapsed_by_attempt, cancelled = {}, {}
         for event in state["events"]:
@@ -390,7 +390,7 @@ class _Execution:
         return self._result(final["status"], final["reason_codes"], replayed=True, output=output)
 
     def _finalize(self, tx, terminal):
-        """후보 terminal의 durable readback 이후를 관측한다. 이 관측의 저장은 report I/O다."""
+        """후보 terminal을 durable하게 다시 읽은 뒤의 상태를 확인한다. 이 확인 결과의 저장은 report I/O다."""
         self._snapshot(tx)
         attempt = self.state["attempts"][self.attempt]
         _require(attempt["terminal"]["event_sha256"] == terminal["event_sha256"]
@@ -407,7 +407,7 @@ class _Execution:
         except Exception:
             cancelled = False
             observation_errors.append("CANCELLATION_OBSERVATION_FAILED_AFTER_TERMINAL")
-        # 유효한 시간 관측이 없으면 FINALIZED를 만들지 않는다.
+        # 유효한 시간 측정값이 없으면 FINALIZED를 만들지 않는다.
         elapsed = self._elapsed()
         if status == "INCOMPLETE" or self.state["open_call_ids"] or observation_errors:
             status = "INCOMPLETE"
@@ -433,7 +433,7 @@ class _Execution:
                 attempt = self.state["attempts"].get(self.attempt)
                 if attempt is None or attempt["terminal"] is not None:
                     return self._result("INCOMPLETE", [reason, "FINALIZATION_NOT_ESTABLISHED"])
-                # 관측/저장 실패로 열린 예약을 timeout·중단 확인으로 추정하지 않는다.
+                # 확인/저장 실패로 열려 있는 예약을 timeout이나 중단이 확인된 것으로 추정하지 않는다.
                 if self.state["open_call_ids"]:
                     status = "INCOMPLETE"
                 terminal = self._emit(tx, "ATTEMPT_TERMINAL", {"status": status, "reason_codes": [reason],
@@ -441,7 +441,7 @@ class _Execution:
                 final = self._finalize(tx, terminal)
             return self._result(final["status"], final["reason_codes"])
         except Exception:
-            # 실패한 END/append의 재시각·재봉인으로 완료를 꾸미지 않는다.
+            # 실패한 END/append에 시각을 다시 찍거나 다시 고정해 완료처럼 꾸미지 않는다.
             return self._result("INCOMPLETE", [reason, "FAILURE_TERMINAL_NOT_STORED"])
 
     def _reserve(self, action):
@@ -480,7 +480,7 @@ class _Execution:
             _require(self.state["open_call_ids"] == [call_id], "RESERVATION_NOT_CURRENT")
             if self._elapsed() - reserved["elapsed_ms"] > self.policy["per_action_timeout_ms"]:
                 raise _Stop("BUDGET_EXHAUSTED", "ACTION_TIME_BUDGET_EXHAUSTED_BEFORE_DISPATCH")
-            # 이 점 이전의 durable append/재검산 실패에서는 fixture dispatch도 0이다.
+            # 이 지점 전에 durable append나 재확인이 실패하면 fixture dispatch도 0이다.
             self.dispatched += 1
         target = self.observation.now() + response["delay_ms"]
         cancel_started = None
@@ -572,7 +572,7 @@ class _Execution:
             with path.open("rb") as stream:
                 stored = stream.read(self.policy["max_output_bytes"] + 1)
             _require(path.stat().st_nlink == 1 and stored == raw, "OUTPUT_READBACK_MISMATCH")
-            # 출력 fsync/재판독 시간과 protected END를 성공 terminal 전에 포함한다.
+            # 출력 fsync·다시 읽기 시간과 protected END를 성공 terminal 전에 포함한다.
             self._guard(tx)
             output = {"path": str(path), "sha256": hashlib.sha256(raw).hexdigest(), "bytes": len(raw)}
             terminal = self._emit(tx, "ATTEMPT_TERMINAL", {"status": "COMPLETED_SIMULATION", "reason_codes": [],
@@ -604,11 +604,11 @@ class _Execution:
             return self._finish_failure(stop.status, stop.reason)
         except Exception as exc:
             code = getattr(exc, "code", "EXECUTION_OBSERVATION_OR_STORAGE_ERROR")
-            # 검산/저장 오류를 retry하지 않는다. raw 예외 문자열을 출력하지 않는다.
+            # 검증/저장 오류는 retry하지 않는다. raw 예외 문자열을 출력하지 않는다.
             return self._finish_failure("INCOMPLETE", code if type(code) is str else "EXECUTION_ERROR")
 
 
 def execute_recovery_simulation(bound_plan, *, fixture, journal, attempt_id, session_id,
                                 clock=None, cancellation=None) -> dict:
-    """고정 합성 응답만 실행한다. 잘못된 사전 결속은 예약 전에 예외로 거절한다."""
+    """고정 합성 응답만 실행한다. 미리 고정한 연결 정보가 잘못되면 예약 전에 예외로 거절한다."""
     return _Execution(bound_plan, fixture, journal, attempt_id, session_id, clock, cancellation).run()

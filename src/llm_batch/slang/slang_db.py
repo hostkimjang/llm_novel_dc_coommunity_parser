@@ -599,7 +599,7 @@ def _should_hold_direct_slang_promotion(source_roles: List[str]) -> bool:
         for role in (source_roles or [])
         if str(role or "").strip()
     }
-    # slang_insight 단독 관측은 한 번의 LLM/OCR 추정만으로 확정 slang 버킷에 오를 수 있어
+    # slang_insight에만 나온 값은 한 번의 LLM/OCR 추정만으로 확정 slang 버킷에 오를 수 있어
     # ambiguous alias 오염을 만들기 쉽다. 1차로 pending에 두고 후속 근거를 기다린다.
     return normalized_roles == {"slang_insight"}
 
@@ -1833,7 +1833,7 @@ class SlangDBManager:
             term_norm = _normalize_term(term_raw)
             if source_role in _REFERENCE_ONLY_ALIAS_ROLES:
                 # reference/candidate 보존은 결과 CandidateLedger의 책임이다. 별칭 관계를
-                # 직접 증명하지 않는 주변 작품 후보는 Slang DB mutation으로 번역하지 않는다.
+                # 직접 증명하지 않는 주변 작품 후보는 Slang DB mutation으로 바꾸지 않는다.
                 return
             if (
                 late_rescue_contaminated
@@ -1845,7 +1845,7 @@ class SlangDBManager:
                 "primary_work",
                 "title_candidate",
             }:
-                # true 계약 불완전 또는 non-bool store 값이면 상관 alias 전체를 fail-close한다.
+                # true 계약이 불완전하거나 store 값이 bool이 아니면 관련 alias 전체를 차단한다(fail-closed).
                 return
             if (
                 unresolvable_memory_query_context

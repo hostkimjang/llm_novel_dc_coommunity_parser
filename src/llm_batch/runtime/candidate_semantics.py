@@ -1,4 +1,4 @@
-"""선택 전 의미 관측과 원문 보존. 새 모델 계약에 결속된 입력 소비만 별도 검산한다."""
+"""선택 전 의미 기록과 원문 보존. 새 모델 계약에 연결된 입력을 쓸 때만 따로 검증한다."""
 from __future__ import annotations
 
 import base64
@@ -235,7 +235,7 @@ def _validate_package(package, observer, post_id):
 
 
 def bind_current_semantic_input(package, observer, post, retrieval_observer):
-    """현재 원문/R2와 독립 대조한 producer만 점수 입력으로 결속한다. IO 없음."""
+    """현재 원문/R2와 따로 대조한 producer만 점수 입력과 연결한다. IO 없음."""
     from .candidate_reranker import _source_view
     from ..grounding.candidate_reranker_semantic_input import build_semantic_input
     _require(observer is not None and post is not None and retrieval_observer is not None,
@@ -308,7 +308,7 @@ def export_candidate_semantics_fields(result, observer, *, binding, output_dir, 
             return exported()
         package = _validate_package(package, observer, binding["post_id"])
         if package["status"] in _EXECUTED:
-            # 패키지 자체 SHA 외에 현재 입력과 현재 고정 R2를 독립적으로 재관측한다.
+            # 패키지 자체 SHA 외에 현재 입력과 현재 고정 R2를 따로 다시 확인한다.
             from .candidate_reranker import _source_view
             _require(current_post is not None and retrieval_observer is not None,
                 "SEMANTICS_CURRENT_CONTEXT_REQUIRED")
@@ -363,7 +363,7 @@ def export_candidate_semantics_fields(result, observer, *, binding, output_dir, 
                         if k not in {"receipt_sha256", "latency_ms", "binding"}}):
                         row["consumption"]["scorer_input_sha256"] = digest
                 except Exception:
-                    # 선택적인 구형 점수 지문은 신규 관측의 저장 가능성을 바꾸지 않는다.
+                    # 선택적인 구형 점수 지문은 새 기록을 저장할 수 있는지에 영향을 주지 않는다.
                     pass
         if package["status"] not in _EXECUTED:
             return exported()

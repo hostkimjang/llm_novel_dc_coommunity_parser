@@ -1,4 +1,4 @@
-"""명시적으로 결속한 저부하 paired 실행의 시작·행·종료 관측."""
+"""명시적으로 연결한 저부하 paired 실행의 시작·행·종료 기록."""
 from __future__ import annotations
 
 from copy import deepcopy
@@ -37,7 +37,7 @@ def prompt_fingerprint(root: Path) -> str:
 
 
 class FreshHealthProbe:
-    """고정 endpoint pool을 직렬 재검사한다. 과거 관측의 시각만 갱신하지 않는다."""
+    """고정 endpoint pool을 직렬로 다시 검사한다. 과거에 확인한 결과의 시각만 바꿔 쓰지 않는다."""
     def __init__(self, *, endpoints, checker, max_age_seconds):
         self._endpoints = endpoints
         self._checker = checker
@@ -71,7 +71,7 @@ class FreshHealthProbe:
 
 
 class PairedExecutionSession:
-    """정책과 각 행을 결속하며 오류를 완료로 바꾸지 않는다. 모델 호출은 하지 않는다."""
+    """정책과 각 행을 연결하며 오류를 완료로 바꾸지 않는다. 모델 호출은 하지 않는다."""
     def __init__(self, *, measurement, run_id, input_sha256, publication_scope_id,
                  execution_config, runtime_fields, health, input_post_ids=None):
         binding = measurement.get('execution_policy_binding')

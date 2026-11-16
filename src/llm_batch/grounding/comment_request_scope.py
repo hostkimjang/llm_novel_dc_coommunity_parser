@@ -88,7 +88,7 @@ def unlabelled_reply_is_predication(text):
     from ..promotion_gate import _edition_kiwi
     kiwi = _edition_kiwi()
     if kiwi is None:
-        return True  # 새 회수 경로의 무표지 답변을 판독할 수 없으면 보류한다.
+        return True  # 새 회수 경로에서 표지 없는 답변을 해석할 수 없으면 보류한다.
     tokens = list(kiwi.tokenize(raw))
     if not tokens:
         return True
@@ -130,7 +130,7 @@ def nominal_mul_ending_is_lexical(text):
 
 
 def elliptic_narrative_request(post):
-    """같은 작성자의 비교 추천+독서 영역 또는 장면·서사 선호를 원필드별로 결속한다.
+    """같은 작성자의 비교 추천+독서 영역 또는 장면·서사 선호를 원필드별로 묶는다.
 
     갤러리명/모델 target/후보 제목 목록은 사용하지 않는다. 모호한 이름의
     작품 정체를 확정하지 않으며 source comparison의 공개/주작품 carrier도 만들지 않는다.

@@ -91,7 +91,7 @@ def _payloads(refs, values):
 
 
 def build_semantic_input(original_view, *, retrieval_receipt, alias_evidence=None, evidence_payloads=None):
-    """같은 R2 관측으로 원본을 검산한 뒤 producer를 실행하고 새 입력을 봉인한다."""
+    """같은 R2 관측값으로 원본을 확인한 뒤 producer를 실행하고 새 입력을 고정한다."""
     original = _copy(original_view)
     retrieval = _copy(retrieval_receipt)
     _require(_raw(build_frozen_view(original["source_view"], retrieval)) == _raw(original),
@@ -167,7 +167,7 @@ def semantic_exposure_requirements(value):
 
 
 def resolve_training_semantic_input(capture, view, row, payloads, evidence, *, split_manifest=None):
-    """TRAIN/CAL/FROZEN 공용 결속. 전체 분할 검사는 호출자의 기존 gate가 수행한다."""
+    """TRAIN/CAL/FROZEN 공용 연결 확인. 전체 분할 검사는 호출자의 기존 gate가 수행한다."""
     _require(type(capture) is dict and capture.get("schema_version") == CAPTURE_SCHEMA,
              "SEMANTIC_TRAINING_CAPTURE_REQUIRED")
     digest = _hash(capture.get("semantic_input_sha256"))

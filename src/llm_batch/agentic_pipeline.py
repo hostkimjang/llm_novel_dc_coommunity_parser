@@ -544,7 +544,7 @@ class AgenticPipeline:
 
     @staticmethod
     def _verifier_mapping(value: Any) -> Dict[str, Any]:
-        """Verifier nested payload가 매핑이 아니면 근거 없음으로 fail-close한다."""
+        """Verifier nested payload가 매핑이 아니면 근거 없음으로 보고 차단한다(fail-closed)."""
         return value if isinstance(value, dict) else {}
     
     def __init__(
@@ -620,7 +620,7 @@ class AgenticPipeline:
         # Explicit dependency injection only.  No environment variable or
         # production entry point constructs or enables this runtime adapter.
         self._search_runtime_shadow = search_runtime_shadow
-        # 원문 후보 회수 관측은 명시 주입만 허용하며 전문가/검색/공개 권한에 넣지 않는다.
+        # 원문 후보 회수 SHADOW 기록은 명시적으로 주입한 경우에만 켜며, 전문가·검색·공개 판정 권한에는 쓰지 않는다.
         self._candidate_retrieval_shadow = candidate_retrieval_shadow
         self._community_knowledge = community_knowledge
         self._candidate_reranker_shadow = candidate_reranker_shadow
@@ -1505,7 +1505,7 @@ class AgenticPipeline:
             # - degraded/possible_throttle
             # - bridge filter로 raw_total>0 이지만 accepted=0
             # - lang_filtered>0
-            # 인 경우의 0건은 이후 포스트까지 poison 되기 쉬워 negative-cache를 남기지 않는다.
+            # 인 경우의 0건은 이후 게시글까지 오염시키기 쉬워 negative-cache를 남기지 않는다.
             _cache_zero_ok = (
                 compacted
                 or (
@@ -4785,7 +4785,7 @@ class AgenticPipeline:
         return post_dict
     
     def _observe_candidate_retrieval_shadow(self, post: PostInput) -> Optional[Dict[str, Any]]:
-        """호출별 원문 view만 관측하고 변경 가능한 observer 상태와 반환값을 격리한다."""
+        """호출마다 원문 view만 observer에 넘기고, observer가 바꿀 수 있는 상태와 반환값은 원래 호출과 격리한다."""
         observer = getattr(self, "_candidate_retrieval_shadow", None)
         if observer is None:
             return None
@@ -4824,7 +4824,7 @@ class AgenticPipeline:
                     raw, path = getattr(comment, "content", None), f"/comments/{index}/content"
                 if isinstance(raw, str):
                     source_view["fragments"].append({"raw_path": path, "kind": "COMMENT", "text": raw})
-            # 관측자가 view를 바꿔도 예외 영수증은 원래 호출의 원문 지문을 사용한다.
+            # observer가 view를 바꿔도 예외 기록에는 원래 호출의 원문 지문을 쓴다.
             query_sha256 = hashlib.sha256(json.dumps(
                 source_view, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False,
             ).encode("utf-8")).hexdigest()
@@ -4893,7 +4893,7 @@ class AgenticPipeline:
         return result
 
     def _observe_candidate_calibration_shadow(self, post: PostInput, retrieval_receipt, semantic_package=None):
-        # 관측 자료는 호출별로만 보존한다. consumer 실패가 기존 전문가 분석을 막지 않는다.
+        # 기록 자료는 호출마다 따로 보존한다. consumer가 실패해도 기존 전문가 분석은 막지 않는다.
         receipt = capture = calibration = None
         try:
             from .runtime.candidate_reranker import observe_candidate_reranker_with_capture, requires_semantic_input
@@ -4932,7 +4932,7 @@ class AgenticPipeline:
             from .runtime.candidate_inference import observe_candidate_inference
             return observe_candidate_inference(observer, post, capture, receipt)
         except Exception:
-            # 별도 관측 실패를 기존 분석 성공이나 공개 판정으로 전파하지 않는다.
+            # 별도 기록 단계가 실패해도 기존 분석 성공이나 공개 판정에 영향을 주지 않는다.
             return None
 
     @staticmethod
@@ -4950,7 +4950,7 @@ class AgenticPipeline:
         try:
             return observe_candidate_semantics(observer, post, retrieval_receipt, getattr(self, "_candidate_retrieval_shadow", None))
         except Exception:
-            # 의미 관측 실패로 기존 분석을 중단하지 않는다. exporter는 누락을 미가용으로 기록한다.
+            # 의미 기록이 실패해도 기존 분석은 중단하지 않는다. exporter는 누락을 미가용으로 기록한다.
             return None
 
     @staticmethod
@@ -5095,7 +5095,7 @@ class AgenticPipeline:
         return result
 
     def _community_knowledge_guard_contract(self, ctx, contract, post_gate_context):
-        """후보 문맥은 새 공개 권한이 아니다. 기존 typed gate에 독립근거 부족을 봉인한다."""
+        """후보 문맥은 새 공개 권한이 아니다. 독립 근거가 부족하다는 사실을 기존 typed gate에 고정한다."""
         receipt = getattr(ctx, "_community_knowledge_readback", None)
         consumption = receipt.get("consumption", {}) if isinstance(receipt, dict) else {}
         if not consumption.get("prompt_included_calls") or not isinstance(contract, PublishContract):
@@ -5196,7 +5196,7 @@ class AgenticPipeline:
                 "publication_authority": False, "public_apply": False, "central_db_write": False,
                 "actual_quality_evaluated": False, "formal_kpi_status": "NOT_ESTIMABLE",
             }
-            # native 관측의 tuple span은 유지하고 발행할 영수증 사본만 JSON wire로 고정한다.
+            # native 기록의 tuple span은 유지하고, 내보낼 기록 사본만 JSON wire 형식으로 고정한다.
             receipt = json.loads(canonical_bytes(receipt))
             receipt["receipt_sha256"] = sha256(receipt)
             return NativeRecoveryOutcome(result, ctx, receipt)
@@ -5209,7 +5209,7 @@ class AgenticPipeline:
         """게시글 한 건을 분석해 ``PickvelOutputItemV2``로 돌려준다.
 
         이전 호출의 ``_last_ctx``를 먼저 지워 다른 행의 문맥을 재사용하지 않는다. 후보 회수·재정렬·
-        교정·커뮤니티 지식 같은 선택 관측은 설정된 경우에만 기록하며 공개 판정 권한이 없다.
+        교정·커뮤니티 지식 같은 선택 기능의 결과는 설정된 경우에만 기록하며 공개 판정 권한이 없다.
         원문 입력, 댓글 참조, NSFW 원문 carrier, 로더의 절단·형식 오류 기록은 같은 호출의 ctx로
         그대로 옮겨 후처리에서 원문과 대조할 수 있게 한다.
 
@@ -5474,7 +5474,7 @@ class AgenticPipeline:
         }
 
     def _build_final_batch_context_learning_envelope(self, ctx, identity):
-        """기존 채널 생성 뒤 최종 작품 쌍에 저자 채널만 다시 결속한다."""
+        """기존 채널을 만든 뒤 최종 작품 쌍에 저자 채널만 다시 연결한다."""
         envelope = self._build_batch_context_learning_envelope(ctx)
         if envelope is None:
             return None
@@ -5494,7 +5494,7 @@ class AgenticPipeline:
         return normalize_batch_context_learning_envelope(envelope)
 
     def _learn_batch_context(self, ctx: ConversationContext, result: PickvelOutputItemV2) -> None:
-        """포스트 처리 완료 후 BatchContextMemory에 학습 (thread-safe)."""
+        """게시글 처리를 마친 뒤 BatchContextMemory에 학습한다 (thread-safe)."""
         if not self.batch_context or not self.batch_context.enabled:
             return
         if not result.identity.is_relevant:
@@ -5737,7 +5737,7 @@ class AgenticPipeline:
             )
             return bool("author" in role_blob or "작가" in role_blob)
 
-        # 추가 안전장치: 단일 전문가 과신호 대신 다중 증거 결속이 있는 경우에만 학습.
+        # 추가 안전장치: 전문가 한 명의 강한 신호만으로는 학습하지 않고, 여러 증거가 함께 맞을 때만 학습한다.
         _commitment = self._compute_title_commitment(ctx, official_title, vf_result)
         if not self._is_title_commitment_medium(_commitment):
             print(
@@ -6275,8 +6275,8 @@ class AgenticPipeline:
         _trace_context_output("entered")
         ctx.__dict__.pop("_propriety_question_scope_evidence", None)
         ctx.__dict__.pop("_general_context_state_evidence", None)
-        # 후처리가 raw Arbiter를 수정하기 전에, 이미 자격을 갖춘 일반 문맥만 결속한다.
-        # 원문/원래 전문가/검색 자료의 내용과 소유 객체는 마지막에 다시 검산한다.
+        # 후처리가 raw Arbiter를 수정하기 전에, 이미 자격을 갖춘 일반 문맥만 연결해 둔다.
+        # 원문/원래 전문가/검색 자료의 내용과 소유 객체는 마지막에 다시 확인한다.
         general_entry = self._source_bound_general_context_state(ctx, "nonwork_comparison")
         if general_entry is None:
             general_entry = self._source_bound_general_context_state(ctx, "genre_context")
@@ -6747,7 +6747,7 @@ class AgenticPipeline:
         # 🛡️ FIX: _title_deliberately_null + no title → 구조적 추출 시도 후 비관련 전환
         # Arbiter/Decoder가 신중하게 title=null을 결정한 경우,
         # 먼저 Gatekeeper possible_titles가 커뮤니티 검색 결과에 다수 등장하는지 확인.
-        # LLM nondeterminism에 의한 오판을 구조적 증거로 보정.
+        # LLM nondeterminism으로 생긴 오판을 구조적 증거로 보정.
         # is_relevant=True/False 모두에서 발동 (Arbiter도 False일 수 있음)
         _structural_title_rescued = None  # J1 거부권 예외 판단에 사용됨
         _author_talk_rescue = False
@@ -7343,7 +7343,7 @@ class AgenticPipeline:
         # 조건:
         # - Arbiter 최종 비관련
         # - Verifier는 관련 + high 계열
-        # - 제목 약칭이 포스트 제목에 실제 존재
+        # - 제목 약칭이 게시글 제목에 실제 존재
         # - 공식 플랫폼 URL/증거가 존재
         # - Decoder 런타임 불안정(NoneType 등) 또는 Synthesizer가 플랫폼약어 드리프트를 주장
         if not is_relevant:
@@ -7736,7 +7736,7 @@ class AgenticPipeline:
         _vf_error_j = self._is_verifier_failure_result(vf_result)
         _arb_veto_exempt_j = bool(final_decision.get("_verifier_veto_exempt"))
         if is_relevant and not _vf_is_relevant and official_title and not _arb_veto_exempt_j and not _vf_error_j:
-            # Verifier 거부를 뒤집으려면, "검색 힌트"만이 아닌 본문-증거 결속이 있어야 한다.
+            # Verifier 거부를 뒤집으려면 "검색 힌트"만이 아니라 본문과 증거가 직접 연결되어야 한다.
             _vf_grounding_j = vf_result.get("grounding_check") or {}
             _vf_anchor_j = str(_vf_grounding_j.get("anchor_found") or "").lower()
             _has_strong_anchor_j = _vf_anchor_j in {
@@ -7952,7 +7952,7 @@ class AgenticPipeline:
                     file=sys.stderr,
                 )
 
-            # critical reject인 경우엔 더 엄격하되, 공식근거 + 안정적인 약칭 결속 + 강한 디코드/합의가 있으면
+            # critical reject인 경우엔 더 엄격하되, 공식근거 + 안정적인 약칭 연결 + 강한 디코드/합의가 있으면
             # 짧은 반응글/약칭글의 false negative를 막기 위해 예외를 허용한다.
             _critical_reject_override_j = (
                 _official_evidence_j
@@ -7994,7 +7994,7 @@ class AgenticPipeline:
 
             # 🆕 구조적 제목 추출 rescue 예외:
             # Gatekeeper possible_titles + 커뮤니티 검색 증거 ≥2건으로 복원된 제목은
-            # LLM Verifier의 비결정성 오판에 의해 기각되어서는 안 된다.
+            # LLM Verifier의 비결정적 오판으로 기각되면 안 된다.
             # 구조적 증거(코드레벨 검색 매칭)는 LLM 의견보다 안정적이다.
             if not _has_strong_override_j and _structural_title_rescued:
                 _structural_rescue_allowed_j = bool(
@@ -8229,7 +8229,7 @@ class AgenticPipeline:
                 _comp_score = abbreviation_match_score(_comp_target_j, official_title)
                 _comp_is_title = _comp_score >= 0.40 or _comp_target_j in official_title or official_title in _comp_target_j
             if _comp_is_title:
-                # 비교 대상을 주제로 오인 → 비관련로 버리지 말고 제목 미확정 관련 포스트로 보존.
+                # 비교 대상을 주제로 오인 → 비관련으로 버리지 말고 제목 미확정 관련 게시글로 보존.
                 _old_title_j5 = official_title
                 print(
                     f"[{_ts()}] ⚖️ 비교 패턴 보류: "
@@ -9316,7 +9316,7 @@ class AgenticPipeline:
             )
         )
         # ── 가드 J10.5: official_title=null 상태의 약앵커 relevant 오승격 차단 ──
-        # 제목/본문에 작품 고유 결속이 없고(약앵커), 단문 반응/플랫폼 메타 패턴이면
+        # 제목/본문에 작품 고유 근거가 연결되지 않았고(약앵커), 단문 반응/플랫폼 메타 패턴이면
         # unresolved relevant를 noise/meta로 하향한다.
         if is_relevant and not official_title:
             _weak_unresolved_anchor = vf_anchor in {
@@ -10557,7 +10557,7 @@ class AgenticPipeline:
         if _has_title_masking and not is_relevant:
             # 마스킹된 제목 + irrelevant로 판정 → 해독불가 정당화
             # 제목이 숨겨져 있으므로 작품 특정 실패는 정상
-            # discussion_type을 noise 대신 undecodable_reference로 分離
+            # discussion_type을 noise 대신 undecodable_reference로 분리
             if discussion_type == "noise":
                 discussion_type = "undecodable_reference"
                 print(
@@ -11008,7 +11008,7 @@ class AgenticPipeline:
                         )
 
                 # 🆕 commitment 기반 rescue:
-                # Verifier anchor가 약해도, 다중 근거 결속도가 높으면 과차단을 피한다.
+                # Verifier anchor가 약해도, 여러 근거가 함께 맞는 정도가 높으면 과차단을 피한다.
                 if not _rescue and official_title:
                     _commit_hg = self._compute_title_commitment(ctx, official_title, vf_result)
                     _canonical_commit_hg = self._canonical_work_rescue_strength(
@@ -11048,7 +11048,7 @@ class AgenticPipeline:
 
                 # 🆕 title switch / ambiguity top candidate rescue:
                 # Verifier가 다른 제목으로 grounding 했더라도, 후반에 선택된 현재 제목이
-                # 후보군 최상단이며 결속도가 충분하면 stale grounding 때문에 noise로 죽이지 않는다.
+                # 후보군 최상단이며 근거 일치도가 충분하면 stale grounding 때문에 noise로 죽이지 않는다.
                 if not _rescue and official_title:
                     _vf_title_hg = str(
                         (vf_result.get("novel_identity") or {}).get("official_novel_title")
@@ -11139,7 +11139,7 @@ class AgenticPipeline:
                         )
 
                 # 🆕 붙여쓰기(작품약칭+캐릭터) 패턴 rescue:
-                # Verifier anchor가 search_only여도, 제목 결속이 강하고 비소설 도메인이 아니면
+                # Verifier anchor가 search_only여도, 제목과의 연결이 강하고 비소설 도메인이 아니면
                 # 하드 게이트 과차단을 피한다. (예: 즉사무림이유백)
                 if not _rescue and official_title:
                     _compound_tc_hg = self._has_compound_title_character_signal(ctx, official_title)
@@ -12484,7 +12484,7 @@ class AgenticPipeline:
 
         # ── 최종 안전장치: "작가번호+신작" 게시글 제목 패턴 → noise 전환 ──
         # DC 장르소설갤에서 "172신작은 묵혀야겠네" 같은 제목은 "작가 #172의 신작"을 
-        # 의미하며, 특정 소설 토론이 아닌 작가의 신작에 대한 메타-언급.
+        # 의미한다. 특정 소설 토론이 아니라 작가의 신작을 두고 하는 메타 언급이다.
         # LLM deliberation이 실제 소설을 찾아 rescue해도 이 패턴은 noise로 확정.
         if is_relevant:
             import re as _re_authnum
@@ -12721,7 +12721,7 @@ class AgenticPipeline:
         counter_arguments = verification_result.get("counter_arguments", []) or []
 
         # 우선순위 개선:
-        # 비관련 포스트는 단일 reason 문자열을 고정 우선순위로 고르지 않고
+        # 비관련 게시글은 단일 reason 문자열을 고정 우선순위로 고르지 않고
         # 후보 근거를 점수화해 상위 근거를 합성한다.
         reason = ""
         has_non_relevant_evidence = any(
@@ -12772,7 +12772,7 @@ class AgenticPipeline:
                 final_decision=_effective_final_decision,
             )
         elif is_relevant and not official_title:
-            # 관련 포스트지만 제목 미확정인 케이스는 기본 reason이 얇아지기 쉬워
+            # 관련 게시글이지만 제목 미확정인 케이스는 기본 reason이 얇아지기 쉬워
             # 전용 포맷으로 진행 근거/보류 사유를 구조화한다.
             reason = self._format_unresolved_relevant_reason(
                 discussion_type=discussion_type,
@@ -12963,7 +12963,7 @@ class AgenticPipeline:
                 reason_lines = []
             reason_lines.append(_audit_suffix.strip())
         
-        # 후보 title군 구성 (resolved/unresolved 관련 포스트 공통)
+        # 후보 title군 구성 (resolved/unresolved 관련 게시글 공통)
         title_candidates, title_candidate_generation_snapshot = (
             self._build_title_candidates_with_snapshot(
             ctx=ctx,
@@ -18872,7 +18872,7 @@ class AgenticPipeline:
                                 for record in publish_contract.evidence))
                 )
             ):
-                # 닫힌 계약에서 보류한 같은 공식 후보를 주작품으로 다시 표시하지 않는다.
+                # 확정된 계약에서 보류한 같은 공식 후보를 주작품으로 다시 표시하지 않는다.
                 # 원 owner와 ledger는 유지하고 공개 reference view만 후보 역할로 바꾼다.
                 held_primary = primary_work
                 if not any(isinstance(item, DetectedTitle)
@@ -18925,7 +18925,7 @@ class AgenticPipeline:
         identity.comparison_target = comparison_target
         identity.recommendation_candidates = recommendation_candidates if recommendation_candidates else None
 
-        # 후행 공개 보류·owner 변경까지 지난 실제 SI를 최초 봉인 전에 제한한다.
+        # 뒤이은 공개 보류·owner 변경까지 거친 실제 SI를 처음 고정하기 전에 제한한다.
         # 공개 권한은 같은 decoded 작품에만 적용하며, 독립 proof는 기존 false를 복구하지 않는다.
         _work_alias_insight = identity.slang_insight
         if _work_alias_insight is not None and _work_alias_insight.alias_scope == "pure_work_alias":
@@ -18986,10 +18986,10 @@ class AgenticPipeline:
                         _work_alias_insight.store_reason = "work_alias_source_binding_unobserved"
                     _work_alias_insight.cultural_context = None
 
-        # 역할 설명은 최종 typed 별칭 계약과 직접 원문 진술로 별도 검산한다.
+        # 역할 설명은 최종 typed 별칭 계약과 직접 원문 진술로 별도로 확인한다.
         self._hold_unbound_slang_character_role_context(ctx, identity)
 
-        # A 반환 state에 결속된 native 전달값을 B/R05 최초 봉인 전에 실제 ledger로 연결한다.
+        # A가 반환한 state에 묶인 native 전달값을 B/R05를 처음 고정하기 전에 실제 ledger와 연결한다.
         self._attach_final_edition_lexical_context(ctx, identity)
         def accept_preseal_question_contract(native, explanation, records, comments):
             nonlocal publish_contract
@@ -19059,7 +19059,7 @@ class AgenticPipeline:
                 notes=analysis_notes,
             )
 
-        # 실제 B projection → R05 표시 경계 → 사용한 final4 검산 → 최초 immutable receipt.
+        # 실제 B projection → R05 표시 경계 → 사용한 final4 재확인 → 최초 immutable receipt.
         self._apply_ocr_reader_provenance_before_source_seal(
             ctx, identity, analysis, publish_contract=publish_contract,
         )
@@ -19153,7 +19153,7 @@ class AgenticPipeline:
         insight = identity.slang_insight
         if (insight is not None and insight.cultural_context is not None
                 and image_ocr_diagnostic_title_surfaces(images)):
-            # OCR가 섞인 자유 설명은 최초 봉인 전에 실제 source 소비 결과로 교체한다.
+            # OCR가 섞인 자유 설명은 처음 고정하기 전에 실제 source 소비 결과로 교체한다.
             # decoded_term/별칭 검증/공개·DB 권한은 이 표시 처리에서 변경하지 않는다.
             expected = getattr(ctx, "_final_source_projection_expected_fields", None)
             source_notes = expected.get("notes") if isinstance(expected, dict) else None
@@ -19183,7 +19183,7 @@ class AgenticPipeline:
     def _source_bound_nsfw_blocks_match(self, original_blocks, post_data):
         """원문 블록 또는 같은 원문 이미지에서 실제 주입 함수가 만든 배열만 허용한다.
 
-        OCR/요약 type을 일괄 제거하지 않는다. 원문 index·URL을 먼저 결속하고
+        OCR/요약 type을 일괄 제거하지 않는다. 원문 index·URL을 먼저 연결해 두고
         원래 배열에서 주입 결과를 재구성하므로 원문 삭제·순서·본문 변경은 남는다.
         파생 텍스트는 직접 원문 NSFW 규칙의 근거로 승격하지 않는다.
         """
@@ -19216,7 +19216,7 @@ class AgenticPipeline:
         return canonical(selected(current)) == canonical(selected(projected["content_blocks"]))
 
     def _source_bound_nsfw_decision(self, ctx, metadata, legacy_value, *, native_verified):
-        """이미지 판정은 원문/native 검산 뒤 적용하고 모델 미평가 이유를 별도로 보존한다."""
+        """이미지 판정은 원문/native 확인 뒤 적용하고 모델 미평가 이유를 별도로 보존한다."""
         decision = self._source_bound_text_nsfw_decision(
             ctx, metadata, legacy_value, native_verified=native_verified)
         model_bool = type(metadata.get("is_nsfw")) is bool
@@ -19282,7 +19282,7 @@ class AgenticPipeline:
 
 
     def _source_bound_trope_nsfw_decision(self, ctx, metadata, legacy_value, *, native_verified):
-        """트로프 예시 요청에 붙은 직접적인 허구 인물 대상 성폭력 명사구만 관측한다.
+        """트로프 예시 요청에 붙은 직접적인 허구 인물 대상 성폭력 명사구만 찾는다.
 
         이는 댓글 내용의 민감도다. 작성자의 지지, 실제 사건 또는 작품명은 추론하지 않는다.
         다른 NSFW 범위 및 모델 false의 일반 우선순위는 기존 계약을 유지한다.
@@ -19399,7 +19399,7 @@ class AgenticPipeline:
                 or re.search(r'''[<>"'「」『』“”‘’\r\n:：]|https?://''', raw)):
             return None
         # 단어의 존재만 보지 않는다. 대상/행위/욕구 또는 억제의 세 구간이
-        # 같은 평문 댓글의 완전한 발화로 결속돼야 한다.
+        # 같은 평문 댓글의 완전한 발화 하나로 이어져야 한다.
         match = re.fullmatch(
             r'[ \t]*(?P<participant>[가-힣A-Za-z0-9][가-힣A-Za-z0-9 \t]{0,64}?)[ \t]+'
             r'(?P<act>강간|성폭행|겁탈|섹스|성관계|성적[ \t]*자위)'
@@ -19437,7 +19437,7 @@ class AgenticPipeline:
                 'event_occurrence': 'NOT_ASSERTED', 'author_endorsement': 'NOT_ASSESSED'}
 
     def _source_bound_sexual_desire_comment_evidence(self, ctx, original, native):
-        """기존 native 댓글 occurrence에 욕구/억제의 구간을 정확히 결속한다."""
+        """기존 native 댓글 occurrence에 욕구/억제의 구간을 정확히 대응시킨다."""
         canonical = lambda x: json.dumps(x, ensure_ascii=False, sort_keys=True,
                                          separators=(',', ':'), allow_nan=False)
         ids = [canonical(c.get('comment_id')) for c in original['comments'] if isinstance(c, dict)]
@@ -19473,7 +19473,7 @@ class AgenticPipeline:
 
     @staticmethod
     def _source_bound_nsfw_serialized_value(payload):
-        """새 live 영수증에만 추가 적용한다. 과거 final-source field SHA는 바꾸지 않는다."""
+        """새 live 기록에만 추가 적용한다. 과거 final-source field SHA는 바꾸지 않는다."""
         if "analysis" not in payload:
             raise ValueError("NSFW analysis field missing")
         analysis = payload["analysis"]
@@ -19485,7 +19485,7 @@ class AgenticPipeline:
 
     @staticmethod
     def _source_bound_nsfw_serialized_assessment(payload):
-        """현재 v2 receipt만 상태와 bool의 동시 보존을 요구한다. legacy null은 소급 검산하지 않는다."""
+        """현재 v2 receipt만 상태와 bool의 동시 보존을 요구한다. legacy null은 소급해 다시 확인하지 않는다."""
         value = AgenticPipeline._source_bound_nsfw_serialized_value(payload)
         if payload["analysis"] is None:
             return None
@@ -19500,7 +19500,7 @@ class AgenticPipeline:
 
     @staticmethod
     def _source_bound_nsfw_serialized_reason(payload):
-        """새 평가 이유만 봉인한다. 과거 영수증에는 이 optional 필드를 요구하지 않는다."""
+        """새 평가 이유만 고정한다. 과거 기록에는 이 optional 필드를 요구하지 않는다."""
         if payload.get("analysis") is None:
             return None
         reason = payload["analysis"].get("nsfw_assessment_reason")
@@ -21586,7 +21586,7 @@ class AgenticPipeline:
         return None
 
     def _propriety_literal_title_anchor_inputs(self, ctx, title, vr, fd):
-        """질문 proof가 따로 필요한 문자 제목 anchor의 좁은 부재 검산. Verifier 값을 고치지 않는다."""
+        """질문 proof가 따로 필요한 문자 제목 anchor가 없는지 좁게 확인한다. Verifier 값은 고치지 않는다."""
         try:
             ground = vr.get("grounding_check")
             if (not isinstance(ground, dict) or type(ground.get("decoder_grounded")) is not bool
@@ -21646,7 +21646,7 @@ class AgenticPipeline:
 
     def _source_bound_propriety_question_scope(self, ctx, identity, native, explanation,
             records, comments, *, publish_contract):
-        """같은 최종 B pass의 질문 proof로 최초 봉인 전 제목 상태만 정리한다."""
+        """같은 최종 B pass의 질문 proof로 처음 고정하기 전의 제목 상태만 정리한다."""
         self._scope_state_guard_note(ctx, "propriety_question_scope", "STARTED", "ENTERED")
         if ctx is None or type(getattr(ctx, "post_id", None)) is not int:
             return self._scope_state_guard_note(ctx, "propriety_question_scope", "REJECTED", "CONTEXT_OR_POST_ID")
@@ -21868,7 +21868,7 @@ class AgenticPipeline:
         )
 
     def _general_context_state_inputs(self, ctx, mode):
-        """채택된 일반 문맥과 원문/후보의 관계를 결속한다. 탐색 완료나 NIL proof는 아니다."""
+        """채택된 일반 문맥과 원문/후보의 관계를 연결해 둔다. 탐색 완료나 NIL proof는 아니다."""
         if mode not in {"nonwork_comparison", "genre_context"} or ctx is None:
             return None
         canonical = lambda value: json.dumps(value, ensure_ascii=False, sort_keys=True,
@@ -22294,7 +22294,7 @@ class AgenticPipeline:
             for line,raw in zip(native.manifest.lines,originals))
 
     def _surface_title_anchor_inputs(self, ctx, verification_result, final_decision):
-        """이미 채택한 비작품 판정의 표면 anchor를 좁게 결속한다. 의미/NIL proof가 아니다."""
+        """이미 채택한 비작품 판정의 표면 anchor를 좁게 연결한다. 의미/NIL proof가 아니다."""
         self._scope_state_guard_note(ctx, "surface_title_anchor", "STARTED", "ENTERED")
         if ctx is None or not isinstance(ctx.post_data, dict):
             return self._scope_state_guard_note(ctx, "surface_title_anchor", "REJECTED", "CONTEXT_OR_POST_DATA")
@@ -22426,7 +22426,7 @@ class AgenticPipeline:
                         for hit in (getattr(ctx, "search_results", None) or []))
                     or any(self._has_official_title_evidence(ctx, t, allow_live_fetch=False) for t in titles)):
                 return self._scope_state_guard_note(ctx, "surface_title_anchor", "REJECTED", "OFFICIAL_ALIAS_CHARACTER_COMPETITION")
-            # raw JSON 전체의 후처리 진단 추가를 봉인하지 않는다. 실제 소비 필드만 고정한다.
+            # 후처리가 raw JSON 전체에 덧붙인 진단은 고정하지 않는다. 실제로 사용한 필드만 고정한다.
             facts = {"source": live, "carrier": expected,
                 "gate": {"entities": entities, "clues": {k: clues.get(k) for k in (
                     "short_post_fast_path", "short_post_title_surface", "is_recommendation_request", "is_asking_recommendation")}},
@@ -22844,7 +22844,7 @@ class AgenticPipeline:
                 ctx._surface_title_anchor_evidence = surface_anchor_evidence
                 self._scope_state_guard_note(ctx, "surface_title_anchor", "APPLIED", "CONTEXT_ONLY_BEFORE_NATIVE")
 
-        # 일반 문맥을 이미 채택한 행에서만 원문과 후보 관계를 별도로 결속한다.
+        # 일반 문맥을 이미 채택한 행에서만 원문과 후보 관계를 별도로 연결한다.
         # 무관 검색/보존용 표면의 존재를 specific-work 권한으로 간주하지 않는다.
         general_mode = None
         if (is_relevant is False and not has_title and resolution == "none"
@@ -22854,7 +22854,7 @@ class AgenticPipeline:
                 general_mode = "nonwork_comparison"
             elif dt in {"trope_discussion","genre_opinion","noise","off_topic"}:
                 general_mode = "genre_context"
-        # 초기 결속 없이 후처리 결과를 새로운 원본으로 재승인하지 않는다.
+        # 처음부터 연결된 근거 없이 후처리 결과를 새 원본으로 다시 승인하지 않는다.
         general_evidence = general_context_entry
         if general_evidence is not None:
             if (general_evidence["context"] is not ctx or general_evidence["mode"] != general_mode
@@ -28090,7 +28090,7 @@ class AgenticPipeline:
                 )
                 return True, dt, None, None, conf_label
 
-            # 초단문(제목 반응형) + 약한 앵커 + 제목 결속이 낮은 경우 과적합 확정을 보류.
+            # 초단문(제목 반응형) + 약한 앵커 + 제목과의 연결이 약한 경우 과적합 확정을 보류.
             if (
                 _weak_anchor
                 and (not _body_present)
@@ -28212,7 +28212,7 @@ class AgenticPipeline:
         else:
             target_rank = 1
 
-        # 제목 미확정 관련 포스트는 High 이상으로 올리지 않는다.
+        # 제목 미확정 관련 게시글은 High 이상으로 올리지 않는다.
         if not official_title:
             target_rank = min(target_rank, 2)
 
@@ -30726,7 +30726,7 @@ OUTPUT JSON:
         final_decision: Optional[Dict[str, Any]] = None,
     ) -> str:
         """
-        관련 포스트이지만 official_title 미확정인 케이스의 reason을
+        관련 게시글이지만 official_title 미확정인 케이스의 reason을
         섹션형으로 상세 구성한다.
         """
         dt = discussion_type or "general"
@@ -32224,7 +32224,7 @@ OUTPUT JSON:
         exact_url: bool = False,
         allow_live_fetch: bool = True,
     ) -> Dict[str, Any]:
-        """동일 URL에 대한 fetched page 상태를 요약한다."""
+        """같은 URL의 fetched page 상태를 요약한다."""
         summary: Dict[str, Any] = {
             "has_fetched_entry": False,
             "page_types": set(),
@@ -33447,7 +33447,7 @@ OUTPUT JSON:
                     break
             if not title_reference and not body_reference:
                 continue
-            # 원형 loader/capture에 결속한 본문 약칭 출현은 작품 논의 판정이
+            # 원형 loader/capture와 연결된 본문 약칭 출현은 작품 논의 판정이
             # 없어도 후보로만 보존한다. 제목 경로와 공개 승격 게이트는 그대로다.
             observation_only = bool(body_reference and not positive_work_context)
             if not positive_work_context and not observation_only:
@@ -35618,7 +35618,7 @@ OUTPUT JSON:
         return extracted[:12]
 
     def _bind_title_candidate_source_payload(self, ctx, payload: Mapping[str, Any]) -> Dict[str, Any]:
-        """후보 metadata를 선택 URL의 관측 근거에만 결속한다. 제목/순위는 바꾸지 않는다."""
+        """후보 metadata를 선택한 URL에서 실제로 확인된 근거에만 연결한다. 제목/순위는 바꾸지 않는다."""
         bound = dict(payload)
         title = str(bound.get("official_title") or "").strip()
         url = str(bound.get("heretic_url") or "").strip()
@@ -35754,8 +35754,8 @@ OUTPUT JSON:
         vf_result: Optional[Dict[str, Any]] = None,
     ) -> Tuple[List[DetectedTitle], Optional[DetectedTitle], List[DetectedTitle], Optional[DetectedTitle]]:
         title_candidates = list(title_candidates or [])
-        # 원문 인물에서 회수한 비권한 후보는 별도의 work-reference 판독에 투입하지 않는다.
-        # 표식만 믿지 않고 현재 원문/검색/Decoder 관계와 fingerprint를 다시 검산한다.
+        # 원문 인물에서 회수한 비권한 후보는 별도의 work-reference 해석에 넣지 않는다.
+        # 표식만 믿지 않고 현재 원문/검색/Decoder 관계와 fingerprint를 다시 확인한다.
         _character_holds: List[DetectedTitle] = []
         _character_proofs = {row["title"]: row for row in character_work_candidates(ctx)}
         _regular_candidates = []
@@ -36369,7 +36369,7 @@ OUTPUT JSON:
             role = role_map.get(cand_norm, "candidate")
             final_candidates.append(self._clone_detected_title(cand, reference_role=role))
 
-        # 합성/추출/URL rematch로 뒤에서 추가된 reference도 같은 결속을 통과한다.
+        # 합성/추출/URL rematch로 뒤에서 추가된 reference도 같은 연결 검사를 거친다.
         return (
             [_bind_source(candidate) for candidate in [*final_candidates, *_character_holds]],
             _bind_source(primary_work),
@@ -38001,7 +38001,7 @@ OUTPUT JSON:
         }
 
     def _source_character_work_conflict(self, ctx, title):
-        """원문에 결속된 인물 해석은 같은 표면의 작품 역할 근거가 아니다."""
+        """원문과 연결된 인물 해석은 같은 표면의 작품 역할 근거가 아니다."""
         result = {'blocked': False, 'reason': 'NO_BOUND_CHARACTER_ROLE', 'source_occurrences': (),
                   'publication_authority': False}
         if ctx is None or not isinstance(title, str) or not title.strip():
@@ -38070,7 +38070,7 @@ OUTPUT JSON:
                 'source_occurrences': tuple(bound)}
 
     def _source_reference_comparison_supported(self, ctx, target, peers):
-        """같은 원문 표제 구간에 직접 결속된 비교 조사·술어만 비교 역할로 쓴다."""
+        """같은 원문 표제 구간에 직접 붙은 비교 조사·술어만 비교 역할로 쓴다."""
         if not isinstance(target, DetectedTitle) or not target.official_title:
             return False
         if self._source_character_work_conflict(ctx, target.official_title)['blocked']:
@@ -38086,7 +38086,7 @@ OUTPUT JSON:
                     continue
                 found.extend(self._source_unquoted_role_occurrences(ctx, surface))
                 # 전역 작품 표면 tail 허용값을 넓히지 않는다. 비교 조사까지 포함한 원문
-                # 출현을 기존 화자/인용 검사로 검산한 뒤 조사만 표제 구간에서 떼어 낸다.
+                # 출현을 기존 화자/인용 검사로 다시 확인한 뒤 조사만 표제 구간에서 떼어 낸다.
                 for suffix in ('만큼', '보다는', '보다도'):
                     for item in self._source_unquoted_role_occurrences(ctx, surface + suffix):
                         lo, hi = item['raw_span']
@@ -38141,7 +38141,7 @@ OUTPUT JSON:
                     if versus.fullmatch(gap):
                         return True
                     # 표제 자체의 ? ! .는 문장 경계가 아니다. 원문을 수정하지 않고 동일 좌표의
-                    # 검사 사본에서 검산된 두 표제 구간만 가린다. 바깥 경계는 그대로 남긴다.
+                    # 검사 사본에서 확인된 두 표제 구간만 가린다. 바깥 경계는 그대로 남긴다.
                     outside = list(raw)
                     for lo, hi in (left, right):
                         outside[lo:hi] = ' ' * (hi - lo)
@@ -38179,7 +38179,7 @@ OUTPUT JSON:
             return False
         if self._non_promotable_cover_anchor_has_catalog_signal(item):
             return True
-        # 이미 검산하는 원문 작성자 작품 관계를 재사용한다. explicit_text 자체는 예외가 아니다.
+        # 이미 확인하는 원문 작성자 작품 관계를 재사용한다. explicit_text 자체는 예외가 아니다.
         candidate = DetectedTitle(official_title=title.strip(), confidence='Low', source_tier='llm_only')
         return self._image_work_relation(ctx, candidate).supports_primary is True
 
@@ -38861,7 +38861,7 @@ OUTPUT JSON:
         return bool(found) and all(found)
 
     def _source_action_object_candidate_only(self, ctx, candidate) -> bool:
-        """가공 동사의 목적어 출현만 있는 후보의 작품 역할을 막고 원문 영수증을 남긴다."""
+        """가공 동사의 목적어 출현만 있는 후보의 작품 역할을 막고 원문 기록을 남긴다."""
         if not ctx or not isinstance(candidate, DetectedTitle):
             return False
         alias = str(candidate.alias_or_mention or '').strip()
@@ -38974,11 +38974,11 @@ OUTPUT JSON:
             or self._has_explicit_alias_official_work_lock(ctx, title, vf_result))
 
     def _hold_unbound_slang_character_role_context(self, ctx, identity) -> None:
-        """합성 별칭의 역할 설명만 보류한다. 이름→작품 결속은 인물 역할 증명이 아니다."""
+        """합성 별칭의 역할 설명만 보류한다. 이름→작품 연결은 인물 역할 증명이 아니다."""
         insight = identity.slang_insight
         if insight is None or not isinstance(insight.cultural_context, str):
             return
-        # raw VF의 other/null 분류와 후처리 pure_work_alias가 역할 검산을 건너뛰지 않게
+        # raw VF의 other/null 분류와 후처리 pure_work_alias가 역할 확인을 건너뛰지 않게
         # 실제 최종 계약의 composite 진단도 읽는다. 순수 작품 설명은 이 경계 대상이 아니다.
         composite = (insight.alias_scope == 'work_plus_character'
             or insight.attached_entity_type == 'character'
@@ -39131,7 +39131,7 @@ OUTPUT JSON:
                         'name_span': [name_start, name_end], 'relation_span': [relation_start, relation_end]})
                     hold_start, hold_end = min(hold_start, sentence_start), max(hold_end, sentence_end)
             if unsupported:
-                # 부정 검산과 같은 인용 경계를 보류한다. 앞줄의 여는 부호나 뒷줄의
+                # 부정 확인과 같은 인용 경계를 보류한다. 앞줄의 여는 부호나 뒷줄의
                 # 닫는 부호/서술 꼬리만 남겨 설명을 훼손하지 않는다.
                 spans.append((hold_start, hold_end))
                 held.append({'model_span': [hold_start, hold_end],
@@ -39201,7 +39201,7 @@ OUTPUT JSON:
                                 touched_quote = True
                             escapes = 0
                         if was_quoted or touched_quote:
-                            continue  # 닫힌 뒤 다음 독립 원문 줄은 다시 검산한다.
+                            continue  # 인용이 닫힌 뒤의 다음 독립 원문 줄은 다시 확인한다.
                     # 기존 quote carry는 발화자 라벨 전파기가 아니다. 본문의 명시 라벨 뒤는
                     # 작성자 복귀를 추론하지 않고 보류한다. URL/작품명 내부 콜론은 라벨이 아니다.
                     if origin == 'body_line':
@@ -39215,7 +39215,7 @@ OUTPUT JSON:
                             continue
                     if not any(pattern.fullmatch(declaration) for pattern in patterns):
                         continue
-                    # 기존 여러 줄/블록 인용 carry 검산을 재사용한다. 일반화된 역할 추론은 하지 않는다.
+                    # 기존 여러 줄/블록 인용 carry 확인을 재사용한다. 일반화된 역할 추론은 하지 않는다.
                     if any(item['origin'] == origin and item['original_index'] == index
                            and item['raw_text'] == raw
                            for item in self._source_unquoted_role_occurrences(ctx, declaration)):
@@ -39356,7 +39356,7 @@ OUTPUT JSON:
         return False
 
     def _source_bound_untitled_new_work_review(self, ctx) -> bool:
-        """원제목의 작가→신작 관계와 인용 밖 본문 감상을 기존 비평 판별기에 결속한다."""
+        """원제목의 작가→신작 관계와 인용 밖 본문 감상을 기존 비평 판별기와 연결한다."""
         relation_found = False
         for author in self._collect_author_new_work_alias_surfaces(ctx):
             for occurrence in self._source_unquoted_role_occurrences(ctx, author):
@@ -50908,7 +50908,7 @@ OUTPUT JSON:
             occurrences = list(self._source_unquoted_role_occurrences(ctx, surface))
             if naming:
                 # 공통 helper가 곡선 여러 줄 인용으로 제외한 경우에도 위에서
-                # 검산한 명시 필명 위치 하나만 복원한다. 평가 cue에는 이 예외가 없다.
+                # 확인한 명시 필명 위치 하나만 복원한다. 평가 cue에는 이 예외가 없다.
                 for occurrence in self._source_bound_author_surface_occurrences(ctx, surface):
                     key = (occurrence['origin'],occurrence['original_index'],occurrence['raw_text'])
                     if (*occurrence['raw_span'],occurrence['surface']) in nominal_names.get(key, ()):
@@ -55131,7 +55131,7 @@ OUTPUT JSON:
                          and item.get("caller_disposition") == "passed_to_source"]
                         if captured is not None else [span["text"] for span in author_text_spans(post_data)])
             # 작성자의 실제 문장을 인용한 설명은 조기에 고쳐 쓰지 않는다.
-            # 혼합 설명은 최종 source 봉인의 보호된 원문/공식쌍 처리에 그대로 맡긴다.
+            # 혼합 설명은 최종 source 고정 단계의 보호된 원문/공식쌍 처리에 그대로 맡긴다.
             if any(clause.text in cleaned for raw in authored if isinstance(raw, str)
                    for clause in source_split_clauses(raw) if clause.text):
                 return cleaned
@@ -55643,7 +55643,7 @@ OUTPUT JSON:
                     continue
             start = raw.find(surface)
             if start < 0 or raw.find(surface, start + len(surface)) >= 0:
-                continue  # 명칭 occurrence를 하나로 결속할 수 없는 변형은 추측하지 않는다.
+                continue  # 명칭 occurrence를 하나로 대응시킬 수 없는 변형은 추측하지 않는다.
             out.append({"surface": surface, "url": linked_url or None,
                         "answer_surface_text": answer_surface_text, "explicit_title_span": bool(explicit or quoted_title),
                         "response_act": "delimited_work_name" if quoted_title and not explicit else response_act,
@@ -55688,7 +55688,7 @@ OUTPUT JSON:
             return {}
         if not re.search(r"[/／]", self._strip_comment_mention_prefix(record["raw_text"])):
             return {}
-        # 관측한 ID는 유일해야 한다. 누락을 허용하더라도 위조/중복/타입 혼동은 허용하지 않는다.
+        # 확인된 ID는 유일해야 한다. 누락을 허용하더라도 위조/중복/타입 혼동은 허용하지 않는다.
         def id_key(value):
             return (type(value), value) if type(value) in (int, str) and value not in (0, "") else None
         for item in (lead, question, record):
@@ -65129,8 +65129,8 @@ OUTPUT JSON:
                     return True
 
         # rank2 (recall / 근본원인 A): 깨끗한 이미지 OCR 카탈로그 상세를 official_detail 에 준하는 근거로 인정.
-        # vetted work-title 카탈로그(작품명)+(작가 또는 강구조신호) 공기 시에만 발화(명시 seed 게이트).
-        # allow_ocr_catalog=False 소비처(verifier promotion veto 등)에는 OCR 근거를 노출하지 않아 게이트 불변 보존.
+        # vetted work-title 카탈로그(작품명)와 (작가 또는 강한 구조 신호)가 함께 나타날 때만 발동한다(명시 seed 게이트).
+        # allow_ocr_catalog=False 소비처(verifier promotion veto 등)에는 OCR 근거를 노출하지 않아 게이트 불변 조건을 지킨다.
         if allow_ocr_catalog and self._has_ocr_catalog_official_title_evidence(ctx, title_raw):
             return True
 
@@ -65488,7 +65488,7 @@ OUTPUT JSON:
     ) -> Dict[str, Any]:
         """
         최종 title 확정 신뢰도(Commitment) 계산.
-        - 프롬프트를 바꾸지 않고 코드 레벨에서 다중 근거 결속도를 점수화한다.
+        - 프롬프트를 바꾸지 않고 코드 레벨에서 여러 근거가 얼마나 함께 맞는지 점수화한다.
         """
         if not title:
             return {
@@ -67990,7 +67990,7 @@ OUTPUT JSON:
         return False
 
     def _decoder_title_role_rejected(self, ctx, title) -> bool:
-        """동일 Decoder 관측의 역할 모순을 원문/독립 출처와 대조하고 raw로 보존한다."""
+        """같은 Decoder 결과 안의 역할 모순을 원문/독립 출처와 대조하고 raw로 보존한다."""
         if not ctx or not isinstance(title, str) or not title.strip():
             return False
         decoder = ctx.get_expert_output(ExpertType.DECODER) or {}
@@ -68850,7 +68850,7 @@ OUTPUT JSON:
             )
             return None
 
-        # 1순위: curated abbreviation에 해당하는 약칭이 포스트에 등장하면 바로 승격
+        # 1순위: curated abbreviation에 해당하는 약칭이 게시글에 등장하면 바로 승격
         _post_data = getattr(ctx, "post_data", None) or {}
         _post_title = str(_post_data.get("title") or "")
         _post_body = str(_post_data.get("body") or "")
@@ -68925,7 +68925,7 @@ OUTPUT JSON:
                         file=sys.stderr,
                     )
                     continue
-                # 포스트에 이 약칭이 등장 → registry의 정식 제목으로 승격
+                # 게시글에 이 약칭이 등장 → registry의 정식 제목으로 승격
                 # Verifier/Decoder에서 URL 정보가 있으면 함께 가져옴.
                 # 단, curated registry + contextual work anchor는 후보 회수 근거이지
                 # 단독 High 확정 근거가 아니다. High는 공식/직접 근거가 있을 때만 허용한다.
@@ -69213,7 +69213,7 @@ OUTPUT JSON:
                 ),
                 reverse=True,
             )
-            # URL 있는 후보 중 포스트 텍스트에 약칭/제목이 등장하는 것 우선
+            # URL 있는 후보 중 게시글 텍스트에 약칭/제목이 등장하는 것 우선
             for t, u, c, s, _q, _sk in _with_url:
                 if _norm(t) in _post_text_norm or any(
                     _norm(t) == _norm(abbr_t) for abbr_t in _post_text_norm
@@ -69221,7 +69221,7 @@ OUTPUT JSON:
                     return (t, u, c, s)
             return _with_url[0][:4]
 
-        # URL 없어도 제목이 포스트에 등장하면 승격
+        # URL 없어도 제목이 게시글에 등장하면 승격
         for t, u, c, s, _q, _sk in sorted(
             _filtered_candidates,
             key=lambda item: (len(item[5]), float(item[4].get("score", 0.0))),
@@ -70216,9 +70216,9 @@ OUTPUT JSON:
         if not hasattr(ctx, "fetched_page_info") or not isinstance(getattr(ctx, "fetched_page_info"), list):
             ctx.fetched_page_info = []
 
-        # 실제 새 fetch는 같은 초기 payload라도 별도 관측이다. 아래 후처리의 삭제·매체
+        # 실제 새 fetch는 같은 초기 payload라도 별도로 확인한 결과다. 아래 후처리의 삭제·매체
         # 판정까지 이 객체에 남겨야 하므로 후처리 전 equality로 버리지 않는다.
-        # 기존 entry는 보존한다. 반복 fetch 차단과 제목·판본·삭제 경쟁 검산은 그대로다.
+        # 기존 entry는 보존한다. 반복 fetch 차단과 제목·판본·삭제 경쟁 확인은 그대로다.
         ctx.fetched_page_info.append(entry)
 
         self._heretic_fetch_cache[norm_url] = entry
@@ -73837,7 +73837,7 @@ OUTPUT JSON:
         title = self._normalize_title_candidate(title) or title
         title = self._strip_title_character_suffix(title, ctx)
 
-        # 🆕 소설 제목 정규화: 포스트 제목에서 <정식제목> 패턴 추출
+        # 🆕 소설 제목 정규화: 게시글 제목에서 <정식제목> 패턴 추출
         # 예: "<마법으로 딸깍하니 전설의 마법사> ㅊㅊ함" → "마법으로 딸깍하니 전설의 마법사"
         import re as _re_title
         _post_data_tf = getattr(ctx, "post_data", None) or {}
@@ -74440,7 +74440,7 @@ OUTPUT JSON:
             pass
 
         # 🛡️ Fix B: KNOWN_ABBREVIATIONS 보호
-        # 포스트 제목에 KNOWN_ABBREVIATIONS 키가 포함되고,
+        # 게시글 제목에 KNOWN_ABBREVIATIONS 키가 포함되고,
         # 현재 Arbiter 제목이 해당 약칭 키를 포함하면 evidence correction 차단
         _abbr_title_protected = False
         try:
@@ -74847,7 +74847,7 @@ OUTPUT JSON:
 
     @staticmethod
     def _final_source_serialization_fields(payload: Mapping[str, Any]) -> Dict[str, Any]:
-        """직렬화할 final4와 entity 전량을 결속한다. 누락과 null을 구별한다."""
+        """직렬화할 final4와 entity 전체를 함께 묶는다. 누락과 null을 구별한다."""
         if not isinstance(payload, Mapping) or "post_id" not in payload:
             raise ValueError("final source payload post_id missing")
         identity = payload.get("identity")
@@ -75012,7 +75012,7 @@ OUTPUT JSON:
 
     @staticmethod
     def _final_source_comparison_origin_binding(native, comparisons, used):
-        """실제 B full NP·채널 좌표를 원래 요청 carrier에 결속한다. 짧은 토큰을 넓히지 않는다."""
+        """실제 B full NP·채널 좌표를 원래 요청 carrier와 연결한다. 짧은 토큰을 넓히지 않는다."""
         def same_location(item, location, *, exact=False):
             path = '/title' if item['field']=='title' else '/' + item['field'] + '/' + str(item['position']) + ('/' + item['text_key'] if item['text_key'] else '')
             key = 'title' if item['field']=='title' else (item['text_key'] or '')
@@ -75027,7 +75027,7 @@ OUTPUT JSON:
             if channel.field == 'work_roles' and channel.value[1] != 'reference':
                 continue
             surface = channel.value[0] if channel.field == 'work_roles' else channel.value
-            # 요청 밖 비교는 기존 B 원형 채널 검산을 그대로 사용한다.
+            # 요청 밖 비교는 기존 B 원형 채널 확인을 그대로 사용한다.
             applicable = [item for item in comparisons if any(same_location(item, location)
                 for location in channel.locations)]
             if not applicable:
@@ -75044,7 +75044,7 @@ OUTPUT JSON:
 
     @staticmethod
     def _final_source_verification_observation(output, payload, *, stage, native_return, edition_return):
-        """이미 끝난 실제 검산을 기록한다. 새 Binder·기대 요지·권한은 생성하지 않는다."""
+        """이미 끝난 실제 확인 결과를 기록한다. 새 Binder·기대 요지·권한은 생성하지 않는다."""
         receipt = output.__dict__['_final_source_context_receipt']
         ctx = receipt['context']
         native = output.__dict__.get('_final_source_context_native')
@@ -75116,7 +75116,7 @@ OUTPUT JSON:
 
     @staticmethod
     def _propriety_question_serialization_seal(payload: Mapping[str, Any]) -> str:
-        """57번 native proof가 소비한 불변 상태·계약 거울만 결속한다."""
+        """57번 native proof가 사용한 불변 상태와 계약 mirror만 해시로 고정한다."""
         def selected(value, keys):
             if not isinstance(value, Mapping) or any(key not in value for key in keys):
                 raise ValueError("final source serialized fields changed: propriety scope field missing")
@@ -75133,8 +75133,8 @@ OUTPUT JSON:
             "title_resolution_allowed", "work_resolution", "candidate_ledger_status")
         decision_keys = ("status", "publish_allowed", "official_title", "official_url",
             "bypassed_gate", "scope", "input_fingerprint", "contract_version")
-        # 사유·후보 보존 전체의 무결성은 기존 typed commit 재계산이 별도로 검산한다.
-        # 공개 판정과 fingerprint, 상태/evidence는 기존 typed commit 검산과 함께 유지한다.
+        # 사유·후보 보존 전체의 무결성은 기존 typed commit 재계산이 별도로 확인한다.
+        # 공개 판정과 fingerprint, 상태/evidence는 기존 typed commit 확인과 함께 유지한다.
         def owner_fields(owner):
             fields = selected(owner, (*state_keys, *contract_keys))
             for key in ("title_resolution_allowed", "promotion_blocked", "hold_without_candidates", "safe_resolved"):
@@ -75177,7 +75177,7 @@ OUTPUT JSON:
 
     @staticmethod
     def _surface_title_anchor_serialization_seal(payload: Mapping[str, Any]) -> str:
-        """표면 anchor 상태 정리에만 불변 상태·계약 거울을 결속한다."""
+        """표면 anchor 상태 정리에 쓰는 불변 상태와 계약 mirror만 해시로 고정한다."""
         def selected(value, keys):
             if not isinstance(value, Mapping) or any(key not in value for key in keys):
                 raise ValueError("final source serialized fields changed: surface anchor scope field missing")
@@ -75194,8 +75194,8 @@ OUTPUT JSON:
             "title_resolution_allowed", "work_resolution", "candidate_ledger_status")
         decision_keys = ("status", "publish_allowed", "official_title", "official_url",
             "bypassed_gate", "scope", "input_fingerprint", "contract_version")
-        # 사유·후보 보존 전체의 무결성은 기존 typed commit 재계산이 별도로 검산한다.
-        # 공개 판정과 fingerprint, 상태/evidence는 기존 typed commit 검산과 함께 유지한다.
+        # 사유·후보 보존 전체의 무결성은 기존 typed commit 재계산이 별도로 확인한다.
+        # 공개 판정과 fingerprint, 상태/evidence는 기존 typed commit 확인과 함께 유지한다.
         def owner_fields(owner):
             fields = selected(owner, (*state_keys, *contract_keys))
             for key in ("title_resolution_allowed", "promotion_blocked", "hold_without_candidates", "safe_resolved"):
@@ -75245,7 +75245,7 @@ OUTPUT JSON:
 
     @staticmethod
     def _attach_final_source_serialization_receipt(output: PickvelOutputItemV2, *, native_verifier) -> None:
-        """실제 native 검증 함수를 요구한다. 이 영수증만으로 의미 승인을 만들지 않는다."""
+        """실제 native 검증 함수를 요구한다. 이 기록만으로 의미 승인을 만들지 않는다."""
         if not callable(native_verifier):
             raise TypeError("final source native verifier required")
         if "_final_source_context_receipt" in output.__dict__:
@@ -75503,7 +75503,7 @@ OUTPUT JSON:
                                    event.supported_before, event.supported_after) for event in record.lifecycle_events]
             if recorded_lifecycle != expected_lifecycle:
                 return None
-            # 현재 endorsement의 active ID는 같은 실제 graph에 결속한다. 이력 설명에 없는 active ID를 만들지 않는다.
+            # 현재 endorsement의 active ID는 같은 실제 graph와 연결한다. 이력 설명에 없는 active ID를 만들지 않는다.
             nodes = {node.node_id: node.node_type for node in ledger.graph_nodes}
             edges = {(edge.source_id, edge.relation, edge.target_id) for edge in ledger.graph_edges}
             for event_id in claim.active_adoption_event_ids:
@@ -75623,7 +75623,7 @@ OUTPUT JSON:
 
     @staticmethod
     def _final_source_original_projection_channels(native, consumed_fields):
-        """raw quote·분류 표지·표면·관계를 생성 endorsement와 별도로 검산한다. 새 parser 판정은 없다."""
+        """raw quote·분류 표지·표면·관계를 생성 endorsement와 별도로 확인한다. 새 parser 판정은 없다."""
         if native.manifest is None or native.manifest.alignment != "exact_enumeration":
             return False, "original_channel_carrier_missing"
         if native.author_clause_alignment != "records_equal_clauses":
@@ -75736,7 +75736,7 @@ OUTPUT JSON:
 
     @staticmethod
     def _final_source_closed_published_title(identity, publish_contract):
-        """실제 닫힌 publication 계약과 현재 공개쌍이 일치할 때만 표시 권한을 읽는다."""
+        """실제로 확정된 publication 계약과 현재 공개쌍이 일치할 때만 표시 권한을 읽는다."""
         novel = identity.novel_identity
         if (isinstance(publish_contract, PublishContract)
                 and publish_contract.decision.publish_allowed and novel is not None
@@ -75780,7 +75780,7 @@ OUTPUT JSON:
 
     @staticmethod
     def _final_source_title_only_display(identity, publish_contract):
-        """실제 결정과 저장 제목에 결속된 설명 표시다. URL/alias/OCR 권한을 부여하지 않는다."""
+        """실제 결정 및 저장 제목과 연결된 설명 표시다. URL/alias/OCR 권한을 부여하지 않는다."""
         novel = identity.novel_identity
         if (isinstance(publish_contract, PublishContract) and publish_contract.decision.publish_allowed
                 and identity.title_resolution_allowed is True and novel is not None
@@ -75800,7 +75800,7 @@ OUTPUT JSON:
         )
 
     def _verify_final_source_reader_fields(self, ctx, identity, analysis, *, publish_contract=None):
-        """원문과 native 결과에서 만든 필드만 reader 표시 변환 후 최초 봉인할 수 있다."""
+        """원문과 native 결과에서 만든 필드만 reader 표시로 변환한 뒤 처음 고정할 수 있다."""
         expected = ctx._final_source_projection_expected_fields
         post = ctx.post_data or {}
         images = post.get("image_enrichment") or []
@@ -76149,7 +76149,7 @@ OUTPUT JSON:
         # 절의 동사를 작품 이름으로 표시하는 native 결과에는 표시 권한을 주지 않는다.
         explicit_name = any(re.search(r'(?:제목|작품명)(?:은|이|:|：)\s*[「《\'"]?'+re.escape(projection.target_surface)+r'[」》\'"]?(?:이다|입니다|\s*$)',line.raw_text)
             for line in native.manifest.lines if line.origin in {'post_title','body_line'}) if native.manifest else False
-        # 후보 입력에 남은 부사만으로 작품 표면을 표시하지 않는다. 명시 원문/닫힌 공식 제목은 예외다.
+        # 후보 입력에 남은 부사만으로 작품 표면을 표시하지 않는다. 명시 원문/확정된 공식 제목은 예외다.
         if (projection.target_surface in source_discourse_adverbs
                 and projection.target_surface != native.state.resolved_title and not explicit_name):
             return False, 'discussion_target_is_discourse_adverb_not_work_np'
@@ -76161,7 +76161,7 @@ OUTPUT JSON:
     @staticmethod
     def _final_source_discussion_classification(identity, native, records, *, eligible, source_eligible=False,
                                                verified_source_explanation=None):
-        """검산된 실제 발화 label+작성자 원절의 좁은 routing. title/URL 권한은 바꾸지 않는다."""
+        """확인된 실제 발화 label과 작성자 원절만 좁게 routing한다. title/URL 권한은 바꾸지 않는다."""
         before = tuple((name, getattr(identity, name)) for name in
             ('discussion_type','subtype','topicality','relevance_scope','is_novel_related','primary_subject_type','identity_state'))
         projection = native.projection
@@ -76204,7 +76204,7 @@ OUTPUT JSON:
                 return {'mode':'current_author_question_continuation','label':label,
                     'locations':label.locations,'body_clause':record['clause']}
             # opinion producer는 speech_act locations가 없을 수 있다. 원문의 현재 반응 술어가
-            # 따로 관측되는 경우만 허용하며, 해당 source 관계를 native label 위치라고 꾸미지 않는다.
+            # 따로 확인되는 경우만 허용하며, 해당 source 관계를 native label 위치라고 꾸미지 않는다.
             opinion_predicates={
                 'platform_reaction':r'1위.*먹|많|불이익|보(?:는데|니|면)|고증',
                 'serialization_response':r'바라|좋겠|올리면|써서|쓰면|연재.*기다',
@@ -76219,7 +76219,7 @@ OUTPUT JSON:
                     'locations':label.locations,'source_clause':record['clause']}
             return None
 
-        # 작품 후보/대상 채널 검산과 작성자의 직접 독서 단정은 서로 다른 계약이다.
+        # 작품 후보/대상 채널 확인과 작성자의 직접 독서 단정은 서로 다른 계약이다.
         # exact 원절만 소비하며 native label 위치나 작품 공개 권한으로 승격하지 않는다.
         def reader_assertion_binding(record):
             if record['kind']!='reading_reaction' or record['question'] or not currently_routes(record):
@@ -76376,7 +76376,7 @@ OUTPUT JSON:
             and identity.topicality == 'unrelated' and identity.relevance_scope == 'off_topic'
             and not identity.novel_identity and not identity.title_candidates
             and not identity.primary_work and not identity.mentioned_works
-            # 원문 설명은 text carrier만 검산한다. 이미지/OCR 부재를 작품 후보 부재로 추정하지 않는다.
+            # 원문 설명은 text carrier만 확인한다. 이미지/OCR 부재를 작품 후보 부재로 추정하지 않는다.
             # 이미지가 있는 행은 기존 분류·공개 계약에 맡기고 이 새 text-only fallback만 보류한다.
             and native.manifest is not None
             and not any(line.origin == 'body_line' and line.reason == 'dropped_non_text_block'
@@ -76584,7 +76584,7 @@ OUTPUT JSON:
             discussion_type=identity.discussion_type, is_novel_related=identity.is_novel_related,
             published_title=published_title,
         )
-        # 최종 후보에서 처음 거절된 출현까지 최초 직렬화 전에 같은 원장에 결속한다.
+        # 최종 후보에서 처음 거절된 출현까지, 처음 직렬화하기 전에 같은 원장에 묶어 둔다.
         for receipt_key in ("source_action_object_role_rejections", "source_author_work_head_role_rejections",
                             "source_comment_actor_role_rejections"):
             role_rejections = getattr(ctx, "_" + receipt_key, None)
@@ -76712,7 +76712,7 @@ OUTPUT JSON:
         context_block = render_context_block(actual, target_label=_source_target_label,
             target_surface_occurrence=target_surface_occurrence)
         status = "FALLBACK_SOURCE_QUOTE" if projection.fallback else "HOLD_CORE_PROOF" if core_held else "CONSUMED_NATIVE_CHANNELS"
-        # fallback도 모든 entity occurrence는 보존한다. 이전 미결속 작품 주장에는 표시 권한을 새로 주지 않는다.
+        # fallback도 모든 entity occurrence는 보존한다. 이전에 근거가 연결되지 않은 작품 주장에는 표시 권한을 새로 주지 않는다.
         policy = ["[최종 판정]", "- 글 분류: " + str(identity.discussion_type or "unknown")]
         if identity.title_resolution_state is not None:
             if identity.title_resolution_state == 'resolved' and title_only_display:
@@ -77122,7 +77122,7 @@ OUTPUT JSON:
 
     @staticmethod
     def _collect_notes(ctx) -> Optional[str]:
-        """전문가 notes를 원문 발화 범위에 맞춰 독자용으로 투영한다."""
+        """전문가 notes를 원문 발화 범위에 맞춰 독자용으로 변환한다."""
         import re as _re_notes
 
         claim_source = AgenticPipeline._claim_scope_source(ctx)
@@ -80565,7 +80565,7 @@ OUTPUT JSON:
         title: Optional[str],
         verification_result: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
-        """rank1 (precision / 근본원인 B): alias/stability 복구 경로가 locked/High로 닫기 전에
+        """rank1 (precision / 근본원인 B): alias/stability 복구 경로가 locked/High로 확정하기 전에
         "음수 정합 신호 OR Verifier critical 반론"을 탐지한다.
 
         코드에는 raw 음수 정수 스코어가 없고, 코드는 "음수 정합"을 다음 일반 신호로 표현한다:
@@ -80573,7 +80573,7 @@ OUTPUT JSON:
               (action reject/nullify_title/downgrade_confidence). 기존 패턴 _vf_has_critical_reject_j와 동형.
           (b) Decoder 음수 정합 — best_match의 _title_anchor_conflict / _abbr_mismatch_downgrade 플래그.
               단 이 title과 정합되는 decoder 매칭(rank>=2)이 별도로 있으면 conflict가 상쇄된 것으로 보고 제외,
-              추가로 anchor-title lexical_overlap>=0.45면 정당 결속으로 보고 제외(canonical drift 판정
+              추가로 anchor-title lexical_overlap>=0.45면 정당한 연결로 보고 제외(canonical drift 판정
               _detect_title_anchor_drift와 동형 — lexical_overlap<0.45 가드 포함).
 
         반환: {"blocked": bool, "reasons": [str, ...]}. 특정 post id/제목/별칭을 보지 않고 구조 신호로만 동작.
@@ -80628,7 +80628,7 @@ OUTPUT JSON:
                     dec_has_conflict = True
             if dec_has_conflict and not dec_has_aligned:
                 # canonical drift 판정 _detect_title_anchor_drift 와 동형: anchor-title lexical_overlap 가
-                # 0.45 이상으로 충분히 결속되면 정당 매칭으로 보고 conflict 신호를 올리지 않음(over-trigger 방지).
+                # 0.45 이상으로 충분히 겹치면 정당 매칭으로 보고 conflict 신호를 올리지 않음(over-trigger 방지).
                 if self._title_anchor_lexical_overlap(ctx, str(title or "")) < 0.45:
                     reasons.append("decoder_anchor_conflict")
 
@@ -84192,7 +84192,7 @@ OUTPUT JSON:
         self, ctx, *, owner, primary, previous_url, official_title, selected_url,
         emit_diagnostic=True,
     ) -> bool:
-        """기존 selected 쌍에 실제 freeze 참조가 이어질 때만 owner 재결속을 허용한다."""
+        """기존 selected 쌍에 실제 freeze 참조가 이어질 때만 owner를 다시 연결하도록 허용한다."""
         proof = getattr(ctx, "_frozen_primary_owner_handoff", None)
         if not isinstance(proof, dict) or proof.get("post_id") != getattr(ctx, "post_id", None):
             return False
@@ -88784,8 +88784,8 @@ OUTPUT JSON:
 
     def _title_anchor_lexical_overlap(self, ctx: "ConversationContext", official_title: str) -> float:
         """
-        제목 앵커 용어와 official_title 간 표면형 결속 점수(0~1).
-        - 너무 약한 결속(예: 초단문 제목단서 only)이면 과적합 매칭을 보수화.
+        제목 앵커 용어와 official_title 간 표면형 일치 점수(0~1).
+        - 일치가 너무 약하면(예: 초단문 제목단서 only) 과적합 매칭을 보수적으로 다룬다.
         """
         title_norm = self._normalize_match_text(official_title)
         if not title_norm:
@@ -89210,8 +89210,8 @@ OUTPUT JSON:
                 cur["alias"] = alias
                 cur["alias_score"] = float(alias_score or 0.0)
 
-        # 원문 질문 NP는 Decoder의 전체 제목 self-match 유무와 독립적으로 관측한다.
-        # 같은 후보의 literal full-title pair와 명명/인용 예외는 원래 검산을 재사용한다.
+        # 원문 질문 NP는 Decoder의 전체 제목 self-match 유무와 독립적으로 확인한다.
+        # 같은 후보의 literal full-title pair와 명명/인용 예외는 원래 확인 결과를 재사용한다.
         source_title = str((ctx.post_data or {}).get('title') or '').strip()
         if source_title:
             source_urls = self._source_bound_predicate_candidate_urls(ctx, source_title,
@@ -89221,7 +89221,7 @@ OUTPUT JSON:
             if source_observation is not None:
                 _upsert(source_title, 'None', None, None, 'original_post_title')
         if _nonrelevant_candidates_blocked:
-            # Legacy exposure는 닫힌 채로 한 개 원제목의 검산된 provisional NP만 보존한다.
+            # Legacy exposure는 막아 둔 채, 원제목 하나에서 확인된 provisional NP만 보존한다.
             return self._finalize_title_candidate_generation(
                 scored=[(0, False, row) for row in rows.values()], final_norm='', max_items=max_items, ctx=ctx)
 
@@ -89500,7 +89500,7 @@ OUTPUT JSON:
         if isinstance(max_items, bool) or not isinstance(max_items, int) or max_items <= 0:
             raise ValueError("max_items must be a positive int")
         # 두 기존 precision 반환 경계를 풀지 않는다. 공개 제목이 없을 때만
-        # 같은 원문 인물/소유 작품 문서의 좁은 proof를 Low 순위 관측으로 보충한다.
+        # 같은 원문 인물/소유 작품 문서의 좁은 proof를 Low 순위 항목으로 보충한다.
         scored = list(scored)
         if ctx is not None and not final_norm:
             present = {self._normalize_match_text(row.get("title")) for _, _, row in scored}

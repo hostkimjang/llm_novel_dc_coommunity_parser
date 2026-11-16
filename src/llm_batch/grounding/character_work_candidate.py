@@ -1,4 +1,4 @@
-"""원문 인물과 작품 소유의 등장인물 문서를 Low 후보 관측으로만 연결한다."""
+"""원문 인물을 작품에 딸린 등장인물 문서와 Low 후보 기록으로만 연결한다."""
 from __future__ import annotations
 
 import hashlib
@@ -46,7 +46,7 @@ def _author_inputs(ctx):
 def _person_occurrences(spans, character, anchor, post):
     pattern = re.compile(r"(?<![" + _WORD + r"])" + re.escape(character)
         + r"(?=(?:께서|에게|에서|으로|은|는|이|가|을|를|의|도|만|와|과|에|로)?(?:$|[^" + _WORD + r"]))")
-    # 기존 alias 원문 판독과 같은 선별 전 text/quote 순서를 사용한다.
+    # 기존 alias 원문 읽기와 같은 선별 전 text/quote 순서를 사용한다.
     # 이미지/OCR의 따옴표는 열림/닫힘을 만들지 않고, 이미지가 원문 열린 인용을 닫지도 않는다.
     body = {int(re.search(r"/content_blocks/(\d+)/", item["path"])[1]): item
             for item in _boundary_fields(post)}
@@ -177,7 +177,7 @@ def _owned_character_text(row, owner, character):
 
 
 def character_work_candidates(ctx):
-    """공식 권한/인명 별칭을 발급하지 않는 후보별 원자료 관측. 입력 객체를 바꾸지 않는다."""
+    """공식 권한이나 인명 별칭을 발급하지 않고 후보별 원자료만 기록한다. 입력 객체를 바꾸지 않는다."""
     spans = _author_inputs(ctx)
     if not spans:
         return []

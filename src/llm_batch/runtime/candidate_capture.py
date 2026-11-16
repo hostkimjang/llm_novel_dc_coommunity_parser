@@ -47,7 +47,7 @@ def _base(binding, reason):
 
 def export_candidate_capture_fields(result, observer, *, binding, output_dir, input_snapshot_sha256,
                                     current_post=None, retrieval_observer=None, semantic_observer=None):
-    """실제 관측·현재 행 결속·입력 파일 SHA를 검산한 뒤 파일을 배타 저장한다.
+    """실제 관측값, 현재 행과의 연결, 입력 파일 SHA를 확인한 뒤 파일을 배타적으로 저장한다.
 
     동일 내용의 파일만 재사용한다. 실패한 파일은 성공 참조로 노출하지 않으며,
     원본 입력 JSONL의 byte 위치나 학습용 권리/정답을 새로 추론하지 않는다.

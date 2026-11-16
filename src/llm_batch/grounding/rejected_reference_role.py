@@ -62,7 +62,7 @@ def rejected_search_reference(pipeline, ctx, candidate, verification=None):
     """명시 거절된 그 후보만 제한한다. raw 후보·공개/학습 계약은 변경하지 않는다.
 
     공식/검색에 작품이 존재하는 것만으로 원문의 mentioned 관계를 만들지 않는다.
-    원문 명명·독서 대상, 같은 원문 별칭의 명시 관계, 원문 인물과 검산된 작품
+    원문 명명·독서 대상, 같은 원문 별칭의 명시 관계, 원문 인물과 확인된 작품
     연결은 해당 거절의 독립 반증으로 보존한다. 전역적인 missing-URL 필터가 아니다.
     """
     if ctx is None:
@@ -79,7 +79,7 @@ def rejected_search_reference(pipeline, ctx, candidate, verification=None):
     texts = [span['text'] for span in spans]
     if any(_explicit_reference_name(raw, title) for raw in texts):
         return False
-    # 검산한 현재 원필드로만 기존 독서/명명 판독을 호출한다. raw capture를 다시 섞지 않는다.
+    # 확인한 현재 원필드로만 기존 독서/명명 판정을 호출한다. raw capture를 다시 섞지 않는다.
     author = [span for span in spans if span['source'] != 'comment']
     view = SimpleNamespace(post_data={
         'title': next((x['text'] for x in author if x['source'] == 'author_title'), ''),

@@ -943,7 +943,7 @@ def summarize(rows: Sequence[Mapping[str, Any]], *, include_partitions: bool = T
 
 
 def validate_terminal_manifest(manifest_path: Path, *, research_root: Path) -> dict[str, Any]:
-    """독립 read-only terminal validator used by tests and review tooling."""
+    """테스트와 리뷰 도구가 쓰는 독립 read-only terminal validator."""
 
     manifest_path = manifest_path.resolve()
     root = research_root.resolve()

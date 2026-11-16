@@ -1,6 +1,6 @@
 """후보 보존 목록의 로컬 완전성 상태를 기록하는 불변 계약.
 
-이 계약은 serializer가 실제로 관측한 후보 보존 source만 다룬다. 상류 후보
+이 계약은 serializer가 실제로 확인한 후보 보존 source만 다룬다. 상류 후보
 생성기가 모든 후보를 열거했다는 증거는 아니므로 v1은 ``COMPLETE``를 만들지
 않는다. 로컬 고유 source가 보존 cap을 넘으면 ``TRUNCATED``, 그 외에는
 ``UNKNOWN``이다.
@@ -537,9 +537,9 @@ def _stage_title_key(value: Any) -> str:
 
 @dataclass(frozen=True)
 class CandidateStageReceipt:
-    """전문가 내부 cap 직전 후보 목록을 원문 비노출 hash로 증명한다.
+    """전문가 내부 cap을 적용하기 직전의 후보 목록을 원문이 드러나지 않는 hash로 증명한다.
 
-    이 영수증은 진단 전용이다. CandidateSet의 완전성, 공개 제목/URL,
+    이 기록은 진단 전용이다. CandidateSet의 완전성, 공개 제목/URL,
     promotion 판정 또는 확률값을 직접 변경하지 않는다.
     """
 

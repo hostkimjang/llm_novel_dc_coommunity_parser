@@ -168,11 +168,11 @@ def _external_speech_at(text, position, *, quote_blocks=()):
                     active, active_end = True, None
                     label_started = True
                 elif not stripped[label.end():].strip() and not section.fullmatch(name):
-                    # 단독 '이름:'은 화자/표제 중 어느 쪽인지 미확정이다. 임의 작성자 권한을 주지 않는다.
+                    # 단독 '이름:'은 화자인지 표제인지 정해지지 않았다. 작성자 권한을 임의로 주지 않는다.
                     active, active_end = True, None
                     label_started = True
                 if label_started and any(lo <= start < hi for lo, hi in quote_blocks):
-                    # 구조화된 원래 quote 안의 라벨은 바로 뒤 발화의 닫힌 따옴표까지만 소유한다.
+                    # 구조화된 원래 quote 안의 라벨은 바로 뒤 발화의 닫는 따옴표까지만 범위로 갖는다.
                     # 일반 text의 라벨 뒤 이름 인용은 이 자동 종료 규칙에 넣지 않는다.
                     opener = start + label.end()
                     while opener < len(text) and text[opener].isspace():
@@ -258,7 +258,7 @@ def _source_relation(fields, alias, title, registries, boundaries):
 
 
 def _external_document_key(row):
-    """문서 신원만 비교한다. 소설 소개/명명 권한은 기존 판독기가 별도로 판단한다."""
+    """문서가 같은지만 비교한다. 소설 소개/명명 권한은 기존 해석기가 따로 판단한다."""
     from urllib.parse import unquote, urlsplit
     from ..grounding.anticipation_search_probe import _compact_source_title
     if not isinstance(row, dict):
@@ -341,7 +341,7 @@ def _direct_external_source_reference(text, start, end):
 
 
 def _owned_external_assertion(row, assertion, alias, title):
-    """기존 선언 판독을 통과한 같은 문장의 외부 인용 범위를 추가로 검산한다."""
+    """기존 선언 해석을 통과한 같은 문장에서 외부 인용 범위를 한 번 더 확인한다."""
     body = "\n".join(row[key] for key in ("content", "snippet", "description") if isinstance(row.get(key), str))
     quotes = _quoted_ranges(body)
     for match in re.finditer(r"([^.!?。！？\n\r]+)([.!?。！？]?)", body):
@@ -366,7 +366,7 @@ def _owned_external_assertion(row, assertion, alias, title):
 
 
 def _external_assertion_evidence(rows, alias, title, source_text):
-    """Verifier가 쓰는 동일 source-bound 판독기를 다시 실행한다. 요약/count는 근거가 아니다."""
+    """Verifier가 쓰는 것과 같은 source-bound 해석기를 다시 실행한다. 요약/count는 근거가 아니다."""
     from ..grounding.anticipation_search_probe import (
         source_bound_alias_assertion, source_bound_search_row_fingerprint,
         _source_bound_sentence_parts, _compact_source_title,
@@ -380,7 +380,7 @@ def _external_assertion_evidence(rows, alias, title, source_text):
         or assertion.get("support_surface") != ""):
         return None
     # 같은 문서가 여러 검색 행으로 돌아온 경우 반박 행을 버리고 긍정 행만 고르지 않는다.
-    # 관계를 만드는 판독은 위 원형 함수만 맡는다. 이 확인은 거부 방향으로만 작동한다.
+    # 관계를 만드는 해석은 위 원래 함수만 맡는다. 이 확인은 거부 방향으로만 작동한다.
     negative = re.compile(r"아니|않|잘못|오해|착각|거짓|오류|다른\s*(?:작품|소설|제목|문서)|별개\s*(?:작품|소설|제목|문서)|(?:후보|가칭|임시명|추정)")
     marker = re.compile(r"약칭|줄임말|통칭|별칭|약어")
     for row in projected:
@@ -414,7 +414,7 @@ def _normalize_external_evidence(value, alias, title):
     projected = _external_rows(rows)
     if projected != rows or value["rows_sha256"] != _corpus_sha(rows):
         return None
-    # source_text/span는 소비 시 실제 원문으로 재검산한다. 여기서는 보존된 행의 선언만 검산한다.
+    # source_text/span은 사용할 때 실제 원문으로 다시 확인한다. 여기서는 보존된 행의 선언만 확인한다.
     expected = _external_assertion_evidence(rows, alias, title, alias)
     if expected != value:
         return None
@@ -526,7 +526,7 @@ def normalize_alias_learning_evidence(value):
 
 
 def eligible_alias_confidence(post, term, official_title, *, registries):
-    """저장 후 소비 시 원문·개별 관계·공개 작품을 재검산한다. 레거시 추측은 승격하지 않는다."""
+    """저장한 값을 사용할 때 원문·개별 관계·공개 작품을 다시 확인한다. 레거시 추측은 승격하지 않는다."""
     if not isinstance(term, Mapping):
         return 0
     proof = normalize_alias_learning_evidence(term.get("learning_evidence"))

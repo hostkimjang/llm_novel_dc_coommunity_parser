@@ -8,7 +8,7 @@ canonical JSON scope, canonical JSONL census, canonical JSON seed receipt만을
 
 작품명, 별칭, 본문, surface, claim, target, route, credit 같은 의미 필드는 census
 schema에 존재하지 않는다. 따라서 ``아생갤`` 같은 문자열 표면은 profile 또는
-eligibility를 바꾸는 입력이 될 수 없다. profile은 봉인된 adapter-id mapping만으로
+eligibility를 바꾸는 입력이 될 수 없다. profile은 고정된 adapter-id mapping만으로
 결정된다.
 """
 
@@ -1188,7 +1188,7 @@ def _build_plan_value(
 def build_frame_manifest_bytes(
     scope_raw: bytes, census_raw: bytes, *, frame_sealed_at: str
 ) -> bytes:
-    """seed reveal 전에 제시된 census를 frame manifest로 봉인한다."""
+    """seed reveal 전에 제시된 census를 frame manifest로 고정한다."""
     scope = validate_scope_bytes(scope_raw)
     rows = validate_census_bytes(census_raw, scope_raw)
     state = _frame_state(scope, census_raw, rows)
@@ -1204,7 +1204,7 @@ def build_sampling_plan_bytes(
     *,
     selection_sealed_at: str,
 ) -> bytes:
-    """frame 이후 reveal된 seed로 deterministic 층화 계획을 봉인한다."""
+    """frame 이후 reveal된 seed로 deterministic 층화 계획을 고정한다."""
 
     scope = validate_scope_bytes(scope_raw)
     frame = validate_frame_manifest_bytes(frame_manifest_raw, scope_raw, census_raw)

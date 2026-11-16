@@ -1,6 +1,6 @@
-"""검토된 R3 별칭과 고정 R2 후보의 순수 결속 검산. 파일/모델/네트워크 IO 없음.
+"""검토된 R3 별칭과 고정 R2 후보의 연결을 다시 확인하는 순수 함수. 파일/모델/네트워크 IO 없음.
 
-HUMAN_REVIEW_BOUND는 제공된 review 원문 결속이며 사람의 신원이나 관계의
+HUMAN_REVIEW_BOUND는 제공된 review 원문과 연결됐다는 뜻이며 사람의 신원이나 관계의
 진실을 독립 인증하지 않는다. 원문 view, 후보 집합, 공개 결정은 변경하지 않는다.
 """
 from __future__ import annotations
@@ -82,7 +82,7 @@ def _path(value):
 
 
 class _MemoryFiles:
-    """R3 검산자의 read 계약만 구현한다. 경로 접근이나 사용자 callback 없음."""
+    """R3 검증기의 read 계약만 구현한다. 경로 접근이나 사용자 callback 없음."""
     def __init__(self, paths, payloads, manifest_size):
         self.paths, self.payloads = paths, payloads
         self.total, self.seen = manifest_size, set()
@@ -101,7 +101,7 @@ class _MemoryFiles:
 
 
 def _snapshot(raw, files):
-    """기존 R3의 행·원문·분류 검산을 그대로 사용하고 로더 orchestration만 순수화."""
+    """기존 R3의 행·원문·분류 검증을 그대로 쓰고 로더 orchestration만 순수 함수로 바꾼다."""
     manifest = ck._obj(ck._strict_json(raw), {"schema_version", "snapshot_id", "data_kind", "built_at", "freeze_cutoff",
         "parser_version", "normalization_version", "query_policy_version", "rights_policy_version", "lineage_policy_version", "files"}, "manifest")
     versions = {"schema_version": ck.MANIFEST_SCHEMA, "parser_version": ck.CORE_VERSION,
@@ -208,7 +208,7 @@ def _corpus(raw):
 
 
 def _prepare_alias_evidence(*, alias_evidence, evidence_payloads):
-    """정적 R3/R2 bytes를 한 번 검산한다. 원문 assertion의 진실은 인증하지 않는다."""
+    """정적 R3/R2 bytes를 한 번 검증한다. 원문 assertion이 사실인지는 인증하지 않는다."""
     _require(type(alias_evidence) is dict and set(alias_evidence) == STATIC_FIELDS, "ALIAS_STATIC_SCHEMA_INVALID")
     _require(alias_evidence["schema_version"] == INPUT_SCHEMA, "ALIAS_INPUT_SCHEMA_INVALID")
     _require(isinstance(evidence_payloads, Mapping) and len(evidence_payloads) <= MAX_FILES, "EVIDENCE_FILES_INVALID")
@@ -236,7 +236,7 @@ def _prepare_alias_evidence(*, alias_evidence, evidence_payloads):
 
 
 def prepare_alias_evidence(*, alias_evidence, evidence_payloads):
-    """기존 검산자의 오류도 하나의 명시 오류 타입으로 전달한다."""
+    """기존 검증기의 오류도 하나의 명시 오류 타입으로 전달한다."""
     try:
         return _prepare_alias_evidence(alias_evidence=alias_evidence, evidence_payloads=evidence_payloads)
     except (ValueError, TypeError, KeyError, UnicodeError, RecursionError, OverflowError) as exc:

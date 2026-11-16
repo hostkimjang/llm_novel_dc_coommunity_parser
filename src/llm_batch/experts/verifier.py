@@ -871,8 +871,8 @@ class VerifierExpert:
         reliable_alias = self._has_reliable_alias_bridge(title, post, decoder_result or {})
         short_title_supported = self._has_short_title_official_support(title, all_search, ctx)
 
-        # short title이 캐릭터 충돌 + character 중심 앵커인데,
-        # 공식 상세 근거가 약하거나(alias bridge 부재)면 title 승격 차단.
+        # short title이 character 중심 앵커인데 alias bridge가 없거나,
+        # 캐릭터명과 충돌하는데 공식 상세 근거가 약하면 title 승격을 차단한다.
         if character_anchor and not reliable_alias:
             return True
         if (particle_collision or gk_char_collision or decoder_char_collision) and not short_title_supported:
@@ -1140,10 +1140,10 @@ class VerifierExpert:
         return user_prompt
 
     def _classify_search_absence_evidence(self, ctx: Any, title: str) -> Dict[str, Any]:
-        """구조화된 검색 실행 관측으로 부재 사유의 적용 범위만 제한한다.
+        """구조화된 검색 실행 기록을 보고 '검색 결과에 없음' 사유를 적용할 범위만 좁힌다.
 
-        제목/URL을 수용하거나 nullify 권한을 해제하지 않는다. 정상적인
-        제목 질의와 완결된 검색 증빙이 없으면 부재를 환각 근거로 단정하지 않는다.
+        제목/URL을 받아들이거나 nullify 권한을 풀어 주지는 않는다. 제목을 담은
+        정상 질의와 끝까지 완료된 검색 기록이 없으면, 검색 결과에 없다는 점을 환각 근거로 단정하지 않는다.
         """
         from collections import Counter
         from ..grounding.candidate_generation import (
@@ -1275,7 +1275,7 @@ class VerifierExpert:
             VerifierResult with final identity, evidence chain, confidence
             May include request_expert/request_reason for dynamic routing
         """
-        import re  # analyze() 스코프 전역 — 후처리 가드에서 re.sub 안전 사용
+        import re  # analyze() 전체에서 쓰도록 여기서 import — 후처리 가드의 re.sub용
         start_time = time.time()
         
         # None 체크
@@ -1850,7 +1850,7 @@ class VerifierExpert:
                             novel_id["official_title"] = None
                     print(
                         f"[{_ts()}][{self.emoji}] 🛡️ '{verified_title_d}' 선택 보류 → "
-                        + (f"검색 범위 내 부재, confidence: {old_conf} → Low" if absence_supported else f"검색 관측 불완전·제목 미검증, confidence: {old_conf} → Low")
+                        + (f"검색 범위 내 부재, confidence: {old_conf} → Low" if absence_supported else f"검색 확인 불충분·제목 미검증, confidence: {old_conf} → Low")
                         + (", title=null" if should_nullify else "")
                         + (" (direct OCR/VLM title tuple support)" if direct_title_tuple_support else ""),
                         file=sys.stderr,
@@ -2416,7 +2416,7 @@ class VerifierExpert:
         # 새로 확인된 작품 추가
         if is_relevant and verified_title:
             if not any(s.get("title") == verified_title for s in updated):
-                # �️ 아이디어 H: Decoder가 작가명으로 식별한 이름은 suspected_titles에 추가 차단
+                # 아이디어 H: Decoder가 작가명으로 식별한 이름은 suspected_titles에 추가 차단
                 is_author_name_in_decoder = False
                 if ctx and hasattr(ctx, 'expert_outputs'):
                     decoder_out_h = ctx.expert_outputs.get("decoder") or {}
@@ -2449,7 +2449,7 @@ class VerifierExpert:
                     ctx.suspected_titles = ranked_updated[:5]
                     return
 
-                # �🔧 Phase26-B: Decoder 최종 결과가 null이면 Verifier 독자 추가의 confidence 제한
+                # 🔧 Phase26-B: Decoder 최종 결과가 null이면 Verifier 독자 추가의 confidence 제한
                 decoder_final_null = False
                 if ctx and hasattr(ctx, 'expert_outputs'):
                     decoder_out = ctx.expert_outputs.get("decoder") or {}
@@ -3348,7 +3348,7 @@ OUTPUT JSON:
                     if has_context:
                         return True
 
-                    # 🆕 추가: 포스트 제목에 약어가 있고 본문에 이모티콘/감정 표현이 있으면 OK
+                    # 🆕 추가: 게시글 제목에 약어가 있고 본문에 이모티콘/감정 표현이 있으면 OK
                     # 단, short title이 조사와 결합된 인명 형태(예: 은영이/은영은)면
                     # 제목 증거로 단독 인정하지 않는다.
                     title_token = title.strip()
@@ -3363,7 +3363,7 @@ OUTPUT JSON:
                     # 본문+댓글에도 있어야 진정한 증거로 인정
                     if orig_norm in body_and_comments_norm:
                         if not (short_title and particle_collision):
-                            # 포스트 제목 약어 앵커 + 캐릭터명 충돌 아님
+                            # 게시글 제목의 약어 앵커이며 캐릭터명 충돌도 아님
                             return True
         
         # 3.5) Decoder의 다른 term이 동일 제목에 high score로 매칭되어 있으면

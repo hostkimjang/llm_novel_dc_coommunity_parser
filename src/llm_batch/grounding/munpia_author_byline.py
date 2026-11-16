@@ -1,4 +1,4 @@
-"""문피아 상세의 제목·명시 byline 결속. 작품 공개 권한을 만들지 않는다."""
+"""문피아 상세 페이지의 제목과 명시된 byline을 연결한다. 작품 공개 권한은 만들지 않는다."""
 from __future__ import annotations
 
 from copy import deepcopy
@@ -358,7 +358,7 @@ def _modern_rendered_claims(source, title):
 
 
 def byline_evidence(url, title, source, *, kind):
-    """반환값은 명시 저자 위치의 재검산 자료다. 전송/공개 승인을 대신하지 않는다."""
+    """반환값은 명시된 저자 위치를 다시 확인한 자료다. 전송/공개 승인을 대신하지 않는다."""
     if (not is_munpia_author_detail(url) or not isinstance(title, str) or not title.strip()
             or not isinstance(source, str) or len(source.encode("utf-8")) > MAX_SOURCE_BYTES
             or kind not in {"html", "rendered_text"}):
@@ -384,7 +384,7 @@ def valid_byline_evidence(proof):
 
 
 def qualify_munpia_fetch(url, result):
-    """캐시를 수정하지 않고 이번 소비용 복사본의 제목·저자 근거를 재검산한다."""
+    """캐시를 수정하지 않고 이번 소비용 복사본의 제목·저자 근거를 다시 확인한다."""
     if not is_munpia_author_detail(url) or not isinstance(result, dict):
         return result
     copied = deepcopy(result)
@@ -429,7 +429,7 @@ def qualify_legacy_munpia_fetch(url, result):
 
 
 def compact_byline(proof):
-    """모델 입력에는 재검산 원문 대신 제한된 위치·지문만 전달한다."""
+    """모델 입력에는 다시 확인한 원문 대신 제한된 위치·지문만 전달한다."""
     if not isinstance(proof, dict):
         return None
     return {key: proof.get(key) for key in (
@@ -503,7 +503,7 @@ def select_author_evidence(author_hints, *, observations=(), selected=None):
             records.append((proof.get("title"), proof.get("url"), None))
     if records:
         related = [r for r in records if selected is None or _same_work(r[0], r[1], selected)]
-        # URL가 같은데 제목이 달라진 관측도 무관 자료로 버리지 않는다.
+        # URL이 같은데 제목이 달라진 기록도 무관한 자료로 버리지 않는다.
         if selected is not None:
             related += [r for r in records if r not in related and r[1]
                         and _work_url(r[1]) == _work_url(selected.get("heretic_url"))]
@@ -516,7 +516,7 @@ def select_author_evidence(author_hints, *, observations=(), selected=None):
                 return proof["name"], {"schema_version": "munpia_author_work_binding_v1",
                     "name": proof["name"], "title": proof["title"], "url": proof["url"],
                     "source_sha256": proof["source_sha256"]}
-        # 범위가 알려진 다른 플랫폼의 정상 힌트는 무관 문피아 관측에 막히지 않는다.
+        # 범위가 알려진 다른 플랫폼의 정상 힌트는 관련 없는 문피아 기록에 막히지 않는다.
         if related or selected is None:
             return None, None
         hints = [h for h in hints if isinstance(h, dict) and "author_byline" not in h

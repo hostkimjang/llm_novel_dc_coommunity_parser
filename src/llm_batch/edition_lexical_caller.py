@@ -1,4 +1,4 @@
-"""검증된 A 원문 inventory와 captured public 전달 helper. 역할 추정·공식 권한 부여 없음."""
+"""검증된 A 원문 inventory와 captured public을 전달하는 helper. 역할을 추정하거나 공식 권한을 부여하지 않는다."""
 from __future__ import annotations
 from typing import Any, Optional
 from . import promotion_gate as P

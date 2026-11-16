@@ -243,7 +243,7 @@ def _discover_public_instances() -> List[str]:
 
     주의:
     - 포털(searx.space) 자체는 제외한다.
-    - 이 함수는 메타데이터 필터링만 수행한다(능동 프로빙 없음).
+    - 이 함수는 메타데이터로 거르기만 한다(능동 프로빙 없음).
     - 실제 요청 실패는 런타임 백오프로 자동 격리된다.
     """
     now = time.time()
@@ -1532,7 +1532,7 @@ def mcp_search(request: SearchRequest) -> Dict[str, Any]:
             response.raise_for_status()
             data = response.json() if response.content else {}
         except httpx.HTTPError as exc:
-            # 원인 파악을 위해 stderr에 디테일을 남긴다.
+            # 원인을 파악할 수 있게 stderr에 세부 내용을 남긴다.
             try:
                 print(
                     f"[mcp-bridge] searchxng request failed: endpoint={used_endpoint} err={exc!r}",
@@ -2017,7 +2017,7 @@ def _fanart_raw_html_receipt(
     requested_url: str, original_html: Any, final_url: Any,
     method: str, status_code: Any,
 ) -> Dict[str, Any]:
-    """정확한 팬아트 상세 응답에 한해 원본 HTML의 후보 전송 영수증을 만든다."""
+    """팬아트 상세 URL과 정확히 일치하는 응답에만 원본 HTML의 후보 전송 기록을 만든다."""
     if not _MUNPIA_FANART_DETAIL_URL.fullmatch(requested_url):
         return {}
     if not isinstance(final_url, str) or final_url != requested_url:
@@ -2533,7 +2533,7 @@ def _sanitize_munpia_canvas_viewer_text(
 def _munpia_detail_author_from_page(
     html: str, url: str, title: str, *, return_claims: bool = False,
 ) -> Any:
-    """기존 현대형 HTML 판독을 캐시 proof 재검산과 같은 구현으로 공유한다."""
+    """기존 현대형 HTML 해석을 캐시 proof 재확인과 같은 구현으로 공유한다."""
     from ..grounding.munpia_author_byline import _munpia_detail_author_from_page as read_author
     return read_author(html, url, title, return_claims=return_claims)
 

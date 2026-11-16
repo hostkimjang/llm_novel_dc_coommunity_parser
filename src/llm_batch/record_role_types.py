@@ -1,4 +1,4 @@
-"""미래 버전 typed 선언 초안. 제품 클래스/실제 생산값이 아니다."""
+"""향후 버전용 typed 선언 초안. 제품 클래스나 실제 생산값이 아니다."""
 from dataclasses import dataclass
 from typing import Optional, Tuple
 

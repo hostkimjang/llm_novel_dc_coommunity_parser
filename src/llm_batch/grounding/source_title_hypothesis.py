@@ -1,4 +1,4 @@
-"""추정 풀이의 후보 승격만 검산한다. 정상 제목의 기존 회수 기준은 바꾸지 않는다."""
+"""추정 풀이를 후보로 승격할지만 확인한다. 정상 제목의 기존 회수 기준은 바꾸지 않는다."""
 from __future__ import annotations
 
 from copy import copy
@@ -102,7 +102,7 @@ def _author_occurrences(ctx, surface, *, require_work_role=False):
     titles = [x for x in records if x['origin'] == 'post_title']
     bodies = [x for x in records if x['origin'] == 'body_line']
     # 제목 내부의 ?, 마침표, 괄호는 발화의 질문/추정이 아니다. 같은 길이로
-    # 가린 뒤 절을 나누고 원문 좌표를 재검산한다. 인용 부호 바깥은 보존한다.
+    # 가린 뒤 절을 나누고 원문 좌표를 다시 확인한다. 인용 부호 바깥은 보존한다.
     marker = '\ue010' * len(surface)
     if any(marker in x['raw_text'] for x in records):
         return ()
@@ -202,7 +202,7 @@ def title_hypothesis_source_support(ctx, alias, title):
     원문 명명/독서 대상과 한 외부 필드 전체의 명시 alias 선언을
     구분한다. 제목 metadata·query 조각을 이어 붙이거나 일부 인용 절만 꺼내지 않는다.
     후보 보존 근거이며 해당 글의 식별/공개/탐색 완전성 권한은 아니다.
-    공식 표제 예외는 각 호출자의 기존 공식 제목 추출/검산 경로에서 별도로 처리한다.
+    공식 표제 예외는 각 호출자의 기존 공식 제목 추출/검증 경로에서 별도로 처리한다.
     """
     if not isinstance(title, str) or not title.strip():
         return None
@@ -264,7 +264,7 @@ def title_hypothesis_source_support(ctx, alias, title):
 
 
 def title_hypothesis_observation_context(ctx):
-    """기존 공식 검산에 원관측만 공급한다. ctx/원문/증거 dict는 수정하지 않는다.
+    """기존 공식 검증에 원래 관측값만 넘긴다. ctx/원문/증거 dict는 수정하지 않는다.
 
     일반 제목 경로에는 사용하지 않는다. 생성/OCR/진단 전용 행의 provenance
     제외는 alias 예외와 같고, 삭제/목록/비작품 등 부정 관측은 지우지 않는다.
@@ -274,7 +274,7 @@ def title_hypothesis_observation_context(ctx):
                 or row.get('_purpose') == 'image_ocr_diagnostic_probe'):
             return False
         # 기존 공식 checker의 문자열 포함 판정을 그대로 신뢰하지 않는다.
-        # 상세 경로·페이지 상태·매체 검산은 아래 원래 checker에 남긴다.
+        # 상세 경로·페이지 상태·매체 확인은 아래 원래 checker에 남긴다.
         try:
             parsed = urlsplit(str(row.get('url') or ''))
             host = str(parsed.hostname or '').lower()

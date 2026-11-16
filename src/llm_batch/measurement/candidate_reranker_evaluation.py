@@ -1,6 +1,6 @@
 """고정 learned raw score 평가와 CAL-only 임계값 선택. 확률 교정/공개 판정 아님.
 
-공급 split의 provenance bytes는 검산하지만 annotation의 진실을 독립 증명하지
+전달받은 split의 provenance bytes는 확인하지만 annotation이 참인지 독립적으로 증명하지
 않는다. 데이터·모델 파일, 네트워크, optimizer를 호출하지 않는 순수 API다.
 """
 from __future__ import annotations

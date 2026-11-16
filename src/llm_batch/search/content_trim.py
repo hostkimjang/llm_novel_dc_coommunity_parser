@@ -219,7 +219,7 @@ def _bm25_retrieve(
         if any(ph in header_lower for ph in _PRIORITY_HEADERS_KO):
             score *= 1.5
 
-        # 첫 3개 세션(개요 부분) 약간 부스트
+        # 앞쪽 청크 3개(개요 부분) 약간 부스트
         if chunk["index"] < 3:
             score *= 1.2
 

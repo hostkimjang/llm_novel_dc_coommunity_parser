@@ -482,7 +482,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--exclude-post-ids",
         default="",
-        help="쉼표로 구분한 post_id 목록. 이미 닫힌 collateral row를 review batch에서 제외한다.",
+        help="쉼표로 구분한 post_id 목록. 이미 처리가 끝난 collateral row를 review batch에서 제외한다.",
     )
     parser.add_argument(
         "--include-post-ids",

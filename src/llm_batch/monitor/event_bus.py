@@ -23,7 +23,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 
 def _native_progress(value):
-    """진행 표시는 저장 성공 증거가 아니다. 정수/결속/분모만 제한해 보존한다."""
+    """진행 표시는 저장 성공 증거가 아니다. 정수/연결 정보/분모만 제한해 보존한다."""
     if type(value) is not dict or set(value) != {"schema_version", "run_id", "publication_scope_id",
             "policy_sha256", "sequence", "status", "total", "processed", "completed",
             "not_executed", "incomplete", "aggregate_ref"}:
@@ -51,7 +51,7 @@ def _native_progress(value):
 
 @dataclass
 class PostSummary:
-    """포스트 처리 결과 요약 (대시보드 표시용)"""
+    """게시글 처리 결과 요약 (대시보드 표시용)"""
     post_id: int
     title: str
     is_relevant: Optional[bool] = None
@@ -67,7 +67,7 @@ class MonitorState:
     프로세스 전역 싱글턴 — 배치 진행 상태를 인메모리로 추적하고
     SSE 구독자에게 이벤트를 브로드캐스트합니다.
     
-    병렬 모드 지원: 동시에 여러 포스트를 추적합니다.
+    병렬 모드 지원: 동시에 여러 게시글을 추적합니다.
     """
 
     def __init__(self) -> None:
@@ -97,13 +97,13 @@ class MonitorState:
         self.llm_suspend_started_at: str = ""
         self.llm_suspend_resumed_at: str = ""
 
-        # 현재 처리 중인 포스트 (순차 모드 호환용)
+        # 현재 처리 중인 게시글 (순차 모드 호환용)
         self.current_post_id: Optional[int] = None
         self.current_post_title: str = ""
         self.current_expert: str = ""  # gatekeeper, discourse, ...
         self.current_expert_status: str = ""  # running / done
 
-        # 🔥 병렬 모드: 동시 진행 중인 포스트들
+        # 🔥 병렬 모드: 동시에 처리 중인 게시글들
         self.active_posts: Dict[int, Dict[str, Any]] = {}  # {post_id: {title, expert, status, worker_id, flow_log, ...}}
 
         # 토큰 통계 (누적)
@@ -119,10 +119,10 @@ class MonitorState:
         # None은 워커별 분해 정보가 없는 구형 전체 스냅샷이다.
         self._search_stats_workers: Optional[Dict[str, Dict[str, int]]] = None
 
-        # 포스트별 결과 요약
+        # 게시글별 결과 요약
         self.post_summaries: List[Dict[str, Any]] = []
         # 누계 카운터 — len(post_summaries) 파생이 아닌 명시적 카운터.
-        # standalone 대시보드가 런 도중 재시작되면 스냅샷 리싱크가 요약을
+        # standalone 대시보드가 런 도중 재시작되면 스냅샷 재동기화가 요약을
         # 최근 500건으로만 복원하는데, 진행률은 이 카운터로 정확히 유지된다.
         self.done_count: int = 0
         self.relevant_done_count: int = 0
@@ -137,10 +137,10 @@ class MonitorState:
         # 워커별 로그 라인 (병렬 모드용)
         self._worker_log_lines: Dict[int, List[str]] = {}  # worker_id → [lines]
 
-        # 파이프라인 실행 흐름 로그 (현재 포스트 — 순차 모드용)
+        # 파이프라인 실행 흐름 로그 (현재 게시글 — 순차 모드용)
         self._flow_log: List[Dict[str, Any]] = []
 
-        # ── 포스트별 로그 라인 (처리 로그 보기용) ──
+        # ── 게시글별 로그 라인 (처리 로그 보기용) ──
         self._post_log_lines: Dict[int, List[str]] = {}  # post_id → [lines]
         self._active_post_by_worker: Dict[int, int] = {}  # worker_id → post_id (현재 처리 중)
 
@@ -209,10 +209,10 @@ class MonitorState:
         return True
 
     def load_status_snapshot(self, snapshot: Dict[str, Any]) -> None:
-        """forwarder 스냅샷 리싱크: 누계 카운터/요약을 정본 상태로 덮어쓴다.
+        """forwarder 스냅샷 재동기화: 누계 카운터/요약을 정본 상태로 덮어쓴다.
 
         대시보드 프로세스가 런 도중 재시작되면 그 사이 이벤트가 유실되는데,
-        expert_main 쪽 MonitorState가 항상 정본이므로 주기 스냅샷으로 치유한다.
+        expert_main 쪽 MonitorState가 항상 정본이므로 주기 스냅샷으로 복구한다.
         """
         with self._lock:
             failure = snapshot.get("batch_failure")
@@ -316,7 +316,7 @@ class MonitorState:
                 self.llm_suspend_resumed_at = str(snapshot.get("llm_suspend_resumed_at", "") or "")
 
     def _store_log_line(self, line: str, worker_id: int) -> None:
-        """로그 라인을 링버퍼/워커별/포스트별 버퍼에 저장 (락 포함)."""
+        """로그 라인을 링버퍼/워커별/게시글별 버퍼에 저장 (락 포함)."""
         with self._lock:
             self._log_lines.append(line)
             if len(self._log_lines) > self._max_log_lines:
@@ -329,7 +329,7 @@ class MonitorState:
                 wlog.append(line)
                 if len(wlog) > self._max_log_lines:
                     self._worker_log_lines[worker_id] = wlog[-self._max_log_lines:]
-            # 포스트별 저장 (워커가 현재 처리 중인 포스트에 연결)
+            # 게시글별 저장 (워커가 현재 처리 중인 게시글에 연결)
             if worker_id >= 0 and worker_id in self._active_post_by_worker:
                 pid = self._active_post_by_worker[worker_id]
                 if pid in self._post_log_lines:
@@ -389,7 +389,7 @@ class MonitorState:
             elapsed = time.time() - self.batch_start_time if self.batch_running else 0
             if self.batch_failure is not None:
                 elapsed = max(0.0, self.batch_failure["ended_at_epoch"] - self.batch_failure["started_at_epoch"])
-            # len(post_summaries) 대신 누계 카운터 — standalone 리싱크(요약 500건
+            # len(post_summaries) 대신 누계 카운터 — standalone 재동기화(요약 500건
             # 캡) 후에도 진행률이 정확하다. 내장 모드에서는 두 값이 항상 같다.
             done_count = max(self.done_count, len(self.post_summaries))
             avg_time = elapsed / done_count if done_count > 0 else 0
@@ -446,7 +446,7 @@ class MonitorState:
         q: str = "",
         relevance: str = "all",
     ) -> Dict[str, Any]:
-        """완료된 포스트 요약 목록을 페이지 단위로 반환
+        """완료된 게시글 요약 목록을 페이지 단위로 반환
 
         q: 제목/공식제목/post_id 부분일치 검색 (대소문자 무시)
         relevance: all | relevant | noise
@@ -505,7 +505,7 @@ class MonitorState:
     def get_post_logs(self, post_id: int) -> List[str]:
         """특정 post_id의 인메모리 처리 로그를 반환합니다.
         
-        현재 실행 중이거나 최근 완료된 포스트의 로그를 반환합니다.
+        현재 실행 중이거나 최근 완료된 게시글의 로그를 반환합니다.
         """
         with self._lock:
             return list(self._post_log_lines.get(post_id, []))
@@ -807,11 +807,11 @@ class MonitorState:
                         "expert_status": "",
                         "flow_log": [],
                     }
-                    # 포스트별 로그 버퍼 초기화 및 워커 매핑
+                    # 게시글별 로그 버퍼 초기화 및 워커 매핑
                     worker_id = data.get("worker_id", 0)
                     self._post_log_lines[post_id] = []
                     self._active_post_by_worker[worker_id] = post_id
-                    # 오래된 로그 정리 (최대 200개 포스트 보관)
+                    # 오래된 로그 정리 (최대 200개 게시글 보관)
                     if len(self._post_log_lines) > 200:
                         oldest = list(self._post_log_lines.keys())[0]
                         del self._post_log_lines[oldest]
@@ -829,7 +829,7 @@ class MonitorState:
                 self.current_expert = expert
                 self.current_expert_status = status
                 
-                # 병렬 모드: 해당 포스트의 전문가 상태 갱신
+                # 병렬 모드: 해당 게시글의 전문가 상태 갱신
                 if post_id is not None and post_id in self.active_posts:
                     self.active_posts[post_id]["expert"] = expert
                     self.active_posts[post_id]["expert_status"] = status
@@ -841,7 +841,7 @@ class MonitorState:
                             "from": data.get("from", ""),
                             "reason": data.get("reason", ""),
                         })
-                        # recall이 많은 포스트에서 무한 누적되면 /api/status의
+                        # recall이 많은 게시글에서 무한 누적되면 /api/status의
                         # active_posts(32개)가 수십 KB로 비대해진다 — 최근 30건만.
                         # 절단량은 flow_dropped로 남겨 프론트가 "앞 N단계 생략"을
                         # 표시할 수 있게 한다.
@@ -869,9 +869,9 @@ class MonitorState:
                 self.current_expert = ""
                 self.current_expert_status = ""
 
-                # 워커→포스트 로그 라우팅 매핑은 여기서 끊지 않는다.
+                # 워커→게시글 로그 라우팅 매핑은 여기서 끊지 않는다.
                 # post_complete 직후에 출력되는 완료 요약/토큰 라인까지 이
-                # 포스트의 처리 로그에 수집되어야 "끝이 잘리는" 문제가 없다.
+                # 게시글의 처리 로그에 수집되어야 "끝이 잘리는" 문제가 없다.
                 # 같은 워커의 다음 post_start가 매핑을 자연히 교체한다.
 
                 # flow_log 결정: 병렬 모드면 active_posts에서, 순차면 self._flow_log

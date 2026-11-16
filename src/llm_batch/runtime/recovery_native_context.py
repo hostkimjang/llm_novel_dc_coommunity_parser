@@ -1,6 +1,6 @@
 """같은 호출의 pre-final native 문맥을 격리 보존하는 메모리 carrier.
 
-디스크 역직렬화나 JSON trace의 native 승격을 제공하지 않는다.
+디스크에서 역직렬화하거나 JSON trace를 native 문맥으로 올리는 기능은 제공하지 않는다.
 """
 from __future__ import annotations
 
@@ -26,7 +26,7 @@ MAX_BYTES = 8 * 1024 * 1024
 _SEAL = object()
 _RLOCK_TYPE = type(threading.RLock())
 # 이 두 색인은 현재 fetch 응답의 메모리 주소에만 유효하다. 복제본은 새 fetch로만
-# 다시 채운다. 이미 발행된 source_fetch_meta/후보 영수증은 일반 문맥으로 보존한다.
+# 다시 채운다. 이미 발행된 source_fetch_meta/후보 기록은 일반 문맥으로 보존한다.
 TRANSIENT_FETCH_IDENTITY_CACHES = frozenset({
     "_phase32_private_fetch_meta", "_private_munpia_fetch_meta",
 })
@@ -294,7 +294,7 @@ def require_evidence(capture, evidence):
 
 
 def require_control_binding(control, capture, evidence):
-    """원장의 최초 문맥/원본/상위 근거를 검산한다. 단계별 mutable 지문과 구별한다."""
+    """원장의 최초 문맥/원본/상위 근거를 검증한다. 단계별 mutable 지문과 구별한다."""
     binding = getattr(control, "binding", None)
     require(type(binding) is dict, "NATIVE_CONTROL_BINDING_REQUIRED")
     base, report = evidence.base, evidence.report

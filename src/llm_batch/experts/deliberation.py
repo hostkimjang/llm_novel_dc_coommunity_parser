@@ -1136,7 +1136,7 @@ class DeliberationOrchestrator:
     """
 
     # conflict 감지 임계값
-    CONFLICT_THRESHOLD = 0.4  # expert_agreement가 이 이하이면 conflict
+    CONFLICT_THRESHOLD = 0.4  # expert_agreement가 이 값 이하이면 conflict
 
     def __init__(self, arbiter_expert: "ArbiterExpert", llm_client: "LLMClient"):
         self.arbiter = arbiter_expert
@@ -2187,15 +2187,15 @@ class DeliberationOrchestrator:
         기본 Arbiter + Jury Panel + Debate 결과를 합성.
         
         가중 투표 (🆕 Smart Deliberation):
-          - Primary Arbiter: 2표 (후처리 가드 뒤집힌 경우 LLM 원본 판정으로 투표)
+          - Primary Arbiter: 2표 (후처리 가드가 판정을 뒤집었으면 LLM 원본 판정으로 투표)
           - Jury 다수결: 3표 (각 juror 1표)
           - Debate Judge: 2표
           - EvidenceScorer: 차등 보정 (≥10→+2, ≥5→+1, ≤-3→+2, ≤-1→+1)
         """
         print(f"[{_ts()}][⚖️🔮] 최종 합성 시작", file=sys.stderr)
 
-        votes_for = 0  # 관련성 지지
-        votes_against = 0  # 비관련성 지지
+        votes_for = 0  # 관련 쪽 득표
+        votes_against = 0  # 비관련 쪽 득표
         title_votes: Dict[str, int] = {}
         all_reasonings: List[str] = []
         _blocked_title_vote_logged: set[str] = set()
@@ -2262,7 +2262,7 @@ class DeliberationOrchestrator:
         _raw_llm_confidence = p_dec.get("_raw_llm_confidence")
         p_rel = p_dec.get("is_relevant")
 
-        # 후처리로 뒤집어진 경우: LLM 원본 판단 사용
+        # 후처리에서 판정이 뒤집힌 경우: LLM 원본 판단 사용
         _primary_used_raw = False
         if _raw_llm_relevant is not None and _raw_llm_relevant != p_rel:
             _primary_used_raw = True

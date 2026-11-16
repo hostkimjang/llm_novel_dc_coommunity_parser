@@ -1,4 +1,4 @@
-"""원시 corpus/source bytes에 결속한 R2 전용 추론 graph. 정답/공개 권한은 없다."""
+"""원시 corpus/source bytes에 고정한 R2 전용 추론 graph. 정답/공개 권한은 없다."""
 from __future__ import annotations
 
 import base64
@@ -44,7 +44,7 @@ def _copy(value):
 
 
 def _receipt_projection(value):
-    # 지연과 저장 binding 이외의 R2 전체 필드를 검산한다.
+    # 지연과 저장 binding 이외의 R2 전체 필드를 확인한다.
     return {k: v for k, v in value.items() if k not in {"latency_ms", "binding"}}
 
 

@@ -55,7 +55,7 @@ _OTHER_ACTOR = re.compile(r"^(?:친구|지인|동생|형|누나|언니|그|그�
 _THANKS = re.compile(r"고맙|고마워|감사")
 
 def exact_nominal_binding_text(source, claim):
-    """명사 인용만 가린 own claim의 기존 binding view를 검산한다.
+    """명사 인용만 가린 own claim의 기존 binding view를 다시 확인한다.
 
     전언·화면 문구·기록 인용을 복원하지 않는다. 원장/claim은 변경하지 않는다.
     """
@@ -223,7 +223,7 @@ _POINTED_HARASSMENT_QUESTION = re.compile(
 
 
 def current_propriety_question_fragment(preceding, question):
-    """바로 앞 작성자 문장을 가리키는 성희롱 여부 질문만 결속한다."""
+    """바로 앞 작성자 문장을 가리키는 성희롱 여부 질문만 그 문장과 연결한다."""
     if not all(exact_unit(unit) and unit.current_own and not unit.reported
                and unit.role == "author" for unit in (preceding, question)):
         return None
@@ -295,7 +295,7 @@ def state_or_allowance_fragment(unit, projection=None):
         m = re.search(r"(.+?)(?:이라도|라도|여도|이어도|도)\s*(?:좋아|좋다|괜찮|상관\s*없|가능)", text)
         return _frag("allowance_not_work_praise", f"{m.group(1).strip()}도 추천 범위로 허용한다. 그 범주의 실제 작품을 읽고 좋게 평가했다는 뜻으로 확대하지 않는다.", "note", (unit,), ((unit, m),))
     if scope == "personal_state":
-        # 기분 앞에 있는 비교 기준 등은 기존 work_roles가 별도 exact 검산한다.
+        # 기분 앞에 있는 비교 기준 등은 기존 work_roles가 별도로 정확히 확인한다.
         return _frag("personal_state_not_work_quality", "화자는 자신의 기분·상태를 말한다. 작품 내용에 대한 구체적인 질 평가와는 구분한다.", "note", (unit,),
                      unresolved=("U: 기분의 원인을 작품 평가로 연결하는 범위",))
     if scope == "retracted":

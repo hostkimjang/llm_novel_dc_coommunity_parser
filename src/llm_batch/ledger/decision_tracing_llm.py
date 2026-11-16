@@ -487,7 +487,7 @@ class DecisionTracingLLMClient(LLMClient):
                         pending["usage"], pending["usage_provenance"]
                     )
                     if not valid or response_sha in empty_hashes:
-                        # 응답 해석 실패와 이미 관측한 호출 비용은 별개다.
+                        # 응답 해석 실패와 이미 확인된 호출 비용은 별개다.
                         self.decision_call_ledger.record_terminal(
                             row,
                             call_id=call_id,

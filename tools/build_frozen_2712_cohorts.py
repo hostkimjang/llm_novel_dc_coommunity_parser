@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""동결 2,712행 정본에서 재현 가능한 회귀 cohort와 실행 bundle을 만든다.
+"""고정한 2,712행 정본에서 재현 가능한 회귀 cohort와 실행 bundle을 만든다.
 
 선정은 오직 정본 ledger의 구조화 판정과 중재 ledger의 상태를 사용한다.
 게시글 ID, 제목, 약칭을 코드에 넣지 않으며 raw result는 post_id로 exact join한 뒤
-`analysis_result`/`run_meta`를 제거해 ``expert_main.py`` 재실행 입력으로 투영한다.
+`analysis_result`/`run_meta`를 제거해 ``expert_main.py`` 재실행 입력으로 변환한다.
 """
 
 from __future__ import annotations

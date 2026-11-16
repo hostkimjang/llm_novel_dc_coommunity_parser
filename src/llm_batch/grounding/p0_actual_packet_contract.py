@@ -439,7 +439,7 @@ def validate_claim_payload_spans(
     claims: Sequence[Mapping[str, Any]],
     payload_text_by_registry: Mapping[str, str],
 ) -> None:
-    """캡처 원문에서 모든 claim exact span을 다시 재생한다."""
+    """캡처 원문에서 모든 claim의 exact span을 재생해 확인한다."""
 
     for claim in claims:
         payload = payload_text_by_registry.get(claim["registry_record_id"])

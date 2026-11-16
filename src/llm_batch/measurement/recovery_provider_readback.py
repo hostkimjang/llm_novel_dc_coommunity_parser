@@ -1,4 +1,4 @@
-"""Provider 원장과 저장 응답을 독립 판독한다. 공개 판정이나 원격 내부 호출을 추정하지 않는다."""
+"""Provider 원장과 저장 응답을 독립적으로 다시 읽어 확인한다. 공개 판정이나 원격 내부 호출을 추정하지 않는다."""
 from __future__ import annotations
 
 from copy import deepcopy

@@ -1,4 +1,4 @@
-"""고정 로컬 NIL 모델·FROZEN 관측을 평가하고 원문 결속 보고서를 새 폴더에 저장한다."""
+"""고정한 로컬 NIL 모델·FROZEN 측정 결과를 평가하고 원문과 연결한 보고서를 새 폴더에 저장한다."""
 from __future__ import annotations
 
 import argparse

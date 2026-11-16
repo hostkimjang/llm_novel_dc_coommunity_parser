@@ -1,4 +1,4 @@
-"""최종 same-pass 객체의 진단 필드만 제한된 JSON으로 투영한다. 공개 판정 권한은 없다."""
+"""최종 same-pass 객체의 진단 필드만 제한된 JSON으로 옮긴다. 공개 판정 권한은 없다."""
 from __future__ import annotations
 
 import json

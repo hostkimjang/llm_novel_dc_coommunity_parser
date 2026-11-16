@@ -1,4 +1,4 @@
-"""미래 explicit producer carrier 전달 후보. lexical 추론·gold 소비는 없다."""
+"""향후 explicit producer carrier로 전달할 후보. lexical 추론이나 gold 사용은 없다."""
 from dataclasses import dataclass, fields, is_dataclass, replace
 import hashlib
 import json
@@ -191,7 +191,7 @@ def object_present(value, records):
     return any(value is item for item in records)
 
 def validate_packet(packet, ledger, binding):
-    """V01–V07의 관계 검산. producer 의미 authority는 별도 미래 검수다."""
+    """V01–V07의 관계 검증. producer 의미 authority는 향후 별도로 검수한다."""
     if type(packet) is not ProducerPacket or type(packet.carrier) is not T.RecordRoleProvenanceDraft:
         raise ValueError('producer packet/pinned typed carrier required')
     carrier = packet.carrier

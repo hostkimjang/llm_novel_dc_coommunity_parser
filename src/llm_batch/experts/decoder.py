@@ -114,11 +114,11 @@ KNOWN_ABBREVIATIONS = {
 
 
 # ============================================================
-# 한글 자모(Jamo) 구조 기반 비작품-약어 판별
+# 한글 자모(Jamo) 구조로 작품 약어가 아닌 표현을 판별
 # ────────────────────────────────────────────────────────────
-#  기존: 초성 비속어를 하드코딩 → 한계 명확
+#  기존: 초성 비속어를 하드코딩 → 한계가 분명함
 #  개선: 유니코드 음절 분해로 초성 패턴 자동 생성 + 초성 비율 휴리스틱
-#        핵심 프레임: "비속어인가?" 가 아니라 "작품 약어일 가능성이 있는가?"
+#        핵심 질문: "비속어인가?"가 아니라 "작품 약어일 가능성이 있는가?"
 # ============================================================
 
 # 한글 초성 19자 (유니코드 한글 음절 분해 표준 순서)
@@ -134,12 +134,12 @@ _COMBINED_JAMO_NORMALIZE: dict[str, str] = {
 
 
 def _is_jamo_consonant(ch: str) -> bool:
-    """단일 문자가 한글 호환 자모 자음인지 (ㄱ~ㅎ, U+3131~U+314E)."""
+    """한 글자가 한글 호환 자모의 자음(ㄱ~ㅎ, U+3131~U+314E)인지 확인."""
     return '\u3131' <= ch <= '\u314E'
 
 
 def _syllable_to_chosung(ch: str) -> str | None:
-    """한글 음절 한 글자 → 초성 자모. 음절 아니면 None."""
+    """한글 음절 한 글자의 초성 자모를 반환. 음절이 아니면 None."""
     cp = ord(ch)
     if 0xAC00 <= cp <= 0xD7A3:
         return _CHOSUNG_JAMO[(cp - 0xAC00) // (21 * 28)]
@@ -171,14 +171,14 @@ def chosung_ratio(text: str) -> float:
     return sum(1 for c in chars if _is_jamo_consonant(c)) / len(chars)
 
 
-# ── 비속어 원형 리스트 (유지보수: → 여기에 단어만 추가) ──
+# ── 비속어 원형 리스트 (유지보수: 여기에 단어만 추가하면 됨) ──
 _PROFANITY_WORDS: list[str] = [
     "새끼", "씨발", "병신", "지랄", "꺼져", "존나",
     "미친", "좆밥", "빡라", "개새끼", "이새끼",
     "씹", "좆", "닥쳐", "꼴받",
 ]
 
-# 쌍자음 → 단자음 간략화 (사람들이 타이핑 시 간략화: ㅆ→ㅅ, ㄲ→ㄱ 등)
+# 쌍자음 → 단자음 간략화 (입력할 때 흔히 줄여 쓰는 형태: ㅆ→ㅅ, ㄲ→ㄱ 등)
 _DOUBLE_TO_SINGLE: dict[str, str] = {
     'ㄲ': 'ㄱ', 'ㄸ': 'ㄷ', 'ㅃ': 'ㅂ', 'ㅆ': 'ㅅ', 'ㅉ': 'ㅈ',
 }
@@ -211,7 +211,7 @@ def contains_chosung_profanity(text: str) -> tuple[bool, str]:
     텍스트가 작품 약어가 *아닐* 가능성을 구조적으로 판별.
 
     전략 (하드코딩 사전 → 구조 기반):
-      1) 비속어 원형에서 자동 생성된 초성 패턴 서브스트링 매칭
+      1) 비속어 원형에서 자동 생성한 초성 패턴이 부분 문자열로 들어 있는지 확인
       2) 겹자음 정규화 (ㅄ→ㅂㅅ) 후 재매칭
       3) 초성 비율 ≥50% 이면서 KNOWN_ABBREVIATIONS 미등록 → 비작품 약어 의심
          (웹소설 약어는 음절 조합이므로 자음만으로 구성될 수 없음)
@@ -458,7 +458,7 @@ def _abbreviation_match_score_inner(abbr_clean: str, candidate_title: str) -> fl
             if _matched_c2 == len(abbr_syllables) and len(abbr_syllables) >= 2:
                 # 모든 약어 음절이 제목 단어들에서 순서대로 매칭됨
                 ratio = _matched_c2 / max(len(title_no_space), 1)
-                # 커버율에 따라 점수 조정 (너무 적은 커버는 낮은 점수)
+                # 커버율에 따라 점수 조정 (커버율이 낮을수록 낮은 점수)
                 if ratio >= 0.3:
                     scores.append(0.90)
                 elif ratio >= 0.15:
@@ -515,7 +515,7 @@ def _pattern_b_score(abbr_syllables: list[str], title_no_space: str) -> float:
             if all_found:
                 # 세그먼트가 적을수록(=더 큰 덩어리) 높은 점수
                 seg_score = 0.95 - 0.05 * len(segments)
-                # 각 세그먼트 최소 2글자면 보너스
+                # 모든 세그먼트가 2글자 이상이면 보너스
                 if all(len(s) >= 2 for s in segments):
                     seg_score += 0.05
                 best = max(best, min(seg_score, 1.0))
@@ -951,7 +951,7 @@ class DecoderExpert:
                 user_prompt += "검색 결과에서 해당 단어가 소설 '캐릭터 이름'으로 나오더라도, 그것이 이 포스트의 맥락과 일치하는지 엄격히 확인하세요.\n"
                 user_prompt += "본문/댓글에 작품 줄거리·작가명·플랫폼 URL이 전혀 없으면 : best_match.title=null, confidence=none으로 판정하세요.\n"
         
-        #  Phase 11j: Gatekeeper 장르토론 감지 플래그 : Decoder 경고 주입
+        #  Phase 11j: Gatekeeper가 장르 토론을 감지했으면 Decoder에 경고 주입
         # Discourse Warning이 없더라도, Gatekeeper가 장르 토론 패턴을 감지했으면 경고
         _gk_ctx_clues = (
             gatekeeper_result.get("context_clues") or {}
@@ -1464,7 +1464,7 @@ class DecoderExpert:
             # 🔥 ctx 전달: 사전값도 검색 결과로 교정 가능하도록
             result = self._merge_dict_matches(result, dict_matches, ctx)
             result = self._sanitize_decoded_term_payload(result)
-            # 사전 항목 간 유사어 오인 치환 방지
+            # 사전 항목끼리 비슷한 말로 잘못 치환하는 것을 방지
             result = self._sanitize_cross_term_dictionary_inference(result, slang_dictionary)
             if ctx is None and dict_matches and _gk_comment_secondary:
                 promoted_any = False
@@ -1683,12 +1683,12 @@ class DecoderExpert:
 
     @staticmethod
     def community_knowledge_independent_title_support(ctx, title):
-        """R3 hint/LLM 주장 대신 원문 완전 제목 또는 실제 search row의 공식 상세 제목만 허용."""
+        """R3 hint나 LLM 주장은 근거로 쓰지 않고, 원문에 나온 완전한 제목이나 실제 search row의 공식 상세 제목만 허용."""
         if ctx is None or not isinstance(title, str) or not title.strip():
             return False
         title = title.strip()
         pattern = re.compile(r"(?<!\w)" + re.escape(title) + r"(?!\w)")
-        # 원문의 완전 제목 뒤 조사만 제한적으로 허용한다. 조사 뒤에도 단어 경계가
+        # 원문에 나온 완전한 제목 뒤에는 조사만 제한적으로 허용한다. 조사 뒤에도 단어 경계가
         # 있어야 하므로 '제목가짜', '제목으로써진다' 같은 붙임 단어는 통과하지 않는다.
         # 공식 검색 row와 frozen query의 exact matching 정책은 넓히지 않는다.
         source_pattern = re.compile(
@@ -1795,7 +1795,7 @@ class DecoderExpert:
     def _is_likely_foreign_transcription(self, term: str) -> bool:
         """
         OPT-4: 한글로 표기된 외래어(일본어/영어 등) 감지.
-        이런 단어는 분리하면 의미 없는 쓰레기만 생기므로 분리 스킵.
+        이런 단어는 나누면 의미 없는 조각만 생기므로 분리하지 않는다.
 
         판정 기준:
         1. Kiwi가 단일 NNP(고유명사)로 인식 → 외래어 가능성 높음
@@ -3041,7 +3041,7 @@ class DecoderExpert:
                     )
         
         # 기존 best-match/공식 교정/known mapping/문자 점수 경로는 그대로 둔다.
-        # ctx와 receipt로 넘기는 마지막 경계에서 추정 풀이의 이름 역할만 검산한다.
+        # ctx와 receipt로 넘기기 직전에 추정 풀이의 이름 역할만 다시 확인한다.
         official_hypothesis_titles = None
         def existing_official_name(title):
             nonlocal official_hypothesis_titles
@@ -3344,7 +3344,7 @@ class DecoderExpert:
         result: Dict[str, Any],
         corrections: List[tuple[str, str, str]],
     ) -> None:
-        """교정된 제목의 확정 치환 설명만 맞춘다. 인용·부정 근거는 보존한다."""
+        """notes의 단정적인 치환 설명에 남은 옛 제목만 교정된 제목으로 바꾼다. 인용·부정 근거는 보존한다."""
         import re
 
         if len(corrections) != 1 or not isinstance(result.get("notes"), str):
@@ -3522,8 +3522,8 @@ class DecoderExpert:
                     # (예: "즉사무림" → "즉사기 들고 무림에 떨어지다"(0.9) vs "즉사기 들고 게임 속으로"(0.0))
                     original_term = term.get("original", "")
                     if original_term and len(original_term) >= 2:
-                        # 동일 문자열(best=bm_title=약어 자체) 케이스도 보존 점수로 취급
-                        # 해야 잘못된 플랫폼 URL 교정을 더 안정적으로 차단할 수 있다.
+                        # 동일 문자열(best=bm_title=약어 자체)인 경우도 보존 점수로 취급해야
+                        # 잘못된 플랫폼 URL 교정을 더 안정적으로 차단할 수 있다.
                         old_abbr_score = _abbr_alignment_guard_score(original_term, bm_title)
                         new_abbr_score = _abbr_alignment_guard_score(original_term, official_title)
                         if old_abbr_score > new_abbr_score + 0.1:
@@ -3580,7 +3580,7 @@ class DecoderExpert:
     
     def _validate_genre_cross_match(self, result: Dict[str, Any], ctx: Any) -> Dict[str, Any]:
         """
-        🔥 장르 교차검증: 포스트 본문의 장르와 후보 작품의 장르 불일치 시 차단
+        🔥 장르 교차검증: 게시글 본문의 장르와 후보 작품의 장르가 다르면 차단
         
         예: 본문에 "마왕, 대마법사, 용사, 도적단" → fantasy
             후보 작품 "초대남 B" → romance
@@ -4079,7 +4079,7 @@ class DecoderExpert:
 
                     # 🛡️ 다중 작가 감지 시 스킵 금지
                     # "개돌도 후반 말아먹긴했지만 목마도 써라" → 작가 비교 글
-                    # 작가 2명 이상이면 특정 대표작에 매칭하면 FP
+                    # 작가가 2명 이상인데 특정 대표작 하나에 매칭하면 FP
                     if _snippet_validated_author:
                         _other_author_count = 0
                         for _other_t in decoded_terms:
@@ -4204,7 +4204,7 @@ class DecoderExpert:
                     file=sys.stderr,
                 )
             # 🆕 검색 증거 기반 일반 어휘 필터 (Generic):
-            # Gatekeeper가 캐릭터명으로 분류 했더라도, 검색 결과의 참고 사이트
+            # Gatekeeper가 캐릭터명으로 분류했더라도, 검색 결과의 참고 사이트
             # (namu.wiki 등)에서 해당 용어가 감탄사/대명사 등 일반 어휘로
             # 분류되면 캐릭터 바이패스를 취소하고 약어 가드를 정상 진행.
             if is_character_term:
@@ -4507,7 +4507,7 @@ class DecoderExpert:
                                     break  # 가장 작은 trim으로 성공하면 중단
 
             # 🆕 FIX: 약어와 제목이 정규화 기준으로 동일한 경우(예: "광마회귀"→"광마회귀"),
-            # abbreviation_match_score의 verbatim 차단(0.00)로 인한 오강등을 방지한다.
+            # abbreviation_match_score의 verbatim 차단(0.00) 때문에 잘못 강등되는 것을 막는다.
             # 단, 제목 앵커가 있거나 공식 검색 제목으로 확인된 경우에만 적용한다.
             _orig_norm_exact = _normalize_text_keep_jamo(original)
             _title_norm_exact = _normalize_text_keep_jamo(str(current_title or ""))
@@ -4590,7 +4590,7 @@ class DecoderExpert:
             ) is not None
 
             if has_explicit_alias:
-                # 현재 제목 자체에 결속된 후보 근거이며 공개·학습 권한은 아니다.
+                # 현재 제목에만 연결된 후보 근거이며 공개·학습 권한은 아니다.
                 print(
                     f"[{_ts()}][{self.emoji}] 🔒 명시적 약칭 증거 발견: "
                     f"'{original}' = '{current_title}' → 약어 스코어 교정 스킵",
@@ -4933,7 +4933,7 @@ class DecoderExpert:
                 and (not has_explicit_alias)
             ):
                 print(
-                    f"[{_ts()}][{self.emoji}] 🛡️ 공식 키워드 결속 제목 유지: "
+                    f"[{_ts()}][{self.emoji}] 🛡️ 공식 키워드와 연결된 제목 유지: "
                     f"'{current_title}' ←/→ '{best_alt_title}' "
                     f"(current_strength={current_support_strength:.1f}, "
                     f"alt_strength={best_alt_support_strength:.1f}, "
@@ -5018,7 +5018,7 @@ class DecoderExpert:
                         "reasoning": f"약어 '{effective_original}'의 각 음절이 '{best_alt_title}'의 단어 첫 글자와 순차 매칭됨 (score={best_alt_score:.2f})",
                     })
             elif current_score < 0.2 and not has_explicit_alias:
-                # 🛡️ 약어스코어 극단적 저조 (0.2 미만) → 할루시네이션 의심
+                # 🛡️ 약어 스코어가 극단적으로 낮음(0.2 미만) → 할루시네이션 의심
                 # 작가 필명을 작품명으로 매칭하는 등의 오류 방지
                 # morpheme_ok 여부와 무관하게 강제 하향/무효화
                 # ⚠️ 단, 검색 결과에 명시적 약칭 증거가 있으면 스킵
@@ -5302,7 +5302,7 @@ class DecoderExpert:
         has_discourse_warning = bool(getattr(ctx, 'discourse_warning', None)) if ctx else False
         rescue_min_score = 0.85 if has_discourse_warning else 0.75
 
-        # 🆕 P1-2: 포스트가 플랫폼 일반 논의/장르 트로프 논의인 경우 Rescue 스킵
+        # 🆕 P1-2: 게시글이 플랫폼 일반 논의/장르 트로프 논의인 경우 Rescue 스킵
         # "탑툰은 비처녀 아닌 히로인..." 같은 플랫폼 전반 논의에서 우연 매칭 방지
         discourse_out = None
         if ctx:
@@ -6761,7 +6761,7 @@ class DecoderExpert:
                 full_norm,
                 {"abbrev": abbrev, "full": full, "sources": set()},
             )
-            # 더 정보량 큰 표기를 유지
+            # 정보가 더 많은(더 긴) 표기를 유지
             if len(_normalize_alnum_kor_cached(full)) > len(_normalize_alnum_kor_cached(bucket["full"])):
                 bucket["full"] = full
             if len(_normalize_alnum_kor_cached(abbrev)) > len(_normalize_alnum_kor_cached(bucket["abbrev"])):
@@ -7139,7 +7139,7 @@ class DecoderExpert:
         """
         🔥 Phase27-C: 플랫폼 기능 용어 가드
 
-        포스트 제목에 플랫폼 약칭(노피아, 문피아 등)과 기능 용어(콘, 뱃지, 이모티콘 등)가
+        게시글 제목에 플랫폼 약칭(노피아, 문피아 등)과 기능 용어(콘, 뱃지, 이모티콘 등)가
         함께 등장하면 → 소설 제목이 아니라 플랫폼 메타 글.
 
         예: "노피아 가운데에서 빔 나오는 콘이 있는거보소" → meta (소설 아님)
@@ -7793,7 +7793,7 @@ class DecoderExpert:
         Decoder가 작품을 식별했더라도 본문/댓글에 실제 작품 관련 증거가 있는지 확인.
         증거 없으면 신뢰도 강제 하향.
         
-        author_talk(작가 비평)은 코드 강제 제동 없이 LLM 프롬프트 이해력으로 처리.
+        author_talk(작가 비평)은 코드로 강제 제동하지 않고 LLM이 프롬프트를 읽고 판단하게 둔다.
         """
         discourse_warning = getattr(ctx, 'discourse_warning', None)
         if not discourse_warning:
@@ -7890,7 +7890,7 @@ class DecoderExpert:
                     file=sys.stderr,
                 )
 
-        # 🆕 장르 경고가 있더라도, "제목/본문 앵커 + 공식 플랫폼 제목" 결속이 있으면 역제동을 면제
+        # 🆕 장르 경고가 있더라도, 제목/본문 앵커와 공식 플랫폼 제목이 연결되면 역제동을 면제
         # 목적: 약칭 중심 커뮤니티 글(제목 약칭 + 본문 전개/캐릭터)이 genre_warning으로 과도하게 low로 떨어지는 현상 완화
         if not evidence_found:
             post_data_local = getattr(ctx, "post_data", {}) or {}
@@ -7928,12 +7928,12 @@ class DecoderExpert:
                     evidence_found = True
                     print(
                         f"[{_ts()}][{self.emoji}] 🔒 Discourse 역방향 제동 면제: "
-                        f"공식제목+게시글앵커 결속 확인 ('{title}', anchor={anchor_type or 'none'})",
+                        f"공식제목+게시글앵커 연결 확인 ('{title}', anchor={anchor_type or 'none'})",
                         file=sys.stderr,
                     )
                     break
 
-        # 🆕 밈/커뮤니티 반응 글이라도, 제목 약칭과 강한 canonical evidence가 결속되면 역제동을 면제
+        # 🆕 밈/커뮤니티 반응 글이라도, 제목 약칭과 강한 canonical evidence가 연결되면 역제동을 면제
         # 목적: "괴담동", "죽깨수"처럼 본문은 팬 반응/밈 톤이지만 작품 식별은 명확한 경우 보호
         if not evidence_found and discourse_warning:
             _dw_lower = str(discourse_warning).lower()
@@ -8350,7 +8350,7 @@ class DecoderExpert:
         문제 상황:
         - Decoder가 "즉사무림" → interpretations에 "즉사기 들고 무림에 떨어지다"(novel_title, fit=high)를
           기록하면서도 best_match.title=null을 반환하는 경우
-        - 이 경우 downstream(Synthesizer)이 null을 보고 엉뚱한 작품 환각
+        - 이 경우 downstream(Synthesizer)이 null을 보고 엉뚱한 작품을 환각함
         
         해결:
         - best_match.title이 null이고 interpretations에 novel_title+high가 있으면
@@ -9077,7 +9077,7 @@ class DecoderExpert:
                 
                 if _char_verify_abbr_score < 0.3 and not _char_verify_morph_ok:
                     print(
-                        f"[{_ts()}][{self.emoji}] ⚠️ 캐릭터-작품 연결 검증됨이지만 약어 불일치: "
+                        f"[{_ts()}][{self.emoji}] ⚠️ 캐릭터-작품 연결은 검증됐지만 약어 불일치: "
                         f"'{original_term}' → '{title}' (abbr_score={_char_verify_abbr_score:.2f}, "
                         f"morpheme_ok={_char_verify_morph_ok}) → 경쟁 작품 오매칭 가능성 있음",
                         file=sys.stderr,

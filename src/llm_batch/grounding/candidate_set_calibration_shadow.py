@@ -858,7 +858,7 @@ class CalibrationArtifact:
         split_manifest: CalibrationSplitManifest,
         policy: CalibrationEvaluationPolicy,
     ) -> None:
-        # v2의 optimizer 재생 검산은 아래 context-bound receipt 검사에서 한 번 수행한다.
+        # v2의 optimizer 재생 확인은 아래 context-bound receipt 검사에서 한 번 한다.
         if self.artifact_sha256 != _canonical_hash(self.payload_without_artifact_sha256()):
             raise ValueError("calibration artifact fingerprint mismatch")
         if self.schema_version == CALIBRATION_ARTIFACT_SCHEMA_V2 and (
@@ -875,7 +875,7 @@ class CalibrationArtifact:
 
 
 def calibration_artifact_from_dict(value: Any) -> CalibrationArtifact:
-    """기존 v1 또는 실제 학습 근거를 내장한 v2를 재판독·검산한다."""
+    """기존 v1 또는 실제 학습 근거를 내장한 v2를 다시 읽어 확인한다."""
     if not isinstance(value, Mapping):
         raise ValueError("calibration artifact must be an object")
     try:

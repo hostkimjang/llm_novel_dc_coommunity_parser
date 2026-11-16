@@ -1488,7 +1488,7 @@ def run_batch(
         
         # Incremental 저장: 원본 데이터 + 분석 결과를 함께 저장
         if incremental_output_path:
-            # 원본 포스트 데이터 구성
+            # 원본 게시글 데이터 구성
             post_texts_list = _post_texts(post)
             full_item = {
                 "post_id": post.post_id,

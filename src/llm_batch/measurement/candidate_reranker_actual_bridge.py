@@ -1,7 +1,7 @@
-"""고정 NIL/CAL 관측을 기존 actual readback 형식으로 연결하는 순수 변환.
+"""고정한 NIL/CAL 측정 결과를 기존 actual readback 형식으로 연결하는 순수 변환.
 
 이 모듈은 모델 점수의 실제 생성, 사람 판정과 권리의 진실을 인증하지 않는다.
-CLI가 고정 모델을 재생하며 기존 actual runner가 파일·정책·분모를 재검산한다.
+CLI가 고정 모델을 재생하며 기존 actual runner가 파일·정책·분모를 다시 확인한다.
 """
 from __future__ import annotations
 

@@ -1,7 +1,7 @@
-"""Actual-P0 parser route를 봉인하는 무쓰기 계약 검증기.
+"""Actual-P0 parser route를 고정하고 파일은 쓰지 않는 계약 검증기.
 
 이 모듈은 실제 source snapshot에서 4개 profile별 10건을 역산하고,
-label을 보기 전에 입력 선택을 봉인하며, 모든 입력을 ``TYPED``,
+label을 보기 전에 입력 선택을 고정하며, 모든 입력을 ``TYPED``,
 ``GENERIC_PENDING``, ``PARSER_ERROR`` 중 정확히 하나로 귀속한다. 검증
 성공은 actual/production/full-scan 권한을 부여하지 않는다.
 """
@@ -536,7 +536,7 @@ def _validate_label_blind_selection_seal_version(
     seal_schema: str,
     selection_algorithm: str,
 ) -> dict[str, Any]:
-    """label 접근 전 claim 입력 선택 봉인과 plan binding을 검증한다."""
+    """label에 접근하기 전에 claim 입력 선택이 고정됐는지와 plan binding을 검증한다."""
 
     row = _strict(value, _SEAL_FIELDS, "label-blind selection seal")
     if row["schema_version"] != seal_schema:

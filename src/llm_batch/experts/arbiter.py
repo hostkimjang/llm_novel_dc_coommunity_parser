@@ -1730,7 +1730,7 @@ class ArbiterExpert:
             file=sys.stderr,
         )
 
-        # 1) relevant=true인데 non-work 가설 우세면 강제 다운시프트
+        # 1) relevant=true인데 non-work 가설이 우세하면 강제로 하향
         if decision.get("is_relevant") is True:
             non_work_map = {
                 "genre_discussion": "genre_opinion",
@@ -2739,7 +2739,7 @@ class ArbiterExpert:
                 if any(_re_ep.search(p, _title) for p in _ep_patterns):
                     _add(-0.40, "episode_title_pattern")
 
-                # 1b) 포스트 제목 꺾쇠/괄호 표기 보너스
+                # 1b) 게시글 제목의 꺾쇠/괄호 표기 보너스
                 # <마법으로 딸깍하니 전설의 마법사> ㅊㅊ함 → 꺾쇠 안 제목은 거의 확정적
                 import re as _re_score
                 _bracket_m = _re_score.search(
@@ -4294,7 +4294,7 @@ class ArbiterExpert:
                             )
                             best_title = None
                     
-                    # 🆕 포스트 제목 꺾쇠 표기 우선: <정식제목> 패턴이 있으면 강제 우선
+                    # 🆕 게시글 제목의 꺾쇠 표기 우선: <정식제목> 패턴이 있으면 그 제목을 강제로 우선한다
                     # 예: "<마법으로 딸깍하니 전설의 마법사> ㅊㅊ함" → 꺾쇠 안 제목이 확정적
                     import re as _re_bracket
                     _post_title_for_bracket = str(
@@ -4330,7 +4330,7 @@ class ArbiterExpert:
                                     break
                             if _bracket_in_suspected or _bracket_in_search:
                                 print(
-                                    f"[{_ts()}][{self.emoji}] 📐 포스트 제목 꺾쇠 표기 우선: "
+                                    f"[{_ts()}][{self.emoji}] 📐 게시글 제목 꺾쇠 표기 우선: "
                                     f"'{best_title}' → '{_bracket_title2}' "
                                     f"(in_suspected={_bracket_in_suspected}, in_search={_bracket_in_search})",
                                     file=sys.stderr,
@@ -4364,7 +4364,7 @@ class ArbiterExpert:
             
             _post_title_for_domain2 = str((getattr(ctx, "post_data", {}) or {}).get("title") or "")
 
-            # � Arbiter LLM 응답의 official_title도 검색 결과로 교정
+            # Arbiter LLM 응답의 official_title도 검색 결과로 교정
             for title_key in ("official_title", "official_novel_title"):
                 arbiter_llm_title = decision.get(title_key)
                 if (
@@ -4581,7 +4581,7 @@ class ArbiterExpert:
                         return _clean_title
 
                     def _is_ambiguous_abbrev_context(_abbr_raw: str, _candidate_title: str) -> bool:
-                        """약칭이 일반 문맥에 과도하게 퍼져 있고 후보 제목과 결속이 약한지 판정."""
+                        """약칭이 검색 결과의 일반 문맥에 널리 퍼져 있고 후보 제목과 함께 나오는 경우가 드문지 판정."""
                         _abbr_norm = _norm_veto_text(_abbr_raw)
                         _cand_norm = _norm_veto_text(_candidate_title)
                         if not _abbr_norm or len(_abbr_norm) < 2 or not _cand_norm:
@@ -4614,7 +4614,7 @@ class ArbiterExpert:
                             return False
 
                         linked_ratio = linked / max(total, 1)
-                        # 공식 결속이 0이고, 약칭 노출 대비 후보 결속이 낮으면 일반어/모호 약칭으로 본다.
+                        # 약칭과 후보가 함께 나온 공식 상세 결과가 없고, 약칭이 나온 결과 중 후보도 함께 나온 비율이 낮으면 일반어/모호 약칭으로 본다.
                         return official_linked == 0 and (linked == 0 or (total >= 5 and linked_ratio < 0.2))
 
                     if not _veto_exempt and _vf_verification_error:
@@ -5300,7 +5300,7 @@ class ArbiterExpert:
                         # reason도 종합 증거로 교정 (LLM의 true 사유 대체)
                         decision["final_reasoning"] = self._synthesize_evidence_reason(ctx, "거부권", False)
             
-            # �️ P0-1.5: Decoder+Verifier 합의 보호
+            # P0-1.5: Decoder+Verifier 합의 보호
             # 두 전문가 모두 동일 작품을 High+ 신뢰도로 식별했는데
             # Arbiter LLM이 is_relevant=false로 뒤집은 경우 → 합의 우선
             # 🆕 단, discourse_warning에 genre_discussion이 포함되면 합의 보호 비활성화
@@ -5781,7 +5781,7 @@ class ArbiterExpert:
                         if "metadata_synthesis" in result:
                             result["metadata_synthesis"]["detected_author"] = detected_authors[0]
             
-            # �🚨 P0-3: Arbiter 독자 제목 생성 금지
+            # 🚨 P0-3: Arbiter 독자 제목 생성 금지
             # Decoder와 Verifier 모두 title을 식별하지 못했는데 Arbiter가 독자적으로 제목을 만들어낸 경우 차단
             if decision.get("official_title") or decision.get("official_novel_title"):
                 arbiter_title_raw = decision.get("official_title") or decision.get("official_novel_title")
@@ -5985,7 +5985,7 @@ class ArbiterExpert:
                                     file=sys.stderr
                                 )
 
-            # �️ 아키타입 용어 가드: Decoder가 차단한 아키타입 제목을 Arbiter가 재도입하는 것 방지
+            # 아키타입 용어 가드: Decoder가 차단한 아키타입 제목을 Arbiter가 재도입하는 것 방지
             final_title = decision.get("official_title") or decision.get("official_novel_title")
             if final_title and decoder_out:
                 blocked_archetypes = set()
@@ -6041,8 +6041,8 @@ class ArbiterExpert:
                             final_title = None
                             break
 
-            # 🚨 P0-4: 포스트 제목 도용 방지
-            # official_title이 분석 대상 포스트의 제목과 높은 유사도면 차단
+            # 🚨 P0-4: 게시글 제목 도용 방지
+            # official_title이 분석 대상 게시글의 제목과 매우 비슷하면 차단
             final_title = decision.get("official_title") or decision.get("official_novel_title")
             if final_title and post_data:
                 post_title = post_data.get("title", "")
@@ -6175,7 +6175,7 @@ class ArbiterExpert:
                     _meme_signals += 1
                     _meme_details.append("dt=meme")
 
-                # (5) evidence_bucket에 post_spans가 0 → 포스트 자체엔 증거 없음
+                # (5) evidence_bucket에 post_spans가 0 → 게시글 자체엔 증거 없음
                 _bucket_meme = {}
                 if hasattr(ctx, "get_candidate_evidence"):
                     try:
@@ -6200,7 +6200,7 @@ class ArbiterExpert:
 
                 # 3개 이상 밈 신호 → FP 가능성 높음
                 # ★핵심 변경: 검색 결과 기반 _has_strong_title_support 대신
-                # 포스트 로컬 증거만 체크 — 소설이 실제 존재해도 포스트가 밈이면 차단
+                # 게시글 자체의 증거만 확인 — 소설이 실제로 있어도 게시글이 밈이면 차단
 
                 _abbrev_meme_exempt = False
                 if _meme_signals >= 3 and final_title:
@@ -6288,7 +6288,7 @@ class ArbiterExpert:
                         )
 
                 if _meme_signals >= 3 and not _abbrev_meme_exempt and not _verified_alias_meme_exempt:
-                    # 포스트 로컬 강 증거: 본문에 해당 소설의 줄거리/캐릭터/URL이 직접 등장
+                    # 게시글 자체의 강한 증거: 본문에 해당 소설의 줄거리/캐릭터/URL이 직접 등장
                     _has_post_local_evidence = bool(
                         _has_platform_url_in_post  # 본문에 소설 플랫폼 URL
                         or _post_spans_count >= 2   # 본문에서 2건 이상 직접 증거
@@ -6525,7 +6525,7 @@ class ArbiterExpert:
                     file=sys.stderr,
                 )
 
-            # 🧠 비하드코딩 최종 보정: 전문가 가설 점수 기반으로 담론 타입 재검증
+            # 🧠 하드코딩 없는 최종 보정: 전문가 가설 점수로 담론 유형을 다시 검증
             _hypothesis_board = self._apply_hypothesis_guard(
                 ctx=ctx,
                 decision=decision,
@@ -7806,7 +7806,7 @@ class ArbiterExpert:
                 return
         if not decoder_has_platform_url:
             print(
-                f"[{_ts()}][{self.emoji}] ⚠️ 포스트 제목 도용 감지: "
+                f"[{_ts()}][{self.emoji}] ⚠️ 게시글 제목 도용 감지: "
                 f"official_title='{final_title}' ≈ post_title='{post_title}' "
                 f"(sim={sim:.2f}) → null 강제",
                 file=sys.stderr
@@ -8201,9 +8201,9 @@ class ArbiterExpert:
 
     def _has_official_title_evidence(self, ctx: "ConversationContext", title: Optional[str]) -> bool:
         """
-        Arbiter 경로용 얇은 official-title evidence helper.
-        AgenticPipeline의 richer helper만큼 정밀하진 않아도,
-        최소한 공식 플랫폼 상세/페치 기반 title support 여부는 일관되게 판단한다.
+        Arbiter 경로에서 쓰는 간단한 official-title 근거 확인 helper.
+        AgenticPipeline의 더 정교한 helper만큼 정밀하지는 않지만,
+        공식 플랫폼 상세 페이지·페치 근거가 title을 뒷받침하는지는 일관되게 판단한다.
         """
         title_raw = str(title or "").strip()
         if not title_raw:
@@ -9133,7 +9133,7 @@ class ArbiterExpert:
         return False
 
     def _sanitize_site_noise_title(self, title: str) -> str:
-        """검색/커뮤니티 접두·접미가 섞인 제목을 코어 작품명으로 정제."""
+        """검색/커뮤니티 접두·접미가 섞인 제목을 핵심 작품명으로 정제."""
         import re
 
         if not isinstance(title, str):
@@ -9163,7 +9163,7 @@ class ArbiterExpert:
         raw = re.sub(r"^\s*블라인드\s*\|\s*", "", raw)
         raw = re.sub(r"^\s*[^:]{0,40}\s*종토방:\s*", "", raw)
 
-        # "A - B - 사이트" 형태에서 사이트/게시판 토큰을 제외한 가장 타이틀다운 파트를 선택
+        # "A - B - 사이트" 형태에서 사이트/게시판 토큰을 뺀 나머지 중 가장 제목다운 부분을 고른다
         def _pick_candidate(parts: list[str]) -> str:
             for p in reversed(parts):
                 p = p.strip()

@@ -1,7 +1,7 @@
-"""고정 R1 관측의 후보 회수·선택 평가. 파일 IO와 공개 권한은 없다.
+"""고정한 R1 측정 결과로 후보 회수·선택을 평가한다. 파일 IO와 공개 권한은 없다.
 
 corpus/CandidateOption/reference ID는 명시 매핑만 사용한다. 운영 회수율은
-모든 lane에 같은 WORK 분모를 쓰며 실패·미완료를 성공 관측으로 바꾸지 않는다.
+모든 lane에 같은 WORK 분모를 쓰며 실패·미완료를 성공으로 바꿔 세지 않는다.
 """
 from __future__ import annotations
 
@@ -121,7 +121,7 @@ def _metric(numerator: float, denominator: int, *, unavailable: bool = False) ->
 
 
 def observation_from_saved_shadow(snapshot_row: Mapping[str, Any], lane_name: str = "bm25") -> dict:
-    """저장 receipt를 같은 R1 행에 결속해 평가 view로 바꾼다. 누락은 성공이 아니다."""
+    """저장된 receipt를 같은 R1 행과 연결해 평가 view로 바꾼다. 누락은 성공이 아니다."""
     _text(lane_name, "lane_name")
     coordinate = snapshot_row.get("coordinate") or {}
     meta = (snapshot_row.get("saved_row") or {}).get("run_meta") or {}
@@ -272,7 +272,7 @@ def _summarize(rows: list[dict], lane_names: tuple[str, ...], *, invalid: bool) 
 def evaluate_candidate_retrieval(snapshot: Mapping[str, Any], observations: Sequence[Mapping[str, Any]], *,
                                  corpus: Mapping[str, Any], id_mapping: Mapping[str, Any],
                                  lane_names: Sequence[str]) -> dict[str, Any]:
-    """R1 pure-builder snapshot과 고정 corpus의 명시 관측만 평가한다.
+    """R1 pure-builder snapshot과 고정 corpus에 명시된 측정 결과만 평가한다.
 
     lane union@K는 각 lane top-K 합집합이다. 실패/미완료 lane은 0 hit이며
     해당 행을 WORK 분모에서 제거하지 않는다. 선택 평가는 공개 허용 평가가 아니다.

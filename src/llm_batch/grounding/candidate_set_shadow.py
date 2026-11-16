@@ -1256,7 +1256,7 @@ def _candidate_generation_metadata(
             raise ValueError("candidate generation proof does not bind plan/receipt set")
         if stored_proof.status == "COMPLETE":
             return "COMPLETE", None
-    # Producer proof가 없거나 UNKNOWN/TRUNCATED이면 recall 계산을 열지 않는다.
+    # Producer proof가 없거나 UNKNOWN/TRUNCATED이면 recall을 계산하지 않는다.
     # Producer-level loss는 하나의 CandidateSet cap으로 환산할 수 없으므로
     # local cap TRUNCATED가 아닌 경우 CandidateSet 상태는 UNKNOWN으로 남긴다.
     return "UNKNOWN", title_cap if title_snapshot_present else local_cap

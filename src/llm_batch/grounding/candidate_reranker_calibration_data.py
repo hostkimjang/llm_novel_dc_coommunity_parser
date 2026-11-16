@@ -1,9 +1,9 @@
-"""CAL 전용 raw-event 자료형. 출처 검산은 bridge, temperature 학습은 solver가 맡는다.
+"""CAL 전용 raw-event 자료형. 출처 확인은 bridge, temperature 학습은 solver가 맡는다.
 
 공개 API: CalibrationFitEvent.create(**kwargs), .validate(), .to_dict(),
 .from_dict(dict); validate_calibration_fit_events(events, *, expected_example_ids=None)
 -> tuple[CalibrationFitEvent, ...]; calibration_event_set_sha256(events) -> str.
-자료형의 자체 SHA는 바이트 결속이며 정답·출처 선언의 진실을 인증하지 않는다.
+자료형의 자체 SHA는 바이트를 고정할 뿐 정답·출처 선언이 사실인지 인증하지 않는다.
 """
 from __future__ import annotations
 
@@ -111,7 +111,7 @@ class CalibrationFitEvent:
 
     @classmethod
     def create(cls, **kwargs) -> "CalibrationFitEvent":
-        """현재 CAL event 계약을 정규화해 봉인한다. raw 점수에서 정답을 추측하지 않는다."""
+        """현재 CAL event 계약을 정규화해 고정한다. raw 점수에서 정답을 추측하지 않는다."""
         payload = dict(kwargs)
         _require("event_sha256" not in payload, "EVENT_SHA_MUST_BE_COMPUTED")
         payload.setdefault("split", "CALIBRATION")
@@ -173,7 +173,7 @@ class CalibrationFitEvent:
 
 
 def validate_calibration_fit_events(events, *, expected_example_ids=None) -> tuple[CalibrationFitEvent, ...]:
-    """CAL 전체 집합 검산용 공통 helper. 순서·중복·동일 고정 모델을 보존한다."""
+    """CAL 전체 집합 확인용 공통 helper. 순서·중복·동일 고정 모델을 보존한다."""
     _require(type(events) in (list, tuple) and 1 <= len(events) <= MAX_EVENTS, "CAL_EVENT_COUNT_LIMIT")
     result = tuple(events)
     _require(all(isinstance(event, CalibrationFitEvent) for event in result), "TYPED_CAL_EVENT_REQUIRED")

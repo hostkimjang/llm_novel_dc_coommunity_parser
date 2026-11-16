@@ -85,7 +85,7 @@ class GatekeeperExpert:
         
         # Build post JSON for prompt
         post_json = self._build_post_json(post, comments)
-        # 원본 OCR catalog와 원시 packet은 보존한다. 첫 모델 입력에서만 미결속 이름을 분리한다.
+        # 원본 OCR catalog와 원시 packet은 보존한다. 첫 모델 입력에서만 근거가 연결되지 않은 이름을 분리한다.
         deferred_identity, prompt_images = [], []
         image_names_by_url = {}
         enrichment_names = []
@@ -226,7 +226,7 @@ class GatekeeperExpert:
     def _image_identity_has_author_reference(
         title: str, content: List[str], item: Dict[str, Any],
     ) -> bool:
-        """원문 고유 제목 또는 이미지 정체성 질문만 이름의 첫 소비를 허용한다."""
+        """원문에 고유 제목이 있거나 이미지 정체를 묻는 질문이 있을 때만 이름을 처음 쓰도록 허용한다."""
         author_lines = [
             line.strip() for part in [title, *content] for line in str(part).splitlines()
             if line.strip() and not line.lstrip().startswith((">", '"', "“", "‘"))
@@ -239,7 +239,7 @@ class GatekeeperExpert:
                         + r"(?=$|[^0-9A-Za-z가-힣]|(?:은|는|이|가|을|를|의|도|만|에서|에게|로|와|과)(?=$|[^0-9A-Za-z가-힣]))")
         if len(name) >= 4 and re.search(name_pattern, author_text, re.I):
             return True
-        # 표지변경 알림/이미지 감상은 주제 근거일 수 있어도 제목-약어 proof는 아니다.
+        # 표지변경 알림/이미지 감상은 주제 근거일 수 있어도 제목-약어 증거는 아니다.
         # 같은 원문 절의 이미지 지시 + 정체성 대상 + 질문/요청 술어만 허용한다.
         for clause in re.findall(r"[^.!。?？\n]+[?？]?", author_text):
             if re.search(r"(?:라고|냐고|인가고|뭐라고)\s*(?:물|질문|말)|(?:질문|말)(?:은|이)\s", clause):
@@ -1039,7 +1039,7 @@ class GatekeeperExpert:
         """
         코드 레벨 후처리: 댓글 중 제목 답변으로 보이는 것을 possible_titles에 추가.
         
-        플랫폼 판별은 하지 않음 — 그것은 검색 결과를 가진 후속 단계에서 처리.
+        플랫폼 판별은 하지 않음 — 검색 결과가 있는 후속 단계에서 처리.
         여기서는 순수하게 "댓글이 제목을 답변한 것 같은가"만 판단.
         """
         detected = result.get("detected_entities") or {}
@@ -1537,7 +1537,7 @@ class GatekeeperExpert:
         
         FP 패턴 대응:
         - "글 쓰고 보니까" (제목만 있고 본문은 이미지만) → LLM이 work_discussion으로 분류
-        - 이미지만 있는 포스트는 소설 작품 논의가 아닐 가능성 매우 높음
+        - 이미지만 있는 게시글은 소설 작품 논의가 아닐 가능성이 매우 높음
         """
         image_enrichment = [
             item for item in (post.get("image_enrichment") or [])
@@ -1778,9 +1778,9 @@ class GatekeeperExpert:
         🆕 회차 번호 감지 (N화/N회/N일차 등)
         
         "수호룡 550화", "■■세계 1234회", "방티알 1034일차" 등의 패턴.
-        회차 숫자가 있으면 "연재 작품 논의"가 거의 확실한 강력한 앵커 신호.
+        회차 숫자가 있으면 "연재 작품 논의"가 거의 확실하므로 강한 앵커 신호로 본다.
         
-        결과에 has_episode_reference=True, episode_info={} 를 context_clues에 추가.
+        context_clues에 has_episode_reference=True와 episode_info={}를 추가.
         """
         from ..domain.rules import EPISODE_NUMBER_PATTERN
         
@@ -2168,7 +2168,7 @@ class GatekeeperExpert:
     ) -> Dict[str, Any]:
         """
         플랫폼 기능/장애 불만형 게시글을 구조적으로 감지해
-        작품명 탐색 과확장을 줄인다.
+        작품명 탐색이 지나치게 넓어지지 않게 한다.
         """
         import re
 

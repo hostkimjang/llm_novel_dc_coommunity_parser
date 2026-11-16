@@ -1,8 +1,8 @@
-"""CAL 전체 사건 집합의 bounded temperature 학습과 v2 증거 재검산.
+"""CAL 전체 사건 집합으로 bounded temperature를 학습하고 v2 증거를 다시 확인한다.
 
 후보 및 NIL 모델은 고정한다. CAL 정답으로 양의 inverse temperature만
 최적화하며 정책의 임계값과 FROZEN 자료는 최적화에 사용하지 않는다.
-저장 증거의 결정적 replay는 수치 결과의 검산이지 새로운 학습 실행이나
+저장 증거의 결정적 replay는 수치 결과를 다시 확인하는 것이지 새로운 학습 실행이나
 원문/주석의 독립적인 진실 확인을 뜻하지 않는다. 파일 및 외부 I/O는 없다.
 """
 from __future__ import annotations
@@ -281,7 +281,7 @@ def fit_temperature(events, *, split_manifest: CalibrationSplitManifest,
                     policy: CalibrationEvaluationPolicy, config=None) -> dict:
     """외부 manifest의 CAL 전체 순서가 맞을 때만 v2 fit artifact를 반환한다.
 
-    입력 events는 bridge가 결속한 CalibrationFitEvent 목록/튜플이다. 누락행,
+    입력 events는 bridge가 연결한 CalibrationFitEvent 목록/튜플이다. 누락 행,
     순서 변경, 혼합 모델, 불명 정답을 제외해 성공으로 만드는 경로는 없다.
     CAL raw score 생성은 이 함수의 책임이 아니며, 모델 파라미터는 변경하지 않는다.
     """
@@ -317,7 +317,7 @@ def fit_temperature(events, *, split_manifest: CalibrationSplitManifest,
 
 
 def validate_fit_evidence(evidence, receipt, *, split_manifest=None, policy=None, artifact=None) -> None:
-    """저장된 v2 증거·외부 좌표·결정적 수치 결과를 재검산한다. I/O/재학습은 없다.
+    """저장된 v2 증거·외부 좌표·결정적 수치 결과를 다시 확인한다. I/O나 재학습은 없다.
 
     v2 receipt/Artifact validator를 다시 호출하지 않는다. typed v1 receipt로
     기존 CAL/DEV gate만 재사용하므로 legacy 소비 경로에서 호출해도 재귀하지 않는다.

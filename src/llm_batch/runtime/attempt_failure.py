@@ -1,4 +1,4 @@
-"""실패 관측만 보존한다. 공개 원장·결과·provider 호출을 수행하지 않는다."""
+"""실패 기록만 남긴다. 공개 원장·결과를 쓰거나 provider를 호출하지 않는다."""
 from __future__ import annotations
 
 import hashlib
@@ -109,7 +109,7 @@ def record_attempt_failure(*, state: dict, error: BaseException, manifest_path: 
         input_sha256: str | None, total: int, flushed: int, pending: int, failed: int,
         parallel_count: int, started_at_epoch: float, shutdown_status: str,
         attempt_configuration: dict, monitor: Any = None) -> None:
-    """코어 예외 관측과 OS 종료 관측은 다르다. exit code는 runner만 채운다."""
+    """코어가 잡은 예외와 OS가 알린 프로세스 종료는 다르다. exit code는 runner만 채운다."""
     state["shutdown_status"] = shutdown_status
     if "failure_observed_at_epoch" not in state:
         state["failure_observed_at_epoch"] = time.time()
@@ -140,7 +140,7 @@ def record_attempt_failure(*, state: dict, error: BaseException, manifest_path: 
         "reason_code": "CORE_EXCEPTION", "message": f"{type(error).__name__}: {error}"[:1000],
         "exit_code": None, "process_exited": False,
         "started_at_epoch": started_at_epoch,
-        # 화면 elapsed의 실패 관측 경계이며 프로세스 종료 시각이라고 주장하지 않는다.
+        # 화면 elapsed에서 실패를 확인한 시점이며, 프로세스 종료 시각을 뜻하지 않는다.
         "ended_at_epoch": state["failure_observed_at_epoch"],
         "manifest_counts": counts, "receipt_ref": state.get("failure_ref"),
         "shutdown_status": shutdown_status,

@@ -183,9 +183,9 @@ def _affirmative_clause(text, match, quote_ranges):
 
 
 def candidate_alias_relation(ctx, title, alias, *, rows=None):
-    """현재 원문 alias와 같은 외부 필드의 명명 관계를 재검산해 비권한 증거로 반환한다.
+    """현재 원문 alias와 같은 외부 필드의 명명 관계를 다시 확인해 권한 없는 참고 증거로 반환한다.
 
-    재호출 때 원문·row·필드·URL·span을 새로 읽으며 캐시나 등록을 수행하지 않는다.
+    다시 호출할 때마다 원문·row·필드·URL·span을 새로 읽고, 캐시하거나 등록하지 않는다.
     서로 다른 작품의 경쟁 선언은 각각 후보 증거일 뿐 어느 쪽의 공개 승인도 아니다.
     """
     if (not isinstance(title, str) or not 2 <= len(title.strip()) <= 240

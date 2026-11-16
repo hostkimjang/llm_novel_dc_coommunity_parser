@@ -4,7 +4,7 @@
 revocation snapshot을 run/packet/protected root 밖에서 읽고, 그 anchor 안의 key로
 기존 owner-root preauthorization HMAC을 검증한 뒤 nonce를 ``O_EXCL`` 파일로 한 번만
 소비한다. nonce 파일은 완전히 기록되기 전에 장애가 나더라도 남겨 두어 재시도를
-fail-close 한다.
+차단한다.
 
 다만 trust store 경로와 시스템 wall clock은 caller/로컬 환경이 선택한 값이다.
 따라서 실제 파일 읽기, store-key 서명 검증, nonce 소비 사실만 증명하며 외부 trust,

@@ -74,7 +74,7 @@ def _sanitize_non_korean_text(
     path: str = "",
 ) -> tuple[Any, int]:
     """
-    LLM 출력 문자열에 중국어 한자/중문장이 섞이는 경우를 완화한다.
+    LLM 출력 문자열에 중국어 한자나 중국어 문장이 섞이는 문제를 줄인다.
     - URL 필드는 원문 유지
     - 한자 포함 문자열은 한자 제거 후 공백 정리
     - 제거 후 빈 문자열이면 안전한 한국어 대체문으로 치환
@@ -124,7 +124,7 @@ def _sanitize_non_korean_text(
 
 def _extract_first_complete_json(text: str) -> str | None:
     """
-    텍스트에서 첫 번째 완전한 JSON 객체를 브라켓 카운팅으로 추출합니다.
+    괄호 짝을 세어 텍스트에서 첫 번째 완전한 JSON 객체를 추출합니다.
     
     LLM이 같은 JSON을 여러 번 반복 출력하는 경우, rfind("}")로는 불완전한
     마지막 복사본의 }를 잡게 됩니다. 이 함수는 첫 번째 완전한 {} 쌍을 추출합니다.
@@ -174,7 +174,7 @@ def _extract_first_complete_json(text: str) -> str | None:
                     )
                 return candidate
     
-    return None  # 완전한 객체 없음 (열린 괄호 미닫힘)
+    return None  # 완전한 객체 없음 (닫히지 않은 괄호가 남음)
 
 
 _MALFORMED_STRING_SUFFIX_RE = re.compile(
@@ -315,7 +315,7 @@ def _try_repair_json(broken: str) -> Dict[str, Any]:
 
 
 def _sanitize_arrays(obj: Any, path: str = "") -> Any:
-    """재귀적으로 JSON 객체 내 모든 배열의 반복 루프를 감지·절삭하고 중복을 제거합니다."""
+    """JSON 객체 안의 모든 배열을 재귀적으로 살펴 반복 루프를 감지해 잘라내고 중복을 제거합니다."""
     if isinstance(obj, dict):
         return {k: _sanitize_arrays(v, f"{path}.{k}") for k, v in obj.items()}
     elif isinstance(obj, list):
@@ -351,7 +351,7 @@ def _sanitize_arrays(obj: Any, path: str = "") -> Any:
                     )
                     obj = deduped
         
-        # (2) 길이 절삭
+        # (2) 최대 길이를 넘는 부분 잘라내기
         if len(obj) > max_len:
             print(
                 f"[utils] ⚠️ 배열 반복 루프 감지: {path} ({len(obj)}개 → {max_len}개 절삭)",
@@ -523,7 +523,7 @@ def _top_domains_from_results(
     results: List[Dict[str, Any]],
     max_domains: int = 5,
 ) -> List[tuple[str, int]]:
-    """검색 결과에서 도메인 빈도 상위 N개를 반환."""
+    """검색 결과에 자주 나온 도메인 상위 N개를 반환."""
     if not results:
         return []
     counts: Dict[str, int] = {}
@@ -557,7 +557,7 @@ def build_search_aggregation_summary(
 ) -> str:
     """
     LLM 프롬프트에 주입할 검색 집계 요약 블록을 생성한다.
-    - 코드 레벨 집계(search_query_stats) + 결과 분포(도메인) + 실행 쿼리 샘플을 압축 제공
+    - 코드에서 집계한 검색 통계(search_query_stats), 결과의 도메인 분포, 실행한 쿼리 샘플을 압축해 제공
     """
     if ctx is None:
         return ""
@@ -655,7 +655,7 @@ def build_search_aggregation_summary(
         dom_text = ", ".join(f"{d}({c})" for d, c in top_domains)
         lines.append(f"- top_domains: {dom_text}")
     if recent_queries:
-        # 쿼리 한 줄 길이 과도 증가 방지
+        # 쿼리 목록 한 줄이 지나치게 길어지지 않게 한다
         q_text = " | ".join(recent_queries)
         if len(q_text) > 360:
             q_text = q_text[:360] + "..."
@@ -707,7 +707,7 @@ def _detect_domain_groups(text: str) -> set:
 
 def _has_domain_conflict_for_mapping(source_term: str, candidate_title: str) -> bool:
     """
-    source_term과 candidate_title 간 세계관 도메인 충돌 판정.
+    source_term과 candidate_title의 세계관 도메인이 충돌하는지 판정.
     source가 도메인 A이고 candidate가 충돌 도메인 B에만 속하면 True.
     """
     src_groups = _detect_domain_groups(source_term)

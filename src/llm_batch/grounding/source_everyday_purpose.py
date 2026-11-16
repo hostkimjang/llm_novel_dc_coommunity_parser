@@ -7,7 +7,7 @@ def _everyday_author(u):
 
 
 def _everyday_pair(a, b):
-    # 표시명이 아니라 기존 native 문서와 저자 원장 객체로만 결속한다.
+    # 표시명이 아니라 기존 native 문서와 저자 원장 객체로만 연결한다.
     same_carrier = (_everyday_author(a) and _everyday_author(b)
             and a.proof.document_object is b.proof.document_object
             and a.proof.manifest_object is b.proof.manifest_object

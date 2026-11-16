@@ -4,7 +4,7 @@
 기존 learned preselection example의 네 필드이며 source_binding_sha256은
 evidence_payloads 안의 별도 JSON 바이트를 가리킨다. 그 JSON은 아래
 ``_source_binding``의 exact projection이다. 공급자가 선언한 원문과 구형 graph의
-연결을 바이트로 검산하며, 그 선언의 진실이나 상류 열거 완전성을 독립 입증하지
+연결을 바이트 단위로 확인하며, 그 선언의 진실이나 상류 열거 완전성을 독립 입증하지
 않는다. 일반 R2 runtime에 graph를 발명하거나 자동 삽입하지 않는다.
 
 학습 manifest(TRAIN 포함)와 calibration manifest(TRAIN 제외)는 별도 SHA
@@ -169,7 +169,7 @@ def resolve_example_semantic_input(example, row, source_payloads, evidence_paylo
 
 
 def validate_semantic_receipt(receipt, view, summary, semantic_input=None):
-    """점수·실패 모두 소비 상태를 검산하고 공급된 artifact와 실제 소비 지문을 대조한다."""
+    """점수와 실패 모두 소비 상태를 확인하고 공급된 artifact와 실제 소비 지문을 대조한다."""
     fields = semantic_model_fields(summary)
     if not fields:
         _require(not any(k in receipt for k in (*SEMANTIC_MODEL_FIELDS,
@@ -313,7 +313,7 @@ def _prepare_context(*, scorer_summary: dict,
         expected_training_manifest_sha256: str, calibration_manifest: CalibrationSplitManifest,
         expected_calibration_manifest_sha256: str, source_payloads: Mapping[str, bytes],
         evidence_payloads: Mapping[str, bytes]) -> dict:
-    """전체 분할과 모델을 batch당 한 번 검산한다. 원본 자료를 수정하지 않는다."""
+    """전체 분할과 모델을 batch당 한 번 확인한다. 원본 자료를 수정하지 않는다."""
     _require(isinstance(calibration_manifest, CalibrationSplitManifest), "TYPED_GRAPH_REQUIRED")
     manifest, summary = map(_copy, (training_manifest, scorer_summary))
     _require(type(manifest) is dict and type(summary) is dict, "OBJECT_REQUIRED")
@@ -338,7 +338,7 @@ def _validate_bound_event(context: dict, *, example: dict, raw_receipt: dict,
         base_shadow: SelectiveShadowDecision, generation_proof: CandidateGenerationProof,
         retrieval_state: RetrievalState, publication_scope_id: str, source_binding_sha256: str,
         required_split: str) -> dict:
-    """CAL/FROZEN의 동일 원문·후보·점수·graph 검산. 정답은 점수와 분리한다."""
+    """CAL/FROZEN이 같은 원문·후보·점수·graph를 쓰는지 확인한다. 정답은 점수와 분리한다."""
     _require(isinstance(base_shadow, SelectiveShadowDecision)
              and isinstance(generation_proof, CandidateGenerationProof)
              and isinstance(retrieval_state, RetrievalState), "TYPED_GRAPH_REQUIRED")
@@ -445,7 +445,7 @@ def build_calibration_fit_events(rows, expected_example_ids, *, scorer_summary: 
     rows는 example/raw_receipt/base_shadow/generation_proof/retrieval_state/
     publication_scope_id/source_binding_sha256의 exact 7필드 목록이다.
     CAL example_id 오름차순을 외부 expected_example_ids 및 rows 순서와 대조한다.
-    원문 fragment/후보 순서는 각 행에서 그대로 검산하며 다시 정렬하지 않는다.
+    원문 fragment/후보 순서는 각 행에서 그대로 확인하며 다시 정렬하지 않는다.
     """
     _require(type(rows) in (list, tuple) and 1 <= len(rows) <= MAX_EVENTS, "CAL_ROW_COUNT_LIMIT")
     _require(type(expected_example_ids) in (list, tuple) and 1 <= len(expected_example_ids) <= MAX_EVENTS

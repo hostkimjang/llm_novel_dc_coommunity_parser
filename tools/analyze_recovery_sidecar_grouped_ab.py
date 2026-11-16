@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""32개 frozen recovery sidecar BEFORE/OFF ↔ AFTER/AUDIT_ONLY 3회 관측을 분석한다.
+"""32개 frozen recovery sidecar BEFORE/OFF ↔ AFTER/AUDIT_ONLY 3회 반복 측정을 분석한다.
 
-공개 결정의 권한은 source-owner PublicationDecisionCommit과 각 관측 행의
-publication_shadow_observation_v1 영수증뿐이다. 관측 실행의 CLI identity는
-제목/품질 관측치로만 사용하며 권한 승격 근거로 사용하지 않는다.
+공개 결정 권한은 source-owner PublicationDecisionCommit과 각 측정 행의
+publication_shadow_observation_v1 기록에만 있다. 측정 실행의 CLI identity는
+제목/품질 측정값으로만 쓰며 권한 승격 근거로 쓰지 않는다.
 """
 from __future__ import annotations
 
@@ -937,13 +937,13 @@ def main() -> int:
         action="append",
         default=[],
         metavar="REPEAT:ARM:OUTPUT_JSON",
-        help="측정 실패 arm을 원본 보존 replacement output으로 명시적으로 대체",
+        help="측정에 실패한 arm을 원본을 보존한 replacement output으로 명시적으로 대체",
     )
     parser.add_argument("--replacement-policy", type=Path, default=None)
     parser.add_argument(
         "--independent-call-readback",
         action="store_true",
-        help="선택된 6개 immutable call ledger를 독립 재판독해 actual KPI를 결속",
+        help="선택한 immutable call ledger 6개를 독립적으로 다시 읽어 actual KPI와 연결",
     )
     args = parser.parse_args(); output = args.output_dir or args.root / "grouped_analysis"
     try:

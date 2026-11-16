@@ -38,7 +38,7 @@ def resolve_community_knowledge_settings(args: Any, environment: Mapping[str, st
 
 
 def prepare_community_knowledge(settings: Mapping[str, Any]):
-    """OFF는 저장소 모듈을 import하거나 파일을 읽지 않는다. 손상 snapshot은 명시적 미가용이다."""
+    """OFF는 저장소 모듈을 import하거나 파일을 읽지 않는다. 손상된 snapshot은 사용할 수 없음으로 명시한다."""
     if settings["mode"] == "OFF":
         return None
     if settings["mode"] != "READ_ONLY":
@@ -64,7 +64,7 @@ def community_knowledge_policy_fields(snapshot: Any, settings: Mapping[str, Any]
 
 
 def community_knowledge_decision_fields(snapshot: Any) -> dict:
-    """모델 입력을 바꾸는 snapshot/config를 WAL 판정 범위에 결속한다. OFF의 기존 지문은 유지한다."""
+    """모델 입력을 바꾸는 snapshot/config를 WAL 판정 범위에 포함한다. OFF의 기존 지문은 유지한다."""
     if snapshot is None:
         return {}
     summary = copy.deepcopy(snapshot.summary())

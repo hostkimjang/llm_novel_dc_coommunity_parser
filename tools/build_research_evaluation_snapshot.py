@@ -1,4 +1,4 @@
-"""저장 자료 평가 snapshot 생성과 자체 해시 검산 CLI."""
+"""저장 자료 평가 snapshot 생성과 자체 해시 검증 CLI."""
 from __future__ import annotations
 
 import argparse

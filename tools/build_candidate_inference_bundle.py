@@ -17,7 +17,7 @@ def build_bundle(*, scorer_summary, artifact, calibration_manifest, policy, corp
     """파일 인수는 {path,sha256,bytes}. source_files는 raw SHA→동일 참조다.
 
     새 온도 학습이나 model score를 호출하지 않는다. 이미 학습된 artifact의
-    고정 CAL 수치 재생 검산은 수행하며 입력과 기존 출력은 변경하지 않는다.
+    고정 CAL 수치는 재생해 검증하며 입력과 기존 출력은 변경하지 않는다.
     """
     from tools import run_candidate_reranker_training as local
     from src.llm_batch.runtime.candidate_inference import (

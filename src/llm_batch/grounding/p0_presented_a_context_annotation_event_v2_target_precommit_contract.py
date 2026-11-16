@@ -2,7 +2,7 @@
 
 annotation subject V2의 13개 raw lineage를 검증한 뒤, 판정값ㆍreviewerㆍevent
 payload 없이 20개 annotation opportunity target만 결정적으로 고정한다. 결과
-taxonomy는 공통 response-schema commitment 한 개로만 precommit에 결박된다.
+taxonomy는 공통 response-schema commitment 한 개로만 precommit에 묶인다.
 """
 
 from __future__ import annotations

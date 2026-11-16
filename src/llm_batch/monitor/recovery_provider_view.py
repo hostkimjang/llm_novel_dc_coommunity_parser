@@ -1,4 +1,4 @@
-"""별도 provider 근거 보고서의 파일·base 결속만 읽는다. GET은 실행하지 않는다."""
+"""별도 provider 근거 보고서의 파일·base 연결만 읽는다. GET은 실행하지 않는다."""
 from __future__ import annotations
 
 import json
@@ -21,13 +21,13 @@ def _view_path(output: Path) -> Path:
 
 
 def _check_report(report: dict, base: dict) -> None:
-    # 이 검산은 순수 보고서 schema/self SHA 확인이다. 원장·key 판독이 아니다.
+    # 이 확인은 보고서 schema/self SHA만 본다. 원장·key를 읽어 검증하지 않는다.
     from ..measurement.recovery_provider_readback import validate_provider_report
 
     validate_provider_report(report)
     if (type(report) is not dict or report.get("schema_version") != "recovery_provider_report_v1"
             or type(base) is not dict or canonical_sha256(report.get("base")) != canonical_sha256(base)):
-        raise ValueError("provider 보고서와 원래 판정 결속 불일치")
+        raise ValueError("provider 보고서와 원래 판정의 연결 정보 불일치")
     fixed = {"guard_status": "GUARD_NOT_EVALUATED", "remote_provider_dispatch_count": None,
              "remote_provider_dispatch_status": "UNKNOWN", "public_apply": False,
              "publication_authority": False, "central_db_write": False,
@@ -47,14 +47,14 @@ def _check_manifest(manifest: dict, base: dict, output: Path) -> None:
 
 
 def publish_recovery_provider_view(bound_plan, report_path: str | Path, *, root: str | Path) -> dict:
-    """고정 원본과 검산된 보고서를 별도 companion으로 연결한다. 덮어쓰지 않는다."""
+    """고정 원본과 검증된 보고서를 별도 companion으로 연결한다. 덮어쓰지 않는다."""
     from ..measurement.recovery_provider_contract import BoundRecoveryProviderPlan
     from ..measurement.recovery_provider_readback import build_provider_report
 
     if type(bound_plan) is not BoundRecoveryProviderPlan:
-        raise ValueError("검산된 provider 계획이 필요합니다")
+        raise ValueError("검증된 provider 계획이 필요합니다")
     if bound_plan.verify_protected_sources() is not True:
-        raise ValueError("provider 원본 보호 검산 실패")
+        raise ValueError("provider 원본 보호 확인 실패")
     root = Path(root).resolve()
     plan, base = bound_plan.plan, bound_plan.base
     output = _safe(Path(plan["source_refs"]["result"]["path"]), root)
@@ -67,7 +67,7 @@ def publish_recovery_provider_view(bound_plan, report_path: str | Path, *, root:
     if report["plan_sha256"] != plan["plan_sha256"] or report["data_kind"] != bound_plan.data_kind:
         raise ValueError("provider 보고서 계획·자료 종류 불일치")
     if canonical_sha256(report) != canonical_sha256(build_provider_report(bound_plan)):
-        raise ValueError("provider 저장 보고서와 원장·응답 재판독 불일치")
+        raise ValueError("provider 저장 보고서와 원장·응답을 다시 읽은 결과 불일치")
     result_raw = _read_ref(plan["source_refs"]["result"], root, SOURCE_LIMIT)
     manifest_raw = _read_ref(plan["source_refs"]["manifest"], root, SOURCE_LIMIT)
     _check_manifest(read_strict_json(manifest_raw, maximum_bytes=SOURCE_LIMIT), base, output)
@@ -90,7 +90,7 @@ def publish_recovery_provider_view(bound_plan, report_path: str | Path, *, root:
             stream.flush()
             os.fsync(stream.fileno())
     if _read(target, root, REFERENCE_LIMIT) != raw:
-        raise ValueError("provider 표시 참조 저장 검산 실패")
+        raise ValueError("provider 표시 참조 저장 후 확인 실패")
     if bound_plan.verify_protected_sources() is not True or _read(report_path, root, REPORT_LIMIT) != report_raw:
         raise ValueError("provider 표시 저장 중 원본 또는 보고서 변경")
     return _ref(target, raw)
@@ -119,7 +119,7 @@ def read_recovery_provider_view(output_path: str | Path, root: str | Path, *, it
         _check_report(report, ref["base"])
         _check_manifest(manifest, ref["base"], output)
         if _read(target, root, REFERENCE_LIMIT) != raw:
-            raise ValueError("판독 중 provider 참조 변경")
+            raise ValueError("읽는 중 provider 참조 변경")
         view = {**result, "binding_status": "BOUND", "reason_codes": [], "report": report}
         return bind_recovery_provider_view_row(view, item) if item is not None else view
     except (OSError, ValueError, KeyError, TypeError, RecursionError):
@@ -146,7 +146,7 @@ def bind_recovery_provider_view_row(view: dict, item: dict) -> dict:
                     type(receipt.get(field)) is not type(base[field]) or receipt.get(field) != base[field]
                     for field in ("publication_scope_id", "input_index", "post_id", "publication_decision_id",
                                   "stable_result_sha256", "public_projection_sha256"))):
-                raise ValueError("행 검토 수령증과 provider base 불일치")
+                raise ValueError("행 검토 기록과 provider base 불일치")
         return view
     except (OSError, ValueError, KeyError, TypeError, RecursionError):
         return {**result, "binding_status": "INVALID", "reason_codes": ["PROVIDER_REFERENCE_OR_BASE_INVALID"]}

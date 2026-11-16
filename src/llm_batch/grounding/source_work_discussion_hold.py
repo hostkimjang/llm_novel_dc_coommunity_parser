@@ -10,7 +10,7 @@ from .context_projection_contract import _author_line_clauses, _author_clause_cu
 
 
 def marked_work_reading_hold(post, discourse):
-    """모델의 작품 가설을 원문 표지·작성자 독서절로 재검산한다.
+    """모델의 작품 가설을 원문 표지·작성자 독서절로 다시 확인한다.
 
     후보 작품의 정답이나 별칭 관계를 증명하지 않는다. 한 표제 표면과
     한 직접 독서절만 수용하여 다른 작품·댓글·인용의 근거가 섞이지 않는다.

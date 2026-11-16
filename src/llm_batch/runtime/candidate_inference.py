@@ -1,4 +1,4 @@
-"""고정 R2 corpus와 학습 모델의 일반 입력 교정 관측. 공개 결과에는 개입하지 않는다."""
+"""고정 R2 corpus와 학습 모델로 일반 입력의 교정 결과를 참고용으로 기록한다. 공개 결과에는 개입하지 않는다."""
 from __future__ import annotations
 
 from dataclasses import dataclass

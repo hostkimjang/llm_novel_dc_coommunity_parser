@@ -274,7 +274,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--label-ledger", required=True)
     parser.add_argument(
         "--actual-evaluation-policy",
-        help="사전 등록된 candidate_set_calibration_policy_v2 JSON; SHA 문자열 대신 파일을 재판독한다.",
+        help="사전 등록된 candidate_set_calibration_policy_v2 JSON; SHA 문자열 대신 파일을 다시 읽어 확인한다.",
     )
     parser.add_argument("--output-json", required=True)
     parser.add_argument("--output-md", required=True)

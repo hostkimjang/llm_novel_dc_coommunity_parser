@@ -21,7 +21,7 @@ EVIDENCE_GRADE_STRONG = "strong"   # 강: 제목 직접 언급, 플랫폼 URL, �
 EVIDENCE_GRADE_MEDIUM = "medium"   # 중: 캐릭터명+맥락, 약칭 해독 성공, 회차 번호
 EVIDENCE_GRADE_WEAK = "weak"       # 약: 장르 키워드만, 마스킹 제목, 단일 캐릭터명
 
-# 등급별 대응하는 앵커 타입 매핑
+# 등급별 앵커 타입 매핑
 EVIDENCE_GRADE_MAP = {
     # strong
     "title_mention": EVIDENCE_GRADE_STRONG,
@@ -241,7 +241,7 @@ TROPE_TERMS = {
 
 # ── 장르 키워드 사전 (본문에서 장르를 추출하기 위한 코드 레벨 사전) ──
 # 각 장르에 대해 본문에 등장할 수 있는 키워드 목록
-# 후보 작품의 장르와 포스트 본문의 장르가 불일치하면 매칭 차단
+# 후보 작품의 장르와 게시글 본문의 장르가 다르면 매칭 차단
 GENRE_KEYWORDS: Dict[str, Tuple[str, ...]] = {
     "fantasy": (
         "마왕", "용사", "마법사", "대마법사", "마법", "마나", "드래곤", "엘프",

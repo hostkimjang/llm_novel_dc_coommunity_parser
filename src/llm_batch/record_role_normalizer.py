@@ -1,4 +1,4 @@
-"""새 typed carrier의 직렬화 필드를 그대로 소비한다. 원형 strict 비교기는 변경하지 않는다."""
+"""새 typed carrier의 직렬화 필드를 그대로 사용한다. 원형 strict 비교기는 변경하지 않는다."""
 from dataclasses import fields, is_dataclass
 import typing
 from . import record_role_types as T

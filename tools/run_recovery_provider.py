@@ -1,4 +1,4 @@
-"""고정 원본에 결속한 provider 증거를 별도 저장한다. 자동 복구·공개 반영은 수행하지 않는다."""
+"""고정 원본과 연결한 provider 증거를 별도 저장한다. 자동 복구·공개 반영은 하지 않는다."""
 from __future__ import annotations
 
 import argparse
@@ -33,14 +33,14 @@ def _save(bound, path, raw, *, replay=True):
     path = bound.assert_output_path(path)
     if os.path.lexists(path):
         if not replay or _file(path, len(raw)).read_bytes() != raw:
-            raise ValueError("기존 provider 산출물과 현재 재판독이 다릅니다")
+            raise ValueError("기존 provider 산출물과 지금 다시 읽은 결과가 다릅니다")
     else:
         path.parent.mkdir(parents=True, exist_ok=True)
         bound.assert_output_path(path)
         with path.open("xb") as stream:
             stream.write(raw); stream.flush(); os.fsync(stream.fileno())
     if _file(path, len(raw)).read_bytes() != raw:
-        raise ValueError("provider 산출물 저장 재판독 실패")
+        raise ValueError("provider 산출물 저장 후 다시 읽기 실패")
     return _ref(path, raw)
 
 
@@ -80,14 +80,14 @@ def _claim_job(bound, root):
         else:
             _write_new(path, raw)
         if _read(path, 4096) != raw:
-            raise ValueError("provider job 위치 저장 재판독 실패")
+            raise ValueError("provider job 위치 저장 후 다시 읽기 실패")
     return _ref(path, raw)
 
 
 def run_recovery_provider(*, plan_path, plan_sha256, hmac_key_path, attempt_id, session_id,
                           root, dashboard_url=None, test_transport=None, clock=None,
                           cancellation=None, headers=None, publish_view=True):
-    """별도 계획 한 건을 예약·전송·저장·판독한다. 기존 결과/WAL/key를 만들거나 바꾸지 않는다."""
+    """별도 계획 한 건을 예약·전송·저장하고 다시 읽어 확인한다. 기존 결과/WAL/key를 만들거나 바꾸지 않는다."""
     if type(publish_view) is not bool:
         raise ValueError("provider companion 발행 여부는 bool이어야 합니다")
     if (os.environ.get("PIPELINE_MEASUREMENT_EXECUTION_MODE", "NORMAL").strip().upper() != "NORMAL"
@@ -133,7 +133,7 @@ def run_recovery_provider(*, plan_path, plan_sha256, hmac_key_path, attempt_id, 
         existing = read_strict_json(_file(report_path, 2*1024*1024).read_bytes(), maximum_bytes=2*1024*1024)
         validate_provider_report(existing)
         if canonical_bytes(existing) != canonical_bytes(build_provider_report(bound)):
-            raise ValueError("기존 보고서와 provider 원장 판독 불일치")
+            raise ValueError("기존 보고서와 provider 원장을 읽은 결과가 다릅니다")
         if os.path.lexists(markdown_path) and _file(markdown_path, 2*1024*1024).read_bytes() != _report_markdown(existing).encode():
             raise ValueError("기존 provider 보고서 본문 불일치")
     elif os.path.lexists(markdown_path):
@@ -152,7 +152,7 @@ def run_recovery_provider(*, plan_path, plan_sha256, hmac_key_path, attempt_id, 
         bound.verify_protected_sources()
         registry_raw = _file(job_reference["path"], 4096).read_bytes()
         if _ref(Path(job_reference["path"]), registry_raw) != job_reference:
-            raise ValueError("provider job 위치 결속이 바뀌었습니다")
+            raise ValueError("provider job 위치 연결 정보가 바뀌었습니다")
         if _file(source, 65536).read_bytes() != source_raw or _file(key_path, 4096).read_bytes() != key_raw:
             raise ValueError("provider 실행 중 계획 또는 감사 key가 바뀌었습니다")
         return True

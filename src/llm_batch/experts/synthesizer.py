@@ -4,7 +4,7 @@ Evidence-Based Re-Interpretation Specialist.
 
 모든 전문가(Decoder, Verifier, Critic)가 분석을 마친 뒤,
 축적된 증거(검색 결과, 해독된 용어, 검증 결과)를 바탕으로
-원본 포스트를 처음부터 다시 읽고 심층 해석합니다.
+원본 게시글을 처음부터 다시 읽고 심층 해석합니다.
 
 목표:
 - 초기 Decoder가 맥락 부족으로 놓친 숨은 참조 발견
@@ -177,7 +177,7 @@ class SynthesizerExpert:
     🔬 Synthesizer — 증거 기반 종합 재해석기
 
     모든 전문가 분석 완료 후, 축적된 증거를 바탕으로
-    원본 포스트를 처음부터 다시 읽고 심층 해석합니다.
+    원본 게시글을 처음부터 다시 읽고 심층 해석합니다.
     """
 
     def __init__(self, llm_client):
@@ -229,7 +229,7 @@ class SynthesizerExpert:
         ).strip().lower() in {"1", "true", "yes", "on"}
 
     def _reject_untrusted_terminal(self) -> None:
-        """절단·추정 HTTP stream 결과가 downstream 근거로 부활하지 않게 한다."""
+        """잘렸거나 추정된 HTTP stream 결과가 후속 단계의 근거로 다시 쓰이지 않게 한다."""
         if not self._trusted_terminal_required():
             return
 
@@ -274,7 +274,7 @@ class SynthesizerExpert:
                 {"role": "user", "content": user_prompt},
             ]
 
-            # 이전 호출의 종료 메타가 이번 응답을 신뢰시키지 못하게 초기화한다.
+            # 이전 호출의 종료 메타데이터 때문에 이번 응답을 잘못 신뢰하지 않도록 초기화한다.
             for attr in ("last_usage_provenance", "last_finish_reason"):
                 if hasattr(self.llm, attr):
                     setattr(self.llm, attr, None)
@@ -318,7 +318,7 @@ class SynthesizerExpert:
         ctx: "ConversationContext",
     ) -> Dict[str, Any]:
         """
-        증거 기반으로 원본 포스트를 재해석합니다.
+        증거를 바탕으로 원본 게시글을 재해석합니다.
 
         Args:
             ctx: 모든 전문가 출력과 검색 결과가 담긴 ConversationContext
@@ -335,7 +335,7 @@ class SynthesizerExpert:
 
         from .orchestrator import ExpertType
 
-        # ── 1. 원본 포스트 전문 구성 ──
+        # ── 1. 원본 게시글 전문 구성 ──
         post_data = ctx.post_data or {}
         title = post_data.get("title", "(제목 없음)")
 
@@ -496,7 +496,7 @@ class SynthesizerExpert:
                 )
 
         if summary:
-            # 요약 첫 200자만 로그
+            # 요약은 앞 200자만 로그에 남김
             print(
                 f"[{_ts()}][{self.emoji}]   요약: {summary[:200]}",
                 file=sys.stderr,
@@ -627,7 +627,7 @@ class SynthesizerExpert:
         return "\n".join(parts) if parts else "(검증 정보 없음)"
 
     def _format_search_evidence(self, search_results: List[Dict[str, Any]]) -> str:
-        """검색 결과를 요약 포맷"""
+        """검색 결과를 요약해 포맷"""
         if not search_results:
             return "(검색 결과 없음)"
 

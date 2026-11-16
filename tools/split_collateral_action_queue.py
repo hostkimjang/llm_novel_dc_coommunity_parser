@@ -446,7 +446,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--exclude-post-ids",
         default="",
-        help="쉼표로 구분한 post_id 목록. 이미 닫힌 residual row를 current queue에서 제외한다.",
+        help="쉼표로 구분한 post_id 목록. 이미 처리가 끝난 residual row를 current queue에서 제외한다.",
     )
     parser.add_argument("--output-json", required=True, type=Path)
     parser.add_argument("--output-md", required=True, type=Path)

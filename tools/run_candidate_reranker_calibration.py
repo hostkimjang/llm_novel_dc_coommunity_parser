@@ -169,7 +169,7 @@ def _read_saved(ref):
 
 
 def _rename_noreplace(source, destination):
-    """같은 폴더의 검산된 파일을 기존 이름을 덮지 않고 원자적으로 확정한다."""
+    """같은 폴더의 검증된 파일을 기존 이름을 덮지 않고 원자적으로 확정한다."""
     if os.name == 'nt':
         # Windows rename은 목적지가 존재하면 실패한다. os.replace는 사용하지 않는다.
         os.rename(source, destination)
@@ -194,7 +194,7 @@ def _publish_workflow_receipt(output, receipt):
     final = output / 'workflow_receipt.json'
     ref = local._write(pending, receipt)
     # _write는 fsync와 raw readback까지 성공해야 반환한다. 확정 후에는 실패 가능한
-    # 재판독/정리 단계가 없으며, 실패한 staging 파일은 진단 근거로 그대로 보존한다.
+    # 다시 읽기/정리 단계가 없으며, 실패한 staging 파일은 진단 근거로 그대로 보존한다.
     final_ref = {**ref, 'path': str(final)}
     _rename_noreplace(pending, final)
     return final_ref

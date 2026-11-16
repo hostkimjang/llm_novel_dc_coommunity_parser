@@ -1,9 +1,9 @@
-"""실제 P0 Track-A 문맥 리뷰의 fail-close 계약.
+"""실제 P0 Track-A 문맥 리뷰에서 확인되지 않으면 막는(fail-closed) 계약.
 
 이 모듈은 source registry의 Track-A claim, A-context, 사람 annotation event를
-구조적으로 결속한다. 구조 검증은 실제 수집 권한, reviewer assignment,
+구조적으로 연결한다. 구조 검증은 실제 수집 권한, reviewer assignment,
 guideline authority, append-only 외부 앵커를 증명하지 않는다. 따라서 정상 검증된
-row도 actual 20건 credit, publication, Slang DB/WAL 쓰기를 열지 않는다.
+row도 actual 20건 credit, publication, Slang DB/WAL 쓰기를 허용하지 않는다.
 """
 
 from __future__ import annotations
@@ -150,7 +150,7 @@ _A_EVENT_FIELDS = frozenset(
 
 
 class P0ActualAContextContractError(P0ActualContractError):
-    """A-context 계약이 구조적 또는 의미적 결속을 잃었을 때 발생한다."""
+    """A-context 계약이 구조적 또는 의미적 연결이 깨졌을 때 발생한다."""
 
 
 def canonical_bytes(value: Any) -> bytes:

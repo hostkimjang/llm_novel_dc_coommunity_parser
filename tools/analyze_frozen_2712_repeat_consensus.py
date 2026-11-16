@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """동일 frozen 입력의 3회 BEFORE/AFTER 실행을 post_id exact consensus로 분석한다.
 
-결정적 계약(입력 집합ㆍmanifest comparability)은 즉시 실패한다. 의미 결과는
+결정적 계약(입력 집합·manifest comparability)은 즉시 실패한다. 의미 결과는
 확률적이므로 3회 다수결만 시스템 변화로 집계하며, 단발 흔들림도 행별로 보존한다.
 """
 

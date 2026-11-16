@@ -232,7 +232,7 @@ async def api_results(
     q: str = Query("", max_length=200),
     relevance: str = Query("all", pattern="^(all|relevant|noise)$"),
 ):
-    """현재 실행의 포스트별 결과 요약 (페이지 단위 + 검색/필터)"""
+    """현재 실행의 게시글별 결과 요약 (페이지 단위 + 검색/필터)"""
     return JSONResponse(
         _build_live_results_payload(offset=offset, limit=limit, order=order, q=q, relevance=relevance)
     )
@@ -768,7 +768,7 @@ async def api_log_detail(filename: str, tail: int = Query(300, ge=1, le=5000)):
         return JSONResponse({"error": str(e)}, status_code=500)
 
 
-# ─── 포스트별 로그 추출 ────────────────────────────────────
+# ─── 게시글별 로그 추출 ────────────────────────────────────
 
 
 def _extract_post_log_from_file(filepath: Path, post_id: int) -> Optional[List[str]]:
@@ -829,9 +829,9 @@ def _extract_post_log_from_file(filepath: Path, post_id: int) -> Optional[List[s
             end_idx = i + 1
             for j in range(i + 1, min(i + 80, total)):
                 end_idx = j + 1
-                # 다음 포스트 배너 시작이면 중단
+                # 다음 게시글 배너 시작이면 중단
                 if "📌 Post ID:" in lines[j] and marker_start not in lines[j]:
-                    end_idx = j  # 다음 포스트 배너 전까지
+                    end_idx = j  # 다음 게시글 배너 전까지
                     break
                 if lines[j].strip().startswith("=" * 10) and j > i + 2:
                     # 다음 배너의 === 줄이면 한 줄 더 포함하고 중단
@@ -842,7 +842,7 @@ def _extract_post_log_from_file(filepath: Path, post_id: int) -> Optional[List[s
             break
 
     if not found_end_marker:
-        # 완료 마커를 못 찾은 경우 — 다음 포스트 시작 전까지
+        # 완료 마커를 못 찾은 경우 — 다음 게시글 시작 전까지
         for i in range(start_idx + 5, total):
             if "📌 Post ID:" in lines[i] and marker_start not in lines[i]:
                 end_idx = i
@@ -891,7 +891,7 @@ def api_post_log(post_id: int, source: str = Query("auto", pattern="^(auto|file)
         )
 
         # 2) 워커별 로그 파일 탐색. current output이 선언된 경우 동일 run id로만
-        # 범위를 고정하며, 결속 정보가 없다고 과거 실행으로 넘어가지 않는다.
+        # 범위를 고정하며, 연결 정보가 없다고 과거 실행으로 넘어가지 않는다.
         if _LOG_DIR.exists():
             try:
                 worker_pattern = (

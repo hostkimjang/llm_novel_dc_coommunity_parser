@@ -1,8 +1,8 @@
 """
-BatchContextMemory — 포스트 간 지식 공유 (thread-safe)
+BatchContextMemory — 게시글 간 지식 공유 (thread-safe)
 
 병렬 모드에서도 안전하게 사용할 수 있는 배치 컨텍스트 메모리.
-해소된 약칭, 작가명, 캐릭터, namu.wiki 페이지 캐시를 포스트 간에 공유한다.
+해소된 약칭, 작가명, 캐릭터, namu.wiki 페이지 캐시를 게시글 간에 공유한다.
 """
 
 from __future__ import annotations
@@ -134,7 +134,7 @@ def _ts() -> str:
 
 
 class BatchContextMemory:
-    """포스트 간 지식 공유 메모리 (thread-safe)."""
+    """게시글 간 지식 공유 메모리 (thread-safe)."""
 
     NON_NOVEL_MEDIA_ALIAS_SEED_BLOCKLIST = {
         ("강연금", "강철의연금술사"),
@@ -234,7 +234,7 @@ class BatchContextMemory:
     # ─── 약칭 관련 ────────────────────────────────────────
 
     def get_abbreviation(self, abbrev: str) -> Optional[str]:
-        """약칭에 대한 정식 제목 반환 (resolved만).
+        """약칭의 정식 제목 반환 (resolved만).
         
         Returns:
             정식 제목 문자열 또는 None
@@ -818,7 +818,7 @@ class BatchContextMemory:
             }
         return {"resolved_slang": resolved_slang}
 
-    # ─── 포스트 완료 후 학습 ──────────────────────────────
+    # ─── 게시글 분석 완료 후 학습 ─────────────────────────
 
     def learn_from_result(
         self,
@@ -828,7 +828,7 @@ class BatchContextMemory:
         identified_author: Optional[str] = None,
         identified_characters: Optional[List[str]] = None,
     ) -> None:
-        """분석 완료된 포스트에서 지식 추출 및 등록.
+        """분석을 마친 게시글에서 지식을 추출해 등록.
         
         Args:
             result: 분석 결과 (identity 포함)
@@ -902,7 +902,7 @@ class BatchContextMemory:
             if canonical_alias_norm and detected != canonical_alias_norm:
                 blocked_surface_norms.add(detected)
 
-        # 학습 자격과 거절 관측을 분리한다. source proof가 없어도 확정적으로 등록하지 않을
+        # 학습 자격과 거절 기록을 분리한다. source proof가 없어도 확정적으로 등록하지 않을
         # exact-title/기존 비소설 쌍은 집계하되 register_abbreviation에는 넘기지 않는다.
         rejected_pairs = set()
         if conf_rank >= 2 and not final_alias_denied:
@@ -957,7 +957,7 @@ class BatchContextMemory:
                     continue
                 if (self._normalize(original), self._normalize(matched_title)) in rejected_pairs:
                     continue
-                # 등록 없는 확정 거절 관측은 source proof 자격보다 먼저 기록한다.
+                # 등록하지 않는 확정 거절은 source proof 자격 확인보다 먼저 기록한다.
                 if image_surface_realigned and self._normalize(original) != self._normalize(matched_title):
                     with self._lock:
                         self.stats["abbreviation_image_surface_skipped"] = (

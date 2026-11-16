@@ -1,6 +1,6 @@
 """전체 FROZEN raw 분모와 고정 NIL/CAL graph의 순수 서술 평가.
 
-원문 결속은 annotation 진실의 독립 검증이 아니다. 파일/모델/새 fit 호출 없이
+원문과 연결했다고 annotation이 참인지 독립 검증한 것은 아니다. 파일/모델/새 fit 호출 없이
 이미 고정한 artifact를 소비한다. 실제 readback·baseline 품질 승인은 지원하지
 않으며 SOURCE_BACKED에도 품질 수용을 주장하지 않는다.
 """
@@ -145,8 +145,8 @@ def _observation(expected, observed, row, model, payloads, evidence, summary, *,
     if not sentinel:
         return raw_evaluation._observation(expected, observed, row, model, payloads, evidence,
                                            split_manifest=split_manifest)
-    # 원래 receipt 전체를 실제 exporter의 미관측 구조와 먼저 대조한다. UNKNOWN은
-    # expected COMPLETE와 다른 관측이 아니라 '관측 자체 없음'일 때만 허용한다.
+    # 원래 receipt 전체를 실제 exporter가 만드는 '관측 없음' 구조와 먼저 대조한다. UNKNOWN은
+    # expected COMPLETE와 다른 관측값이 아니라 '관측 자체가 없음'을 뜻할 때만 허용한다.
     from ..runtime.candidate_reranker import _unavailable
     reasons = receipt.get("reason_codes")
     _require(type(reasons) is list and len(reasons) == 1 and type(reasons[0]) is str
@@ -186,7 +186,7 @@ def _graph_payload(graph):
 
 
 def _bind_graph(graph, expected, observation, row, context):
-    """불완전 graph도 공급한 source 결속은 검산하고, 완전성은 별도 판정한다."""
+    """불완전 graph도 전달된 source와의 연결은 확인하고, 완전성은 따로 판정한다."""
     example = {k: v for k, v in expected.items() if k != "publication_scope_id"}
     _require(_same(graph["example"], example)
              and graph["publication_scope_id"] == expected["publication_scope_id"], "GRAPH_EXAMPLE_MISMATCH")
@@ -269,7 +269,7 @@ def evaluate_frozen_nil_scores(*, training_manifest: dict, expected_training_man
     """전체 raw 관측 필수, 순서를 유지한 graph 부분집합 허용. 입력과 파일 불변.
 
     실제 readback을 받지 않으므로 FROZEN_ACTUAL 요청은 서술 분모만 반환한다.
-    공용 typed artifact 검산이 CAL fit 증거를 재계산할 수 있으나 새 fit은 없다.
+    공용 typed artifact 검증이 CAL fit 증거를 재계산할 수 있으나 새 fit은 없다.
     """
     _require(evidence_mode in ("SYNTHETIC_CONTRACT_ONLY", "FROZEN_ACTUAL"), "EVIDENCE_MODE_INVALID")
     _require(type(expected_rows) is list and type(observations) is list

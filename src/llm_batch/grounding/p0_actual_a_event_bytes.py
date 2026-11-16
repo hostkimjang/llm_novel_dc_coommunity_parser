@@ -5,7 +5,7 @@ registry/B-event journal과 A-review journal은 schema와 의미가 다르므로
 artifact의 canonical UTF-8 JSON/JSONL bytes, A-event hash chain, context의
 latest-event projection, source claim 집합과 pre-label subject seal을 한 번에
 재계산한다. 이 receipt는 파일 handle, durable predecessor, owner/runtime
-authority를 증명하지 않으며 actual 20건 credit이나 P0 exit을 열지 않는다.
+authority를 증명하지 않으며 actual 20건 credit이나 P0 exit을 허용하지 않는다.
 """
 
 from __future__ import annotations

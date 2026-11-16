@@ -375,7 +375,7 @@ def _apply_event(state: dict, event: dict) -> None:
 
 
 def validate_execution_events(events: list, *, binding: Mapping, policy: Mapping, actions: list) -> dict:
-    """순수 검산. caller 입력은 바꾸지 않으며 파일/lock/복구 동작이 없다."""
+    """순수 검증. caller 입력은 바꾸지 않으며 파일/lock/복구 동작이 없다."""
     binding, policy, actions = _configuration(binding, policy, actions)
     if not isinstance(events, list) or len(events) > MAX_EVENTS:
         _fail("EVENT_LIMIT")
@@ -398,7 +398,7 @@ def _no_duplicate_keys(pairs: list) -> dict:
 
 
 def read_execution_journal(raw_bytes: bytes, *, binding: Mapping, policy: Mapping, actions: list) -> dict:
-    """raw JSONL snapshot 검산. 불완전 tail을 삭제/수리하지 않는다."""
+    """raw JSONL snapshot 검증. 불완전 tail을 삭제/수리하지 않는다."""
     if not isinstance(raw_bytes, bytes):
         _fail("INVALID_JOURNAL_BYTES")
     if len(raw_bytes) > MAX_JOURNAL_BYTES:
@@ -505,7 +505,7 @@ def _exclusive_lock(path: Path):
     try:
         path.parent.mkdir(parents=True, exist_ok=True)
         lock_path = path.with_name(path.name + ".lock")
-        # 두 정상 실행자가 최초 lock을 동시에 만들면 새 snapshot으로 재검산한다.
+        # 두 정상 실행자가 최초 lock을 동시에 만들면 새 snapshot으로 다시 확인한다.
         for retry in range(3):
             previous = _path_info(lock_path, label="LOCK", missing_ok=True)
             try:

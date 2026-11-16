@@ -1,7 +1,7 @@
-"""커뮤니티 발화의 문맥(발화 유형·대상·조건·매체·요지·인물 역할)을 원문 결속 범위로 투영하는 순수 계약.
+"""커뮤니티 발화의 문맥(발화 유형·대상·조건·매체·요지·인물 역할) 가운데 원문과 연결되는 부분만 추려 내는 순수 계약.
 
 파이프라인이 전문가 출력과 최종 상태를 값으로 넘기면, 이 모듈은 원문(title·body)과 맞는 부분만
-typed 투영으로 돌려준다. 제목·URL·공개 권한은 다루지 않는다. 근거가 부족하면 fallback 또는 None을
+typed ContextProjection으로 돌려준다. 제목·URL·공개 권한은 다루지 않는다. 근거가 부족하면 fallback 또는 None을
 돌려 호출자가 기존의 '원문+불확실성' 출력을 그대로 쓰게 한다.
 
 원칙
@@ -12,7 +12,7 @@ typed 투영으로 돌려준다. 제목·URL·공개 권한은 다루지 않는�
 - 원문 표면 하나(평가 술어 앞 토큰, 비교 문형의 X)만으로 작품·후보·관련성 권한을 만들지 않는다.
   작품 역할은 named_work_surfaces 또는 작품형 비교('X 비슷한 소설/거/느낌')로만 준다.
 - 작품 표면의 관계는 (작품, 관계, 근거, 원문 구간)으로 남긴다. 이미지·차용 맥락의 현재 작품 단서는 행위 대상 자리
-  (독서 동사의 목적어, 평가 술어의 주어, 내용 명사의 소유자)에 그 작품이 올 때만 결속한다. 단서 단어의 존재만으로는 아니다.
+  (독서 동사의 목적어, 평가 술어의 주어, 내용 명사의 소유자)에 그 작품이 올 때만 그 작품과 연결한다. 단서 단어가 있다는 것만으로는 연결하지 않는다.
 - 인물 역할은 행 전체의 작품 앵커가 아니라 그 인물 표면마다의 근거로만 유지한다.
 - 매체어나 성적 어근 같은 단어의 존재만으로 범위를 바꾸지 않는다.
 - 작성자 소유 절만 요청 조건으로 쓰고, 인용 조사가 붙은 전언·댓글은 조건으로 쓰지 않는다.
@@ -186,7 +186,7 @@ def _report_subject_remains_lead(text: str, lead, predicate_start: int) -> bool:
 
 
 def _reported_speaker_lead(text: str):
-    """첫 인물·댓글 명사에 실제 발화·출처 표지가 결속될 때만 전언 prefix다."""
+    """첫 인물·댓글 명사에 실제 발화·출처 표지가 붙을 때만 전언 prefix로 본다."""
     lead = _REPORT_SOURCE_HEAD.match(text)
     if lead is None:
         return None
@@ -604,7 +604,7 @@ _CURRENT_WORK_CUE = re.compile(
 )
 _BORROW_ANY = re.compile(_BORROW_ADNOMINAL + "|" + _BORROW_FINITE)
 # 단서마다 행위 대상의 자리가 다르다. 독서 동사는 목적어, 평가 술어는 주어·주제, 내용 명사는 소유자다.
-# 단서 단어가 있다는 사실만으로는 권한이 없고, 그 자리에 해당 작품 표면(또는 유일한 작품을 가리키는 지시어)이 올 때만 결속한다.
+# 단서 단어가 있다는 사실만으로는 권한이 없고, 그 자리에 해당 작품 표면(또는 유일한 작품을 가리키는 지시어)이 올 때만 연결한다.
 _CUE_READING = re.compile(r"읽|정주행|정독|완독|구독|결제|하차|찍먹|복습|재탕")
 _CUE_EVALUATION = re.compile(r"재밌|재미|꿀잼|노잼|명작|띵작")
 # 작품·이미지·기기 어디에나 붙는 명사('그림 작가', '폰 설정')는 명시 소유자가 그 작품일 때만 작품 단서다.
@@ -631,7 +631,7 @@ _CUE_ADVERBS = {"바로", "쭉", "밤새", "또", "다", "전부", "처음부터
                 "같이", "함께", "직접", "몰래", "예전에", "전에", "옛날에", "처음", "안", "못", "더"}
 # 작품 속 행위자(작품 속 사건 판정용). 조사까지 한 어절로 본다.
 _STORY_AGENT = re.compile(r"^(?:주인공|히로인|악역|빌런|캐릭터|등장인물|주연|조연|남주|여주)(?:이|가|은|는|께서|도)?$")
-# 작품 밖 대상(채널·앱·계정)에도 쓰는 소비 행위. 명시 목적어가 그 작품일 때만 결속한다.
+# 작품 밖 대상(채널·앱·계정)에도 쓰는 소비 행위. 명시 목적어가 그 작품일 때만 연결한다.
 _CUE_SHARED_ACT = re.compile(r"구독|결제")
 # 단서가 문장에서 실제로 맡은 성분을 가리는 닫힌 문법 부류(경동사·상 어절, 용언 어미, 명사 꼬리 조사).
 _READ_STEM_REST = re.compile(r"^(?:었|은|는|고|어|을|음|기|다|자|으|히|혀|힌)")
@@ -980,7 +980,7 @@ def _cue_target(toks: Sequence[str], k: int, prefix: str, kind: str, cue: str) -
         return ("other_work", prefix) if _OTHER_MARK in prefix else ("other", prefix)
     if kind in ("work_noun", "shared_noun"):
         owner = _noun_owner(toks, k)
-        # 결속될 소유자일 때만 수식 관계를 본다: 수식어로 쓰인 명사('설정 버튼', '작가 연락처')는 뒤 명사가 대상이다.
+        # 연결할 소유자일 때만 수식 관계를 본다: 수식어로 쓰인 명사('설정 버튼', '작가 연락처')는 뒤 명사가 대상이다.
         bindable = ("surface", "deictic_work") if kind == "shared_noun" else ("surface", "deictic_work", "deictic_det", "implicit")
         if owner[0] in bindable and toks[k] == cue and k + 1 < len(toks):
             nxt = toks[k + 1]
@@ -1046,9 +1046,9 @@ def _evaluation_subject_is(clause: str, surface: str, others: Sequence[str]) -> 
 
 
 def _bind_cue(region: str, surface: str, others: Sequence[str]) -> Tuple[Optional[str], str]:
-    """이미지 맥락의 현재 작품 단서가 그 작품 표면을 행위 대상으로 삼는가: (결속 근거, 거절 사유).
+    """이미지 맥락의 현재 작품 단서가 그 작품 표면을 행위 대상으로 삼는가: (연결 근거, 거절 사유).
 
-    대상이 작품 표면이면 명시 결속, 유일한 작품을 가리키는 지시어면 지시 결속이다. 대상 자리가 비었을 때는
+    대상이 작품 표면이면 명시 연결, 유일한 작품을 가리키는 지시어면 지시 연결이다. 대상 자리가 비었을 때는
     작품에만 성립하는 행위·명사(정주행, 결말)만 구간의 유일한 작품으로 잇고, 평가 술어·공용 명사(재밌다, 작가, 설정)는 잇지 않는다.
     """
     marked, spans, toks = _mark_tokens(region, surface, others)
@@ -1065,7 +1065,7 @@ def _bind_cue(region: str, surface: str, others: Sequence[str]) -> Tuple[Optiona
         if first_surface is None or k < first_surface or (k == first_surface and _SURF_MARK not in prefix):
             rejected.append(f"{kind}:{cue}->before_surface")
             continue
-        # 단서 어근이 문장에서 그 종류의 행위·평가·명사로 쓰였는지 먼저 본다(대상 결속은 그다음).
+        # 단서 어근이 문장에서 그 종류의 행위·평가·명사로 쓰였는지 먼저 본다(대상 연결은 그다음).
         formed, form_why = _cue_form(toks, k, marked[m.end():spans[k].end()], cue, kind, breaks)
         if not formed:
             rejected.append(f"{kind}:{cue}->form:{_unmark(form_why)}")
@@ -1225,7 +1225,7 @@ def _relation_table(named: Sequence[str], clauses: Sequence[str]) -> Tuple[Tuple
 
 
 def _new_work_head_match(surface: str, clause: str):
-    """원문 앞쪽 표면과 신작 head의 결속. 이 일치 자체는 작가 역할 근거가 아니다."""
+    """원문 앞쪽 표면과 신작 head의 연결. 이 일치 자체는 작가 역할 근거가 아니다."""
     return re.match(r'\s*(?P<surface>' + re.escape(surface) + r')(?:의)?\s+'
                     r'(?P<role>작가|센세|선생|님)?\s*'
                     r'(?P<head>신작|최신작|새\s*작품|차기작|신간|후속작)'
@@ -1233,7 +1233,7 @@ def _new_work_head_match(surface: str, clause: str):
 
 
 def _author_new_work_span(surface: str, clause: str) -> Optional[Tuple[int, int]]:
-    """원문 신작 head 앞쪽 표면의 위치. 사람/작품 역할은 소비자가 별도로 검산한다."""
+    """원문 신작 head 앞쪽 표면의 위치. 사람/작품 역할은 소비자가 별도로 확인한다."""
     match = _new_work_head_match(surface, clause)
     return match.span(1) if match else None
 
@@ -1270,7 +1270,7 @@ def _relation_table_detail(named: Sequence[str], clauses: Sequence[str]
 
 
 def _cue_backed(basis: str) -> bool:
-    """현재 작품 근거가 행위 대상 결속(단서·작품 속 사건)으로 뒷받침되는가. 단순 언급·출처 조사 단독은 아니다."""
+    """현재 작품 근거가 행위 대상 연결(단서·작품 속 사건)으로 뒷받침되는가. 단순 언급·출처 조사 단독은 아니다."""
     return basis not in ("named_mention", "dangling_source_without_image")
 
 
@@ -1845,7 +1845,7 @@ _PRED_REST = re.compile(r"^(?:다|었|았|였|했|한다|하는|하고|하며|�
 _LOOKS_PRED = re.compile(r"(?:다|다는|다고|다며|는다|던|고|며)$|(?:었|았|였|했|줬|봤|왔|갔|났|졌|됐)")
 _DEMONSTRATIVE_SUBJ = {"이게", "이거", "이건", "그게", "그거", "그건", "저게", "저거", "이것", "그것", "이", "그"}
 # 조사가 붙은 한 음절 명사(검을, 돈이)도 논항이다. 의존 명사는 뺀다.
-# 영역 명사(전개·설정·결말 등)는 결속 수에는 세지 않지만 사건 논항·태도 대상으로는 대조한다. 메타어만 논항에서 뺀다.
+# 영역 명사(전개·설정·결말 등)는 묶인 어절 수에는 세지 않지만 사건 논항·태도 대상으로는 대조한다. 메타어만 논항에서 뺀다.
 _DOMAIN_NOUNS = {"서사", "이야기", "내용", "설정", "전개", "분량", "화수", "부분", "측면", "방식", "요소", "상황", "장면", "씬",
                  "캐릭터", "인물", "등장인물", "작가", "유형", "주제", "대상", "결말"}
 _BOUND_NOUNS_1 = {"것", "수", "등", "때", "곳", "데", "바", "줄", "척", "듯", "뿐", "만", "점", "말", "일", "게", "건", "걸"}
@@ -2125,7 +2125,7 @@ def filter_entity_roles(
 
 
 # ---------------------------------------------------------------------------
-# 전문가 요지의 원문 결속
+# 전문가 요지와 원문의 연결
 _TEMPLATE_PHRASES = re.compile(
     r"장르/트로프 일반론|특정 작품으로 잠기지|추천 요청, 감상 순서|정식 제목|공식 제목|검색 결과|검색 증거|근거가|증거|grounding"
     r"|E\d{3}|판정|메인 화제|앵커|후보|표현 오타/축약|확인이 필요"
@@ -2376,7 +2376,7 @@ def _quote_frame_status(after: str, is_self: bool = False) -> str:
     return "affirmed"
 
 
-# 동의 행위(v14). 동의어 하나를 행위 하나로 보고 주체·양태·대상을 함께 결속한다.
+# 동의 행위(v14). 동의어 하나를 행위 하나로 보고 주체·양태·대상을 함께 묶는다.
 # 주체는 동의어(또는 제3자 서술어) 앞을 접속 구간으로 나눠 가까운 구간부터 찾는다. 명시적 자기 주어('나는', '나도', '내가')면 화자 본인,
 # 그 밖의 인물·집단 주어('동생은', '민수가', '다들')면 다른 사람이다. 부사어 주제('평가에는', '입장에서는'), 용언 연결형('생각해도'),
 # 시간·틀 명사('지금은'), 사물·발언·작품 주제어는 주어가 아니다. 관형절 속 주어('동생이 한 말에'), 이름과 어미를 가를 수 없는 어절('정아도'),
@@ -2734,7 +2734,7 @@ def _agreement_act_detail(text: str, lex_start: int, lex_end: int, region_start:
     start, end = spans[k0].start(), spans[j].end()
     end += len(re.match(r"[?？!.~…]*", text[end:]).group(0))
     if construction is not None and construction.start >= 0:
-        # 유효성 단계가 봉인한 원문 구간을 극성·성립 문맥도 그대로 사용한다.
+        # 유효성 단계에서 고정한 원문 구간을 극성·성립 문맥 판정에도 그대로 쓴다.
         start, end = construction.start, construction.end
     span = text[start:end]
     core = _ACT_FORCED.sub(" ", span)
@@ -2782,7 +2782,7 @@ def _agreement_act_detail(text: str, lex_start: int, lex_end: int, region_start:
 
 
 # 동의 행위의 유효성(v16). 동의어가 서술어 구성이나 짧은 독립 응답으로 쓰였을 때만 동의 행위다. 명사 수식('동의 버튼', '공감 수'),
-# 파생·합성 명사('동의어', '공감능력', '인정욕구'), 다른 서술어의 논항('동의를 구했다', '공감을 눌렀다', '동의가 필요하다'), 수치 관측
+# 파생·합성 명사('동의어', '공감능력', '인정욕구'), 다른 서술어의 논항('동의를 구했다', '공감을 눌렀다', '동의가 필요하다'), 수치 표기
 # ('공감 10개')은 동의 행위가 아니다. 대상 연결(목적어 생략 시 단일 인용 복원 포함)은 유효한 행위에만 적용한다.
 _LEX_PARTICLE_TAIL = {"은", "는", "이", "가", "을", "를", "도", "만", "까지", "조차", "마저"}
 _LEX_COPULA_TAIL = re.compile(r"^(?:요|임|이다|이야|입니다|이에요|예요|이지|이죠|이고|이며|이긴|이네|이요|이라|ㅇㅇ|ㅇㅈ|ㅋ+|ㅎ+|ㅠ+|ㅜ+)$")
@@ -3351,7 +3351,7 @@ def _agreement_targets(text: str, prior: Sequence[int], utts: Sequence[_Utteranc
         return (list(prior), "no_object") if len(prior) == 1 else ([], "ambiguous" if prior else "none")
     phrase = toks
     head_stems = _name_stems(head)
-    # 수량 head는 같은 선행 평가 NP에 결속한다. 평가 없는 '두 개에'는 그대로 unrelated다.
+    # 수량 head는 같은 선행 평가 NP에 연결한다. 평가 없는 '두 개에'는 그대로 unrelated다.
     counted_speech = (bool(head_stems & {"개", "건"})
                       and len(toks) >= 3 and bool(re.fullmatch(r"두|세|네|한|[0-9]+", toks[-2]))
                       and bool(_name_stems(toks[-3]) & _SPEECH_NOUNS))
@@ -3379,7 +3379,7 @@ def _agreement_targets(text: str, prior: Sequence[int], utts: Sequence[_Utteranc
         parent = next((p for p in parents if relation.kind != "speaker"
                        and p.phrase_span[0] <= relation.members[0][0]
                        and relation.members[-1][1] <= p.phrase_span[1]), None)
-        # 부모 평가 명사구에 결속한 자식 작품·항목은 독립 집합으로 다시 넓히지 않는다.
+        # 부모 평가 명사구에 묶인 자식 작품·항목은 독립 집합으로 다시 넓히지 않는다.
         if parent and ((relation.kind == "work" and parent.speaker_work_pairs)
                        or (relation.kind == "item" and parent.speaker_item_pairs)):
             continue
@@ -3493,7 +3493,7 @@ def _agreement_targets(text: str, prior: Sequence[int], utts: Sequence[_Utteranc
 
 def _bind_agreement_events(acts: Sequence[_AgreementAct], target_text: str, prior: Sequence[int],
                            utts: Sequence[_Utterance], works: Sequence[str]) -> List[_BoundAgreementEvent]:
-    """한 행위의 주체·양태와 원문 명사구 관계·대상 발화를 같은 사건에 결속한다."""
+    """한 행위의 주체·양태와 원문 명사구 관계·대상 발화를 같은 사건으로 묶는다."""
     speakers = {utts[i].speaker for i in prior if utts[i].speaker not in ("other", "self")}
     events: List[_BoundAgreementEvent] = []
     for act in acts:
@@ -3761,8 +3761,8 @@ def _retraction_positions(text: str) -> List[Tuple[int, int]]:
 def _retraction_acts(text: str, works: Sequence[str]) -> List[_AgreementAct]:
     """철회도 동의와 같은 완결 술어 구성(_agreement_construction)·극성·성립 문맥·주체 판정을 거친다.
 
-    취소 어근이 완결 서술어를 이루지 못하고 뒤 명사를 꾸미면('취소 버튼을 눌렀다', '철회 문구') 철회가 아니다. 구성이 봉인한
-    원문 구간을 극성·성립 문맥도 그대로 쓴다.
+    취소 어근이 완결 서술어를 이루지 못하고 뒤 명사를 꾸미면('취소 버튼을 눌렀다', '철회 문구') 철회가 아니다. 구성 판정이 고정한
+    원문 구간을 극성·성립 문맥 판정에도 그대로 쓴다.
     """
     acts: List[_AgreementAct] = []
     inside = [(a, b) for _, a, b in _work_spans(text, works)]
@@ -3862,7 +3862,7 @@ def _source_bound_events(text: str, target_text: str, utts: Sequence[_Utterance]
     """공통 위치순 사건 원장을 만든다. 모든 술어가 다음 사건의 목적어 범위를 전진시킨다.
 
     등위 연결 술어는 뒤 술어의 비실제 성립 문맥을 함께 받는다(_coordinated_realization). 동의 명사를 목적어로 한 철회는
-    _agreement_noun_object가 정한 평가 명사구·앞선 동의·무관 대상에만 결속한다.
+    _agreement_noun_object가 정한 평가 명사구·앞선 동의·무관 대상에만 연결한다.
     """
     specs = [(act.start, "agree", act) for act in _agreement_acts(text, works)]
     specs += [(act.start, "retract", act) for act in _retraction_acts(text, works)]
@@ -3915,7 +3915,7 @@ def _source_bound_events(text: str, target_text: str, utts: Sequence[_Utterance]
             scope, scope_span = "constrained_object_targets", token_span
         if kind == "correct":
             scope, scope_span = "previous_adoption_by_correction", (act.start, act.end)
-            # 담화 정정은 실제 성립할 때만 바로 앞 채택에 결속한다.
+            # 담화 정정은 실제 성립할 때만 바로 앞 채택에 연결한다.
             effect = "withdraw" if act.realization == "actual" and (
                 act.polarity == "positive" or text[act.start:act.end].startswith("아니")) else ""
             targets, how = sorted(last_adopted), "previous_adoption"
@@ -3946,7 +3946,7 @@ def _source_bound_events(text: str, target_text: str, utts: Sequence[_Utterance]
                 scope, scope_span = "unrelated_evaluation_noun", evaluation_object[3]
                 targets, how = [], "unrelated"
         elif kind == "retract" and any(act.region <= a and b <= act.lex for a, b in nominal_edges):
-            # B33: 'X에 동의했다는 앞의 말'의 철회는 그 동의 진술을 가리킨다. 앞선 자기 동의 사건 중 X 제약에 맞는 것에 결속한다.
+            # B33: 'X에 동의했다는 앞의 말'의 철회는 그 동의 진술을 가리킨다. 앞선 자기 동의 사건 중 X 제약에 맞는 것에 연결한다.
             scope, scope_span = "embedded_agreement_statement_prior_adoptions", token_span
             targets, how, target_event_ids = _prior_adoption_targets(local, utts, works, window_end - act.region, act.truth,
                                                                      tokens, relations, adoption_history, events)
@@ -4016,7 +4016,7 @@ def _own_evaluation_index(claims: Sequence[_NativeClaim], evaluations: Sequence[
 def _own_evaluation_object(target_text: str, act: _AgreementAct,
                            own_evaluations: Sequence[Tuple[int, str, str, Tuple[str, ...], str]],
                            works: Sequence[str]) -> Optional[Tuple[str, Tuple[int, ...], str, Tuple[int, int], Tuple[str, ...], bool]]:
-    """B33(H11): 철회 술어 바로 앞 목적어가 평가 명사면 (종류, 대상 발화 index, 결속 이유, 평가 명사 구간, 대상 평가 사건 ID).
+    """B33(H11): 철회 술어 바로 앞 목적어가 평가 명사면 (종류, 대상 발화 index, 연결 이유, 평가 명사 구간, 대상 평가 사건 ID).
 
     철회 주체가 화자 본인이면 본인이 거둘 수 있는 평가는 본인 평가뿐이다. 평가 명사 앞 명사구에 다른 사람 소유자('친구의')가 있을
     때만 종류 unrelated이고, 그 밖에는 종류 own이다. 평가 명사 극성이 같고, 명사구의 내용어(본인 소유·직전 지시·지시 관형어 제외)가
@@ -4086,7 +4086,7 @@ def _speaker_ledger(parts: Sequence[str], works: Sequence[str] = (), source_id: 
                     unit_input: Optional["_NativeUnitInput"] = None) -> _SpeakerLedger:
     """화자 단위(작성자 글 전체, 댓글 한 개)의 절을 순서대로 발화 목록으로 만들고, 동의·반박·철회를 적용한 현재 채택 상태를 매긴다.
 
-    직접 발화는 채택, 바깥 인용 틀과 결속한 reported_utterance 및 전언은 미채택으로 시작한다. 인용마다 바깥 틀의 극성·양태를 보고,
+    직접 발화는 채택, 바깥 인용 틀과 연결된 reported_utterance 및 전언은 미채택으로 시작한다. 인용마다 바깥 틀의 극성·양태를 보고,
     부정('라고 말한 적이 없다')이면 denied, 질문·가정이면 uncertain으로 두어 채택하지 않고 동의로도 되살리지 않는다(자기 인용도 같다).
     긍정 틀의 자기 인용만 직접 발화로 채택한다.
 
@@ -4191,7 +4191,7 @@ def _speaker_ledger(parts: Sequence[str], works: Sequence[str] = (), source_id: 
         marked = _marked_spans(p, works, speakers)
         reported_spans = {(s.start, s.end) for s in marked if s.kind == "quote" and s.role == "reported_utterance"}
         quotes = [m for m in _QUOTE_SPAN.finditer(p) if (m.start(), m.end()) in reported_spans]
-        # 행위 추출에서는 인용 속 어형을 가린다. 목적어 결속에서는 작품·화자명
+        # 행위 추출에서는 인용 속 어형을 가린다. 목적어를 연결할 때는 작품·화자명
         # 인용을 보존하고 완결 발화 인용만 가린다. 두 view의 원문 위치는 같다.
         target_text, binding_masks = _mask_marked_detail(p, marked, {"reported_utterance", "display_label"}, quotes_only=True)
         # 기록 내용(필사·적은 문장)은 누구의 현재 평가·동의도 아니므로 목적어·행위·공개 근거 어디에도 쓰지 않는다.
@@ -4199,7 +4199,7 @@ def _speaker_ledger(parts: Sequence[str], works: Sequence[str] = (), source_id: 
         text, act_masks = _mask_marked_detail(p, marked, {"reported_utterance", "nominal_argument", "display_label"},
                                               quotes_only=True, keep_nominal_subject=True, nominal_placeholder=True)
         text, late_masks = _mask_marked_detail(text, marked, {"display_label", "recorded_content"})
-        # B32: parser가 실제로 읽은 raw·가린 행위 view·결속 view·인용 내용 view를 같은 절 기록에 남긴다.
+        # B32: parser가 실제로 읽은 raw·가린 행위 view·binding view·인용 내용 view를 같은 절 기록에 남긴다.
         quote_parts = [_quote_body_offset(m) for m in quotes]
         act_view_id, binding_view_id = f"{clause_id}:view:act", f"{clause_id}:view:binding"
         views = [_NativeParserView(f"{clause_id}:view:raw", "raw_clause", p, 0),
@@ -4402,7 +4402,7 @@ def _self_governed_report(text: str, event: "_EvaluationEvent", works: Sequence[
 
 def native_evidence_ledger(parts: Sequence[str], works: Sequence[str] = (), *, source_id: str = "unit:0",
                            unit_input: Optional["_NativeUnitInput"] = None) -> _SpeakerLedger:
-    """별도 관측 API. 제품과 같은 speaker pass의 후보·NP·주체·채택/철회 edge를 돌려준다. gold를 받지 않는다.
+    """별도 기록 조회 API. 제품과 같은 speaker pass의 후보·NP·주체·채택/철회 edge를 돌려준다. gold를 받지 않는다.
 
     B32: unit_input은 caller가 아는 역할·출처·원문 줄 metadata다. 없으면 NOT_OBSERVED로 남긴다. 공개 pass 자체의 원장은
     native_binder_capture로 같은 _Binder 객체에서 읽는다.
@@ -4874,7 +4874,7 @@ class _NativeGraphEdge:
     recorded_by: str
 
 
-# B32 신규 native 값의 선언 범위. 검증은 관측값이 이 선언 안에 있는지만 본다(검토기 추가 허용 없음).
+# B32 신규 native 값의 선언 범위. 검증은 실제 값이 이 선언 안에 있는지만 본다(검토기 추가 허용 없음).
 _NATIVE_B32_ENUMS = {
     "source_role": ("author", "comment", "NOT_OBSERVED"),
     "source_origin": ("post_title", "body_line", "comment", "NOT_OBSERVED"),
@@ -4927,11 +4927,11 @@ _NATIVE_B32_ENUMS = {
                        "assertion_in_source", "application_in_source", "application_target_claim",
                        "application_target_adoption", "event_target_event"),
     "graph_failure_prefix": ("UNKNOWN_REFERENCE", "DUPLICATE_DEFINITION", "ID_COLLISION"),
-    # B31 필드 target_relation의 실제 코드 범위를 선언으로 남긴다(targets_utterance 또는 결속 이유).
+    # B31 필드 target_relation의 실제 코드 범위를 선언으로 남긴다(targets_utterance 또는 연결 이유).
     "target_relation": ("targets_utterance", "speech", "speaker", "work", "no_object", "none", "ambiguous", "ambiguous_speaker",
                         "ambiguous_work", "ambiguous_item", "unrelated", "unknown_speaker", "no_match", "previous_adoption",
                         "prior_adopted"),
-    # B33 추가 선언(typed input·결속 proof·projection channel 출처). 끝이 *인 값은 접두 선언이다.
+    # B33 추가 선언(typed input·연결 proof·projection channel 출처). 끝이 *인 값은 접두 선언이다.
     "owner_source": ("stance_aspect_owner", "coordinated_shared_owner", "named_work_surface", "speech_possessor",
                      "speech_work_content", "none", "NOT_OBSERVED"),
     "carrier_alignment": ("exact_enumeration", "carrier_differs_source", "NOT_OBSERVED"),
@@ -5010,7 +5010,7 @@ def _support_attribution(ids: Sequence[str], supported: bool) -> str:
 
 
 def _native_boundary_spans(line: str, texts: Sequence[str]) -> List[Tuple[Tuple[int, int], str]]:
-    """절 문자열의 원문 줄 좌표(B32). 앞 절 끝부터 공백만 건너 정확히 이어질 때만 좌표를 두고, 한 번 끊기면 뒤도 미관측이다."""
+    """절 문자열의 원문 줄 좌표(B32). 앞 절 끝부터 공백만 건너 정확히 이어질 때만 좌표를 두고, 한 번 끊기면 그 뒤 절도 NOT_OBSERVED로 둔다."""
     out: List[Tuple[Tuple[int, int], str]] = []
     cursor, broken = 0, False
     for text in texts:
@@ -5252,7 +5252,7 @@ class NativeAuthorClause:
     clause_index는 _author_clauses 반환 순서이며 request_conditions index와 같은 기준이다. text는 그 반환 문자열이다. 인용 조사가
     붙은 인용문(_QUOTED)과 앱 꼬리(_APP_TAIL)를 지우고 strip한 값이라 원문 절(clause_text)과 다를 수 있다. text_runs는
     (text 시작, clause_text 시작, 길이) 연속 구간이다. text가 원문 절의 한 연속 구간일 때만 text_line_span(W13 정규화 줄 좌표)과
-    text_raw_span(caller raw_text 좌표)이 관측된다. removed_spans는 clause_text 좌표의 지운 구간과 이유다.
+    text_raw_span(caller raw_text 좌표)이 기록된다. removed_spans는 clause_text 좌표의 지운 구간과 이유다.
     """
     clause_index: int
     text: str
@@ -5335,7 +5335,7 @@ class NativeLifecycleEvent:
 
 @dataclass(frozen=True)
 class NativeSupportClaim:
-    """결속 창 하나를 만든 실제 원장 claim과 그 현재 상태·이력(B33).
+    """판정 창 하나를 만든 실제 원장 claim과 그 현재 상태·이력(B33).
 
     claimant는 claim 내용의 발화자(claim.speaker, 화자 단위 본인이면 self)다. lifecycle은 own_current / own_withdrawn /
     report_adopted_current / report_adoption_withdrawn / report_not_adopted / quote_denied / quote_uncertain이다.
@@ -5364,7 +5364,7 @@ class NativeSupportClaim:
 
 @dataclass(frozen=True)
 class NativeTokenLocation:
-    """요지 결속 어절 하나를 창의 어디에서 찾았는지(B33). claim_ids는 그 위치의 실제 claim이다."""
+    """요지에서 원문과 묶인 어절 하나를 창의 어디에서 찾았는지(B33). claim_ids는 그 위치의 실제 claim이다."""
     token: str
     location: str
     claim_ids: Tuple[str, ...] = ()
@@ -5372,13 +5372,13 @@ class NativeTokenLocation:
 
 @dataclass(frozen=True)
 class NativeSupportWindow:
-    """Binder가 요지 하나에 쓴 결속 창 하나(B33). window_index는 bind의 창 순서다.
+    """Binder가 요지 하나에 쓴 판정 창 하나(B33). window_index는 bind의 창 순서다.
 
     selection은 창을 만든 Binder 목록(author_first_person / author_reported_by_summary_marker / comment_adopted_unit)이고
     claim은 그 목록 항목을 만든 실제 claim 하나다. usage가 endorsed_assertion이면 claim은 화자 단위 본인의 현재 주장(직접 발화
     또는 채택한 전언)이다. attribution_only면 요지에 전언 표지가 있어 전언 claim을 그대로 넣은 창이다. 이때 final_support는
     거짓일 수 있으며, 작성자의 현재 동의로 읽으면 안 된다. why는 선택 근거이고 window_modality는 Binder 양태 검사와 같은 판정이다.
-    token_complete가 참인 창만 결속 어절을 모두 담는다(태도 검사 범위).
+    token_complete가 참인 창만 묶인 어절을 모두 담는다(태도 검사 범위).
     """
     window_index: int
     unit_kind: str
@@ -5788,7 +5788,7 @@ def _claim_lifecycle(claim: Any, events: Sequence[NativeLifecycleEvent]) -> str:
 
 
 def _native_support_claim(ledger: Any, claim: Any) -> NativeSupportClaim:
-    """원장 claim 하나를 결속 창 기록으로 옮긴다(B33). 이력은 같은 원장 applications에서 그 claim을 대상으로 한 적용만 순서대로 고른다."""
+    """원장 claim 하나를 판정 창 기록으로 옮긴다(B33). 이력은 같은 원장 applications에서 그 claim을 대상으로 한 적용만 순서대로 고른다."""
     events: List[NativeLifecycleEvent] = []
     for application in ledger.applications:
         for claim_id, before, after in zip(application.target_claim_ids, application.prior_adoption, application.after_application):
@@ -5821,7 +5821,7 @@ def project_context_native(source: ClaimScopeSource, signals: "ExpertSignals", s
                            carrier: Optional[NativeSourceCarrier] = None,
                            signal_origins: Sequence[NativeSignalOrigin] = ()) -> NativeProjectionResult:
     """B33 제품 연결 hook용 단일 호출. project_context와 같은 공개 projection과, 그 호출이 만든 같은 Binder의 원장·manifest·
-    RowState·요지 판정·결속 증거·작성자 절 좌표·channel 출처를 함께 돌려준다. 전역 capture를 쓰지 않는다."""
+    RowState·요지 판정·연결 증거·작성자 절 좌표·channel 출처를 함께 돌려준다. 전역 capture를 쓰지 않는다."""
     collector = NativeProjectionCollector(carrier=carrier, signal_origins=tuple(signal_origins))
     project_context(source, signals, state, native=collector)
     return collector.result()
@@ -6118,7 +6118,7 @@ def _cue_nominal_kiwi():
 
 
 def _cue_is_nominal_observation(text, token, cue, works):
-    """원문 명명 범위·복합 명사 안의 어휘 관측을 실제 평가 술어와 구분한다."""
+    """원문 명명 범위·복합 명사 안의 어휘 출현을 실제 평가 술어와 구분한다."""
     # 기존 직접 평가 lexeme에도 쓰는 caller의 명명 표면이다. cue 자체와 같은
     # 짧은 이름만으로 정상 술어까지 가리지 않고, 더 큰 명명 구간 내부만 받는다.
     if any(a <= cue.start() and cue.end() <= b and (a < cue.start() or cue.end() < b)
@@ -6138,7 +6138,7 @@ def _cue_is_nominal_observation(text, token, cue, works):
         and cue.end() <= part.start + part.len <= token.end()
         and text[part.start:part.start + part.len] == part.form), None)
     if owner_index is None:
-        return False  # VA/VV의 정상 평가 어근은 명사 내부 관측이 아니다.
+        return False  # VA/VV의 정상 평가 어근은 명사 내부 출현이 아니다.
     owner = parsed[owner_index]
     owner_end = owner.start + owner.len
     compound = owner.start < cue.start() or cue.end() < owner_end
@@ -6219,7 +6219,7 @@ def _nominal_judgment_binding(text: str, works: Sequence[str] = ()):
             if not valid or any(not text[j].isspace() and j not in covered
                                 for j in range(modifier.end(), copula_start)):
                 continue  # 다른 술어/주체·문장부호·인용을 건너 이어 붙이지 않는다.
-            # 원좌표를 유지한 채 내용 논항만 가려 기존 matrix 주체 판독을 재사용한다.
+            # 원좌표를 유지한 채 내용 논항만 가려 기존 matrix 주체 판정을 재사용한다.
             masked = text[:modifier.start()] + " " * (quotative.end() - modifier.start()) + text[quotative.end():]
             actor, actor_span = _clause_subject_detail(masked, governor.start(), works)
             mode = _agreement_act_detail(text, governor.start(), governor.end())
@@ -6377,7 +6377,7 @@ def _offset_evaluation(event: _EvaluationEvent, offset: int) -> _EvaluationEvent
 
 def _object_licenses(obj: "_NativeObject", item: str) -> bool:
     """B33(F02): 발언명사 머리 NP('민지의 결말 평가')는 그 평가 발화에 대한 메타 평가다. 같은 발언명사 항목만 지지하고,
-    NP 안의 내용 항목('결말')이나 작품 호평으로 축약하지 않는다. 그 밖의 대상 NP는 기존 결속 규칙을 그대로 따른다."""
+    NP 안의 내용 항목('결말')이나 작품 호평으로 축약하지 않는다. 그 밖의 대상 NP는 기존 연결 규칙을 그대로 따른다."""
     if getattr(obj, "object_kind", "") != "speech_noun":
         return True
     return _same_arg(item, obj.head)
@@ -6418,7 +6418,7 @@ def _governed_cue_spans(text: str) -> List[Tuple[int, int]]:
 
 
 class _Binder:
-    """요지 문장 하나를 원문 절·근거에 묶어 본다. 범용 함의 판정기가 아니라 좁은 결속 검사다."""
+    """요지 문장 하나를 원문 절·근거에 묶어 본다. 범용 함의 판정기가 아니라 좁은 연결 검사다."""
 
     def __init__(self, source: ClaimScopeSource, signals: ExpertSignals, state: RowState, act: str, clauses: Sequence[str], *,
                  native: Optional["NativeProjectionCollector"] = None):
@@ -6532,7 +6532,7 @@ class _Binder:
     def _stance_supported(self, group: str, text: str, aspects: Sequence[Tuple[str, Optional[str]]], needles: Sequence[str],
                           allow_uncertain: bool = False, ctx: Optional[Tuple[str, Tuple[str, ...]]] = None,
                           proof: Optional[list] = None) -> bool:
-        """태도 단서가 같은 평가 항목(없으면 결속 어절)을 가리키는 연결 절 안에 같은 극성으로 있는가.
+        """태도 단서가 같은 평가 항목(없으면 묶인 어절)을 가리키는 연결 절 안에 같은 극성으로 있는가.
 
         작품명 하나가 겹친다고 결말·전개 같은 다른 평가 항목을 같은 대상으로 보지 않는다. 대상을 생략한 반응은 허용한다.
         직접 평가 술어('결말을 호평한다')는 현재 실제로 성립한 화자 본인의 평가일 때만 단서다(_evaluation_act_spans). 인용 보문으로
@@ -6601,7 +6601,7 @@ class _Binder:
             # 질문·불확실 절의 태도 단서는 요지가 불확실성을 밝힐 때만 근거가 된다(반어 불평은 예외).
             if (_is_question(seg) or _UNCERTAIN_SRC.search(seg)) and not _RHETORICAL.search(seg) and not allow_uncertain:
                 continue
-            # 항목 쌍이 있으면 같은 항목·소유 작품, 없으면 결속 어절로 본다. 목표가 전혀 없으면 단서만 본다.
+            # 항목 쌍이 있으면 같은 항목·소유 작품, 없으면 묶인 어절로 본다. 목표가 전혀 없으면 단서만 본다.
             if aspects:
                 if any(_target_in(seg, item, owner, live, named) for item, owner in aspects):
                     note_cue(at, seg)
@@ -6610,7 +6610,7 @@ class _Binder:
                 note_cue(at, seg)
                 return True
             subj, obj, dat = _clause_args(seg)
-            # 지시어·태도 단서 어절·요지의 소유 작품(대상 항목은 이미 결속 범위 안에 있음)은 다른 대상이 아니다.
+            # 지시어·태도 단서 어절·요지의 소유 작품(대상 항목은 이미 묶인 범위 안에 있음)은 다른 대상이 아니다.
             owners = [o for _, o in aspects if o]
             items = [i for i, _ in aspects]
             bare_domain = [w for w in re.findall(r"[가-힣]+", seg) if w in _DOMAIN_NOUNS and not any(_same_arg(w, i) for i in items)]
@@ -6628,11 +6628,11 @@ class _Binder:
         return False
 
     def bind(self, s: str) -> Tuple[bool, str, int]:
-        """요지 문장 하나의 결속 판정. 반환 (ok, why, count)는 B32와 같다."""
+        """요지 문장 하나의 연결 판정. 반환 (ok, why, count)는 B32와 같다."""
         return self._bind_impl(s, None)
 
     def bind_with_proof(self, s: str) -> Tuple[bool, str, int, "NativeBindProof"]:
-        """B33: bind와 같은 판정에, 그 판정이 실제로 쓴 결속 창·원장 claim·태도 사건을 함께 돌려준다."""
+        """B33: bind와 같은 판정에, 그 판정이 실제로 쓴 판정 창·원장 claim·태도 사건을 함께 돌려준다."""
         record: dict = {}
         ok, why, count = self._bind_impl(s, record)
         return ok, why, count, self._bind_proof(s, ok, why, count, record)
@@ -6832,7 +6832,7 @@ class _Binder:
             s_neg = [_negated_at(binding, a, b) for a, b in occ]
             if (e_neg and not any(s_neg)) or (not e_neg and all(s_neg)):
                 return False, f"core_hold:polarity_mismatch:{token}", len(bound)
-        # 절 결속: 묶인 어절은 한 근거 단위(원문 절 또는 댓글 하나)와 제목 안에 함께 있어야 한다.
+        # 절 연결: 묶인 어절은 한 근거 단위(원문 절 또는 댓글 하나)와 제목 안에 함께 있어야 한다.
         # 근거 단위(원문 절·댓글 절)마다 그 화자 단위의 현재 작품 문맥을 함께 둔다.
         windows = [(c + " / " + self.window_title, lv) for c, lv in zip(clauses, ctxs)]
         good = [(w, lv) for w, lv in windows if all(re.search(b[1], w, re.I) for b in bound)]
@@ -7043,8 +7043,8 @@ def _core_meaning(source: ClaimScopeSource, signals: ExpertSignals, state: RowSt
 # ---------------------------------------------------------------------------
 def project_context(source: ClaimScopeSource, signals: ExpertSignals, state: RowState, *,
                     native: Optional["NativeProjectionCollector"] = None) -> ContextProjection:
-    """공개 투영. B33: native는 keyword-only 호출별 수집기다. 없으면 기존과 같고, 있으면 같은 pass의 Binder·원장·manifest·
-    RowState·요지 판정·결속 증거·작성자 절 좌표·channel 출처를 그 수집기에 남긴다. 공개 반환값은 native 유무와 무관하게 같다."""
+    """공개 ContextProjection을 만든다. B33: native는 keyword-only 호출별 수집기다. 없으면 기존과 같고, 있으면 같은 pass의 Binder·원장·manifest·
+    RowState·요지 판정·연결 증거·작성자 절 좌표·channel 출처를 그 수집기에 남긴다. 공개 반환값은 native 유무와 무관하게 같다."""
     if native is not None:
         if native.calls:
             raise ValueError("NativeProjectionCollector는 project_context 호출마다 새로 만든다")
@@ -7140,7 +7140,7 @@ _MEDIA_KO = {"manga": "만화", "webtoon": "웹툰", "anime": "애니", "film": 
 def render_context_block(projection: ContextProjection, *, include_conditions: bool = True,
                          target_label: Optional[str] = None,
                          target_surface_occurrence: Optional[Sequence[str]] = None) -> Optional[str]:
-    """typed 투영을 독자용 한국어 블록으로 만든다. fallback이면 None.
+    """typed ContextProjection을 독자용 한국어 블록으로 만든다. fallback이면 None.
 
     include_conditions=False는 호출자가 이미 작성자 조건 블록을 붙인 행에서 원문 조건 중복을 막는다.
     조건 줄은 원문 절을 그대로 옮긴 것이라 의미 개선으로 세지 않는다. 보류한 해석(held_meaning)은 싣지 않는다.

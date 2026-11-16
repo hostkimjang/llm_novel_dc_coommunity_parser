@@ -290,7 +290,7 @@ class _Transaction:
 
 
 class RecoveryProviderJournal:
-    """생성자는 쓰지 않는다. 원장 경로까지 event에 결속한다."""
+    """생성자는 파일을 쓰지 않는다. 원장 경로까지 event와 연결한다."""
     def __init__(self, path, *, binding, policy, requests):
         self.path = Path(os.path.abspath(path))
         self.binding, self.policy, self.requests = configuration(binding, policy, requests)

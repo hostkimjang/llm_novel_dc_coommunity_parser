@@ -74,7 +74,7 @@ class CriticExpert:
         if ctx and hasattr(ctx, 'suspected_titles') and ctx.suspected_titles:
             suspected_items = []
             for st in ctx.suspected_titles[:3]:
-                # 각 dict 타입 검사 추가
+                # 각 항목이 dict인지 검사
                 if not isinstance(st, dict):
                     print(f"[{_ts()}][{self.emoji}] ⚠️  suspected_titles 항목이 dict가 아님: {type(st)}, value={st}", file=sys.stderr)
                     continue
@@ -148,7 +148,7 @@ class CriticExpert:
                   f"tags={analysis.get('micro_tags', [])}", 
                   file=sys.stderr)
             
-            # 각 suspected_titles 항목별 분석 후 조정
+            # suspected_titles 항목별로 분석 후 조정
             if ctx:
                 self._adjust_suspected_titles(result, ctx)
             
@@ -163,7 +163,7 @@ class CriticExpert:
     
     def _adjust_suspected_titles(self, result: Dict[str, Any], ctx: Any) -> None:
         """
-        각 suspected_titles 항목별 분석 후 조정
+        suspected_titles 항목별로 분석 후 조정
         - 감정 분석과 일치하지 않는 항목에 flag 추가
         - 신뢰도가 낮은 항목 정리
         """
@@ -175,7 +175,7 @@ class CriticExpert:
         
         adjusted = []
         for st in ctx.suspected_titles:
-            # 각 dict 타입 검사 추가
+            # 각 항목이 dict인지 검사
             if not isinstance(st, dict):
                 print(f"[{_ts()}][{self.emoji}] ⚠️  suspected_titles 항목이 dict가 아님 (skip): {type(st)}", file=sys.stderr)
                 continue
@@ -276,7 +276,7 @@ class CriticExpert:
         return result.get("analysis")
     
     def _summarize_verifier(self, vf: Dict[str, Any]) -> Dict[str, Any]:
-        """Verifier 결과 ?붿빟 (토큰 압축)"""
+        """Verifier 결과 요약 (토큰 압축)"""
         if not vf:
             return {}
         

@@ -3,11 +3,11 @@
 이 계층은 caller key를 받지 않는다. run root 밖 trust store에서 key를 읽고
 single-use nonce를 먼저 소비한 뒤, Windows witness가 기존 packet/authority 결합
 supervisor 호출 전체를 감싼다. nonce 소비 뒤 하위 실행이 실패하면 nonce 파일을
-지우지 않아 replay를 fail-close한다.
+지우지 않아 replay를 차단한다.
 
 trust-store 경로와 wall clock, 보호 root pin, verifier process 자체는 독립적으로
 attest되지 않았다. 따라서 store-key 서명 검증·nonce 소비·bounded runtime 관측이
-성공해도 owner authority, actual credit, P0 exit, production/full scan은 열지 않는다.
+성공해도 owner authority, actual credit, P0 exit, production/full scan은 허용하지 않는다.
 """
 
 from __future__ import annotations

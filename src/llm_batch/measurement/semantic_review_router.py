@@ -431,7 +431,7 @@ def _route(source_view: Mapping[str, Any], errors: list[str]) -> tuple[str, list
 
 
 def _direct_ocr_evidence(result: Mapping[str, Any]) -> dict[str, Any]:
-    """최종 catalog를 기존 제안 추출기로 검산하고 제목 없는 요약만 반환한다."""
+    """최종 catalog를 기존 제안 추출기로 검증하고 제목 없는 요약만 반환한다."""
     from ..ledger.recovery_activation import extract_direct_ocr_review_proposals
 
     identity = result["analysis_result"]["identity"]
@@ -507,7 +507,7 @@ def _route_for_rule(source_view, errors, rule_version):
 
 
 def _validate_v2_result_binding(result, receipt):
-    # source_view까지 재봉인해도 원래 WAL의 공개/안정 payload 지문은 대체할 수 없다.
+    # source_view까지 다시 고정해도 원래 WAL의 공개/안정 payload 지문은 대체할 수 없다.
     from ..ledger.publication_commit import compute_publication_decision_commit
 
     try:

@@ -6,7 +6,7 @@
 <title>Expert — Pipeline Monitor</title>
 <meta name="color-scheme" content="light dark">
 <script src="/static/theme.js?v=20260922-reason-log-v1"></script>
-  <script src="/static/presentation.js?v=20261013-nsfw-assessment-reason-v2"></script>
+  <script src="/static/presentation.js?v=20261116-kr-wording-v1"></script>
 <link rel="stylesheet" href="/static/utilities.css?v=20260922-reason-log-v1">
 <link rel="stylesheet" href="/static/dashboard.css?v=20260922-reason-log-v1">
 </head>
@@ -40,7 +40,7 @@
 
   <main id="main-content" class="page-shell" tabindex="-1">
     <div class="page-heading">
-      <div><div class="eyebrow" id="page-eyebrow">LIVE OVERVIEW</div><h1 id="page-title">실시간 모니터</h1><p id="page-description">파이프라인의 모든 흐름, 하나의 워크스페이스에서.</p></div>
+      <div><div class="eyebrow" id="page-eyebrow">LIVE OVERVIEW</div><h1 id="page-title">실시간 모니터</h1><p id="page-description">파이프라인 진행 상황을 한 화면에서 확인하세요.</p></div>
       <span class="page-tag"><span class="icon icon-layers" aria-hidden="true"></span> Expert Pipeline</span>
     </div>
   <!-- ===== LIVE TAB ===== -->
@@ -53,7 +53,7 @@
       </div>
       <div id="progress-track" role="progressbar" aria-label="배치 처리 진행률" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="progress-bar" style="width:0%"></div></div>
       <div id="batch-failure-detail" class="section-note" role="status" hidden></div>
-      <div class="progress-footer"><span id="elapsed-text">경과: -</span><span id="eta-text">ETA: -</span><span id="avg-text">평균: -</span><span class="progress-caption">포스트 처리 현황</span></div>
+      <div class="progress-footer"><span id="elapsed-text">경과: -</span><span id="eta-text">ETA: -</span><span id="avg-text">평균: -</span><span class="progress-caption">게시글 처리 현황</span></div>
     </section>
 
 	    <div id="llm-suspend-banner" class="hidden glass rounded-xl p-4 mb-4 border border-amber-500/30 bg-amber-950/20">
@@ -61,7 +61,7 @@
 	        <div class="text-2xl leading-none">⚠️</div>
 	        <div class="min-w-0">
 	          <div id="llm-suspend-title" class="text-sm font-semibold text-amber-200">LLM 서버 확인 대기 중</div>
-	          <div id="llm-suspend-message" class="text-xs text-amber-100 mt-1">HTTP 스트리밍 오류가 관측되었습니다. 관리자님은 LLM 서버측을 확인해주세요.</div>
+	          <div id="llm-suspend-message" class="text-xs text-amber-100 mt-1">HTTP 스트리밍 오류가 발생했습니다. LLM 서버 상태를 확인해 주세요.</div>
 	          <div id="llm-suspend-error" class="text-xs text-amber-300/90 mt-2 break-all"></div>
 	          <div class="flex flex-wrap gap-3 mt-2 text-[11px] text-amber-200/80">
 	            <span id="llm-suspend-count"></span>
@@ -81,16 +81,16 @@
 	      </div>
 	    </div>
 
-    <section class="stats-grid" aria-label="실행 통계"><div class="stat-card stat-positive"><div class="stat-label">관련 포스트</div><strong id="stat-relevant">0</strong><span class="stat-caption">RELEVANT</span></div>
+    <section class="stats-grid" aria-label="실행 통계"><div class="stat-card stat-positive"><div class="stat-label">관련 게시글</div><strong id="stat-relevant">0</strong><span class="stat-caption">RELEVANT</span></div>
 <div class="stat-card "><div class="stat-label">노이즈</div><strong id="stat-noise">0</strong><span class="stat-caption">NOISE</span></div>
-<div class="stat-card "><div class="stat-label">이벤트 관측 토큰</div><strong id="stat-tokens">0</strong><span class="stat-caption">수신 이벤트 합계 · 정식 KPI 아님</span></div>
+<div class="stat-card "><div class="stat-label">이벤트 집계 토큰</div><strong id="stat-tokens">0</strong><span class="stat-caption">수신 이벤트 합계 · 정식 KPI 아님</span></div>
 <div class="stat-card "><div class="stat-label">입력 토큰</div><strong id="stat-prompt-tokens">0</strong><span class="stat-caption">INPUT TOKENS</span></div>
 <div class="stat-card "><div class="stat-label">출력 토큰</div><strong id="stat-completion-tokens">0</strong><span class="stat-caption">OUTPUT TOKENS</span></div>
 <div class="stat-card "><div class="stat-label">검색 캐시 적중률</div><strong id="stat-cache">-</strong><span class="stat-caption">CACHE HIT</span></div></section>
     <div class="pipeline-overview">
       <!-- Pipeline Steps -->
       <section class="pipeline-card glass">
-        <div class="section-heading"><div><span class="eyebrow">EXECUTION FLOW</span><h2>파이프라인</h2></div><span class="section-note">9개의 전문가 단계</span></div>
+        <div class="section-heading"><div><span class="eyebrow">EXECUTION FLOW</span><h2>파이프라인</h2></div><span class="section-note">전문가 단계 9개</span></div>
         <div class="flex items-center gap-1 flex-wrap" id="pipeline-steps">
           <div data-step="fast_path" data-recall-count="" class="step-idle rounded-lg px-3 py-2 text-xs font-medium transition-all"><span class="stage-index">01</span>Fast-Path</div>
           <span class="text-slate-600">→</span>
@@ -111,7 +111,7 @@
           <div data-step="arbiter" data-recall-count="" class="step-idle rounded-lg px-3 py-2 text-xs font-medium transition-all"><span class="stage-index">09</span>Arbiter</div>
         </div>
         <div class="current-post-row mt-3 text-xs text-slate-400">
-          현재 포스트 <span id="current-post-label" class="text-slate-200">-</span>
+          현재 게시글 <span id="current-post-label" class="text-slate-200">-</span>
         </div>
         <!-- 실행 흐름 타임라인 -->
         <div class="flow-timeline mt-3 pt-3 border-t border-slate-700/40">
@@ -251,7 +251,7 @@
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
           <div class="text-center">
             <div id="hist-total" class="text-xl font-bold text-blue-400">0</div>
-            <div class="text-xs text-slate-400">총 포스트</div>
+            <div class="text-xs text-slate-400">총 게시글</div>
           </div>
           <div class="text-center">
             <div id="hist-relevant" class="text-xl font-bold text-emerald-400">0</div>
@@ -385,12 +385,12 @@
         <div id="modal-subtitle" class="text-xs text-slate-400 mt-0.5"></div>
       </div>
       <div class="flex items-center gap-1 shrink-0">
-        <button id="modal-nav-prev" onclick="navModal(-1)" title="이전 포스트 (←)"
+        <button id="modal-nav-prev" onclick="navModal(-1)" title="이전 게시글 (←)"
                 class="px-2.5 py-1 rounded bg-slate-800 text-slate-300 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed text-sm">◀</button>
         <span id="modal-nav-pos" class="text-xs text-slate-500 min-w-[52px] text-center"></span>
-        <button id="modal-nav-next" onclick="navModal(1)" title="다음 포스트 (→)"
+        <button id="modal-nav-next" onclick="navModal(1)" title="다음 게시글 (→)"
                 class="px-2.5 py-1 rounded bg-slate-800 text-slate-300 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed text-sm">▶</button>
-        <button onclick="copyModalJson(this)" title="이 포스트의 상세 데이터를 JSON으로 복사"
+        <button onclick="copyModalJson(this)" title="이 게시글의 상세 데이터를 JSON으로 복사"
                 class="px-2.5 py-1 rounded bg-slate-800 text-slate-300 hover:bg-slate-700 text-sm ml-1">JSON</button>
         <button class="modal-close" aria-label="상세 닫기" onclick="closeModal()">&times;</button>
       </div>
@@ -544,7 +544,7 @@ const _CACHE_RESULTS_KEY = _CACHE_PREFIX + 'results';
 const _CACHE_LIVE_PANELS_KEY = _CACHE_PREFIX + 'live_panels';
 const _CACHE_SLANG_DB_PAGE_SIZE_KEY = _CACHE_PREFIX + 'slang_db_page_size';
 const _CACHE_LOG_PREFIX = _CACHE_PREFIX + 'log_';
-const _CACHE_MAX_LOGS = 50;  // 최대 캐시할 포스트 로그 수
+const _CACHE_MAX_LOGS = 50;  // 캐시할 게시글 로그 최대 수
 
 function _cacheSet(key, value) {
   try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
@@ -565,7 +565,7 @@ function _cacheSaveResults() {
   });
 }
 function _cacheSavePostLog(postId, data) {
-  // 개별 포스트 로그 캐시 (source, lines)
+  // 게시글별 로그 캐시 (source, lines)
   _cacheSet(_CACHE_LOG_PREFIX + postId, data);
   // 캐시된 로그 ID 목록 관리 (FIFO)
   let ids = _cacheGet(_CACHE_PREFIX + 'log_ids') || [];
@@ -986,7 +986,7 @@ workerLogs.set(-1, []);  // 전체 로그
 function switchTab(tab) {
   currentTab = tab;
   const pageMeta = {
-    live: ['실시간 모니터', 'LIVE OVERVIEW', '파이프라인의 모든 흐름, 하나의 워크스페이스에서.'],
+    live: ['실시간 모니터', 'LIVE OVERVIEW', '파이프라인 진행 상황을 한 화면에서 확인하세요.'],
     history: ['실행 이력', 'RUN HISTORY', '지난 실행을 돌아보고, 결과와 판단의 근거를 확인하세요.'],
     'slang-db': ['Slang DB', 'KNOWLEDGE BASE', '작품별 별칭과 커뮤니티 표현을 한곳에서 살펴보세요.'],
   }[tab];
@@ -1048,7 +1048,7 @@ function renderLlmSuspendBanner() {
   banner.classList.remove('hidden');
   document.getElementById('llm-suspend-title').textContent = 'LLM 서버 확인 대기 중';
   document.getElementById('llm-suspend-message').textContent =
-    llmSuspendState.message || 'HTTP 스트리밍 오류가 관측되었습니다. 관리자님은 LLM 서버측을 확인해주세요.';
+    llmSuspendState.message || 'HTTP 스트리밍 오류가 발생했습니다. LLM 서버 상태를 확인해 주세요.';
   document.getElementById('llm-suspend-error').textContent =
     llmSuspendState.error ? `최근 오류: ${llmSuspendState.error}` : '';
   document.getElementById('llm-suspend-count').textContent =
@@ -1226,7 +1226,7 @@ function goToLivePage(page) {
 
 function renderLiveResults() {
   // post_complete마다 페이지(최대 100행) 전체를 innerHTML로 재생성하면
-  // 브라우저가 렉 걸린다 — 250ms 코얼레싱 + 증분 prepend
+  // 브라우저가 렉 걸린다 — 250ms 단위로 묶어 렌더 + 증분 prepend
   scheduleRender('results');
 }
 
@@ -1579,7 +1579,7 @@ async function loadSlangDb(page = 0) {
 
     if (!res.ok) {
       if (res.status === 404) {
-        throw new Error('현재 서버에 /api/slang-db 라우트가 없습니다. 모니터 서버 재시작 또는 최신 배포가 필요합니다.');
+        throw new Error('현재 서버에 /api/slang-db 라우트가 없습니다. 모니터 서버를 다시 시작하거나 최신 버전을 배포해야 합니다.');
       }
       throw new Error((payload && (payload.error || payload.detail)) || `HTTP ${res.status}`);
     }
@@ -1665,7 +1665,7 @@ function connectSSE() {
       }
       if (liveFilterActive()) return;  // 필터 스냅샷 보호: restore/gap 재조회도 일시정지
       // 갭 감지: 재연결 restore(최신 50건)와 기존 page 0 행이 하나도 겹치지
-      // 않으면 단절 중 50건 초과 완료 의심 — merge 대신 전체 재조회로 치유
+      // 않으면 단절 중 50건 초과 완료 의심 — merge 대신 전체 재조회로 복구
       if (
         liveCurrentPage === 0
         && liveResultPage.length > 0
@@ -1924,7 +1924,7 @@ function batchStatePresentation(s) {
   if (s.batch_status === 'FAILED' && failure && failure.schema_version === 'dashboard_run_failure_v1') {
     const counts = failure.manifest_counts || {};
     return { state: 'failed', icon: '!', label: failure.process_exited === false ? '배치 중단 · 프로세스 종료 미확인 · 실측 미완료' : '배치 실패 · 실측 미완료',
-      detail: `${failure.reason_code}: ${failure.message || ''} · 저장 ${counts.flushed_count ?? '?'} / ${counts.input_post_count ?? s.total_posts ?? '?'} · 처리 관측 ${s.done_count || 0} · 실행 ${failure.run_id}` };
+      detail: `${failure.reason_code}: ${failure.message || ''} · 저장 ${counts.flushed_count ?? '?'} / ${counts.input_post_count ?? s.total_posts ?? '?'} · 처리 집계 ${s.done_count || 0} · 실행 ${failure.run_id}` };
   }
   if (s.llm_suspended) return { state: 'suspended', icon: '!', label: 'LLM 서버 확인 대기', detail: '' };
   if (s.batch_running) return { state: 'running', icon: '↻', label: '배치 실행 중', detail: '' };
@@ -1991,7 +1991,7 @@ function updateStatus(s) {
   }
 
   // 순차 모드 전용 — 병렬 모드에서 호출하면 임의 워커의 expert가 순차
-  // 파이프라인 스트립에 누적되어 표시가 오도된다 (워커 카드가 담당)
+  // 파이프라인 스트립에 누적되어 표시가 잘못된다 (워커 카드가 담당)
   if ((s.parallel_count || 1) <= 1 && s.current_expert) {
     updatePipeline(s.current_expert, s.current_expert_status);
   }
@@ -2092,7 +2092,7 @@ function addFlowEntry(expert, isRecall, fromExpert, reason) {
   const container = document.getElementById('flow-log');
   const label = STEP_LABELS[expert] || expert;
   
-  // 화살표: 첫 엔트리가 아니면 표시
+  // 화살표: 첫 항목이 아니면 표시
   if (flowLog.length > 0) {
     const arrow = document.createElement('span');
     if (isRecall && fromExpert) {
@@ -2156,7 +2156,7 @@ function toggleParallelUI(isParallel) {
 }
 
 function renderWorkerCards() {
-  // 32병렬 expert_phase가 초당 수십 건 — 즉시 렌더 대신 250ms 코얼레싱
+  // 32병렬 expert_phase가 초당 수십 건 — 즉시 렌더하지 않고 250ms 단위로 묶는다
   scheduleRender('workers');
 }
 
@@ -2187,7 +2187,7 @@ function renderWorkerCardsNow() {
         setTimeout(() => {
           el.remove();
           if (activeWorkers.size === 0 && !container.querySelector('.worker-card')) {
-            container.innerHTML = '<div data-worker-empty="1" class="text-xs text-slate-500 col-span-full text-center py-4">처리 중인 포스트 없음</div>';
+            container.innerHTML = '<div data-worker-empty="1" class="text-xs text-slate-500 col-span-full text-center py-4">처리 중인 게시글 없음</div>';
           }
         }, 200);
       }
@@ -2248,7 +2248,7 @@ function renderWorkerCardsNow() {
 
   // 아무 워커도 없으면 안내 메시지
   if (activeWorkers.size === 0 && container.children.length === 0) {
-    container.innerHTML = '<div data-worker-empty="1" class="text-xs text-slate-500 col-span-full text-center py-4">처리 중인 포스트 없음</div>';
+    container.innerHTML = '<div data-worker-empty="1" class="text-xs text-slate-500 col-span-full text-center py-4">처리 중인 게시글 없음</div>';
   }
 }
 
@@ -2282,7 +2282,7 @@ function toggleExpandBlock(id, btn) {
   }
 }
 
-// 모달 내 이전/다음 포스트 네비게이션 컨텍스트 (현재 페이지 목록 기준)
+// 모달 내 이전/다음 게시글 이동 컨텍스트 (현재 페이지 목록 기준)
 let _modalNav = { ids: [], index: -1, mode: 'live' };
 let _modalCurrentData = null;
 
@@ -2536,7 +2536,7 @@ function showModal(d, mode) {
   const tu = d.token_usage;
   if (tu && typeof tu === 'object') {
     const tokenText = value => value === null ? 'null · 산정값 없음' : value === undefined ? '미기록' : fmtNum(value);
-    html += dkv('행 token_usage 관측', `입력 ${escHtml(tokenText(tu.prompt_tokens))} / 출력 ${escHtml(tokenText(tu.completion_tokens))} / 총 ${escHtml(tokenText(tu.total_tokens))}`);
+    html += dkv('행 token_usage 기록', `입력 ${escHtml(tokenText(tu.prompt_tokens))} / 출력 ${escHtml(tokenText(tu.completion_tokens))} / 총 ${escHtml(tokenText(tu.total_tokens))}`);
   }
   html += `</div></div>`;
 
@@ -2655,7 +2655,7 @@ function closeModal() {
   _modalNav = { ids: [], index: -1, mode: 'live' };
 }
 
-// ESC로 닫기 + ←/→로 이전/다음 포스트
+// ESC로 닫기 + ←/→로 이전/다음 게시글
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     if (document.getElementById('log-modal').style.display !== 'none') {
@@ -2908,7 +2908,7 @@ function appendLog(line, workerId) {
   }
 
   // DOM 갱신은 배치(250ms)로 — 라인마다 textContent 재구성(O(n²))하지 않는다.
-  // 배열이 진실이므로 flush 시점에 통째로 다시 그린다.
+  // 배열이 기준 데이터이므로 flush 시점에 통째로 다시 그린다.
   if (currentLogWorker === -1 || currentLogWorker === wid) {
     scheduleRender('log');
   }
@@ -3095,7 +3095,7 @@ async function loadHistoryDetail(filename, logFile, page = 0) {
     document.getElementById('hist-identified').textContent = stats.identified ?? '미기록';
     document.getElementById('hist-noise').textContent = stats.noise ?? '미기록';
     renderHistoryResults();
-    // 파일명으로 별도 로그를 추측하지 않고 선택한 실행에 결속된 로그만 요청한다.
+    // 파일명으로 별도 로그를 추측하지 않고 선택한 실행에 연결된 로그만 요청한다.
     const logRes = await fetch(`/api/runs/${encodeURIComponent(filename)}/log?tail=500`);
     const logPayload = await logRes.json();
     if (selectionVersion !== historySelectionVersion) return;

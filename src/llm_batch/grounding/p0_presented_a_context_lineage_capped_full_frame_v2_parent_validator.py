@@ -1,4 +1,4 @@
-"""A-context lineage-capped V2의 producer 비의존 독립 parent replay.
+"""A-context lineage-capped V2의 producer에 의존하지 않는 독립 parent replay.
 
 현재 producer 모듈은 import하지 않는다. 두 predecessor parent를 실행하고,
 source plan·bridge·A census 원문에서 lineage/context 모집단, 2단계 rank,

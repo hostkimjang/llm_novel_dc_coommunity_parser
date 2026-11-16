@@ -1,8 +1,8 @@
-"""원시 게시글과 main의 텍스트·블록·이미지 투영을 순수 검산한다.
+"""원시 게시글과 main의 텍스트·블록·이미지 투영을 순수 함수로 검증한다.
 
 main loader를 import하거나 원문을 다시 쓰지 않는다. 구조형 입력은 loader의
 명시적 부분집합만 허용하며, 과거 문자열 content의 정확 비교 계약도 유지한다.
-댓글/전체 입력 순서/WAL 및 raw bytes SHA는 호출자의 기존 계약이 검산한다.
+댓글/전체 입력 순서/WAL 및 raw bytes SHA는 호출자의 기존 계약이 검증한다.
 """
 from __future__ import annotations
 
@@ -109,7 +109,7 @@ public content_blocks의 text/url은 main처럼 strip하며 이미지 URL은 순
 
 
 def validate_main_input_projection(source_post, result):
-    """원문/결과를 변경하지 않고 source-bound main 투영 또는 legacy exact를 검산한다."""
+    """원문/결과를 변경하지 않고 source-bound main 투영 또는 legacy exact를 검증한다."""
     _require(type(source_post) is dict and type(result) is dict, "ORIGINAL_INPUT_RESULT_OBJECT_REQUIRED")
     for key in ("gallery_id", "post_id", "title"):
         _require(key in source_post and key in result, "ORIGINAL_INPUT_FIELD_MISSING")

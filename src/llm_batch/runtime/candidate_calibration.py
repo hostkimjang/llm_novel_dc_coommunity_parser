@@ -1,7 +1,7 @@
-"""명시적으로 배정된 FROZEN 행의 재관측만 교정 shadow에 연결한다.
+"""명시적으로 배정된 FROZEN 행을 다시 확인한 결과만 교정 shadow에 연결한다.
 
-새 추론 자료에 대한 확률 계약이 아니다. 원래 runtime/corpus 좌표와 dataset
-좌표를 별도로 보존하며 기존 bridge·교정 검산을 완화하지 않는다.
+새 추론 자료의 확률을 보장하는 계약이 아니다. 원래 runtime/corpus 좌표와 dataset
+좌표를 따로 보존하며 기존 bridge·교정 검증을 완화하지 않는다.
 """
 from __future__ import annotations
 
@@ -73,7 +73,7 @@ def _equal(left, right):
 
 
 def _semantic_binding(value):
-    """runtime/dataset의 명시 post 매핑 외 별칭 정책·원시 근거는 그대로 결속한다."""
+    """runtime/dataset의 명시적 게시글 매핑을 제외한 별칭 정책·원시 근거는 그대로 연결한다."""
     alias = value["alias_evidence"]
     return {"contract_sha256": value["contract_sha256"],
         "policy_sha256": value["observation"]["policy_sha256"],
@@ -85,7 +85,7 @@ def _semantic_binding(value):
 
 
 def _require_frozen_semantic_binding(capture, scorer_summary, record):
-    """관측과 저장 양쪽에서 같은 고정 별칭 문맥을 요구한다."""
+    """기록할 때와 저장할 때 모두 같은 고정 별칭 문맥을 요구한다."""
     if scorer_summary.get("semantic_input_required") is True:
         _require(capture.get("schema_version") == "candidate_reranker_capture_v2"
             and _equal(_semantic_binding(capture["semantic_input"]), record["semantic_binding"]),
@@ -205,7 +205,7 @@ class FrozenCandidateCalibration:
 
 
 def _load(settings, scorer):
-    # OFF 경로는 이 import와 파일 판독에도 도달하지 않는다.
+    # OFF 경로에서는 이 import와 파일 읽기까지 가지 않는다.
     from tools import run_candidate_reranker_training as local
     from ..grounding import candidate_reranker_event_bridge as bridge
     from ..grounding import candidate_set_calibration_shadow as legacy

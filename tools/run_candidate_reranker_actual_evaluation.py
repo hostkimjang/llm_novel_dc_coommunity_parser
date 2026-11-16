@@ -1,4 +1,4 @@
-"""고정 로컬 NIL/CAL 양쪽 관측을 재생하고 기존 actual 파일 게이트로 연결한다."""
+"""고정한 로컬 NIL/CAL 양쪽 측정 결과를 재생하고 기존 actual 파일 게이트로 연결한다."""
 from __future__ import annotations
 
 import argparse
@@ -161,7 +161,7 @@ def _archive_inputs(*, root, output, snapshots, used_paths):
     """기존 reader의 JSON 계약 안에 일반 원문 bytes도 손실 없이 보존한다.
 
     기존 reader는 .bin/text를 직접 artifact로 받지 않는다. 원본을 변환하지 않고
-    새 JSON wrapper에 base64를 넣고 SHA·길이·decode를 검산한다. 최종 영수증 전
+    새 JSON wrapper에 base64를 넣고 SHA·길이·decode를 검증한다. 최종 기록 전
     원래 경로의 raw bytes도 _check_inputs로 다시 확인한다.
     """
     refs = []

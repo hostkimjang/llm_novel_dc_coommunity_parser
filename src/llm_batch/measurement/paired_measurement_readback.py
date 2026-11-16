@@ -2018,7 +2018,7 @@ def _validate_low_load_observation_bundle(
 
 def _validate_parallel12_row_intervals(observations: list[dict[str, Any]], *,
                                        input_count: int, effective_parallel: int) -> None:
-    """이미 검산한 행 구간의 겹침은 허용하되 두 clock 모두 동시성 상한을 지킨다."""
+    """이미 검증한 행 구간끼리 겹치는 것은 허용하되 두 clock 모두 동시성 상한을 지킨다."""
     if type(input_count) is not int or input_count < 1 or type(effective_parallel) is not int or effective_parallel != min(12, input_count):
         raise ValueError("parallel12 interval input/parallel mismatch")
     if len(observations) != input_count:

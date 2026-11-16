@@ -63,7 +63,7 @@ def _projection(frozen_view, raw_receipt, retrieval_receipt, scorer_summary, *, 
                              for candidate in view["candidates"]]
     _require(receipt.get("frozen_candidate_ids") == expected_ids, "CAPTURE_CANDIDATE_IDS_MISMATCH")
     # scorer의 명시적 크기 제한 terminal만 상세 배열 생략을 허용한다.
-    # 입력 후보 ID·순서·generation 결속은 이 경우에도 그대로 검산한다.
+    # 입력 후보 ID·순서·generation 연결은 이 경우에도 그대로 확인한다.
     omitted = (receipt.get("status") == "LIMIT_EXCEEDED"
                and receipt.get("reason_codes") == ["RECEIPT_BYTE_LIMIT"]
                and receipt.get("details_available") is False
@@ -125,7 +125,7 @@ def _projection(frozen_view, raw_receipt, retrieval_receipt, scorer_summary, *, 
 
 
 def build_capture(frozen_view, raw_receipt, retrieval_receipt, scorer_summary, *, semantic_input=None, evidence_payloads=None) -> dict:
-    """같은 호출에서 만든 원문·R2·역할 관측·score 입력만 깊은 복사로 봉인한다."""
+    """같은 호출에서 만든 원문·R2·역할 관측·score 입력만 깊은 복사로 고정한다."""
     payload = _projection(frozen_view, raw_receipt, retrieval_receipt, scorer_summary,
         semantic_input=semantic_input, evidence_payloads=evidence_payloads)
     payload["capture_sha256"] = canonical_sha256(payload)
@@ -133,7 +133,7 @@ def build_capture(frozen_view, raw_receipt, retrieval_receipt, scorer_summary, *
 
 
 def validate_capture(value) -> dict:
-    """자체 해시만 신뢰하지 않고 원문/후보/점수 및 UTF-8 좌표를 재검산한다."""
+    """자체 해시만 신뢰하지 않고 원문/후보/점수 및 UTF-8 좌표를 다시 확인한다."""
     value = _copy(value)
     _require(type(value) is dict, "CAPTURE_OBJECT_REQUIRED")
     try:

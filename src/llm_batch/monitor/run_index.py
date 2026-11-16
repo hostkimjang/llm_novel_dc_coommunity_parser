@@ -1,4 +1,4 @@
-"""저장 결과를 읽기만 하는 제한된 실행 인덱스와 manifest 결속 계약."""
+"""저장 결과를 읽기만 하는 제한된 실행 인덱스와 manifest 연결 계약."""
 from __future__ import annotations
 
 from collections import OrderedDict, deque
@@ -154,7 +154,7 @@ def _row_bindings(meta: dict[str, Any], key: str) -> set[str]:
             row_key = "attempt_run_id" if key == "run_id" else key
             if isinstance(row, dict) and row.get(row_key):
                 values.add(str(row[row_key]))
-    # 저장된 새 관측의 좌표도 독립 비교한다. 참조 artifact 파일은 읽지 않는다.
+    # 저장된 새 SHADOW 기록의 좌표도 따로 비교한다. 참조 artifact 파일은 읽지 않는다.
     for name in ("candidate_calibration_shadow", "candidate_reranker_capture",
                  "candidate_reranker_inference", "candidate_inference_capture",
                  "candidate_reranker_semantics", "candidate_reranker_semantics_capture"):
@@ -170,7 +170,7 @@ def _row_bindings(meta: dict[str, Any], key: str) -> set[str]:
 
 def bound_manifest(output: Path, root: Path, *, item: dict[str, Any] | None = None,
                    manifest_path: Path | None = None, payload: dict[str, Any] | None = None) -> dict[str, Any]:
-    """행 기록과 종료 기록을 섞지 않고 출처·결속 상태를 따로 반환한다."""
+    """행 기록과 종료 기록을 섞지 않고 출처·연결 상태를 따로 반환한다."""
     path = manifest_path or output.with_name(f"{output.stem}_manifest.json")
     payload = payload if payload is not None else read_object(path, root)
     if payload is None:
@@ -195,7 +195,7 @@ def bound_manifest(output: Path, root: Path, *, item: dict[str, Any] | None = No
                 missing.append(f"{name}_NOT_RECORDED")
     if reasons:
         return {"binding_status": "MISMATCH", "reason_codes": reasons, "summary": {}}
-    # 판독 대상이 원본 result인지 명시된 completed subset인지 구별한다.
+    # 읽는 대상이 원본 result인지 명시된 completed subset인지 구별한다.
     # terminal 확정은 저장 마감이며 전체 행의 성공/실패 판정이 아니다.
     artifact_kind = "COMPLETED_SUBSET" if inside(output, root) != manifest_output(payload, root, path) else "RESULT"
     return {"binding_status": "PARTIAL" if missing else "BOUND", "reason_codes": missing,
@@ -204,11 +204,11 @@ def bound_manifest(output: Path, root: Path, *, item: dict[str, Any] | None = No
 
 def bound_manifest_rows(output: Path, root: Path, items: list[dict[str, Any]],
                         manifest_path: Path | None = None) -> dict[str, Any]:
-    """결과 파일과 sidecar manifest의 결속을 행 단위로 확인한다.
+    """결과 파일과 sidecar manifest의 연결을 행 단위로 확인한다.
 
     manifest가 없거나 결과와 맞지 않으면 그 상태(MISSING/MISMATCH)를 그대로 돌려주고, 어떤 행이라도
     MISMATCH면 즉시 MISMATCH다. 행마다 빠진 필드는 모아 PARTIAL로 표시하며, 과거 결과에 기록되지
-    않은 값을 추정해 채우지 않는다. BOUND는 저장 자료가 결속됐다는 뜻이지 품질 승인이 아니다.
+    않은 값을 추정해 채우지 않는다. BOUND는 저장 자료가 서로 연결됐다는 뜻이지 품질 승인이 아니다.
     """
     path = manifest_path or output.with_name(f"{output.stem}_manifest.json")
     payload = read_object(path, root)
@@ -241,9 +241,9 @@ class RunIndex:
     """저장된 실행 결과를 읽기 전용으로 찾는 제한된 인덱스.
 
     탐색 항목 수·깊이·manifest 수와 JSON 크기에 상한을 두고 URL에서 파일 경로를 받지 않는다.
-    일반 탐색 결과(``_records``)는 TTL 동안 캐시한다. 이와 별도로 실제 current로 관측한 출력
+    일반 탐색 결과(``_records``)는 TTL 동안 캐시한다. 이와 별도로 실제 current로 확인한 출력
     좌표를 최대 ``RECENT_CURRENT_LIMIT``(24)개 서버 메모리에 보존해, 탐색 상한 밖의 직전 실행도
-    고를 수 있게 한다. 보존 좌표는 조회 때마다 경계·symlink·sidecar·run_id를 다시 검산하며
+    고를 수 있게 한다. 보존 좌표는 조회 때마다 경계·symlink·sidecar·run_id를 다시 확인하며
     서버를 재시작하면 비워진다.
     """
 
@@ -257,8 +257,8 @@ class RunIndex:
         self._root: Path | None = None
         self._expires = 0.0
         self._records: dict[str, RunRecord] = {}
-        # 현재 실행으로 실제 관측한 경로/실행 ID만 제한적으로 기억한다.
-        # payload는 권위로 캐시하지 않고 records()마다 sidecar를 다시 읽는다.
+        # 현재 실행으로 실제 확인한 경로/실행 ID만 제한적으로 기억한다.
+        # payload를 기준값으로 캐시하지 않고 records()마다 sidecar를 다시 읽는다.
         self._recent_current: OrderedDict[str, tuple[Path, str]] = OrderedDict()
         self._result_cache: OrderedDict[tuple[str, int, int], list[dict[str, Any]]] = OrderedDict()
         self.truncated = False
@@ -294,7 +294,7 @@ class RunIndex:
         return data
 
     def _paths(self, root: Path):
-        # 깊은 ledger/frame 디렉터리가 얕은 실행 sidecar 탐색을 굶기지 않는다.
+        # 깊은 ledger/frame 디렉터리 때문에 얕은 실행 sidecar 탐색이 밀리지 않게 한다.
         pending = deque([(root, 0)])
         seen = 0
         manifests = 0
@@ -393,7 +393,7 @@ class RunIndex:
         return self._record(safe, manifest, payload, root)
 
     def _retained_current_record(self, output: Path, run_id: str, root: Path) -> RunRecord | None:
-        """이전에 본 current 경로도 매번 경계·링크·sidecar·실행 ID를 재검산한다."""
+        """이전에 본 current 경로도 매번 경계·링크·sidecar·실행 ID를 다시 확인한다."""
         if inside(output, root) != output:
             return None
         try:

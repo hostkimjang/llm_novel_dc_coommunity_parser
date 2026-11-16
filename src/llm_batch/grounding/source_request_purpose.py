@@ -134,7 +134,7 @@ def reduce_request_roles(units, projection, *, exact, emit, current):
         if request or exists:
             # 소재가 없는 매체 일반 요청은 다른 줄의 구체 조건을 기다린다.
             continue
-        # projection은 조건과 맥락을 함께 담는다. 무술어 명사구/분량만 보충 조건으로 인정.
+        # projection은 조건과 맥락을 함께 담는다. 술어 없는 명사구/분량만 보충 조건으로 인정한다.
         for condition in _get(projection, "request_conditions", ()):
             if condition == t and _nominal_condition(condition):
                 add("wanted", u, condition)

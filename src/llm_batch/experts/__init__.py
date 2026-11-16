@@ -1,4 +1,4 @@
-"""공개 expert 이름을 유지하되 원문 유틸리티 import는 독립시킨다."""
+"""공개 expert 이름은 유지하되, 지연 import로 원문 유틸리티가 다른 expert 모듈을 함께 불러오지 않게 한다."""
 from importlib import import_module
 
 _EXPORTS = {

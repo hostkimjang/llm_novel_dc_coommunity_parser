@@ -624,7 +624,7 @@ def source_anticipation_official_search_evidence(
     post: dict[str, Any], comments: list[Any], discourse: dict[str, Any],
     title: str, rows: list[dict[str, Any]],
 ) -> dict[str, str] | None:
-    """원문 기다림 대상과 위키 원문의 명시 약칭/작가 관계만 검색 허용에 쓴다."""
+    """원문의 기다림 대상과 위키 원문에 명시된 약칭/작가 관계만 검색 허용 근거로 쓴다."""
     import hashlib
     if not isinstance(discourse, dict) or not isinstance(title, str) or not isinstance(rows, list):
         return None

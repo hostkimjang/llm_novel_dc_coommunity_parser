@@ -236,7 +236,7 @@ class _LLMServerSuspendController:
                 "threshold": threshold,
                 "last_error": error_text,
                 "started_at": started_at,
-                "message": "HTTP 스트리밍 오류가 관측되었습니다. 관리자님은 LLM 서버측을 확인해주세요.",
+                "message": "HTTP 스트리밍 오류가 발생했습니다. LLM 서버 상태를 확인해 주세요.",
             },
         )
         resume_source = "unknown"
@@ -383,8 +383,8 @@ class _LLMServerSuspendController:
     def _prompt_until_resume(self, *, count: int, threshold: int, error_text: str) -> str:
         ts = time.strftime("%H:%M:%S")
         self._write_notice(
-            f"\n[{ts}][llm-watchdog] ⚠️ HTTP 스트리밍 오류가 관측되었습니다. "
-            "관리자님은 LLM 서버측을 확인해주세요. "
+            f"\n[{ts}][llm-watchdog] ⚠️ HTTP 스트리밍 오류가 발생했습니다. "
+            "LLM 서버 상태를 확인해 주세요. "
             f"(연속 실패 {count}회, 임계값 {threshold}회)"
         )
         if error_text:
@@ -484,7 +484,7 @@ def _log_llm_admission(event: str, **data: Any) -> None:
             {"event": event, **data}, ensure_ascii=False, sort_keys=True,
         ), file=sys.stderr, flush=True)
     except Exception:
-        # 관측 출력 실패가 전송이나 슬롯 반환을 바꾸지 않게 한다.
+        # 이 진단 로그 출력이 실패해도 전송이나 슬롯 반환에 영향을 주지 않게 한다.
         pass
 
 
@@ -1036,8 +1036,8 @@ class LLMClient:
         # ── 반복 루프 다계층 방어 ──
         loop_detected = False
         # vLLM의 provider-reported usage는 보통 마지막 SSE 이벤트에만 실린다.
-        # 의미 출력을 동결한 뒤 곧바로 소켓을 닫으면 그 마지막 이벤트를 놓쳐
-        # ESTIMATED로 강등된다. 반환 텍스트는 그대로 동결한 채 usage만 읽는
+        # 의미 출력을 고정한 뒤 곧바로 소켓을 닫으면 그 마지막 이벤트를 놓쳐
+        # ESTIMATED로 강등된다. 반환 텍스트는 고정한 그대로 두고 usage만 읽는
         # drain-only 상태를 별도로 둔다.
         _usage_drain_active = False
         _usage_drain_complete = False
@@ -1088,7 +1088,7 @@ class LLMClient:
             _usage_drain_last_progress_at = _usage_drain_started_at
             ts_drain = self._timestamp()
             print(
-                f"\n[{ts_drain}][llm-stream] ℹ️ {tag} 의미 출력 동결 후 provider usage drain 시작 "
+                f"\n[{ts_drain}][llm-stream] ℹ️ {tag} 의미 출력 고정 후 provider usage drain 시작 "
                 f"(reason={_usage_drain_reason}, "
                 f"signal_idle_limit={_USAGE_DRAIN_SIGNAL_IDLE_TIMEOUT_S:.2f}s, "
                 f"absolute_limit={_USAGE_DRAIN_MAX_SECONDS:.2f}s)",
@@ -1575,7 +1575,7 @@ class LLMClient:
                                         print(f"\n[{ts_debug}][llm-debug] usage 발견: {last_usage}", file=sys.stderr, flush=True)
                                 
                                 # finish_reason은 의미 출력과 별개인 provider 종료 메타데이터다.
-                                # hardcap은 기존 동결 계약을 유지하고, 반복 감지 early-stop의
+                                # hardcap은 출력을 고정하는 기존 계약을 유지하고, 반복 감지 early-stop의
                                 # drain만 tail의 non-null 값을 보존한다.
                                 choices = chunk.get("choices", [])
                                 if choices and (
@@ -1596,7 +1596,7 @@ class LLMClient:
                                             flush=True,
                                         )
                                         break
-                                    # 동결 뒤의 reasoning/content는 반환값·파서·token_count에
+                                    # 고정한 뒤 들어온 reasoning/content는 반환값·파서·token_count에
                                     # 절대 반영하지 않는다. 다음 SSE 이벤트에서 usage만 찾는다.
                                     continue
                                 if choices:

@@ -1,4 +1,4 @@
-"""R2 후보 회수의 명시적 실행 설정과 비공개 관측 저장 경계."""
+"""R2 후보 회수의 명시적 실행 설정과 비공개 기록 저장 경계."""
 from __future__ import annotations
 
 import copy
@@ -51,7 +51,7 @@ def _unavailable(reason: str, binding: Mapping[str, Any]) -> dict:
 
 
 def export_candidate_retrieval_fields(result: Any, observer: Any, *, binding: Mapping[str, Any]) -> dict:
-    """같은 게시글·attempt의 관측만 run_meta에 넣고 공개 payload에는 넣지 않는다."""
+    """같은 게시글·attempt의 기록만 run_meta에 넣고 공개 payload에는 넣지 않는다."""
     if observer is None:
         return {}
     raw = getattr(result, "_candidate_retrieval_shadow", None) if result is not None else None

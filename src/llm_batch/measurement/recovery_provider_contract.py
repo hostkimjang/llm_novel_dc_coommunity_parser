@@ -1,6 +1,6 @@
 """명시적 완료 원본에 묶인 단일 provider 검색 계획. 실행·공개 권한은 부여하지 않는다.
 
-기존 합성 계약의 파일/JSON/입력/WAL 검산 helper만 재사용한다. 합성 source
+기존 합성 계약의 파일/JSON/입력/WAL 검증 helper만 재사용한다. 합성 source
 schema를 바꾸거나 실제 자료에 합성 표식을 채우지 않는다. provider 응답과
 native 공개 guard 재판정은 이 모듈의 범위 밖이다.
 """
@@ -131,7 +131,7 @@ def _seal(plan: dict) -> dict:
 
 
 def validate_recovery_provider_plan(plan: Any) -> dict:
-    """저장 계획의 구조 검산. 원본 결속에는 bind_recovery_provider_plan이 필요하다."""
+    """저장 계획의 구조 검증. 원본과 연결하려면 bind_recovery_provider_plan이 필요하다."""
     _exact(plan, _TOP, "PLAN_FIELDS")
     _require(len(legacy._canonical_bytes(plan)) <= MAX_PLAN_BYTES, "PLAN_BYTE_LIMIT")
     _require(plan["schema_version"] == SCHEMA and plan["execution_mode"] == MODE, "PLAN_SCHEMA_MODE")
@@ -225,7 +225,7 @@ def build_recovery_provider_plan(*, source_refs: dict, source_bytes: dict, input
     result_pointer: str, router_pointer: str, recovery_plan_pointer: str,
     publication_decision_id: str, activation_event_sha256: str, source_binding: dict,
     endpoint: str, payload: dict, policy: dict, output_dir: str, hmac_key: bytes) -> dict:
-    """명시 bytes만 검산한다. 파일·key·원장·provider를 생성하지 않는다."""
+    """명시한 bytes만 검증한다. 파일·key·원장·provider를 생성하지 않는다."""
     refs = _refs(source_refs)
     _require(type(source_bytes) is dict and set(source_bytes) == _ROLES, "SOURCE_BYTES_FIELDS")
     for role, ref in refs.items():

@@ -1275,7 +1275,7 @@ def _parser() -> argparse.ArgumentParser:
     freeze.add_argument("--parent-p1-run-spec", required=True)
     freeze.add_argument("--parent-producer-run-spec", required=True)
     freeze.add_argument("--output", required=True)
-    status = sub.add_parser("status", help="RunSpec 결속을 재검증")
+    status = sub.add_parser("status", help="RunSpec 연결 정보를 다시 검증")
     status.add_argument("--run-spec", required=True)
     compare = sub.add_parser("compare", help="저장본·합성 공격 전후 비교")
     compare.add_argument("--run-spec", required=True)

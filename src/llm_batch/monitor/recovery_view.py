@@ -1,4 +1,4 @@
-"""명시적으로 연결한 복구 판독 보고서만 읽는다. GET은 실행·원장 수리를 하지 않는다."""
+"""명시적으로 연결한 복구 확인 보고서만 읽는다. GET은 실행·원장 수리를 하지 않는다."""
 from __future__ import annotations
 
 import hashlib
@@ -41,7 +41,7 @@ def _read(path: Path, root: Path, limit: int) -> bytes:
     final = _safe(path, root).stat()
     identity = lambda value: (value.st_dev, value.st_ino, value.st_size, value.st_mtime_ns)
     if len(raw) > limit or identity(before) != identity(after) or identity(after) != identity(final):
-        raise ValueError('복구 표시 판독 중 파일 변경')
+        raise ValueError('복구 표시 파일을 읽는 중 파일 변경')
     return raw
 
 
@@ -70,7 +70,7 @@ def _check_report(report: dict, base: dict) -> None:
     if report.get('report_sha256') != canonical_sha256({k: v for k, v in report.items() if k != 'report_sha256'}):
         raise ValueError('복구 보고서 자체 지문 불일치')
     if canonical_sha256(report.get('base')) != canonical_sha256(base):
-        raise ValueError('복구 보고서 원래 판정 결속 불일치')
+        raise ValueError('복구 보고서와 원래 판정의 연결 정보 불일치')
     fixed = {'execution_mode': 'LOCAL_SIMULATION_ONLY', 'data_kind': 'SYNTHETIC_CONTRACT_ONLY',
              'actual_external_call_count': 0, 'public_apply': False, 'publication_authority': False,
              'central_db_write': False, 'formal_kpi_status': 'NOT_ESTIMABLE'}
@@ -79,7 +79,7 @@ def _check_report(report: dict, base: dict) -> None:
 
 
 def publish_recovery_view(bound_plan, report_path: str | Path, *, root: str | Path) -> dict:
-    """독립 재판독 후 새 companion을 만든다. 기존 companion은 덮어쓰지 않는다."""
+    """따로 다시 읽어 확인한 뒤 새 companion을 만든다. 기존 companion은 덮어쓰지 않는다."""
     root = Path(root).resolve()
     bound_plan.verify_protected_sources()
     plan = bound_plan.plan
@@ -107,7 +107,7 @@ def publish_recovery_view(bound_plan, report_path: str | Path, *, root: str | Pa
             stream.flush()
             os.fsync(stream.fileno())
     if _read(target, root, 65536) != raw:
-        raise ValueError('복구 표시 참조 저장 검산 실패')
+        raise ValueError('복구 표시 참조 저장 후 확인 실패')
     bound_plan.verify_protected_sources()
     if _read(report_path, root, REPORT_LIMIT) != report_raw:
         raise ValueError('복구 표시 저장 중 보고서 변경')
@@ -115,7 +115,7 @@ def publish_recovery_view(bound_plan, report_path: str | Path, *, root: str | Pa
 
 
 def read_recovery_view(output_path: str | Path, root: str | Path, *, item: dict | None = None) -> dict:
-    """표시용 파일·base 결속만 검산한다. 원장/HMAC 재검산으로 주장하지 않는다."""
+    """표시용 파일·base 연결만 확인한다. 원장/HMAC을 다시 검증한 것처럼 주장하지 않는다."""
     result = {'binding_status': 'MISSING', 'verification_scope': 'FILE_AND_BASE_BINDING_ONLY',
               'reason_codes': ['RECOVERY_REPORT_NOT_ATTACHED']}
     try:
@@ -143,7 +143,7 @@ def read_recovery_view(output_path: str | Path, root: str | Path, *, item: dict 
                 or manifest.get('run_id') != base['base_attempt_run_id']):
             raise ValueError('복구 base와 원본 manifest 불일치')
         if _read(target, root, 65536) != raw:
-            raise ValueError('판독 중 복구 표시 참조 변경')
+            raise ValueError('읽는 중 복구 표시 참조 변경')
         view = {**result, 'binding_status': 'BOUND', 'reason_codes': [], 'report': report}
         return bind_recovery_view_row(view, item) if item is not None else view
     except (OSError, ValueError, KeyError, TypeError, RecursionError):
@@ -173,7 +173,7 @@ def bind_recovery_view_row(view: dict, item: dict) -> dict:
                     'post_id': base['post_id'], 'publication_decision_id': base['publication_decision_id'],
                     'stable_result_sha256': base['stable_result_sha256'],
                     'public_projection_sha256': base['public_projection_sha256']}.items())):
-                raise ValueError('행 검토 수령증과 복구 base 불일치')
+                raise ValueError('행 검토 기록과 복구 base 불일치')
         return view
     except (OSError, ValueError, KeyError, TypeError, RecursionError):
         return {**result, 'binding_status': 'INVALID', 'reason_codes': ['RECOVERY_REFERENCE_OR_BASE_INVALID']}

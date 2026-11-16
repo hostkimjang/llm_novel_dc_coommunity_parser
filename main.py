@@ -61,7 +61,7 @@ def main() -> None:
     INPUT_PATH = repo_root / "tests" / "inputs" / "sample.jsonl"
     OUTPUT_PATH = repo_root / "_last_run.json"
     LOG_DIR = repo_root / "logs"
-    OUT_DIR = repo_root / "out"  # 처리 결과 JSON 저장 디렉토리
+    OUT_DIR = repo_root / "out"  # 처리 결과 JSON 저장 디렉터리
     USE_LLM = True
     TRACE = True
     DEBUG_LLM_MESSAGES = True  # LLM이 받는 messages(system/user)를 stderr로 덤프
@@ -129,10 +129,10 @@ def main() -> None:
 
     # 콘솔 출력 로그를 logs/ 아래에 저장(터미널 truncate 방지)
     LOG_DIR.mkdir(parents=True, exist_ok=True)
-    OUT_DIR.mkdir(parents=True, exist_ok=True)  # 결과 저장 디렉토리 생성
+    OUT_DIR.mkdir(parents=True, exist_ok=True)  # 결과 저장 디렉터리 생성
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
     log_path = LOG_DIR / f"run_{ts}.log"
-    # 처리 결과를 out/ 디렉토리에도 타임스탬프 포함하여 저장
+    # 처리 결과를 out/ 디렉터리에도 타임스탬프를 붙여 저장
     out_result_path = OUT_DIR / f"result_{ts}.json"
     _orig_out = sys.stdout
     _orig_err = sys.stderr

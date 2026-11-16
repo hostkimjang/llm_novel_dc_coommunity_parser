@@ -64,7 +64,7 @@ def _same(left, right, code):
 
 
 def validate_native_batch_policy(value):
-    """명시 JSON 정책만 검산한다. 파일·capture·원장·네트워크를 만들지 않는다."""
+    """명시된 JSON 정책만 검증한다. 파일·capture·원장·네트워크를 만들지 않는다."""
     _require(type(value) is dict and set(value) == _POLICY_KEYS, "BATCH_POLICY_FIELDS")
     _require(value["schema_version"] == POLICY_SCHEMA, "BATCH_POLICY_SCHEMA")
     for key in ("max_capture_rows", "max_batch_calls", "max_batch_elapsed_ms", "max_batch_response_bytes"):

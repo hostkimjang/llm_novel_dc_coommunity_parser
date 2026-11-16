@@ -67,7 +67,7 @@ class Evidence(BaseModel):
 
 class SlangInsight(BaseModel):
     # LLM이 종종 null을 넣는 경우가 있어 Optional로 허용.
-    # (원칙상 null이면 slang_insight 자체를 생략하는게 맞지만, 파이프라인 안정성을 위해 완화)
+    # (원칙상 null이면 slang_insight 자체를 생략하는 게 맞지만, 파이프라인 안정성을 위해 완화)
     detected_term: Optional[str] = None
     decoded_term: Optional[str] = None
     decode_verified: Optional[bool] = None
@@ -158,7 +158,7 @@ class PickvelIdentity(BaseModel):
     evidence: Optional[Evidence] = None
     slang_insight: Optional[SlangInsight] = None
     inference: Optional[Inference] = None
-    # 관련 포스트에서 단일 official_title 외에 후보군을 함께 노출
+    # 관련 게시글에서 단일 official_title 외에 후보군을 함께 노출
     # (복수 작품/작품군 비교 맥락, 미확정 케이스 대응)
     title_candidates: Optional[List["DetectedTitle"]] = None
     primary_work: Optional["DetectedTitle"] = None
@@ -293,7 +293,7 @@ class PickvelIdentity(BaseModel):
         "resolved_title",    # 관련 + 정식 제목 확정
         "unresolved_title",  # 관련이나 정식 제목 미확정
         "adjacent_relevant", # 주변 관련
-        "technical_inconclusive",  # 기술 실패로 비관련로 단정하기 어려움
+        "technical_inconclusive",  # 기술 실패로 비관련으로 단정하기 어려움
         "non_relevant",      # 비관련
     ]] = None
 
@@ -316,9 +316,9 @@ class DetectedTitle(BaseModel):
     page_type: Optional[str] = None
     content_status: Optional[str] = None
     locked: Optional[bool] = None
-    # rank1/rank3 precision 게이트가 lock(locked)을 분리한 뒤에도, 게이트 전에 확정 가능했던
-    # (lock 가능했던) 정당 resolved 후보임을 다운스트림 displace 보호용으로 표시한다. locked(precision)과
-    # 분리된 recall 보호 신호 — final-semantic-reread demotion 가드(has_official_candidate)가 참조한다.
+    # rank1/rank3 precision 게이트가 lock(locked)을 분리한 뒤에도, 게이트 전에 확정할 수 있었던
+    # (lock 가능했던) 정당한 resolved 후보임을 표시해 다운스트림에서 밀려나지(displace) 않게 한다. locked(precision)과
+    # 별개인 recall 보호 신호이며, final-semantic-reread demotion 가드(has_official_candidate)가 참조한다.
     resolved_recall_anchor: Optional[bool] = None
     negative_evidence: Optional[List[str]] = None
     reference_role: Optional[Literal[
@@ -371,7 +371,7 @@ class PickvelAnalysis(BaseModel):
     micro_tags: List[str] = Field(default_factory=list)
     sentiment_profile: Optional[SentimentProfile] = None
     is_nsfw: bool = False
-    # 평가 수행 범위다. false나 MODEL_REPORTED는 이미지 전체의 안전 확인을 뜻하지 않는다.
+    # 평가를 어디까지 했는지 나타낸다. false나 MODEL_REPORTED는 이미지 전체의 안전 확인을 뜻하지 않는다.
     nsfw_assessment_status: Optional[Literal[
         "MODEL_REPORTED", "SOURCE_RULE_POSITIVE", "NOT_EVALUATED",
     ]] = None

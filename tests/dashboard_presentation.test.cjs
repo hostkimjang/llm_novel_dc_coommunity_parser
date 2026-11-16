@@ -80,7 +80,7 @@ test('native foreign run·typed ID·scope·카운터·권한 모순은 guard 표
   for (const edit of edits) {
     const x = nativeViewFixture(); edit(x);
     const html = ui.renderRecoveryNative(x.view, x.context);
-    assert.match(html, /결속이 맞지 않아 판정을 표시하지 않습니다/);
+    assert.match(html, /연결이 맞지 않아 판정을 표시하지 않습니다/);
     assert.doesNotMatch(html, /별도 native guard 판정<\/div>/);
   }
 });
@@ -110,15 +110,15 @@ test('WAL 재생 owner와 새 export 불일치는 유지하면서 native 전체 
   assert.match(whole, /전체 입력 수<\/div><div class="value">2</);
   assert.match(whole, /BASE_PUBLICATION_REPLAY_NO_CAPTURE/);
   assert.match(whole, /별도 native guard 판정<\/div><div class="value">PUBLISH</);
-  assert.match(whole, /기본 manifest 결속<\/div><div class="value">MISMATCH</);
-  assert.match(whole, /현재 export 파일 결속<\/div><div class="value">BOUND</);
+  assert.match(whole, /기본 manifest 연결<\/div><div class="value">MISMATCH</);
+  assert.match(whole, /현재 export 파일 연결<\/div><div class="value">BOUND</);
   view.row = replayRow; context.post_id = replayRow.post_id; context.run_meta = {run_id: 'prior-wal-owner'};
   const replay = ui.renderRecoveryNative(view, context);
   assert.match(replay, /prior-wal-owner/); assert.match(replay, /native-current/);
   assert.match(replay, /별도 native guard 판정<\/div><div class="value">null · 산정값 없음/);
   assert.doesNotMatch(replay, /별도 native guard 판정<\/div><div class="value">PUBLISH</);
   context.recovery_native_export_manifest.summary.publication_scope_id = 'c'.repeat(64);
-  assert.match(ui.renderRecoveryNative(view, context), /결속이 맞지 않아 판정을 표시하지 않습니다/);
+  assert.match(ui.renderRecoveryNative(view, context), /연결이 맞지 않아 판정을 표시하지 않습니다/);
 });
 
 test('불완전 native 영수증이 없으면 알려진 provider 호출을 전체 합계로 대체하지 않는다', () => {
@@ -130,7 +130,7 @@ test('불완전 native 영수증이 없으면 알려진 provider 호출을 전�
   assert.match(html, /client HTTP 누적 호출 수<\/div><div class="value">null · 산정값 없음/);
   assert.match(html, /실제 외부 누적 호출 수<\/div><div class="value">null · 산정값 없음/);
   view.aggregate.counts.client_http_invocations = 7;
-  assert.match(ui.renderRecoveryNative(view, context), /결속이 맞지 않아 판정을 표시하지 않습니다/);
+  assert.match(ui.renderRecoveryNative(view, context), /연결이 맞지 않아 판정을 표시하지 않습니다/);
 });
 
 test('native 행 성공과 마지막 batch 제어 실패를 별도로 표시하고 보고서 결속을 확인한다', () => {
@@ -152,7 +152,7 @@ test('native 행 성공과 마지막 batch 제어 실패를 별도로 표시하�
   assert.match(html, /batch 최종 제어 상태<\/div><div class="value">INCOMPLETE</);
   assert.match(html, /BATCH_TIME_EXHAUSTED/);
   assert.match(html, /별도 native guard 판정<\/div><div class="value">PUBLISH</);
-  assert.match(html, /마지막 제어 검사까지 관측한 시간 ms<\/div><div class="value">101</);
+  assert.match(html, /마지막 제어 검사까지 측정한 시간 ms<\/div><div class="value">101</);
   assert.match(html, /보고서 발행 시간 포함<\/div><div class="value">false</);
   assert.match(html, /예약량은 실제 사용량이 아닙니다/); assert.match(html, /&lt;img/);
   assert.doesNotMatch(html, /<img|href=/); assert.equal(JSON.stringify(view), before);
@@ -160,7 +160,7 @@ test('native 행 성공과 마지막 batch 제어 실패를 별도로 표시하�
     x => {x.batch.status = 'COMPLETED';}, x => {x.batch.counts.input_count = 2;},
     x => {x.batch.budget.report_publication_io_in_time_scope = true;}]) {
     const copy = JSON.parse(before); edit(copy.aggregate);
-    assert.match(ui.renderRecoveryNative(copy, context), /결속이 맞지 않아 판정을 표시하지 않습니다/);
+    assert.match(ui.renderRecoveryNative(copy, context), /연결이 맞지 않아 판정을 표시하지 않습니다/);
   }
 });
 
@@ -211,7 +211,7 @@ test('실제 native HTTP mock→저장→live/history API 자료를 같은 rende
       assert.match(rendered, /별도 native guard 판정<\/div><div class="value">(?:PUBLISH|HOLD)</);
       assert.match(rendered, /GUARD_NOT_EVALUATED/); assert.match(rendered, /TEST_DOUBLE/);
       assert.match(rendered, /native 포함 실제 외부 호출 수<\/div><div class="value">0</);
-      assert.match(rendered, /원격 관측<\/div><div class="value">UNKNOWN</);
+      assert.match(rendered, /원격 호출 확인<\/div><div class="value">UNKNOWN</);
     }
     assert.equal(JSON.stringify(payload), before);
   });
@@ -366,7 +366,7 @@ test('실제 provider workflow의 저장·판독 자료를 현재 행에 결속�
     const html = ui.renderRecoveryProvider(view, context);
     assert.match(html, /provider 응답 근거 저장/);
     assert.match(html, /GUARD_NOT_EVALUATED/); assert.match(html, /NO_PLAN_PROVIDED/);
-    assert.match(html, /TEST_DOUBLE/); assert.match(html, /원격 내부 호출 관측<\/div><div class="value">UNKNOWN</);
+    assert.match(html, /TEST_DOUBLE/); assert.match(html, /원격 내부 호출 확인<\/div><div class="value">UNKNOWN</);
     assert.match(html, /client HTTP 호출 수<\/div><div class="value">1</);
     assert.match(html, /실제 외부 호출 수<\/div><div class="value">0</);
     assert.match(ui.renderRunContext({...context, recovery_provider_execution: view}), /provider 응답 근거 저장/);
@@ -420,7 +420,7 @@ test('실제 pipeline·저장·live/history API 판독 자료의 일반 입력 �
     for (const detail of [payload.live, payload.history]) {
       assert.equal(detail.run_manifest.binding_status, 'BOUND');
       const html = ui.renderCandidateInference(detail.run_meta.candidate_reranker_inference, detail.run_meta.candidate_inference_capture, detail);
-      assert.match(html, /결속된 일반 입력 사건 확률/);
+      assert.match(html, /연결된 일반 입력 사건 확률/);
       assert.match(ui.renderRunContext(detail), /일반 입력 교정 정책/);
       assert.match(html, /UNJUDGED_NOT_ASSIGNED/);
     }
@@ -429,7 +429,7 @@ test('실제 pipeline·저장·live/history API 판독 자료의 일반 입력 �
 test('일반 입력의 저장·모델 검산·행 결속을 함께 만족할 때만 확률을 표시한다', () => {
   const {value, capture, context} = generalInferenceFixture();
   const html = ui.renderCandidateInference(value, capture, context);
-  assert.match(html, /결속된 일반 입력 사건 확률/);
+  assert.match(html, /연결된 일반 입력 사건 확률/);
   assert.match(html, /UNJUDGED_NOT_ASSIGNED/);
   assert.match(html, /FROZEN 평가 배정이나 실제 정확도 보증이 아닙니다/);
   assert.match(html, /SHADOW 선택 오류확률<\/div><div class="value">0</);
@@ -452,10 +452,10 @@ test('미실행·저장 실패·다른 행·부분 확률은 일반 입력 성�
   for (const change of changes) {
     const x = generalInferenceFixture(); change(x);
     const html = ui.renderCandidateInference(x.value, x.capture, x.context);
-    assert.doesNotMatch(html, /결속된 일반 입력 사건 확률/);
+    assert.doesNotMatch(html, /연결된 일반 입력 사건 확률/);
     assert.match(html, /확률 표시 조건을 충족하지 못했습니다/);
   }
-  assert.match(ui.renderCandidateInference(null, null), /교정 관측이 저장되지 않았습니다/);
+  assert.match(ui.renderCandidateInference(null, null), /교정 기록이 저장되지 않았습니다/);
 });
 
 test('일반 입력 정책과 capture 경로는 HTML로 실행하지 않고 live·history 공용 표시를 사용한다', () => {
@@ -738,7 +738,7 @@ function nsfwReasonDisplayCases() {
     [false, 'MODEL_REPORTED', 'MODEL_BOOLEAN_REPORTED', '모델이 NSFW 여부를 보고했습니다.'],
     [true, 'MODEL_REPORTED', 'MODEL_BOOLEAN_REPORTED', '모델이 NSFW 여부를 보고했습니다.'],
     [true, 'SOURCE_RULE_POSITIVE', 'SOURCE_TEXT_RULE_POSITIVE', '원문 텍스트가 NSFW 규칙에 해당합니다.'],
-    [true, 'SOURCE_RULE_POSITIVE', 'SOURCE_IMAGE_RULE_POSITIVE', '원문 이미지의 관측 정보가 NSFW 규칙에 해당합니다.'],
+    [true, 'SOURCE_RULE_POSITIVE', 'SOURCE_IMAGE_RULE_POSITIVE', '원문 이미지에서 확인한 정보가 NSFW 규칙에 해당합니다.'],
     [false, 'NOT_EVALUATED', 'NOISE_EARLY_RETURN_NO_MODEL_ASSESSMENT', '작품 분석이 조기 종료되어 모델의 NSFW 평가는 수행되지 않았습니다.'],
     [false, 'NOT_EVALUATED', 'NOISE_OUTPUT_WITHOUT_MODEL_ASSESSMENT', '작품 분석에서 제외됐으며 모델의 NSFW 평가값은 없습니다.'],
     [false, 'NOT_EVALUATED', 'MODEL_ASSESSMENT_MISSING_OR_INVALID', '모델의 NSFW 평가값이 없거나 형식이 올바르지 않습니다.'],
@@ -1066,7 +1066,7 @@ test('실제 상세 모달은 live와 history 모두 메모·NSFW·실행 기록
   for (const mode of ['live', 'history']) {
     vm.runInContext("showModal(" + mode + ", '" + mode + "')", context);
     const body = get('modal-body').innerHTML;
-    for (const text of ['원문 판정', '별도 분석 메모', 'false · NSFW 해당 없음', 'low-load', '구조화 진단이 저장되지 않았습니다', '작품 후보 회수 · SHADOW', 'PIPELINE_NOT_EXECUTED', '커뮤니티 지식 · READ_ONLY', 'PROMPT_SECTION_INCLUDED', '선택 행 · R6 로컬 복구 판독', '파일·base 결속 확인', 'report-fingerprint']) {
+    for (const text of ['원문 판정', '별도 분석 메모', 'false · NSFW 해당 없음', 'low-load', '구조화 진단이 저장되지 않았습니다', '작품 후보 회수 · SHADOW', 'PIPELINE_NOT_EXECUTED', '커뮤니티 지식 · READ_ONLY', 'PROMPT_SECTION_INCLUDED', '선택 행 · R6 로컬 복구 확인 결과', '파일·base 연결 확인', 'report-fingerprint']) {
       assert.ok(body.includes(text), mode + ': ' + text);
     }
     for (const text of ['후보 확률 교정 · FROZEN SHADOW', 'CALIBRATION_NOT_EXECUTED',
@@ -1239,12 +1239,12 @@ test('저부하 paired 관측은 저장과 검증을 구분하고 행·종료 �
     health: {ok_count: 1, failure_count: 0}};
   const meta = {paired_execution_observation: {start, end: {...start, observed_at: '2026-10-10T00:01:00Z'}}};
   const html = ui.renderRunContext({run_meta: meta, run_manifest: {summary: meta}});
-  for (const text of ['행 저장 시점 · 저부하 비교 관측', '실행 manifest · 저부하 비교 관측', '시작·종료 관측 저장',
-    '16384', 'policy-fixed', '정책 검산 통과를 판정하지 않습니다', 'REFERENCE_COPY_COST_ONLY']) assert.ok(html.includes(text), text);
+  for (const text of ['행 저장 시점 · 저부하 비교 기록', '실행 manifest · 저부하 비교 기록', '시작·종료 기록 저장',
+    '16384', 'policy-fixed', '정책 검증 통과를 판정하지 않습니다', 'REFERENCE_COPY_COST_ONLY']) assert.ok(html.includes(text), text);
   assert.doesNotMatch(html, /<script>/);
   assert.match(html, /&lt;script&gt;/);
-  assert.match(ui.renderPairedExecution({paired_execution_observation: {start}}), /관측 미완료/);
-  assert.doesNotMatch(ui.renderPairedExecution({paired_execution_observation: {start}}), /시작·종료 관측 저장/);
+  assert.match(ui.renderPairedExecution({paired_execution_observation: {start}}), /기록 미완료/);
+  assert.doesNotMatch(ui.renderPairedExecution({paired_execution_observation: {start}}), /시작·종료 기록 저장/);
 });
 
 test('semantic 검토·계획은 모드와 결속을 표시하고 query 허용을 실행으로 승격하지 않는다', () => {
@@ -1265,8 +1265,8 @@ test('semantic 검토·계획은 모드와 결속을 표시하고 query 허용�
   }
   assert.equal(JSON.stringify(meta), before);
   const missing = ui.renderSemanticReview({});
-  assert.match(missing, /의미 검토 수령증 미기록/);
-  assert.match(missing, /복구 계획 수령증 미기록/);
+  assert.match(missing, /의미 검토 기록 없음/);
+  assert.match(missing, /복구 계획 기록 없음/);
   assert.doesNotMatch(missing, /NO_REVIEW|>false<|>0</);
   for (const state of ['NO_REVIEW', 'NOT_APPLICABLE', 'UNKNOWN']) {
     assert.ok(ui.renderSemanticReview({semantic_review_router_receipt: {state}}).includes(state));
@@ -1275,7 +1275,7 @@ test('semantic 검토·계획은 모드와 결속을 표시하고 query 허용�
     public_apply: false, plan: {state: 'UNKNOWN', query_plan: {query_execution_allowed: false, max_queries: 0}}}});
   assert.match(blocked, /UNKNOWN · 계획 미확인/);
   assert.match(blocked, />false</);
-  assert.match(blocked, /계획 수령증의 검색 호출 수<\/div><div class="value">미기록/);
+  assert.match(blocked, /계획 기록의 검색 호출 수<\/div><div class="value">미기록/);
 });
 
 test('activation manifest는 READY·OFF·NO_GO·fresh 생략과 미기록을 구분한다', () => {
@@ -1314,7 +1314,7 @@ test('공통 live·history 복구 표시는 행과 manifest 출처를 유지하�
 test('R6 판독은 파일 결속과 저장자의 검증을 구분하고 합성·미산정·전체 분모를 보존한다', () => {
   const view = recoveryViewFixture(), before = JSON.stringify(view);
   const html = ui.renderRunContext({recovery_execution: view});
-  for (const text of ['BOUND · 파일·base 결속 확인', 'FILE_AND_BASE_BINDING_ONLY', '저장 판독자의 검증 상태',
+  for (const text of ['BOUND · 파일·base 연결 확인', 'FILE_AND_BASE_BINDING_ONLY', '보고서에 기록된 검증 상태',
     'VERIFIED_LOCAL_CONTRACT', 'COMPLETED_SIMULATION · 로컬 합성 시뮬레이션 완료', 'LOCAL_SIMULATION_ONLY',
     'SYNTHETIC_CONTRACT_ONLY', 'NOT_ESTIMABLE', 'null · 산정값 없음', '실제 provider 실행은 미연결',
     '마지막 최종화 기록 저장 I/O는 예산에서 제외', '종결 후보 저장', '최종화 저장',
@@ -1330,7 +1330,7 @@ test('R6 판독은 파일 결속과 저장자의 검증을 구분하고 합성·
 
 test('R6 미기록·미계획·결속 오류는 성공 보고서를 재사용하지 않으며 오류 문자열을 escape한다', () => {
   const report = recoveryViewFixture().report;
-  const labels = {MISSING: '판독 기록 미기록', NO_PLAN_PROVIDED: '이 행의 명시 계획 없음 · 실패 아님', INVALID: '판독 기록 결속 오류'};
+  const labels = {MISSING: '확인 기록 없음', NO_PLAN_PROVIDED: '이 행의 명시 계획 없음 · 실패 아님', INVALID: '확인 기록 연결 오류'};
   for (const [binding_status, label] of Object.entries(labels)) {
     const html = ui.renderRecoveryExecution({binding_status, verification_scope: 'FILE_AND_BASE_BINDING_ONLY',
       reason_codes: ['<img src=x onerror=bad()>'], report});
@@ -1339,7 +1339,7 @@ test('R6 미기록·미계획·결속 오류는 성공 보고서를 재사용하
     assert.doesNotMatch(html, /<img |COMPLETED_SIMULATION|VERIFIED_LOCAL_CONTRACT|report-fingerprint/);
   }
   const absent = ui.renderRecoveryExecution(undefined);
-  assert.match(absent, /판독 기록 미기록/);
+  assert.match(absent, /확인 기록 없음/);
   assert.doesNotMatch(absent, /NOT_STARTED|>0<|>false</);
   for (const view of [{binding_status: 'BOUND'}, {...recoveryViewFixture(), verification_scope: 'UNRECOGNIZED'},
     {...recoveryViewFixture(), report: {...report, schema_version: 'future_schema'}}]) {
@@ -1486,11 +1486,11 @@ test('기존 scorer의 v1 제목 관측과 별도 의미 관측의 미소비를 
     for (const value of [status, 'AMBIGUOUS_TITLE', 'policy-roles-fixed', 'view-roles-fixed', 'MENTIONED', '/comments/0']) {
       assert.ok(html.includes(value), value);
     }
-    assert.match(html, /이 scorer 입력의 v1 제목 출현 관측은 MENTIONED만 기록합니다/);
-    assert.match(html, /별도 의미 역할 관측은 이 점수·교정 입력에 반영하지 않습니다/);
+    assert.match(html, /이 scorer 입력의 v1 제목 출현 기록에는 MENTIONED만 남깁니다/);
+    assert.match(html, /별도 의미 역할 기록은 이 점수·교정 입력에 반영하지 않습니다/);
     assert.doesNotMatch(html, /<img/);
   }
-  assert.doesNotMatch(ui.renderCandidateReranker({status: 'SCORED_SYNTHETIC'}), /선택 전 역할 관측 상태/);
+  assert.doesNotMatch(ui.renderCandidateReranker({status: 'SCORED_SYNTHETIC'}), /선택 전 역할 기록 상태/);
 });
 
 test('커뮤니티 지식은 조회와 실제 소비를 구분하고 후보 권한과 출처를 표시한다', () => {
@@ -1565,14 +1565,14 @@ test('의미 역할은 원문 근거와 미결합을 표시하고 scorer·교정
   }
   assert.match(html, /작가의 전작 · PREVIOUS<\/div><div class="value">0</);
   assert.match(html, /scorer 입력 적용<\/div><div class="value">false</);
-  assert.match(html, /별칭 검산·출처 권한·자료 구분<\/div><div class="value">null · 산정값 없음</);
-  assert.match(html, /관측 후 view SHA-256 · 모델 입력 아님/);
+  assert.match(html, /별칭 검증·출처 권한·자료 구분<\/div><div class="value">null · 산정값 없음</);
+  assert.match(html, /기록 후 view SHA-256 · 모델 입력 아님/);
   assert.equal(JSON.stringify(value), before);
 });
 
 test('의미 관측 terminal·미기록·스키마 불일치는 성공이나 0건으로 보충하지 않는다', () => {
   for (const value of [undefined, null, [], false]) {
-    assert.match(ui.renderCandidateSemantics(value), /관측이 저장되지 않았습니다/);
+    assert.match(ui.renderCandidateSemantics(value), /기록이 저장되지 않았습니다/);
   }
   for (const status of ['NOT_EXECUTED', 'NOT_AVAILABLE', 'ERROR', 'LIMIT_EXCEEDED', 'INVALID_INPUT', 'FUTURE_STATUS']) {
     const value = semanticsViewFixture(); value.status = status;
@@ -1701,7 +1701,7 @@ test('의미 capture는 저장·미실행·null을 보존하고 참조 파일을
     'ref-fixed', 'file-fixed', '저장 성공은 모델 입력 적용이나 학습·정답 배정을 뜻하지 않습니다']) assert.ok(html.includes(text), text);
   assert.match(html, /파일 바이트 수<\/div><div class="value">0</);
   assert.match(html, /공개 권한<\/div><div class="value">false</);
-  assert.match(html, /관측 객체 전체 SHA-256 · receipt self SHA와 별도/);
+  assert.match(html, /기록 객체 전체 SHA-256 · receipt self SHA와 별도/);
   assert.match(html, /&lt;img/); assert.doesNotMatch(html, /<img|<a\s|href=/);
   assert.equal(JSON.stringify(value), before);
   for (const status of ['NOT_EXECUTED', 'NOT_AVAILABLE', 'FUTURE_STATUS']) {
@@ -1724,7 +1724,7 @@ test('manifest 의미 정책은 행 관측을 대신하지 않고 stale scope �
       summary: {candidate_reranker_semantics_policy: policy}}});
     assert.match(html, /실행 manifest · 선행 의미 역할 정책/);
     assert.match(html, /manifest-semantics-fixed/);
-    assert.match(html, /행별 관측 성공이나 모델·교정 입력 소비를 뜻하지 않습니다/);
+    assert.match(html, /행별 기록 성공이나 모델·교정 입력 소비를 뜻하지 않습니다/);
     assert.match(html, /실제 품질 평가<\/div><div class="value">미기록</);
     assert.match(html, /PER_OCCURRENCE_AUTHOR_ASSERTION/);
     assert.match(html, /manifest-parser-fixed/);
@@ -1736,18 +1736,18 @@ test('manifest 의미 정책은 행 관측을 대신하지 않고 stale scope �
       summary: {candidate_reranker_semantics_policy: policy}}});
     // The untrusted complete manifest stays in its existing raw-record section; the policy card must not adopt it.
     const policyCard = html.slice(html.indexOf('<h3 class="detail-section-title">실행 manifest · 선행 의미 역할 정책'));
-    assert.match(policyCard, /manifest 결속이 확인되지 않아/);
+    assert.match(policyCard, /manifest 연결이 확인되지 않아/);
     assert.doesNotMatch(policyCard, /manifest-semantics-fixed/);
   }
   const row = ui.renderCandidateSemantics(semanticsViewFixture(), {binding_status: 'MISMATCH'});
-  assert.match(row, /manifest 실행·공개 범위 결속 불일치/);
+  assert.match(row, /manifest 실행·공개 범위 연결 정보 불일치/);
   assert.match(row, /runtime-semantics-fixed/);
 });
 
 test('교정 카드는 저장된 FROZEN 확률 질량을 raw 점수·공개 판정과 구분한다', () => {
   const value = calibrationViewFixture(), before = JSON.stringify(value);
   const html = ui.renderCandidateCalibration(value);
-  for (const text of ['FROZEN 재관측 전용', 'SYNTHETIC_FIXTURE', 'mapping-fixed', 'capture-fixed',
+  for (const text of ['FROZEN 재실행 전용', 'SYNTHETIC_FIXTURE', 'mapping-fixed', 'capture-fixed',
     'runtime-raw-fixed', 'dataset-raw-fixed', 'artifact-fixed', 'bundle-fixed', 'model-fixed', 'scorer-fixed',
     'calibration-receipt-fixed', 'run-fixed', 'attempt-fixed', 'scope-fixed', 'dataset-42', 'frozen-42',
     '__NIL__', 'candidate-A', '1000000', 'NONE_SHADOW_ONLY', 'policy-fixed', 'split-fixed', 'vector-fixed']) {
@@ -1765,7 +1765,7 @@ test('교정 카드는 저장된 FROZEN 확률 질량을 raw 점수·공개 판�
 
 test('교정 미기록·비결속·null은 확률 0으로 대체하지 않는다', () => {
   for (const value of [null, undefined, [], false]) {
-    assert.match(ui.renderCandidateCalibration(value), /교정 관측이 저장되지 않았습니다/);
+    assert.match(ui.renderCandidateCalibration(value), /교정 기록이 저장되지 않았습니다/);
   }
   for (const status of ['NOT_AVAILABLE', 'NOT_EXECUTED', 'UNAVAILABLE', 'OFF', 'FUTURE_STATUS']) {
     const value = {...calibrationViewFixture(), status, calibration_shadow: null};

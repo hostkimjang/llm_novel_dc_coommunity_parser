@@ -58,7 +58,7 @@ def resolve_execution_settings(args: argparse.Namespace, environment: Mapping[st
         if key == "ledger_mode":
             value = str(value or "OFF").strip().upper()
             if value not in {"OFF", "SHADOW", "REQUIRED"}:
-                raise ValueError("호출 장부 모드는 OFF, SHADOW, REQUIRED 중 하나여야 합니다")
+                raise ValueError("호출 원장 모드는 OFF, SHADOW, REQUIRED 중 하나여야 합니다")
             updates[env_key] = value
         else:
             value = _toggle(value, legacy_default)
@@ -117,7 +117,7 @@ def observe_process_resources(environment: Mapping[str, str]) -> dict:
 
 
 def apply_profile_resources(profile: str, environment: dict | os._Environ) -> dict:
-    """저부하 프로필은 실제 실행 중인 CPython PID에 적용하고 반환값·관측을 검사한다."""
+    """저부하 프로필은 실제 실행 중인 CPython PID에 적용하고 반환값과 실제 적용 결과를 검사한다."""
     if profile == "low-load-validation":
         for key in NUMERIC_THREAD_KEYS:
             environment[key] = "1"
@@ -145,7 +145,7 @@ def apply_profile_resources(profile: str, environment: dict | os._Environ) -> di
         if os.name == "nt":
             valid = valid and observed["priority_class"] == 0x4000
         if not valid:
-            raise RuntimeError("저부하 프로필 자원 설정의 실제 관측이 요청과 다릅니다")
+            raise RuntimeError("저부하 프로필 자원 설정을 실제로 확인한 값이 요청과 다릅니다")
         observed["status"] = "LOW_LOAD_VERIFIED"
     return observed
 

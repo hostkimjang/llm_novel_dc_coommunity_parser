@@ -1,4 +1,4 @@
-"""선택 전 R2 후보의 재정렬 관측 설정·연결·행별 저장 경계."""
+"""선택 전 R2 후보를 재정렬해 참고용으로 기록하는 기능의 설정·연결·행별 저장 경계."""
 from __future__ import annotations
 
 import copy
@@ -63,7 +63,7 @@ def resolve_candidate_reranker_settings(args: Any, environment: Mapping[str, str
         if getattr(args, "candidate_retrieval", "OFF") != "SHADOW":
             raise ValueError("재정렬 SHADOW에는 --candidate-retrieval SHADOW가 필요합니다")
         if not values["manifest_path"] or not isinstance(values["manifest_sha256"], str) or not _HASH.fullmatch(values["manifest_sha256"]):
-            raise ValueError("재정렬 SHADOW에는 manifest 경로와 사전 고정 소문자 SHA-256이 필요합니다")
+            raise ValueError("재정렬 SHADOW에는 manifest 경로와 미리 고정한 소문자 SHA-256이 필요합니다")
     return {**values, "sources": sources}
 
 
@@ -182,7 +182,7 @@ def _role_not_executed(reason, *, status="NOT_EXECUTED"):
 
 
 def _attach_roles(receipt, metadata, view=None):
-    # 관측 뒤 scorer 오류가 나도 완료된 producer 관측을 미실행으로 바꾸지 않는다.
+    # 기록한 뒤 scorer 오류가 나도 이미 완료된 producer 기록을 미실행으로 바꾸지 않는다.
     if metadata["status"] in _ROLE_EXECUTED and receipt.get("input_sha256") is None and view is not None:
         receipt.update(input_sha256=_sha(view), candidate_view_sha256=_sha(view["candidates"]),
             generation_sha256=view["generation_sha256"], generation_status=view["generation_status"],
@@ -209,7 +209,7 @@ def _valid_role_metadata(receipt):
                 and receipt.get("details_available") is False
                 and observations == [] and receipt.get("ranked_candidates") == []):
             # scorer가 크기 한도로 상세를 생략했어도 완료된 producer의 집계·입력
-            # 결속과 LIMIT terminal은 보존한다. 큰 관측 배열을 다시 붙이지 않는다.
+            # 연결 정보와 LIMIT terminal은 보존한다. 큰 기록 배열을 다시 붙이지 않는다.
             return type(ids) is list and metadata["counts"]["candidates"] == len(ids)
         if (type(observations) is not list or type(ids) is not list
                 or [row.get("candidate_id") if type(row) is dict else None for row in observations] != ids):
@@ -266,7 +266,7 @@ def _observe_roles(frozen):
 
 
 def _validate_role_enrichment(original, enriched):
-    """원문·고정 후보는 그대로 두고 정확한 제목 언급 관측만 허용한다."""
+    """원문과 고정 후보는 그대로 두고, 제목이 정확히 언급된 경우의 기록만 허용한다."""
     from ..grounding.candidate_reranker_shadow import _validate_view
     view = _validate_view(enriched)
     restored = copy.deepcopy(view)
@@ -399,7 +399,7 @@ def _observe_candidate_reranker(scorer, post, retrieval_receipt, retrieval_obser
                 or str(receipt.get("post_id")) != str(post.post_id) or receipt.get("query_sha256") != query_sha
                 or any(receipt.get(key) is not False for key in ("publication_authority", "public_apply", "central_db_write"))):
             raise ValueError("R2 receipt binding")
-        # 실패 영수증에 없는 값은 만들지 않되 알려진 지문 모순은 실패 원인과 구별한다.
+        # 실패 기록에 없는 값은 만들지 않되, 알려진 지문 모순은 실패 원인과 구별한다.
         for key in ("corpus_sha256", "scorer_sha256", "config_sha256"):
             if key in receipt and receipt[key] is not None and receipt[key] != expected.get(key):
                 raise ValueError("R2 policy binding")
@@ -456,7 +456,7 @@ def _observe_candidate_reranker(scorer, post, retrieval_receipt, retrieval_obser
         output = json.loads(_bytes(raw))
         if not _valid_receipt(output, summary, post.post_id):
             raise ValueError("R4 receipt binding")
-        # 입력 검사 전 거절은 입력 지문이 없을 수 있다. 성공한 관측에는 예외를 적용하지 않는다.
+        # 입력 검사 전 거절은 입력 지문이 없을 수 있다. 성공한 기록에는 이 예외를 적용하지 않는다.
         if output.get("status") not in {"INVALID_INPUT", "LIMIT_EXCEEDED"}:
             if any(output.get(key) != value for key, value in {"query_sha256": query_sha, "input_sha256": input_sha,
                     "candidate_view_sha256": candidate_sha, "generation_sha256": generation_sha}.items()):
@@ -533,7 +533,7 @@ def export_candidate_reranker_fields(result, scorer, *, binding: Mapping[str, An
             if not _valid_receipt(receipt, summary, post_id, require_roles=has_metadata) or ("binding" in receipt and receipt["binding"] != storage_binding):
                 raise ValueError("stale or invalid receipt")
             if not has_metadata and summary.get("semantic_input_required") is not True:
-                # 이전 명시 frozen-view API는 보존하되 producer 실행으로 승격하지 않는다.
+                # 이전 명시 frozen-view API는 보존하되 producer 실행으로 취급하지 않는다.
                 receipt = _attach_roles(receipt, _role_not_executed("EXPLICIT_FROZEN_VIEW_PROVIDED"))
                 if not _valid_receipt(receipt, summary, post_id, require_roles=True):
                     raise ValueError("manual frozen view receipt binding")

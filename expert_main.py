@@ -1756,7 +1756,7 @@ def _parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
     """CLI 인자를 기존 호환 규칙대로 해석한다.
 
     - ``-h``/``--help``는 stderr에 도움말을 쓰고 종료 코드 0으로 끝난다.
-    - 알 수 없는 인자는 무시한다. ``--native-recovery``로 시작하는 나머지는 따로 모아 이후 검산한다.
+    - 알 수 없는 인자는 무시한다. ``--native-recovery``로 시작하는 나머지는 따로 모아 나중에 검증한다.
     - ``-pN``과 옵션 축약을 허용하고, ``--parallel`` 명시 여부를 ``parallel_explicit``로 구분한다(기본 1).
     - ``--input``이 위치 인자보다 우선한다.
     - 복구 옵션이 있으면 축약을 허용하지 않는 별도 parser로 남은 인자를 확인한다.
@@ -1798,7 +1798,7 @@ def _parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
 
 
 def _resolve_native_recovery_options(args, environment: Mapping[str, str]) -> Optional[Dict[str, Any]]:
-    """OFF는 정책 파일과 native 모듈을 읽지 않는다. ON은 worker 준비 전에 검산한다."""
+    """OFF는 정책 파일과 native 모듈을 읽지 않는다. ON은 worker 준비 전에 확인한다."""
     mode = getattr(args, "native_recovery", None)
     if mode is None:
         mode = str(environment.get("EXPERT_NATIVE_RECOVERY", "OFF")).strip().upper()
@@ -10440,7 +10440,7 @@ def _normalize_mcp_endpoint(endpoint: str) -> str:
 
 
 def _dedupe_mcp_endpoints(raw_endpoints: str) -> List[str]:
-    """쉼표/공백/개행으로 섞인 MCP endpoint 목록을 순서 보존 dedupe한다."""
+    """쉼표/공백/개행이 섞인 MCP endpoint 목록에서 순서를 유지한 채 중복을 제거한다."""
     seen: set[str] = set()
     out: List[str] = []
     for token in re.split(r"[\s,]+", str(raw_endpoints or "")):
@@ -11501,7 +11501,7 @@ def main() -> None:
     posts = load_jsonl_posts(INPUT_PATH, snapshot_bytes=_input_snapshot_bytes)
     if input_nonempty_lines and not posts:
         raise ValueError(
-            "입력 JSONL에 내용이 있지만 로드된 post가 0개입니다. "
+            "입력 JSONL에 내용이 있지만 읽어 들인 게시글이 0개입니다. "
             "post_id/content_blocks 또는 post_id/content 형식과 UTF-8/BOM 상태를 확인하세요."
         )
     if LIMIT:
@@ -11671,7 +11671,7 @@ def main() -> None:
         _set_env("LLM_SERVER_TYPE", LLM_SERVER_TYPE)  # "llama" or "vllm"
         
         if LLM_SERVER_TYPE == "vllm":
-            # ===== vLLM 서빙 =====
+            # ===== vLLM 서빙 (기본) =====
             #_set_env("LLM_ENDPOINT", _CLI_ARGS.llm_endpoint or os.getenv("LLM_ENDPOINT", "http://localhost:20000/"))
             #_set_env("LLM_ENDPOINT", _CLI_ARGS.llm_endpoint or os.getenv("LLM_ENDPOINT", "http://a100:10000/"))
             _set_env("LLM_ENDPOINT", _CLI_ARGS.llm_endpoint or os.getenv("LLM_ENDPOINT", "http://10.20.0.101:8000/"))
@@ -11712,7 +11712,7 @@ def main() -> None:
             _set_env("LLM_TEMP_SKEPTIC", os.getenv("LLM_TEMP_SKEPTIC", _DEFAULT_EXPERT_TEMP))
             _set_env("LLM_TEMP_JUDGE", os.getenv("LLM_TEMP_JUDGE", _DEFAULT_EXPERT_TEMP))
         else:
-            # ===== llama-server 서빙 (기본) =====
+            # ===== llama-server 서빙 (--server-type llama 또는 LLM_SERVER_TYPE=llama일 때) =====
             _set_env("LLM_ENDPOINT", _CLI_ARGS.llm_endpoint or os.getenv("LLM_ENDPOINT", "http://a100:10000/"))
             # 참고용 기존 Qwen GGUF 설정
             #_set_env("LLM_MODEL", _CLI_ARGS.llm_model or os.getenv("LLM_MODEL", "unsloth/Qwen3.5-35B-A3B-GGUF:UD-IQ3_XXS"))
@@ -11793,7 +11793,7 @@ def main() -> None:
     if not INPUT_PATH.exists():
         raise FileNotFoundError(f"Input not found: {INPUT_PATH}")
 
-    # 디렉토리 생성
+    # 디렉터리 생성
     LOG_DIR.mkdir(parents=True, exist_ok=True)
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -12247,7 +12247,7 @@ def main() -> None:
         def _report_attempt_failure(error, shutdown_status, values):
             try:
                 # 생성자 실패는 batch_start보다 먼저 발생할 수 있다. 실패를
-                # 기존 standalone 실행에 섞지 않도록 이 시도의 결속부터 보낸다.
+                # 기존 standalone 실행에 섞지 않도록 이번 시도의 run 정보(batch_prepare)부터 보낸다.
                 if _monitor is not None and getattr(_monitor, "run_id", ts) != ts:
                     _monitor.emit("batch_prepare", {
                         "run_id": ts,
@@ -12419,7 +12419,7 @@ def main() -> None:
             print(f"\n{'='*70}", file=sys.stderr, flush=True)
             print(f"🤖 Agentic Pipeline (유기적 전문가 시스템)", file=sys.stderr, flush=True)
             print(f"{'='*70}", file=sys.stderr, flush=True)
-            print(f"📂 입력: {INPUT_PATH} ({len(posts)}개 포스트)", file=sys.stderr, flush=True)
+            print(f"📂 입력: {INPUT_PATH} ({len(posts)}개 게시글)", file=sys.stderr, flush=True)
             if _MODEL_PARALLEL_MAX:
                 print(
                     "[expert_main] model parallel cap: "
@@ -13241,7 +13241,7 @@ def main() -> None:
             _early_route_by_index: Dict[int, Dict[str, Any]] = {}
             _early_route_lock = threading.RLock()
 
-            # ─── 배치 컨텍스트 메모리 (포스트 간 지식 공유) ──
+            # ─── 배치 컨텍스트 메모리 (게시글 간 지식 공유) ──
             _measurement_context_frozen = bool(
                 _community_knowledge_snapshot is not None
                 or _native_recovery_options is not None
@@ -13252,9 +13252,9 @@ def main() -> None:
             print(
                 (
                     "🧊 BatchContextMemory 비활성화 "
-                    "(paired FROZEN_OFF·커뮤니티 READ_ONLY·native 복구; 포스트 간 학습 차단)"
+                    "(paired FROZEN_OFF·커뮤니티 READ_ONLY·native 복구; 게시글 간 학습 차단)"
                     if _measurement_context_frozen
-                    else "🧠 BatchContextMemory 활성화 (포스트 간 약칭/작가/캐릭터 공유)"
+                    else "🧠 BatchContextMemory 활성화 (게시글 간 약칭/작가/캐릭터 공유)"
                 ),
                 file=sys.stderr,
                 flush=True,
@@ -13385,7 +13385,7 @@ def main() -> None:
                         flush=True,
                     )
 
-            # v3 관측은 provider 호출 전에 실제 설정·정책·시작 자원을 확인한다.
+            # v3 측정은 provider 호출 전에 실제 설정·정책·시작 자원을 확인한다.
             _paired_clients = []
             _paired_mcp_clients = []
             if _paired_policy is not None:
@@ -13898,13 +13898,13 @@ def main() -> None:
                     receipt["publication_link_frame_sha256"] = link_frame.get("frame_sha256")
                     receipt["publication_link_decision_id"] = decision_id
 
-            # ─── 단일 포스트 처리 함수 ────────────────────
+            # ─── 단일 게시글 처리 함수 ────────────────────
             def _process_one(
                 post, index: int, total: int,
                 pipeline: AgenticPipeline,
                 worker_id: int,
             ) -> Dict[str, Any]:
-                """한 포스트를 처리하고 full_result dict 반환"""
+                """게시글 하나를 처리하고 full_result dict 반환"""
                 w_tag = f"W{worker_id}" if _PARALLEL > 1 else ""
                 if _paired_session is not None:
                     _paired_session.start_row(input_index=index, post_id=post.post_id,
@@ -13947,7 +13947,7 @@ def main() -> None:
                 )
                 
                 # 📊 대시보드: post_start — 배너 출력 전에 emit하여
-                # 인메모리 포스트별 로그에 배너 라인도 포함되도록 함
+                # 인메모리 게시글별 로그에 배너 라인도 포함되도록 함
                 _post_start_t = time.time()
                 _post_started_at = datetime.now().astimezone().isoformat(timespec="milliseconds")
                 if _monitor:
@@ -14200,8 +14200,8 @@ def main() -> None:
                 # P4 비용 계측의 첫 단계. 현재 ConversationContext는 token
                 # aggregate만 제공하고 호출별 event를 제공하지 않으므로,
                 # expert_calls는 의도적으로 null인 PARTIAL trace로 저장한다.
-                # 이 값은 dashboard 전용 휘발성 정보가 아니라 future paired
-                # before/after RunSpec에 결속할 수 있는 행별 sidecar receipt다.
+                # 이 값은 dashboard에서만 쓰고 버리는 정보가 아니다. 향후 paired
+                # before/after RunSpec과 연결할 수 있는 행별 sidecar 기록이다.
                 _post_elapsed = time.time() - _post_start_t
                 _post_finished_at = datetime.now().astimezone().isoformat(timespec="milliseconds")
                 _ctx_token: Dict[str, Any] = {}
@@ -14748,7 +14748,7 @@ def main() -> None:
                     "total": len(posts),
                     "input_file": str(INPUT_PATH.name),
                     # 상세 조회가 다른 run의 동명/최근 결과로 폴백하지 않도록
-                    # 현재 run의 중첩 출력 경로를 그대로 대시보드에 결속한다.
+                    # 현재 run의 중첩 출력 경로를 그대로 대시보드에 연결한다.
                     "output_file": str(out_result_path.resolve()),
                     "parallel_count": _PARALLEL,
                     "execution_config": _execution_config_snapshot(),
@@ -15496,7 +15496,7 @@ def main() -> None:
                         raise
                 
                 # 슬라이딩 윈도우 병렬 처리
-                # — 하나 끝나면 즉시 다음 포스트 투입 (빈 워커 재활용)
+                # — 하나 끝나면 즉시 다음 게시글 투입 (빈 워커 재활용)
                 _worker_pool = Queue()  # 사용 가능한 워커 ID 큐
                 for wid in range(_PARALLEL):
                     _worker_pool.put(wid)
@@ -15879,7 +15879,7 @@ def main() -> None:
                 print(f"   총 검색 요청: {cache_total}건", file=sys.stderr, flush=True)
                 print(f"   캐시 히트:    {cache_hits}건 ({cache_hits/cache_total*100:.1f}%)", file=sys.stderr, flush=True)
                 print(f"   실제 검색:    {cache_misses}건 ({cache_misses/cache_total*100:.1f}%)", file=sys.stderr, flush=True)
-                print(f"   캐시 엔트리:  {cache_entries}개", file=sys.stderr, flush=True)
+                print(f"   캐시 항목:    {cache_entries}개", file=sys.stderr, flush=True)
                 if _PARALLEL > 1:
                     print(f"   워커 수:      {_PARALLEL}개 (독립 캐시)", file=sys.stderr, flush=True)
                 print(f"{'='*70}", file=sys.stderr, flush=True)
@@ -15993,7 +15993,7 @@ def main() -> None:
             ):
                 print(f"   {line}", file=sys.stderr, flush=True)
             
-            # 전체 배치 토큰 통계는 각 포스트 처리 중 출력됨
+            # 전체 배치 토큰 통계는 각 게시글 처리 중 출력됨
             # 여기서는 요약만 표시
             print(f"\n💡 참고: 각 전문가별 토큰 사용량은 위 로그 참조", file=sys.stderr, flush=True)
 
@@ -16313,7 +16313,7 @@ def load_jsonl_posts(path: Path, *, snapshot_bytes: bytes | None = None) -> List
             except json.JSONDecodeError:
                 continue
 
-            # 댓글인지 포스트인지 구분
+            # 댓글인지 게시글인지 구분
             if "comment_id" in item:
                 # 댓글
                 pid = _post_id_key(item.get("post_id"))
@@ -16322,7 +16322,7 @@ def load_jsonl_posts(path: Path, *, snapshot_bytes: bytes | None = None) -> List
                         comments_map[pid] = []
                     comments_map[pid].append(item)
             elif "post_id" in item:
-                # 포스트
+                # 게시글
                 pid = _post_id_key(item.get("post_id"))
                 if pid is None:
                     continue

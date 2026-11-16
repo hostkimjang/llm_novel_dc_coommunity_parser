@@ -45,7 +45,7 @@ def _get(obj, name, default=None):
 
 
 def _text(u):
-    # view는 원 claim의 연속 구간이다. emit이 유일 occurrence와 raw offset을 검산한다.
+    # view는 원 claim의 연속 구간이다. emit이 유일 occurrence와 raw offset을 확인한다.
     return _APP.sub("", u.text).strip()
 
 
@@ -210,7 +210,7 @@ def counterfactual_preference(u, all_units, projection, exact, emit, scope):
 
 
 def work_genre_purpose_fragments(units, projection, *, exact, emit, scope):
-    """동일 native units를 여섯 유한 family에 한 번 통과시킨다."""
+    """같은 native units를 유한한 family 여섯 개에 한 번씩 통과시킨다."""
     units = tuple(units)
     families = (sympathy, dissatisfaction, feature_or_event_question,
                 genre_preference, recommendation_and_exclusion, counterfactual_preference)

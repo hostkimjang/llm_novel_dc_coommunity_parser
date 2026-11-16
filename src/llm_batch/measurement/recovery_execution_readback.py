@@ -1,4 +1,4 @@
-"""합성 복구 원장과 출력 후보를 원본 결속으로 독립 재판독한다."""
+"""합성 복구 원장과 출력 후보를 원본과 연결해 독립적으로 다시 읽어 확인한다."""
 from __future__ import annotations
 
 from collections import Counter
@@ -54,13 +54,13 @@ def read_strict_json(raw: bytes, *, maximum_bytes: int = 65536) -> Any:
             result[key] = value
         return result
     def constant(_):
-        raise RecoveryExecutionReadbackError('JSON 비유한 숫자')
+        raise RecoveryExecutionReadbackError('JSON에 유한하지 않은 숫자가 있음')
     try:
         value = json.loads(raw.decode('utf-8'), object_pairs_hook=pairs, parse_constant=constant)
         canonical_sha256(value)
         return value
     except (UnicodeError, json.JSONDecodeError, RecursionError) as exc:
-        raise RecoveryExecutionReadbackError('UTF-8 JSON 판독 실패') from exc
+        raise RecoveryExecutionReadbackError('UTF-8 JSON 읽기 실패') from exc
 
 
 def _same(actual: Any, expected: Any) -> bool:
@@ -73,9 +73,9 @@ def _output_path(bound: BoundRecoveryPlan, attempt: str) -> Path:
 
 
 def validate_fixture_execution_events(plan: dict, fixture: dict, events: list[dict]) -> None:
-    """실패도 고정 fixture에 결속하여 영구 실패를 retry 근거로 바꾸지 못하게 한다.
+    """실패도 고정 fixture와 연결해 영구 실패를 retry 근거로 바꾸지 못하게 한다.
 
-    journal의 exact schema/순서/예산 검산을 통과한 events를 소비한다.
+    journal의 exact schema/순서/예산 검증을 통과한 events를 사용한다.
     시간·취소 파생 상태는 기록된 근거가 있어야 하며 의미 품질을 평가하지 않는다.
     """
     responses = {item['action_id']: item['responses'] for item in fixture['actions']}
@@ -226,7 +226,7 @@ def build_recovery_execution_readback(bound_plan: BoundRecoveryPlan, *, journal_
         _require(len(finals) <= 1, '중복 attempt finalization')
         terminal = terminals[0] if terminals else None
         final = finals[0] if finals else None
-        # 원장의 상태 검산은 final과 terminal의 SHA·시간·허용 상태 전이를 먼저 확인한다.
+        # 원장 상태 검증은 final과 terminal의 SHA·시간·허용 상태 전이를 먼저 확인한다.
         status = final['payload']['status'] if final else 'INCOMPLETE'
         candidate_output = None
         if terminal and terminal['payload']['status'] == 'COMPLETED_SIMULATION':

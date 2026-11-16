@@ -157,7 +157,7 @@
   }
 
   function nsfwLabel(value, assessmentStatus) {
-    // 새 상태는 생산자가 봉인한 평가 출처다. UI가 OCR/설명/기본 false로 추론하지 않는다.
+    // 새 상태는 생산자가 고정한 평가 출처다. UI가 OCR/설명/기본 false로 추론하지 않는다.
     if (assessmentStatus !== undefined && assessmentStatus !== null) {
       if (!['MODEL_REPORTED', 'SOURCE_RULE_POSITIVE', 'NOT_EVALUATED'].includes(assessmentStatus))
         return '상태 미확인 · NSFW 여부 미확인';
@@ -179,7 +179,7 @@
     const labels = {
       MODEL_BOOLEAN_REPORTED: '모델이 NSFW 여부를 보고했습니다.',
       SOURCE_TEXT_RULE_POSITIVE: '원문 텍스트가 NSFW 규칙에 해당합니다.',
-      SOURCE_IMAGE_RULE_POSITIVE: '원문 이미지의 관측 정보가 NSFW 규칙에 해당합니다.',
+      SOURCE_IMAGE_RULE_POSITIVE: '원문 이미지에서 확인한 정보가 NSFW 규칙에 해당합니다.',
       NOISE_EARLY_RETURN_NO_MODEL_ASSESSMENT: '작품 분석이 조기 종료되어 모델의 NSFW 평가는 수행되지 않았습니다.',
       NOISE_OUTPUT_WITHOUT_MODEL_ASSESSMENT: '작품 분석에서 제외됐으며 모델의 NSFW 평가값은 없습니다.',
       MODEL_ASSESSMENT_MISSING_OR_INVALID: '모델의 NSFW 평가값이 없거나 형식이 올바르지 않습니다.',
@@ -201,7 +201,7 @@
       '프로필 ' + displayValue(c.profile),
       'VLM ' + displayValue(object(s.vlm).value),
       'OCR ' + displayValue(object(s.ocr).value),
-      '장부 ' + displayValue(object(s.ledger_mode).value),
+      '원장 ' + displayValue(object(s.ledger_mode).value),
       '병렬 ' + displayValue(c.requested_parallel) + '/' + displayValue(c.effective_parallel),
     ].join(' · ');
   }
@@ -264,12 +264,12 @@
   function renderExecutionConfig(config, title = '실행 유효 설정') {
     const c = object(config), s = object(c.settings), source = object(c.source);
     if (!Object.keys(c).length) return section(title, '<p class="presentation-empty">이 실행에는 유효 설정 기록이 없습니다.</p>');
-    const labels = { vlm: 'VLM', ocr: 'OCR', ledger_mode: '호출 장부', context_diagnostics: '문맥 진단', requested_parallel: '요청 병렬도' };
+    const labels = { vlm: 'VLM', ocr: 'OCR', ledger_mode: '호출 원장', context_diagnostics: '문맥 진단', requested_parallel: '요청 병렬도' };
     let rows = kv('프로필', c.profile) + kv('프로필 출처', c.profile_source);
     for (const [key, label] of Object.entries(labels)) {
       rows += kv(label, object(s[key]).value) + kv(label + ' 설정 출처', object(s[key]).source);
     }
-    rows += kv('요청 / 실효 병렬도', displayValue(c.requested_parallel) + ' / ' + displayValue(c.effective_parallel))
+    rows += kv('요청 / 실제 병렬도', displayValue(c.requested_parallel) + ' / ' + displayValue(c.effective_parallel))
       + kv('실행 코드', source.entry_point) + kv('진입점 SHA-256', source.entry_sha256)
       + kv('런타임 소스 SHA-256', source.runtime_source_sha256)
       + kv('대시보드', c.dashboard) + kv('출력 위치', c.output_file)
@@ -289,27 +289,27 @@
       + kv('출력 토큰', m.completion_tokens) + kv('전체 토큰', m.total_tokens) + '</div>';
   }
 
-  function renderPairedExecution(meta, title = '저부하 비교 실행 · 저장 관측') {
+  function renderPairedExecution(meta, title = '저부하 비교 실행 · 저장 기록') {
     const m = object(meta), bundle = object(m.paired_execution_observation);
     if (!Object.keys(bundle).length) return '';
     const start = object(bundle.start), end = object(bundle.end);
     const recorded = Object.keys(start).length && Object.keys(end).length;
-    let html = '<p class="section-note">' + (recorded ? '시작·종료 관측 저장' : '관측 미완료 · 시작 또는 종료 기록 없음')
-      + '. 저장값을 표시하며 정책 검산 통과를 판정하지 않습니다. 실행 중 자원의 연속 유지, 원격 모델 가중치 불변, 비용·품질 개선은 이 화면으로 증명되지 않습니다.</p>';
+    let html = '<p class="section-note">' + (recorded ? '시작·종료 기록 저장' : '기록 미완료 · 시작 또는 종료 기록 없음')
+      + '. 저장값을 표시하며 정책 검증 통과를 판정하지 않습니다. 실행 중 자원의 연속 유지, 원격 모델 가중치 불변, 비용·품질 개선은 이 화면으로 증명되지 않습니다.</p>';
     for (const [label, observation] of [['START', start], ['END', end]]) {
       const binding = object(observation.binding), resources = object(observation.resources), health = object(observation.health);
       const threads = object(resources.numeric_threads);
       html += '<h4>' + label + '</h4><div class="detail-grid">'
-        + kv('관측 시각', observation.observed_at) + kv('비교 구간', binding.arm)
+        + kv('기록 시각', observation.observed_at) + kv('비교 구간', binding.arm)
         + kv('실행 ID', binding.run_id) + kv('시도 ID', binding.attempt_id)
         + kv('실제 프로세스 PID', resources.pid) + kv('우선순위 코드', resources.priority_class)
         + kv('CPU 수 / affinity mask', displayValue(resources.logical_cpu_count) + ' / ' + displayValue(resources.affinity_mask))
         + kv('수치 연산 스레드', Object.keys(threads).length === 5 && Object.values(threads).every(value => value === '1') ? '5종 모두 1' : resources.numeric_threads)
         + kv('검색 health 정상 / 실패', displayValue(health.ok_count) + ' / ' + displayValue(health.failure_count))
-        + kv('health 관측 시각', health.observed_at) + '</div>';
+        + kv('health 확인 시각', health.observed_at) + '</div>';
     }
-    html += '<div class="detail-grid">' + kv('결속 정책 SHA-256', start.policy_sha256) + '</div>';
-    html += '<p class="section-note">정식 KPI: 별도 paired reader 검산과 실측 자료 필요. REFERENCE_COPY_COST_ONLY는 production 절감률로 사용할 수 없습니다.</p>';
+    html += '<div class="detail-grid">' + kv('연결된 정책 SHA-256', start.policy_sha256) + '</div>';
+    html += '<p class="section-note">정식 KPI를 내려면 별도 paired reader 검증과 실측 자료가 필요합니다. REFERENCE_COPY_COST_ONLY는 production 절감률로 사용할 수 없습니다.</p>';
     return section(title, html + rawRecord('저부하 비교 실행 원본 · JSON', {
       paired_execution_observation: bundle, paired_execution_runtime_fields: m.paired_execution_runtime_fields,
     }));
@@ -321,24 +321,24 @@
   }
 
   function renderReviewBinding(receipt) {
-    return '<div class="detail-grid">' + kv('수령증 모드', receipt.mode)
+    return '<div class="detail-grid">' + kv('기록 모드', receipt.mode)
       + kv('공개 적용', receipt.public_apply) + kv('기록 출처', receipt.authority)
       + kv('실행 시도 ID', receipt.attempt_run_id) + kv('공개 범위 ID', receipt.publication_scope_id)
       + kv('입력 순서', receipt.input_index) + kv('post ID', receipt.post_id)
-      + kv('공개 decision ID', receipt.publication_decision_id) + kv('수령증 SHA-256', receipt.receipt_sha256) + '</div>';
+      + kv('공개 decision ID', receipt.publication_decision_id) + kv('기록 SHA-256', receipt.receipt_sha256) + '</div>';
   }
 
   function renderSemanticReview(meta) {
     const m = object(meta), review = object(m.semantic_review_router_receipt);
     const receipt = object(m.semantic_recovery_plan_receipt), plan = object(receipt.plan), query = object(plan.query_plan);
-    const note = '<p class="section-note">행에 저장된 검토·계획 수령증입니다. 화면 표시는 독립 검산 통과, 실제 복구 실행 또는 공개 승인을 뜻하지 않습니다.</p>';
+    const note = '<p class="section-note">행에 저장된 검토·계획 기록입니다. 이 표시는 독립 검증 통과, 실제 복구 실행, 공개 승인을 뜻하지 않습니다.</p>';
     let html = section('행 저장 시점 · 의미 검토', Object.keys(review).length
       ? note + '<div class="detail-grid">' + kv('검토 상태', storedState(review.state, {
         REVIEW_REQUIRED: '검토 필요', NO_REVIEW: '추가 검토 신호 없음',
         NOT_APPLICABLE: '해당 없음', UNKNOWN: '판정 미확인',
       })) + kv('검토 사유', review.trigger_codes) + kv('미확인 사유', review.unknown_reason_codes)
       + '</div>' + renderReviewBinding(review) + rawRecord('의미 검토 원본 · JSON', review)
-      : '<p class="presentation-empty">의미 검토 수령증 미기록 · 검토 필요 여부를 추정하지 않습니다.</p>');
+      : '<p class="presentation-empty">의미 검토 기록 없음 · 검토 필요 여부를 추정하지 않습니다.</p>');
     html += section('행 저장 시점 · 복구 계획', Object.keys(receipt).length
       ? note + '<div class="detail-grid">' + kv('계획 상태', storedState(plan.state, {
         HOLD: '보류 · 계획만 기록', NOT_APPLICABLE: '해당 없음', UNKNOWN: '계획 미확인',
@@ -347,11 +347,11 @@
       + kv('OCR 원문 근거 수', plan.raw_ocr_evidence_count) + kv('검색 목적', query.purposes)
       + kv('계획상 query 실행 허용', query.query_execution_allowed)
       + kv('계획상 query 상한', query.max_queries) + kv('계획에 기록된 검색 상태', query.search_health)
-      + kv('계획 수령증의 검색 호출 수', plan.search_calls_executed)
-      + kv('계획 수령증의 네트워크 호출 수', plan.network_calls_executed) + '</div>'
+      + kv('계획 기록의 검색 호출 수', plan.search_calls_executed)
+      + kv('계획 기록의 네트워크 호출 수', plan.network_calls_executed) + '</div>'
       + '<p class="section-note">query_execution_allowed는 PLAN_ONLY 안의 계획 조건입니다. true여도 실제 query 생성·검색·모델 실행을 뜻하지 않습니다.</p>'
       + renderReviewBinding(receipt) + rawRecord('복구 계획 원본 · JSON', receipt)
-      : '<p class="presentation-empty">복구 계획 수령증 미기록 · 실행 여부를 추정하지 않습니다.</p>');
+      : '<p class="presentation-empty">복구 계획 기록 없음 · 실행 여부를 추정하지 않습니다.</p>');
     return html;
   }
 
@@ -372,7 +372,7 @@
         SKIPPED_FRESH_MEASUREMENT: 'fresh 측정으로 감사 기록 생략', NO_GO: '제안 기록 불가·오류 확인',
       })) + kv('공개 적용', run.recovery_activation_public_apply)
       + kv('감사 사건 수', run.recovery_activation_event_count)
-      + kv('관측 제안 수', run.recovery_activation_proposals_observed)
+      + kv('확인된 제안 수', run.recovery_activation_proposals_observed)
       + kv('새 기록 수', run.recovery_activation_events_created)
       + kv('기존 기록 재사용 수', run.recovery_activation_events_replayed)
       + kv('기록 오류 수', run.recovery_activation_append_errors)
@@ -392,22 +392,22 @@
 
   function renderRecoveryExecution(value) {
     const view = object(value), report = object(view.report);
-    const title = '선택 행 · R6 로컬 복구 판독';
+    const title = '선택 행 · R6 로컬 복구 확인 결과';
     const binding = Object.keys(view).length ? view.binding_status : 'MISSING';
     let html = '<p class="section-note">이 합성 경로의 실제 provider 실행은 미연결입니다. 별도 provider 기록은 전용 구역에서 표시합니다. 로컬 합성 기록은 실제 복구 품질·비용 측정이나 R6 전체 개발 완료를 뜻하지 않습니다.</p>'
-      + '<div class="detail-grid">' + kv('파일·대상 결속', storedState(binding, {
-        BOUND: '파일·base 결속 확인', MISSING: '판독 기록 미기록',
-        NO_PLAN_PROVIDED: '이 행의 명시 계획 없음 · 실패 아님', INVALID: '판독 기록 결속 오류',
-      })) + kv('대시보드 확인 범위', view.verification_scope) + kv('결속 사유', view.reason_codes) + '</div>';
-    // 결속되지 않은 다른 행/이전 보고서의 상태를 현재 행의 실행 결과로 표시하지 않는다.
+      + '<div class="detail-grid">' + kv('파일·대상 연결', storedState(binding, {
+        BOUND: '파일·base 연결 확인', MISSING: '확인 기록 없음',
+        NO_PLAN_PROVIDED: '이 행의 명시 계획 없음 · 실패 아님', INVALID: '확인 기록 연결 오류',
+      })) + kv('대시보드 확인 범위', view.verification_scope) + kv('연결 사유', view.reason_codes) + '</div>';
+    // 연결되지 않은 다른 행/이전 보고서의 상태를 현재 행의 실행 결과로 표시하지 않는다.
     if (binding !== 'BOUND') return section(title, html);
     if (view.verification_scope !== 'FILE_AND_BASE_BINDING_ONLY'
         || report.schema_version !== 'recovery_execution_readback_v1') {
-      return section(title, html + '<p class="presentation-empty">판독 스키마 또는 확인 범위 미확인 · 실행 상태를 표시할 수 없습니다.</p>');
+      return section(title, html + '<p class="presentation-empty">확인 보고서 스키마 또는 확인 범위 미확인 · 실행 상태를 표시할 수 없습니다.</p>');
     }
     const base = object(report.base), journal = object(report.journal);
-    html += '<p class="section-note">BOUND는 파일·base 결속 확인입니다. 아래 검증 상태는 저장 판독자가 남긴 주장입니다. 대시보드가 원장·출력을 독립 재검산하거나 복구를 실행한 결과가 아닙니다.</p>'
-      + '<div class="detail-grid">' + kv('저장 판독자의 검증 상태', report.verification_status)
+    html += '<p class="section-note">BOUND는 파일과 base의 연결을 확인했다는 뜻입니다. 아래 검증 상태는 보고서를 저장한 확인 도구의 주장입니다. 대시보드가 원장·출력을 따로 다시 확인하거나 복구를 실행한 결과가 아닙니다.</p>'
+      + '<div class="detail-grid">' + kv('보고서에 기록된 검증 상태', report.verification_status)
       + kv('저장된 실행 상태', recoveryExecutionState(report.execution_status))
       + kv('실행 모드', report.execution_mode) + kv('자료 종류', report.data_kind)
       + kv('실제 외부 호출 수', report.actual_external_call_count)
@@ -418,12 +418,12 @@
       + kv('복구 시도 수', report.attempt_count) + kv('합성 예약 수', report.consumed_simulated_dispatches)
       + kv('소비한 action 수', report.consumed_action_count) + kv('미종결 호출 수', report.open_call_count)
       + kv('최종화 대기 수', report.pending_finalization_count)
-      + kv('누적 관측 시간(ms)', report.consumed_elapsed_ms)
-      + kv('시간 예산 관측 범위', report.budget_observation_scope)
+      + kv('누적 측정 시간(ms)', report.consumed_elapsed_ms)
+      + kv('시간 예산 측정 범위', report.budget_observation_scope)
       + kv('최종화 기록 저장 I/O의 예산 포함', report.finalization_persistence_in_budget) + '</div>';
     if (report.budget_observation_scope === 'THROUGH_ATTEMPT_TERMINAL_DURABLE_READBACK'
         && report.finalization_persistence_in_budget === false) {
-      html += '<p class="section-note">시간 예산은 종결 후보의 저장·재판독까지 관측합니다. 마지막 최종화 기록 저장 I/O는 예산에서 제외됩니다.</p>';
+      html += '<p class="section-note">시간 예산은 종결 후보를 저장하고 다시 읽어 확인하는 시간까지 측정합니다. 마지막 최종화 기록 저장 I/O는 예산에서 제외됩니다.</p>';
     }
     html += '<details class="raw-record"><summary>시도별 종결 후보·최종화</summary>'
       + '<p class="section-note">종결 후보만 저장되고 최종화되지 않은 시도는 미완료입니다. 후보 출력과 최종 출력은 구분합니다.</p>';
@@ -436,7 +436,7 @@
         + kv('종결 후보 저장', attempt.terminal_recorded)
         + kv('종결 후보 상태', recoveryExecutionState(attempt.terminal_candidate_status))
         + kv('최종화 저장', attempt.finalization_recorded) + kv('시도 사유', attempt.reason_codes)
-        + kv('예약 수', attempt.reserved_dispatches) + kv('마지막 관측 시간(ms)', attempt.last_elapsed_ms)
+        + kv('예약 수', attempt.reserved_dispatches) + kv('마지막 측정 시간(ms)', attempt.last_elapsed_ms)
         + kv('후보 출력 참조', attempt.candidate_output) + kv('최종 출력 참조', attempt.output) + '</div>';
     }
     html += '</details><details class="raw-record"><summary>전체 입력의 명시 계획·상태</summary>'
@@ -450,10 +450,10 @@
     html += '</details><div class="detail-grid">' + kv('base 입력 순서', base.input_index)
       + kv('base post ID', base.post_id) + kv('base 실행 시도 ID', base.base_attempt_run_id)
       + kv('base 공개 범위 ID', base.publication_scope_id)
-      + kv('계획 SHA-256', report.plan_sha256) + kv('결속 SHA-256', report.binding_sha256)
+      + kv('계획 SHA-256', report.plan_sha256) + kv('연결 정보 SHA-256', report.binding_sha256)
       + kv('원장 SHA-256', journal.sha256) + kv('원장 사건 수', journal.event_count)
-      + kv('판독 보고서 SHA-256', report.report_sha256) + kv('판독 한계', report.limitations) + '</div>';
-    return section(title, html + rawRecord('저장된 R6 판독 보고서 · JSON', report));
+      + kv('확인 보고서 SHA-256', report.report_sha256) + kv('확인 한계', report.limitations) + '</div>';
+    return section(title, html + rawRecord('저장된 R6 확인 보고서 · JSON', report));
   }
 
   function renderRecoveryProvider(value, context) {
@@ -461,10 +461,10 @@
     const title = '선택 행 · R6 provider 근거 수집';
     const binding = Object.keys(view).length ? view.binding_status : 'MISSING';
     let html = '<p class="section-note">명시 provider 명령의 저장 기록입니다. 원래 공개 결과는 바꾸지 않으며, 검색 응답만으로 공식 상세 근거나 주역 관계를 확정하지 않습니다.</p>'
-      + '<div class="detail-grid">' + kv('파일·대상 결속', storedState(binding, {
-        BOUND: '파일·base 결속 확인', MISSING: 'provider 기록 미기록',
-        INVALID: 'provider 기록 결속 오류', NO_PLAN_PROVIDED: '이 행의 명시 계획 없음 · 실패 아님',
-      })) + kv('대시보드 확인 범위', view.verification_scope) + kv('결속 사유', view.reason_codes) + '</div>';
+      + '<div class="detail-grid">' + kv('파일·대상 연결', storedState(binding, {
+        BOUND: '파일·base 연결 확인', MISSING: 'provider 기록 미기록',
+        INVALID: 'provider 기록 연결 오류', NO_PLAN_PROVIDED: '이 행의 명시 계획 없음 · 실패 아님',
+      })) + kv('대시보드 확인 범위', view.verification_scope) + kv('연결 사유', view.reason_codes) + '</div>';
     if (binding !== 'BOUND') return section(title, html);
     const base = object(report.base), manifest = object(d.run_manifest), run = object(manifest.summary);
     const sha = x => typeof x === 'string' && /^[0-9a-f]{64}$/.test(x);
@@ -533,7 +533,7 @@
         && receipts.every(row => object(row).status === 'SUCCESS' && row.finalization_recorded === true
           && Object.keys(object(row.response_ref)).length > 0)));
     if (!valid) return section(title, html + '<p class="presentation-empty">provider 스키마·현재 행·미평가 조건이 맞지 않아 실행 상태를 표시할 수 없습니다.</p>');
-    html += '<p class="section-note">BOUND는 파일·base 결속 확인입니다. 저장 판독자가 원장과 응답을 검산했으며, 이 화면은 HMAC·원장·원시 응답을 재판독하거나 요청을 실행하지 않습니다. 공개 guard 재판정과 실제 복구 품질은 미평가입니다.</p>';
+    html += '<p class="section-note">BOUND는 파일과 base의 연결을 확인했다는 뜻입니다. 원장과 응답은 보고서를 저장한 확인 도구가 검증했으며, 이 화면은 HMAC·원장·원시 응답을 다시 읽어 확인하거나 요청을 실행하지 않습니다. 공개 guard 재판정과 실제 복구 품질은 미평가입니다.</p>';
     if (report.transport_mode === 'TEST_DOUBLE' || report.data_kind === 'TEST_SYNTHETIC') {
       html += '<p class="section-note">합성 자료 또는 시험 전송 기록입니다. 실제 자료의 provider 복구 성과가 아닙니다.</p>';
     }
@@ -544,18 +544,18 @@
       + kv('전송 모드', report.transport_mode) + kv('실제 외부 호출 수', report.actual_external_call_count)
       + kv('client HTTP 호출 수', report.client_http_invocations)
       + kv('원격 내부 provider 호출 수', report.remote_provider_dispatch_count)
-      + kv('원격 내부 호출 관측', report.remote_provider_dispatch_status)
+      + kv('원격 내부 호출 확인', report.remote_provider_dispatch_status)
       + kv('공개 적용', report.public_apply) + kv('공개 권한', report.publication_authority)
       + kv('중앙 DB 쓰기', report.central_db_write) + kv('정식 KPI', report.formal_kpi_status)
-      + kv('전체 입력 수', report.input_count) + kv('예산 관측', report.budget) + '</div>'
-      + '<p class="section-note">MCP HTTP 요청 1회와 원격 bridge 내부 검색 횟수는 다릅니다. null/UNKNOWN은 관측하지 못한 값이며 0회로 계산하지 않습니다.</p>'
+      + kv('전체 입력 수', report.input_count) + kv('예산 측정', report.budget) + '</div>'
+      + '<p class="section-note">MCP HTTP 요청 1회와 원격 bridge 내부 검색 횟수는 다릅니다. null/UNKNOWN은 확인하지 못한 값이며 0회로 계산하지 않습니다.</p>'
       + '<details class="raw-record"><summary>요청별 저장 근거 참조</summary>';
     for (const receipt of receipts) {
       html += '<div class="detail-grid">' + kv('요청 ID', receipt.request_id) + kv('요청 상태', receipt.status)
         + kv('최종화 저장', receipt.finalization_recorded) + kv('client HTTP 호출 수', receipt.client_http_invocations)
         + kv('실제 외부 호출 수', receipt.actual_external_call_count) + kv('응답 bytes', receipt.observed_response_bytes)
         + kv('요청 SHA-256', receipt.request_sha256) + kv('응답 파일 참조', receipt.response_ref)
-        + kv('전송 수령증 참조', receipt.transport_ref) + '</div>';
+        + kv('전송 기록 참조', receipt.transport_ref) + '</div>';
     }
     html += '</details><details class="raw-record"><summary>전체 입력의 명시 계획·상태</summary>';
     for (const row of rows) {
@@ -574,9 +574,9 @@
     const a = object(view.aggregate), base = object(a.base_run);
     const title = 'R6 native 복구 · 별도 판정';
     let html = '<div class="detail-grid">' + kv('저장 집계 연결', view.binding_status || 'MISSING')
-      + kv('검산 범위', view.verification_scope) + kv('사유', view.reason_codes) + '</div>';
+      + kv('확인 범위', view.verification_scope) + kv('사유', view.reason_codes) + '</div>';
     if (view.binding_status !== 'BOUND') return section(title, html + '<p class="presentation-empty">'
-      + (view.binding_status === 'INVALID' ? '파일·원본 행 결속이 맞지 않아 성공 판정을 표시하지 않습니다.'
+      + (view.binding_status === 'INVALID' ? '파일·원본 행 연결이 맞지 않아 성공 판정을 표시하지 않습니다.'
         : '현재 실행에 연결된 native 복구 집계가 없습니다. 미기록은 실행 성공이나 실패를 뜻하지 않습니다.') + '</p>');
     const sha = x => typeof x === 'string' && /^[a-f0-9]{64}$/.test(x);
     const count = x => x === null || (Number.isSafeInteger(x) && x >= 0);
@@ -644,14 +644,14 @@
       && totals.remote_dispatch_count === null && totals.remote_dispatch_status === 'UNKNOWN'
       && (!selected || (selected.length === 1 && object(view.row).input_index === selected[0].input_index
         && view.row.post_id === selected[0].post_id && view.row.result_sha256 === selected[0].result_sha256));
-    if (!bound) return section(title, html + '<p class="presentation-empty">native 스키마·전체 분모·현재 실행/행 결속이 맞지 않아 판정을 표시하지 않습니다.</p>');
-    html += '<p class="section-note">BOUND는 파일·원본 판정 결속입니다. GET은 HMAC 키나 실행기를 호출하지 않습니다. native 판정은 별도 scope에 저장된 guard 결과이며 원래 공개 결과를 변경하지 않습니다. provider의 GUARD_NOT_EVALUATED와 구분합니다.</p>'
-      + '<div class="detail-grid">' + kv('기본 manifest 결속', manifest.binding_status)
-      + kv('현재 export 파일 결속', exported.binding_status) + kv('현재 export 실행 ID', run.run_id)
+    if (!bound) return section(title, html + '<p class="presentation-empty">native 스키마·전체 분모·현재 실행/행 연결이 맞지 않아 판정을 표시하지 않습니다.</p>');
+    html += '<p class="section-note">BOUND는 파일과 원본 판정이 연결되었다는 뜻입니다. GET은 HMAC 키나 실행기를 호출하지 않습니다. native 판정은 별도 scope에 저장된 guard 결과이며 원래 공개 결과를 변경하지 않습니다. provider의 GUARD_NOT_EVALUATED와 구분합니다.</p>'
+      + '<div class="detail-grid">' + kv('기본 manifest 연결', manifest.binding_status)
+      + kv('현재 export 파일 연결', exported.binding_status) + kv('현재 export 실행 ID', run.run_id)
       + kv('행에 남은 실행 ID', object(d.run_meta).run_id)
       + kv('전체 입력 수', totals.input_count) + kv('상태별 입력 수', totals.states)
       + kv('client HTTP 누적 호출 수', totals.client_http_invocations) + kv('실제 외부 누적 호출 수', totals.actual_external_call_count)
-      + kv('원격 내부 호출 수', totals.remote_dispatch_count) + kv('원격 관측', totals.remote_dispatch_status)
+      + kv('원격 내부 호출 수', totals.remote_dispatch_count) + kv('원격 호출 확인', totals.remote_dispatch_status)
       + kv('공개 적용', a.public_apply) + kv('공개 권한', a.publication_authority)
       + kv('실제 품질 평가', a.actual_quality_evaluated) + kv('정식 KPI', a.formal_kpi_status) + '</div>';
     if (a.batch !== null) {
@@ -659,15 +659,15 @@
         + kv('batch 최종 사유', batch.reason_codes) + kv('batch 보고서 원래 계수', batch.counts)
         + kv('예약된 행 수', budget.reserved_rows) + kv('예약된 호출 수', budget.reserved_calls)
         + kv('예약된 응답 바이트', budget.reserved_response_bytes) + kv('예약된 시간 ms', budget.reserved_elapsed_ms)
-        + kv('마지막 제어 검사까지 관측한 시간 ms', budget.observed_elapsed_ms)
-        + kv('batch 시간 관측 범위', budget.time_scope)
+        + kv('마지막 제어 검사까지 측정한 시간 ms', budget.observed_elapsed_ms)
+        + kv('batch 시간 측정 범위', budget.time_scope)
         + kv('보고서 발행 시간 포함', budget.report_publication_io_in_time_scope)
         + kv('batch 보고서 참조', a.batch_report_ref) + '</div>'
         + '<p class="section-note">행별 guard와 batch 최종 제어 상태는 별도입니다. 완료 행이 있어도 마지막 취소·시간 초과는 INCOMPLETE로 남습니다. 예약량은 실제 사용량이 아닙니다.</p>';
     } else html += '<p class="section-note">batch 최종 제어 보고서는 미기록입니다. 행 성공만으로 batch 전체 완료를 추론하지 않습니다.</p>';
     const shown = selected || rows;
-    if (manifest.binding_status === 'PARTIAL') html += '<p class="section-note">기존 행의 run 메타데이터 일부는 미기록입니다. 별도 집계가 원본 result·manifest 파일과 typed 행을 다시 결속한 범위로 표시합니다.</p>';
-    if (manifest.binding_status === 'MISMATCH') html += '<p class="section-note">기존 행 메타데이터와 현재 export의 불일치는 그대로 유지합니다. WAL 재생 행의 원래 실행 ID를 바꾸지 않으며 native 표시는 별도 검산한 현재 export 파일과 전체 typed 행 결속을 사용합니다.</p>';
+    if (manifest.binding_status === 'PARTIAL') html += '<p class="section-note">기존 행의 run 메타데이터 일부는 미기록입니다. 별도 집계가 원본 result·manifest 파일과 typed 행을 다시 연결한 범위로 표시합니다.</p>';
+    if (manifest.binding_status === 'MISMATCH') html += '<p class="section-note">기존 행 메타데이터와 현재 export의 불일치는 그대로 유지합니다. WAL 재생 행의 원래 실행 ID를 바꾸지 않으며 native 표시는 따로 확인한 현재 export 파일과 전체 typed 행의 연결 정보를 사용합니다.</p>';
     for (const row of shown) {
       const n = object(row.native), p = object(row.provider);
       html += '<div class="detail-grid">' + kv('입력 순서', row.input_index) + kv('post ID', row.post_id)
@@ -678,7 +678,7 @@
         + kv('별도 publication scope', n.publication_scope_id) + kv('자료 종류', n.data_kind || p.data_kind)
         + kv('전송 모드', n.transport_mode) + kv('native 포함 client 호출 수', n.client_http_invocations)
         + kv('native 포함 실제 외부 호출 수', n.actual_external_call_count) + kv('가격', n.price)
-        + kv('시간 관측 범위', n.time_scope) + kv('최종 저장 시간 포함', n.finalization_write_in_time_scope)
+        + kv('시간 측정 범위', n.time_scope) + kv('최종 저장 시간 포함', n.finalization_write_in_time_scope)
         + kv('provider 보고서 참조', row.provider_report_ref) + kv('native 보고서 참조', row.native_receipt_ref) + '</div>';
       if (n.transport_mode === 'TEST_DOUBLE' || n.data_kind === 'TEST_SYNTHETIC' || p.data_kind === 'TEST_SYNTHETIC') {
         html += '<p class="section-note">합성 HTTP mock 기록입니다. 실제 모델·검색·복구 품질 검증이 아닙니다.</p>';
@@ -695,17 +695,17 @@
     const attempt = object(meta.decision_call_attempt_receipt), measurement = object(meta.decision_call_measurement);
     const trace = object(meta.decision_cost_trace);
     let html = section('호출·측정 기록',
-      '<p class="section-note">행 저장 시점과 실행 종료 기록을 따로 표시합니다. 관측 토큰과 정식 비교 KPI는 같은 값이 아닙니다.</p>');
+      '<p class="section-note">행 저장 시점과 실행 종료 기록을 따로 표시합니다. 기록된 토큰 수와 정식 비교 KPI는 같은 값이 아닙니다.</p>');
     if (Object.keys(rowSummary).length || Object.keys(attempt).length || Object.keys(measurement).length || Object.keys(trace).length) {
-      html += section('행 저장 시점 · 호출 장부',
+      html += section('행 저장 시점 · 호출 원장',
         '<div class="detail-grid">' + kv('행 연결 상태', attempt.publication_link_status)
         + kv('사용량 출처·상태', rowSummary.usage_status) + kv('측정 모드', measurement.mode)
-        + kv('측정 결속', measurement.binding_status) + kv('정식 KPI 상태', rowSummary.actual_kpi_status)
+        + kv('측정 연결', measurement.binding_status) + kv('정식 KPI 상태', rowSummary.actual_kpi_status)
         + kv('정식 KPI 대상 여부', measurement.actual_kpi_eligible) + '</div>'
-        + renderMetrics(rowSummary.derived_observation, '행 장부의 관측 사용량')
-        + renderMetrics(rowSummary.actual_metrics, '행 장부의 정식 KPI')
+        + renderMetrics(rowSummary.derived_observation, '행 원장에 기록된 사용량')
+        + renderMetrics(rowSummary.actual_metrics, '행 원장의 정식 KPI')
         + (Object.keys(trace).length ? '<p class="section-note">별도 비용 trace · '
-          + esc(displayValue(trace.measurement_status)) + ' · 행 장부와 집계 범위가 다를 수 있습니다.</p>'
+          + esc(displayValue(trace.measurement_status)) + ' · 행 원장과 집계 범위가 다를 수 있습니다.</p>'
           + renderMetrics(trace, '비용 trace에 기록된 부분 사용량') : '')
         + rawRecord('행 호출·측정 원본 · JSON', {
           decision_call_attempt_receipt: meta.decision_call_attempt_receipt,
@@ -714,22 +714,22 @@
           decision_call_measurement: meta.decision_call_measurement,
           decision_cost_trace: meta.decision_cost_trace,
         }));
-    } else html += section('행 저장 시점 · 호출 장부', '<p class="presentation-empty">이 행에는 호출·측정 기록이 없습니다.</p>');
+    } else html += section('행 저장 시점 · 호출 원장', '<p class="presentation-empty">이 행에는 호출·측정 기록이 없습니다.</p>');
     html += section('실행 manifest · 종료 계측',
-      '<div class="detail-grid">' + kv('결과와 manifest 결속', manifest.binding_status)
-      + kv('결속 사유', manifest.reason_codes) + kv('실행 ID', run.run_id)
+      '<div class="detail-grid">' + kv('결과와 manifest 연결', manifest.binding_status)
+      + kv('연결 사유', manifest.reason_codes) + kv('실행 ID', run.run_id)
       + kv('완료 상태', runCompletionSummary(run, manifest.artifact_kind).label)
       + kv('종료 산출물 확정', run.terminal_artifacts_finalized) + kv('입력 수', run.input_post_count)
       + kv('처리 결과 수', run.completed_count) + kv('저장된 결과 수', run.flushed_count)
       + kv('저장 대기 수', run.pending_count) + kv('실패 기록 수', run.failed_count)
       + kv('계측 상태', runSummary.instrumentation_status)
-      + kv('측정 결속', runSummary.measurement_binding_status) + kv('정식 KPI 상태', runSummary.actual_kpi_status)
-      + kv('봉인 행', runSummary.sealed_row_attempt_count) + kv('연결 행', runSummary.linked_row_attempt_count)
+      + kv('측정 연결', runSummary.measurement_binding_status) + kv('정식 KPI 상태', runSummary.actual_kpi_status)
+      + kv('고정된 행', runSummary.sealed_row_attempt_count) + kv('연결 행', runSummary.linked_row_attempt_count)
       + kv('미종결 호출', runSummary.open_call_count) + '</div>'
       + '<p class="section-note">출처: 선택한 실행의 manifest. 행 저장 당시의 연결 상태를 이 값으로 덮어쓰지 않습니다. '
       + '진행 표시는 마지막 저장 시점이며 현재 프로세스 생존을 확인한 값이 아닙니다. '
       + '저장 대기는 처리 후 순서대로 저장하기를 기다리는 결과 수입니다. 처리 완료는 의미 판정·품질·KPI 승인을 뜻하지 않습니다.</p>'
-      + renderMetrics(runSummary.derived_observation, 'manifest의 관측 사용량')
+      + renderMetrics(runSummary.derived_observation, 'manifest에 기록된 사용량')
       + renderMetrics(runSummary.actual_metrics, 'manifest의 정식 KPI')
       + (Object.keys(manifest).length ? rawRecord('실행 manifest 요약 · JSON', manifest)
         : '<p class="presentation-empty">이 실행의 manifest 기록을 찾지 못했습니다.</p>'));
@@ -737,8 +737,8 @@
     if (Object.keys(rowConfig).length) html += renderExecutionConfig(rowConfig, '행 저장 시점 · 실행 유효 설정');
     if (Object.keys(runConfig).length) html += renderExecutionConfig(runConfig, '실행 manifest · 유효 설정');
     if (!Object.keys(rowConfig).length && !Object.keys(runConfig).length) html += renderExecutionConfig(null);
-    html += renderPairedExecution(meta, '행 저장 시점 · 저부하 비교 관측');
-    html += renderPairedExecution(run, '실행 manifest · 저부하 비교 관측');
+    html += renderPairedExecution(meta, '행 저장 시점 · 저부하 비교 기록');
+    html += renderPairedExecution(run, '실행 manifest · 저부하 비교 기록');
     if (Object.prototype.hasOwnProperty.call(run, 'candidate_calibration_policy')) {
       html += renderCandidateCalibrationPolicy(run.candidate_calibration_policy);
     }
@@ -839,13 +839,13 @@
   function renderCandidateRetrieval(value) {
     const d = object(value);
     if (!Object.keys(d).length) return '';
-    let html = '<p class="section-note">고정 작품 자료의 후보 회수 관측입니다. 기존 제목 판정과 공개 권한에는 반영하지 않습니다.</p>'
-      + '<div class="detail-grid">' + kv('관측 모드', d.mode) + kv('상태', d.status)
+    let html = '<p class="section-note">고정 작품 자료에서 후보를 회수한 결과를 참고용으로 기록했습니다. 기존 제목 판정과 공개 권한에는 반영하지 않습니다.</p>'
+      + '<div class="detail-grid">' + kv('기록 모드', d.mode) + kv('상태', d.status)
       + kv('사유', d.reason_codes) + kv('게시글 ID', d.post_id)
       + kv('자료 구분', object(d.policy).data_kind) + kv('출처 독립 검증', object(d.policy).source_refs_independently_verified)
       + kv('corpus SHA-256', d.corpus_sha256) + kv('원문 query SHA-256', d.query_sha256)
       + kv('처리 시간(ms)', d.latency_ms) + kv('공개 권한', d.publication_authority)
-      + kv('실행·행 결속', d.binding) + '</div>';
+      + kv('실행·행 연결', d.binding) + '</div>';
     const candidates = Array.isArray(d.ranked_candidates) ? d.ranked_candidates : [];
     if (!candidates.length) html += '<p class="presentation-empty">저장된 양수 점수 후보가 없습니다. 작품 없음(NIL) 판정을 뜻하지 않습니다.</p>';
     for (const [index, value] of candidates.slice(0, 100).entries()) {
@@ -856,14 +856,14 @@
         + kv('작품 ID', hit.work_id) + kv('판본 ID', hit.edition_id) + kv('매체', hit.media_type)
         + kv('출처', hit.source_refs) + '</div></details>';
     }
-    return section('작품 후보 회수 · SHADOW', html + rawRecord('후보 관측 원본 · JSON', d));
+    return section('작품 후보 회수 · SHADOW', html + rawRecord('후보 기록 원본 · JSON', d));
   }
 
   function renderCandidateReranker(value) {
     const d = object(value);
     if (!Object.keys(d).length) return '';
-    let html = '<p class="section-note">고정 후보의 점수와 순서만 관측합니다. 학습 파라미터가 있어도 실제 자료의 성능 검증을 뜻하지 않습니다. 점수는 교정된 확률이나 작품 없음(NIL) 판정이 아닙니다.</p>'
-      + '<div class="detail-grid">' + kv('관측 모드', d.mode) + kv('상태', d.status) + kv('사유', d.reason_codes)
+    let html = '<p class="section-note">고정 후보의 점수와 순서만 기록합니다. 학습 파라미터가 있어도 실제 자료의 성능 검증을 뜻하지 않습니다. 점수는 교정된 확률이나 작품 없음(NIL) 판정이 아닙니다.</p>'
+      + '<div class="detail-grid">' + kv('기록 모드', d.mode) + kv('상태', d.status) + kv('사유', d.reason_codes)
       + kv('자료 구분', d.data_kind) + kv('학습 상태', d.training_status) + kv('학습 파라미터 사용 가능', d.actual_model_available)
       + kv('점수화 방식', d.backend) + kv('모델 종류', d.model_kind) + kv('모델 품질 검증', d.model_quality_status)
       + kv('학습 모델 SHA-256', d.model_sha256)
@@ -872,7 +872,7 @@
       + kv('공개 권한', d.publication_authority) + kv('판정 반영', d.public_apply)
       + kv('scorer SHA-256', d.scorer_sha256) + kv('manifest SHA-256', d.model_manifest_sha256)
       + kv('원문 query SHA-256', d.query_sha256) + kv('고정 입력 SHA-256', d.input_sha256)
-      + kv('후보 생성 SHA-256', d.generation_sha256) + kv('실행·행 결속', d.binding) + '</div>';
+      + kv('후보 생성 SHA-256', d.generation_sha256) + kv('실행·행 연결', d.binding) + '</div>';
     if (d.backend === 'NIL_AUGMENTED_LINEAR_V1') {
       html += '<p class="section-note">NIL 학습 점수도 미교정 원시 점수입니다. 작품 없음의 확률이나 최종 판정으로 사용하지 않습니다.</p>'
         + '<div class="detail-grid">' + kv('NIL 학습 파라미터 사용 가능', d.nil_head_available)
@@ -887,47 +887,47 @@
     }
     const roles = object(d.preselection_role_producer);
     if (Object.keys(roles).length) {
-      html += '<p class="section-note">이 scorer 입력의 v1 제목 출현 관측은 MENTIONED만 기록합니다. 별도 의미 역할 관측은 이 점수·교정 입력에 반영하지 않습니다.</p>'
-        + '<div class="detail-grid">' + kv('선택 전 역할 관측 상태', roles.status)
-        + kv('역할 관측 사유', roles.reason_codes) + kv('역할 관측 집계', roles.counts)
-        + kv('역할 관측 정책 SHA-256', roles.policy_sha256)
-        + kv('역할 관측 입력 SHA-256', roles.frozen_view_sha256) + '</div>';
+      html += '<p class="section-note">이 scorer 입력의 v1 제목 출현 기록에는 MENTIONED만 남깁니다. 별도 의미 역할 기록은 이 점수·교정 입력에 반영하지 않습니다.</p>'
+        + '<div class="detail-grid">' + kv('선택 전 역할 기록 상태', roles.status)
+        + kv('역할 기록 사유', roles.reason_codes) + kv('역할 기록 집계', roles.counts)
+        + kv('역할 기록 정책 SHA-256', roles.policy_sha256)
+        + kv('역할 기록 입력 SHA-256', roles.frozen_view_sha256) + '</div>';
     }
     const ranked = Array.isArray(d.ranked_candidates) ? d.ranked_candidates : [];
     if (!ranked.length) html += '<p class="presentation-empty">저장된 재정렬 점수가 없습니다. 위 상태와 사유를 확인하세요.</p>';
     for (const [index, item] of ranked.slice(0, 20).entries()) {
       const candidate = object(item);
-      html += '<article class="evidence-card"><div class="detail-grid">' + kv('관측 순위', index + 1)
+      html += '<article class="evidence-card"><div class="detail-grid">' + kv('기록된 순위', index + 1)
         + kv('고정 후보 ID', candidate.candidate_id) + kv('원시 점수', candidate.score) + '</div></article>';
     }
     const observed = Array.isArray(d.candidate_observations) ? d.candidate_observations : [];
     for (const value of observed.slice(0, 20)) {
       const candidate = object(value);
       if (Array.isArray(candidate.role_observations) && candidate.role_observations.length) {
-        html += '<details class="raw-record"><summary>원문 역할 관측 · ' + esc(displayValue(candidate.candidate_id))
+        html += '<details class="raw-record"><summary>원문 역할 기록 · ' + esc(displayValue(candidate.candidate_id))
           + '</summary><div class="detail-grid">' + kv('역할·원문 위치', candidate.role_observations) + '</div></details>';
       }
     }
-    return section('고정 후보 재정렬 · SHADOW', html + rawRecord('재정렬 관측 원본 · JSON', d));
+    return section('고정 후보 재정렬 · SHADOW', html + rawRecord('재정렬 기록 원본 · JSON', d));
   }
 
   function renderCandidateSemanticsPolicy(value, manifestValue) {
     const title = '실행 manifest · 선행 의미 역할 정책', d = object(value), manifest = object(manifestValue);
     const policy = object(d.policy);
     if (manifest.binding_status !== 'BOUND' && manifest.binding_status !== 'PARTIAL') {
-      return section(title, '<p class="presentation-empty">manifest 결속이 확인되지 않아 의미 역할 정책을 행에 연결하지 않습니다.</p>'
-        + '<div class="detail-grid">' + kv('manifest 결속', manifest.binding_status)
-        + kv('결속 사유', manifest.reason_codes) + '</div>');
+      return section(title, '<p class="presentation-empty">manifest 연결이 확인되지 않아 의미 역할 정책을 행에 연결하지 않습니다.</p>'
+        + '<div class="detail-grid">' + kv('manifest 연결', manifest.binding_status)
+        + kv('연결 사유', manifest.reason_codes) + '</div>');
     }
     return section(title,
-      '<p class="section-note">실행에 저장된 정책입니다. 행별 관측 성공이나 모델·교정 입력 소비를 뜻하지 않습니다. PARTIAL은 실행·공개 범위 좌표가 일부 미기록인 상태입니다.</p>'
-      + '<div class="detail-grid">' + kv('manifest 결속', manifest.binding_status)
-      + kv('결속 사유', manifest.reason_codes) + kv('관측 모드', d.mode)
+      '<p class="section-note">실행에 저장된 정책입니다. 행별 기록 성공이나 모델·교정 입력 소비를 뜻하지 않습니다. PARTIAL은 실행·공개 범위 좌표가 일부 미기록인 상태입니다.</p>'
+      + '<div class="detail-grid">' + kv('manifest 연결', manifest.binding_status)
+      + kv('연결 사유', manifest.reason_codes) + kv('기록 모드', d.mode)
       + kv('정책 스키마', d.schema_version) + kv('producer 스키마', d.producer_schema)
-      + kv('적용 범위', policy.semantic_scope) + kv('관측 권한의 범위', policy.authority)
-      + kv('관측 정책 SHA-256', d.policy_sha256) + kv('원문 parser 계약 SHA-256', policy.parser_contract_sha256)
+      + kv('적용 범위', policy.semantic_scope) + kv('기록 권한의 범위', policy.authority)
+      + kv('기록 정책 SHA-256', d.policy_sha256) + kv('원문 parser 계약 SHA-256', policy.parser_contract_sha256)
       + kv('별칭 근거 bundle SHA-256', d.alias_bundle_sha256)
-      + kv('정적 별칭 설정 SHA-256 · 행 관측과 별도', d.alias_evidence_sha256)
+      + kv('정적 별칭 설정 SHA-256 · 행 기록과 별도', d.alias_evidence_sha256)
       + kv('점수 소비 상태', d.score_consumption_status) + kv('실제 품질 평가', d.actual_quality_evaluated)
       + kv('설정 출처', d.setting_sources)
       + kv('공개 권한', d.publication_authority) + kv('판정 반영', d.public_apply)
@@ -937,16 +937,16 @@
   function renderCandidateSemantics(value, manifestValue) {
     const title = '선택 전 의미 역할 · 별도 SHADOW', d = object(value), manifest = object(manifestValue);
     if (!Object.keys(d).length) return section(title,
-      '<p class="presentation-empty">이 행에는 선행 의미 역할 관측이 저장되지 않았습니다.</p>');
+      '<p class="presentation-empty">이 행에는 선행 의미 역할 기록이 저장되지 않았습니다.</p>');
     const observation = object(d.observation), consumption = object(d.consumption);
-    let html = '<p class="section-note">원문과 고정 후보에 연결된 역할 관측입니다. PRIMARY는 원문의 논의 대상, PREVIOUS는 작가의 전작이며 독자의 과거 독서 이력이 아닙니다. 관측은 정답·최종 작품 선택·공개 권한을 부여하지 않습니다. 이 화면은 저장값을 표시하며 producer를 재실행하지 않습니다.</p>'
-      + '<div class="detail-grid">' + kv('관측 모드', d.mode) + kv('실행 관측 상태', d.status)
+    let html = '<p class="section-note">원문과 고정 후보에 연결된 역할 기록입니다. PRIMARY는 원문의 논의 대상, PREVIOUS는 작가의 전작이며 독자의 과거 독서 이력이 아닙니다. 이 기록은 정답·최종 작품 선택·공개 권한을 부여하지 않습니다. 이 화면은 저장값을 표시하며 producer를 재실행하지 않습니다.</p>'
+      + '<div class="detail-grid">' + kv('기록 모드', d.mode) + kv('실행 기록 상태', d.status)
       + kv('사유', d.reason_codes) + kv('게시글 ID', d.post_id) + kv('스키마', d.schema_version)
-      + kv('실행·행 결속', d.binding) + kv('공개 권한', d.publication_authority)
+      + kv('실행·행 연결', d.binding) + kv('공개 권한', d.publication_authority)
       + kv('판정 반영', d.public_apply) + kv('중앙 DB 쓰기', d.central_db_write)
       + kv('runtime receipt SHA-256', d.receipt_sha256) + '</div>';
     if (manifest.binding_status === 'MISMATCH') {
-      html += '<p class="section-note">manifest 실행·공개 범위 결속 불일치입니다. 아래 행 저장 관측은 보존하되 manifest 정책과 같은 실행의 기록으로 연결하지 않습니다.</p>';
+      html += '<p class="section-note">manifest 실행·공개 범위 연결 정보 불일치입니다. 아래 행 저장 기록은 보존하되 manifest 정책과 같은 실행의 기록으로 연결하지 않습니다.</p>';
     }
     const notConsumed = ['OBSERVED_NOT_CONSUMED', 'NOT_CONSUMED_OBSERVATION_FAILED', 'NOT_EXECUTED', 'NOT_AVAILABLE'].includes(consumption.status)
       && consumption.scorer_input_applied === false && consumption.calibration_input_applied === false;
@@ -976,20 +976,20 @@
         ? '의미 특징을 실제 점수 입력에 사용했습니다. 교정 입력 적용은 별도 저장값을 확인하세요. 실제 자료 품질 수용을 뜻하지 않습니다.'
         : consumption.backend_invoked
           ? '의미 특징을 점수기에 전달했으나 점수 생성은 완료되지 않았습니다.'
-          : '의미 특징의 점수기 호출은 실행되지 않았습니다. 입력 검산과 미실행 사유를 확인하세요.')
+          : '의미 특징의 점수기 호출은 실행되지 않았습니다. 입력 검증 결과와 미실행 사유를 확인하세요.')
       : notConsumed
-      ? '점수·교정 입력 미사용 · 역할 정책과 학습 모델의 결속이 아직 연결되지 않았습니다. 관측 실행 상태는 위 기록을 따로 확인하세요.'
+      ? '점수·교정 입력 미사용 · 역할 정책과 학습 모델이 아직 연결되지 않았습니다. 기록 실행 상태는 위 항목에서 따로 확인하세요.'
       : '점수·교정 입력 소비 계약 미확인 · 미기록이나 다른 값을 미사용 또는 사용 완료로 보충하지 않습니다.') + '</p>'
       + '<div class="detail-grid">' + kv('소비 상태', consumption.status)
       + kv('scorer 입력 적용', consumption.scorer_input_applied)
       + kv('교정 입력 적용', consumption.calibration_input_applied) + kv('소비 사유', consumption.reason_codes)
       + kv(semanticConsumer ? '실제 scorer 입력 SHA-256' : '기존 scorer 입력 SHA-256', consumption.scorer_input_sha256) + '</div>';
     if (d.schema_version === 'candidate_reranker_semantics_runtime_v2') {
-      html += '<div class="detail-grid">' + kv('입력 검산', consumption.input_validated)
+      html += '<div class="detail-grid">' + kv('입력 검증', consumption.input_validated)
         + kv('점수기 호출', consumption.backend_invoked) + kv('점수 생성', consumption.score_produced)
         + kv('의미 입력 SHA-256', consumption.semantic_input_sha256)
         + kv('의미 특징 계약 SHA-256', consumption.semantic_contract_sha256)
-        + kv('소비한 관측 SHA-256', consumption.semantic_observation_sha256)
+        + kv('소비한 기록 SHA-256', consumption.semantic_observation_sha256)
         + kv('소비 정책 SHA-256', consumption.semantic_policy_sha256)
         + kv('점수 receipt SHA-256', consumption.score_receipt_sha256)
         + kv('학습 모델 SHA-256', consumption.model_sha256) + kv('점수기 SHA-256', consumption.scorer_sha256) + '</div>';
@@ -999,32 +999,32 @@
       && observation.schema_version === 'candidate_preselection_semantics_v2' && observation.status === d.status;
     if (observed) {
       const counts = object(observation.counts), aliases = object(observation.alias_validation);
-      html += '<div class="detail-grid">' + kv('producer 관측 상태', observation.status)
+      html += '<div class="detail-grid">' + kv('producer 기록 상태', observation.status)
         + kv('producer 사유', observation.reason_codes)
         + kv('주요 논의 대상 · PRIMARY', counts.primary) + kv('작가의 전작 · PREVIOUS', counts.previous)
         + kv('비교 기준작 · COMPARISON', counts.comparison) + kv('제목·검증 별칭 출현 · MENTIONED', counts.mentioned)
-        + kv('미결합 관측 수', counts.unresolved) + kv('검증 별칭 출현 수', counts.alias_observations)
-        + kv('관측 집계 원본', observation.counts) + kv('관측 정책 SHA-256', observation.policy_sha256)
+        + kv('미결합 기록 수', counts.unresolved) + kv('검증 별칭 출현 수', counts.alias_observations)
+        + kv('기록 집계 원본', observation.counts) + kv('기록 정책 SHA-256', observation.policy_sha256)
         + kv('원문 parser 계약 SHA-256', observation.parser_contract_sha256)
         + kv('파싱된 source-view SHA-256 · 원본 파일 SHA 아님', observation.source_view_sha256)
-        + kv('query SHA-256', observation.query_sha256) + kv('관측 전 view SHA-256', observation.input_frozen_view_sha256)
+        + kv('query SHA-256', observation.query_sha256) + kv('기록 전 view SHA-256', observation.input_frozen_view_sha256)
         + kv(d.schema_version === 'candidate_reranker_semantics_runtime_v1'
-          ? '관측 후 view SHA-256 · 모델 입력 아님' : '관측 후 view SHA-256 · 실제 소비는 별도 기록', observation.frozen_view_sha256)
+          ? '기록 후 view SHA-256 · 모델 입력 아님' : '기록 후 view SHA-256 · 실제 소비는 별도 기록', observation.frozen_view_sha256)
         + kv('고정 후보 ID·순서 SHA-256', observation.candidate_ids_sha256)
         + kv('producer 점수 소비 상태', observation.score_consumption_status)
         + kv('별칭 근거 SHA-256', observation.alias_evidence_sha256)
-        + kv('관측 receipt SHA-256', observation.receipt_sha256) + '</div>'
+        + kv('기록 receipt SHA-256', observation.receipt_sha256) + '</div>'
         + '<p class="section-note">별칭 근거가 null이면 검증된 별칭 사용을 뜻하지 않습니다. 합성 근거와 source-backed 근거를 구분하며, 갤·갤러리라는 표면만으로 현실 커뮤니티나 작품을 단정하지 않습니다.</p>';
       if (Object.keys(aliases).length) {
-        html += '<details class="raw-record"><summary>별칭 검산 · 출처 권한과 자료 구분</summary>'
+        html += '<details class="raw-record"><summary>별칭 검증 · 출처 권한과 자료 구분</summary>'
           + '<p class="section-note">검토 권한은 원문 선언입니다. 관계의 진실·검토자 신원을 이 화면에서 인증하지 않습니다.</p>'
-          + '<div class="detail-grid">' + kv('별칭 결속 상태', aliases.status) + kv('별칭 결속 사유', aliases.reason_codes)
-          + kv('별칭 자료 구분', aliases.data_kind) + kv('별칭 관측 집계', aliases.counts)
+          + '<div class="detail-grid">' + kv('별칭 연결 상태', aliases.status) + kv('별칭 연결 사유', aliases.reason_codes)
+          + kv('별칭 자료 구분', aliases.data_kind) + kv('별칭 기록 집계', aliases.counts)
           + kv('별칭 정책 SHA-256', aliases.policy_sha256) + kv('snapshot SHA-256', aliases.snapshot_sha256)
           + kv('corpus SHA-256', aliases.corpus_sha256) + kv('별칭 receipt SHA-256', aliases.receipt_sha256)
-          + kv('별칭 결속·검토 권한·관계 근거', aliases.bindings) + kv('별칭 미결합 사유', aliases.unresolved)
+          + kv('별칭 연결·검토 권한·관계 근거', aliases.bindings) + kv('별칭 미결합 사유', aliases.unresolved)
           + '</div></details>';
-      } else html += '<div class="detail-grid">' + kv('별칭 검산·출처 권한·자료 구분', observation.alias_validation) + '</div>';
+      } else html += '<div class="detail-grid">' + kv('별칭 검증·출처 권한·자료 구분', observation.alias_validation) + '</div>';
       const rows = Array.isArray(observation.observations) ? observation.observations : [];
       for (const value of rows.slice(0, 32)) {
         const row = object(value);
@@ -1036,14 +1036,14 @@
           + kv('단언 상태', row.assertion) + kv('적용 규칙', row.rule_id)
           + kv('별칭 근거 ID', row.alias_evidence_ids) + '</div></details>';
       }
-      if (rows.length > 32) html += '<p class="section-note">상세 카드 표시 상한 32개를 넘었습니다. 전체 관측은 아래 저장 원본에서 확인하세요.</p>';
+      if (rows.length > 32) html += '<p class="section-note">상세 카드 표시 상한 32개를 넘었습니다. 전체 기록은 아래 저장 원본에서 확인하세요.</p>';
       html += '<details class="raw-record"><summary>모호성·부정·전언 등 미결합 근거</summary><div class="detail-grid">'
         + kv('미결합 목록', observation.unresolved) + '</div></details>';
     } else {
-      html += '<p class="presentation-empty">구조화 역할 표시 대상이 아닙니다. 미실행·오류·상한 초과·미기록과 알 수 없는 스키마를 관측 성공이나 역할 0건으로 바꾸지 않습니다.</p>'
+      html += '<p class="presentation-empty">구조화 역할 표시 대상이 아닙니다. 미실행·오류·상한 초과·미기록과 알 수 없는 스키마를 기록 성공이나 역할 0건으로 바꾸지 않습니다.</p>'
         + '<div class="detail-grid">' + kv('저장된 producer payload', d.observation) + '</div>';
     }
-    return section(title, html + rawRecord('저장된 의미 역할 관측 원본 · JSON', d));
+    return section(title, html + rawRecord('저장된 의미 역할 기록 원본 · JSON', d));
   }
 
   function renderCandidateSemanticsCapture(value) {
@@ -1051,14 +1051,14 @@
     if (!Object.keys(d).length) return section(title,
       '<p class="presentation-empty">이 행에는 의미 역할 capture 참조가 저장되지 않았습니다.</p>');
     return section(title,
-      '<p class="section-note">별도 의미 관측의 재생용 저장 참조입니다. 저장 성공은 모델 입력 적용이나 학습·정답 배정을 뜻하지 않습니다. 파일 경로는 정보만 표시하며 화면에서 파일을 읽지 않습니다.</p>'
-      + '<div class="detail-grid">' + kv('스키마', d.schema_version) + kv('관측 모드', d.mode) + kv('capture 상태', d.status)
+      '<p class="section-note">별도 의미 기록을 재생하기 위한 저장 참조입니다. 저장 성공은 모델 입력 적용이나 학습·정답 배정을 뜻하지 않습니다. 파일 경로는 정보만 표시하며 화면에서 파일을 읽지 않습니다.</p>'
+      + '<div class="detail-grid">' + kv('스키마', d.schema_version) + kv('기록 모드', d.mode) + kv('capture 상태', d.status)
       + kv('사유', d.reason_codes) + kv('게시글 ID', d.post_id) + kv('파일 참조', d.artifact)
       + kv('학습 준비 상태', d.training_readiness)
       + kv('저장 경로 · 정보만 표시', artifact.path) + kv('파일 SHA-256', artifact.sha256)
-      + kv('파일 바이트 수', artifact.bytes) + kv('관측 객체 전체 SHA-256 · receipt self SHA와 별도', d.observation_sha256)
-      + kv('결속된 capture SHA-256', d.capture_sha256) + kv('입력 snapshot SHA-256', d.input_snapshot_sha256)
-      + kv('실행·행 결속', d.binding) + kv('공개 권한', d.publication_authority)
+      + kv('파일 바이트 수', artifact.bytes) + kv('기록 객체 전체 SHA-256 · receipt self SHA와 별도', d.observation_sha256)
+      + kv('연결된 capture SHA-256', d.capture_sha256) + kv('입력 snapshot SHA-256', d.input_snapshot_sha256)
+      + kv('실행·행 연결', d.binding) + kv('공개 권한', d.publication_authority)
       + kv('판정 반영', d.public_apply) + kv('중앙 DB 쓰기', d.central_db_write)
       + kv('capture receipt SHA-256', d.receipt_sha256) + '</div>'
       + rawRecord('저장된 의미 역할 capture 참조 · JSON', d));
@@ -1068,7 +1068,7 @@
     const d = object(value);
     return section('실행 manifest · 일반 입력 교정 정책',
       '<p class="section-note">고정 R2 corpus와 학습 모델에 연결한 일반 입력 SHADOW 정책입니다. 정책 로드는 실행·정답 검토·실제 품질 평가 완료를 뜻하지 않습니다.</p>'
-      + '<div class="detail-grid">' + kv('관측 모드', d.mode) + kv('정책 상태', d.status)
+      + '<div class="detail-grid">' + kv('기록 모드', d.mode) + kv('정책 상태', d.status)
       + kv('적용 범위', d.scope) + kv('사유', d.reason_codes) + kv('자료 구분', d.data_kind)
       + kv('bundle SHA-256', d.bundle_sha256) + kv('corpus SHA-256', d.corpus_sha256)
       + kv('고정 교정 정책', d.calibration) + kv('공개 권한', d.publication_authority)
@@ -1082,10 +1082,10 @@
     const runPolicy = object(run.candidate_inference_policy), calibration = object(runPolicy.calibration);
     const title = '일반 입력 후보·NIL · 고정 교정 SHADOW';
     if (!Object.keys(d).length && !Object.keys(ref).length) return section(title,
-      '<p class="presentation-empty">이 행에는 일반 입력 교정 관측이 저장되지 않았습니다.</p>');
-    let html = '<p class="section-note">현재 원문에서 회수한 고정 corpus 후보와 NIL의 관측입니다. FROZEN 평가 배정이나 실제 정확도 보증이 아닙니다. NIL 제안으로 작품 없음의 최종 판정을 추론하지 않습니다.</p>'
-      + '<div class="detail-grid">' + kv('관측 상태', d.status) + kv('사유', d.reason_codes)
-      + kv('고정 모델 수치 재생 검산', d.score_replay_verified) + kv('검산 범위', d.verification_scope)
+      '<p class="presentation-empty">이 행에는 일반 입력 교정 기록이 저장되지 않았습니다.</p>');
+    let html = '<p class="section-note">현재 원문에서 회수한 고정 corpus 후보와 NIL을 기록한 것입니다. FROZEN 평가 배정이나 실제 정확도 보증이 아닙니다. NIL 제안으로 작품 없음의 최종 판정을 추론하지 않습니다.</p>'
+      + '<div class="detail-grid">' + kv('기록 상태', d.status) + kv('사유', d.reason_codes)
+      + kv('고정 모델 수치 재현 확인', d.score_replay_verified) + kv('확인 범위', d.verification_scope)
       + kv('자료 구분', receipt.data_kind) + kv('확률 범위', receipt.probability_scope)
       + kv('원문 게시글 ID', d.post_id) + kv('정답 상태', receipt.truth_status)
       + kv('실제 품질 평가', receipt.actual_quality_evaluated) + kv('capture 저장 상태', ref.status)
@@ -1094,7 +1094,7 @@
       + kv('R2 graph SHA-256', d.graph_sha256) + kv('capture SHA-256', d.capture_sha256)
       + kv('bundle SHA-256', d.bundle_sha256) + kv('교정 artifact SHA-256', receipt.calibration_artifact_sha256)
       + kv('모델 SHA-256', receipt.model_sha256) + kv('고정 온도', receipt.temperature)
-      + kv('실행·행 결속', d.binding) + kv('공개 권한', d.publication_authority)
+      + kv('실행·행 연결', d.binding) + kv('공개 권한', d.publication_authority)
       + kv('판정 반영', d.public_apply) + kv('동작 적용', d.action_applied) + '</div>';
     const hash = x => typeof x === 'string' && /^[0-9a-f]{64}$/.test(x);
     const flags = x => ['publication_authority', 'public_apply', 'central_db_write', 'action_applied'].every(k => x[k] === false);
@@ -1144,16 +1144,16 @@
       html += '<div class="detail-grid">' + kv('SHADOW 제안 label · 공개 선택 아님', receipt.selected_label)
         + kv('SHADOW 제안 동작 · 적용 아님', receipt.action)
         + kv('SHADOW 선택 오류확률', receipt.selected_error_probability) + '</div>'
-        + '<div class="detail-grid">' + kv('결속된 일반 입력 사건 확률', probabilities) + '</div>';
-    } else html += '<p class="presentation-empty">확률 표시 조건을 충족하지 못했습니다. 실행·저장·수치 검산 상태를 확인하세요.</p>';
-    return section(title, html + rawRecord('일반 입력 관측 원본 · JSON', d) + rawRecord('저장 capture 참조 · JSON', ref));
+        + '<div class="detail-grid">' + kv('연결된 일반 입력 사건 확률', probabilities) + '</div>';
+    } else html += '<p class="presentation-empty">확률 표시 조건을 충족하지 못했습니다. 실행·저장·수치 검증 상태를 확인하세요.</p>';
+    return section(title, html + rawRecord('일반 입력 기록 원본 · JSON', d) + rawRecord('저장 capture 참조 · JSON', ref));
   }
 
   function renderCandidateCalibrationPolicy(value) {
     const d = object(value);
     return section('실행 manifest · 후보 확률 교정 정책',
-      '<p class="section-note">FROZEN 재관측 전용 정책입니다. 정책 저장은 해당 행의 교정 실행이나 실제 자료 품질 평가 완료를 뜻하지 않습니다.</p>'
-      + '<div class="detail-grid">' + kv('관측 모드', d.mode) + kv('정책 상태', d.status)
+      '<p class="section-note">FROZEN 재실행 전용 정책입니다. 정책 저장은 해당 행의 교정 실행이나 실제 자료 품질 평가 완료를 뜻하지 않습니다.</p>'
+      + '<div class="detail-grid">' + kv('기록 모드', d.mode) + kv('정책 상태', d.status)
       + kv('적용 범위', d.scope) + kv('자료 구분', d.data_kind)
       + kv('bundle SHA-256', d.bundle_sha256) + kv('교정 artifact SHA-256', d.calibration_artifact_sha256)
       + kv('모델 SHA-256', d.model_sha256) + kv('scorer SHA-256', d.scorer_sha256)
@@ -1164,10 +1164,10 @@
   function renderCandidateCalibration(value) {
     const title = '후보 확률 교정 · FROZEN SHADOW', d = object(value);
     if (!Object.keys(d).length) return section(title,
-      '<p class="presentation-empty">이 행에는 교정 관측이 저장되지 않았습니다.</p>');
+      '<p class="presentation-empty">이 행에는 교정 기록이 저장되지 않았습니다.</p>');
     const shadow = object(d.calibration_shadow);
-    let html = '<p class="section-note">FROZEN 재관측 전용입니다. 저장된 확률은 SHADOW 관측이며 실제 자료의 교정 품질이나 최종 공개 판정을 뜻하지 않습니다. __NIL__ 확률로 작품 없음의 최종 판정을 추론하지 않습니다. 기존 재정렬 원시 점수는 별도 기록입니다.</p>'
-      + '<div class="detail-grid">' + kv('관측 모드', d.mode) + kv('관측 상태', d.status)
+    let html = '<p class="section-note">FROZEN 재실행 전용입니다. 저장된 확률은 SHADOW 기록이며 실제 자료의 교정 품질이나 최종 공개 판정을 뜻하지 않습니다. __NIL__ 확률로 작품 없음의 최종 판정을 추론하지 않습니다. 기존 재정렬 원시 점수는 별도 기록입니다.</p>'
+      + '<div class="detail-grid">' + kv('기록 모드', d.mode) + kv('기록 상태', d.status)
       + kv('사유', d.reason_codes) + kv('자료 구분', d.data_kind) + kv('실행 게시글 ID', d.post_id)
       + kv('자료 example ID', d.dataset_example_id) + kv('자료 게시글 ID', d.dataset_post_id)
       + kv('ID 대응 SHA-256', d.mapping_sha256) + kv('실행 capture SHA-256', d.runtime_capture_sha256)
@@ -1177,7 +1177,7 @@
       + kv('모델 SHA-256', d.model_sha256) + kv('scorer SHA-256', d.scorer_sha256)
       + kv('공개 권한', d.publication_authority) + kv('판정 반영', d.public_apply)
       + kv('동작 적용', d.action_applied) + kv('중앙 DB 쓰기', d.central_db_write)
-      + kv('운영 영향', d.operational_effect) + kv('실행·행 결속', d.binding)
+      + kv('운영 영향', d.operational_effect) + kv('실행·행 연결', d.binding)
       + kv('교정 receipt SHA-256', d.receipt_sha256) + '</div>';
     const bound = d.schema_version === 'candidate_calibration_shadow_v1' && d.mode === 'SHADOW'
       && d.status === 'CALIBRATED_SHADOW_BOUND' && shadow.probability_status === 'CALIBRATED_SHADOW_BOUND';
@@ -1197,10 +1197,10 @@
       }
       if (probabilities.length > 21) html += '<p class="section-note">사건 표시 상한 21개를 넘었습니다. 전체 저장값은 아래 원본에서 확인하세요.</p>';
     } else {
-      html += '<p class="presentation-empty">결속된 교정 확률 표시 대상이 아닙니다. 미실행·미사용·오류·미기록을 확률 0으로 바꾸지 않습니다.</p>'
+      html += '<p class="presentation-empty">연결된 교정 확률 표시 대상이 아닙니다. 미실행·미사용·오류·미기록을 확률 0으로 바꾸지 않습니다.</p>'
         + '<div class="detail-grid">' + kv('저장된 교정 payload', d.calibration_shadow) + '</div>';
     }
-    return section(title, html + rawRecord('저장된 교정 관측 원본 · JSON', d));
+    return section(title, html + rawRecord('저장된 교정 기록 원본 · JSON', d));
   }
 
   function renderCandidateCapture(value) {
@@ -1209,16 +1209,16 @@
       '<p class="presentation-empty">이 행에는 선택 전 원문 capture 참조가 저장되지 않았습니다.</p>');
     const artifact = object(d.artifact);
     const html = '<p class="section-note">선택 전 파싱된 원문 snapshot의 참조 정보입니다. 저장 성공은 학습 분할 배정이나 정답 판정을 뜻하지 않습니다. 파일 경로는 표시만 하며 이 화면에서 파일을 열거나 읽지 않습니다.</p>'
-      + '<div class="detail-grid">' + kv('관측 모드', d.mode) + kv('capture 상태', d.status)
+      + '<div class="detail-grid">' + kv('기록 모드', d.mode) + kv('capture 상태', d.status)
       + kv('사유', d.reason_codes) + kv('게시글 ID', d.post_id) + kv('snapshot 범위', d.scope)
       + kv('학습 준비 상태', d.training_readiness) + kv('원문 fragment 수', d.fragment_count)
-      + kv('후보 수', d.candidate_count) + kv('원본 관측 SHA-256', d.observation_sha256)
-      + kv('결속된 capture SHA-256', d.capture_sha256) + kv('고정 입력 view SHA-256', d.frozen_view_sha256)
+      + kv('후보 수', d.candidate_count) + kv('원본 기록 SHA-256', d.observation_sha256)
+      + kv('연결된 capture SHA-256', d.capture_sha256) + kv('고정 입력 view SHA-256', d.frozen_view_sha256)
       + kv('입력 snapshot SHA-256', d.input_snapshot_sha256) + kv('파일 참조', d.artifact)
       + kv('저장 경로 · 정보만 표시', artifact.path) + kv('파일 SHA-256', artifact.sha256)
       + kv('파일 바이트 수', artifact.bytes) + kv('공개 권한', d.publication_authority)
       + kv('판정 반영', d.public_apply) + kv('중앙 DB 쓰기', d.central_db_write)
-      + kv('실행·행 결속', d.binding) + kv('capture receipt SHA-256', d.receipt_sha256) + '</div>';
+      + kv('실행·행 연결', d.binding) + kv('capture receipt SHA-256', d.receipt_sha256) + '</div>';
     return section(title, html + rawRecord('저장된 capture 참조 원본 · JSON', d));
   }
 
@@ -1231,7 +1231,7 @@
       + kv('게시글 ID', d.post_id) + kv('자료 구분', object(d.policy).data_kind || d.data_kind)
       + kv('snapshot SHA-256', d.snapshot_sha256) + kv('원문 query SHA-256', d.query_sha256)
       + kv('공개 권한', d.public_authority) + kv('중앙 DB 쓰기', d.central_db_write)
-      + kv('원문 출현 위치', d.occurrences) + kv('실행·행 결속', d.binding) + '</div>';
+      + kv('원문 출현 위치', d.occurrences) + kv('실행·행 연결', d.binding) + '</div>';
     const candidates = Array.isArray(d.candidates) ? d.candidates : [];
     if (!candidates.length) html += '<p class="presentation-empty">전달할 후보가 없습니다. 작품 없음(NIL)이나 용어에 의미가 없다는 판정은 아닙니다.</p>';
     for (const value of candidates.slice(0, 16)) {

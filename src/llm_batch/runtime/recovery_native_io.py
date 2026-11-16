@@ -425,7 +425,7 @@ class NativeRecoveryIO:
 
 
 def _native_wire_body(config):
-    """검산된 설정을 비스트리밍 요청의 고정 부분으로 바꾼다."""
+    """검증된 설정을 비스트리밍 요청의 고정 부분으로 바꾼다."""
     body = {key: config[key] for key in ('model', 'max_tokens', 'temperature', 'top_p')}
     server_type = config['server_type']
     if server_type in ('llama', 'vllm'):
@@ -446,7 +446,7 @@ def _native_wire_body(config):
 def validate_native_wire_config(*, model, max_tokens, temperature=0, top_p=1,
         server_type='openai', min_p=None, repeat_penalty=None, enable_thinking=False,
         temperature_by_tag=None, vllm_top_k=None, vllm_presence_penalty=None, **unsupported):
-    """파일·환경·I/O를 만들지 않는 사전검산. 반환값은 workflow/facade의 공통 입력이다."""
+    """파일·환경·I/O를 만들지 않는 사전 검증. 반환값은 workflow/facade의 공통 입력이다."""
     require(not unsupported and server_type in ('openai', 'llama', 'vllm'), 'NATIVE_LLM_SETTINGS_UNSUPPORTED')
     require(type(model) is str and bool(model.strip()), 'NATIVE_LLM_MODEL')
     require(type(max_tokens) is int and 1 <= max_tokens <= 32768, 'NATIVE_LLM_TOKEN_LIMIT')
@@ -482,7 +482,7 @@ def validate_native_wire_config(*, model, max_tokens, temperature=0, top_p=1,
 
 
 class NativeLLMFacade:
-    """Text/non-stream OpenAI·llama·vLLM 설정을 동일 사전검산과 전송에 사용한다."""
+    """Text/non-stream OpenAI·llama·vLLM 설정을 같은 사전 검증과 전송에 사용한다."""
     def __init__(self, io, model, max_tokens, temperature=0, top_p=1, *, min_p=None,
                  repeat_penalty=None, enable_thinking=False, server_type='openai',
                  temperature_by_tag=None, vllm_top_k=None, vllm_presence_penalty=None, **unsupported):

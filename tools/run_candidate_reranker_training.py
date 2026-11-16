@@ -53,7 +53,7 @@ def _strict_json(raw: bytes) -> dict:
             result[key] = value
         return result
     def invalid_constant(value):
-        raise ValueError('비유한 JSON 숫자')
+        raise ValueError('유한하지 않은 JSON 숫자')
     try:
         value = json.loads(raw.decode('utf-8'), object_pairs_hook=pairs, parse_constant=invalid_constant)
         _json_bytes(value)  # 1e999 등 JSON decoder의 float overflow도 거절한다.

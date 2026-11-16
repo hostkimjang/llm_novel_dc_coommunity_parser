@@ -1,4 +1,4 @@
-"""Decoder 원관측의 작품 역할 모순. 표제 문자열이나 게시글 ID 목록은 사용하지 않는다."""
+"""Decoder 원래 관측값에서 작품 역할이 모순되는 경우를 찾는다. 표제 문자열이나 게시글 ID 목록은 사용하지 않는다."""
 from __future__ import annotations
 
 from copy import deepcopy

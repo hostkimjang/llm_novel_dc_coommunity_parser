@@ -1,4 +1,4 @@
-"""예약-before-send와 원시 응답 재판독을 연결한다. 재시작 자동 재전송은 없다.
+"""send 전 예약과 원시 응답 다시 읽기를 연결한다. 재시작 후 자동 재전송은 없다.
 
 actual_external_calls는 이 프로세스의 HTTP invocation만 뜻한다. 원격 MCP의
 내부 검색/fallback 횟수나 원격 모델 완료/비용은 이 모듈이 확인하지 못한다.
@@ -266,7 +266,7 @@ class RecoveryProviderRunner:
         return value
 
     def readback(self, *, request_id):
-        """전송·lock·원장 쓰기 없이 완료 원문/receipt/결속을 재판독한다."""
+        """전송·lock·원장 쓰기 없이 완료 원문/receipt/연결 정보를 다시 읽어 확인한다."""
         state = None
         try:
             require(type(request_id) is str and any(r["request_id"] == request_id for r in self._requests), "REQUEST_NOT_PLANNED")
@@ -349,7 +349,7 @@ class RecoveryProviderRunner:
                     "transport_receipt_sha256": tr["receipt_sha256"], "observed_response_bytes": tr["observed_response_bytes"],
                     "transport_invocations": invocations, "actual_external_calls": invocations if self._mode == "HTTPX_SINGLE_REQUEST" else 0})
                 state = tx.snapshot()
-                # 원시 응답과 transport receipt의 독립 재판독도 성공 확정 전에 수행한다.
+                # 원시 응답과 transport receipt도 성공을 확정하기 전에 따로 다시 읽어 확인한다.
                 tr, ref, status, reasons = self._stored(state, request_id, allow_unfinalized=True)
                 reasons = list(reasons)
                 if status == "SUCCESS":

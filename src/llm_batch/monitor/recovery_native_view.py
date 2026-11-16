@@ -1,4 +1,4 @@
-"""native 집계의 배타 발행과 파일·base 결속 판독. GET은 실행기나 키를 쓰지 않는다."""
+"""native 집계의 배타 발행과 파일·base 연결 확인. GET은 실행기나 키를 쓰지 않는다."""
 from __future__ import annotations
 
 from copy import deepcopy
@@ -359,7 +359,7 @@ def _validate(payload, output, root):
 
 
 def publish_recovery_native_view(output_path, manifest_path, *, root, policy, rows, input_posts=None, batch_report_ref=None):
-    """완료 workflow의 저장 보고서를 전체 입력에 결속해 한 번 발행한다."""
+    """완료 workflow의 저장 보고서를 전체 입력과 연결해 한 번 발행한다."""
     root = Path(root).resolve(); output = _safe(Path(output_path), root)
     manifest_path = _safe(Path(manifest_path), root)
     items, manifest, result_ref, manifest_ref = _base_files(output, manifest_path, root, policy)

@@ -91,7 +91,7 @@ def _check_resources(value: dict) -> None:
             or set(value.get('numeric_threads', {})) != set(NUMERIC_THREAD_KEYS)
             or any(item != '1' for item in value['numeric_threads'].values())
             or (os.name == 'nt' and (value.get('priority_class') != 16384 or value.get('affinity_mask') != 2))):
-        raise ValueError('합성 복구의 실제 저부하 자원 관측이 요청과 다릅니다')
+        raise ValueError('합성 복구에서 측정한 실제 저부하 자원이 요청과 다릅니다')
 
 
 def run_recovery_simulation(*, plan_path: str | Path, hmac_key_path: str | Path,
@@ -124,7 +124,7 @@ def run_recovery_simulation(*, plan_path: str | Path, hmac_key_path: str | Path,
     if attempt_id == bound.plan['base']['base_attempt_run_id']:
         raise ValueError('원래 판정 attempt ID를 복구 attempt로 재사용할 수 없습니다')
     root = Path(root).resolve()
-    # publisher와 동일한 root/path 검산을 실행 전에 한다. source와 key는 출력 폴더 밖에 둔다.
+    # publisher와 동일한 root/path 확인을 실행 전에 한다. source와 key는 출력 폴더 밖에 둔다.
     from src.llm_batch.monitor.recovery_view import _safe, _view_path
     result_path = _safe(Path(bound.plan['artifacts']['result']['path']), root)
     _safe(Path(bound.plan['artifacts']['manifest']['path']), root)
@@ -136,7 +136,7 @@ def run_recovery_simulation(*, plan_path: str | Path, hmac_key_path: str | Path,
              for suffix in ('.json', '.md')]
     present = [os.path.lexists(path) for path in paths]
     if any(present) and not all(present):
-        raise ValueError('부분 저장된 보고서를 덮어쓰지 않습니다. 기존 자료를 먼저 판독하세요')
+        raise ValueError('부분 저장된 보고서를 덮어쓰지 않습니다. 기존 자료를 먼저 읽어 확인하세요')
     view_path = _safe(_view_path(result_path), root)
     # 이미 연결한 결과는 같은 계획·보고서의 완료 replay만 허용한다.
     if os.path.lexists(view_path):
@@ -196,7 +196,7 @@ def run_recovery_simulation(*, plan_path: str | Path, hmac_key_path: str | Path,
                           'after': dashboard_after, 'visibility_verified': False}}
     receipt['receipt_sha256'] = hashlib.sha256(json.dumps(receipt, ensure_ascii=False, sort_keys=True,
         separators=(',', ':'), allow_nan=False).encode('utf-8')).hexdigest()
-    # invocation 자원 관측은 매번 달라질 수 있다. companion이 참조하는 고정 readback와 분리한다.
+    # invocation 자원 측정값은 매번 달라질 수 있다. companion이 참조하는 고정 readback과 분리한다.
     receipt_path = bound.assert_output_path(bound.output_dir / 'reports' /
         (basename + '_workflow_' + uuid4().hex + '.json'))
     raw = (json.dumps(receipt, ensure_ascii=False, indent=2, allow_nan=False) + '\n').encode('utf-8')
@@ -205,7 +205,7 @@ def run_recovery_simulation(*, plan_path: str | Path, hmac_key_path: str | Path,
         stream.flush()
         os.fsync(stream.fileno())
     if _file(receipt_path, 2 * 1024 * 1024).read_bytes() != raw:
-        raise OSError('실행 자원 수령증 저장 검산 실패')
+        raise OSError('실행 자원 기록 저장 후 확인 실패')
     return {**receipt, 'workflow_receipt': _ref(receipt_path, raw)}
 
 
@@ -215,7 +215,7 @@ def _verify_reports(bound, paths: list[Path], report: dict) -> list[dict]:
     for path, raw in zip(paths, payloads):
         bound.assert_output_path(path)
         if _file(path, 2 * 1024 * 1024).read_bytes() != raw:
-            raise ValueError('기존 보고서와 현재 독립 판독 결과가 다릅니다')
+            raise ValueError('기존 보고서와 지금 독립적으로 다시 읽은 결과가 다릅니다')
     return [_ref(path, raw) for path, raw in zip(paths, payloads)]
 
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""동결 2,712행의 저장된 publish contract를 현재 순수 계약으로 재평가한다.
+"""고정한 2,712행의 저장된 publish contract를 현재 순수 계약으로 재평가한다.
 
 네트워크와 ``expert_main.py``를 사용하지 않는다. 최종 의미 판정 ledger는 cohort
 집계용으로만 읽으며, production promotion decision의 입력으로 사용하지 않는다.

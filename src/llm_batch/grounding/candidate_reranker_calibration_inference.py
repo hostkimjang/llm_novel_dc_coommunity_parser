@@ -1,7 +1,7 @@
 """새 입력의 고정 R2 사건 점수에 CAL 온도를 적용한다. 평가 split은 배정하지 않는다.
 
-이 순수 소비자는 capture와 모델/CAL 지문의 구조적 결속을 검산한다. 실제
-고정 모델의 수치 재생과 현재 실행/저장 결속은 runtime 소비자가 담당한다.
+이 순수 소비자는 capture와 모델/CAL 지문이 구조적으로 연결됐는지 확인한다. 실제
+고정 모델의 수치 재생과 현재 실행/저장 연결 확인은 runtime 소비자가 담당한다.
 확률은 고정 corpus의 반환 후보와 NIL에 한정되며 실제 정확도 보증이 아니다.
 """
 from __future__ import annotations
@@ -79,7 +79,7 @@ class FrozenInferenceCalibration:
         return json.loads(self._summary_json)
 
     def apply(self, graph, *, capture, corpus_snapshot, source_payloads):
-        """검산된 고정 온도만 사용한다. fit/optimizer/파일/네트워크 호출은 없다."""
+        """검증된 고정 온도만 사용한다. fit/optimizer/파일/네트워크 호출은 없다."""
         summary = self.summary()
         checked = None
         try:
@@ -124,7 +124,7 @@ class FrozenInferenceCalibration:
 
 
 def prepare_inference_calibration(*, scorer_summary, artifact, calibration_manifest, policy):
-    """실제 CAL 학습 근거를 한 번 재생 검산하고 모델·정책을 불변으로 고정한다."""
+    """실제 CAL 학습 근거를 한 번 재생해 확인하고 모델·정책을 불변으로 고정한다."""
     summary = _copy(scorer_summary)
     # TRAIN의 내용을 재구성하거나 새 입력에 assignment를 발명하지 않는다.
     # 실제 고정 모델 로딩은 runtime 책임이며 여기서는 그 summary 계약을 검사한다.
