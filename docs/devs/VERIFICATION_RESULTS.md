@@ -10,6 +10,29 @@
 
 <!-- r5-resolution-current:end -->
 
+## 2026-11-16 복원 프롬프트 80건 검증 실행
+
+인코딩 손상 문구를 복원한 커밋(`ed977d890`)으로 10-13 기준 실행과 같은 입력·설정을 다시 돌렸다. 기준 실행 뒤 R5 수리(10-14~15)와 코드 정리도 함께 들어갔으므로 이 비교는 복원 문구만의 A/B가 아니다. LLM 출력과 실시간 검색 결과도 실행마다 달라질 수 있다.
+
+| 항목 | 기준 실행 `20261013_181711_146907` | 복원 뒤 `20261116_225916_249813` |
+| --- | --- | --- |
+| 입력 | expanded80(글 80건, 댓글 193건), SHA `f4eb5433…` | 같음 |
+| 병렬도(요청/실제) | 12/12 | 12/12 |
+| 완료·실패·대기 | 80·0·0, 완료 게이트 `GO` | 80·0·0, 완료 게이트 `GO` |
+| 소요 시간 | 5,497초 | 5,881초(+7.0%) |
+| 전문가 호출 | 646회 | 665회 |
+| 입력·출력 토큰 | 8,250,475·377,093 | 8,825,541·396,553 |
+| 관련 글 | 25건 | 28건 |
+| 공개 제목 | 10건 | 8건 |
+
+- 실행 소스: `orchestrator.py`와 `expert_prompts.py`의 SHA가 복원 커밋과 같다. 프롬프트 덤프는 꺼져 있어 모델에 들어간 문장을 로그로 직접 확인하지는 않았다.
+- 행 단위 변화: 제목 상태·관련 여부·공개 제목 가운데 하나가 바뀐 행이 12건, 글 분류가 바뀐 행이 12건이다. 관련 여부는 4건이 관련으로, 1건이 비관련으로 바뀌었다.
+- 공개 제목이 빠진 2건: `11718075`(죽깨수)는 모든 전문가와 배심원이 `죽었다 깨어도 수선`으로 판정했지만, 10-15 커밋 `cb85dbdff`에서 추가된 `J11 source-bound alias anticipation HOLD` 규칙이 기대글의 별칭 제목을 보류했다. 이 규칙은 기준 실행 로그에 나오지 않는다. `8933008`(좀비수선전)은 심의 결과 제목이 같았지만 공식 URL 근거를 확보하지 못해 공개 가드에서 보류됐다(`weak_source_exact_title_without_official_support_public_title_bridge`). 기준 실행에서는 이미지 OCR과 공식 상세 URL로 짝을 확인했다.
+- 공개 제목이 남은 8건은 제목이 모두 같다. URL은 4건이 달라졌다. `즉사기 들고 무림에 떨어지다` 3건은 네이버 시리즈에서 문피아 상세로 바뀌었고, `빌어먹을 환생` 1건은 URL이 없던 자리에 문피아 상세가 붙었다.
+- 대시보드는 standalone 18868에 연결했다. 23:21에 전송 시간 초과가 세 번 나서 forwarder가 드롭 모드로 바뀌었다(critical 이벤트는 보존). forwarder는 화면 전송만 맡으므로 결과 파일·manifest와는 관계가 없다.
+- 판정: 실행 기술 상태는 `GO`다. 의미 품질은 이 비교로 판정하지 않고, 공개 제목 2건 감소는 규칙과 근거 확보 차이로 기록한다.
+- 로컬 자료: `out/prompt_restore_validation_20261116/`(`PROCESS.json`, `run/result.json`, `run/result_manifest.json`), `logs/expert_run_20261116_225916_249813*.log`
+
 ## 2026-09-15 workflow-level 진단 보존 회귀
 
 - workflow partition summary가 child `metrics.json`의 `case_type_counts`, `expected_action_counts`, `failure_stage_counts`, `candidate_recall`, `conditional_selection`을 workflow manifest에 복사하도록 최소 수정했다. runner의 score semantics와 child validator는 변경하지 않았다.
