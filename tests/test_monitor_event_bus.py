@@ -3,6 +3,8 @@ from __future__ import annotations
 import asyncio
 import json
 import sys
+import time
+import threading
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -134,6 +136,93 @@ class NativeRecoveryProgressTest(unittest.TestCase):
         m.emit("native_recovery_progress", self.event(sequence=1))
         self.assertIsNone(m.get_status()["native_recovery"])
 
+
+class MonitorLlmThroughputTest(unittest.TestCase):
+    def _monitor(self) -> MonitorState:
+        monitor = MonitorState()
+        monitor.emit("batch_start", {"total": 4, "input_file": "in.jsonl", "output_file": "out.json",
+                                     "parallel_count": 2})
+        return monitor
+
+    def test_llm_stream_without_worker_id_uses_logging_thread_worker(self):
+        monitor = self._monitor()
+        seen = {}
+
+        def worker() -> None:
+            monitor.add_log("[12:00:00.000|W1] 🚀 Agentic Pipeline start", worker_id=1)
+            monitor.emit("llm_stream", {"phase": "start", "tag": "decoder"})
+            seen["sessions"] = monitor.get_status()["llm_throughput"]["sessions"]
+
+        thread = threading.Thread(target=worker)
+        thread.start()
+        thread.join()
+        self.assertEqual(seen["sessions"]["1"]["phase"], "streaming")
+        self.assertEqual(seen["sessions"]["1"]["tag"], "decoder")
+
+    def test_progress_then_end_counts_provider_usage_once(self):
+        monitor = self._monitor()
+        now = time.time()
+        base = {"tag": "gatekeeper", "worker_id": 0}
+        monitor.emit("llm_stream", {**base, "phase": "start", "at": now - 20})
+        monitor.emit("llm_stream", {**base, "phase": "progress", "tokens": 200, "elapsed_s": 6.0,
+                                    "ttft_s": 2.0, "at": now - 14})
+        monitor.emit("llm_stream", {**base, "phase": "end", "tokens": 300, "elapsed_s": 12.0, "ttft_s": 2.0,
+                                    "prompt_tokens": 1000, "completion_tokens": 400, "at": now - 8})
+        throughput = monitor.get_status()["llm_throughput"]
+        self.assertEqual(throughput["source"], "llm_stream")
+        self.assertEqual((throughput["calls"], throughput["prompt_tokens"], throughput["completion_tokens"]),
+                         (1, 1000, 400))
+        # 진행 이벤트 200 + 끝 보정 200 = 출력 400. 첫 표본(14초 전)부터 나눈다.
+        self.assertAlmostEqual(throughput["output_tps"], 400 / 14, delta=0.5)
+        self.assertAlmostEqual(throughput["processed_tps"], 1400 / 14, delta=1.0)
+        session = throughput["sessions"]["0"]
+        self.assertEqual(session["phase"], "idle")
+        self.assertEqual(session["last_call"]["tps"], 40.0)
+        self.assertNotIn("_counted", session)
+
+    def test_post_complete_tokens_give_approximate_rate_without_llm_stream(self):
+        monitor = self._monitor()
+        empty = monitor.get_status()["llm_throughput"]
+        self.assertEqual(empty["source"], "none")
+        self.assertIsNone(empty["output_tps"])
+        monitor.emit("post_complete", {"post_id": 7, "title": "t", "is_relevant": True, "worker_id": 0,
+                                       "token_usage": {"prompt_tokens": 3000, "completion_tokens": 600,
+                                                       "total_tokens": 3600}})
+        throughput = monitor.get_status()["llm_throughput"]
+        self.assertEqual(throughput["source"], "post_complete")
+        self.assertGreater(throughput["output_tps"], 0)
+        self.assertGreater(throughput["processed_tps"], throughput["output_tps"])
+
+    def test_batch_start_clears_llm_sessions(self):
+        monitor = self._monitor()
+        monitor.emit("llm_stream", {"phase": "queued", "tag": "verifier", "worker_id": 1})
+        self.assertIn("1", monitor.get_status()["llm_throughput"]["sessions"])
+        monitor.emit("batch_start", {"total": 1, "input_file": "in.jsonl", "output_file": "out2.json",
+                                     "parallel_count": 2})
+        self.assertEqual(monitor.get_status()["llm_throughput"]["sessions"], {})
+
+    def test_unknown_llm_stream_phase_is_not_broadcast(self):
+        monitor = self._monitor()
+        sent = []
+        with patch.object(monitor, "_broadcast", side_effect=sent.append):
+            monitor.emit("llm_stream", {"phase": "bogus", "worker_id": 0})
+        self.assertEqual(sent, [])
+        self.assertEqual(monitor.get_status()["llm_throughput"]["sessions"], {})
+
+    def test_progress_lines_are_throttled_per_worker(self):
+        monitor = self._monitor()
+        sent = []
+        with patch.object(monitor, "_broadcast", side_effect=sent.append):
+            for worker_id in (0, 1, 2):
+                monitor.add_log(f"[12:00:00.000|W{worker_id}] ✅ Gatekeeper 완료", worker_id=worker_id)
+            # 진행 줄은 워커가 다르면 같은 순간에 와도 모두 보낸다.
+            self.assertEqual(len(sent), 3)
+            monitor.add_log("[12:00:00.010|W0] 🔍 검색 시작", worker_id=0)
+            self.assertEqual(len(sent), 3)
+            # LLM 응답 JSON 조각은 워커와 상관없이 전체 간격을 따른다.
+            monitor.add_log('    "query": "a",', worker_id=1)
+            monitor.add_log('    "query": "b",', worker_id=2)
+            self.assertEqual(len(sent), 4)
 
 if __name__ == "__main__":
     unittest.main()

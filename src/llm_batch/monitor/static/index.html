@@ -6,9 +6,9 @@
 <title>Expert — Pipeline Monitor</title>
 <meta name="color-scheme" content="light dark">
 <script src="/static/theme.js?v=20260922-reason-log-v1"></script>
-  <script src="/static/presentation.js?v=20261116-kr-wording-v1"></script>
+  <script src="/static/presentation.js?v=20261116-worker-log-grid-v1"></script>
 <link rel="stylesheet" href="/static/utilities.css?v=20260922-reason-log-v1">
-<link rel="stylesheet" href="/static/dashboard.css?v=20260922-reason-log-v1">
+<link rel="stylesheet" href="/static/dashboard.css?v=20261116-worker-log-grid-v1">
 </head>
 <body>
 <a href="#main-content" class="skip-link">본문으로 건너뛰기</a>
@@ -86,6 +86,8 @@
 <div class="stat-card "><div class="stat-label">이벤트 집계 토큰</div><strong id="stat-tokens">0</strong><span class="stat-caption">수신 이벤트 합계 · 정식 KPI 아님</span></div>
 <div class="stat-card "><div class="stat-label">입력 토큰</div><strong id="stat-prompt-tokens">0</strong><span class="stat-caption">INPUT TOKENS</span></div>
 <div class="stat-card "><div class="stat-label">출력 토큰</div><strong id="stat-completion-tokens">0</strong><span class="stat-caption">OUTPUT TOKENS</span></div>
+<div class="stat-card stat-throughput"><div class="stat-label">전체 생성 속도</div><strong id="stat-output-tps">-</strong><span class="stat-caption" id="stat-output-tps-caption">출력 tok/s · 최근 1분</span><span class="stat-note" id="stat-output-tps-note"></span></div>
+<div class="stat-card stat-throughput"><div class="stat-label">전체 처리 속도</div><strong id="stat-processed-tps">-</strong><span class="stat-caption" id="stat-processed-tps-caption">입력+출력 tok/s · 최근 1분</span><span class="stat-note" id="stat-processed-tps-note"></span></div>
 <div class="stat-card "><div class="stat-label">검색 캐시 적중률</div><strong id="stat-cache">-</strong><span class="stat-caption">CACHE HIT</span></div></section>
     <div class="pipeline-overview">
       <!-- Pipeline Steps -->
@@ -216,7 +218,13 @@
       <div id="live-logs-panel" class="glass rounded-xl p-4 flex flex-col">
         <div class="flex items-start justify-between mb-3 gap-3 flex-wrap">
           <div class="flex flex-col gap-2 min-w-0 flex-1">
-            <h3 class="text-sm font-semibold text-slate-300">실시간 로그</h3>
+            <div class="log-panel-title">
+              <h3 class="text-sm font-semibold text-slate-300">실시간 로그</h3>
+              <div id="log-view-switch" class="log-view-switch hidden" role="group" aria-label="실시간 로그 보기 방식">
+                <button type="button" data-log-view="grid" aria-pressed="true" onclick="setLogView('grid')">작업자별</button>
+                <button type="button" data-log-view="stream" aria-pressed="false" onclick="setLogView('stream')">전체 흐름</button>
+              </div>
+            </div>
             <div id="log-worker-tabs" class="hidden flex flex-wrap items-center gap-1 max-w-full">
               <button onclick="switchLogWorker(-1)" data-log-w="-1" class="text-xs px-2 py-0.5 rounded-full bg-blue-900/60 text-blue-300 font-medium">전체</button>
             </div>
@@ -225,6 +233,7 @@
             <input type="checkbox" id="log-autoscroll" checked class="rounded"> 자동 스크롤
           </label>
         </div>
+        <div id="log-grid" class="log-grid hidden" aria-label="작업자별 실시간 로그"></div>
         <div id="log-area" class="flex-1 overflow-auto max-h-[50vh] bg-slate-900/50 rounded-lg p-3 whitespace-pre-wrap" style="overflow-wrap:break-word;word-break:normal"></div>
       </div>
     </div>
@@ -981,6 +990,14 @@ let llmResumeRequestMessage = '';
 let currentLogWorker = -1;  // -1=전체, 0+=워커별
 const workerLogs = new Map();  // worker_id → [lines]  (-1 = 전체)
 workerLogs.set(-1, []);  // 전체 로그
+// 실시간 로그 보기: 'grid'(작업자별 카드) | 'stream'(전체 흐름). 병렬 실행에서만 카드를 쓴다.
+let logView = (() => {
+  try { return localStorage.getItem('dashboard.logView') === 'stream' ? 'stream' : 'grid'; } catch { return 'grid'; }
+})();
+const _logGridDirty = new Set();   // 다시 그릴 워커 카드
+const _logGridPinned = new Map();  // worker_id → 사용자가 위로 스크롤해 자동 스크롤을 멈췄는지
+// 워커별 LLM 세션 상태(llm_stream 이벤트). receivedAt은 브라우저가 받은 시각이다.
+const llmSessions = new Map();
 
 // ─── Tab Switching ──────────────────────────────
 function switchTab(tab) {
@@ -1772,6 +1789,7 @@ function handleEvent(msg) {
       workerLogs.clear();
       workerLogs.set(-1, []);
       currentLogWorker = -1;
+      resetLogGridState();
       document.getElementById('log-area').textContent = '';
       // 로그 탭 초기화
       const tabContainer = document.getElementById('log-worker-tabs');
@@ -1786,6 +1804,7 @@ function handleEvent(msg) {
       } else {
         tabContainer.classList.add('hidden');
       }
+      updateLogViewUI();
       break;
 
     case 'post_start': {
@@ -1911,6 +1930,10 @@ function handleEvent(msg) {
       updateStatus({ ...lastKnownStatus, llm_suspended: false, llm_suspend_resumed_at: data.resumed_at || '' });
       break;
 
+    case 'llm_stream':
+      applyLlmStreamEvent(data);
+      break;
+
     case 'log':
       appendLog(data.line, data.worker_id);
       break;
@@ -1976,6 +1999,8 @@ function updateStatus(s) {
   document.getElementById('stat-tokens').textContent = fmtNum(s.token_usage?.total_tokens || 0);
   document.getElementById('stat-prompt-tokens').textContent = fmtNum(s.token_usage?.prompt_tokens || 0);
   document.getElementById('stat-completion-tokens').textContent = fmtNum(s.token_usage?.completion_tokens || 0);
+  updateThroughputStats(s.llm_throughput);
+  hydrateLlmSessions(s.llm_throughput);
   
   const total_search = (s.search_hits||0) + (s.search_misses||0);
   document.getElementById('stat-cache').textContent = total_search > 0
@@ -2016,6 +2041,7 @@ function updateStatus(s) {
       }
       updateLogTabStyles();
     }
+    updateLogViewUI();
     // active_posts 복원은 SSE 라이브 추적이 없을 때만 (새로고침/재연결 직후).
     // 라이브 추적 중에 5s 폴링이 통째로 덮어쓰면 expert_phase로 쌓은
     // doneSteps/recallCounts가 매번 리셋되어 카드가 깜빡인다.
@@ -2153,6 +2179,7 @@ function toggleParallelUI(isParallel) {
   } else {
     section.classList.add('hidden');
   }
+  updateLogViewUI();
 }
 
 function renderWorkerCards() {
@@ -2210,7 +2237,10 @@ function renderWorkerCardsNow() {
     const isRunning = w.status === 'running';
     const doneSig = MINI_STEPS.filter(s => w.doneSteps.has(s)).join(',');
     const recallSig = MINI_STEPS.map(s => `${s}:${w.recallCounts[s] || 0}`).join('|');
+    const llmView = DashboardPresentation.llmSessionView(llmSessions.get(wid), Date.now());
     const renderSig = [
+      llmView.state,
+      llmView.tpsShort,
       wid,
       w.title || '',
       w.index || 0,
@@ -2242,7 +2272,7 @@ function renderWorkerCardsNow() {
       </div>
       <div class="worker-title" title="${escHtml(w.title)}">${escHtml(w.title || '제목 없음')}</div>
       <div class="worker-stages">${stepsHtml}</div>
-      <div class="worker-footer"><span class="${isRunning ? 'text-blue-300' : 'text-slate-500'}">${expertLabel}</span><span class="worker-state">${isRunning ? '처리 중' : '대기'}</span></div>
+      <div class="worker-footer"><span class="${isRunning ? 'text-blue-300' : 'text-slate-500'}">${expertLabel}</span><span class="worker-tps" title="세션 생성 속도">${escHtml(llmView.tpsShort)}</span><span class="worker-state">${isRunning ? '처리 중' : '대기'}</span></div>
     `;
   });
 
@@ -2909,7 +2939,12 @@ function appendLog(line, workerId) {
 
   // DOM 갱신은 배치(250ms)로 — 라인마다 textContent 재구성(O(n²))하지 않는다.
   // 배열이 기준 데이터이므로 flush 시점에 통째로 다시 그린다.
-  if (currentLogWorker === -1 || currentLogWorker === wid) {
+  if (isLogGridActive()) {
+    if (wid >= 0) {
+      _logGridDirty.add(wid);
+      scheduleRender('log');
+    }
+  } else if (currentLogWorker === -1 || currentLogWorker === wid) {
     scheduleRender('log');
   }
 }
@@ -2918,6 +2953,7 @@ function flushLogArea() {
   const area = document.getElementById('log-area');
   if (!area) return;
   if (livePanelVisibility && livePanelVisibility.logs === false) return;
+  if (isLogGridActive()) { renderLogGrid(); return; }
   const openRecords = new Set(Array.from(area.querySelectorAll('details.log-record[open]'), node => node.dataset.logKey));
   const scrollTop = area.scrollTop;
   const lines = workerLogs.get(currentLogWorker) || [];
@@ -2945,6 +2981,176 @@ function tailLogLinesForRender(lines) {
   return tail.slice(start);
 }
 
+// ─── 작업자별 로그 카드 ───────────────────────────
+const LOG_GRID_TAIL_LINES = 120;   // 카드마다 다시 해석할 최근 줄 수
+const LOG_GRID_MAX_RECORDS = 40;   // 카드에 그릴 최근 기록 수
+const _logGridHydrated = new Set();
+
+function isLogGridActive() {
+  return logView === 'grid' && parallelCount > 1;
+}
+
+function resetLogGridState() {
+  llmSessions.clear();
+  _logGridDirty.clear();
+  _logGridPinned.clear();
+  _logGridHydrated.clear();
+  const grid = document.getElementById('log-grid');
+  if (grid) grid.innerHTML = '';
+}
+
+function setLogView(view) {
+  logView = view === 'stream' ? 'stream' : 'grid';
+  try { localStorage.setItem('dashboard.logView', logView); } catch {}
+  updateLogViewUI();
+  if (isLogGridActive()) workerLogs.forEach((_, wid) => { if (wid >= 0) _logGridDirty.add(wid); });
+  flushLogArea();
+}
+
+function updateLogViewUI() {
+  const parallel = parallelCount > 1;
+  const grid = isLogGridActive();
+  const viewSwitch = document.getElementById('log-view-switch');
+  if (viewSwitch) {
+    viewSwitch.classList.toggle('hidden', !parallel);
+    viewSwitch.querySelectorAll('[data-log-view]').forEach(btn => {
+      btn.setAttribute('aria-pressed', String(btn.dataset.logView === (grid ? 'grid' : 'stream')));
+    });
+  }
+  document.getElementById('log-grid')?.classList.toggle('hidden', !grid);
+  document.getElementById('log-area')?.classList.toggle('hidden', grid);
+  document.getElementById('log-worker-tabs')?.classList.toggle('hidden', !parallel || grid);
+}
+
+function focusWorkerLog(wid) {
+  setLogView('stream');
+  switchLogWorker(wid);
+}
+
+function activePostForWorker(wid) {
+  for (const [postId, w] of activeWorkers) {
+    if (w.worker_id === wid) return { postId, ...w };
+  }
+  return null;
+}
+
+function logGridWorkerIds() {
+  const ids = new Set();
+  for (let i = 0; i < parallelCount; i++) ids.add(i);
+  workerLogs.forEach((_, wid) => { if (wid >= 0) ids.add(wid); });
+  return [...ids].sort((a, b) => a - b);
+}
+
+// 새로고침 직후처럼 카드에 로그가 거의 없으면 서버가 보관한 그 워커의 최근 로그를 한 번 채운다.
+function hydrateWorkerLog(wid) {
+  if (_logGridHydrated.has(wid)) return;
+  _logGridHydrated.add(wid);
+  fetch(`/api/logs?n=${LOG_GRID_TAIL_LINES}&worker=${wid}`).then(r => r.json()).then(lines => {
+    if (!Array.isArray(lines) || !lines.length) return;
+    const merged = DashboardPresentation.mergeWorkerLogTail(lines.slice(-LOG_GRID_TAIL_LINES), workerLogs.get(wid) || []);
+    workerLogs.set(wid, merged.slice(-MAX_LOG_LINES));
+    _logGridDirty.add(wid);
+    scheduleRender('log');
+  }).catch(() => {});
+}
+
+function renderLogGrid() {
+  const grid = document.getElementById('log-grid');
+  if (!grid) return;
+  const autoscroll = !!document.getElementById('log-autoscroll')?.checked;
+  const now = Date.now();
+  for (const wid of logGridWorkerIds()) {
+    let card = grid.querySelector(`.wlog-card[data-worker="${wid}"]`);
+    if (!card) {
+      card = document.createElement('section');
+      card.className = 'wlog-card';
+      card.dataset.worker = String(wid);
+      card.innerHTML = `<header class="wlog-head"></header><div class="wlog-llm"></div><div class="wlog-body" tabindex="0" aria-label="W${wid} 실시간 로그"></div>`;
+      const body = card.querySelector('.wlog-body');
+      body.addEventListener('scroll', () => {
+        _logGridPinned.set(wid, body.scrollTop + body.clientHeight < body.scrollHeight - 24);
+      });
+      const next = [...grid.children].find(el => Number(el.dataset.worker) > wid);
+      grid.insertBefore(card, next || null);
+      _logGridDirty.add(wid);
+      if ((workerLogs.get(wid) || []).length < 5) hydrateWorkerLog(wid);
+    }
+    renderLogGridHeader(card, wid, now);
+    if (!_logGridDirty.has(wid)) continue;
+    _logGridDirty.delete(wid);
+    const body = card.querySelector('.wlog-body');
+    const openKeys = new Set(Array.from(body.querySelectorAll('details.log-record[open]'), node => node.dataset.logKey));
+    const followTail = autoscroll && !_logGridPinned.get(wid);
+    const scrollTop = body.scrollTop;
+    body.innerHTML = DashboardPresentation.renderWorkerLogTail(workerLogs.get(wid) || [],
+      { tailLines: LOG_GRID_TAIL_LINES, maxRecords: LOG_GRID_MAX_RECORDS });
+    body.querySelectorAll('details.log-record').forEach(node => { if (openKeys.has(node.dataset.logKey)) node.open = true; });
+    body.scrollTop = followTail ? body.scrollHeight : scrollTop;
+  }
+}
+
+function renderLogGridHeader(card, wid, now) {
+  const post = activePostForWorker(wid);
+  const view = DashboardPresentation.llmSessionView(llmSessions.get(wid), now);
+  const stage = post ? (post.expert ? post.expert.replace(/_/g, ' ') : '대기') : '';
+  const state = post ? (post.status === 'running' ? 'running' : 'waiting') : 'idle';
+  const sig = [post ? post.postId : '', post ? post.title : '', stage, state,
+    view.state, view.label, view.tps, view.detail].join('\u001f');
+  if (card.dataset.headSig === sig) return;
+  card.dataset.headSig = sig;
+  card.dataset.state = state;
+  const title = post ? `#${post.postId} · ${post.title || '제목 없음'}` : '처리 중인 게시글 없음';
+  card.querySelector('.wlog-head').innerHTML = `
+    <span class="worker-badge w${wid % 8}">W${wid}</span>
+    <span class="wlog-title" title="${escHtml(title)}">${escHtml(title)}</span>
+    <span class="wlog-stage">${escHtml(stage)}</span>
+    <button type="button" class="wlog-focus" onclick="focusWorkerLog(${wid})" aria-label="W${wid} 로그 크게 보기">크게 보기</button>`;
+  card.querySelector('.wlog-llm').innerHTML = `
+    <span class="wlog-llm-state" data-state="${view.state}">${escHtml(view.label)}</span>
+    ${view.tps !== '-' ? `<strong class="wlog-tps">${escHtml(view.tps)}</strong>` : ''}
+    <span class="wlog-llm-detail">${escHtml(view.detail)}</span>`;
+}
+
+function applyLlmStreamEvent(data) {
+  if (!data || typeof data !== 'object') return;
+  const wid = Number.isInteger(data.worker_id) ? data.worker_id : -1;
+  const next = DashboardPresentation.nextLlmSession(llmSessions.get(wid), data, Date.now());
+  if (!next) return;
+  llmSessions.set(wid, next);
+  if (isLogGridActive()) scheduleRender('log');
+  renderWorkerCards();
+}
+
+function hydrateLlmSessions(throughput) {
+  if (!throughput || typeof throughput !== 'object' || !throughput.sessions) return;
+  const now = Date.now();
+  for (const [key, snapshot] of Object.entries(throughput.sessions)) {
+    const wid = Number(key);
+    if (!Number.isInteger(wid)) continue;
+    const local = llmSessions.get(wid);
+    // 이벤트로 받은 최신 상태가 있으면 5초 주기 상태 스냅샷으로 덮어쓰지 않는다.
+    if (local && now - (local.receivedAt || 0) < 15000) continue;
+    llmSessions.set(wid, DashboardPresentation.sessionFromSnapshot(snapshot, now));
+  }
+}
+
+function updateThroughputStats(throughput) {
+  const view = DashboardPresentation.throughputView(throughput);
+  document.getElementById('stat-output-tps').textContent = view.output;
+  document.getElementById('stat-processed-tps').textContent = view.processed;
+  document.getElementById('stat-output-tps-caption').textContent = view.outputCaption;
+  document.getElementById('stat-processed-tps-caption').textContent = view.processedCaption;
+  document.getElementById('stat-output-tps-note').textContent = view.outputNote;
+  document.getElementById('stat-processed-tps-note').textContent = view.processedNote;
+}
+
+// 생성 중 경과·대기 시간이 이벤트 없이도 흐르도록 2초마다 카드 머리글을 다시 계산한다.
+setInterval(() => {
+  if (document.hidden) return;
+  if (isLogGridActive()) scheduleRender('log');
+  if (llmSessions.size) renderWorkerCards();
+}, 2000);
+
 const WORKER_TAB_COLORS = ['blue','purple','pink','amber','emerald','red','sky','lime'];
 
 function initLogTabs() {
@@ -2953,7 +3159,7 @@ function initLogTabs() {
     container.classList.add('hidden');
     return;
   }
-  container.classList.remove('hidden');
+  container.classList.toggle('hidden', isLogGridActive());
   
   // 현재 존재하는 워커 ID 수집
   const workerIds = [...workerLogs.keys()].filter(k => k >= 0).sort((a,b) => a - b);

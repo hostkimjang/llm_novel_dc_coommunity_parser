@@ -134,6 +134,52 @@ def _emit_monitor_event(event_type: str, data: Optional[Dict[str, Any]] = None) 
         return
 
 
+_LLM_MONITOR_PROGRESS_INTERVAL_S = 1.0
+# 생성 중 출력 토큰을 어림하는 비율. provider usage가 있는 스트림 호출의 출력 토큰 수와 받은 글자 수를 모은다.
+# speculative decoding을 쓰는 서버는 스트림 조각 하나에 토큰 여러 개를 실어 보내므로 조각 수로 세면 적게 잡힌다.
+_LLM_TOKEN_RATIO_LOCK = threading.Lock()
+_LLM_TOKEN_RATIO_TOTALS = {"tokens": 0, "chars": 0}
+_LLM_TOKEN_RATIO_MIN_CHARS = 200
+
+
+def _llm_tokens_per_char() -> Optional[float]:
+    """지금까지 끝난 호출로 구한 출력 토큰/글자 비율. 표본이 적으면 None을 돌려준다."""
+    with _LLM_TOKEN_RATIO_LOCK:
+        tokens = _LLM_TOKEN_RATIO_TOTALS["tokens"]
+        chars = _LLM_TOKEN_RATIO_TOTALS["chars"]
+    if tokens <= 0 or chars < _LLM_TOKEN_RATIO_MIN_CHARS:
+        return None
+    return tokens / chars
+
+
+def _learn_llm_tokens_per_char(completion_tokens: int, content_chars: int) -> None:
+    if completion_tokens <= 0 or content_chars <= 0:
+        return
+    with _LLM_TOKEN_RATIO_LOCK:
+        _LLM_TOKEN_RATIO_TOTALS["tokens"] += int(completion_tokens)
+        _LLM_TOKEN_RATIO_TOTALS["chars"] += int(content_chars)
+
+
+def _estimate_stream_tokens(content_chars: int, reasoning_chunks: int, chunks: int, ratio: Optional[float]) -> int:
+    """생성 중 출력 토큰 어림값. 비율을 아직 모르면 스트림 조각 수를 쓴다."""
+    if ratio:
+        return int(round(content_chars * ratio)) + int(reasoning_chunks)
+    return int(chunks)
+
+
+def _emit_llm_stream_event(phase: str, tag: str, **fields: Any) -> None:
+    """대시보드 처리 속도(TPS) 표시용 LLM 호출 단계 이벤트를 보낸다.
+
+    queued(LLM 슬롯 대기) → start(생성 시작) → progress(1초 간격) → end 또는 error 순서다.
+    전송 실패는 무시하므로 LLM 호출 결과와 재시도에는 영향을 주지 않는다.
+    """
+    import time as _time_mod
+
+    payload: Dict[str, Any] = {"phase": phase, "tag": str(tag or ""), "at": _time_mod.time()}
+    payload.update(fields)
+    _emit_monitor_event("llm_stream", payload)
+
+
 class _LLMServerSuspendController:
     """공유 LLM transport 이상 감시 및 사용자 승인 재개 게이트."""
 
@@ -872,7 +918,17 @@ class LLMClient:
         return raw_text[:json_complete_pos].rstrip()
 
     def _print_usage_details(self, tag: str, data: Dict[str, Any], elapsed_s: float = 0.0) -> None:
-        """스크린샷과 같은 상세 토큰 사용량 출력"""
+        """호출 완료 이벤트를 대시보드에 보내고, print_timings가 켜져 있으면 상세 토큰 사용량을 출력한다."""
+        monitor_usage = data.get("usage") if isinstance(data, dict) else None
+        if isinstance(monitor_usage, dict) and monitor_usage:
+            _emit_llm_stream_event(
+                "end",
+                tag,
+                elapsed_s=round(float(elapsed_s or 0.0), 3),
+                prompt_tokens=int(monitor_usage.get("prompt_tokens", 0) or 0),
+                completion_tokens=int(monitor_usage.get("completion_tokens", 0) or 0),
+                usage_source="provider",
+            )
         if not self.print_timings:
             return
         try:
@@ -1016,6 +1072,7 @@ class LLMClient:
         _start = _time.time()
         ts = self._timestamp()
         print(f"[{ts}][llm-stream] ▶ {tag} 토큰 생성 시작...", file=sys.stderr, flush=True)
+        _emit_llm_stream_event("queued", tag)
         
         acc: List[str] = []
         token_count = 0
@@ -1026,6 +1083,8 @@ class LLMClient:
         first_token_at: Optional[float] = None
         last_chunk_at: Optional[float] = None
         last_progress_log_at = _start
+        _llm_monitor_progress_at = 0.0
+        _llm_monitor_ratio = _llm_tokens_per_char()
         sse_event_count = 0
         content_chunk_count = 0
         reasoning_chunk_count = 0
@@ -1239,6 +1298,7 @@ class LLMClient:
             # 로컬 대기를 서버의 첫 토큰 지연으로 세어 정상 응답을 버리지 않는다.
             _start = _time.time()
             last_progress_log_at = _start
+            _emit_llm_stream_event("start", tag)
 
         try:
             # httpx streaming with iter_text() for better SSE handling
@@ -1526,6 +1586,22 @@ class LLMClient:
                                 f"(limit={_STREAM_IDLE_TIMEOUT_S:.2f}s)"
                             )
                     last_chunk_at = _chunk_now
+                    if (
+                        not _usage_drain_active
+                        and (_chunk_now - _llm_monitor_progress_at) >= _LLM_MONITOR_PROGRESS_INTERVAL_S
+                    ):
+                        _llm_monitor_progress_at = _chunk_now
+                        _llm_monitor_chars = sum(len(s) for s in acc)
+                        _emit_llm_stream_event(
+                            "progress",
+                            tag,
+                            tokens=_estimate_stream_tokens(
+                                _llm_monitor_chars, reasoning_chunk_count, token_count, _llm_monitor_ratio
+                            ),
+                            chars=_llm_monitor_chars,
+                            elapsed_s=round(_chunk_now - _start, 3),
+                            ttft_s=(round(first_token_at - _start, 3) if first_token_at is not None else None),
+                        )
                     if not _usage_drain_active and (
                         first_token_at is None
                         and _STREAM_FIRST_TOKEN_TIMEOUT_S is not None
@@ -1829,6 +1905,7 @@ class LLMClient:
                 )
             else:
                 print(f"\n[{ts}][llm-error] HTTP 스트리밍 오류: {type(e).__name__}: {e}", file=sys.stderr, flush=True)
+                _emit_llm_stream_event("error", tag, error=type(e).__name__)
                 raise
         finally:
             _usage_drain_stop_event.set()
@@ -1940,6 +2017,19 @@ class LLMClient:
         )
         self.last_model = last_model
         self.last_finish_reason = last_finish_reason
+        if last_usage and not reasoning_chunk_count:
+            _learn_llm_tokens_per_char(int(completion_tokens or 0), sum(len(s) for s in acc))
+        _emit_llm_stream_event(
+            "end",
+            tag,
+            tokens=token_count,
+            elapsed_s=round(_elapsed, 3),
+            ttft_s=(round(first_token_at - _start, 3) if first_token_at is not None else None),
+            prompt_tokens=int(prompt_tokens or 0),
+            completion_tokens=int(completion_tokens or 0),
+            usage_source=("provider" if last_usage else "estimate"),
+            finish_reason=last_finish_reason,
+        )
         
         # 출력
         if self.print_timings:

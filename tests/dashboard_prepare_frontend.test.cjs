@@ -26,6 +26,7 @@ function harness(fetchImpl) {
     liveSearchQuery:'',liveRelevanceFilter:'all',LIVE_PAGE_SIZE:100,slangDbLoaded:true,WORKER_TAB_COLORS:['blue'],
     currentTab:'live',rendered:[],cacheWrites:[],statuses:[],
     renderNativeProgress(){},setLlmSuspendState(){},resetPipelineSteps(){},clearFlowLog(){},toggleParallelUI(){},
+    resetLogGridState(){},updateLogViewUI(){},
     renderWorkerCards(){},renderLiveResults(){s.rendered.push(s.liveResultPage.map(r=>r.post_id));},
     _cacheSaveResults(){s.cacheWrites.push(s.liveResultPage.map(r=>r.post_id));},
     updateStatus(status){s.statuses.push(status);},Date,Map,Set,URLSearchParams,console,

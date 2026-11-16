@@ -754,5 +754,61 @@ class LLMClientStreamTimeoutTest(unittest.TestCase):
         self.assertEqual(client.last_usage_provenance, "ESTIMATED")
 
 
+class LLMClientStreamMonitorEventTest(unittest.TestCase):
+    def setUp(self) -> None:
+        _reset_llm_server_suspend_controller_for_tests()
+
+    def tearDown(self) -> None:
+        _reset_llm_server_suspend_controller_for_tests()
+
+    def test_stream_emits_llm_stream_phases_with_provider_usage(self):
+        class _FakeStreamResponse:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, exc_type, exc, tb):
+                return False
+
+            def raise_for_status(self) -> None:
+                return None
+
+            def iter_text(self):
+                yield 'data: {"model":"Qwen","choices":[{"delta":{"content":"{\\"ok\\":"},"finish_reason":null}]}\n'
+                yield 'data: {"model":"Qwen","choices":[{"delta":{"content":"true}"},"finish_reason":null}]}\n'
+                yield 'data: {"model":"Qwen","usage":{"prompt_tokens":120,"completion_tokens":7,"total_tokens":127},"choices":[{"delta":{},"finish_reason":"stop"}]}\n'
+                yield "data: [DONE]\n"
+
+        events = []
+        client = LLMClient(backend="http", endpoint="http://llm.test", model="Qwen", server_type="vllm", stream=True)
+        with patch("llm_batch.llm.client.httpx.stream", return_value=_FakeStreamResponse()), patch(
+            "llm_batch.llm.client._emit_monitor_event",
+            side_effect=lambda kind, data=None: events.append((kind, dict(data or {}))),
+        ):
+            result = client._stream_chat_http([{"role": "user", "content": "ok"}], tag="gatekeeper")
+
+        self.assertEqual(result, '{"ok":true}')
+        stream_events = [data for kind, data in events if kind == "llm_stream"]
+        phases = [data["phase"] for data in stream_events]
+        self.assertEqual(phases[:2], ["queued", "start"])
+        self.assertIn("progress", phases)
+        self.assertEqual(phases[-1], "end")
+        self.assertEqual(phases.count("end"), 1)
+        end = stream_events[-1]
+        self.assertEqual((end["prompt_tokens"], end["completion_tokens"], end["usage_source"]), (120, 7, "provider"))
+        self.assertTrue(all(data["tag"] == "gatekeeper" for data in stream_events))
+
+    def test_stream_token_estimate_uses_learned_chars_ratio(self):
+        from llm_batch.llm import client as client_mod
+
+        # 비율을 모르면 스트림 조각 수, 알면 받은 글자 수 × 토큰/글자 비율(+ reasoning 조각 수)
+        self.assertEqual(client_mod._estimate_stream_tokens(2400, 0, 400, None), 400)
+        self.assertEqual(client_mod._estimate_stream_tokens(2400, 3, 400, 1000 / 2400), 1003)
+        with patch.dict(client_mod._LLM_TOKEN_RATIO_TOTALS, {"tokens": 0, "chars": 0}):
+            self.assertIsNone(client_mod._llm_tokens_per_char())
+            client_mod._learn_llm_tokens_per_char(40, 100)
+            self.assertIsNone(client_mod._llm_tokens_per_char())  # 모은 글자 수가 아직 적다
+            client_mod._learn_llm_tokens_per_char(1000, 2400)
+            self.assertAlmostEqual(client_mod._llm_tokens_per_char(), 1040 / 2500)
+
 if __name__ == "__main__":
     unittest.main()

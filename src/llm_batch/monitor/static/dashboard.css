@@ -116,7 +116,7 @@ h1 { font-size:27px; font-weight:650; letter-spacing:-1.1px; margin:7px 0 8px; l
 .progress-caption { margin-left:auto; }
 .progress-card[data-state="suspended"] #batch-status-icon { background:var(--warning-soft); color:var(--warning); border-color:var(--warning); }
 .progress-card[data-state="suspended"] #progress-bar { background:var(--warning); }
-.stats-grid { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:12px; margin-bottom:24px; }
+.stats-grid { display:grid; grid-template-columns:repeat(8,minmax(0,1fr)); gap:12px; margin-bottom:24px; }
 .stat-card { display:flex; flex-direction:column; align-items:flex-start; background:var(--surface); border:1px solid var(--line); border-radius:9px; padding:17px 18px 15px; min-width:0; box-shadow:var(--shadow); }
 .stat-label { color:var(--secondary); font-size:10px; white-space:nowrap; }
 .stat-card strong { font-size:28px; font-weight:550; letter-spacing:-1px; line-height:1.2; margin:12px 0 9px; font-variant-numeric:tabular-nums; }
@@ -373,4 +373,42 @@ tr.row-noise { color:var(--muted); }
 }
 @media (prefers-reduced-motion:reduce) {
   *, *::before, *::after { animation:none !important; transition:none !important; scroll-behavior:auto !important; }
+}
+/* 실시간 로그 · 작업자별 카드와 처리 속도 */
+.stat-throughput strong { color:var(--accent); }
+.log-panel-title { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.log-view-switch { display:inline-flex; border:1px solid var(--line); border-radius:6px; overflow:hidden; }
+.log-view-switch.hidden { display:none; }
+.log-view-switch button { padding:3px 10px; font-size:10px; color:var(--muted); background:var(--surface); }
+.log-view-switch button + button { border-left:1px solid var(--line); }
+.log-view-switch button[aria-pressed="true"] { color:var(--accent); background:var(--accent-soft); font-weight:600; }
+.log-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:12px; }
+.log-grid.hidden { display:none; }
+.wlog-card { display:flex; flex-direction:column; min-width:0; border:1px solid var(--line); border-radius:8px; background:var(--surface); overflow:hidden; }
+.wlog-card[data-state="running"] { border-color:var(--accent-line); }
+.wlog-head { display:flex; align-items:center; gap:8px; padding:9px 11px 6px; min-width:0; }
+.wlog-title { flex:1; min-width:0; font-size:11px; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:500; }
+.wlog-card[data-state="idle"] .wlog-title { color:var(--muted); font-weight:400; }
+.wlog-stage { font-size:10px; color:var(--secondary); white-space:nowrap; text-transform:capitalize; }
+.wlog-focus { font-size:10px; color:var(--muted); border:1px solid var(--line); border-radius:5px; padding:2px 7px; white-space:nowrap; background:var(--surface); }
+.wlog-focus:hover { color:var(--accent); border-color:var(--accent-line); }
+.wlog-llm { display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; padding:0 11px 8px; font-size:10px; color:var(--muted); border-bottom:1px solid var(--line); }
+.wlog-llm-state[data-state="streaming"] { color:var(--accent); }
+.wlog-llm-state[data-state="queued"] { color:var(--warning); }
+.wlog-llm-state[data-state="stale"], .wlog-llm-state[data-state="error"] { color:var(--danger); }
+.wlog-tps { font-size:13px; font-weight:600; color:var(--ink); font-variant-numeric:tabular-nums; }
+.wlog-llm-detail { font-variant-numeric:tabular-nums; }
+.wlog-body { height:260px; overflow:auto; font-size:11px; line-height:1.55; background:var(--surface-soft); white-space:normal; }
+.wlog-body .log-record { display:flex; align-items:baseline; gap:8px; padding:4px 9px; }
+.wlog-body details.log-record { display:block; }
+.wlog-body .log-record > .log-meta { flex:none; font-size:9px; }
+.wlog-body .log-meta b, .wlog-body .log-kind { display:none; }
+.wlog-body .log-record > pre { margin:0; flex:1; min-width:0; }
+.stat-note { font-size:10px; color:var(--muted); margin-top:2px; min-height:14px; }
+.wlog-body .presentation-empty { padding:18px; }
+.worker-tps { color:var(--secondary); font-variant-numeric:tabular-nums; }
+@media (min-width:1201px) and (max-width:1600px) { .stats-grid { grid-template-columns:repeat(4,minmax(0,1fr)); } }
+@media (max-width:480px) {
+  .stats-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .log-grid { grid-template-columns:minmax(0,1fr); }
 }

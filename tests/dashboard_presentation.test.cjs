@@ -1936,3 +1936,56 @@ test('guard 문자열·객체를 escape하고 표시 상한과 원본 보존을 
   assert.ok(!structured.includes('DISPLAY_CODE_24'));
   assert.ok(all.includes('DISPLAY_CODE_24'));
 });
+
+test('LLM 세션 표시는 생성 중 디코드 속도와 직전 호출 속도를 구분한다', () => {
+  const now = 1000000;
+  let session = ui.nextLlmSession(null, { phase: 'queued', tag: 'decoder' }, now);
+  assert.equal(ui.llmSessionView(session, now + 3000).state, 'queued');
+  session = ui.nextLlmSession(session, { phase: 'start', tag: 'decoder' }, now + 4000);
+  session = ui.nextLlmSession(session, { phase: 'progress', tag: 'decoder', tokens: 300, elapsed_s: 12, ttft_s: 2 }, now + 16000);
+  const live = ui.llmSessionView(session, now + 16500);
+  assert.equal(live.state, 'streaming');
+  assert.equal(live.tps, '30.0 tok/s');
+  session = ui.nextLlmSession(session, { phase: 'end', tag: 'decoder', completion_tokens: 420, prompt_tokens: 9000, elapsed_s: 16, ttft_s: 2 }, now + 20000);
+  const done = ui.llmSessionView(session, now + 21000);
+  assert.equal(done.state, 'idle');
+  assert.equal(done.tps, '30.0 tok/s');
+  assert.match(done.detail, /입력 9,000 · 출력 420 토큰/);
+  assert.equal(ui.nextLlmSession(session, { phase: 'unknown' }, now), null);
+  const failed = ui.llmSessionView(ui.nextLlmSession(session, { phase: 'error', tag: 'decoder', error: 'ReadTimeout' }, now), now);
+  assert.equal(failed.state, 'error');
+});
+
+test('끊긴 세션과 처리 속도 근사를 구분해 표시한다', () => {
+  const stalled = ui.nextLlmSession(null, { phase: 'progress', tag: 'verifier', tokens: 10, elapsed_s: 3, ttft_s: 1 }, 0);
+  assert.equal(ui.llmSessionView(stalled, 31000).state, 'stale');
+  assert.equal(ui.throughputView(null).output, '-');
+  assert.equal(ui.throughputView({ source: 'none' }).processed, '-');
+  const approx = ui.throughputView({ source: 'post_complete', output_tps: 12.34, processed_tps: 2345.6 });
+  assert.equal(approx.output, '12.3');
+  assert.equal(approx.processed, '2,346');
+  assert.match(approx.outputNote, /근사/);
+  assert.equal(approx.outputCaption, '출력 tok/s · 최근 1분');
+  const live = ui.throughputView({ source: 'llm_stream', output_tps: 80, processed_tps: 900, streaming: 4, queued: 2 });
+  assert.equal(live.outputNote, 'LLM 생성 4 · 대기 2');
+  const restored = ui.sessionFromSnapshot({ phase: 'streaming', tag: 'arbiter', tokens: 50, elapsed_s: 6, ttft_s: 1, age_s: 2 }, 10000);
+  assert.equal(ui.llmSessionView(restored, 10000).tps, '10.0 tok/s');
+});
+
+test('작업자 로그 꼬리는 최근 기록만 같은 표시 규칙으로 그린다', () => {
+  const lines = Array.from({ length: 60 }, (_, i) => `[12:00:${String(i).padStart(2, '0')}.000|W3] ✅ step ${i}`);
+  const html = ui.renderWorkerLogTail(lines, { tailLines: 30, maxRecords: 5 });
+  assert.match(html, /step 59/);
+  assert.doesNotMatch(html, /step 54(?!\d)/);
+  assert.match(ui.renderWorkerLogTail([]), /아직 로그가 없습니다/);
+});
+
+test('작업자 로그 복원은 SSE에서 빠진 줄과 반복 줄이 있어도 같은 줄을 두 번 넣지 않는다', () => {
+  const fetched = ['[23:01:02.000|W3] ▶ decoder 단계 시작', '    "a": 1,', '  },', '    "b": 2,', '  },'];
+  // SSE는 "b" 줄을 건너뛰었고, 서버 응답 뒤에 완료 줄이 새로 왔다.
+  const done = '[23:01:09.000|W3] ✅ Decoder 완료 (7.0s)';
+  assert.deepEqual(ui.mergeWorkerLogTail(fetched, ['  },', '  },', done]), [...fetched, done]);
+  assert.deepEqual(ui.mergeWorkerLogTail(fetched, []), fetched);
+  assert.deepEqual(ui.mergeWorkerLogTail([], [done]), [done]);
+  assert.deepEqual(ui.mergeWorkerLogTail(['a', 'b'], ['c']), ['a', 'b', 'c']);
+});

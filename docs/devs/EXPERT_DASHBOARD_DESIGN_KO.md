@@ -39,13 +39,29 @@ python tools/attach_manifest_dashboard.py --manifest out/example/result_manifest
 
 왼쪽 메뉴에서 실시간 모니터, 과거 실행 이력, Slang DB를 고른다.
 
-- **실시간 모니터:** 진행률, KPI, 파이프라인 단계, 병렬 worker, 처리 결과, 로그를 보여 준다. 새로고침하면 최근 전체 로그는 복구되지만 worker별 스트림 탭은 이후 들어온 이벤트부터 표시한다.
+- **실시간 모니터:** 진행률, KPI와 LLM 처리 속도, 파이프라인 단계, 병렬 worker, 처리 결과, 로그를 보여 준다. 로그 보는 방식은 [실시간 로그](#실시간-로그), 처리 속도 계산은 [LLM 처리 속도](#llm-처리-속도)에 정리했다.
 - **과거 실행 이력:** `out/` 아래 결과와 manifest를 골라 상세, 로그, 실행 설정, 종료 계측을 본다. 중첩 manifest 실행은 실행 키로 선택한다.
 - **Slang DB:** 중앙 slang DB의 항목·요약을 페이지 단위로 본다. 파일이 없거나 읽을 수 없으면 빈 목록을 보여 준다. 서버는 `<저장소>/slang_db/slang_db.json`을 읽으며, `expert_main`의 `--slang-db-path`와 자동으로 연동하지 않는다.
 
 상세 화면은 판정 결과, 판정 사유, 판정 범위·확정 상태, 후보 검토, 검색 상태, 근거 자료, 분석 메모 순으로 읽는다. 판정 사유는 구역별 카드로 나누고 `판정 사유 원문 보기`에서 저장된 문장을 그대로 보여 준다. 처리 로그는 입력, 이미지·OCR, 전문가 단계, 검색, 완료 결과로 묶고 종류 필터와 내용 검색을 함께 쓸 수 있다.
 
 화이트·다크 테마는 상단 해·달 버튼으로 바꾼다. 선택하지 않았으면 OS의 `prefers-color-scheme`을 따르고, 선택값은 브라우저 `localStorage`의 `lndc_theme` 키에 저장해 같은 출처의 다른 탭과 동기화한다.
+
+### 실시간 로그
+
+병렬 실행에서는 실시간 로그를 `작업자별`과 `전체 흐름` 가운데 하나로 본다. 기본은 `작업자별`이고, 고른 방식은 브라우저 `localStorage`의 `dashboard.logView` 키에 저장한다. worker가 하나뿐인 실행은 전환 버튼 없이 전체 흐름만 보여 준다.
+
+`작업자별` 보기는 worker마다 카드를 하나씩 두고 처리 중인 게시글, 전문가 단계, LLM 호출 상태와 속도, 최근 기록 40개를 보여 준다. 자동 스크롤은 카드마다 따로 움직여서, 한 카드를 위로 올려 읽는 동안에도 다른 카드는 새 기록을 따라간다. `크게 보기`를 누르면 그 worker 탭이 선택된 `전체 흐름` 보기로 바뀐다.
+
+| LLM 상태 | 뜻 |
+| --- | --- |
+| `LLM 슬롯 대기` | 요청이 같은 endpoint의 동시 호출 상한(`LLM_HTTP_CONCURRENCY`, 기본 4)에 걸려 차례를 기다린다. 서버 과부하 뒤 쉬는 시간이나 사용자 일시정지로 기다리는 경우도 여기에 든다. |
+| `생성 중` | 응답 토큰을 받고 있다. 생성 속도, 지금까지 받은 토큰 수, 첫 토큰까지 걸린 시간을 함께 보여 준다. |
+| `직전 호출` | 마지막으로 끝난 호출의 입력·출력 토큰, 걸린 시간, 생성 속도다. |
+| `응답 없음` | 생성 중인데 30초 넘게 새 소식이 없다. |
+| `호출 오류` | 마지막 호출이 오류로 끝났다. |
+
+새로고침 직후 카드에 기록이 거의 없으면 서버가 보관한 그 worker의 최근 로그 120줄을 한 번 불러와 채운다. 그사이 SSE로 받은 줄과 겹치는 부분은 한 번만 남긴다. 불러온 기록은 `전체 흐름`의 worker 탭에도 보인다. `전체 흐름`만 보고 있으면 worker 탭은 새로고침한 뒤 들어온 이벤트부터 쌓인다.
 
 ## 표시 규칙
 
@@ -55,6 +71,26 @@ python tools/attach_manifest_dashboard.py --manifest out/example/result_manifest
 - 행 저장 당시 호출 원장과 실행 종료 manifest의 계측은 따로 보여 준다. 실시간 이벤트로 합산한 토큰과 manifest 사용량은 집계 범위가 다르다. 기록된 토큰 수를 정식 KPI로 바꾸지 않으며 `NOT_ESTIMABLE`, null, `UNBOUND_PARTIAL`을 그대로 둔다.
 - 후보 회수·재정렬·의미 역할·교정·inference와 커뮤니티 지식 기록은 결과의 `run_meta`에 저장된 경우에만 상세에 표시한다. 큰 기록 자료는 목록과 SSE에 넣지 않는다. 빈 후보를 NIL 판정으로, 미교정 점수를 확률로 표시하지 않는다.
 - 복구 결과는 `run_meta`가 아니라 서버의 별도 reader가 읽어 `recovery_execution`, `recovery_provider_execution`, `recovery_native_execution`으로 붙인다. native 복구 reader는 aggregate가 원래 결과·manifest, 선택한 행과 SHA로 연결되는지 검사하고 맞지 않으면 `MISSING`·`INVALID`로 표시한다. 복구는 원래 결과·manifest·WAL을 덮어쓰지 않는다.
+
+## LLM 처리 속도
+
+통계 카드의 `전체 생성 속도`·`전체 처리 속도`와 worker 카드의 tok/s는 LLM 클라이언트가 호출마다 보내는 `llm_stream` 이벤트로 계산한다. 이벤트는 대기(`queued`), 시작(`start`), 1초 간격 진행(`progress`), 종료(`end`), 오류(`error`) 다섯 단계다. 이벤트에 worker 번호가 없으면 같은 스레드가 마지막으로 남긴 로그의 worker로 정한다.
+
+| 표시 | 계산 |
+| --- | --- |
+| 전체 생성 속도 | 최근 60초 동안 받은 출력 토큰 ÷ 구간 길이 |
+| 전체 처리 속도 | 같은 구간의 입력 토큰과 출력 토큰 합 ÷ 구간 길이 |
+| worker 카드 속도 | 출력 토큰 ÷ (걸린 시간 − 첫 토큰까지 걸린 시간). 생성 중이면 지금까지의 값, 끝났으면 직전 호출의 값이다. |
+
+- 실행을 시작하고 1분이 지나기 전에는 첫 표본 이후 흐른 시간(최소 10초)을 구간 길이로 쓴다. 그래서 시작 직후에도 값이 낮게 눌리지 않는다.
+- 생성 중인 출력 토큰은 받은 글자 수에, 앞서 끝난 호출에서 구한 토큰/글자 비율을 곱해 어림한다. speculative decoding을 켠 서버는 스트림 조각 하나에 토큰 여러 개를 실어 보내므로 조각 수로 세면 적게 잡힌다(2026-11-17 vLLM 실측: 조각 194개, 실제 출력 440토큰). 실행 초반처럼 비율을 아직 모를 때만 조각 수를 쓴다.
+- 호출이 끝나면 provider usage(없으면 추정치)와의 차이를 맞춘다. 입력 토큰은 호출이 끝날 때 한꺼번에 더하므로 전체 처리 속도는 계단처럼 움직인다.
+- `LLM 생성`·`대기` 수는 30초 안에 소식이 온 호출만 센다.
+- worker 카드 속도는 첫 토큰 대기를 뺀 생성 속도다. 프롬프트 처리와 슬롯 대기 시간이 빠지므로 worker 속도를 모두 더해도 전체 생성 속도와 같아지지 않는다.
+- `llm_stream` 이벤트를 보내지 않는 이전 버전 실행은 게시글 완료 이벤트의 토큰 합계로 근사하고, 카드에 `게시글 완료 기준 근사`라고 표시한다.
+- 모두 화면에서 진행을 살피기 위한 값이다. manifest 사용량이나 정식 KPI를 대신하지 않는다.
+
+SSE로 내보내는 로그에는 폭주를 막는 간격이 있다. 시각이나 진행 기호로 시작하는 진행 줄은 worker마다 0.1초, LLM 응답 조각 같은 나머지 줄은 전체에서 0.05초 간격이다. 간격 때문에 화면에 보내지 않은 줄도 서버 로그 저장소와 `/api/logs`에는 남는다.
 
 ## 이력 탐색의 상한
 
@@ -78,14 +114,14 @@ python tools/attach_manifest_dashboard.py --manifest out/example/result_manifest
 | [`index.html`](../../src/llm_batch/monitor/static/index.html) | 화면 구조와 대시보드 동작 |
 | [`dashboard.css`](../../src/llm_batch/monitor/static/dashboard.css) | 배치, 컴포넌트, 두 테마의 색상 변수 |
 | [`theme.js`](../../src/llm_batch/monitor/static/theme.js) | 초기 테마, 선택 저장, OS 변경과 탭 동기화 |
-| [`presentation.js`](../../src/llm_batch/monitor/static/presentation.js) | 판정 사유·진단 필드·단계별 로그와 JSON 표시 |
+| [`presentation.js`](../../src/llm_batch/monitor/static/presentation.js) | 판정 사유·진단 필드·단계별 로그·LLM 처리 속도와 JSON 표시 |
 | [`utilities.css`](../../src/llm_batch/monitor/static/utilities.css) | 로컬 생성 Tailwind CSS. 직접 편집하지 않는다. |
 | [`tailwind.config.cjs`](../../tools/dashboard/tailwind.config.cjs) · [`input.css`](../../tools/dashboard/input.css) | Tailwind 생성 입력, HTML 스캔 경로, 동적 worker 클래스 safelist |
 | [`server.py`](../../src/llm_batch/monitor/server.py) | HTML, `/static` 자산, API, SSE 제공 |
 | [`slang_view.py`](../../src/llm_batch/monitor/slang_view.py) | Slang DB 파일 내용을 화면용 행·요약으로 변환 |
 | [`run_index.py`](../../src/llm_batch/monitor/run_index.py) | 실행 이력 탐색, 결과와 manifest 연결, 최근 current 실행 보존 |
 
-`index.html`은 각 자산을 `/static/presentation.js?v=<토큰>`처럼 버전 토큰을 붙여 불러온다. JS나 CSS를 바꾸면 해당 토큰도 바꿔 이전 브라우저 캐시와 구분한다. 회귀시험이 `presentation.js` 토큰을 확인하므로 토큰을 바꾸면 `tests/test_dashboard_standalone.py`의 기대값도 같이 갱신한다.
+`index.html`은 각 자산을 `/static/presentation.js?v=<토큰>`처럼 버전 토큰을 붙여 불러온다. JS나 CSS를 바꾸면 해당 토큰도 바꿔 이전 브라우저 캐시와 구분한다. 회귀시험이 `presentation.js`와 `dashboard.css` 토큰을 확인하므로 토큰을 바꾸면 `tests/test_dashboard_standalone.py`의 기대값도 같이 갱신한다.
 
 유틸리티 클래스를 바꿨다면 개발 환경에서 Tailwind 3.4.17 결과를 다시 만든다. 처음 `npx`를 실행할 때는 패키지 다운로드가 필요할 수 있다.
 
@@ -104,9 +140,9 @@ npx.cmd --yes --package tailwindcss@3.4.17 tailwindcss --config tools/dashboard/
 대시보드 관련 변경 뒤에는 서버·이벤트·이력 시험과 화면 표시 시험을 함께 실행한다.
 
 ```powershell
-.venv312/Scripts/python.exe -m pytest -q tests/test_dashboard_standalone.py tests/test_dashboard_run_index.py tests/test_dashboard_cache_scan_budget.py tests/test_dashboard_current_run_resolution.py tests/test_history_current_retention.py tests/test_dashboard_slang_db_view.py
+.venv312/Scripts/python.exe -m pytest -q tests/test_dashboard_standalone.py tests/test_dashboard_run_index.py tests/test_dashboard_cache_scan_budget.py tests/test_dashboard_current_run_resolution.py tests/test_history_current_retention.py tests/test_dashboard_slang_db_view.py tests/test_llm_client_stream_timeout.py
 .venv312/Scripts/python.exe -m unittest tests.test_dashboard_standalone tests.test_monitor_event_bus
-node --test tests/dashboard_presentation.test.cjs tests/dashboard_theme.test.cjs
+node --test tests/dashboard_presentation.test.cjs tests/dashboard_theme.test.cjs tests/dashboard_prepare_frontend.test.cjs tests/dashboard_failed_run.test.cjs tests/dashboard_context_event_state.test.cjs
 ```
 
 화면 배치나 테마를 바꿨다면 실제 브라우저에서 화이트·다크 두 테마와 좁은 화면의 가로 넘침, 콘솔 오류를 확인한다. 개발 체크리스트는 [CHECKLIST](CHECKLIST.md)에 있다.

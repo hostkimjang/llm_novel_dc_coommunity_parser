@@ -13,6 +13,7 @@ import asyncio
 import json
 import math
 import os
+from collections import deque
 from copy import deepcopy
 import re
 import threading
@@ -20,6 +21,51 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
+
+
+# ─── LLM 처리 속도(TPS) 집계 ───
+_LLM_TPS_WINDOW_S = 60.0  # 전체 처리 속도를 계산하는 최근 구간(초)
+_LLM_STREAM_PHASES = frozenset({"queued", "start", "progress", "end", "error"})
+_LLM_SESSION_STALE_S = 30.0  # 이 시간 동안 소식이 없는 세션은 생성 중·대기 수에서 뺀다
+_LOG_SSE_WORKER_MIN_INTERVAL = 0.1  # 진행 줄의 워커별 SSE 최소 간격(초)
+_PROGRESS_LOG_RE = re.compile(r"^\[\d{2}:\d{2}:\d{2}")
+
+
+def _is_progress_log_line(line: str) -> bool:
+    """타임스탬프나 진행 표지(기호·이모지)로 시작하는 파이프라인 진행 줄인지 판별한다."""
+    text = str(line or "").lstrip()
+    if not text:
+        return False
+    if _PROGRESS_LOG_RE.match(text):
+        return True
+    code = ord(text[0])
+    return 0x2190 <= code < 0x2C00 or code >= 0x1F000
+
+
+def _non_negative_int(value: Any) -> int:
+    try:
+        number = int(value)
+    except (TypeError, ValueError):
+        return 0
+    return number if number > 0 else 0
+
+
+def _non_negative_float(value: Any) -> float:
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return 0.0
+    return number if math.isfinite(number) and number > 0 else 0.0
+
+
+def _optional_float(value: Any) -> Optional[float]:
+    if value is None:
+        return None
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return None
+    return round(number, 3) if math.isfinite(number) and number >= 0 else None
 
 
 def _native_progress(value):
@@ -161,6 +207,13 @@ class MonitorState:
         # 외부 standalone 대시보드로의 이벤트 전달자 (None이면 내장 모드 — 비용 0)
         self._forwarder: Optional[Any] = None
 
+        # ─ LLM 처리 속도(TPS) ─
+        # 워커 스레드가 add_log를 부를 때 스레드→워커를 기록해 두고, LLM 클라이언트가
+        # 워커 ID 없이 보낸 llm_stream 이벤트에 붙인다(분석을 실행하는 프로세스에서만 쓰인다).
+        self._thread_worker: Dict[int, int] = {}
+        self._log_sse_worker_last_ts: Dict[int, float] = {}
+        self._reset_llm_throughput()
+
     # ─── 외부 호출 API ────────────────────────────────────
 
     def attach_forwarder(self, forwarder: Any) -> None:
@@ -170,6 +223,8 @@ class MonitorState:
     def emit(self, event_type: str, data: Optional[Dict[str, Any]] = None) -> None:
         """이벤트를 발행하고 SSE 구독자에게 브로드캐스트"""
         data = data or {}
+        if event_type == "llm_stream" and data.get("worker_id") is None:
+            data = {**data, "worker_id": self._thread_worker.get(threading.get_ident(), -1)}
         if self._handle_event(event_type, data) is False:
             return
 
@@ -338,8 +393,8 @@ class MonitorState:
     def ingest_log(self, line: str, worker_id: int = -1) -> None:
         """외부 프로세스(forwarder)가 보낸 로그 라인을 주입한다.
 
-        발신 측 add_log가 이미 skip-tag 필터 + 50ms 쓰로틀(≤20줄/s)을 적용한
-        뒤에만 forwarder로 보내므로, 수신 측에서 같은 쓰로틀을 다시 걸면
+        발신 측 add_log가 이미 skip-tag 필터와 쓰로틀(진행 줄은 워커별 0.1초, 그 밖의
+        줄은 전체 0.05초 간격)을 적용한 뒤에만 forwarder로 보내므로, 수신 측에서 다시 걸면
         배치(0.5s 단위) 도착 시 첫 줄만 SSE에 살아남는다. 그래서 여기서는
         저장 + 무조건 브로드캐스트만 한다 (forwarder 재전달도 없음).
         """
@@ -359,16 +414,26 @@ class MonitorState:
         """
         self._store_log_line(line, worker_id)
 
+        if worker_id >= 0:
+            self._thread_worker[threading.get_ident()] = worker_id
+
         # SSE 최적화: verbose LLM 태그는 SSE에서 제외 (로그 파일/REST API로는 조회 가능)
         for tag in self._LOG_SSE_SKIP_TAGS:
             if tag in line:
                 return
 
-        # SSE 쓰로틀: 최소 간격 미만이면 건너뛰기 (폭주 방지)
+        # SSE 쓰로틀 (폭주 방지). 진행 줄은 워커마다 따로 세어 다른 워커의 LLM 응답 줄에
+        # 밀려 빠지지 않게 하고, 그 밖의 줄(LLM 응답 JSON 조각 등)은 전체 간격을 쓴다.
         now = time.time()
-        if now - self._log_sse_last_ts < self._LOG_SSE_MIN_INTERVAL:
-            return
-        self._log_sse_last_ts = now
+        if _is_progress_log_line(line):
+            last_ts = self._log_sse_worker_last_ts.get(worker_id, 0.0)
+            if now - last_ts < _LOG_SSE_WORKER_MIN_INTERVAL:
+                return
+            self._log_sse_worker_last_ts[worker_id] = now
+        else:
+            if now - self._log_sse_last_ts < self._LOG_SSE_MIN_INTERVAL:
+                return
+            self._log_sse_last_ts = now
 
         self._broadcast({
             "type": "log",
@@ -436,6 +501,7 @@ class MonitorState:
                 "llm_suspend_threshold": self.llm_suspend_threshold,
                 "llm_suspend_started_at": self.llm_suspend_started_at,
                 "llm_suspend_resumed_at": self.llm_suspend_resumed_at,
+                "llm_throughput": self._llm_throughput_snapshot(),
             }
 
     def get_results(
@@ -767,6 +833,7 @@ class MonitorState:
                 self.active_posts = {}
                 self.token_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
                 self._reset_search_stats()
+                self._reset_llm_throughput()
                 self._flow_log = []
                 self._worker_log_lines = {}
                 self._post_log_lines = {}
@@ -909,6 +976,10 @@ class MonitorState:
                     self.token_usage["prompt_tokens"] += tu.get("prompt_tokens", 0)
                     self.token_usage["completion_tokens"] += tu.get("completion_tokens", 0)
                     self.token_usage["total_tokens"] += tu.get("total_tokens", 0)
+                    self._record_post_token_sample(tu)
+
+            elif event_type == "llm_stream":
+                return self._accept_llm_stream(data)
 
             elif event_type == "search_stats":
                 return self._accept_search_stats(data)
@@ -935,6 +1006,149 @@ class MonitorState:
                 self.batch_running = False
                 self.active_posts = {}
                 self.llm_suspended = False
+
+    # ─── LLM 처리 속도(TPS) ─────────────────────────────
+
+    def _reset_llm_throughput(self) -> None:
+        """실행마다 LLM 세션 상태와 처리 속도 표본을 비운다. 호출자가 락을 관리한다."""
+        self.llm_sessions: Dict[int, Dict[str, Any]] = {}
+        self._llm_samples: deque = deque()  # (시각, 입력 토큰, 출력 토큰) 증가분
+        self._post_token_samples: deque = deque()  # llm_stream이 없을 때 쓰는 게시글 완료 기준 근사
+        self._llm_totals: Dict[str, int] = {"calls": 0, "prompt_tokens": 0, "completion_tokens": 0, "errors": 0}
+        self._llm_stream_seen = False
+        self._llm_first_sample_at: Optional[float] = None
+        self._post_first_sample_at: Optional[float] = None
+
+    @staticmethod
+    def _event_epoch(data: Dict[str, Any]) -> float:
+        """발신 시각(at)이 그럴듯하면 쓰고, 아니면 수신 시각을 쓴다."""
+        now = time.time()
+        at = data.get("at")
+        if type(at) in (int, float) and math.isfinite(at) and abs(now - at) <= 600:
+            return float(at)
+        return now
+
+    @staticmethod
+    def _prune_samples(samples: deque, now: float) -> None:
+        cutoff = now - _LLM_TPS_WINDOW_S
+        while samples and samples[0][0] < cutoff:
+            samples.popleft()
+
+    def _add_llm_sample(self, at: float, prompt_tokens: int, completion_tokens: int) -> None:
+        if self._llm_first_sample_at is None:
+            self._llm_first_sample_at = at
+        self._llm_samples.append((at, prompt_tokens, completion_tokens))
+        self._prune_samples(self._llm_samples, max(at, time.time()))
+
+    def _record_post_token_sample(self, token_usage: Dict[str, Any]) -> None:
+        """게시글 완료 이벤트의 토큰 합계를 근사 표본으로 남긴다(락 안에서 호출)."""
+        now = time.time()
+        if self._post_first_sample_at is None:
+            # 첫 게시글의 토큰은 실행 시작부터 쌓였으므로 시작 시각부터 센다.
+            started = self.batch_start_time or now
+            self._post_first_sample_at = min(started, now)
+        self._post_token_samples.append((
+            now,
+            _non_negative_int(token_usage.get("prompt_tokens")),
+            _non_negative_int(token_usage.get("completion_tokens")),
+        ))
+        self._prune_samples(self._post_token_samples, now)
+
+    def _accept_llm_stream(self, data: Dict[str, Any]) -> Optional[bool]:
+        """llm_stream 이벤트로 워커별 LLM 세션과 처리 속도 표본을 갱신한다(락 안에서 호출)."""
+        phase = data.get("phase")
+        if phase not in _LLM_STREAM_PHASES:
+            return False
+        try:
+            worker_id = int(data.get("worker_id", -1))
+        except (TypeError, ValueError):
+            worker_id = -1
+        now = self._event_epoch(data)
+        tag = str(data.get("tag") or "")[:64]
+        self._llm_stream_seen = True
+        session = self.llm_sessions.get(worker_id)
+        if session is None:
+            session = {"phase": "idle", "tag": "", "tokens": 0, "elapsed_s": 0.0, "ttft_s": None,
+                       "updated_at": now, "calls": 0, "prompt_tokens": 0, "completion_tokens": 0,
+                       "decode_seconds": 0.0, "last_call": None, "last_error": "", "_counted": 0}
+            self.llm_sessions[worker_id] = session
+        if tag:
+            session["tag"] = tag
+        session["updated_at"] = now
+        if phase in {"queued", "start"}:
+            session.update(phase="queued" if phase == "queued" else "streaming",
+                           tokens=0, elapsed_s=0.0, ttft_s=None, _counted=0)
+        elif phase == "progress":
+            tokens = _non_negative_int(data.get("tokens"))
+            if tokens > session["_counted"]:
+                self._add_llm_sample(now, 0, tokens - session["_counted"])
+                session["_counted"] = tokens
+            session.update(phase="streaming", tokens=tokens,
+                           elapsed_s=round(_non_negative_float(data.get("elapsed_s")), 3),
+                           ttft_s=_optional_float(data.get("ttft_s")))
+        elif phase == "end":
+            prompt = _non_negative_int(data.get("prompt_tokens"))
+            completion = _non_negative_int(data.get("completion_tokens", data.get("tokens")))
+            elapsed = _non_negative_float(data.get("elapsed_s"))
+            ttft = _optional_float(data.get("ttft_s"))
+            decode = elapsed - ttft if ttft is not None and elapsed > ttft else elapsed
+            # 진행 이벤트로 이미 센 출력 토큰은 빼고 provider 사용량으로 맞춘다.
+            self._add_llm_sample(now, prompt, completion - session["_counted"])
+            session["calls"] += 1
+            session["prompt_tokens"] += prompt
+            session["completion_tokens"] += completion
+            session["decode_seconds"] = round(session["decode_seconds"] + decode, 3)
+            session["last_call"] = {
+                "tag": tag or session["tag"], "prompt_tokens": prompt, "completion_tokens": completion,
+                "elapsed_s": round(elapsed, 3), "ttft_s": ttft,
+                "tps": round(completion / decode, 1) if decode > 0 and completion > 0 else None,
+                "usage_source": str(data.get("usage_source") or "")[:16],
+            }
+            session.update(phase="idle", tokens=completion, elapsed_s=round(elapsed, 3), ttft_s=ttft, _counted=0)
+            self._llm_totals["calls"] += 1
+            self._llm_totals["prompt_tokens"] += prompt
+            self._llm_totals["completion_tokens"] += completion
+        else:
+            session.update(phase="idle", _counted=0, last_error=str(data.get("error") or "error")[:80])
+            self._llm_totals["errors"] += 1
+        return None
+
+    def _llm_throughput_snapshot(self) -> Dict[str, Any]:
+        """최근 구간의 전체 처리 속도와 워커별 LLM 세션 상태를 만든다(락 안에서 호출)."""
+        now = time.time()
+        if self._llm_stream_seen:
+            source, samples, first_at = "llm_stream", self._llm_samples, self._llm_first_sample_at
+        elif self._post_token_samples:
+            source, samples, first_at = "post_complete", self._post_token_samples, self._post_first_sample_at
+        else:
+            source, samples, first_at = "none", None, None
+        output_tps = processed_tps = None
+        if samples is not None:
+            self._prune_samples(samples, now)
+            prompt = sum(sample[1] for sample in samples)
+            completion = sum(sample[2] for sample in samples)
+            span = min(_LLM_TPS_WINDOW_S, max(10.0, now - (first_at or now)))
+            output_tps = round(max(0, completion) / span, 1)
+            processed_tps = round(max(0, prompt + completion) / span, 1)
+        sessions: Dict[str, Any] = {}
+        streaming = queued = 0
+        for worker_id, session in sorted(self.llm_sessions.items()):
+            age = max(0.0, now - session["updated_at"])
+            fresh = age <= _LLM_SESSION_STALE_S
+            streaming += int(fresh and session["phase"] == "streaming")
+            queued += int(fresh and session["phase"] == "queued")
+            public = {key: value for key, value in session.items()
+                      if not key.startswith("_") and key != "updated_at"}
+            public["last_call"] = dict(session["last_call"]) if session["last_call"] else None
+            public["age_s"] = round(age, 1)
+            sessions[str(worker_id)] = public
+        return {
+            "source": source, "window_s": _LLM_TPS_WINDOW_S,
+            "output_tps": output_tps, "processed_tps": processed_tps,
+            "streaming": streaming, "queued": queued,
+            **dict(self._llm_totals),
+            "sessions": sessions,
+        }
 
     def _make_post_summary(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """브라우저에 보낼 최소 요약만 보관합니다."""

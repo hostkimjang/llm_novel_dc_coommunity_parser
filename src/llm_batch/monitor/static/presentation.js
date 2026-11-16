@@ -1390,7 +1390,139 @@
     return groups.map(group => `<details class="log-stage" open><summary><span>${esc(STAGES[group.stage] || group.stage)}</span><span class="log-stage-meta">${esc(group.worker)} · ${group.records[0].start}–${group.records.at(-1).end}줄</span></summary><div>${group.records.map(record => renderLogRecord(record)).join('')}</div></details>`).join('');
   }
 
+  // ─── LLM 처리 속도(TPS) 표시 ───────────────────────
+  const LLM_STALE_MS = 30000;
+
+  function formatTps(value) {
+    const n = Number(value);
+    if (value === null || value === undefined || !Number.isFinite(n) || n < 0) return '-';
+    return n >= 1000 ? Math.round(n).toLocaleString('en-US') : n.toFixed(1);
+  }
+
+  function numberOr(value, fallback = null) {
+    const n = Number(value);
+    return value !== null && value !== undefined && Number.isFinite(n) ? n : fallback;
+  }
+
+  const tokenText = value => Math.round(numberOr(value, 0)).toLocaleString('en-US');
+
+  // llm_stream 이벤트 한 건을 반영한 세션 상태. 알 수 없는 단계면 null을 돌려준다.
+  function nextLlmSession(prev, data, nowMs) {
+    const phase = data && data.phase;
+    if (!['queued', 'start', 'progress', 'end', 'error'].includes(phase)) return null;
+    const base = { ...(prev || {}) };
+    const tag = typeof data.tag === 'string' && data.tag ? data.tag : (base.tag || '');
+    if (phase === 'queued' || phase === 'start') {
+      return { ...base, phase: phase === 'queued' ? 'queued' : 'streaming', tag, tokens: 0, elapsedS: 0, ttftS: null, error: '', receivedAt: nowMs };
+    }
+    if (phase === 'progress') {
+      return { ...base, phase: 'streaming', tag, tokens: Math.max(0, numberOr(data.tokens, 0)),
+        elapsedS: Math.max(0, numberOr(data.elapsed_s, 0)), ttftS: numberOr(data.ttft_s), error: '', receivedAt: nowMs };
+    }
+    if (phase === 'end') {
+      const completion = Math.max(0, numberOr(data.completion_tokens, numberOr(data.tokens, 0)));
+      const elapsed = Math.max(0, numberOr(data.elapsed_s, 0));
+      const ttft = numberOr(data.ttft_s);
+      const decode = ttft !== null && elapsed > ttft ? elapsed - ttft : elapsed;
+      return { ...base, phase: 'idle', tag, tokens: completion, elapsedS: elapsed, ttftS: ttft, error: '', receivedAt: nowMs,
+        lastCall: { tag, completionTokens: completion, promptTokens: Math.max(0, numberOr(data.prompt_tokens, 0)),
+          elapsedS: elapsed, ttftS: ttft, tps: decode > 0 && completion > 0 ? completion / decode : null } };
+    }
+    return { ...base, phase: 'idle', tag, receivedAt: nowMs, error: typeof data.error === 'string' && data.error ? data.error : 'error' };
+  }
+
+  // /api/status의 llm_throughput.sessions 항목을 브라우저 세션 상태로 바꾼다(새로고침 복원용).
+  function sessionFromSnapshot(snapshot, nowMs) {
+    const s = snapshot || {};
+    const last = s.last_call;
+    return {
+      phase: ['queued', 'streaming', 'idle'].includes(s.phase) ? s.phase : 'idle',
+      tag: typeof s.tag === 'string' ? s.tag : '',
+      tokens: Math.max(0, numberOr(s.tokens, 0)),
+      elapsedS: Math.max(0, numberOr(s.elapsed_s, 0)),
+      ttftS: numberOr(s.ttft_s),
+      error: typeof s.last_error === 'string' ? s.last_error : '',
+      receivedAt: nowMs - Math.max(0, numberOr(s.age_s, 0)) * 1000,
+      lastCall: last ? { tag: last.tag || '', completionTokens: numberOr(last.completion_tokens, 0),
+        promptTokens: numberOr(last.prompt_tokens, 0), elapsedS: numberOr(last.elapsed_s, 0),
+        ttftS: numberOr(last.ttft_s), tps: numberOr(last.tps) } : null,
+    };
+  }
+
+  // 워커 카드의 세션 표시. 생성 중이면 첫 토큰 이후 디코드 속도, 끝났으면 직전 호출 속도를 쓴다.
+  function llmSessionView(session, nowMs) {
+    if (!session) return { state: 'none', label: 'LLM 호출 기록 없음', tps: '-', tpsShort: '', detail: '' };
+    const receivedAt = Number.isFinite(session.receivedAt) ? session.receivedAt : nowMs;
+    const sinceS = Math.max(0, Math.round((nowMs - receivedAt) / 1000));
+    if (session.phase === 'queued') {
+      return { state: 'queued', label: `LLM 슬롯 대기 · ${session.tag}`, tps: '-', tpsShort: '슬롯 대기',
+        detail: `${sinceS}초째 대기` };
+    }
+    if (session.phase === 'streaming') {
+      if (sinceS * 1000 > LLM_STALE_MS) {
+        return { state: 'stale', label: `응답 없음 · ${session.tag}`, tps: '-', tpsShort: '응답 없음',
+          detail: `마지막 수신 ${sinceS}초 전` };
+      }
+      const ttft = session.ttftS;
+      const decode = ttft !== null && ttft !== undefined && session.elapsedS > ttft ? session.elapsedS - ttft : session.elapsedS;
+      const rate = decode > 0 && session.tokens > 0 ? session.tokens / decode : null;
+      const first = ttft !== null && ttft !== undefined ? `첫 토큰 ${ttft.toFixed(1)}초` : '첫 토큰 대기';
+      return { state: 'streaming', label: `생성 중 · ${session.tag}`,
+        tps: rate === null ? '-' : `${formatTps(rate)} tok/s`, tpsShort: rate === null ? '생성 중' : `${formatTps(rate)} tok/s`,
+        detail: `약 ${tokenText(session.tokens)} 토큰 · ${session.elapsedS.toFixed(1)}초 · ${first}` };
+    }
+    if (session.error) {
+      return { state: 'error', label: `호출 오류 · ${session.tag}`, tps: '-', tpsShort: '오류', detail: session.error };
+    }
+    const last = session.lastCall;
+    if (last) {
+      const tps = last.tps ? `${formatTps(last.tps)} tok/s` : '-';
+      return { state: 'idle', label: `직전 호출 · ${last.tag}`, tps, tpsShort: last.tps ? tps : '',
+        detail: `입력 ${tokenText(last.promptTokens)} · 출력 ${tokenText(last.completionTokens)} 토큰 · ${numberOr(last.elapsedS, 0).toFixed(1)}초` };
+    }
+    return { state: 'idle', label: 'LLM 대기', tps: '-', tpsShort: '', detail: '' };
+  }
+
+  // 전체 처리 속도 카드. 토큰 진행 이벤트가 없는 실행은 게시글 완료 합계로 근사한다.
+  function throughputView(t) {
+    const view = { output: '-', processed: '-', outputCaption: '출력 tok/s · 최근 1분',
+      processedCaption: '입력+출력 tok/s · 최근 1분', outputNote: '', processedNote: '' };
+    if (!t || !['llm_stream', 'post_complete'].includes(t.source)) return view;
+    view.output = formatTps(t.output_tps);
+    view.processed = formatTps(t.processed_tps);
+    if (t.source === 'post_complete') {
+      view.outputNote = view.processedNote = '게시글 완료 기준 근사';
+      return view;
+    }
+    const streaming = Math.max(0, numberOr(t.streaming, 0));
+    const queued = Math.max(0, numberOr(t.queued, 0));
+    view.outputNote = `LLM 생성 ${streaming}${queued ? ` · 대기 ${queued}` : ''}`;
+    return view;
+  }
+
+  // 작업자 카드의 최근 로그. 끝부분만 해석해 전체 흐름과 같은 표시 규칙으로 그린다.
+  function renderWorkerLogTail(lines, { tailLines = 120, maxRecords = 40 } = {}) {
+    const tail = (lines || []).slice(-tailLines);
+    if (!tail.length) return '<p class="presentation-empty">아직 로그가 없습니다.</p>';
+    return renderLogs(parseLogs(tail).slice(-maxRecords), { grouped: false });
+  }
+
+  // 새로고침 직후 불러온 서버 로그(fetched)와 그사이 SSE로 받은 줄(current)을 겹치지 않게 합친다.
+  // current의 앞부분은 서버 로그에도 있다. SSE 간격 제한으로 중간 줄이 빠지거나 JSON 조각처럼 같은 줄이
+  // 반복될 수 있으므로, 줄 하나의 위치로 맞추지 않고 서버 로그 안에서 차례대로 이어지는 만큼을 겹친 줄로 본다.
+  function mergeWorkerLogTail(fetched, current) {
+    const base = Array.isArray(fetched) ? fetched : [];
+    const recent = Array.isArray(current) ? current : [];
+    let matched = 0;
+    for (let i = 0; i < base.length && matched < recent.length; i++) {
+      if (base[i] === recent[matched]) matched += 1;
+    }
+    return base.concat(recent.slice(matched));
+  }
+
   const api = { parseReason, renderReason, renderIdentity, parseLogs, renderLogs, prettyJson, safeLink,
+    formatTps, nextLlmSession, sessionFromSnapshot, llmSessionView, throughputView, renderWorkerLogTail,
+    mergeWorkerLogTail,
     renderExplanation, nsfwLabel, nsfwReasonLabel, executionSummary, runCompletionSummary, historyRunSummary, renderHistoryRun,
     renderExecutionConfig, renderPairedExecution, renderSemanticReview, renderRecoveryActivation, renderRecoveryExecution, renderRecoveryProvider,
     renderRecoveryNative, renderRunContext, renderContextDiagnostics, renderCandidateRetrieval, renderCandidateReranker,

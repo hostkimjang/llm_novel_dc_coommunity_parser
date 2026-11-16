@@ -19,7 +19,8 @@ function harness() {
     liveTotalResults: 1, parallelCount: 12, sseRestorePending: false, lastEventTime: Date.now(),
     workerLogs: new Map(), flowLog: [], renderNativeProgress(){},setLlmSuspendState(){},resetPipelineSteps(){},
     renderWorkerCards(){}, liveFilterActive(){return false;}, updateLivePager(){}, toggleParallelUI(){},
-    updateLogTabStyles(){},addFlowEntry(){},updatePipeline(){},fmtTime: n=>String(n),fmtNum: n=>String(n),
+    updateLogTabStyles(){},updateLogViewUI(){},updateThroughputStats(){},hydrateLlmSessions(){},
+    addFlowEntry(){},updatePipeline(){},fmtTime: n=>String(n),fmtNum: n=>String(n),
     WORKER_TAB_COLORS: [], Date, Map, Set };
   vm.createContext(sandbox); vm.runInContext(code, sandbox);
   return {s:sandbox,node};
