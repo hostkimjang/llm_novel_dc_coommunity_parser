@@ -749,6 +749,7 @@ tests/inputs/test01.jsonl
 !/tests/dashboard_context_event_state.test.cjs
 !/tests/test_source_context_event_state_export.py
 !/tests/test_dashboard_cache_scan_budget.py
+!/tests/test_dashboard_slang_db_view.py
 !/tests/test_source65_character_candidate_boundaries.py
 !/tests/test_source65_relation_counterevidence_polarity.py
 !/tests/test_source65_same_document_counterevidence.py

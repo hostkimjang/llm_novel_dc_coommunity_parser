@@ -1,818 +1,137 @@
 # 시스템 아키텍처
 
-> 프로젝트: `llm_novel_dc_coommunity_parser`
->
-> 목적: DC인사이드 장르소설 갤러리 게시글에서 웹소설 작품을 식별하는 LLM 파이프라인
->
-> 최종 갱신: 2026-07-13
+이 문서는 커뮤니티 게시글에서 웹소설 작품을 식별하는 주 실행 경로의 구조를 설명한다. 설치와 실행 방법은 [README](../README.md)와 [전문가 실행 안내](../expert_readme.md), 패키지 경계는 [소스 구조](devs/SOURCE_LAYOUT_KO.md)를 따른다.
 
-이 문서는 현재 공개 결과를 만드는 경로와 기본 OFF인 shadow·측정 경로를 함께 설명한다. 아키텍처 통합은 `COMPLETE_SAFE_TERMINAL / ARCHITECTURE_V2_INTEGRATED`로 닫혔지만, 실제 효과 검증은 외부 입력 부족으로 `ACTUAL_BLOCKED_HANDOFF / NOT_COMPLETE`다. 정확도·비용·지연 개선은 아직 `null/NOT_ESTIMABLE`이며 운영은 `REVIEW-LOCKED / full_scan_approval=false`다.
+## 1. 목적과 문제
 
----
+입력은 DC인사이드 장르소설 갤러리 같은 커뮤니티의 게시글·댓글이다. 시스템은 글이 특정 웹소설 작품을 다루는지 판단하고, 근거가 충분하면 공식 제목과 작품 URL을 공개 결과로 남긴다. 근거가 부족하면 후보와 보류 사유를 남기고 공개 제목은 비워 둔다.
 
-## 목차
+어려운 지점은 다음과 같다.
 
-1. [시스템 개요](#1-시스템-개요)
-2. [파이프라인 흐름](#2-파이프라인-흐름)
-3. [전문가 상세 명세](#3-전문가-상세-명세)
-4. [데이터 흐름 및 공유 객체](#4-데이터-흐름-및-공유-객체)
-5. [공유 구성 요소](#5-공유-구성-요소)
-6. [Orchestrator 라우팅 정책](#6-orchestrator-라우팅-정책)
-7. [후처리 정책 (Arbiter 하드코드 규칙)](#7-후처리-정책)
-8. [검색 시스템](#8-검색-시스템)
-9. [토큰 최적화 이력](#9-토큰-최적화-이력)
-10. [파일 구조 인덱스](#10-파일-구조-인덱스)
+- 커뮤니티 약어·초성·별칭이 작품 제목을 대신한다. 예를 들어 "전독시"는 "전지적 독자 시점"을 가리킨다.
+- 같은 표면이 작가명, 캐릭터명, 작품명 중 어느 것인지 문맥에 따라 달라진다.
+- 장르·트로프 일반론과 특정 작품 토론을 구분해야 한다.
+- 밈, 비유, 비꼼, 질문, 인용처럼 화자의 의도가 판정을 바꾼다.
+- 본문과 댓글의 화자가 다르며, 댓글 근거를 게시글 작성자의 발언으로 바꾸면 안 된다.
 
----
+`갤러리` 표면을 현실 DC 갤러리명으로만 단정하지 않는다. `아생갤`은 `아카데미 생존 갤러리`처럼 실제 웹소설 작품의 약어일 수 있고, 요즘 웹소설은 작품 안에 갤러리·댓글식 커뮤니티를 서사 장치로 쓰거나 오마주로 차용하기도 한다. 그래서 명시적인 별칭 관계, 특정 작품 대상, 공식·커뮤니티 근거, 본문에서 경쟁하는 작품 근거를 함께 확인한다.
 
-## 1. 시스템 개요
+## 2. 진입점
 
-### 1.1 도메인 컨텍스트
+| 진입점 | 역할 |
+| --- | --- |
+| `expert_main.py` | 주 분석 실행기. 입력 로드, 병렬 worker, 검색 shard 구성, 대시보드, checkpoint, 결과·manifest 저장, 공개 결정 commit을 맡는다. |
+| `src/llm_batch/runtime/expert_cli.py` | `expert_main`의 CLI 정의(`build_arg_parser`). `expert_main._build_arg_parser`는 이 함수를 감싸는 얇은 wrapper다. |
+| `tools/dashboard_server.py` | 실행이 끝나도 유지되는 standalone 대시보드 서버. 같은 포트의 `expert_main`이 이벤트를 전달한다. |
+| `llm-batch` (`src/llm_batch/cli.py`), `main.py` | 레거시 순차·staged 파이프라인. [레거시 안내](../README_legacy_pipeline.md)를 따른다. |
 
-DC인사이드 장르소설 갤러리(장르소설 마이너갤러리)의 포스트를 입력받아, 해당 포스트가 **특정 웹소설 작품에 대한 토론인지** 식별합니다.
+## 3. 구성 요소와 책임
 
-핵심 난제:
-- **한국 웹소설 커뮤니티 축약어**: "죽깨수" → "죽음에서 깨어난 수학 천재", "전독시" → "전지적 독자 시점"
-- **작가명/캐릭터명/작품명 혼동**: 동일 텍스트가 맥락에 따라 작가명 or 작품명
-- **장르 토론 vs 작품 토론**: "요즘 무협물 추세" ≠ 특정 작품 토론
-- **밈/비유/비꼼**: 커뮤니티 특유의 표현 방식
-
-### 1.2 설계 원칙
-
-| 원칙 | 설명 |
-|------|------|
-| **문장 구조 기반 원칙** | LLM 이해력은 특정 작품 하드코딩이 아닌, 한국어 문장 구조와 화용론 원칙으로 유도 |
-| **플랫폼 매핑은 예시 제공** | "문피아→munpia.com" 등 사실적 매핑 테이블은 공유 상수로 제공 |
-| **전문가 분업** | 각 전문가는 자기 역할에 특화된 관점으로만 분석 |
-| **검증 우선** | Decoder가 식별 → Verifier가 반론 → Critic이 메타분석 → Arbiter가 종합 |
-| **환각 방지** | Arbiter는 Decoder/Verifier가 제시하지 않은 제목을 독자적으로 생성할 수 없음 |
-
-### 1.3 Architecture V2와 공개 경로
-
-현재 공개 결과는 `src/llm_batch/agentic_pipeline.py`의 전문가 근거를 `src/llm_batch/promotion_gate.py`의 공통 판정 경계로 통과시킨 뒤 기록한다. V2는 이 경로를 바꾸지 않으면서 후보 보존, 호출 추적, 확률·비용 측정을 추가하는 선택적 계층이다.
-
-| 계층 | 역할 | 현재 경계 |
+| 구성 요소 | 위치 | 책임 |
 | --- | --- | --- |
-| 공통 publication gate | title·URL·scope·검색 근거를 하나의 typed decision으로 판정 | 현재 공개 경로의 fail-close 경계. 차단된 제목은 후보와 reason code로 보존 |
-| publication exact-once | 같은 실행 범위와 입력의 첫 정상 판정을 정본으로 유지 | 재시도 덮어쓰기와 다른 scope 혼합을 차단 |
-| StageBudget/limiter/cache/singleflight | search 단계의 비용·대기·cache provenance를 receipt로 관찰 | `AgenticPipeline` 명시 주입 runtime adapter, 기본 OFF. limiter는 process-local, shared result는 filesystem 범위 |
-| DecisionLedgerV2 framed WAL | legacy call ledger를 segment/index/checkpoint로 독립 재생 | legacy 우선 dual-write shadow, restart/one-way rollback 지원. 자동 production enable 금지 |
-| CandidateSet/NIL | producer 완료 상태와 후보/NIL 사건 공간을 보존 | candidate ledger 내부 shadow. 공개 결과 비간섭 |
-| typed confidence와 metrics reader | 행별 보정 확률과 집계 accuracy/ECE/Brier/log loss/selective risk/AURC를 분리 | 운영 writer 미연결, no-write reader. 정확히 결속된 `FROZEN_ACTUAL` 외 입력은 `NOT_ESTIMABLE` |
-| packet operations | policy, 10+6 packet, 동일 frozen input과 BEFORE/AFTER를 사전 결속 | preflight 도구가 스스로 runtime을 시작하지 않음. 현재 actual lane은 `ACTUAL_BLOCKED_HANDOFF` |
+| `AgenticPipeline` | `src/llm_batch/agentic_pipeline.py` | 게시글 한 건의 분석 단위. 입력 정규화, 이미지·OCR 보강, 선택 관측, Orchestrator 호출, 출력 변환을 묶는다. |
+| `Orchestrator`, `ConversationContext` | `src/llm_batch/experts/orchestrator.py` | 전문가 호출과 검색을 상황에 따라 고르는 조율기와 호출별 공유 문맥 |
+| 전문가 | `src/llm_batch/experts/` | Gatekeeper·Discourse·Decoder·Verifier·Critic·Synthesizer·Arbiter |
+| 프롬프트 | `src/llm_batch/prompts/expert_prompts.py`, 일부 전문가 모듈 | 역할별 system·user 프롬프트와 공유 상수 |
+| 공개 계약 | `src/llm_batch/promotion_gate.py` | 제목·URL·범위·근거를 하나의 공개 판정으로 닫는 fail-close 경계 |
+| 원문 근거·후보 | `src/llm_batch/grounding/` | 원문 span, 화자·발화 역할, 후보 감사, 별칭 관계, 선택 관측 계약 |
+| 원장 | `src/llm_batch/ledger/` | 공개 결정 commit, framed WAL, 호출·복구 원장 |
+| 실행 설정 | `src/llm_batch/runtime/` | 실행 프로필, 선택 실행 지문, budget·cache, 선택 관측 adapter |
+| 검색·LLM | `src/llm_batch/search/`, `src/llm_batch/llm/`, `src/llm_batch/mcp_bridge/` | MCP 검색·fetch와 OpenAI 호환 LLM 호출 |
+| 대시보드 | `src/llm_batch/monitor/` | 이벤트 버스, API, 정적 화면, 실행 이력 색인 |
 
-이 계층의 내부 통합은 exact Git closure와 staged-tree clean export까지 통과했다. 상세 근거는 `docs/devs/ARCHITECTURE_V2_INTERNAL_REAUDIT_KO_20260713.md`를 따른다. actual effect 재개 조건은 `docs/devs/ACTUAL_PACKET_INPUT_INVENTORY_KO_20260712.md`에 정리돼 있다.
+전문가 역할은 다음과 같다.
 
----
+| 전문가 | 역할 |
+| --- | --- |
+| Gatekeeper | 노이즈 판별, 엔티티 추출, 첫 검색 요청 |
+| Discourse | 담론 영역·의도, 인용·비유·질문 역할 |
+| Decoder | 약어·초성·별칭을 작품 후보로 풀이 |
+| Verifier | 원문과 후보의 관계, 공식 제목·URL과 출처를 비판적으로 검증 |
+| Critic | 다른 전문가 분석의 메타 검토. 기본 순차 경로에서는 별도로 호출하지 않고 그 역할을 Arbiter가 코드 수준에서 처리한다. 협력 요청 같은 일부 경로에서만 호출될 수 있다. |
+| Synthesizer | 흩어진 근거·댓글·참조 종합 |
+| Arbiter | 전문가 판단을 종합해 최종 분석안 작성 |
 
-## 2. 파이프라인 흐름
+Arbiter는 Decoder·Verifier가 제시하지 않은 제목을 스스로 만들어 공개하지 못한다. 최종 공개 여부는 이후 공개 계약에서 다시 판정한다.
 
-### 2.1 전체 흐름도
+## 4. 동적 흐름
 
 ```mermaid
 flowchart LR
-    A["게시글 입력"] --> B["AgenticPipeline"]
-    B --> C["Gatekeeper / Discourse"]
-    C --> D["검색 / Decoder / Verifier / Critic"]
-    D --> E["Arbiter와 후보 근거"]
-    E --> F["공통 publication gate"]
-    F --> H["publication exact-once journal"]
-    H --> G["PickvelOutputItemV2"]
-
-    D -. "명시 주입, 기본 OFF" .-> I["search runtime adapter"]
-    B -. "legacy 우선, 선택적 dual-write" .-> J["DecisionLedgerV2 shadow"]
-    E -. "공개 결과 비간섭" .-> K["CandidateSet + NIL"]
-    K -. "운영 writer 미연결" .-> L["typed confidence"]
-    L -. "FROZEN_ACTUAL만 집계" .-> M["no-write metrics reader"]
+    A["expert_main: 입력 로드·worker"] --> B["AgenticPipeline.process_post"]
+    B --> C["Orchestrator.process: Gatekeeper·Discourse"]
+    C --> F0["process: 초기 검색 (조건부)"]
+    F0 --> D{"_decide_next_action"}
+    D -- "call_expert" --> E["전문가 호출"]
+    E -- "검색 요청·검증 조건" --> F["process: 검색·fetch"]
+    E --> D
+    F --> D
+    D -- "finalize" --> S["Synthesizer (조건부)"]
+    S --> R["Arbiter"]
+    R --> G["ConversationContext"]
+    G --> H["AgenticPipeline._context_to_output"]
+    H --> I["공개 계약 (promotion_gate)"]
+    I --> J["PickvelOutputItemV2"]
+    J --> K["expert_main writer: 공개 결정 commit·결과·manifest"]
 ```
 
-실선은 현재 공개 결과를 만드는 경로다. 점선은 기본 OFF이거나 관측·측정만 수행하는 경로다.
-
-### 2.2 Phase별 상세
-
-| Phase | 전문가 | 조건 | 결과 |
-|-------|--------|------|------|
-| **1** | Gatekeeper | 항상 실행 | `is_noise`=true면 Phase 4 건너뛰고 조기 종료 |
-| **1.5** | DiscourseAnalyzer | Gatekeeper 통과 시 | `primary_domain`, `discourse_intent` 설정 |
-| **2** | (검색) | search_requests 존재 시 | `ctx.search_results`에 저장 |
-| **3** | Decoder → Verifier → Critic | 순차적 | 동적 협력/재검색 포함 |
-| **4** | Arbiter | 항상 실행 (Phase 3 완료 후) | 최종 판정 + 후처리 규칙 적용 |
-
-### 2.3 Phase 3 동적 루프 내부 로직
-
-```
-_decide_next_action(ctx) 반환값:
-├── "call_expert" → 전문가 호출
-│   ├── 협력 요청 처리 (request_expert 필드 확인)
-│   ├── verification_search → Decoder+Verifier 재호출 사이클
-│   ├── unresolved_terms → 자동 재검색
-│   └── low confidence → 자동 추가 검색 + Decoder 재호출
-├── "search" → 추가 검색
-└── "finalize" → 루프 종료, Phase 4로
-```
-
----
-
-## 3. 전문가 상세 명세
-
-### 3.1 Gatekeeper
-
-| 속성 | 값 |
-|------|-----|
-| **파일** | `experts/gatekeeper.py` (273줄) |
-| **프롬프트** | `GATEKEEPER_SYSTEM` (L538~688), `GATEKEEPER_PROMPT` (L689~) |
-| **LF 버전** | `LF_GATEKEEPER` (~1000 tok): §1화용론, §2담화구조, §4온라인언어, §6주제vs참조, §7담화영역 |
-| **역할** | 첫 관문 — 노이즈 필터링 + 엔티티 추출 + 검색 쿼리 생성 |
-| **특수 기능** | Kiwi 형태소 분석기 통합 (NNG/NNP/SL 품사 추출) |
-
-**입력**:
-- `post_data`: 포스트 원문 (title, content_blocks, author, url)
-- `comments`: 댓글 리스트 (최대 15개)
-- `rules_config`: noise_terms, novel_sites, slang_dictionary, trope_terms
-
-**출력**:
-```json
-{
-  "is_noise": false,
-  "noise_reason": null,
-  "detected_entities": {
-    "possible_titles": ["죽깨수"],
-    "possible_characters": ["이유백"],
-    "possible_authors": [],
-    "unknown_terms": ["목마"]
-  },
-  "search_requests": [
-    {"query": "\"죽깨수\" 웹소설", "purpose": "title_verification", "priority": 1}
-  ]
-}
-```
-
-**Kiwi 통합 흐름**:
-```
-LLM 분석 결과 ←→ Kiwi 형태소 분석 결과 → _merge_entities() → 최종 엔티티
-```
-
----
-
-### 3.2 DiscourseAnalyzer
-
-| 속성 | 값 |
-|------|-----|
-| **파일** | `experts/discourse.py` (규칙 기반 + LLM) |
-| **역할** | 포스트의 담론적 도메인과 의도를 파악 |
-| **호출 조건** | Gatekeeper 통과 후 (Phase 1.5) |
-
-**입력**: `post_data`, `comments`
-
-**출력**:
-```json
-{
-  "discourse_analysis": {
-    "primary_domain": "novel_work",  // novel_work | real_world | meta | mixed
-    "intent": "discussion",          // discussion | recommendation | meme | review | ...
-    "confidence": 0.85
-  }
-}
-```
-
-**ctx에 저장되는 필드**: `ctx.primary_domain`, `ctx.discourse_intent`  
-→ 이후 Verifier, Arbiter가 도메인 교차 검증에 활용
-
----
-
-### 3.3 Decoder
-
-| 속성 | 값 |
-|------|-----|
-| **파일** | `experts/decoder.py` (661줄) |
-| **프롬프트** | `DECODER_SYSTEM` (L1392~1776), `DECODER_PROMPT` (L1777~) |
-| **LF 버전** | `LF_DECODER` (~800 tok): §4축약어원리, §5정보확정성, §8지시표현, §3문법구조 |
-| **역할** | 축약어/은어 해독 + 검색 결과 매칭 + 작가 식별 |
-| **공유 상수** | `PLATFORM_ABBREVIATION_MAP` (`{platform_map}` placeholder) |
-
-**입력**:
-- `gatekeeper_output`: Gatekeeper의 detected_entities
-- `search_results`: 현재까지의 검색 결과
-- `slang_dictionary`: 알려진 은어 사전
-- `conversation_context`: 대화 요약
-- `ctx`: ConversationContext (suspected_titles 초기 생성용)
-
-**출력**:
-```json
-{
-  "decoded_terms": [
-    {
-      "original": "죽깨수",
-      "type": "abbreviation",
-      "decoded_meaning": "죽음에서 깨어난 수학 천재",
-      "best_match": {
-        "title": "죽음에서 깨어난 수학 천재",
-        "url": "https://novelpia.com/...",
-        "confidence": 0.95
-      },
-      "is_author_name": false,
-      "author_info": null,
-      "candidates": [...],
-      "supporting_evidence": [...]
-    }
-  ],
-  "overall_confidence": "High",
-  "verification_search": ["\"죽음에서 깨어난 수학 천재\" 웹소설"],  // 재검색 요청
-  "unresolved_terms": [...]  // 미해결 용어
-}
-```
-
-**특수 로직**:
-- `_try_split_abbreviation_boundary()`: 한국어 축약어의 음절 경계를 형태소 분석으로 분할 시도
-- `_expand_repetition_patterns()`: 반복 패턴 확장 (ㅋㅋㅋ 등)
-- `_check_session_knowledge()`: 이전 포스트에서 학습한 축약어 재활용
-- `_init_suspected_titles()`: 첫 호출 시 ctx.suspected_titles 초기 생성
-- `_call_llm()`: `DECODER_SYSTEM.replace("{platform_map}", PLATFORM_ABBREVIATION_MAP)`
-
----
-
-### 3.4 Verifier
-
-| 속성 | 값 |
-|------|-----|
-| **파일** | `experts/verifier.py` (363줄) |
-| **프롬프트** | `VERIFIER_SYSTEM` (L2384~3024), `VERIFIER_PROMPT` (L3025~3270) |
-| **LF 버전** | `LF_VERIFIER` (~700 tok): §1발화대상구분, §2일관성검증, §6주제vs참조, §7담화영역일관성 |
-| **역할** | Decoder 결과 비판적 검증 — 반론 생성, 앵커 검증, 환각 탐지 |
-
-**입력**:
-- `post_data`, `comments`
-- `gatekeeper_output` (요약: `_summarize_gatekeeper()`)
-- `decoder_output` (요약: `_summarize_decoder()`)
-- `search_results` **(제한됨)**: Decoder가 실제 참조한 URL만 필터링 (최대 8개)
-- `conversation_context`, `ctx`
-
-**출력**:
-```json
-{
-  "verification_result": {
-    "is_relevant": true,
-    "novel_identity": {
-      "official_novel_title": "죽음에서 깨어난 수학 천재",
-      "heretic_url": "https://...",
-      "confidence": "High"
-    },
-    "rejection_reason": null,
-    "reason": "..."
-  },
-  "verification_search": [...]  // 추가 검색 요청
-}
-```
-
-**토큰 최적화 (Orchestrator가 수행)**:
-```python
-# Decoder가 참조한 URL만 추출
-used_urls = {term["best_match"]["url"] for term in decoded_terms if ...}
-limited_search = [r for r in search_results if r["url"] in used_urls][:8]
-```
-
-**특수 로직**:
-- `_update_suspected_titles()`: Verifier 판정 결과로 suspected_titles 업데이트
-- `_summarize_gatekeeper()`: Gatekeeper 출력을 핵심만 추출
-- `_summarize_decoder()`: Decoder 출력을 핵심만 추출
-
-**프롬프트 핵심 정책 (VERIFIER_SYSTEM)**:
-- 비판적 사고 4원칙 + 반론 생성 의무
-- BLOCKING RULES (부분 문자열 매칭 금지, 순환 참조 금지)
-- 앵커 검증: 본문에서 직접 증거가 없으면 거부
-- 검색 결과 해석: URL 도메인 기반 신뢰도 평가
-- 작가 비평 vs 작품 토론 구분
-
----
-
-### 3.5 Critic
-
-| 속성 | 값 |
-|------|-----|
-| **파일** | `experts/critic.py` (256줄) |
-| **프롬프트** | `CRITIC_SYSTEM` (L3271~3298), `CRITIC_PROMPT` (L3299~) |
-| **역할** | 메타 분석 — 다른 전문가들의 분석 과정 자체를 비판적으로 검토 |
-| **호출 조건** | `is_relevant=true`일 때만 호출 (비관련이면 스킵) |
-
-**입력**:
-- `post_data`, `comments`
-- `verifier_result` (요약: `_summarize_verifier()`)
-- `conversation_context`, `ctx`
-
-**출력**:
-```json
-{
-  "meta_analysis": {
-    "agreement_level": "high",
-    "potential_issues": [...],
-    "confidence_adjustment": 0,
-    "final_recommendation": "accept"
-  }
-}
-```
-
-**특수 로직**:
-- `_adjust_suspected_titles()`: Critic 메타분석 결과로 suspected_titles의 신뢰도 조정
-
----
-
-### 3.6 Arbiter
-
-| 속성 | 값 |
-|------|-----|
-| **파일** | `experts/arbiter.py` (1230줄) |
-| **프롬프트** | `ARBITER_SYSTEM` (인라인, L25~626) |
-| **LF 버전** | `LF_ARBITER` (~400 tok): 6개 핵심 원칙 요약 |
-| **역할** | 최종 종합 판정 — 전문가 합의 평가, 갈등 해소, official_title 결정 |
-| **공유 상수** | `PLATFORM_ABBREVIATION_MAP` (`{platform_map}` placeholder) |
-
-**입력**: `ctx` (ConversationContext 전체)
-
-**출력**:
-```json
-{
-  "final_decision": {
-    "is_relevant": true,
-    "official_novel_title": "...",
-    "official_title": "...",
-    "heretic_url": "...",
-    "confidence": "High",
-    "discussion_type": "review",
-    "reason": "..."
-  },
-  "expert_consensus": {
-    "unanimous": true,
-    "agreeing_experts": ["decoder", "verifier", "critic"]
-  },
-  "metadata_synthesis": {
-    "sentiment": "positive",
-    "micro_tags": [...],
-    "is_nsfw": false
-  },
-  "final_reasoning": "..."
-}
-```
-
-**특수 로직**:
-- suspected_titles 병합: Decoder→Verifier→Critic이 업데이트한 목록을 최종 병합
-- `_call_llm()`: `ARBITER_SYSTEM.replace("{platform_map}", PLATFORM_ABBREVIATION_MAP)`
-- **후처리 규칙**: 아래 [§7](#7-후처리-정책) 참조
-
----
-
-## 4. 데이터 흐름 및 공유 객체
-
-### 4.1 ConversationContext (핵심 공유 객체)
-
-`orchestrator.py` L98에 정의된 `@dataclass`. 모든 전문가가 이 객체를 통해 데이터를 공유합니다.
-
-```
-ConversationContext
-├── post_id: int                    # 포스트 ID
-├── post_data: Dict                 # 원본 포스트 데이터
-├── comments: List[str]             # 댓글 리스트 (최대 15개)
-├── search_results: List[Dict]      # 누적 검색 결과 (URL 중복 제거됨)
-├── messages: List[ExpertMessage]   # 전문가 간 메시지 로그
-├── expert_outputs: Dict            # 전문가별 최종 출력 {"gatekeeper": {...}, ...}
-├── suspected_titles: List[Dict]    # 추정 작품 목록 (전문가 간 공유)
-├── primary_domain: Optional[str]   # DiscourseAnalyzer 결과
-├── discourse_intent: Optional[str] # DiscourseAnalyzer 결과
-├── expert_confidence: Dict         # 전문가별 신뢰도
-├── uncertainty_sources: List[str]  # 불확실성 요인
-├── token_usage: Dict               # 토큰 사용량 추적
-└── iteration: int                  # 현재 루프 반복 횟수
-```
-
-### 4.2 suspected_titles 생명주기
-
-`suspected_titles`는 가장 중요한 전문가 간 공유 데이터입니다.
-
-```
-Decoder._init_suspected_titles()    ← 최초 생성 (decoded_terms에서 후보 추출)
-    │
-    ▼
-Verifier._update_suspected_titles() ← 검증 결과로 업데이트 (확인/거부/신뢰도 조정)
-    │
-    ▼
-Critic._adjust_suspected_titles()   ← 메타분석 결과로 신뢰도 재조정
-    │
-    ▼
-Arbiter.analyze()                   ← 최종 병합 + 정렬 (상위 5개 유지)
-    │
-    ▼
-P0-3 후처리                         ← suspected에 있으면 Low로 허용, 없으면 차단
-```
-
-**suspected_titles 항목 구조**:
-```json
-{
-  "title": "죽음에서 깨어난 수학 천재",
-  "confidence": 0.85,
-  "source": "decoder",
-  "url": "https://...",
-  "is_author": false
-}
-```
-
-### 4.3 전문가 간 데이터 의존성
-
-```
-                    ┌─────────────────────────────────────────┐
-                    │                                         │
-Gatekeeper ────────▶ Decoder ────────▶ Verifier ────────▶ Critic
-  │ detected_entities  │ decoded_terms    │ verification_     │ meta_analysis
-  │ search_requests    │ suspected_titles │   result          │ adjusted_titles
-  │                    │ verification_    │ updated_titles    │
-  │                    │   search         │                   │
-  │                    │                  │                   │
-  └────────────────────┴──────────────────┴───────────────────┘
-                    │                                         │
-                    ▼                                         ▼
-               Arbiter ◀──────────────────────────────────────┘
-                    │
-                    ▼
-            final_decision + 후처리 규칙
-```
-
-### 4.4 검색 결과 공유 패턴
-
-```
-ctx.search_results (전체 누적)
-    │
-    ├── Decoder: 전체 search_results 수신
-    │
-    └── Verifier: Decoder가 참조한 URL만 필터링 (limited_search)
-        └── Orchestrator._call_expert()에서 필터링 로직 수행
-            used_urls = Decoder의 best_match + supporting_evidence URL
-            limited_search = [r for r if r.url in used_urls][:8]
-```
-
----
-
-## 5. 공유 구성 요소
-
-### 5.1 LINGUISTIC_FRAMEWORK 체계
-
-`expert_prompts.py`에 정의된 언어학 프레임워크입니다.
-
-| 상수 | 위치 | 토큰 | 사용처 | 포함 섹션 |
-|------|------|------|--------|-----------|
-| `LINGUISTIC_FRAMEWORK` | L11~421 | ~6,259 | 참조용 (삽입 안 됨) | 전체 8개 섹션 |
-| `LF_GATEKEEPER` | L447~474 | ~1,000 | GATEKEEPER_SYSTEM | §1화용론, §2담화구조, §4온라인언어, §6주제vs참조, §7담화영역 |
-| `LF_DECODER` | L475~498 | ~800 | DECODER_SYSTEM | §4축약어원리, §5정보확정성, §8지시표현, §3문법구조 |
-| `LF_VERIFIER` | L499~521 | ~700 | VERIFIER_SYSTEM | §1발화대상구분, §2일관성검증, §6주제vs참조, §7담화영역일관성 |
-| `LF_ARBITER` | L522~537 | ~400 | ARBITER_SYSTEM | 6개 핵심 원칙 요약 |
-
-**설계 원칙**: 각 전문가는 자기 역할에 필요한 언어학 섹션만 수신하여 토큰 절약.
-
-### 5.2 PLATFORM_ABBREVIATION_MAP
-
-`expert_prompts.py` L422~446에 정의된 공유 플랫폼 약칭 매핑 테이블.
-
-```
-약칭 → 정식명 → 도메인
-문피아   munpia       munpia.com
-노벨피아 novelpia     novelpia.com
-조아라   joara        joara.com
-카카오   kakaopage    page.kakao.com
-네이버   naver series series.naver.com
-리디     ridibooks    ridibooks.com
-북큐브   bookcube     bookcube.com
-
-UI/메타 용어:
-헤레틱(heretic) → 작품 고유 URL/페이지
-```
-
-**삽입 방식**: `{platform_map}` placeholder → `.replace("{platform_map}", PLATFORM_ABBREVIATION_MAP)`
-
-| 사용 파일 | 삽입 위치 |
-|-----------|-----------|
-| `decoder.py` L397 | `DECODER_SYSTEM.replace("{platform_map}", ...)` |
-| `arbiter.py` | `ARBITER_SYSTEM.replace("{platform_map}", ...)` |
-
-### 5.3 Rules Config (rules.py)
-
-`rules.py`에 정의된 정적 규칙 세트.
-
-| 상수 | 용도 |
-|------|------|
-| `NOISE_TERMS` | 노이즈 판별 키워드 (광고, 정치, 스포츠 등) |
-| `NOVEL_SITES` | 공식 웹소설 플랫폼 도메인 목록 |
-| `SLANG_DICTIONARY` | 알려진 축약어→정식명 사전 |
-| `TROPE_TERMS` | 장르 트로프 키워드 (회귀, 빙의, 현판 등) |
-
-→ `AgenticPipeline.__init__()`에서 `self.rules_config`로 합산, Gatekeeper/Decoder에 전달
-
----
-
-## 6. Orchestrator 라우팅 정책
-
-### 6.1 _decide_next_action() 결정 트리
-
-```
-_decide_next_action(ctx):
-│
-├── 1. 협력 요청 확인 (request_expert 필드)
-│   ├── 전체 협력 횟수 ≥ MAX_TOTAL_COLLABORATIONS(2)? → 무시
-│   ├── 같은 쌍(request_key) 이미 처리? → 무시
-│   └── 통과 → {"action": "call_expert", "expert": requested, "collaboration": True}
-│
-├── 2. 순차 진행
-│   ├── Decoder 완료 & Verifier 미완료 → Verifier 호출
-│   ├── Verifier 완료 & Critic 미완료 & is_relevant=true → Critic 호출
-│   └── Gatekeeper 완료 & Decoder 미완료 → Decoder 호출
-│
-├── 3. 종료 조건
-│   ├── GK+DC+VF 완료 & is_relevant=false → finalize (Critic 불필요)
-│   ├── GK+DC+VF+CR 완료 → finalize
-│   └── iteration ≥ max_iterations → finalize
-│
-└── 4. 기본값 → finalize
-```
-
-### 6.2 협력 제한 정책
-
-| 제한 | 값 | 적용 위치 |
-|------|-----|-----------|
-| 같은 전문가 쌍 협력 | **최대 1회** | `_processed_requests` set |
-| 전체 협력 요청 | **최대 2회** | `_total_collaborations` counter |
-| 동적 루프 최대 반복 | **10회** (안전장치, 실제 3~5회) | `ctx.max_iterations` |
-
-### 6.3 자동 재검색 트리거
-
-| 트리거 | 조건 | 동작 |
-|--------|------|------|
-| `verification_search` | Decoder/Verifier가 요청 | 검색 실행 → Decoder 재호출 → Verifier 재호출 |
-| `unresolved_terms` | Decoder가 미해결 용어 반환 | 자동 검색 (용어당 쿼리 생성) |
-| Low confidence | Decoder confidence = low/none | 형태소 분석으로 명사 추출 → 자동 검색 → Decoder 재호출 |
-
-### 6.4 Critic 호출 조건
-
-```
-Critic은 is_relevant=true일 때만 호출됨.
-이유: is_relevant=false인 경우 메타분석 불필요, 토큰 절약.
-```
-
----
-
-## 7. 후처리 정책
-
-Arbiter의 `analyze()` 메서드 후반부에 하드코드된 후처리 규칙들입니다. LLM 응답을 받은 후 Python 코드로 강제 보정합니다.
-
-### 7.1 P0-1: Verifier 거부권 (arbiter.py ~L964)
-
-```
-조건: Verifier의 verification_result.is_relevant == false
-동작: 강제로 is_relevant=false, official_title=null 설정
-우선순위: 최고 — LLM이 무시해도 코드가 강제 적용
-```
-
-### 7.2 P0-2: 작가 이름 필터 (arbiter.py ~L987)
-
-```
-조건: Decoder의 decoded_terms에 is_author_name=true인 항목 존재
-     AND official_title == 작가 이름
-동작: official_title=null, is_relevant=false, discussion_type="author_talk"
-```
-
-### 7.3 P0-3: Arbiter 독자 제목 생성 금지 (arbiter.py ~L1010)
-
-```
-Case A: Decoder도 Verifier도 title 없음
-  ├── arbiter_title이 suspected_titles에 있으면 → confidence="Low"로 허용
-  └── suspected_titles에도 없으면 → null 강제, is_relevant=false
-
-Case B: Decoder 후보에도 없고 Verifier와도 다른 새 제목
-  ├── suspected_titles에 있으면 → 허용
-  └── suspected_titles에도 없으면 → Decoder 최선 후보로 교체
-```
-
-### 7.4 suspected_titles 최종 병합 (arbiter.py ~L813)
-
-```
-기존 ctx.suspected_titles + Arbiter LLM 응답의 suspected_titles
-→ confidence 기준 내림차순 정렬
-→ 상위 5개만 유지
-→ ctx.suspected_titles에 저장
-```
-
-### 7.5 5단계 폴백 체인 (agentic_pipeline.py ~L310)
-
-`_context_to_output()`에서 `reason` 필드 생성 시 적용:
-
-```
-1. arbiter_out["final_reasoning"]
-2. arbiter_out["conflict_resolution"][0]["reasoning"]
-3. final_decision["reason"]
-4. verifier_out["verification_result"]["rejection_reason"] 또는 ["reason"]
-5. gatekeeper_out["noise_reason"]
-6. 컨텍스트 기반 기본 메시지 (is_relevant/official_title/discussion_type 조합)
-   → "분석 완료" 같은 무의미한 텍스트 방지
-```
-
-### 7.6 discussion_type 정합성 검증 (agentic_pipeline.py ~L280)
-
-```
-유효값: review, spoiler, anticipation, meme, author_talk, character_talk,
-       general, meta, recommendation, trope_discussion, noise
-
-레거시 매핑:
-  work_discussion → review
-  author_criticism → author_talk
-  genre_discussion → trope_discussion
-
-정합성 규칙:
-  is_relevant=true AND discussion_type="noise" → "general"로 변경
-```
-
----
-
-## 8. 검색 시스템
-
-### 8.1 검색 실행 흐름
-
-```
-AgenticPipeline._search(query)
-    │
-    ├── MCPClient.search(query)  → raw 결과
-    │
-    ├── top_k 제한 (환경변수 MCP_TOP_K_RESULTS, 기본 10)
-    │
-    └── content 축소 (환경변수 MCP_MAX_CONTENT_CHARS, 기본 400)
-        └── compacted results 반환
-```
-
-### 8.2 Orchestrator._execute_searches()
-
-```
-입력: search_requests 리스트 (최대 5개 쿼리)
-    │
-    ├── URL 기반 중복 제거 (seen_urls set)
-    │
-    ├── 관련성 필터링 (_is_relevant_result)
-    │   ├── 무관 도메인 제외 (youtube, github, wikipedia 등)
-    │   ├── 관련 도메인 통과 (munpia, novelpia, dcinside 등)
-    │   └── 키워드 기반 판단 (소설, 웹소설, 작가, 연재 등)
-    │
-    ├── content 축소 (100자)
-    │
-    └── 우선순위 재정렬 (_prioritize_search_results)
-        ├── 0순위: 공식 플랫폼 + 작가 패턴
-        ├── 1순위: 공식 플랫폼
-        ├── 2순위: 작가 패턴 포함
-        ├── 3순위: 커뮤니티 토론
-        └── 4순위: 기타
-```
-
-### 8.3 자기 참조 방지 (ConversationContext.add_search_results)
-
-```
-현재 post_id / post_url을 검색 결과 URL과 대조
-→ 자기 참조 URL은 자동 제외
-→ URL 기반 중복도 제거
-```
-
----
-
-## 9. 토큰 최적화 이력
-
-### 9.1 최적화 전후 비교
-
-| 전문가 | 최적화 전 (토큰) | 주요 변경 | 예상 절감 |
-|--------|------------------|-----------|-----------|
-| **Verifier** | ~43,948 | SYSTEM+PROMPT 대규모 압축, LF_VERIFIER | **~60%** (~17,500 토큰) |
-| **Decoder** | ~23,492 | LF_DECODER, 플랫폼 매핑 공유 | ~15% |
-| **Gatekeeper** | ~22,100 | LF_GATEKEEPER | ~15% |
-| **Arbiter** | ~17,298 | LF_ARBITER, 플랫폼 매핑 공유 | ~10% |
-| **Critic** | ~3,202 | 변경 없음 | 0% |
-
-### 9.2 expert_prompts.py 줄 수 변화
-
-```
-최적화 전: 4,982줄
-최적화 후: 3,505줄 (약 30% 감소)
-```
-
-### 9.3 주요 최적화 내용
-
-| 카테고리 | 세부 항목 | 절감 |
-|----------|-----------|------|
-| **LF 슬림화** | 6,259 tok 풀 버전 → 전문가별 400~1,000 tok | ~19K tok (4회 삽입 기준) |
-| **Verifier SYSTEM** | 한국어 문맥 이해력 100줄→20줄 | ~3,500 tok |
-| | 검색 결과 재평가 250줄→30줄 | ~5,000 tok |
-| | 부분 문자열 매칭 반복 3~4회→1회 | ~2,500 tok |
-| | 본문 다시 읽기 120줄→15줄 | ~2,000 tok |
-| **Verifier PROMPT** | [1-6단계] 형태소 검증 프로세스 삭제 | ~4,400 tok |
-| | 축약어 감지 CRITICAL 2+3 200줄→15줄 | ~4,000 tok |
-| | 작가 비평 판별 120줄→10줄 | ~3,000 tok |
-| | 장르 토론 구분 120줄→8줄 | ~3,000 tok |
-| **플랫폼 매핑** | Decoder+Arbiter 인라인 중복 → 공유 상수 | ~500 tok |
-
-### 9.4 최적화 원칙
-
-1. **중복 제거**: 같은 내용이 SYSTEM과 PROMPT 양쪽에 있으면 한 곳에만 유지
-2. **SYSTEM 참조**: PROMPT에서 "SYSTEM의 BLOCKING RULES 참조" 식으로 참조만 남김
-3. **체크리스트화**: 긴 설명을 → 짧은 체크리스트로 압축
-4. **핵심 보존**: 압축 시 판단 품질에 직접 영향을 주는 원칙은 절대 삭제하지 않음
-
----
-
-## 10. 파일 구조 인덱스
-
-### 10.1 핵심 파일 목록
-
-| 파일 | 줄 수 | 역할 |
-|------|-------|------|
-| `src/llm_batch/prompts/expert_prompts.py` | 3,505 | 모든 프롬프트 + LF 슬림 + 공유 상수 |
-| `src/llm_batch/experts/arbiter.py` | 1,230 | Arbiter 전문가 + 인라인 시스템 프롬프트 + 후처리 규칙 |
-| `src/llm_batch/experts/orchestrator.py` | 1,025 | ConversationContext + Orchestrator (동적 라우팅) |
-| `src/llm_batch/experts/decoder.py` | 661 | Decoder 전문가 + 축약어 분할 로직 |
-| `src/llm_batch/agentic_pipeline.py` | 523 | 파이프라인 진입점 + 결과 변환 + 세션 지식 |
-| `src/llm_batch/experts/verifier.py` | 363 | Verifier 전문가 + suspected_titles 업데이트 |
-| `src/llm_batch/experts/gatekeeper.py` | 273 | Gatekeeper + Kiwi 형태소 분석기 |
-| `src/llm_batch/experts/critic.py` | 256 | Critic 메타분석 + suspected_titles 조정 |
-| `src/llm_batch/experts/discourse.py` | ~370 | DiscourseAnalyzer (담론 분석) |
-| `src/llm_batch/experts/prompts.py` | ~30 | 레거시 호환 리다이렉트 모듈 |
-
-### 10.2 expert_prompts.py 내부 구조
-
-```
-PLATFORM_ABBREVIATION_MAP       공유 플랫폼 약칭 지식
-LF_GATEKEEPER / LF_DECODER      역할별 최소 언어 프레임
-LF_VERIFIER / LF_ARBITER
-GATEKEEPER_SYSTEM / PROMPT      역할별 실제 LLM 입력
-DECODER_SYSTEM / PROMPT
-VERIFIER_SYSTEM / PROMPT
-CRITIC_SYSTEM / PROMPT
-```
-
-참조되지 않던 대형 `LINGUISTIC_FRAMEWORK` 상수는 2026-07-15에 제거했다. 프롬프트 구획은 줄 번호가 아니라 상수명으로 참조하며, 실제 입력의 장식용 Unicode는 사용하지 않는다.
-
-### 10.3 지원 파일
-
-| 파일 | 역할 |
-|------|------|
-| `src/llm_batch/domain/models.py` | Pydantic 데이터 모델 (PostInput, PickvelOutputItemV2 등) |
-| `src/llm_batch/domain/rules.py` | 정적 규칙 세트 (NOISE_TERMS, NOVEL_SITES 등) |
-| `src/llm_batch/llm/client.py` | LLM API 클라이언트 (OpenAI 호환) |
-| `src/llm_batch/search/client.py` | MCP 검색 클라이언트 |
-| `src/llm_batch/cli.py` | CLI 진입점 |
-| `src/llm_batch/pipelines/legacy.py` | 기존 비-Agentic 파이프라인 (레거시) |
-| `src/llm_batch/grounding/` | 후보 생성·감사·보정·confidence 계약 |
-| `src/llm_batch/ledger/` | decision event·WAL·원장·publication commit |
-| `src/llm_batch/runtime/` | stage budget·cache·singleflight·shadow adapter |
-| `src/llm_batch/measurement/` | early route·paired readback·selective compute |
-| `src/llm_batch/slang/` | slang DB·governance·transaction |
-
-현재 전체 패키지 책임과 import 이동 표는 [`src/llm_batch` 소스 구조](devs/SOURCE_LAYOUT_KO.md)를 따른다. 과거 loop 보고서의 옛 경로는 당시 증거 위치로 보존한다.
-
-### 10.4 세션 지식 베이스
-
-`AgenticPipeline.session_knowledge`는 배치 처리 시 포스트 간 학습을 유지합니다.
-
-```python
-session_knowledge = {
-    "resolved_slang": {},       # 축약어 → 정식 제목 매핑
-    "resolved_authors": {},     # 작가명 → 대표작 매핑
-    "resolved_characters": {},  # 캐릭터명 → 작품 매핑
-}
-```
-
-**학습 조건**: `confidence >= "High"` (잘못된 매칭 학습 방지)
-**학습 시점**: `_update_session_knowledge()` (포스트 처리 완료 후)
-
----
-
-## 부록: 정책 요약 체크리스트
-
-### A. 환각 방지 정책
-
-- [ ] Decoder/Verifier가 식별하지 못한 제목을 Arbiter가 생성하면 차단 (P0-3)
-- [ ] suspected_titles에 존재하면 Low로 허용 (완화)
-- [ ] 프롬프트에 특정 작품명 하드코딩 금지
-
-### B. 작가 비평 구분 정책
-
-- [ ] Decoder의 is_author_name 판정 → Arbiter 후처리에서 author_talk 분류 (P0-2)
-- [ ] Verifier의 author_info 전달 → Arbiter가 참조 (P2-6)
-
-### C. 토큰 절약 정책
-
-- [ ] Verifier에게 Decoder가 참조한 검색 결과만 전달 (limited_search)
-- [ ] 검색 결과 content 100자 축소
-- [ ] 전문가별 LF 슬림 버전 사용
-- [ ] is_relevant=false면 Critic 호출 스킵
-
-### D. 무한 루프 방지 정책
-
-- [ ] 전체 협력 최대 2회
-- [ ] 같은 쌍 협력 최대 1회
-- [ ] request_expert 필드 즉시 클리어
-- [ ] 동적 루프 최대 10회 (안전장치)
-
-### E. 데이터 정합성 정책
-
-- [ ] 검색 결과 URL 기반 중복 제거
-- [ ] 자기 참조(현재 post_id) URL 자동 제외
-- [ ] discussion_type과 is_relevant 정합성 검증
-- [ ] Confidence 값 정규화 (대소문자 통일)
+1. `expert_main`이 입력 JSONL을 읽고 요청 병렬도를 상한으로 입력 수를 반영해 worker 수를 정한다. 적용된 모델 병렬 정책이나 endpoint health 조건에 따라 실효 병렬도가 더 줄 수 있다. 각 worker는 `AgenticPipeline.process_post`를 호출한다.
+2. `process_post`는 직전 호출의 문맥을 지우고, 원문 입력·댓글 참조·로더 기록을 이번 호출의 문맥으로 옮긴다. 설정된 경우에만 후보 회수 같은 선택 관측을 기록한다.
+3. `Orchestrator.process`는 새 `ConversationContext`를 만들고, 명확한 글은 fast-path로 끝낸다. 그 밖의 글은 Gatekeeper와 Discourse를 거치고 조건에 따라 초기 검색을 실행한 뒤 `_decide_next_action`이 고르는 행동을 반복한다.
+4. `_decide_next_action`은 `call_expert` 또는 `finalize`를 돌려준다. 기억 질의 거절이 확정됐으면 마무리하고, 그 밖에는 유효한 전문가 간 협력 요청(같은 요청 쌍은 한 번, 전체 최대 3회), Decoder 다음 Verifier, 예약된 Verifier 재검증 순으로 전문가를 고른다. Gatekeeper·Decoder·Verifier가 끝나면 마무리한다. 반복은 실행기가 지정한 `max_iterations` 안에서 멈춘다. 검색은 이 함수가 고르지 않는다. `process`가 전문가 출력의 검색 요청이나 검증 검색 조건을 보고 검색·fetch를 실행한 뒤 다음 결정을 이어 간다. `process`에는 `search` 행동을 처리하는 분기가 남아 있지만 기본 결정 함수는 이를 반환하지 않는다.
+5. 마무리 단계에서 Synthesizer가 근거를 재해석하고(노이즈 글처럼 재해석할 근거가 없으면 생략), Arbiter가 최종 분석안을 만든다. Synthesizer가 Decoder·Verifier의 합의 작품을 다른 작품으로 바꾸면 별도 guard가 이를 감지한다.
+6. 모든 게시글이 같은 전문가 순서나 호출 수로 처리되지는 않는다. fast-path, 기억 질의 거절, 조기 종료, Synthesizer 생략 같은 경로가 있다.
+7. `_context_to_output`은 전문가 결과를 공개 전에 정리한다. 후보 보존, 공식 제목·URL 쌍, 문맥과 제목 상태의 일관성을 맞추고 `evaluate_publish_contract`·`apply_publish_contract`를 거쳐 `PickvelOutputItemV2`를 만든다.
+8. 결과 파일 저장과 공개 결정 commit은 `expert_main`의 main thread writer가 맡는다. checkpoint와 manifest도 이 단계에서 기록한다.
+
+## 5. 원문·후보·공개·저장 경계
+
+| 경계 | 의미 | 지키는 규칙 |
+| --- | --- | --- |
+| 원문 | 입력 게시글·댓글과 화자 | 원문을 덮어쓰지 않는다. 댓글 근거를 작성자 발언으로 바꾸지 않는다. 로더의 절단·형식 오류도 원문 기록으로 남긴다. |
+| 후보 | 전문가·검색이 제시한 작품 후보와 근거 | 후보 점수나 형태 유사도만으로 원문의 작품 관계를 확정하지 않는다. 공개되지 않은 후보도 사유와 함께 보존한다. |
+| 공개 | 공식 제목·URL을 결과에 싣는 판정 | `promotion_gate`의 공개 계약이 제목·URL·범위·근거를 하나의 판정으로 닫는다. 근거가 맞지 않으면 공개하지 않고 후보로 남긴다. |
+| 저장 | 결과 파일, manifest, 원장 | `expert_main` writer가 행 단위로 공개 결정을 commit한다. 과거 결과에 기록되지 않은 값은 미기록으로 두고 새 해석으로 채우지 않는다. |
+
+`HOLD`나 `context_only` 결과에도 문맥상 참조 후보가 남을 수 있다. 작품 후보와 공개 제목·URL은 별도 필드다.
+
+## 6. 선택 기능
+
+아래 기능의 기본값은 기능마다 다르다. 실행 설정은 CLI > 환경 변수 > 실행 프로필(`--execution-profile`) > 기존 기본값 순서로 정해지며, 실제 값은 시작 로그와 manifest의 유효 설정으로 확인한다. 공개 판정 권한이 없는 관측 기능은 표에 따로 적었다.
+
+| 기능 | 켜는 방법 | 기본값과 성격 |
+| --- | --- | --- |
+| 후보 회수·재정렬·의미 관측·교정·inference | `--candidate-retrieval`, `--candidate-reranker`, `--candidate-semantics`, `--candidate-calibration`, `--candidate-inference`와 고정 corpus·manifest·bundle | 기본 OFF. 관측 전용이며 결과의 `run_meta`에 기록하고 공개 판정에 반영하지 않는다. |
+| 커뮤니티 지식 | `--community-knowledge`와 고정 snapshot | 기본 OFF. 후보 지식 문맥이며 `READ_ONLY`에서는 Slang DB와 배치 학습 쓰기를 끈다. |
+| 호출 원장 | `--decision-call-ledger` | 일반 프로필 기본 OFF, `low-load-validation` 프로필은 `SHADOW`. 실제 호출·사용량을 관측한다. `REQUIRED`는 기존 측정 결속 검증을 함께 요구한다. |
+| 문맥 진단 | `--context-diagnostics` | 일반 프로필 기본 OFF, `low-load-validation` 프로필은 ON. 크기 제한이 있는 원문 문맥·발화 구조 진단을 저장한다. |
+| VLM/OCR | `--vlm`, `--ocr` | 일반 프로필 기본은 VLM OFF·OCR ON(OCR은 VLM 경로에서만 쓰인다), `low-load-validation` 프로필은 둘 다 ON. 이미지 게시글의 텍스트·시각 근거를 보강한다. |
+| Slang DB | `--slang-db` | 기본 OFF. 중앙 slang DB 검토용 저장 |
+| native 복구 | `--native-recovery ON`과 정책 파일·SHA | 기본 OFF. 일반 분석이 끝난 뒤 같은 호출의 문맥으로 별도 복구를 실행한다. 결과는 별도 파일(`SEPARATE_RESULT_ONLY`)이며 원래 결과·manifest·WAL을 덮어쓰지 않는다. 학습 쓰기는 꺼진다. |
+| 복구 계획 | `--recovery-simulation-plan`, `--recovery-provider-plan` | 지정할 때만 실행. 일반 분석과 분리된 합성·provider 근거 수집 계획 |
+
+`native/p0_windows_owner_observer/`의 Windows native observer는 native 복구와 다른 구성이다. 서명되지 않은 read-only 후보 구성요소이고 판정은 `NO_GO`다. `expert_main`의 실행 경로에 연결되지 않으며, 코드가 있다는 사실이 운영 권한이나 production 활성화를 뜻하지 않는다.
+
+## 7. 프롬프트와 규칙
+
+- 전문가 프롬프트는 `src/llm_batch/prompts/expert_prompts.py`에 있다. 역할별 언어 프레임(`LF_GATEKEEPER`, `LF_DECODER`, `LF_VERIFIER`, `LF_ARBITER`)과 `GATEKEEPER_*`, `DECODER_*`, `VERIFIER_*`, `CRITIC_*` 프롬프트, 공유 플랫폼 약칭표 `PLATFORM_ABBREVIATION_MAP`을 둔다.
+- Arbiter와 Synthesizer의 system 프롬프트는 각각 `experts/arbiter.py`, `experts/synthesizer.py`에 있다.
+- 프롬프트 구획은 줄 번호가 아니라 상수명으로 참조한다. 실제 LLM 입력에는 장식용 Unicode를 쓰지 않는다.
+- 프롬프트는 특정 작품 하드코딩 대신 한국어 문장 구조와 화용론 원리로 판단을 유도한다.
+- 정적 규칙(`NOISE_TERMS`, `NOVEL_SITES`, `SLANG_DICTIONARY`, `TROPE_TERMS`)은 `src/llm_batch/domain/rules.py`에 있다.
+
+## 8. 코드 탐색
+
+| 찾는 것 | 시작점 |
+| --- | --- |
+| 실행 옵션과 기본값 | `runtime/expert_cli.py`의 `build_arg_parser`, `python expert_main.py --help` |
+| 게시글 한 건의 처리 | `AgenticPipeline.process_post` |
+| 전문가 라우팅 | `Orchestrator.process`, `Orchestrator._decide_next_action`, `Orchestrator._call_expert` |
+| 공개 전 정리 | `AgenticPipeline._context_to_output` |
+| 공개 판정 | `promotion_gate.evaluate_publish_contract`, `promotion_gate.apply_publish_contract` |
+| 저장과 공개 결정 commit | `expert_main.py`의 `_commit_final_result`, `ledger/publication_commit.py` |
+| 검색 shard 구성 | `expert_main._configure_mcp_endpoints`, [검색·WARP 운영 안내](warp_sharding.md) |
+| 선택 실행 지문 | `runtime/execution_config.py`의 `source_snapshot` |
+| 대시보드 | `monitor/server.py`, `monitor/run_index.py`, [대시보드 안내](devs/EXPERT_DASHBOARD_DESIGN_KO.md) |
+
+함수 단위의 판정 규칙은 해당 함수의 docstring과 회귀시험을 기준으로 확인한다. 이 문서는 줄 번호와 파일 크기를 기록하지 않는다.

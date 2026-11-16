@@ -105,7 +105,7 @@ class DashboardStaticUiContractTest(unittest.TestCase):
         version = "20260922-reason-log-v1"
         for name in ("theme.js", "presentation.js", "utilities.css", "dashboard.css"):
             with self.subTest(name=name):
-                asset_version = "20261012-nsfw-assessment-v1" if name == "presentation.js" else version
+                asset_version = "20261013-nsfw-assessment-reason-v2" if name == "presentation.js" else version
                 self.assertIn(f"/static/{name}?v={asset_version}", html)
 
     def test_modal_json_copy_sanitizes_internal_warning_and_has_fallback(self):

@@ -1,6 +1,8 @@
-"""
-Stage 2: Decoder Expert - 한글 슬랭 해독 전문가
-Korean abbreviation/slang restoration specialist.
+"""Decoder 전문가: 커뮤니티 약어·초성·별칭에서 작품 후보를 만든다.
+
+검색 결과와 약어 사전을 대조해 후보, 해독 신뢰도, 추가 검증 필요 여부를 제안한다. 후보 점수와
+사전 일치는 원문의 작품 관계를 확정하는 공개 근거가 아니며, 확정은 Verifier와 이후 공개
+계약이 맡는다.
 """
 
 from __future__ import annotations
@@ -739,19 +741,18 @@ class DecoderExpert:
         ctx: Optional[Any] = None,  # ConversationContext - suspected_titles 공유용
         community_knowledge_context: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
-        """
-        Decode detected terms using search results.
-        
+        """검색 결과를 사용해 감지된 용어를 작품 후보로 해독한다.
+
         Args:
-            gatekeeper_result: Output from Gatekeeper stage
-            search_results: Combined search results from all queries
-            slang_dictionary: Pre-defined slang → title mappings
-            conversation_context: Optional conversation history from other experts
-            session_knowledge: Session-wide learned terms from previous posts
-            
+            gatekeeper_result: Gatekeeper 출력
+            search_results: 모든 질의의 검색 결과
+            slang_dictionary: 미리 정의된 약어→제목 사전(recall 힌트이며 확정 근거가 아님)
+            conversation_context: 다른 전문가와의 대화 이력(선택)
+            session_knowledge: 이전 게시글에서 학습한 세션 용어
+
         Returns:
-            DecoderResult with candidates, confidence scores, verification needs
-            May include request_expert/request_reason for dynamic routing
+            후보·신뢰도·검증 필요 여부를 담은 DecoderResult.
+            동적 라우팅을 위한 request_expert/request_reason을 포함할 수 있다.
         """
         start_time = time.time()
         

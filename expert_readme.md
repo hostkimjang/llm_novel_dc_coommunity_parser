@@ -7,8 +7,8 @@
 1. 입력과 실행 설정을 확인하고 대시보드·checkpoint·manifest를 준비합니다.
 2. Gatekeeper와 Discourse가 원문의 주제, 발화 역할, 작품 관련성을 판단합니다.
 3. Decoder가 약어·제목 후보를 만들고 Verifier가 검색·공식 출처와 원문의 관계를 확인합니다.
-4. 필요한 경로에서 Critic·Synthesizer·Arbiter가 담론, 근거, 최종 판단을 정리합니다.
-5. `agentic_pipeline`이 문맥·후보·상태 일관성과 공개 조건을 확인하고 결과·원장을 저장합니다.
+4. Synthesizer가 흩어진 근거를 재해석하고(근거가 없으면 생략) Arbiter가 최종 판단을 정리합니다.
+5. `agentic_pipeline`이 문맥·후보·상태 일관성과 공개 조건을 확인하고, `expert_main`이 결과·원장을 저장합니다.
 
 Orchestrator가 상황과 예산에 따라 다음 전문가·검색을 선택하므로 모든 게시글이 같은 순서나 호출 수로 처리되지는 않습니다.
 
@@ -21,7 +21,7 @@ Orchestrator가 상황과 예산에 따라 다음 전문가·검색을 선택하
 | Discourse | 발화·도메인·대상 작품과 인용·비유·질문 역할 분석 |
 | Decoder | 약어·초성·별칭에서 작품 후보 생성 |
 | Verifier | 원문과 후보의 관계, 공식 제목·URL 및 출처 검증 |
-| Critic | 담론·감성·NSFW 등 분석 |
+| Critic | 다른 전문가 분석의 메타 검토. 기본 경로에서는 Arbiter가 이 역할을 처리하고, 협력 요청 같은 일부 경로에서만 따로 호출 |
 | Synthesizer | 분산된 근거·댓글·참조 종합 |
 | Arbiter | 전문가 판단을 종합해 최종 분석안 작성 |
 

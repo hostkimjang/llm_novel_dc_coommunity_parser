@@ -168,6 +168,7 @@ def source_snapshot(entry_point: Path) -> dict:
     entry = entry_point.resolve()
     root = entry.parent
     relative_files = ("expert_main.py", "src/llm_batch/agentic_pipeline.py",
+        "src/llm_batch/runtime/expert_cli.py",
         "src/llm_batch/grounding/context_projection_contract.py",
         "src/llm_batch/grounding/source_context_explanation.py",
         "src/llm_batch/grounding/source_speech_structure.py",

@@ -39,11 +39,11 @@ def _build_title_lock_conflict_prompt(
     canonical_title: Any = "",
     canonical_author: Any = "",
 ) -> str:
-    """Present competing title provenance without issuing any title as a lock.
+    """경쟁하는 제목 출처를 어떤 제목도 잠금으로 선언하지 않고 비교용으로 제시한다.
 
-    Decoder+Verifier agreement remains model provenance, while canonical_title_lock
-    is a source-referenced snippet-analysis candidate. Divergence or multiple
-    consensus candidates requires comparison against post and stored EID evidence.
+    Decoder+Verifier 합의는 모델 출처일 뿐이고, canonical_title_lock은 원문 참조가 있는 snippet
+    분석 후보다. 둘이 다르거나 합의 후보가 여럿이면 게시글과 저장된 EID 근거로 비교해야 한다.
+    반환하는 prompt 문자열은 이 설명과 별개이며 바꾸지 않는다.
     """
     if isinstance(consensus_titles, (list, tuple, set)):
         consensus_list = [str(value or "").strip() for value in consensus_titles]
@@ -1865,14 +1865,17 @@ class ArbiterExpert:
         decision["_title_deliberately_null"] = True
     
     def analyze(self, ctx: "ConversationContext") -> Dict[str, Any]:
-        """
-        모든 전문가 의견을 종합하여 최종 판정
-        
+        """모든 전문가 의견을 종합해 최종 분석안을 만든다.
+
+        이 결과는 종합 판단 artifact다. 공개 제목·URL의 실제 공개 여부는 이후
+        ``AgenticPipeline._context_to_output``의 공개 계약이 다시 판정한다. Decoder·Verifier의 모델
+        합의나 snippet 후보를 원문 증거와 같은 것으로 취급하지 않는다.
+
         Args:
-            ctx: ConversationContext with all expert outputs
-            
+            ctx: 모든 전문가 출력을 담은 ConversationContext
+
         Returns:
-            Final arbiter decision
+            최종 판정 dict
         """
         start_time = time.time()
         

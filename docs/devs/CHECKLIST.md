@@ -2,6 +2,15 @@
 
 > 현재 상태는 [현재 상태 문서](CURRENT_STATUS_KO.md)를 따른다. 날짜별 기록과 `out/`·`logs/` 링크는 로컬 보존 자료이며 Git checkout에 포함되지 않을 수 있다.
 
+## 지속 점검: 코드 이동과 구조 정리
+
+코드를 옮기거나 나눌 때마다 확인한다. 자세한 규칙은 [소스 구조](SOURCE_LAYOUT_KO.md)를 따른다.
+
+- CLI 계약: `expert_main.py --help` 출력 바이트, 옵션 이름·dest·기본값·choices·help, 대표 argv의 parse 결과가 변경 전과 같은지 확인한다. 레거시 CLI는 `llm-batch --help`로 확인한다.
+- 선택 실행 지문: 옮긴 코드가 실행 판단·설정 경계에 속하면 `runtime/execution_config.py`의 `source_snapshot` 목록에 추가하고, 표시 전용 코드는 파일별 SHA로 기록한다. 목록 변경으로 실행 지문이 달라진다는 점을 비교 기록에 남긴다.
+- 줄바꿈 보존: 편집한 파일의 기존 CRLF·LF(혼합 포함)를 유지하고, 줄바꿈만 바뀐 diff가 없는지 확인한다.
+- 분리 전후 동등성과 기능 시험: docstring을 뺀 AST가 같은지 확인하고, 옮긴 기능의 회귀시험을 같은 묶음으로 변경 전후에 실행한다.
+
 ## 2026-10-16 main push와 로컬 브랜치 정리
 
 - [x] main을 origin에 정상 push하고 원격 main의 SHA를 검산했다.

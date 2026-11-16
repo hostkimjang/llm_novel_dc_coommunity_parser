@@ -1,4 +1,4 @@
-> **레거시 순차 파이프라인 안내입니다.** 설치와 기본 실행은 [README](README.md)를, 전문가 협업 방식은 [전문가 실행 안내](expert_readme.md)를 참고하세요. 아래 명령과 모델 설정은 레거시 구현을 설명합니다.
+> **레거시 순차 파이프라인 안내입니다.** 현재 주 실행기는 `expert_main.py`입니다. 설치와 기본 실행은 [README](README.md)를, 전문가 협업 방식은 [전문가 실행 안내](expert_readme.md)를 참고하세요. 아래 명령과 모델 설정은 레거시 구현을 설명합니다.
 
 # LLM Novel Batch Pipeline
 
@@ -12,10 +12,10 @@
 2. [구성 요소](#-구성-요소)
 3. [설치](#-설치)
 4. [빠른 시작](#-빠른-시작)
-5. [실행 옵션](#-실행-옵션)
+5. [실행 옵션](#실행-옵션)
 6. [분석 파이프라인 흐름도](#-분석-파이프라인-흐름도)
 7. [프롬프트 구조](#-프롬프트-구조)
-8. [프롬프트 작성 지침](#-프롬프트-작성-지침) ⭐ **NEW**
+8. [프롬프트 작성 지침](#-프롬프트-작성-지침)
 9. [입출력 형식](#-입출력-형식)
 10. [도커 환경](#-도커-환경)
 11. [고급 설정](#-고급-설정)
@@ -62,7 +62,7 @@
 
 | 구성 요소 | 설명 |
 |-----------|------|
-| **llm-batch** | 메인 배치 CLI |
+| **llm-batch** | 레거시 배치 CLI (`src/llm_batch/cli.py`) |
 | **RuleEngine** | 규칙 기반 1차 판정 (URL/사전/노이즈) |
 | **LLMClient** | HTTP 또는 로컬(llama-cpp-python) LLM 백엔드 |
 | **MCPClient** | SearchXNG 검색 브릿지 |
@@ -102,7 +102,16 @@ llm-batch --input tests/inputs/sample.jsonl --use-llm --trace --agentic-search -
 
 ---
 
-## ⚙️ 실행 옵션
+## 실행 옵션
+
+전체 옵션은 `llm-batch --help`로 확인합니다. 설치 후 생기는 `llm-batch` 명령은 `llm_batch.cli:main`을 실행합니다.
+
+### 실행 모드
+
+| 옵션 | 설명 |
+|------|------|
+| (기본) | 규칙 엔진 → 선택적 LLM 식별 → 선택적 담론 분석 순차 실행 |
+| `--staged` | 역할별 페르소나를 쓰는 4단계 staged 파이프라인. `--input` 파일이 필요하며 `--output`, `--limit`을 사용합니다. |
 
 ### 입력 방식
 
@@ -118,6 +127,8 @@ llm-batch --input tests/inputs/sample.jsonl --use-llm --trace --agentic-search -
 |------|------|
 | `--use-llm` | LLM 정밀 분석 활성화 |
 | `--llm-backend http\|local` | HTTP 서버 또는 로컬 GGUF |
+| `--server-type llama\|vllm` | HTTP 서빙 엔진 (기본 `llama`). `LLM_SERVER_TYPE` 환경 변수로도 지정 |
+| `--llm-endpoint <URL>` | `--llm-backend http`의 LLM 서버 주소. 생략하면 `LLM_ENDPOINT` 사용 |
 | `--model-path <경로>` | 로컬 GGUF 모델 경로 |
 | `--llm-profile tool\|general` | 샘플링 프로파일 |
 | `--temp`, `--top-p`, `--min-p` | 샘플링 파라미터 직접 설정 |
@@ -350,7 +361,7 @@ LLM: search_results를 근거로 최종 판정
 ```
 
 ### 프롬프트 파일 위치
-`src/llm_batch/llm/prompt.py`
+`src/llm_batch/prompts/pipeline_prompts.py` (`src/llm_batch/llm/prompt.py`는 기존 import 호환용 리다이렉트)
 
 ### 프롬프트 종류
 
@@ -561,16 +572,19 @@ docker compose up -d --build
 
 ### 환경 변수
 
+아래 기본값은 `llm-batch`를 직접 실행할 때의 값입니다. `main.py`는 일부 값을 자체 설정으로 덮어쓸 수 있습니다.
+
 | 변수 | 설명 | 기본값 |
 |------|------|--------|
-| `LLM_ENDPOINT` | LLM 서버 주소 | `http://localhost:11434` |
+| `LLM_ENDPOINT` | LLM 서버 주소 | `http://127.0.0.1:8080` |
+| `LLM_SERVER_TYPE` | HTTP 서빙 엔진 (`llama` 또는 `vllm`) | `llama` |
 | `MCP_TOP_K_RESULTS` | 검색 결과 상위 K개 | `5` |
-| `MCP_MAX_CONTENT_CHARS` | 결과 본문 최대 길이 | `400` |
+| `MCP_MAX_CONTENT_CHARS` | 결과 본문 최대 길이 | `0` (이 단계에서 문자 수 제한 없음) |
 | `LLM_MAX_SEARCH_ROUNDS` | 검색 라운드 최대 횟수 | `2` |
 | `LLM_MAX_SEARCH_QUERIES` | 라운드당 최대 쿼리 수 | `3` |
 | `LLM_PROGRESS_EVERY` | 진행 로그 간격(초) | `5` |
-| `LLM_N_CTX` | 로컬 백엔드 컨텍스트 | - |
-| `LLM_N_GPU_LAYERS` | GPU 오프로드 레이어 | - |
+| `LLM_N_CTX` | 로컬 백엔드 컨텍스트 | `4096` |
+| `LLM_N_GPU_LAYERS` | GPU 오프로드 레이어 | `0` |
 
 ---
 
@@ -583,7 +597,7 @@ docker compose up -d --build
 | `tool` | 0.7 | 1.0 | 0.01 | 1.0 | JSON 출력 (권장) |
 | `general` | 1.0 | 0.95 | 0.01 | 1.0 | 일반 생성 |
 
-### 사전 설정 (rules.py)
+### 사전 설정 (`src/llm_batch/domain/rules.py`)
 
 ```python
 # 속어 → 공식 제목 매핑

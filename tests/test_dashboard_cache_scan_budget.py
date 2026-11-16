@@ -143,7 +143,13 @@ def test_current_output_seed_and_resolve_survive_zero_budget_without_cache_leak(
     key, record = next(iter(records.items()))
     assert record.path == output.resolve() and record.manifest == sidecar.resolve()
     assert index.resolve(key, root, current_output=output).path == output.resolve()
-    assert index.records(root) == {}  # 시드를 일반 탐색 캐시에 넣지 않는다.
+    # 관측한 current는 최근 current 보존으로만 남고 일반 탐색 캐시(_records)에는 들어가지 않는다.
+    assert index._records == {}
+    retained = index.records(root)
+    assert set(retained) == {key} and retained[key].path == output.resolve()
+    # current를 관측하지 않은 새 0예산 index는 cache 하위 결과를 발견하지 않는다.
+    fresh = RunIndex(max_entries=0)
+    assert fresh.records(root) == {} and fresh.truncated is True
     assert snapshot(root) == before
 
 

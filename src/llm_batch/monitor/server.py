@@ -1,7 +1,9 @@
-"""
-Monitor Dashboard Server — FastAPI + SSE 기반 웹 모니터링 대시보드
+"""Expert 대시보드 서버(FastAPI + SSE).
 
-별도 스레드에서 uvicorn 으로 실행되며, expert_main.py 프로세스와 함께 동작합니다.
+``expert_main``에 내장된 데몬 스레드로 뜨거나 ``tools/dashboard_server.py``로 독립 실행된다. 독립
+서버가 떠 있으면 expert_main은 같은 포트의 ``/api/health``로 이를 감지하고 forwarder로 이벤트를
+보낸다. live 상태는 ``event_bus.monitor``에서, 저장된 결과와 실행 이력은 ``run_index``의 제한된
+탐색으로 읽는다. 이 서버는 결과·원장 파일을 쓰지 않고 읽어서 표시만 한다.
 """
 
 from __future__ import annotations
@@ -25,6 +27,16 @@ from .run_index import RunIndex, bound_manifest, bound_manifest_rows, inside, ro
 from .recovery_view import bind_recovery_view_row, read_recovery_view
 from .recovery_provider_view import bind_recovery_provider_view_row, read_recovery_provider_view
 from .recovery_native_view import bind_recovery_native_view_row, read_recovery_native_view
+from .slang_view import (  # 기존 private helper 이름도 서버 모듈에서 그대로 찾을 수 있게 둔다.
+    _build_pending_kind_counts,
+    _extract_conflict_terms,
+    _extract_example_preview,
+    _extract_family_alias_terms,
+    _extract_pending_terms,
+    _extract_slang_terms,
+    _extract_term_list,
+    build_slang_db_payload,
+)
 
 _run_index = RunIndex()
 
@@ -424,139 +436,9 @@ def _load_slang_db_file() -> Dict[str, Any]:
     }
 
 
-def _extract_term_list(bucket: Any, key: str) -> List[str]:
-    if not isinstance(bucket, dict):
-        return []
-
-    terms: List[str] = []
-    seen: set[str] = set()
-    for entry in bucket.get(key) or []:
-        raw_term = entry.get("term") if isinstance(entry, dict) else entry
-        term = str(raw_term or "").strip()
-        if not term or term in seen:
-            continue
-        seen.add(term)
-        terms.append(term)
-    return terms
-
-
-def _extract_slang_terms(bucket: Any) -> List[str]:
-    return _extract_term_list(bucket, "slang")
-
-
-def _extract_pending_terms(bucket: Any) -> List[str]:
-    return _extract_term_list(bucket, "pending")
-
-
-def _extract_conflict_terms(bucket: Any) -> List[str]:
-    return _extract_term_list(bucket, "conflicts")
-
-
-def _build_pending_kind_counts(bucket: Any) -> Dict[str, int]:
-    counts: Dict[str, int] = {}
-    if not isinstance(bucket, dict):
-        return counts
-    for entry in bucket.get("pending") or []:
-        if not isinstance(entry, dict):
-            continue
-        kind = str(entry.get("pending_kind") or "unknown").strip()
-        if not kind:
-            kind = "unknown"
-        counts[kind] = counts.get(kind, 0) + 1
-    return counts
-
-
-def _extract_example_preview(bucket: Any, *, limit: int = 3) -> List[Dict[str, Any]]:
-    preview: List[Dict[str, Any]] = []
-    if not isinstance(bucket, dict):
-        return preview
-    for example in (bucket.get("examples") or [])[:limit]:
-        if not isinstance(example, dict):
-            continue
-        preview.append(
-            {
-                "post_id": example.get("post_id"),
-                "alias": example.get("alias"),
-                "bucket": example.get("bucket"),
-                "source_role": example.get("source_role"),
-                "discussion_type": example.get("discussion_type"),
-                "work_resolution": example.get("work_resolution"),
-                "pending_kind": example.get("pending_kind"),
-                "classification_confidence": example.get("classification_confidence"),
-                "created_at": example.get("created_at"),
-            }
-        )
-    return preview
-
-
-def _extract_family_alias_terms(payload: Dict[str, Any], title: str) -> List[str]:
-    terms: List[str] = []
-    seen: set[str] = set()
-    for key, bucket in (payload.get("family_aliases") or {}).items():
-        if not isinstance(bucket, dict):
-            continue
-        titles = [str(x).strip() for x in (bucket.get("titles") or []) if str(x).strip()]
-        if str(title or "").strip() not in titles:
-            continue
-        term = str(bucket.get("term") or key or "").strip()
-        if not term or term in seen:
-            continue
-        seen.add(term)
-        terms.append(term)
-    return terms
-
-
 def _build_slang_db_payload(offset: int = 0, limit: int = 100) -> Dict[str, Any]:
-    payload = _load_slang_db_file()
-    rows: List[Dict[str, Any]] = []
-    summary = {
-        "titles_with_slang": 0,
-        "titles_with_pending": 0,
-        "titles_with_conflicts": 0,
-        "titles_with_family_aliases": 0,
-    }
-
-    for title, bucket in sorted((payload.get("titles") or {}).items(), key=lambda item: str(item[0])):
-        title_text = str(title or "").strip()
-        slang_terms = _extract_slang_terms(bucket)
-        pending_terms = _extract_pending_terms(bucket)
-        conflict_terms = _extract_conflict_terms(bucket)
-        family_alias_terms = _extract_family_alias_terms(payload, title_text)
-        example_preview = _extract_example_preview(bucket)
-        pending_kind_counts = _build_pending_kind_counts(bucket)
-        if slang_terms:
-            summary["titles_with_slang"] += 1
-        if pending_terms:
-            summary["titles_with_pending"] += 1
-        if conflict_terms:
-            summary["titles_with_conflicts"] += 1
-        if family_alias_terms:
-            summary["titles_with_family_aliases"] += 1
-        rows.append({
-            "title": title_text,
-            "slang_terms": slang_terms,
-            "slang_count": len(slang_terms),
-            "pending_terms": pending_terms,
-            "pending_count": len(pending_terms),
-            "pending_kind_counts": pending_kind_counts,
-            "conflict_terms": conflict_terms,
-            "conflict_count": len(conflict_terms),
-            "family_alias_terms": family_alias_terms,
-            "family_alias_count": len(family_alias_terms),
-            "example_preview": example_preview,
-            "example_count": len(bucket.get("examples") or []),
-        })
-
-    total = len(rows)
-    page = rows[offset:offset + limit]
-    return {
-        "items": page,
-        "total": total,
-        "offset": offset,
-        "limit": limit,
-        "updated_at": payload.get("updated_at"),
-        "summary": summary,
-    }
+    """Slang DB 파일을 읽어 화면 payload로 조립한다. 변환은 ``slang_view``가 맡는다."""
+    return build_slang_db_payload(_load_slang_db_file(), offset=offset, limit=limit)
 
 
 def _has_text(value: Any) -> bool:

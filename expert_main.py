@@ -1,13 +1,14 @@
+"""Agentic Pipeline(유기적 전문가 시스템)의 주 실행기.
+
+JSONL 게시글·댓글을 읽어 ``AgenticPipeline``으로 분석하고 결과·checkpoint·manifest와 공개 결정
+원장을 저장한다. 병렬 worker, MCP 검색 endpoint, 대시보드 연결, 실행 설정 기록도 이 파일이
+조정한다. 레거시 순차 실행기 ``main.py``와 같은 LLM/MCP 환경 변수를 쓴다.
+
+CLI 옵션 선언은 ``llm_batch.runtime.expert_cli``에, 인자 해석은 이 파일의 ``_parse_args``에 있다.
+다른 모듈이 이 파일을 import해도 호출자의 ``sys.argv``를 소비하지 않는다.
+"""
+
 from __future__ import annotations
-
-"""
-Agentic Pipeline (유기적 전문가 시스템) 원클릭 엔트리포인트.
-
-목표:
-- tests/inputs/sample.jsonl 같은 커뮤니티 게시글을 Agentic Pipeline으로 분석
-- main.py와 동일한 LLM/MCP 환경설정 사용
-- 토큰 사용량, 로그, 결과를 main.py처럼 저장
-"""
 
 import argparse
 import copy
@@ -37,6 +38,7 @@ from llm_batch.runtime.attempt_failure import (
     preserve_rejected_publication, drain_failed_workers, close_worker_logs,
     record_attempt_failure, note_secondary,
 )
+from llm_batch.runtime.expert_cli import build_arg_parser
 
 try:
     from llm_batch.promotion_gate import (
@@ -1746,134 +1748,22 @@ def _decision_env_key_is_secret(key: str) -> bool:
 
 # ─── CLI 인자 파싱 ──────────────────────────────────────
 def _build_arg_parser(*, add_help: bool) -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        description="Agentic Pipeline (유기적 전문가 시스템)",
-        add_help=add_help,  # 기존 sys.argv[1] 호환성 유지
-    )
-    parser.add_argument("input", nargs="?", default=None, help="입력 JSONL 파일 경로")
-    parser.add_argument("--input", dest="input_flag", default=None, help="입력 JSONL 파일 경로 (--input 형식)")
-    parser.add_argument("--output", "-o", default=None, help="출력 JSON 파일 경로")
-    parser.add_argument("--recovery-simulation-plan", default=None, help="일반 분석과 분리된 고정 합성 복구 계획 JSON")
-    parser.add_argument("--recovery-provider-plan", default=None, help="일반 분석과 분리된 명시 provider 근거 수집 계획 JSON")
-    parser.add_argument("--recovery-provider-plan-sha256", default=None, help="provider 계획 파일의 사전 고정 raw SHA-256")
-    parser.add_argument("--recovery-hmac-key-file", default=None, help="기존 감사 key 읽기 전용 경로(ASCII hex64)")
-    parser.add_argument("--recovery-attempt-id", default=None, help="명시적인 새 복구 attempt ID")
-    parser.add_argument("--recovery-session-id", default=None, help="명시적인 복구 session ID")
-    parser.add_argument("--native-recovery", choices=["OFF", "ON"], default=None,
-                        help="일반 분석 완료 뒤 같은 호출의 문맥으로 별도 native 복구 실행(기본 OFF)")
-    parser.add_argument("--native-recovery-policy", default=None, help="자동 native 복구의 명시 예산·endpoint·wire 정책 JSON")
-    parser.add_argument("--native-recovery-policy-sha256", default=None, help="자동 native 정책 파일의 고정 raw SHA-256")
-    parser.add_argument("--parallel", "-p", type=int, default=1, help="최대 병렬 처리 워커 수 (기본: 1, 실제 워커 수는 입력 post 수로 상한 조정)")
-    parser.add_argument("--no-dashboard", action="store_true", help="대시보드 비활성화")
-    parser.add_argument("--execution-profile", choices=["general", "low-load-validation", "paired-measurement"],
-                        default=None, help="실행 설정 묶음. 개별 CLI·환경 설정이 프로필 기본값보다 우선")
-    parser.add_argument("--decision-call-ledger", choices=["OFF", "SHADOW", "REQUIRED"], default=None,
-                        help="호출 장부 모드. REQUIRED는 기존 측정 결속 검증을 그대로 수행")
-    parser.add_argument("--context-diagnostics", choices=["on", "off"], default=None,
-                        help="원문 문맥·발화 구조의 크기 제한 진단 저장")
-    parser.add_argument("--candidate-retrieval", choices=["OFF", "SHADOW"], default="OFF",
-                        help="고정 작품 corpus의 후보 회수 관측. 기본 OFF, 기존 판정에 반영하지 않음")
-    parser.add_argument("--candidate-corpus", default=None, help="명시적으로 고정한 작품 corpus JSON 경로")
-    parser.add_argument("--candidate-corpus-sha256", default=None, help="corpus 파일의 사전 고정 SHA-256")
-    parser.add_argument("--candidate-retrieval-top-k", type=int, default=20, help="관측할 양수 점수 후보 수 상한 (1~100)")
-    parser.add_argument("--candidate-reranker", choices=["OFF", "SHADOW"], default=None,
-                        help="R2 고정 후보의 재정렬 관측. 기본 OFF, 공개 판정에는 반영하지 않음")
-    parser.add_argument("--reranker-manifest", default=None, help="명시적으로 고정한 scorer manifest 경로")
-    parser.add_argument("--reranker-manifest-sha256", default=None, help="scorer manifest의 사전 고정 SHA-256")
-    parser.add_argument("--candidate-semantics", choices=["OFF", "SHADOW"], default=None,
-                        help="고정 후보의 선택 전 의미 역할·검증 별칭 관측. 기본 OFF, 점수·교정 입력 미사용")
-    parser.add_argument("--semantic-alias-bundle", default=None, help="고정 R3·corpus 원문을 포함한 별칭 근거 bundle")
-    parser.add_argument("--semantic-alias-bundle-sha256", default=None, help="별칭 근거 bundle의 사전 고정 SHA-256")
-    parser.add_argument("--candidate-calibration", choices=["OFF", "SHADOW"], default=None,
-                        help="명시적으로 결속된 FROZEN 행의 교정 관측. 기본 OFF, 공개 판정에는 반영하지 않음")
-    parser.add_argument("--calibration-bundle", default=None, help="고정 source/ID/graph와 CAL artifact bundle 경로")
-    parser.add_argument("--calibration-bundle-sha256", default=None, help="calibration bundle의 사전 고정 SHA-256")
-    parser.add_argument("--candidate-inference", choices=["OFF", "SHADOW"], default=None,
-                        help="일반 입력 R2 후보·NIL의 고정 교정 관측. 기본 OFF, 공개 판정에는 반영하지 않음")
-    parser.add_argument("--inference-bundle", default=None, help="고정 모델/CAL과 현재 corpus 원문·출처를 연결한 bundle")
-    parser.add_argument("--inference-bundle-sha256", default=None, help="inference bundle의 사전 고정 SHA-256")
-    parser.add_argument("--community-knowledge", choices=["OFF", "READ_ONLY"], default=None,
-                        help="커뮤니티 후보 지식 문맥. 기본 OFF, READ_ONLY는 Slang DB·배치 학습 비활성")
-    parser.add_argument("--community-snapshot", default=None, help="고정 커뮤니티 snapshot manifest 경로")
-    parser.add_argument("--community-snapshot-sha256", default=None, help="snapshot manifest의 사전 고정 SHA-256")
-    parser.add_argument(
-        "--server-type", "-s",
-        choices=["llama", "vllm"],
-        default=None,
-        help="LLM 서빙 엔진 선택: llama (llama-server, 기본) 또는 vllm",
-    )
-    parser.add_argument("--llm-endpoint", default=None, help="LLM 서버 엔드포인트 URL (예: http://a100:8000)")
-    parser.add_argument("--llm-model", default=None, help="사용할 모델명 (예: Qwen/Qwen3-32B)")
-    parser.add_argument("--vlm", choices=["on", "off"], default=None, help="멀티모달/VLM 보강 사용 여부")
-    parser.add_argument("--ocr", choices=["on", "off"], default=None, help="VLM 경로에서 OCR 텍스트 추출 여부")
-    parser.add_argument("--vlm-fetch-timeout", type=float, default=None, help="이미지 fetch timeout (초)")
-    parser.add_argument("--vlm-max-image-bytes", type=int, default=None, help="개별 이미지 최대 바이트")
-    parser.add_argument("--vlm-max-total-bytes", type=int, default=None, help="포스트당 이미지 총 바이트 상한")
-    parser.add_argument("--vlm-chunk-max-images", type=int, default=None, help="멀티모달 청크당 최대 이미지 수")
-    parser.add_argument("--vlm-chunk-max-bytes", type=int, default=None, help="멀티모달 청크당 최대 바이트")
-    parser.add_argument(
-        "--require-vlm-ocr-for-images",
-        action="store_true",
-        help="이미지 post가 있으면 VLM/OCR이 모두 켜져 있지 않은 run을 시작 전에 실패 처리",
-    )
-    parser.add_argument(
-        "--llm-suspend-on-anomaly",
-        choices=["on", "off"],
-        default=None,
-        help="LLM 서버 무응답/이상 응답 누적 시 사용자 확인 후 재개",
-    )
-    parser.add_argument(
-        "--llm-suspend-threshold",
-        type=int,
-        default=None,
-        help="LLM 서버 이상 응답 누적 시 일시중지 임계값 (0=비활성)",
-    )
-    parser.add_argument(
-        "--llm-stream-first-token-timeout",
-        type=float,
-        default=None,
-        help="스트리밍 첫 토큰 대기 제한(초). 0 이하이면 비활성",
-    )
-    parser.add_argument(
-        "--llm-stream-idle-timeout",
-        type=float,
-        default=None,
-        help="스트리밍 청크 간 idle 대기 제한(초). 0 이하이면 비활성",
-    )
-    parser.add_argument("--slang-db", choices=["on", "off"], default=None, help="중앙 slang DB 검토용 저장 사용 여부")
-    parser.add_argument("--slang-db-path", default=None, help="중앙 slang DB JSON 경로")
-    parser.add_argument("--slang-db-flush-posts", type=int, default=None, help="slang DB flush post 간격")
-    parser.add_argument("--slang-db-flush-seconds", type=int, default=None, help="slang DB flush 시간 간격(초)")
-    parser.add_argument(
-        "--auto-up-shards",
-        action="store_true",
-        help="로컬 MCP/WARP shard가 부족할 때 docker compose up 자동 실행을 명시적으로 허용",
-    )
-    parser.add_argument("--no-auto-up-shards", action="store_true", help="로컬 MCP/WARP shard 자동 기동 비활성화")
-    parser.add_argument(
-        "--auto-recreate-shards",
-        action="store_true",
-        help="WARP/search 헬스 실패 시 docker compose force-recreate 자동 실행을 명시적으로 허용",
-    )
-    parser.add_argument(
-        "--no-auto-recreate-shards",
-        action="store_true",
-        help="WARP/search 헬스 실패 시 docker compose force-recreate 자동 실행 비활성화",
-    )
-    parser.add_argument(
-        "--reuse-shards-only",
-        action="store_true",
-        help="기존 MCP/WARP shard만 재사용하고 docker compose up/recreate 자동 실행을 모두 생략",
-    )
-    parser.add_argument(
-        "--allow-goal-shard-lifecycle",
-        action="store_true",
-        help="Allow Docker shard up/recreate in small goal/test runs. Requires --auto-up-shards or --auto-recreate-shards.",
-    )
-    return parser
+    """CLI parser를 만든다. 선언은 ``runtime.expert_cli``에 있고 기존 이름·시그니처를 유지한다."""
+    return build_arg_parser(add_help=add_help)
 
 
 def _parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
+    """CLI 인자를 기존 호환 규칙대로 해석한다.
+
+    - ``-h``/``--help``는 stderr에 도움말을 쓰고 종료 코드 0으로 끝난다.
+    - 알 수 없는 인자는 무시한다. ``--native-recovery``로 시작하는 나머지는 따로 모아 이후 검산한다.
+    - ``-pN``과 옵션 축약을 허용하고, ``--parallel`` 명시 여부를 ``parallel_explicit``로 구분한다(기본 1).
+    - ``--input``이 위치 인자보다 우선한다.
+    - 복구 옵션이 있으면 축약을 허용하지 않는 별도 parser로 남은 인자를 확인한다.
+
+    ``argv``가 None이면 ``sys.argv[1:]``를 쓴다. 모듈 import 때는 빈 목록으로 호출해
+    호출자의 인자를 소비하지 않는다. 옵션 선언은 ``llm_batch.runtime.expert_cli``에 있다.
+    """
     effective_argv = sys.argv[1:] if argv is None else argv
     if any(arg in {"-h", "--help"} for arg in effective_argv):
         _build_arg_parser(add_help=True).print_help(sys.stderr)
@@ -16145,7 +16035,16 @@ def main() -> None:
 
 
 def load_jsonl_posts(path: Path, *, snapshot_bytes: bytes | None = None) -> List:
-    """JSONL 파일에서 포스트만 로드 (댓글 제외)"""
+    """JSONL을 읽어 게시글마다 별도 댓글 행과 내장 댓글을 붙인 ``PostInput`` 목록을 만든다.
+
+    - ``comment_id``가 있는 행은 댓글, ``post_id``만 있는 행은 게시글로 본다.
+    - 별도 댓글 행을 먼저, 게시글 내부 댓글을 뒤에 붙이고 같은 댓글은 한 번만 남긴다.
+    - 같은 ``post_id`` 행이 내용까지 같으면 첫 행만 쓰고, 내용이 다르면 ValueError로 멈춘다.
+    - ``snapshot_bytes``가 있으면 파일 대신 그 고정 bytes를 읽어 실행 중 파일 변경과 분리한다.
+    - JSON으로 읽을 수 없는 줄은 건너뛴다.
+    - 정규화하면 사라질 원문 절단·형식 오류 사실은 각 게시글의 ``_input_truncated``와
+      ``_parse_errors``에 남긴다.
+    """
     sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
     from llm_batch.domain.models import PostInput, ContentBlock
 

@@ -52,7 +52,7 @@ provider가 추가 증거를 저장하면 전용 pipeline에서 Decoder·Verifie
 
 옵션은 `--native-recovery ON`, `--native-recovery-policy <정책 JSON 경로>`, `--native-recovery-policy-sha256 <파일 SHA-256>`다. 대응 환경변수는 `EXPERT_NATIVE_RECOVERY`, `EXPERT_NATIVE_RECOVERY_POLICY`, `EXPERT_NATIVE_RECOVERY_POLICY_SHA256`다. CLI가 우선하며 정책은 strict JSON과 raw bytes 지문을 함께 검산한다.
 
-대시보드 ON, `RECOVERY_ACTIVATION_MODE=AUDIT_ONLY`, Slang DB OFF가 필요하다. mutable batch/session learning과 active learning queue는 동결한다. 별도 recovery-only 명령, source-only early route, paired/FRESH 측정 실행과 동시에 켤 수 없다. 현재 프로젝트의 사용자 승인 검증 조건은 병렬 1·저부하 프로필이다.
+대시보드 ON, `RECOVERY_ACTIVATION_MODE=AUDIT_ONLY`, Slang DB OFF가 필요하다. mutable batch/session learning과 active learning queue는 동결한다. 별도 recovery-only 명령, source-only early route, paired/FRESH 측정 실행과 동시에 켤 수 없다. 일반 `expert_main` 검증은 저장소 지침에 따라 요청 병렬도 `--parallel 12`와 저부하 프로필을 기본으로 한다. 실제 worker 수는 입력 수와 실행 조건에 따라 줄 수 있으며, 분석 후 native 복구는 별도로 직렬 실행한다.
 
 정책 schema는 `recovery_native_batch_policy_v1`이며 다음 필드를 모두 명시한다.
 

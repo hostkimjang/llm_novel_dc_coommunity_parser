@@ -781,11 +781,15 @@ class ExpertMainInputLoaderTest(unittest.TestCase):
         lines = _public_comment_context_lines(meta)
 
         self.assertEqual(meta[0]["speaker"], "user1")
-        self.assertEqual(meta[1]["speaker"], "post_author")
+        # 표시명이 게시글 작성자와 같아도 인증된 작성자 관계가 아니다(post_author_match_unverified).
+        self.assertEqual(meta[1]["speaker"], "user2")
+        self.assertFalse(meta[1]["is_post_author"])
+        self.assertTrue(meta[1]["post_author_match_unverified"])
         self.assertIn("author=reader", lines[0])
         self.assertIn("reply_to=c1", lines[0])
         self.assertIn("author=writer", lines[1])
-        self.assertIn("role=post_author", lines[1])
+        self.assertIn("role=author_match_unverified", lines[1])
+        self.assertNotIn("role=post_author", lines[1])
         self.assertIn("ip=123.248", lines[1])
 
     def test_public_comment_context_lines_are_available_for_result_rows(self):
@@ -811,16 +815,20 @@ class ExpertMainInputLoaderTest(unittest.TestCase):
         lines = _public_comment_context_lines(meta)
         dialogue_lines = _public_comment_dialogue_context_lines(comments, meta)
 
-        self.assertEqual(meta[0]["speaker"], "post_author")
-        self.assertTrue(meta[0]["is_post_author"])
-        self.assertEqual(meta[1]["speaker"], "user1")
+        # 표시명 일치만으로 게시글 작성자를 확정하지 않는다(post_author_match_unverified).
+        self.assertEqual(meta[0]["speaker"], "user1")
+        self.assertFalse(meta[0]["is_post_author"])
+        self.assertTrue(meta[0]["post_author_match_unverified"])
+        self.assertEqual(meta[1]["speaker"], "user2")
         self.assertIn("author=글쓴이", lines[0])
-        self.assertIn("role=post_author", lines[0])
+        self.assertIn("role=author_match_unverified", lines[0])
+        self.assertNotIn("role=post_author", lines[0])
         self.assertIn("ip=123.248", lines[0])
         self.assertIn("author=다른유저", lines[1])
         self.assertIn("reply_to=c1", lines[1])
         self.assertIn("comment_id=c2", lines[1])
-        self.assertIn("role=post_author", dialogue_lines[0])
+        self.assertIn("role=author_match_unverified", dialogue_lines[0])
+        self.assertNotIn("role=post_author", dialogue_lines[0])
         self.assertIn("text=이거 맞다", dialogue_lines[0])
         self.assertIn("author=다른유저", dialogue_lines[1])
         self.assertIn("text=작품명 후보", dialogue_lines[1])

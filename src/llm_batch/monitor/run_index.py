@@ -204,6 +204,12 @@ def bound_manifest(output: Path, root: Path, *, item: dict[str, Any] | None = No
 
 def bound_manifest_rows(output: Path, root: Path, items: list[dict[str, Any]],
                         manifest_path: Path | None = None) -> dict[str, Any]:
+    """결과 파일과 sidecar manifest의 결속을 행 단위로 확인한다.
+
+    manifest가 없거나 결과와 맞지 않으면 그 상태(MISSING/MISMATCH)를 그대로 돌려주고, 어떤 행이라도
+    MISMATCH면 즉시 MISMATCH다. 행마다 빠진 필드는 모아 PARTIAL로 표시하며, 과거 결과에 기록되지
+    않은 값을 추정해 채우지 않는다. BOUND는 저장 자료가 결속됐다는 뜻이지 품질 승인이 아니다.
+    """
     path = manifest_path or output.with_name(f"{output.stem}_manifest.json")
     payload = read_object(path, root)
     binding = bound_manifest(output, root, manifest_path=path, payload=payload)
@@ -232,7 +238,14 @@ class RunRecord:
 
 
 class RunIndex:
-    """탐색·JSON 크기·캐시를 제한하며 URL에는 파일 경로를 받지 않는다."""
+    """저장된 실행 결과를 읽기 전용으로 찾는 제한된 인덱스.
+
+    탐색 항목 수·깊이·manifest 수와 JSON 크기에 상한을 두고 URL에서 파일 경로를 받지 않는다.
+    일반 탐색 결과(``_records``)는 TTL 동안 캐시한다. 이와 별도로 실제 current로 관측한 출력
+    좌표를 최대 ``RECENT_CURRENT_LIMIT``(24)개 서버 메모리에 보존해, 탐색 상한 밖의 직전 실행도
+    고를 수 있게 한다. 보존 좌표는 조회 때마다 경계·symlink·sidecar·run_id를 다시 검산하며
+    서버를 재시작하면 비워진다.
+    """
 
     def __init__(self, *, ttl: float = 30.0, max_entries: int = 50000,
                  max_manifests: int = 2000, max_depth: int = 12):

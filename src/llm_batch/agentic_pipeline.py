@@ -5206,11 +5206,15 @@ class AgenticPipeline:
             self.orchestrator.__dict__.pop("_last_ctx", None)
 
     def process_post(self, post: PostInput, *, native_context_sink=None) -> PickvelOutputItemV2:
-        """
-        Process a single post.
-        
+        """게시글 한 건을 분석해 ``PickvelOutputItemV2``로 돌려준다.
+
+        이전 호출의 ``_last_ctx``를 먼저 지워 다른 행의 문맥을 재사용하지 않는다. 후보 회수·재정렬·
+        교정·커뮤니티 지식 같은 선택 관측은 설정된 경우에만 기록하며 공개 판정 권한이 없다.
+        원문 입력, 댓글 참조, NSFW 원문 carrier, 로더의 절단·형식 오류 기록은 같은 호출의 ctx로
+        그대로 옮겨 후처리에서 원문과 대조할 수 있게 한다.
+
         Returns:
-            PickvelOutputItemV2 with complete analysis
+            후보·공개 판정·담론 분석을 담은 PickvelOutputItemV2
         """
         post_id = post.post_id
         # Never carry a previous row's context into this attempt.
@@ -6253,7 +6257,12 @@ class AgenticPipeline:
         return comments[:15]  # max 15 comments
     
     def _context_to_output(self, ctx: ConversationContext) -> PickvelOutputItemV2:
-        """Convert context to PickvelOutputItemV2."""
+        """전문가 협업 결과(ctx)를 공개 전에 정리해 ``PickvelOutputItemV2``로 만든다.
+
+        단순 직렬화가 아니다. 후보 보존, 공식 제목·URL 쌍, 문맥·제목 상태의 일관성을 정리하고
+        공개 계약(``evaluate_publish_contract``/``apply_publish_contract``)과 최종 원문 문맥 소비를
+        거친다. 결과 파일 저장과 공개 결정 commit은 ``expert_main``의 writer가 맡는다.
+        """
         _trace_postprocess = os.getenv("PIPELINE_POSTPROCESS_TRACE", "").strip().lower() in {"1", "true", "yes", "on"}
 
         def _trace_context_output(stage: str) -> None:

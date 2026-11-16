@@ -1347,18 +1347,16 @@ class ConversationContext:
 
 
 class Orchestrator:
-    """
-    🎯 Orchestrator - 전문가 조율
+    """전문가 실행과 검색을 상황에 따라 고르는 조율기.
 
-    븷:
-    - 전문가들의 분석 결과 요청해석
-    - ?ㅼ쓬대뼡 전문가를 실행유지 결정
-    - 검색 요청 처리
-    - 종료 조건 판단
+    Gatekeeper·Discourse·Decoder·Verifier·Critic·Synthesizer·Arbiter의 출력과 협력 요청을 보고
+    다음 전문가 호출, 추가 검색, 종료를 고른다. 모든 게시글이 같은 순서·호출 수로 처리되지는
+    않으며 fast-path와 조기 종료 경로가 있다.
 
-    협력 제한:
-    - 같은 전문가 간의 협력 최대 1회
-    - 전체 협력 요청 최대 3회
+    협력 제한(``_decide_next_action``):
+    - 같은 요청자→대상 전문가 쌍의 협력 요청은 한 번만 처리한다.
+    - 전체 협력 요청은 최대 3회다.
+    - 반복은 ``max_iterations``(기본 12)를 넘지 않는다.
     """
 
     def __init__(
@@ -12050,11 +12048,16 @@ class Orchestrator:
         community_knowledge_context: Optional[Dict[str, Any]] = None,
         community_knowledge_original_inputs: Optional[Tuple[Dict[str, Any], ...]] = None,
     ) -> ConversationContext:
-        """
-        전문가ㅼ쓣 조율섏뿬 포스트분석 완료
+        """게시글 하나를 전문가 협업으로 분석하고 이 호출의 ``ConversationContext``를 돌려준다.
+
+        새 ctx를 만들고 입력 행의 source-evidence 검색 결과와 커뮤니티 지식 readback을 이 호출에
+        격리해 싣는다. 명확한 글은 fast-path로 끝내고, 그렇지 않으면 Gatekeeper·Discourse를 거친다.
+        이후 ``_decide_next_action``은 전문가 호출과 종료를 고르고, 검색은 이 함수가 초기 요청·
+        전문가 요청·검증 조건에 따라 실행한다. 조기 종료 조건이나 최종 판정 단계에서 마친다.
+        공개 제목·URL의 확정은 이후 ``AgenticPipeline._context_to_output``과 공개 계약이 맡는다.
 
         Returns:
-            ConversationContext with all expert outputs and messages
+            이 호출의 전문가 출력·메시지·검색 결과를 담은 ConversationContext
         """
         ctx = ConversationContext(
             post_id=post_data.get("post_id", 0),
@@ -16284,16 +16287,20 @@ class Orchestrator:
         ctx: ConversationContext,
         rules_config: Dict[str, Any],
     ) -> Dict[str, Any]:
-        """
-        Decide next orchestrator action for the current iteration.
+        """현재 반복에서 오케스트레이터가 할 다음 행동을 고른다.
 
-        Priority:
-        1) Process valid expert-to-expert collaboration requests.
-        2) Trigger targeted search when evidence is insufficient.
-        3) Finalize when stop conditions are satisfied.
+        우선순위는 다음과 같다.
+        1) 기억 질의 거절이 이미 확정됐으면 곧바로 마무리한다.
+        2) 유효한 전문가 간 협력 요청을 처리한다(같은 요청 쌍은 한 번, 전체 최대 3회).
+        3) Decoder가 끝났고 Verifier가 없으면 Verifier, 예약된 Verifier 재검증이 있으면 Verifier,
+           Gatekeeper 다음 Decoder가 없으면 Decoder를 호출한다.
+        4) 그 밖에는 마무리한다(Gatekeeper·Decoder·Verifier 완료, 반복 상한 도달 포함).
+
+        검색은 이 함수가 고르지 않는다. 초기 검색, 전문가가 요청한 검색, 검증 검색은 ``process``가
+        조건에 따라 실행한다.
 
         Returns:
-            {"action": "call_expert|search|finalize", ...}
+            {"action": "call_expert", "expert": ...} 또는 {"action": "finalize"}
         """
         gk = ctx.get_expert_output(ExpertType.GATEKEEPER)
         dc = ctx.get_expert_output(ExpertType.DECODER)
@@ -16326,7 +16333,7 @@ class Orchestrator:
                 output["request_reason"] = None
                 output["request_context"] = None
 
-                # 이미 처리요청몄 확인
+                # 같은 요청 쌍을 이미 처리했는지 확인
                 request_key = f"{expert_type.value}::{requested}"
                 processed_requests = getattr(ctx, '_processed_requests', set())
 
@@ -16376,7 +16383,7 @@ class Orchestrator:
         # Critic의 역할(메타데이터 추출, suspected_titles 정리)은 Arbiter.analyze()에서 코드레벨로 처리
         # if vf and not cr:  # DEPRECATED
 
-        # === 3. 쒖감 실행 (꾩쭅 실행 전문가) ===
+        # === 3. Gatekeeper 다음 Decoder 실행 ===
         if not dc and gk:
             return {"action": "call_expert", "expert": "decoder"}
 
@@ -16385,7 +16392,7 @@ class Orchestrator:
         if gk and dc and vf:
             return {"action": "finalize"}
 
-        # 5. 최대 반복 전달
+        # 5. 최대 반복 도달
         if ctx.iteration >= ctx.max_iterations:
             return {"action": "finalize"}
 

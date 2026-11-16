@@ -1,12 +1,51 @@
-# WARP Sharding Layout
+# 검색·WARP shard 운영 안내
 
-`expert_main.py --parallel 4` 같이 여러 워커를 돌릴 때는, `searchxng`, `crawl4ai`, `browser-search`를 같은 WARP 번들에 묶고 `MCPClient`가 shard별 `mcp-bridge`를 고르게 하는 구성이 가장 단순하다.
+`expert_main.py`는 검색과 fetch를 MCP bridge로 보낸다. 여러 worker를 돌릴 때는 `searchxng`, `crawl4ai`, `browser-search`를 같은 WARP 번들(shard)에 묶고, `MCPClient`가 shard별 `mcp-bridge`를 고르게 하는 구성이 가장 단순하다.
 
 운영 품질 게이트와 검증 결과는 `docs/devs/OPERATION_QUALITY_CHECKLIST.md`, `docs/devs/VERIFICATION_RESULTS.md`에 기록한다.
 
-현재 goal/test regression에서는 `expert_main.py`가 로컬 자동 생성 shard(`localhost:3333+`)를 감지해도 Docker Compose lifecycle을 기본으로 열지 않는다. 소규모 run은 살아 있는 endpoint를 재사용/필터링하고, `--parallel`은 worker 최대치로만 해석한다. shard 복구 자체가 검증 대상일 때만 `--allow-goal-shard-lifecycle`과 `--auto-up-shards` 또는 `--auto-recreate-shards`를 함께 명시해 `tools/warp_shards.py up/recreate`를 실행한다. 수동으로 `MCP_ENDPOINTS` / `MCP_ENDPOINT` 를 지정한 경우에는 기존 구성을 존중하고, goal/test에서는 health filter 이후 사용 가능한 endpoint만 쓰는 계약을 우선한다.
+## 검증 실행 예시
 
-또한 shard 상태감사 작업에서는 `expert_main.py` 시작 시 shard별 `warp-cli status` 와 Cloudflare trace(`ip`, `warp`, `loc`, `colo`)를 확인해서 `logs/warp_shards_status_*.json` 에 메모로 남길 수 있다. 일반 goal/test semantic regression에서는 Compose status/exec 기반 감사도 기본 경로가 아니며, 필요할 때만 `MCP_LOCAL_SHARD_STATUS_AUDIT=1`과 `MCP_ALLOW_GOAL_SHARD_STATUS_AUDIT=1`을 함께 명시한다.
+테스트런·검증런은 대시보드를 켠 상태(`--no-dashboard` 없음)에서 요청 병렬도 12로 실행한다. 기존 shard만 쓰고 Docker 기동·재생성을 하지 않으려면 `--reuse-shards-only`를 붙인다.
+
+```bash
+python expert_main.py tests/inputs/sample.jsonl --parallel 12 --reuse-shards-only
+```
+
+## 병렬도와 endpoint 구성
+
+**worker 수.** `--parallel`은 worker 수의 상한이다. 실제 병렬도(effective parallel)는 요청값과 입력 게시글 수 중 작은 값이다. 시작 시 health filter가 endpoint pool을 줄였다면 살아 있는 endpoint 수로도 제한된다. manifest의 requested/effective parallel과 병렬도 정책 문구를 함께 확인한다.
+
+**endpoint 출처.** 다음 순서로 정해진다.
+
+1. `MCP_ENDPOINTS`를 지정하면 중복을 제거해 그대로 쓴다.
+2. `MCP_ENDPOINT` 하나만 지정하면 그 주소를 쓴다.
+3. 둘 다 없으면 `MCP_SHARD_SCHEME`(기본 `http`), `MCP_SHARD_HOST`(기본 `127.0.0.1`), `MCP_SHARD_BASE_PORT`(기본 `3333`)로 endpoint를 자동 생성한다.
+
+**자동 생성 수.** `MCP_SHARD_COUNT`가 있으면 그 값, 없으면 effective parallel에서 출발한 뒤 아래 상한을 차례로 적용한다.
+
+| 상한 | 적용 조건 | 기본값 |
+| --- | --- | --- |
+| `MCP_AUTO_SHARD_LIMIT` | 값이 0보다 크고 `MCP_SHARD_COUNT`가 없을 때 | `0`(상한 없음) |
+| 낮은 병렬도 상한 `MCP_SMALL_RUN_AUTO_SHARD_LIMIT` | effective parallel이 `MCP_SMALL_RUN_SHARD_THRESHOLD` 미만이고, `MCP_SHARD_COUNT`가 없고, 환경에 `MCP_AUTO_SHARD_LIMIT` 자체가 없을 때 | 기준 `10` 미만이면 `2`개 |
+| goal 실행 상한 `MCP_GOAL_RUN_AUTO_SHARD_LIMIT` | 입력 수 기준 소규모 실행(아래)이면서 shard lifecycle이 막혀 있을 때. `MCP_SHARD_COUNT`를 지정해도 적용된다. | `8`개 |
+
+`MCP_AUTO_SHARD_LIMIT`는 환경에 있기만 해도(값이 `0`이어도) 낮은 병렬도 상한 2개를 끈다.
+
+**소규모 실행과 lifecycle.** 입력 게시글 수가 `MCP_GOAL_RUN_SHARD_LIFECYCLE_THRESHOLD`(기본 `36`) 이하이면 소규모(goal/test) 실행으로 본다. 이때 Docker Compose shard lifecycle은 기본으로 닫혀 있다. 현재 명령에 `--allow-goal-shard-lifecycle`과 `--auto-up-shards` 또는 `--auto-recreate-shards`를 함께 줘야 `tools/warp_shards.py up/recreate`를 실행한다. `--reuse-shards-only`는 이 허가보다 우선해 lifecycle을 닫는다. 이전 셸에서 남은 `MCP_AUTO_*` 환경 변수만으로는 소규모 실행의 shard를 기동·재생성하지 않는다. Codex에서 시작한 실행도 현재 명령의 opt-in이 필요하다.
+
+**health filter.** 시작 시 health check에서 응답하지 않는 endpoint를 pool에서 뺄 수 있는 경우는 두 가지다.
+
+- `--reuse-shards-only`: `MCP_REUSE_ONLY_FILTER_HEALTHY_AUTOGEN`(자동 생성) 또는 `MCP_REUSE_ONLY_FILTER_HEALTHY_ENDPOINTS`(직접 지정)가 켜져 있으면(기본 ON) 살아 있는 endpoint만 쓴다.
+- 소규모 실행에서 lifecycle이 막힌 경우: `MCP_GOAL_RUN_FILTER_HEALTHY_AUTOGEN` 또는 `MCP_GOAL_RUN_FILTER_HEALTHY_ENDPOINTS`(기본 ON)에 따라 살아 있는 endpoint만 쓴다.
+
+그 밖의 대형 검증에서 직접 지정한 endpoint가 실패하면 감추지 않고 실패로 드러낸다.
+
+**누락 shard 증분 기동.** `MCP_AUTO_SCALE_UP_MISSING_SHARDS`(기본 `1`)는 자동 생성한 로컬 shard 일부가 연결 거부로 빠졌을 때 부족한 shard만 기동하는 경로 하나를 제어한다. `0`은 이 증분 기동 경로만 끄며, `--auto-up-shards`·`--auto-recreate-shards` 같은 다른 lifecycle 동작은 각자의 조건을 따른다. 이 경로는 `--reuse-shards-only`, `--no-auto-up-shards`, lifecycle이 막힌 소규모 실행, 현재 명령 opt-in이 없는 Codex 실행, 직접 지정 endpoint, 로컬이 아닌 `MCP_SHARD_HOST`에서는 동작하지 않는다.
+
+shard 상태 감사에서는 시작 시 shard별 `warp-cli status`와 Cloudflare trace(`ip`, `warp`, `loc`, `colo`)를 `logs/warp_shards_status_*.json`에 남길 수 있다. 소규모 실행에서는 이 Compose status/exec 기반 감사도 기본 경로가 아니며, 필요할 때만 `MCP_LOCAL_SHARD_STATUS_AUDIT=1`과 `MCP_ALLOW_GOAL_SHARD_STATUS_AUDIT=1`을 함께 지정한다.
+
+## shard 구성
 
 핵심:
 
@@ -212,17 +251,17 @@ services:
 host에서 일반 개발 샘플을 돌릴 때는 아래처럼 실행할 수 있다.
 
 ```bash
-python expert_main.py tests/inputs/sample.jsonl --parallel 4
+python expert_main.py tests/inputs/sample.jsonl --parallel 12
 ```
 
-대형 shard bootstrap 또는 shard 복구 검증 모드에서는 아래 자동 관리 기능을 사용할 수 있다. 다만 goal/test regression의 기본 실행 계약은 reuse/filter이며, 아래 Docker lifecycle은 `--allow-goal-shard-lifecycle` opt-in 없이 열지 않는다.
+대형 shard bootstrap 또는 shard 복구 검증 모드에서는 아래 자동 관리 기능을 사용할 수 있다. 소규모 실행의 기본 계약은 기존 shard 재사용과 health filter이며, 아래 Docker lifecycle은 위의 lifecycle 조건을 충족할 때만 열린다.
 
-- `--parallel 4` -> `3333,3334,3335,3336`
-- 로컬 `WARP/SearchXNG/Crawl4AI/CloakBrowser browser-search/MCP` 4 shard 자동 `docker compose up -d --build`는 shard lifecycle opt-in이 있을 때만 수행
-- 자동 생성 shard 수는 기본적으로 `--parallel` 값을 그대로 따른다. 필요하면 `MCP_SHARD_COUNT=6` 같이 별도 지정 가능
+- effective parallel이 12이고 상한이 적용되지 않으면 `3333`부터 `3344`까지 12개 endpoint를 만든다
+- 로컬 `WARP/SearchXNG/Crawl4AI/CloakBrowser browser-search/MCP` shard의 자동 `docker compose up -d --build`는 shard lifecycle이 열려 있을 때만 수행
+- 자동 생성 shard 수는 effective parallel에서 출발해 위의 상한을 적용한다. 필요하면 `MCP_SHARD_COUNT=6` 같이 별도 지정 가능
 - `MCP_SHARD_BASE_PORT=4000` -> `4000,4001,4002,...`
 - `MCP_SHARD_HOST=10.0.0.5` -> `http://10.0.0.5:3333,...`
-- `MCP_SHARD_COUNT=6` -> `--parallel` 과 별개로 6개 shard 생성
+- `MCP_SHARD_COUNT=6` -> `--parallel`과 별개로 6개 shard 생성. 단 lifecycle이 막힌 소규모 실행에서는 goal 실행 상한(기본 8)이 적용된다
 - `WARP_SHARDS_SEARCH_UI_BASE_PORT=19001` -> SearchXNG UI를 `http://localhost:19001`, `19002`, ... 로 노출. `0`이면 UI 포트 노출 비활성화
 - 대량 shard에서는 `warp_shards.py`가 shard 묶음을 배치 단위로 `docker compose up ... mcp-bridge-N` 해서 점진적으로 수렴시킨다
 - shard 복구 모드의 `expert_main.py`는 auto-managed shard에서 `warp=off` 또는 미기동 shard가 보이면 해당 shard 번들을 다시 올리고, 모두 `warp=on` 이 될 때까지 기다린다
@@ -232,13 +271,13 @@ python expert_main.py tests/inputs/sample.jsonl --parallel 4
 - `WARP_SHARDS_BATCH_PAUSE_SEC=2` -> 배치 사이 쉬는 시간(초)
 - `WARP_SHARDS_ENSURE_PAUSE_SEC=5` -> `warp=off` shard 재기동 뒤 다음 상태 확인까지 기다릴 시간(초)
 - `WARP_SHARDS_ENSURE_MAX_ATTEMPTS=0` -> `warp=on` 보장 루프 최대 시도 횟수. `0`이면 제한 없이 계속 재시도
-- `MCP_AUTO_SHARD_LIMIT=24` -> 정말 필요할 때만 자동 생성 shard 수 상한 지정 (기본은 제한 없음)
+- `MCP_AUTO_SHARD_LIMIT=24` -> 자동 생성 shard 수 상한 지정. 기본 `0`은 상한 없음이며, 이 변수가 환경에 있으면 낮은 병렬도 상한 2개는 적용되지 않는다
 - `BROWSER_SEARCH_PROVIDER_ORDER=cloak` -> 기본값. 비용 없는 CloakBrowser 단일 fallback만 사용
 - `BROWSER_SEARCH_PROVIDER_ORDER=playwright,ucd` 처럼 Google 직접 provider를 여러 개 이어붙이면 CAPTCHA 시 연쇄 재시도가 늘 수 있으므로 기본값을 권장
 - `BROWSER_SEARCH_GOOGLE_MIN_INTERVAL_SEC=45` / `BROWSER_SEARCH_GOOGLE_JITTER_SEC=15` -> shard별 Google 직접 브라우저 검색 간격
 - `BROWSER_SEARCH_BLOCK_COOLDOWN_SEC=7200` -> CAPTCHA/차단 징후 감지 시 해당 shard의 Google 직접 브라우저 검색 중단 시간
 - `MCP_HEALTH_USE_READYZ=1` -> 시작 헬스체크에서 bridge liveness뿐 아니라 `/readyz` 기반 SearchXNG readiness도 확인
-- `MCP_AUTO_SCALE_UP_MISSING_SHARDS=1` (기본) -> 대형 검증 런에서 autogen 로컬 shard 일부가 헬스체크에 **연결 거부(컨테이너 부재)** 로 빠지면(예: 16개만 기동된 상태에서 32개 필요) 부족 shard만 `warp_shards.py up --shards 17-32` + `--no-recreate`로 자동 증분 기동 후 실패 endpoint만 재검사. 기존 healthy 컨테이너는 compose up 대상 자체에서 제외된다. 소규모 goal/test 런(기존 2-key 허가+액션 opt-in 필요)·Codex 런(현재 커맨드 opt-in 필요)·`--reuse-shards-only`·`--no-auto-up-shards`에서는 동작하지 않음. `0`으로 비활성화
+- `MCP_AUTO_SCALE_UP_MISSING_SHARDS=1` (기본) -> 대형 검증 런에서 autogen 로컬 shard 일부가 헬스체크에 **연결 거부(컨테이너 부재)** 로 빠지면(예: 16개만 기동된 상태에서 32개 필요) 부족 shard만 `warp_shards.py up --shards 17-32` + `--no-recreate`로 자동 증분 기동 후 실패 endpoint만 재검사. 기존 healthy 컨테이너는 compose up 대상 자체에서 제외된다. 소규모 goal/test 런(허가와 동작 opt-in이 모두 필요)·Codex 런(현재 커맨드 opt-in 필요)·`--reuse-shards-only`·`--no-auto-up-shards`에서는 동작하지 않음. `0`은 이 증분 기동 경로만 끈다
 - `MCP_SCALE_UP_REPROBE_ATTEMPTS=12` / `MCP_SCALE_UP_REPROBE_PAUSE_SEC=10` -> 증분 기동 후 실패 endpoint 재검사 횟수/간격 (신규 shard WARP 등록 워밍업 시간 흡수용; 전부 회복되면 조기 종료)
 - `warp_shards.py up --shards 17,19,20-32` -> compose 렌더는 `--count` 전체로 유지하되 지정 shard 서비스만 up. 단일 shard 영구 실패는 수집-계속(collect-and-continue)되어 나머지 shard 기동을 막지 않고 exit code 2로 보고
 - `WARP_SHARDS_REMOVE_ORPHANS=0` -> `warp_shards.py up` 시 `--remove-orphans` 생략 (현재 풀 크기를 초과해 떠 있는 기존 컨테이너 보호용; expert_main 자동 증분 기동은 항상 `0`으로 호출)
@@ -246,15 +285,15 @@ python expert_main.py tests/inputs/sample.jsonl --parallel 4
 - `MCP_CLIENT_ENDPOINT_FAILOVER=1` -> 런 중 워커 기본 MCP shard가 실패하면 `MCP_ENDPOINTS` pool의 다른 endpoint로 우회
 - `MCP_CLIENT_ENDPOINT_BACKOFF_SEC=90` -> 실패 endpoint를 클라이언트 쪽에서 잠시 제외하는 시간
 
-2026-07-06 Loop496 운영 메모: shard 1의 SearchXNG host UI publish가 끊겨 `warp_shards.py render --count 16` 뒤 `up --count 16 --shards 1`로 복구했다. 이때 compose가 현재 count 밖 shard `17-44`를 orphan으로 보고 제거했다. 이번 full375는 shard `1-16`만 사용해 문제가 없었지만, 16개를 넘는 후속 런은 먼저 필요한 shard를 다시 `up`해야 한다. 더 큰 풀을 보존해야 하는 복구 작업에서는 `WARP_SHARDS_REMOVE_ORPHANS=0` 또는 전체 count 렌더를 함께 사용한다.
+과거 운영 기록(2026-07-06 Loop496): shard 1의 SearchXNG host UI publish가 끊겨 `warp_shards.py render --count 16` 뒤 `up --count 16 --shards 1`로 복구했다. 이때 compose가 현재 count 밖 shard `17-44`를 orphan으로 보고 제거했다. 당시 full375는 shard `1-16`만 사용해 문제가 없었지만, 16개를 넘는 후속 런은 먼저 필요한 shard를 다시 `up`해야 한다. 더 큰 풀을 보존해야 하는 복구 작업에서는 `WARP_SHARDS_REMOVE_ORPHANS=0` 또는 전체 count 렌더를 함께 사용한다.
 
 shard 복구 모드에서 자동 기동을 명시적으로 끄려면:
 
 ```bash
-python expert_main.py tests/inputs/sample.jsonl --parallel 4 --no-auto-up-shards
+python expert_main.py tests/inputs/sample.jsonl --parallel 12 --no-auto-up-shards
 ```
 
-goal/test regression에서는 위 옵션을 붙이지 않아도 Docker lifecycle이 기본으로 열리지 않는다. 운영 실수를 줄이고 싶으면 `--reuse-shards-only`를 함께 사용한다.
+소규모 실행에서는 위 옵션을 붙이지 않아도 Docker lifecycle이 기본으로 열리지 않는다. 운영 실수를 줄이고 싶으면 `--reuse-shards-only`를 함께 사용한다.
 
 WARP 연결 상태와 egress IP 확인:
 
@@ -288,7 +327,7 @@ python tools/audit_search_shards.py --count 36
 ```bash
 export MCP_ENDPOINTS="http://localhost:3333,http://localhost:3334,http://localhost:3335,http://localhost:3336"
 export MCP_ENDPOINT_STRATEGY="round_robin"
-python expert_main.py tests/inputs/sample.jsonl --parallel 4
+python expert_main.py tests/inputs/sample.jsonl --parallel 12
 ```
 
 선택 전략:
@@ -304,9 +343,9 @@ python expert_main.py tests/inputs/sample.jsonl --parallel 4
 - 워커 단위로 MCP shard가 고정되므로, 한 게시글 처리 중 search/fetch가 섞여도 같은 WARP 번들을 쓴다.
 - host에는 `mcp-bridge-*` 포트와 디버깅용 SearchXNG UI 포트(`19001+`)만 연다. `searchxng`가 `warp-N`의 네트워크 namespace를 공유하므로 UI 포트 publish도 `searchxng-N`가 아니라 `warp-N` 서비스에 둔다.
 
-## 2026-04-26 운영 메모
+## 과거 운영 기록 (2026-04-26)
 
-`20260423_170321_250907` 20k 런 리뷰에서 일부 shard가 `Exited (1/137)` 상태로 남아 있었고, 브라우저에서 SearchXNG UI가 `ERR_EMPTY_RESPONSE`를 보였다. 대표 증상은 `19013`이었지만 실제 감사에서는 `1,10,13,15,26,27,29,33,34` shard가 문제로 잡혔다. 해당 shard bundle만 recreate한 뒤 재감사에서는 `36/36` 정상화됐다.
+아래는 당시 운영 기록이며 현재 동작을 보장하는 설명이 아니다. `20260423_170321_250907` 20k 런 리뷰에서 일부 shard가 `Exited (1/137)` 상태로 남아 있었고, 브라우저에서 SearchXNG UI가 `ERR_EMPTY_RESPONSE`를 보였다. 대표 증상은 `19013`이었지만 실제 감사에서는 `1,10,13,15,26,27,29,33,34` shard가 문제로 잡혔다. 해당 shard bundle만 recreate한 뒤 재감사에서는 `36/36` 정상화됐다.
 
 컨테이너 로그에서는 `can't start new thread`, `Resource temporarily unavailable`, `pthread_create failed`, Docker DNAT/iptables fork 실패가 확인됐다. 따라서 대량 병렬 처리에서는 WARP on 여부만으로 충분하지 않고, `mcp-bridge /readyz`와 SearchXNG UI 응답까지 readiness로 봐야 한다.
 
