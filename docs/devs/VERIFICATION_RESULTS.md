@@ -34,6 +34,7 @@ J11이 첫 음절 약칭과 띄어쓰기만 다른 제목 표기를 같은 작�
 - `9727547`·`10388511`·`11718098`은 J11을 통과했지만 마지막 직렬화 단계가 후보만 남기고 공개 제목을 고르지 않았다(`serializer_candidate_inventory_hold`, `candidate_inventory_unselected`). 판수대에는 이미지 OCR 제목 충돌 표시가, 마왕의 게임 후보 `마왕의 게임 [E]`에는 검색 제목 충돌 표시가 함께 붙었다. 세 글은 10-13·11-16 실행에서도 보류였으므로 J11 밖의 남은 문제로 둔다.
 - `11718064`는 Arbiter 내부 가드(`curated_alias_missing_contextual_work_anchor`)가 제목을 null로 만들어 J11에 닿기 전에 제목이 빠졌다. 11-16에도 같은 가드가 걸렸지만 그때는 뒤 단계 복구(`relation_hold_unresolved_recovered`, `single_candidate_unresolved_promoted`)로 공개됐고, 이번에는 그 복구가 일어나지 않았다. 이 글에는 J11 기록이 없으므로 이번 수정이 지나는 경로가 아니다. 11-16의 Verifier는 제목을 내지 않았고(Low) 이번 Verifier는 제목을 냈으므로(High), LLM 출력 변동이 원인으로 보인다.
 - `11698880`은 본문 작품(`가챠 중독자의 퓨전펑크 생활`)이 후보로 남았고 `아카데미 생존 갤러리` 오작품 공개는 없었다. `11694035`는 기존 J11 known_alias 잠금으로 통과한 뒤 공식 URL이 없어 보류됐으며, 공식 상세 전에는 공개하지 않는다는 기존 기대와 같다.
+- 이 실행 뒤에 같은 작품 인정 조건을 좁혔다. 띄어쓰기만 다른 제목은 원문과 J11 앵커 용어 양쪽에 있어야 하고, 약칭의 Decoder 일치는 코드 교정을 거치지 않고 LLM이 High 이상으로 낸 제목만 센다. 실행은 좁히기 전 코드로 돌렸으므로 로그에 남은 4건의 Gatekeeper·Decoder·Verifier 출력과 Decoder 교정 기록으로 J11 판정만 다시 계산했고, 네 건 모두 판정이 그대로였다(마왕의 게임은 제목 표기, 나머지 셋은 약칭). LLM을 다시 호출해 확인하지는 않았다.
 - 같은 날 먼저 시작한 실행 두 개는 코드를 보완하느라 중간에 멈췄다. 결과 행이 없던 첫 실행은 지웠고, 6건이 끝난 두 번째 실행(최종 제목 교정 호출까지 새 판정을 켠 중간 코드)은 `run_partial_allcallers`로 보존했다. 그 실행에서도 `11718075`는 같은 URL로 공개됐고 `11718064`는 같은 Arbiter 가드로 보류됐다.
 - 로컬 자료: `out/j11_fix_check_20261117/`(`PROCESS.json`, `run/result.json`, `run/result_manifest.json`, `run_partial_allcallers/`), `logs/expert_run_20261117_122127_627975*.log`
 

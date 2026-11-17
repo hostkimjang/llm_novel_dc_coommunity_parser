@@ -2224,6 +2224,44 @@ class KnownTitleAbbreviationSupportTest(unittest.TestCase):
         self.assertFalse(drift["is_drift"])
         self.assertEqual(drift["reason"], "word_initial_abbreviation")
 
+    def test_j11_word_initial_alias_counts_only_high_decoder_llm_title(self):
+        pipeline = _build_pipeline()
+
+        def _context(confidence: str) -> ConversationContext:
+            return self._j11_alias_anticipation_context(
+                decoder_terms=[
+                    {
+                        "original": "이제는 죽깨수 올 때 됐다",
+                        "best_match": {"title": "죽었다 깨어도 수선", "confidence": confidence},
+                        "grounding": {"anchor_type": "title_mention"},
+                    }
+                ],
+                verifier_title=None,
+                relation_type="unknown",
+                promotion_decision="hold",
+            )
+
+        # 코드 rescue 경로가 남기는 medium 확신도는 Decoder 일치로 세지 않는다.
+        self.assertTrue(self._j11_drift(pipeline, _context("medium"), "죽었다 깨어도 수선")["is_drift"])
+
+        ctx = _context("high")
+        self.assertFalse(self._j11_drift(pipeline, ctx, "죽었다 깨어도 수선")["is_drift"])
+
+        # 약어 스코어 교정은 LLM 확신도를 그대로 두므로 code_level_hints로 걸러야 한다.
+        ctx.code_level_hints = [
+            {
+                "type": "abbreviation_correction",
+                "original_term": "이제는 죽깨수 올 때 됐다",
+                "old_title": "죽음의 수선공",
+                "corrected_title": "죽었다 깨어도 수선",
+                "abbreviation_score": 0.95,
+            }
+        ]
+        drift = self._j11_drift(pipeline, ctx, "죽었다 깨어도 수선")
+
+        self.assertTrue(drift["is_drift"])
+        self.assertNotIn("same_work_surface", drift)
+
     def test_j11_word_initial_alias_ignores_verifier_title_without_alias_relation(self):
         pipeline = _build_pipeline()
         ctx = self._j11_alias_anticipation_context(
@@ -2403,6 +2441,40 @@ class KnownTitleAbbreviationSupportTest(unittest.TestCase):
         drift = self._j11_drift(pipeline, ctx, "마왕의 게임")
 
         self.assertTrue(drift["is_drift"])
+
+    def test_j11_title_named_only_in_body_outside_anchor_is_still_drift(self):
+        pipeline = _build_pipeline()
+        ctx = ConversationContext(
+            post_id=11718064,
+            post_data={
+                "post_id": 11718064,
+                "title": "즉사무림 이유백 존나 멋있네",
+                "content_blocks": [{"type": "text", "text": "마왕의 게임 주인공 느낌도 좀 남"}],
+            },
+            comments=[],
+        )
+        ctx.set_expert_output(
+            ExpertType.GATEKEEPER,
+            {"detected_entities": {"possible_titles": ["즉사무림"], "possible_characters": ["이유백"]}},
+        )
+        ctx.set_expert_output(
+            ExpertType.DECODER,
+            {
+                "decoded_terms": [
+                    {
+                        "original": "즉사무림",
+                        "best_match": {"title": "즉사기 들고 무림에 떨어지다", "confidence": "medium"},
+                        "grounding": {"anchor_type": "title_mention"},
+                    }
+                ]
+            },
+        )
+
+        # 본문에서 지나가듯 언급한 작품은 J11 앵커(즉사무림)가 가리키는 작품이 아니다.
+        drift = self._j11_drift(pipeline, ctx, "마왕의 게임")
+
+        self.assertTrue(drift["is_drift"])
+        self.assertNotIn("same_work_surface", drift)
 
     def test_title_correction_callers_keep_previous_drift_rule(self):
         pipeline = _build_pipeline()

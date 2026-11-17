@@ -214,6 +214,10 @@ _TITLE_ANCHOR_NON_WORK_RELATIONS = frozenset(
         "thematic_overlap_only",
     )
 )
+# Decoder 후처리가 약어 점수로 제목을 구하거나 바꿀 때 남기는 code_level_hints 종류
+_TITLE_ANCHOR_CODE_DERIVED_HINT_TYPES = frozenset(
+    ("rescue_match", "verbatim_rescue", "abbreviation_correction")
+)
 
 
 @lru_cache(maxsize=1)
@@ -90392,31 +90396,41 @@ OUTPUT JSON:
     ) -> Optional[Dict[str, str]]:
         """J11 앵커가 표기만 다를 뿐 최종 제목과 같은 작품을 가리키는지 확인한다.
 
-        제목을 그대로 적은 경우는 원문(제목·본문, 댓글 제외)에 띄어쓰기만 다르게
-        나오는지 본다. 약칭은 형태만으로 단정하지 않는다. Decoder나 Verifier가
-        같은 제목으로 독립 판정했고, 본문 용어가 다른 작품으로 풀리지 않았고,
-        같은 약칭이 되는 다른 후보 제목이 없을 때만 같은 작품으로 본다.
+        제목을 그대로 적은 경우는 앵커 용어와 원문(제목·본문, 댓글 제외)에 제목이
+        띄어쓰기·뒤 조사만 다르게 나오는지 본다. 약칭은 형태만으로 단정하지 않는다.
+        Decoder LLM이나 Verifier가 같은 제목으로 독립 판정했고, 본문 용어가 다른 작품으로
+        풀리지 않았고, 같은 약칭이 되는 다른 후보 제목이 없을 때만 같은 작품으로 본다.
         """
         title_words = self._title_surface_words(official_title)
         title_key = self._normalize_match_text("".join(title_words))
         if not title_key:
             return None
-        post_text = self._collect_non_image_post_text(ctx, include_comments=False)
-        post_tokens = [
-            token_norm
-            for token_norm in (
-                self._normalize_match_text(token)
-                for token in re.findall(r"[0-9A-Za-z가-힣]+", post_text)
-            )
-            if token_norm
-        ]
+
+        def _surface_tokens(value: Any) -> List[str]:
+            return [
+                token_norm
+                for token_norm in (
+                    self._normalize_match_text(token)
+                    for token in re.findall(r"[0-9A-Za-z가-힣]+", str(value or ""))
+                )
+                if token_norm
+            ]
+
+        post_tokens = _surface_tokens(self._collect_non_image_post_text(ctx, include_comments=False))
         if not post_tokens:
             return None
 
+        # 제목 표기는 J11이 비교하는 앵커 용어가 제목을 띄어쓰기·조사만 다르게 적었을 때만 인정한다.
+        # 원문 어디에 나오든 인정하면 본문에서 지나가듯 언급한 다른 작품도 드리프트 검사를 피하고,
+        # J11 대체 후보 복구가 그 제목으로 바꿀 수 있다.
         if (
             len(title_key) >= 4
             and not self._is_generic_topic_title(" ".join(title_words))
             and self._surface_tokens_contain(post_tokens, title_key)
+            and any(
+                self._surface_tokens_contain(_surface_tokens(term), title_key)
+                for term in anchor_terms
+            )
         ):
             return {"reason": "direct_title_surface", "surface": " ".join(title_words)}
 
@@ -90485,6 +90499,17 @@ OUTPUT JSON:
             and str(relation.get("discussion_target") or "").strip().lower() == "specific_work"
         )
 
+        # Decoder 일치는 LLM이 High 이상으로 낸 제목만 센다. 코드가 약어 점수로 제목을 구하는
+        # 경로는 확신도를 medium으로 낮추고, 약어 스코어 교정은 확신도를 그대로 두는 대신
+        # code_level_hints를 남긴다. 둘 다 약칭 형태로 다시 약칭을 인정하는 셈이라 뺀다.
+        code_hints = getattr(ctx, "code_level_hints", None)
+        decoder_title_code_derived = any(
+            isinstance(hint, dict)
+            and str(hint.get("type") or "") in _TITLE_ANCHOR_CODE_DERIVED_HINT_TYPES
+            and _title_key(hint.get("corrected_title")) == title_key
+            for hint in (code_hints if isinstance(code_hints, list) else [])
+        )
+
         post_key = "".join(post_tokens)
         decoder_out = ctx.get_expert_output(ExpertType.DECODER) or {}
         other_titles: List[Any] = []
@@ -90496,7 +90521,7 @@ OUTPUT JSON:
             bm_title = bm.get("title")
             bm_rank = self._confidence_rank_value(bm.get("confidence"))
             if bm_title and _title_key(bm_title) == title_key:
-                expert_aligned = expert_aligned or bm_rank >= 2
+                expert_aligned = expert_aligned or (bm_rank >= 3 and not decoder_title_code_derived)
             elif bm_title and not _same_work_title(bm_title):
                 # 본문 용어가 다른 작품으로 풀렸으면 약칭만으로 같은 작품이라 보지 않는다.
                 original_key = self._normalize_match_text(str(dt.get("original") or ""))
@@ -90594,8 +90619,8 @@ OUTPUT JSON:
             return {"is_drift": False}
 
         # 키워드는 띄어쓰기 단위로 비교하므로 표기만 다른 같은 제목을 놓친다.
-        # 원문이 제목을 붙여 쓰거나 조사를 붙였으면(마왕의게임 ↔ 마왕의 게임),
-        # 또는 제목 단어의 첫 음절 약칭을 썼으면(죽깨수 ↔ 죽었다 깨어도 수선) 같은 작품이다.
+        # 앵커가 제목을 붙여 쓰거나 조사를 붙였으면(마왕의게임 ↔ 마왕의 게임),
+        # 또는 제목 단어의 첫 음절 약칭이면(죽깨수 ↔ 죽었다 깨어도 수선) 같은 작품이다.
         same_work = None
         if recognize_same_work_surface:
             try:
