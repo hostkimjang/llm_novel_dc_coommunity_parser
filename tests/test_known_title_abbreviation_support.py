@@ -2103,6 +2103,334 @@ class KnownTitleAbbreviationSupportTest(unittest.TestCase):
             )
         )
 
+    @staticmethod
+    def _j11_drift(pipeline: AgenticPipeline, ctx: ConversationContext, title: str) -> dict:
+        return pipeline._detect_title_anchor_drift(
+            ctx,
+            official_title=title,
+            recognize_same_work_surface=True,
+        )
+
+    @staticmethod
+    def _j11_alias_anticipation_context(
+        *,
+        decoder_terms: list,
+        verifier_title: str | None = "죽었다 깨어도 수선",
+        relation_type: str = "explicit_alias",
+        promotion_decision: str = "allow",
+    ) -> ConversationContext:
+        ctx = ConversationContext(
+            post_id=11718075,
+            post_data={
+                "post_id": 11718075,
+                "title": "이제는 죽깨수 올 때 됐다",
+                "content_blocks": [
+                    {"type": "image", "url": "https://example.invalid/11718075.png"},
+                    {"type": "text", "text": "가자 돌마늘!"},
+                ],
+            },
+            comments=["돌마늘 기우제", "ㅋ"],
+        )
+        ctx.set_expert_output(
+            ExpertType.GATEKEEPER,
+            {"detected_entities": {"possible_titles": ["죽깨수"], "possible_authors": ["돌마늘"]}},
+        )
+        ctx.set_expert_output(ExpertType.DECODER, {"decoded_terms": decoder_terms})
+        ctx.set_expert_output(
+            ExpertType.VERIFIER,
+            {
+                "verification_result": {
+                    "novel_identity": {
+                        "official_novel_title": verifier_title,
+                        "confidence": "High" if verifier_title else "None",
+                    },
+                    "relation_judgment": {
+                        "relation_type": relation_type,
+                        "discussion_target": "specific_work",
+                        "promotion_decision": promotion_decision,
+                    },
+                }
+            },
+        )
+        return ctx
+
+    def test_word_initial_title_abbreviation_shapes(self):
+        check = AgenticPipeline._is_word_initial_title_abbreviation
+        self.assertTrue(check("죽깨수", "죽었다 깨어도 수선"))
+        self.assertTrue(check("판수대", "판타지 수학대전"))
+        self.assertTrue(check("마좋좋좋", "마법 좋아좋아좋아"))
+        self.assertTrue(check("아생갤", "아카데미 생존 갤러리 [독점]"))
+        # 단어를 건너뛰거나 다른 음절로 시작하면 약칭으로 보지 않는다.
+        self.assertFalse(check("즉사무림", "즉사기 들고 게임 속으로"))
+        self.assertFalse(check("즉사무림", "즉사기 들고 무림에 떨어지다"))
+        self.assertFalse(check("잘생인방", "잘생기면 인생이 편하다"))
+        self.assertFalse(check("죽깨", "죽었다 깨어도 수선"))
+        self.assertFalse(check("화산귀환", "화산귀환"))
+
+    def test_j11_word_initial_alias_with_expert_agreement_is_not_drift(self):
+        pipeline = _build_pipeline()
+        ctx = self._j11_alias_anticipation_context(
+            decoder_terms=[
+                {
+                    "original": "이제는 죽깨수 올 때 됐다",
+                    "best_match": {"title": "죽었다 깨어도 수선", "confidence": "high"},
+                    "grounding": {"anchor_type": "title_mention"},
+                }
+            ]
+        )
+
+        drift = pipeline._detect_title_anchor_drift(
+            ctx,
+            official_title="죽었다 깨어도 수선",
+            vf_anchor="title_mention",
+            recognize_same_work_surface=True,
+        )
+
+        self.assertFalse(drift["is_drift"])
+        self.assertEqual(drift["reason"], "word_initial_abbreviation")
+        self.assertEqual(drift["same_work_surface"], "죽깨수")
+
+    def test_j11_word_initial_alias_needs_independent_expert_title(self):
+        pipeline = _build_pipeline()
+        ctx = self._j11_alias_anticipation_context(
+            decoder_terms=[
+                {
+                    "original": "이제는 죽깨수 올 때 됐다",
+                    "best_match": {"title": None, "confidence": "none"},
+                    "grounding": {"anchor_type": "title_mention"},
+                }
+            ],
+            verifier_title=None,
+        )
+
+        drift = self._j11_drift(pipeline, ctx, "죽었다 깨어도 수선")
+
+        self.assertTrue(drift["is_drift"])
+
+    def test_j11_word_initial_alias_accepts_verifier_alias_relation_without_decoder(self):
+        pipeline = _build_pipeline()
+        ctx = self._j11_alias_anticipation_context(
+            decoder_terms=[
+                {
+                    "original": "이제는 죽깨수 올 때 됐다",
+                    "best_match": {"title": None, "confidence": "none"},
+                    "grounding": {"anchor_type": "title_mention"},
+                }
+            ]
+        )
+
+        drift = self._j11_drift(pipeline, ctx, "죽었다 깨어도 수선")
+
+        self.assertFalse(drift["is_drift"])
+        self.assertEqual(drift["reason"], "word_initial_abbreviation")
+
+    def test_j11_word_initial_alias_ignores_verifier_title_without_alias_relation(self):
+        pipeline = _build_pipeline()
+        ctx = self._j11_alias_anticipation_context(
+            decoder_terms=[
+                {
+                    "original": "이제는 죽깨수 올 때 됐다",
+                    "best_match": {"title": None, "confidence": "none"},
+                    "grounding": {"anchor_type": "title_mention"},
+                }
+            ],
+            relation_type="unknown",
+            promotion_decision="hold",
+        )
+
+        drift = self._j11_drift(pipeline, ctx, "죽었다 깨어도 수선")
+
+        self.assertTrue(drift["is_drift"])
+
+    def test_j11_word_initial_alias_keeps_drift_when_verifier_picks_other_work(self):
+        pipeline = _build_pipeline()
+        ctx = self._j11_alias_anticipation_context(
+            decoder_terms=[
+                {
+                    "original": "이제는 죽깨수 올 때 됐다",
+                    "best_match": {"title": "죽었다 깨어도 수선", "confidence": "high"},
+                    "grounding": {"anchor_type": "title_mention"},
+                }
+            ],
+            verifier_title="회귀수선전",
+        )
+
+        drift = self._j11_drift(pipeline, ctx, "죽었다 깨어도 수선")
+
+        self.assertTrue(drift["is_drift"])
+
+    def test_j11_word_initial_alias_must_be_one_post_word(self):
+        pipeline = _build_pipeline()
+        # Gatekeeper가 붙여 쓴 약칭을 내도, 원문에서 두 단어로 갈라져 있으면 약칭으로 보지 않는다.
+        ctx = self._j11_alias_anticipation_context(
+            decoder_terms=[
+                {
+                    "original": "이제는 죽깨 수 올 때 됐다",
+                    "best_match": {"title": "죽었다 깨어도 수선", "confidence": "high"},
+                    "grounding": {"anchor_type": "title_mention"},
+                }
+            ]
+        )
+        ctx.post_data["title"] = "이제는 죽깨 수 올 때 됐다"
+
+        drift = self._j11_drift(pipeline, ctx, "죽었다 깨어도 수선")
+
+        self.assertTrue(drift["is_drift"])
+
+    def test_j11_word_initial_alias_respects_verifier_relation_reject(self):
+        pipeline = _build_pipeline()
+        ctx = self._j11_alias_anticipation_context(
+            decoder_terms=[
+                {
+                    "original": "이제는 죽깨수 올 때 됐다",
+                    "best_match": {"title": "죽었다 깨어도 수선", "confidence": "high"},
+                    "grounding": {"anchor_type": "title_mention"},
+                }
+            ],
+            relation_type="community_slang_or_meta",
+            promotion_decision="reject",
+        )
+
+        drift = self._j11_drift(pipeline, ctx, "죽었다 깨어도 수선")
+
+        self.assertTrue(drift["is_drift"])
+
+    def test_j11_word_initial_alias_keeps_drift_when_body_names_other_work(self):
+        pipeline = _build_pipeline()
+        ctx = ConversationContext(
+            post_id=11698880,
+            post_data={
+                "post_id": 11698880,
+                "title": "아생갤 개 존나게 재밌군 ㅇㅇ",
+                "content_blocks": [
+                    {"type": "text", "text": "가챠펑크 세드릭도 그렇고"},
+                    {"type": "text", "text": "이런게 아닌 시원시원한 상남자라서"},
+                ],
+            },
+            comments=[],
+        )
+        ctx.set_expert_output(
+            ExpertType.GATEKEEPER,
+            {"detected_entities": {"possible_titles": ["아생갤", "가챠펑크"]}},
+        )
+        ctx.set_expert_output(
+            ExpertType.DECODER,
+            {
+                "decoded_terms": [
+                    {
+                        "original": "아생갤",
+                        "best_match": {"title": "아카데미 생존 갤러리", "confidence": "high"},
+                        "grounding": {"anchor_type": "title_mention"},
+                    },
+                    {
+                        "original": "가챠펑크",
+                        "best_match": {"title": "가챠 중독자의 퓨전펑크 생활", "confidence": "high"},
+                        "grounding": {"anchor_type": "title_mention"},
+                    },
+                ]
+            },
+        )
+
+        drift = self._j11_drift(pipeline, ctx, "아카데미 생존 갤러리")
+
+        self.assertTrue(drift["is_drift"])
+        self.assertNotIn("same_work_surface", drift)
+
+    def test_j11_word_initial_alias_keeps_drift_when_another_candidate_shares_it(self):
+        pipeline = _build_pipeline()
+        ctx = self._j11_alias_anticipation_context(
+            decoder_terms=[
+                {
+                    "original": "이제는 죽깨수 올 때 됐다",
+                    "best_match": {"title": "죽었다 깨어도 수선", "confidence": "high"},
+                    "grounding": {"anchor_type": "title_mention"},
+                }
+            ]
+        )
+        ctx.suspected_titles = [{"title": "죽음의 깨달음 수련기", "confidence": "Medium"}]
+
+        drift = self._j11_drift(pipeline, ctx, "죽었다 깨어도 수선")
+
+        self.assertTrue(drift["is_drift"])
+
+    def test_j11_spacing_variant_of_title_in_post_is_not_drift(self):
+        pipeline = _build_pipeline()
+        post_title = "그런의미로 마왕의게임<< 보지픽 가능함?"
+        ctx = ConversationContext(
+            post_id=9727547,
+            post_data={"post_id": 9727547, "title": post_title, "content_blocks": []},
+            comments=[],
+        )
+        ctx.set_expert_output(
+            ExpertType.DECODER,
+            {
+                "decoded_terms": [
+                    {
+                        "original": post_title,
+                        "best_match": {"title": post_title, "confidence": "high"},
+                        "grounding": {"anchor_type": "title_mention"},
+                    }
+                ]
+            },
+        )
+
+        drift = self._j11_drift(pipeline, ctx, "마왕의 게임")
+
+        self.assertFalse(drift["is_drift"])
+        self.assertEqual(drift["reason"], "direct_title_surface")
+
+    def test_j11_title_surface_inside_longer_word_is_still_drift(self):
+        pipeline = _build_pipeline()
+        post_title = "대마왕의게임판 같은 작품 없냐"
+        ctx = ConversationContext(
+            post_id=9727548,
+            post_data={"post_id": 9727548, "title": post_title, "content_blocks": []},
+            comments=["마왕의 게임 말하는 거임?"],
+        )
+        ctx.set_expert_output(
+            ExpertType.DECODER,
+            {
+                "decoded_terms": [
+                    {
+                        "original": "대마왕의게임판",
+                        "best_match": {"title": "대마왕의 게임판", "confidence": "high"},
+                        "grounding": {"anchor_type": "title_mention"},
+                    }
+                ]
+            },
+        )
+
+        drift = self._j11_drift(pipeline, ctx, "마왕의 게임")
+
+        self.assertTrue(drift["is_drift"])
+
+    def test_title_correction_callers_keep_previous_drift_rule(self):
+        pipeline = _build_pipeline()
+        post_title = "그런의미로 마왕의게임<< 보지픽 가능함?"
+        ctx = ConversationContext(
+            post_id=9727547,
+            post_data={"post_id": 9727547, "title": post_title, "content_blocks": []},
+            comments=[],
+        )
+        ctx.set_expert_output(
+            ExpertType.DECODER,
+            {
+                "decoded_terms": [
+                    {
+                        "original": post_title,
+                        "best_match": {"title": post_title, "confidence": "high"},
+                        "grounding": {"anchor_type": "title_mention"},
+                    }
+                ]
+            },
+        )
+
+        # 최종 제목 교정 단계가 쓰는 기본 호출은 기존 판정을 그대로 유지한다.
+        drift = pipeline._detect_title_anchor_drift(ctx, official_title="마왕의 게임")
+
+        self.assertTrue(drift["is_drift"])
+        self.assertNotIn("same_work_surface", drift)
+
     def test_stable_alias_conflict_ignores_decoder_descriptor_term(self):
         pipeline = _build_pipeline()
         ctx = ConversationContext(

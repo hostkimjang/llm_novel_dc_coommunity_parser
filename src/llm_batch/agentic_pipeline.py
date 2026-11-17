@@ -197,6 +197,23 @@ _WORK_ANTICIPATION_COMPARISON_RE = re.compile(
     r"(?:\bvs\b|비교|다른\s*작품|두\s*작품|여러\s*작품|각각|대결)",
     flags=re.IGNORECASE,
 )
+# J11 제목 앵커 비교에서 표기만 다른 같은 작품을 알아볼 때 쓰는 보조 규칙
+_TITLE_SURFACE_BRACKET_RE = re.compile(r"[\[\(（【〈《<][^\]\)）】〉》>]{0,40}[\]\)）】〉》>]")
+_TITLE_SURFACE_PARTICLES = frozenset(
+    (
+        "은", "는", "이", "가", "을", "를", "의", "도", "만", "에", "와", "과", "랑", "로",
+        "으로", "에서", "에게", "한테", "하고", "이랑", "처럼", "까지", "부터", "보다",
+        "이나", "나", "임", "이냐", "냐", "이다", "다", "요", "이요",
+    )
+)
+_TITLE_ANCHOR_NON_WORK_RELATIONS = frozenset(
+    (
+        "genre_or_trope_label",
+        "platform_or_category",
+        "community_slang_or_meta",
+        "thematic_overlap_only",
+    )
+)
 
 
 @lru_cache(maxsize=1)
@@ -11369,13 +11386,23 @@ class AgenticPipeline:
         # ── 가드 J11: 제목 앵커 드리프트 차단 ──
         # 제목/약칭 앵커가 가리키는 핵심 도메인 키워드와 최종 제목이 충돌하면
         # (예: 즉사'무림' ↔ 즉사기 들고 '게임' 속으로) 오매칭 가능성이 높다.
+        # 띄어쓰기·조사만 다른 제목 표기(마왕의게임)와 제목 단어의 첫 음절 약칭(죽깨수)은
+        # _detect_title_anchor_drift가 같은 작품으로 보고 드리프트에서 뺀다.
         if is_relevant and official_title:
             _official_title_evidence_j11 = self._has_official_title_evidence(ctx, official_title)
             _drift = self._detect_title_anchor_drift(
                 ctx,
                 official_title=official_title,
                 vf_anchor=vf_anchor,
+                recognize_same_work_surface=True,
             )
+            if _drift.get("same_work_surface"):
+                print(
+                    f"[{_ts()}] 🔒 제목 드리프트 스킵(J11-same-work-surface): "
+                    f"title='{official_title}', surface='{_drift.get('same_work_surface')}', "
+                    f"reason={_drift.get('reason')}",
+                    file=sys.stderr,
+                )
             _known_alias_lock_j11 = False
             _title_body_detail_lock_j11 = False
             _post_alias_detail_lock_j11 = False
@@ -11619,6 +11646,7 @@ class AgenticPipeline:
                             _alt_overlap = self._title_anchor_lexical_overlap(ctx, _j11_alt)
                             _alt_drift = self._detect_title_anchor_drift(
                                 ctx, official_title=_j11_alt, vf_anchor=vf_anchor,
+                                recognize_same_work_surface=True,
                             )
                             _alt_is_drift = _alt_drift.get("is_drift", False)
                             _alt_has_ev = self._has_official_title_evidence(ctx, _j11_alt)
@@ -90290,15 +90318,224 @@ OUTPUT JSON:
 
         return True
 
+    @staticmethod
+    def _title_surface_words(title: Any) -> List[str]:
+        """제목에서 [독점]·(외전) 같은 괄호 꼬리표를 빼고 단어로 나눈다."""
+        stripped = _TITLE_SURFACE_BRACKET_RE.sub(" ", str(title or ""))
+        return [word for word in re.findall(r"[0-9A-Za-z가-힣]+", stripped) if word]
+
+    @classmethod
+    def _is_word_initial_title_abbreviation(cls, alias: Any, title: Any) -> bool:
+        """약칭이 제목 단어마다 그 단어의 첫 음절로 시작하는 조각을 이어 붙인 형태인지 본다.
+
+        각 단어는 첫 음절을 반드시 내고, 같은 단어의 뒤 음절을 순서대로 더 낼 수 있다.
+        죽깨수(죽었다 깨어도 수선)와 판수대(판타지 수학대전)는 맞고,
+        단어를 건너뛰는 즉사무림(즉사기 들고 게임 속으로)은 맞지 않는다.
+        """
+        alias_text = str(alias or "").strip()
+        if not re.fullmatch(r"[가-힣]{3,10}", alias_text):
+            return False
+        words = cls._title_surface_words(title)
+        if not 2 <= len(words) <= 8:
+            return False
+        if any(not re.fullmatch(r"[가-힣]+", word) for word in words):
+            return False
+        if len(alias_text) < len(words) or len(alias_text) >= sum(len(word) for word in words):
+            return False
+
+        def _match(alias_pos: int, word_pos: int) -> bool:
+            if word_pos == len(words):
+                return alias_pos == len(alias_text)
+            if len(alias_text) - alias_pos < len(words) - word_pos:
+                return False
+            word = words[word_pos]
+            if alias_text[alias_pos] != word[0]:
+                return False
+            next_pos = alias_pos + 1
+            search_from = 1
+            while True:
+                if _match(next_pos, word_pos + 1):
+                    return True
+                if next_pos >= len(alias_text):
+                    return False
+                found = word.find(alias_text[next_pos], search_from)
+                if found < 0:
+                    return False
+                search_from = found + 1
+                next_pos += 1
+
+        return _match(0, 0)
+
+    @staticmethod
+    def _surface_tokens_contain(tokens: Sequence[str], surface_norm: str) -> bool:
+        """정규화한 표면이 토큰 경계에서 시작해 토큰 경계(뒤 조사 허용)에서 끝나는지 본다."""
+        if not surface_norm:
+            return False
+        for start in range(len(tokens)):
+            joined = ""
+            for token in tokens[start:]:
+                joined += token
+                if len(joined) >= len(surface_norm):
+                    break
+            if not joined.startswith(surface_norm):
+                continue
+            rest = joined[len(surface_norm):]
+            if not rest or rest in _TITLE_SURFACE_PARTICLES:
+                return True
+        return False
+
+    def _title_anchor_same_work_surface(
+        self,
+        ctx: "ConversationContext",
+        official_title: str,
+        anchor_terms: Sequence[str],
+    ) -> Optional[Dict[str, str]]:
+        """J11 앵커가 표기만 다를 뿐 최종 제목과 같은 작품을 가리키는지 확인한다.
+
+        제목을 그대로 적은 경우는 원문(제목·본문, 댓글 제외)에 띄어쓰기만 다르게
+        나오는지 본다. 약칭은 형태만으로 단정하지 않는다. Decoder나 Verifier가
+        같은 제목으로 독립 판정했고, 본문 용어가 다른 작품으로 풀리지 않았고,
+        같은 약칭이 되는 다른 후보 제목이 없을 때만 같은 작품으로 본다.
+        """
+        title_words = self._title_surface_words(official_title)
+        title_key = self._normalize_match_text("".join(title_words))
+        if not title_key:
+            return None
+        post_text = self._collect_non_image_post_text(ctx, include_comments=False)
+        post_tokens = [
+            token_norm
+            for token_norm in (
+                self._normalize_match_text(token)
+                for token in re.findall(r"[0-9A-Za-z가-힣]+", post_text)
+            )
+            if token_norm
+        ]
+        if not post_tokens:
+            return None
+
+        if (
+            len(title_key) >= 4
+            and not self._is_generic_topic_title(" ".join(title_words))
+            and self._surface_tokens_contain(post_tokens, title_key)
+        ):
+            return {"reason": "direct_title_surface", "surface": " ".join(title_words)}
+
+        alias = ""
+        for term in anchor_terms:
+            for token in re.findall(r"[가-힣]+", str(term or "")):
+                variants = [token]
+                for particle in sorted(_TITLE_SURFACE_PARTICLES, key=len, reverse=True):
+                    if token.endswith(particle) and len(token) - len(particle) >= 3:
+                        variants.append(token[: -len(particle)])
+                        break
+                for variant in variants:
+                    # 약칭은 원문의 한 단어(뒤 조사 허용)로 나와야 한다.
+                    if (
+                        self._is_word_initial_title_abbreviation(variant, official_title)
+                        and any(
+                            self._surface_tokens_contain([post_token], variant)
+                            for post_token in post_tokens
+                        )
+                        and not self._is_generic_topic_title(variant)
+                    ):
+                        alias = variant
+                        break
+                if alias:
+                    break
+            if alias:
+                break
+        if not alias:
+            return None
+
+        def _title_key(value: Any) -> str:
+            return self._normalize_match_text("".join(self._title_surface_words(value)))
+
+        def _same_work_title(value: Any) -> bool:
+            value_key = _title_key(value)
+            return bool(value_key) and (
+                value_key == title_key or self._is_similar_title(value_key, title_key)
+            )
+
+        vf_out = ctx.get_expert_output(ExpertType.VERIFIER) or {}
+        vf_result = vf_out.get("verification_result") if isinstance(vf_out, dict) else None
+        vf_result = vf_result if isinstance(vf_result, dict) else {}
+        relation = vf_result.get("relation_judgment") or {}
+        relation = relation if isinstance(relation, dict) else {}
+        relation_type = str(relation.get("relation_type") or "").strip().lower()
+        if (
+            str(relation.get("promotion_decision") or "").strip().lower() == "reject"
+            or relation_type in _TITLE_ANCHOR_NON_WORK_RELATIONS
+        ):
+            return None
+
+        vf_identity = vf_result.get("novel_identity") or {}
+        vf_identity = vf_identity if isinstance(vf_identity, dict) else {}
+        vf_title = vf_identity.get("official_novel_title") or vf_identity.get("official_title")
+        vf_rank = self._confidence_rank_value(vf_identity.get("confidence"))
+        if vf_title and vf_rank >= 2 and not _same_work_title(vf_title):
+            # Verifier가 다른 작품을 골랐으면 전문가 판단이 갈린 것이므로 약칭 형태만으로 풀지 않는다.
+            return None
+        # 파이프라인이 앞 단계에서 Verifier 제목을 최종 제목으로 덮어쓰는 경로가 있으므로,
+        # Verifier 쪽 일치는 별칭 관계 판정이 특정 작품을 가리킬 때만 독립 근거로 센다.
+        expert_aligned = bool(
+            vf_title
+            and _title_key(vf_title) == title_key
+            and vf_rank >= 2
+            and relation_type in {"exact_title", "explicit_alias", "work_specific_nickname"}
+            and str(relation.get("discussion_target") or "").strip().lower() == "specific_work"
+        )
+
+        post_key = "".join(post_tokens)
+        decoder_out = ctx.get_expert_output(ExpertType.DECODER) or {}
+        other_titles: List[Any] = []
+        for dt in decoder_out.get("decoded_terms", []) or []:
+            if not isinstance(dt, dict):
+                continue
+            bm = dt.get("best_match") or {}
+            bm = bm if isinstance(bm, dict) else {}
+            bm_title = bm.get("title")
+            bm_rank = self._confidence_rank_value(bm.get("confidence"))
+            if bm_title and _title_key(bm_title) == title_key:
+                expert_aligned = expert_aligned or bm_rank >= 2
+            elif bm_title and not _same_work_title(bm_title):
+                # 본문 용어가 다른 작품으로 풀렸으면 약칭만으로 같은 작품이라 보지 않는다.
+                original_key = self._normalize_match_text(str(dt.get("original") or ""))
+                if bm_rank >= 2 and original_key and original_key in post_key:
+                    return None
+            other_titles.append(bm_title)
+            candidates = dt.get("candidates")
+            for cand in candidates if isinstance(candidates, list) else []:
+                if isinstance(cand, dict):
+                    other_titles.append(cand.get("official_novel_title") or cand.get("title"))
+        if not expert_aligned:
+            return None
+
+        for st in getattr(ctx, "suspected_titles", None) or []:
+            other_titles.append(st.get("title") if isinstance(st, dict) else st)
+        for other in other_titles:
+            other_text = str(other or "").strip()
+            if (
+                other_text
+                and not _same_work_title(other_text)
+                and self._is_word_initial_title_abbreviation(alias, other_text)
+            ):
+                return None
+        return {"reason": "word_initial_abbreviation", "surface": alias}
+
     def _detect_title_anchor_drift(
         self,
         ctx: "ConversationContext",
         *,
         official_title: str,
         vf_anchor: str = "",
+        recognize_same_work_surface: bool = False,
     ) -> Dict[str, Any]:
         """
         제목 앵커와 최종 제목의 도메인 키워드가 충돌하는지 검사.
+
+        recognize_same_work_surface=True(J11)이면 띄어쓰기·조사만 다른 제목 표기와
+        제목 단어의 첫 음절 약칭을 같은 작품으로 본다. 최종 제목 교정 단계는
+        이 판정을 따로 검증하지 않았으므로 기본값(False)으로 기존 동작을 유지한다.
         """
         anchor_terms = self._collect_title_anchor_terms(ctx)
         if not anchor_terms:
@@ -90355,6 +90592,23 @@ OUTPUT JSON:
             or len(shared_keywords) >= min(len(anchor_keywords), len(title_keywords))
         ):
             return {"is_drift": False}
+
+        # 키워드는 띄어쓰기 단위로 비교하므로 표기만 다른 같은 제목을 놓친다.
+        # 원문이 제목을 붙여 쓰거나 조사를 붙였으면(마왕의게임 ↔ 마왕의 게임),
+        # 또는 제목 단어의 첫 음절 약칭을 썼으면(죽깨수 ↔ 죽었다 깨어도 수선) 같은 작품이다.
+        same_work = None
+        if recognize_same_work_surface:
+            try:
+                same_work = self._title_anchor_same_work_surface(ctx, official_title, anchor_terms)
+            except Exception:
+                # 보조 판정이 실패해도 기존 드리프트 판정은 그대로 진행한다.
+                same_work = None
+        if same_work:
+            return {
+                "is_drift": False,
+                "reason": same_work["reason"],
+                "same_work_surface": same_work["surface"],
+            }
 
         # 본문 플롯/캐릭터 앵커 + 공식 근거가 충분하면 드리프트로 보지 않음
         if vf_anchor in {"plot_mention", "character_mention", "character_title_link"}:
